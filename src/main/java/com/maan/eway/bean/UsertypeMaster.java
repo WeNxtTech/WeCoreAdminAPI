@@ -33,8 +33,8 @@ public class UsertypeMaster implements Serializable  {
 	//--- ENTITY PRIMARY KEY 
   
 	@Id
-    @Column(name="USER_CODE",nullable=false)
-    private String userCode;  
+    @Column(name="CODE",nullable=false)
+    private String code;  
 	
     @Id
     @Column(name="COMPANY_ID", nullable=false, length=100)

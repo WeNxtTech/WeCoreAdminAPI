@@ -82,13 +82,11 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 				}
 			} 
 			
-			if(req.getReLoginKey()!=null) {
-				if(req.getReLoginKey().equals("Y")) {
+			if(req.getReLoginKey()!=null && req.getReLoginKey().equalsIgnoreCase("Y") ) {
 					SessionDetails updatelogout = sessionlist.get(0);
 					updatelogout.setLogoutDate(new Date());
 					updatelogout.setStatus("DE-ACTIVE");
 					sessionRep.save(updatelogout);
-				}
 			}else if(sessionlist.size()!=0) {
 			
 					if(sessionlist.get(0).getLogoutDate()==null) {
@@ -97,15 +95,17 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 					}
 			}
 			
-			if(list!=null && list.size()>0  ) {
-				commonRes.setErrorMessage(list);
-				commonRes.setChangePasswordYn(changePwd);
-				commonRes.setCommonResponse(null);
-				commonRes.setIsError(true);
-				commonRes.setMessage("Failed");
-			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
+			list.add(new Error("", "CommonError", e.getMessage() ));
+		}
+		if(list!=null && list.size()>0  ) {
+			commonRes.setErrorMessage(list);
+			commonRes.setChangePasswordYn(changePwd);
+			commonRes.setCommonResponse(null);
+			commonRes.setIsError(true);
+			commonRes.setMessage("Failed");
 		}
 		return commonRes;
 	}
@@ -367,9 +367,8 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 		
 		List<Error> list = new ArrayList<Error>();
 		
-		if(req.getUserId()==null || StringUtils.isBlank(req.getUserId())) {
+		if(StringUtils.isBlank(req.getUserId())) {
 			list.add(new Error("","User Id", "Please Enter UserName"));
-			list.add(new Error("","Change Password", "You are not authorized user"));
 		}
 		else {
 			passwordEnc passEnc = new passwordEnc();

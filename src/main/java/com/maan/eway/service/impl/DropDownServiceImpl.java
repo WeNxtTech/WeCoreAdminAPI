@@ -71,7 +71,7 @@ public class DropDownServiceImpl implements DropDownService {
 
 			for (UsertypeMaster data : getList) {
 				DropDownRes res = new DropDownRes();
-				res.setCode(data.getUserCode());
+				res.setCode(data.getCode());
 				res.setCodeDesc(data.getUsertype());
 				resList.add(res);
 			}

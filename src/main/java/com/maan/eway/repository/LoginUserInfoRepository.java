@@ -30,4 +30,6 @@ import com.maan.eway.bean.LoginUserInfoId;
  
 public interface LoginUserInfoRepository  extends JpaRepository<LoginUserInfo,LoginUserInfoId > , JpaSpecificationExecutor<LoginUserInfo> {
 
+	LoginUserInfo findByLoginId(String loginId);
+
 }

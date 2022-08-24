@@ -83,9 +83,6 @@ private static final long serialVersionUID = 1L;
 
 
     //--- ENTITY LINKS ( RELATIONSHIP )
-    @OneToMany(mappedBy="bankMaster")
-    private List<LoginMaster> listOfLoginMaster ; 
-
 
 
 }

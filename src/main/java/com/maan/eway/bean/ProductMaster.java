@@ -113,14 +113,7 @@ private static final long serialVersionUID = 1L;
 
 
     //--- ENTITY LINKS ( RELATIONSHIP )
-    @ManyToOne
-    @JoinColumn(name="COMPANY_ID", referencedColumnName="COMPANY_ID", insertable=false, updatable=false)
-    private InsuranceCompanyMaster insuranceCompanyMaster ; 
-
-    @OneToMany(mappedBy="productMaster")
-    private List<LoginProductMaster> listOfLoginProductMaster ; 
-
-
+  
 
 }
 

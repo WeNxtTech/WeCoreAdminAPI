@@ -127,13 +127,6 @@ private static final long serialVersionUID = 1L;
     private String     pwdCount ;
 
 
-    //--- ENTITY LINKS ( RELATIONSHIP )
-    @ManyToOne
-    @JoinColumn(name="BANK_CODE", referencedColumnName="BANK_CODE", insertable=false, updatable=false)
-    private BankMaster bankMaster ; 
-
-
-
 }
 
 

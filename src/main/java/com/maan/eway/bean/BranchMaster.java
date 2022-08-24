@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -66,15 +65,19 @@ private static final long serialVersionUID = 1L;
     @Column(name="EFFECTIVE_DATE_END", nullable=false)
     private Date       effectiveDateEnd ;
 
+    @Id
+    @Column(name="REGION_CODE", length=20)
+    private String     regionCode ;
+
+    @Id
+    @Column(name="COMPANY_ID", length=20)
+    private String     companyId ;
+    
     //--- ENTITY DATA FIELDS 
     @Column(name="BRANCH_NAME", length=100)
     private String     branchName ;
 
-    @Column(name="REGION_CODE", length=20)
-    private String     regionCode ;
-
-    @Column(name="COMPANY_ID", length=20)
-    private String     companyId ;
+  
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ENTRY_DATE")
@@ -82,18 +85,6 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="STATUS", length=1)
     private String     status ;
-
-
-    //--- ENTITY LINKS ( RELATIONSHIP )
-    @ManyToOne
-    @JoinColumn(name="REGION_CODE", referencedColumnName="REGION_CODE", insertable=false, updatable=false)
-    private RegionMaster regionMaster ; 
-
-    @ManyToOne
-    @JoinColumn(name="COMPANY_ID", referencedColumnName="COMPANY_ID", insertable=false, updatable=false)
-    private InsuranceCompanyMaster insuranceCompanyMaster ; 
-
-
 
 }
 

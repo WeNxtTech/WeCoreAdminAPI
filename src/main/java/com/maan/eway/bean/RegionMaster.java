@@ -67,6 +67,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="EFFECTIVE_DATE_END", nullable=false)
     private Date       effectiveDateEnd ;
 
+    @Column(name="COMPANY_ID", length=20)
+    private String     companyId ;
+    
     //--- ENTITY DATA FIELDS 
     @Column(name="SHORT_CODE", length=20)
     private String     shortCode ;
@@ -77,22 +80,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="STATUS", length=1)
     private String     status ;
 
-    @Column(name="COMPANY_ID", length=20)
-    private String     companyId ;
-
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ENTRY_DATE")
     private Date       entryDate ;
 
 
     //--- ENTITY LINKS ( RELATIONSHIP )
-    @ManyToOne
-    @JoinColumn(name="COMPANY_ID", referencedColumnName="COMPANY_ID", insertable=false, updatable=false)
-    private InsuranceCompanyMaster insuranceCompanyMaster ; 
-
-    @OneToMany(mappedBy="regionMaster")
-    private List<BranchMaster> listOfBranchMaster ; 
-
 
 
 }

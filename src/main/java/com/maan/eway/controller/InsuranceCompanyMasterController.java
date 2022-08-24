@@ -5,6 +5,7 @@
 */
 package com.maan.eway.controller;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,19 +18,29 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.bean.InsuranceCompanyMaster;
+import com.maan.eway.error.Error;
+import com.maan.eway.req.CompanySaveReq;
+import com.maan.eway.res.CommonRes;
+import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.InsuranceCompanyMasterService;
+import com.maan.eway.service.PrintReqService;
+
+import io.swagger.annotations.Api;
 
 
 /**
 * <h2>InsuranceCompanyMasterController</h2>
 */
 @RestController
-@RequestMapping("/api")
+@Api(  tags="MASTER : Company Master ", description = "API's")
+@RequestMapping("/master")
 public class InsuranceCompanyMasterController {
 
 	@Autowired
 	private  InsuranceCompanyMasterService entityService;
 
+	@Autowired
+	private PrintReqService reqPrinter;
 /*
 	private static final String ENTITY_TITLE = "InsuranceCompanyMaster";
 
@@ -39,17 +50,37 @@ public class InsuranceCompanyMasterController {
 	}
 */
 
-	@PostMapping(value = "/insurancecompanymaster")
-	public ResponseEntity<InsuranceCompanyMaster> createInsuranceCompanyMaster(@RequestBody  InsuranceCompanyMaster model) {
+	@PostMapping(value = "/savecompany")
+	public ResponseEntity<CommonRes> createInsuranceCompanyMaster(@RequestBody  CompanySaveReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<Error> validation = entityService.validateCompanySaveReq(req);
+		//// validation
+		if (validation != null && validation.size() != 0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
 
-   		 InsuranceCompanyMaster data = entityService.create(model);
-    		if (data != null) {
-    			return new ResponseEntity<>(data,HttpStatus.CREATED);
-  			  } else {
-    			return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
-   			 }
-    }
+		} else {
+			/////// save
 
+			SuccessRes res = entityService.saveCompanyDetails(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+
+	}
+	
+	
     @GetMapping(value = "/insurancecompanymaster")
     public ResponseEntity<List<InsuranceCompanyMaster>> getAllInsuranceCompanyMaster() {
         List<InsuranceCompanyMaster> lst = entityService.getAll();

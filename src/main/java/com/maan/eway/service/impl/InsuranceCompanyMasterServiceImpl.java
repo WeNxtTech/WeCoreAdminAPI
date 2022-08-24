@@ -5,17 +5,26 @@
 */
 package com.maan.eway.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.maan.eway.repository.InsuranceCompanyMasterRepository;
-import com.maan.eway.bean.InsuranceCompanyMaster;
-import com.maan.eway.service.InsuranceCompanyMasterService;
 
-import java.util.Collections;
-import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.maan.eway.bean.InsuranceCompanyMaster;
+import com.maan.eway.error.Error;
+import com.maan.eway.repository.InsuranceCompanyMasterRepository;
+import com.maan.eway.req.CompanySaveReq;
+import com.maan.eway.res.SuccessRes;
+import com.maan.eway.service.InsuranceCompanyMasterService;
 /**
 * <h2>InsuranceCompanyMasterServiceimpl</h2>
 */
@@ -107,6 +116,80 @@ this.repository = repo;
         }
         return total;
     }
+
+
+	@Override
+	public List<Error> validateCompanySaveReq(CompanySaveReq req) {
+		List<Error> errors = new ArrayList<Error>();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
+		try {
+
+			if (StringUtils.isBlank(req.getCompanyAddress())) {
+				errors.add(new Error("01", "Company Address", "Please Enter Company Address"));
+			} else if (req.getCompanyAddress().length() > 200) {
+				errors.add(new Error("01", "Company Address", "Company Address under 200 Characters only allowed"));
+			}
+			
+			if (StringUtils.isBlank(req.getCompanyEmail())) {
+				errors.add(new Error("02", "Company Email", "Please Enter Company Email"));
+			} else if (req.getCompanyEmail().length() > 200) {
+				errors.add(new Error("02", "Company Email", "Company Email under 200 Characters only allowed"));
+			}
+			
+		/*	if (StringUtils.isBlank(req.getCompanyLogo())) {
+				errors.add(new Error("03", "Company Logo", "Please Enter Company Logo"));
+			} else if (req.getCompanyLogo().length() > 200) {
+				errors.add(new Error("03", "Company Logo", "Company Logo under 200 Characters only allowed"));
+			}*/
+			
+			if (StringUtils.isBlank(req.getCompanyName())) {
+				errors.add(new Error("03", "Company Name", "Please Enter Company Name"));
+			} else if (req.getCompanyName().length() > 200) {
+				errors.add(new Error("03", "Company Name", "Company Name under 200 Characters only allowed"));
+			}
+			
+			if (StringUtils.isBlank(req.getCompanyPhone())) {
+				errors.add(new Error("04", "Company Phone", "Please Enter Company Phone"));
+			} else if (req.getCompanyPhone().length() > 200) {
+				errors.add(new Error("04", "Company Phone", "Company Phone under 200 Characters only allowed"));
+			}
+
+			if (StringUtils.isBlank(req.getRegards())) {
+				errors.add(new Error("04", "Regards", "Please Enter Company Regards"));
+			} else if (req.getRegards().length() > 200) {
+				errors.add(new Error("04", "Regards", "Company Regards under 200 Characters only allowed"));
+			}
+			
+			if (StringUtils.isBlank(req.getRemarks())) {
+				errors.add(new Error("04", "Company Regards", "Please Enter Insurance Company Regards"));
+			} else if (req.getCompanyName().length() > 200) {
+				errors.add(new Error("04", "Company Regards", "Insurance Company Regards under 200 Characters only allowed"));
+			}
+			
+			if (StringUtils.isBlank(req.getStatus())) {
+				errors.add(new Error("04", "Status", "Please Enter Insurance Company Regards"));
+			} else if (req.getCompanyName().length() > 200) {
+				errors.add(new Error("04", "Status", "Insurance Company Regards under 200 Characters only allowed"));
+			}
+			
+			// Date Validation 
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return errors;
+		}
+		return errors;
+	}
+
+
+	@Override
+	public SuccessRes saveCompanyDetails(CompanySaveReq req) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 /*
     @Override

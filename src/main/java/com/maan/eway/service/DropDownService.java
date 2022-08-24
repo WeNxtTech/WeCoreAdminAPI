@@ -8,8 +8,4 @@ public interface DropDownService {
 
 	List<DropDownRes> getgender();
 
-	List<DropDownRes> getUserTypes();
-
-	List<DropDownRes> getInsuranceCompanies();
-
 }

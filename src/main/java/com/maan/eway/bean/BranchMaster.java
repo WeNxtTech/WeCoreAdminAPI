@@ -65,11 +65,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="EFFECTIVE_DATE_END", nullable=false)
     private Date       effectiveDateEnd ;
 
-    @Id
     @Column(name="REGION_CODE", length=20)
     private String     regionCode ;
 
-    @Id
     @Column(name="COMPANY_ID", length=20)
     private String     companyId ;
     

@@ -15,9 +15,6 @@ public class CommonRes {
 	@JsonProperty("IsError")	
 	private Boolean isError;
 	
-	@JsonProperty("ChangePasswordYn")	
-	private String changePasswordYn;
-
 	@JsonProperty("ErrorMessage")
 	private List<Error> errorMessage;
 

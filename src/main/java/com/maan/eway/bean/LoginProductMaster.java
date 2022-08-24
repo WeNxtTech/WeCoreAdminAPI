@@ -92,15 +92,6 @@ private static final long serialVersionUID = 1L;
     private Double     endLimit ;
 
 
-    //--- ENTITY LINKS ( RELATIONSHIP )
-    @ManyToOne
-    @JoinColumns( { 
-        @JoinColumn(name="PRODUCT_ID", referencedColumnName="PRODUCT_ID", insertable=false, updatable=false),
-        @JoinColumn(name="COMPANY_ID", referencedColumnName="COMPANY_ID", insertable=false, updatable=false) } )
-    private ProductMaster productMaster ; 
-
-
-
 }
 
 

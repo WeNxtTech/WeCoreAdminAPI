@@ -105,17 +105,6 @@ private static final long serialVersionUID = 1L;
     private String     status ;
 
 
-    //--- ENTITY LINKS ( RELATIONSHIP )
-    @ManyToOne
-    @JoinColumns( { 
-        @JoinColumn(name="REFERAL_ID", referencedColumnName="REFERAL_ID", insertable=false, updatable=false),
-        @JoinColumn(name="REFERAL_EFFECTIVE_START", referencedColumnName="REFERAL_EFFECTIVE_START", insertable=false, updatable=false),
-        @JoinColumn(name="REFERAL_EFFECTIVE_END", referencedColumnName="REFERAL_EFFECTIVE_END", insertable=false, updatable=false),
-        @JoinColumn(name="COMPANY_ID", referencedColumnName="COMPANY_ID", insertable=false, updatable=false) } )
-    private ReferalMaster referalMaster ; 
-
-
-
 }
 
 

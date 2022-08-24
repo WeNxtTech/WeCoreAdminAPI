@@ -97,27 +97,6 @@ private static final long serialVersionUID = 1L;
     private String     remarks ;
 
 
-    //--- ENTITY LINKS ( RELATIONSHIP )
-    @OneToMany(mappedBy="insuranceCompanyMaster")
-    private List<BranchMaster> listOfBranchMaster ; 
-
-    @OneToMany(mappedBy="insuranceCompanyMaster")
-    private List<MailMaster> listOfMailMaster ; 
-
-    @OneToMany(mappedBy="insuranceCompanyMaster")
-    private List<SmsConfigMaster> listOfSmsConfigMaster ; 
-
-    @OneToMany(mappedBy="insuranceCompanyMaster")
-    private List<RegionMaster> listOfRegionMaster ; 
-
-    @OneToMany(mappedBy="insuranceCompanyMaster")
-    private List<ProductMaster> listOfProductMaster ; 
-
-    @OneToMany(mappedBy="insuranceCompanyMaster")
-    private List<DocumentMaster> listOfDocumentMaster ; 
-
-
-
 }
 
 

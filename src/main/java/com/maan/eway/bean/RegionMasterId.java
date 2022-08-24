@@ -36,5 +36,6 @@ public class RegionMasterId implements Serializable {
     
     private Date       effectiveDateEnd ;
     
+    
      
 }

@@ -72,6 +72,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="TOKEN_ID", length=500)
     private String     tokenId ;
+    
+    @Column(name="USER_NAME", length=50)
+    private String     userName ;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ENTRY_DATE")

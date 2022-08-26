@@ -7,8 +7,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class CommonLoginInformationReq {
-	
+public class IssuerLoginReq {
+
 	// Login Details
 	@JsonProperty("LoginId")
     private String     loginId      ;
@@ -16,7 +16,7 @@ public class CommonLoginInformationReq {
     private String     userType     ;
 	@JsonProperty("SubUserType")
     private String     subUserType  ;
-	@JsonProperty("Oacode")
+	@JsonProperty("OaCode")
     private String     oaCode       ;
 	
 	@JsonProperty("AttachedBranches")
@@ -34,9 +34,4 @@ public class CommonLoginInformationReq {
     private String     createdBy    ;
 	@JsonProperty("Status")
     private String     status       ;
-	@JsonProperty("BankCode")
-    private String     bankCode       ;
-	
-	
-
 }

@@ -33,8 +33,6 @@ public class LoginMasterId implements Serializable {
     
     private String     userType ;
     
-    private String     attachedBranches ;
-    
     private String     subUserType ;
     
      

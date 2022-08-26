@@ -13,6 +13,7 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.maan.eway.bean.SessionMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,5 +30,9 @@ import com.maan.eway.bean.SessionMasterId;
  
  
 public interface SessionMasterRepository  extends JpaRepository<SessionMaster,SessionMasterId > , JpaSpecificationExecutor<SessionMaster> {
+
+	List<SessionMaster> findByLoginIdOrderByEntryDateDesc(String userId);
+
+	SessionMaster findByTempTokenid(String authToken);
 
 }

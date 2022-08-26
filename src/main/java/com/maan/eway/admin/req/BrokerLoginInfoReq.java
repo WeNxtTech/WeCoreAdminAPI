@@ -19,8 +19,15 @@ public class BrokerLoginInfoReq {
 		@JsonProperty("OaCode")
 	    private String     oaCode       ;
 		
-		@JsonProperty("Attachedbranches")
+		
+		@JsonProperty("AttachedBranches")
 	    private List<String>     attachedBranches ;
+		
+		@JsonProperty("AttachedCompanies")
+	    private List<String>     attachedCompanies ;
+		
+		@JsonProperty("AttachedRegions")
+	    private List<String>     attachedRegions ;
 		
 		@JsonProperty("Password")
 	    private String     password     ;
@@ -28,4 +35,6 @@ public class BrokerLoginInfoReq {
 	    private String     createdBy    ;
 		@JsonProperty("Status")
 	    private String     status       ;
+		@JsonProperty("BankCode")
+	    private String     bankCode    ;
 }

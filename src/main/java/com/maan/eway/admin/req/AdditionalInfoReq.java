@@ -1,13 +1,11 @@
 package com.maan.eway.admin.req;
 
-import javax.persistence.Column;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
 
 @Data
-public class BrokerPersonalInfoReq {
+public class AdditionalInfoReq {
 
 	// Personal Details
 	@JsonProperty("UserName")

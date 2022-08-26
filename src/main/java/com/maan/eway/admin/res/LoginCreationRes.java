@@ -1,4 +1,4 @@
-package com.maan.eway.res;
+package com.maan.eway.admin.res;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

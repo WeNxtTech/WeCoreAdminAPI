@@ -14,20 +14,26 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dozer.DozerBeanMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.admin.req.AdditionalInfoReq;
 import com.maan.eway.admin.req.BrokerCreationReq;
 import com.maan.eway.admin.req.CommonLoginCreationReq;
 import com.maan.eway.admin.req.CommonLoginInformationReq;
 import com.maan.eway.admin.req.CommonPersonalInforReq;
+import com.maan.eway.admin.req.IssuerCraeationReq;
+import com.maan.eway.admin.req.UserCreationReq;
+import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.admin.service.LoginCreationService;
-import com.maan.eway.bean.BranchMaster;
+import com.maan.eway.auth.token.passwordEnc;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginMasterArch;
 import com.maan.eway.bean.LoginUserInfo;
@@ -38,7 +44,6 @@ import com.maan.eway.repository.LoginMasterArchRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.LoginUserInfoArchRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
-import com.maan.eway.res.LoginCreationRes;
 /**
 * <h2>LoginMasterServiceimpl</h2>
 */
@@ -152,19 +157,24 @@ this.repository = repo;
 	@Override
 	public List<Error> validateBrokerCreation(BrokerCreationReq req) {
 		List<Error> errors = new ArrayList<Error>();
-		ModelMapper mapper = new ModelMapper();
-		mapper.getConfiguration().setAmbiguityIgnored(true);	
+		 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
 			
 			// Common Errors
 			CommonLoginCreationReq commonReq = new CommonLoginCreationReq();
-			mapper.map(req, commonReq);
+			dozerMapper.map(req, commonReq);
 			List<Error>  commonErrors = basicValidation.commonLoginCreationValidation(commonReq) ;
 			if(commonErrors.size()>0  ) {
 				errors.addAll(commonErrors);
 			}
 			
-			// Additional Errors
+			// Additional Broker Validataion
+			AdditionalInfoReq  brokerReq = new AdditionalInfoReq();
+			dozerMapper.map(req.getPersonalInformation() , brokerReq); 
+			List<Error>  brokerErrors = basicValidation.commonBrokerPersonalValidation(brokerReq) ;
+			if(brokerErrors.size()>0  ) {
+				errors.addAll(brokerErrors);
+			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -183,22 +193,10 @@ this.repository = repo;
 	@Override
 	public LoginCreationRes createBroker(BrokerCreationReq req) {
 		LoginCreationRes res = new LoginCreationRes();
-		ModelMapper mapper = new ModelMapper();
-		mapper.getConfiguration().setAmbiguityIgnored(true);	
+		 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {	
-			List<String> branchList = req.getLoginInformation().getAttachedBranches();	
-			List<BranchMaster> findBranches = branchRepo.findByBranchCodeIn(branchList);
-			List<String> regionList =  findBranches.stream().map(o ->  o.getRegionCode() ).collect(Collectors.toList());
-			List<String> companyList = findBranches.stream().map(o ->  o.getCompanyId() ).collect(Collectors.toList());
 			
-			// Remove Duplicates
-			regionList = regionList.stream().distinct().collect(Collectors.toList()); 
-			companyList = companyList.stream().distinct().collect(Collectors.toList());
-			
-			CommonLoginCreationReq commonReq = mapper.map(req, CommonLoginCreationReq.class );
-			commonReq.getLoginInformation().setAttachedRegions(regionList);
-			commonReq.getLoginInformation().setAttachedCompanies(companyList);
-			
+			CommonLoginCreationReq commonReq = dozerMapper.map(req, CommonLoginCreationReq.class );
 			LoginMaster loginData  = loginRepo.findByLoginId(req.getLoginInformation().getLoginId()  );
 			
 			String saveRes = "";
@@ -229,34 +227,164 @@ this.repository = repo;
 	
 	
 	
+	
+
+
+	@Override
+	public List<Error> validateIssuerCreation(IssuerCraeationReq req) {
+		List<Error> errors = new ArrayList<Error>();
+		ModelMapper mapper = new ModelMapper();
+		mapper.getConfiguration().setAmbiguityIgnored(true);	
+		try {
+			
+			// Common Errors
+			CommonLoginCreationReq commonReq = new CommonLoginCreationReq();
+			mapper.map(req, commonReq);
+			List<Error>  commonErrors = basicValidation.commonLoginCreationValidation(commonReq) ;
+			if(commonErrors.size()>0  ) {
+				errors.addAll(commonErrors);
+			}
+			
+			// Additional Errors
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			errors.add(new Error("07", "Common Error", e.getMessage() ));
+			return errors;
+		}
+		return errors;
+	}
+
+
+	@Transactional
+	@Override
+	public LoginCreationRes createIssuerLogin(IssuerCraeationReq req) {
+		LoginCreationRes res = new LoginCreationRes();
+		 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+		
+		try {	
+			
+			CommonLoginCreationReq commonReq = dozerMapper.map(req, CommonLoginCreationReq.class );
+			LoginMaster loginData  = loginRepo.findByLoginId(req.getLoginInformation().getLoginId()  );
+			
+			String saveRes = "";
+			if (loginData ==null) {
+				// Save
+				saveRes =   newLoginInsert(commonReq) ;
+				res.setResponse("Saved Successfully");
+				
+			} else {
+				// Update
+				saveRes = updateLoginDetails(commonReq);
+				res.setResponse("Updated Successfully");
+			}
+			
+			if(! saveRes.equalsIgnoreCase("Success")  ) {
+				return null; 
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null; 
+		}
+		return res ;
+	}
+
+
+	@Override
+	public List<Error> validateUserCreation(UserCreationReq req) {
+		List<Error> errors = new ArrayList<Error>();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+		try {
+			
+			// Common Errors
+			CommonLoginCreationReq commonReq = new CommonLoginCreationReq();
+			dozerMapper.map(req, commonReq);
+			List<Error>  commonErrors = basicValidation.commonLoginCreationValidation(commonReq) ;
+			if(commonErrors.size()>0  ) {
+				errors.addAll(commonErrors);
+			}
+			
+			// Additional Broker Validataion
+			AdditionalInfoReq  brokerReq = new AdditionalInfoReq();
+			dozerMapper.map(req.getPersonalInformation() , brokerReq); 
+			List<Error>  brokerErrors = basicValidation.commonBrokerPersonalValidation(brokerReq) ;
+			if(brokerErrors.size()>0  ) {
+				errors.addAll(brokerErrors);
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			errors.add(new Error("07", "Common Error", e.getMessage() ));
+			return errors;
+		}
+		return errors;
+	}
+
+
+	@Transactional
+	@Override
+	public LoginCreationRes createUserLogin(UserCreationReq req) {
+		LoginCreationRes res = new LoginCreationRes();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+		try {		
+			
+			CommonLoginCreationReq commonReq = dozerMapper.map(req, CommonLoginCreationReq.class );	
+			LoginMaster loginData  = loginRepo.findByLoginId(req.getLoginInformation().getLoginId()  );
+			
+			String saveRes = "";
+			if (loginData ==null) {
+				// Save
+				saveRes =   newLoginInsert(commonReq) ;
+				res.setResponse("Saved Successfully");
+				
+			} else {
+				// Update
+				saveRes = updateLoginDetails(commonReq);
+				res.setResponse("Updated Successfully");
+			}
+			
+			if(! saveRes.equalsIgnoreCase("Success")  ) {
+				return null; 
+			}
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null; 
+		}
+		return res ;
+	}
+	
 	// Login Save Method
 	
 	public String newLoginInsert(CommonLoginCreationReq req ) {
 		String res = "" ;  
-		ModelMapper mapper = new ModelMapper();
-		mapper.getConfiguration().setAmbiguityIgnored(true);	
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
 			CommonLoginInformationReq loginReq = req.getLoginInformation() ;
+			// Branch Setup
+			String branches  = loginReq.getAttachedBranches()==null  || loginReq.getAttachedBranches().size()==0 ?"" : String.join(",", loginReq.getAttachedBranches());
+			String regions   = loginReq.getAttachedRegions()==null   || loginReq.getAttachedRegions().size()==0 ?"" : String.join(",", loginReq.getAttachedRegions());
+			String companies = loginReq.getAttachedCompanies()==null || loginReq.getAttachedCompanies().size()==0 ?"" : String.join(",", loginReq.getAttachedCompanies());
 			
-		//	passwordEnc passEnc = new passwordEnc();
-			String newpass = "BgBn8jBhAYu3paFVGk54PlgnOGo=";// passEnc.crypt(loginReq.getPassword().trim());
+			passwordEnc passEnc = new passwordEnc();
+			String newpass =  passEnc.crypt(loginReq.getPassword().trim());
 			Instant now = Instant.now();
 			Instant after = now.plus(Duration.ofDays(45));
 			Date dateAfter = Date.from(after);
 			Long count = loginRepo.count();
 			Long countId = 10001 + count ; 
 			
-			String branches  =  String.join(",", loginReq.getAttachedBranches());
-			String regions   =  String.join(",", loginReq.getAttachedRegions());
-			String companies =  String.join(",", loginReq.getAttachedCompanies());
-			
 			// Login Master Insert
 			LoginMaster saveLogin = new LoginMaster();
-			mapper.map(loginReq, saveLogin);
+			dozerMapper.map(loginReq, saveLogin);
+			saveLogin.setPassword(newpass);
 			saveLogin.setLoginId(loginReq.getLoginId());
-			saveLogin.setAttachedBranches(branches);
-			saveLogin.setAttachedRegions(regions);
-			saveLogin.setAttachedCompanies(companies);
 			saveLogin.setOaCode(countId.toString());
 			saveLogin.setAgencyCode(countId.toString());
 			saveLogin.setEntryDate(new Date());
@@ -265,18 +393,28 @@ this.repository = repo;
 			saveLogin.setPassword(newpass);
 			saveLogin.setPwdCount("0");				
 			saveLogin.setLpassDate(dateAfter);
+			saveLogin.setAttachedBranches(branches);
+			saveLogin.setAttachedRegions(regions);
+			saveLogin.setAttachedCompanies(companies);
+			if( ! loginReq.getSubUserType().equalsIgnoreCase("bank") ) {
+				saveLogin.setBankCode("");
+			}
 			loginRepo.saveAndFlush(saveLogin);
 				
 			// Login User Details Insert
 			CommonPersonalInforReq personalReq = req.getPersonalInformation() ;
 			LoginUserInfo userInfo = new LoginUserInfo(); 
-			mapper.map(personalReq, userInfo);
+			dozerMapper.map(personalReq, userInfo);
+			userInfo.setLoginId(loginReq.getLoginId());
+			userInfo.setOaCode(countId.toString());	
+			userInfo.setAgencyCode(countId.toString());
 			userInfo.setEntryDate(new Date());
 			userInfo.setUpdatedDate(new Date());
 			userInfo.setUpdatedBy(loginReq.getCreatedBy());
 			loginUserRepo.saveAndFlush(userInfo);
 			
 			res = "Success" ; 
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
@@ -290,8 +428,7 @@ this.repository = repo;
 	
 	public String updateLoginDetails(CommonLoginCreationReq req ) {
 		String res = "";
-		ModelMapper mapper = new ModelMapper();
-		mapper.getConfiguration().setAmbiguityIgnored(true);
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		SimpleDateFormat idf = new SimpleDateFormat("yyMMddhhssmmss"); 
 		try {
 			// Find Data 
@@ -299,47 +436,72 @@ this.repository = repo;
 			LoginMaster findLogin = loginRepo.findByLoginId(loginId);
 			LoginUserInfo findUserInfo = loginUserRepo.findByLoginId(loginId);
 			
-			// Save in Arch tables
-			String archId = "AI-" + idf.format(new Date());
-			LoginMasterArch  loginArch = mapper.map(findLogin, LoginMasterArch.class )  ;
-			loginArch.setArchId(archId);
-			loginArchRepo.saveAndFlush(loginArch);
-			LoginUserInfoArch userArch = mapper.map(findUserInfo, LoginUserInfoArch.class )  ;  
-			userArch.setArchId(archId);
-			loginUserArchRepo.saveAndFlush(userArch);
-			
 			// Delete Old Records
 			LoginMaster  updateLogin = findLogin;
 			loginRepo.delete(findLogin);
 			LoginUserInfo updateUser = findUserInfo;
 			loginUserRepo.delete(findUserInfo);
 			
+			// Save in Arch tables
+			String archId = "AI-" + idf.format(new Date());
+			LoginMasterArch  loginArch = dozerMapper.map(findLogin, LoginMasterArch.class )  ;
+			loginArch.setArchId(archId);
+			loginArchRepo.saveAndFlush(loginArch);
+			LoginUserInfoArch userArch = dozerMapper.map(findUserInfo, LoginUserInfoArch.class )  ;  
+			userArch.setArchId(archId);
+			loginUserArchRepo.saveAndFlush(userArch);
+			
 			// Update Login Master
 			CommonLoginInformationReq loginReq = req.getLoginInformation() ;
-			String branches  =  String.join(",", loginReq.getAttachedBranches());
-			String regions   =  String.join(",", loginReq.getAttachedRegions());
-			String companies =  String.join(",", loginReq.getAttachedCompanies());
+			// Branch Setup
+			String branches  = loginReq.getAttachedBranches()==null  || loginReq.getAttachedBranches().size()==0 ?"" : String.join(",", loginReq.getAttachedBranches());
+			String regions   = loginReq.getAttachedRegions()==null   || loginReq.getAttachedRegions().size()==0 ?"" : String.join(",", loginReq.getAttachedRegions());
+			String companies = loginReq.getAttachedCompanies()==null || loginReq.getAttachedCompanies().size()==0 ?"" : String.join(",", loginReq.getAttachedCompanies());
 			
-			mapper.map(loginReq, updateLogin);
+			dozerMapper.map(loginReq, updateLogin);
+			
+			if (StringUtils.isNotBlank(loginReq.getPassword())) {
+				passwordEnc passEnc = new passwordEnc();
+				String newpass =  passEnc.crypt(loginReq.getPassword().trim());
+				updateLogin.setPassword(newpass);
+			}
+			updateLogin.setCreatedBy(findLogin.getCreatedBy() );
 			updateLogin.setUpdatedDate(new Date());
 			updateLogin.setUpdatedBy(loginReq.getCreatedBy());
 			updateLogin.setLoginId(loginReq.getLoginId());
 			updateLogin.setAttachedBranches(branches);
 			updateLogin.setAttachedRegions(regions);
 			updateLogin.setAttachedCompanies(companies);
+			if( ! loginReq.getSubUserType().equalsIgnoreCase("bank") ) {
+				updateLogin.setBankCode("");
+			}
 			loginRepo.saveAndFlush(updateLogin);
 			
 			log.info( "Login Master Updated Details ---> " + json.toJson(updateLogin) );
 			
 			// Update User Info 
 			CommonPersonalInforReq personalReq = req.getPersonalInformation() ;
-			mapper.map(personalReq , updateUser);
+			dozerMapper.map(personalReq , updateUser);
+			updateLogin.setCreatedBy(findLogin.getCreatedBy() );
+			updateUser.setLoginId(loginReq.getLoginId());
+			updateUser.setOaCode(loginReq.getOaCode());
 			updateUser.setUpdatedDate(new Date());
 			updateUser.setUpdatedBy(loginReq.getCreatedBy());
 			loginUserRepo.saveAndFlush(updateUser);
 			log.info( "Login User Info Updated Details ---> " + json.toJson(updateUser) );
 			
 			res = "Success" ;
+			
+			/*// Branch Setup	
+			String branches  =  String.join(",", loginReq.getAttachedBranches());
+			String regions   =  String.join(",", loginReq.getAttachedRegions());
+			String companies =  String.join(",", loginReq.getAttachedCompanies());
+			updateLogin.setAttachedBranches(branches);
+			updateLogin.setAttachedRegions(regions);
+			updateLogin.setAttachedCompanies(companies);
+			 
+			 */
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
@@ -347,7 +509,6 @@ this.repository = repo;
 		}
 		return res;
 	}
-	
 /*
     @Override
     public boolean delete(long id) {

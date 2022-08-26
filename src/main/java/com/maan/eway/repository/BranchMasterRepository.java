@@ -31,6 +31,6 @@ import com.maan.eway.bean.BranchMasterId;
  
 public interface BranchMasterRepository  extends JpaRepository<BranchMaster,BranchMasterId > , JpaSpecificationExecutor<BranchMaster> {
 
-	List<BranchMaster> findByBranchCodeIn(List<String> branchList);
+	List<BranchMaster> findByBranchCodeInOrderByBranchCodeAsc(List<String> branchList);
 
 }

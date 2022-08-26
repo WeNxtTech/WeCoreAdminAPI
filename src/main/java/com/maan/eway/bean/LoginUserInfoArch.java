@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -92,6 +91,74 @@ private static final long serialVersionUID = 1L;
     private String     updatedBy ;
 
 
+    @Column(name="AGENCY_CODE", nullable=false)
+    private String    agencyCode ;
+
+    @Column(name="COMPANY_NAME")
+    private String    companyName ;
+    
+    @Column(name="ADDRESS1")
+    private String    address1 ;
+    
+    @Column(name="ADDRESS2")
+    private String    address2 ;
+    
+    @Column(name="ADDRESS3")
+    private String    address3 ;
+    
+    @Column(name="CITY")
+    private String    city ;
+    
+    @Column(name="STATE")
+    private String    state ;
+    
+    @Column(name="COUNTRY")
+    private String    country ;
+    
+    @Column(name="POBOX")
+    private Long    pobox ;
+    
+    @Column(name="FAX")
+    private String    fax ;
+    
+    @Column(name="EMIRATE")
+    private String    emirate;
+    
+    @Column(name="REMARKS")
+    private String    remarks ;
+    
+    @Column(name="CUSTOMER_ID")
+    private Long    customerId ;
+    
+    @Column(name="BRANCH_CODE")
+    private String    branchCode ;
+    
+    @Column(name="MISSIPPI_ID")
+    private Long    missippiId ;
+    
+    @Column(name="APPROVED_PREPARED_BY")
+    private String    approvedPreparedBy ;
+    
+    @Column(name="RSA_BROKER_CODE")
+    private String    rsaBrokerCode ;
+    
+    @Column(name="AC_EXECUTIVE_ID")
+    private Long    acExecutiveId ;
+    
+    @Column(name="CUST_CONFIRM_YN")
+    private String    custConfirmYn ;
+    
+    @Column(name="COMMISSION_VAT_YN")
+    private String    commissionVatYn ;
+    
+    @Column(name="VAT_REG_NO")
+    private String    vatRegNo ;
+    
+    @Column(name="CHECKER_YN")
+    private String    checkerYn ;
+    
+    @Column(name="MAKER_YN")
+    private String    makerYn ;
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

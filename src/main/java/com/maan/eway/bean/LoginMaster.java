@@ -61,14 +61,13 @@ private static final long serialVersionUID = 1L;
     private String     userType ;
 
     @Id
-    @Column(name="ATTACHED_BRANCHES", nullable=false, length=300)
-    private String     attachedBranches ;
-
-    @Id
     @Column(name="SUB_USER_TYPE", nullable=false, length=20)
     private String     subUserType ;
 
     //--- ENTITY DATA FIELDS 
+    @Column(name="ATTACHED_BRANCHES", length=300)
+    private String     attachedBranches ;
+    
     @Column(name="PASSWORD", length=50)
     private String     password ;
 

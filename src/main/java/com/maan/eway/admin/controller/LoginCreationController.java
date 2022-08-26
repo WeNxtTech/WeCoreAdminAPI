@@ -18,16 +18,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.admin.req.BrokerCreationReq;
+import com.maan.eway.admin.req.IssuerCraeationReq;
+import com.maan.eway.admin.req.UserCreationReq;
+import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.admin.service.LoginCreationService;
 import com.maan.eway.bean.LoginMaster;
+import com.maan.eway.error.Error;
 import com.maan.eway.res.CommonRes;
-import com.maan.eway.res.LoginCreationRes;
-import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.Api;
-
-import com.maan.eway.error.Error;
 
 
 /**
@@ -68,6 +68,65 @@ public class LoginCreationController {
 		} else {
 			/////// save
 			LoginCreationRes res = entityService.createBroker(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+
+	}
+	
+	@PostMapping(value = "/createissuer")
+	public ResponseEntity<CommonRes> createIssuerLogin(@RequestBody  IssuerCraeationReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<Error> validation = entityService.validateIssuerCreation(req);
+		//// validation
+		if (validation != null && validation.size() != 0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+		} else {
+			/////// save
+			LoginCreationRes res = entityService.createIssuerLogin(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+
+	}
+
+	
+	@PostMapping(value = "/createuser")
+	public ResponseEntity<CommonRes> createIssuerLogin(@RequestBody  UserCreationReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<Error> validation = entityService.validateUserCreation(req);
+		//// validation
+		if (validation != null && validation.size() != 0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+		} else {
+			/////// save
+			LoginCreationRes res = entityService.createUserLogin(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());

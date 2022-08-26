@@ -30,8 +30,8 @@ import com.maan.eway.bean.LoginMasterId;
  
 public interface LoginMasterRepository  extends JpaRepository<LoginMaster,LoginMasterId > , JpaSpecificationExecutor<LoginMaster> {
 
-	LoginMaster findByOaCode(String oaCode);
-
 	LoginMaster findByLoginId(String loginId);
+
+	LoginMaster findByLoginIdAndPassword(String userId, String epass);
 
 }

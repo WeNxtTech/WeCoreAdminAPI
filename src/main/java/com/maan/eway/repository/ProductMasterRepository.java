@@ -30,4 +30,6 @@ import com.maan.eway.bean.ProductMasterId;
  
 public interface ProductMasterRepository  extends JpaRepository<ProductMaster,ProductMasterId > , JpaSpecificationExecutor<ProductMaster> {
 
+	Long countByProductNameOrderByEntryDateDesc(String productName);
+
 }

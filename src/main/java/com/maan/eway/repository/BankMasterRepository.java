@@ -13,11 +13,18 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
 
 import com.maan.eway.bean.BankMaster;
+
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import com.maan.eway.bean.BankMasterId;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 /**
  * <h2>BankMasterRepository</h2>
  *
@@ -29,5 +36,17 @@ import com.maan.eway.bean.BankMasterId;
  
  
 public interface BankMasterRepository  extends JpaRepository<BankMaster,BankMasterId > , JpaSpecificationExecutor<BankMaster> {
+
+	List<BankMaster> findByBankCodeAndBankShortNameOrderByBankShortName(String bankCode, String bankShortName);
+			
+	List<BankMaster> findByBankCodeAndEffectiveDateStartGreaterThanEqualAndEffectiveDateEndLessThanEqualOrderByEffectiveDateEndDesc(
+			String bankCode, Date startDate, Date endDate);
+
+	List<BankMaster> findByStatusOrderByEffectiveDateStartDesc(String string);
+
+	Long countByBankShortNameOrderByEntryDateDesc(String bankShortName);
+
+
+	
 
 }

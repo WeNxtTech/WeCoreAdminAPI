@@ -25,6 +25,8 @@ public class CommonRes {
 	@JsonProperty("ErroCode")
 	private int erroCode;
 
+	
+
 /*	@JsonProperty("AdditionalData")
 	private DefaultAllResponse defaultValue; */
 }

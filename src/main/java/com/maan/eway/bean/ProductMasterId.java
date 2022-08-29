@@ -30,7 +30,7 @@ public class ProductMasterId implements Serializable {
     private static final long serialVersionUID = 1L;
 
     //--- ENTITY KEY ATTRIBUTES 
-    private Integer    productId ;
+    private Long    productId ;
     
     private String     companyId ;
     

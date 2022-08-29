@@ -30,7 +30,7 @@ public class ReferalMasterId implements Serializable {
     private static final long serialVersionUID = 1L;
 
     //--- ENTITY KEY ATTRIBUTES 
-    private Integer    referalId ;
+    private Long    referalId ;
     
     private Date       effectiveDateStart ;
     

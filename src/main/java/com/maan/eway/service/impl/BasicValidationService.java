@@ -16,4 +16,14 @@ public class BasicValidationService {
 		}
 	}
 	
+	//Effective Date
+	public boolean effectiveDateValidation (Date date  ) {
+		Date today = new Date();
+		if (date.compareTo(today) > 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 }

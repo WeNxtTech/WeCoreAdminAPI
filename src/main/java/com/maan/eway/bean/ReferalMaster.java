@@ -55,7 +55,7 @@ private static final long serialVersionUID = 1L;
     //--- ENTITY PRIMARY KEY 
     @Id
     @Column(name="REFERAL_ID", nullable=false)
-    private Integer    referalId ;
+    private Long    referalId ;
 
     @Id
     @Temporal(TemporalType.TIMESTAMP)

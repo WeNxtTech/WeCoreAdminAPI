@@ -30,4 +30,6 @@ import com.maan.eway.bean.RegionMasterId;
  
 public interface RegionMasterRepository  extends JpaRepository<RegionMaster,RegionMasterId > , JpaSpecificationExecutor<RegionMaster> {
 
+	Long countByShortCodeOrderByEntryDateDesc(String regionName);
+
 }

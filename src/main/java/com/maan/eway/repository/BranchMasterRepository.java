@@ -33,4 +33,6 @@ public interface BranchMasterRepository  extends JpaRepository<BranchMaster,Bran
 
 	List<BranchMaster> findByBranchCodeInOrderByBranchCodeAsc(List<String> branchList);
 
+	Long countByBranchNameOrderByEntryDateDesc(String branchName);
+
 }

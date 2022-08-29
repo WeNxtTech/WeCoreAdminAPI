@@ -1,0 +1,35 @@
+package com.maan.eway.admin.req;
+
+import java.io.Serializable;
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.Data;
+
+@Data
+public class RegionMasterSaveReq implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+	@JsonProperty("RegionCode")
+	private String regionCode;
+
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDate")
+	private Date effectiveDate;
+
+	@JsonProperty("ShortCode")
+	private String shortCode;
+
+	@JsonProperty("RegionName")
+	private String regionName;
+
+	@JsonProperty("Status")
+	private String status;
+
+	@JsonProperty("CompanyId")
+	private String companyId;
+
+}

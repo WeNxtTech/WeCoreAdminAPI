@@ -1,13 +1,15 @@
-package com.maan.eway.req;
+package com.maan.eway.admin.res;
 
+import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
 
 @Data
-public class BankMasterReq {
+public class BankMasterRes implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -16,20 +18,29 @@ public class BankMasterReq {
     //----------------------------------------------------------------------
 	@JsonProperty("BankCode")
     private String     bankCode     ;
-	@JsonProperty("Effectivedatestart")
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
     private Date       effectiveDateStart ;
-	@JsonProperty("Effectivedateend")
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateEnd")
     private Date       effectiveDateEnd ;
 
     //----------------------------------------------------------------------
     // ENTITY DATA FIELDS 
-    //----------------------------------------------------------------------    
-	@JsonProperty("Bankshortname")
+    //----------------------------------------------------------------------   
+	
+	@JsonProperty("BankShortName")
     private String     bankShortName ;
-	@JsonProperty("Bankfullname")
+	
+	@JsonProperty("BankFullName")
     private String     bankFullName ;
-	@JsonProperty("Entrydate")
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EntryDate")
     private Date       entryDate    ;
+	
 	@JsonProperty("Status")
     private String     status       ;
 

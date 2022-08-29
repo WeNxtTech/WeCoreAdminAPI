@@ -55,7 +55,7 @@ private static final long serialVersionUID = 1L;
     //--- ENTITY PRIMARY KEY 
     @Id
     @Column(name="PRODUCT_ID", nullable=false)
-    private Integer    productId ;
+    private Long    productId ;
 
     @Id
     @Column(name="COMPANY_ID", nullable=false, length=20)

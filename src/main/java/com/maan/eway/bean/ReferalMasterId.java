@@ -32,9 +32,9 @@ public class ReferalMasterId implements Serializable {
     //--- ENTITY KEY ATTRIBUTES 
     private Integer    referalId ;
     
-    private Date       referalEffectiveStart ;
+    private Date       effectiveDateStart ;
     
-    private Date       referalEffectiveEnd ;
+    private Date       effectiveDateEnd ;
     
     private String     companyId ;
     

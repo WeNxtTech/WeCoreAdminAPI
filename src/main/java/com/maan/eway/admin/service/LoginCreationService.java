@@ -6,6 +6,9 @@
 package com.maan.eway.admin.service;
 import java.util.List;
 
+import com.maan.eway.admin.req.AttachCompaniesReq;
+import com.maan.eway.admin.req.AttachCompnayProductRequest;
+import com.maan.eway.admin.req.AttachIssuerProductReq;
 import com.maan.eway.admin.req.BrokerCreationReq;
 import com.maan.eway.admin.req.IssuerCraeationReq;
 import com.maan.eway.admin.req.UserCreationReq;
@@ -29,5 +32,13 @@ List<Error> validateIssuerCreation(IssuerCraeationReq req);
 LoginCreationRes createIssuerLogin(IssuerCraeationReq req);
 List<Error> validateUserCreation(UserCreationReq req);
 LoginCreationRes createUserLogin(UserCreationReq req);
+List<Error> validateBrokerBranchReq(AttachCompaniesReq req);
+LoginCreationRes attachBrokerBranches(AttachCompaniesReq req);
+List<Error> validateBrokerProductReq(AttachCompnayProductRequest req);
+LoginCreationRes saveBrokerProductDetails(AttachCompnayProductRequest req);
+List<Error> validateIssuerBranchReq(AttachCompaniesReq req);
+LoginCreationRes attachIssuerBranches(AttachCompaniesReq req);
+List<Error> validateIssuerReferalReq(AttachIssuerProductReq req);
+LoginCreationRes attachIssuerReferal(AttachIssuerProductReq req);
 
 }

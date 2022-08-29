@@ -17,6 +17,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.admin.req.AttachCompaniesReq;
+import com.maan.eway.admin.req.AttachCompnayProductRequest;
+import com.maan.eway.admin.req.AttachIssuerProductReq;
+import com.maan.eway.admin.req.AttachedPreductReq;
 import com.maan.eway.admin.req.BrokerCreationReq;
 import com.maan.eway.admin.req.IssuerCraeationReq;
 import com.maan.eway.admin.req.UserCreationReq;
@@ -139,6 +143,125 @@ public class LoginCreationController {
 		}
 
 	}
+	
+	@PostMapping(value = "/attachbrokerbranches")
+	public ResponseEntity<CommonRes> attachBrokerBranch(@RequestBody  AttachCompaniesReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<Error> validation = entityService.validateBrokerBranchReq(req);
+		//// validation
+		if (validation != null && validation.size() != 0) 	{
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+		} else {
+			/////// save
+			LoginCreationRes res = entityService.attachBrokerBranches(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+
+	}
+	
+	@PostMapping(value = "/attachbrokerproducts")
+	public ResponseEntity<CommonRes> attachBrokerProducts(@RequestBody  AttachCompnayProductRequest req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<Error> validation = entityService.validateBrokerProductReq(req);
+		//// validation
+		if (validation != null && validation.size() != 0) 	{
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+		} else {
+			/////// save
+			LoginCreationRes res = entityService.saveBrokerProductDetails(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+
+	}
+	
+	
+	@PostMapping(value = "/attachissuerbranches")
+	public ResponseEntity<CommonRes> attachIssuerBranches(@RequestBody  AttachCompaniesReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<Error> validation = entityService.validateIssuerBranchReq(req);
+		//// validation
+		if (validation != null && validation.size() != 0) 	{
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+		} else {
+			/////// save
+			LoginCreationRes res = entityService.attachIssuerBranches(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+
+	}
+	
+	
+	@PostMapping(value = "/attachissuerreferal")
+	public ResponseEntity<CommonRes> attachIssuerReferals(@RequestBody  AttachIssuerProductReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<Error> validation = entityService.validateIssuerReferalReq(req);
+		//// validation
+		if (validation != null && validation.size() != 0) 	{
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+		} else {
+			/////// save
+			LoginCreationRes res = entityService.attachIssuerReferal(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+
+	}
+	
 
     @GetMapping(value = "/loginmaster")
     public ResponseEntity<List<LoginMaster>> getAllLoginMaster() {

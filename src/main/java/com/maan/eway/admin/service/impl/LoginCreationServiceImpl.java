@@ -9,10 +9,22 @@ import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -25,6 +37,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.maan.eway.admin.req.AdditionalInfoReq;
+import com.maan.eway.admin.req.AttachCompaniesReq;
+import com.maan.eway.admin.req.AttachCompnayProductRequest;
+import com.maan.eway.admin.req.AttachIssuerProductReq;
+import com.maan.eway.admin.req.AttachReferalReq;
+import com.maan.eway.admin.req.AttachedBranchesReq;
+import com.maan.eway.admin.req.AttachedCompaniesReq;
+import com.maan.eway.admin.req.AttachedPreductReq;
 import com.maan.eway.admin.req.BrokerCreationReq;
 import com.maan.eway.admin.req.CommonLoginCreationReq;
 import com.maan.eway.admin.req.CommonLoginInformationReq;
@@ -34,14 +53,19 @@ import com.maan.eway.admin.req.UserCreationReq;
 import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.admin.service.LoginCreationService;
 import com.maan.eway.auth.token.passwordEnc;
+import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginMasterArch;
+import com.maan.eway.bean.LoginProductMaster;
+import com.maan.eway.bean.LoginReferalMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.LoginUserInfoArch;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.BranchMasterRepository;
 import com.maan.eway.repository.LoginMasterArchRepository;
 import com.maan.eway.repository.LoginMasterRepository;
+import com.maan.eway.repository.LoginProductMasterRepository;
+import com.maan.eway.repository.LoginReferalMasterRepository;
 import com.maan.eway.repository.LoginUserInfoArchRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
 /**
@@ -64,10 +88,19 @@ public class LoginCreationServiceImpl implements LoginCreationService {
 	private LoginUserInfoArchRepository loginUserArchRepo ;
 	
 	@Autowired
+	private LoginProductMasterRepository loginProductRepo ;
+	
+	@Autowired
+	private LoginReferalMasterRepository loginReferalRepo ;
+	
+	@Autowired
 	private BasicLoginValidationService basicValidation;
 	
 	@Autowired
 	private BranchMasterRepository branchRepo ;
+	
+	@PersistenceContext
+	private EntityManager em;
 
 	Gson json = new Gson();
 
@@ -523,5 +556,502 @@ this.repository = repo;
     }
 
  */
+
+
+	@Override
+	public List<Error> validateBrokerBranchReq(AttachCompaniesReq req) {
+		List<Error> errors = new ArrayList<Error>();
+		try {
+			// Branch Validation
+			if(StringUtils.isBlank(req.getLoginId()) ) {
+				errors.add(new Error("01", "LoginId", "Plese Enter LoginId" ));
+			}
+			
+			if(req.getAttachedCompanies()==null || req.getAttachedCompanies().size()== 0 ) {
+				errors.add(new Error("02", "Attached Companies", "Plese select Atleast One  Company" ));
+			} else {
+				Long rowNo = 0L ;
+				for(AttachedBranchesReq  data : req.getAttachedCompanies() ) {
+					rowNo = rowNo + 1L ;
+					if(StringUtils.isBlank(data.getInsuranceId()) ) {
+						errors.add(new Error("01", "Insurance Id", "Plese Select Atleast One Company" ));
+					}
+					
+					if(data.getAttachedBranches()==null || data.getAttachedBranches().size()== 0 ) {
+						errors.add(new Error("02", "Attached Companies", "Plese select Atleast One  Branch in Company Row No : " +  rowNo  ));
+					}
+				}	
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			errors.add(new Error("09", "Common Error", e.getMessage() ));
+		}
+		return errors;
+	}
+
+
+	@Override
+	public LoginCreationRes attachBrokerBranches(AttachCompaniesReq req) {
+		LoginCreationRes res = new LoginCreationRes();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+		SimpleDateFormat idf = new SimpleDateFormat("yyMMddhhssmmss"); 
+		try {
+			// Find Data 
+			LoginMaster findLogin = loginRepo.findByLoginId(req.getLoginId());
+			
+			// Save in Arch tables
+			String archId = "AI-" + idf.format(new Date());
+			LoginMasterArch  loginArch = dozerMapper.map(findLogin, LoginMasterArch.class )  ;
+			loginArch.setArchId(archId);
+			loginArchRepo.saveAndFlush(loginArch);
+			
+			// Branch Setup
+			String totalBranches  = "" ;
+			String companies = "" ;
+			List<String> branchIds = new ArrayList<String>();
+			
+			for(AttachedBranchesReq  data : req.getAttachedCompanies() ) {
+				 
+				String branches  = data.getAttachedBranches()==null  || data.getAttachedBranches().size()==0 ?"" : String.join(",", data.getAttachedBranches());
+				companies = StringUtils.isBlank(companies) ? data.getInsuranceId() : "," + data.getInsuranceId() ;
+				totalBranches  = StringUtils.isBlank(branches) ? totalBranches :totalBranches + "," + branches ; 
+				branchIds.addAll(data.getAttachedBranches());
+			}
+			List<BranchMaster> branchList = branchRepo.findByBranchCodeInOrderByBranchCodeAsc(branchIds);
+			List<String> rigionList = branchList.stream().map( o -> o.getRegionCode()  ).collect(Collectors.toList());
+			
+			// Remove Duplicate
+			rigionList = rigionList.stream().distinct().collect(Collectors.toList());
+			
+			String regions   = rigionList==null   || rigionList.size()==0 ?"" : String.join(",",rigionList);
+			
+			// Update Login Master
+			findLogin.setAttachedBranches(totalBranches);
+			findLogin.setAttachedRegions(regions);
+			findLogin.setAttachedCompanies(companies);
+			loginRepo.saveAndFlush(findLogin);
+			
+			log.info( "Login Master Updated Details ---> " + json.toJson(findLogin) );
+			
+			res.setResponse("Updated Successfully");
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+
+
+	@Override
+	public List<Error> validateBrokerProductReq(AttachCompnayProductRequest req) {
+		List<Error> errors = new ArrayList<Error>();
+		try {
+			//Product Validation
+			if(StringUtils.isBlank(req.getLoginId()) ) {
+				errors.add(new Error("01", "LoginId", "Plese Enter LoginId" ));
+			}
+			
+			boolean status = false ;
+			
+			if(req.getAttachedProducts()==null || req.getAttachedProducts().size()== 0 ) {
+				errors.add(new Error("02", "Attached Companies", "Plese select Atleast One  Product" ));
+			} else {
+				Long productRow = 0L;
+				for (AttachedPreductReq product :  req.getAttachedProducts() ) {
+					productRow = productRow + 1L ;
+					if(StringUtils.isBlank(product.getProductId())) {
+						errors.add(new Error("02", "ProductId", "Plese Enter Product Id in  Product Row No : " +  productRow ));
+					}
+					
+					if(StringUtils.isBlank(product.getProductName())) {
+						errors.add(new Error("02", "Product Name", "Plese Enter Product Name in  Product Row No : " +  productRow ));
+					}
+					
+					if(product.getEffectiveDate()==null ) {
+						errors.add(new Error("02", "Effective Date ", "Please select Effective Date  in  Product Row No : " +  productRow ));
+					} else {
+						Calendar cal = new GregorianCalendar(); 
+						long MILLIS_IN_A_DAY = (1000 * 60 * 60 * 24) * 1 ;
+						Date today = new Date();
+						Date yesterday  = new Date(today.getTime() - MILLIS_IN_A_DAY) ;	
+						cal.setTime(yesterday);  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
+						if(product.getEffectiveDate().before(yesterday) ) {
+							errors.add(new Error("02", "Effective Date ", "Plese Enter Future Date as Effective Date  in  Product Row No : " +  productRow ));
+						}
+					}
+					if(StringUtils.isBlank(product.getStatus())) {
+						errors.add(new Error("02", "Status", "Plese Select Status in  Product Row No : " +  productRow ));
+					} else if(product.getStatus().equalsIgnoreCase("Y") ) {
+						status = true ;
+					}
+					if(StringUtils.isBlank(product.getStartLimit())) {
+						errors.add(new Error("02", "Start Limit", "Plese Enter Start Limit in  Product Row No : " +  productRow ));
+					} else if (! product.getStartLimit().matches("[0-9]+") ) {
+						errors.add(new Error("02", "Start Limit", "Plese Enter Valid Number Start Limit in  Product Row No : " +  productRow ));
+					}
+					if(StringUtils.isBlank(product.getEndLimit())) {
+						errors.add(new Error("02", "End Limit", "Plese Enter End Limit in  Product Row No : " +  productRow ));
+					} else if (! product.getEndLimit().matches("[0-9]+") ) {
+						errors.add(new Error("02", "End Limit", "Plese Enter Valid Number End Limit in  Product Row No : " +  productRow ));
+					} else if (StringUtils.isNotBlank(product.getStartLimit()) && StringUtils.isBlank(product.getEndLimit())  ) {
+						if (Long.valueOf(product.getStartLimit()) > Long.valueOf(product.getStartLimit()) ) {
+							errors.add(new Error("02", "End Limit", "Start Limit Greater Than End Limit in  Product Row No : " +  productRow ));
+						}
+					}
+					
+				}	
+				
+				if( status == false   ) {
+					errors.add(new Error("02", "Status", "Plese Select Active Status for Alteast One Product " ));
+				}
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			errors.add(new Error("09", "Common Error", e.getMessage() ));
+		}
+		return errors;
+	}
+
+
+	@Transactional
+	@Override
+	public LoginCreationRes saveBrokerProductDetails(AttachCompnayProductRequest req) {
+		LoginCreationRes res = new LoginCreationRes();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 
+		try { 
+				 
+			for ( AttachedPreductReq data : req.getAttachedProducts()  ) {
+				
+				Calendar cal = new GregorianCalendar();
+				cal.setTime(data.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
+				Date startDate = cal.getTime() ;
+				cal.setTime(data.getEffectiveDate());  cal.set(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, 0); cal.set(Calendar.MINUTE, 10);
+				Date oldEndDate = cal.getTime() ;
+				Date today = new Date();
+				cal.setTime(data.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes() );
+				Date effDate = cal.getTime();
+				
+				// Find Old Record 
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<LoginProductMaster> query = cb.createQuery(LoginProductMaster.class);
+				List<LoginProductMaster> list = new ArrayList<LoginProductMaster>();
+				
+				// Find All
+				Root<LoginProductMaster> lp = query.from(LoginProductMaster.class);
+
+				// Select
+				query.select(lp);
+
+				// Effective Date Max Filter
+				Subquery<Long> effectiveDate = query.subquery(Long.class);
+				Root<LoginProductMaster> ocpm1 = effectiveDate.from(LoginProductMaster.class);
+				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+				Predicate a1 = cb.equal(ocpm1.get("productId"), lp.get("productId"));
+				Predicate a2 = cb.equal(ocpm1.get("loginId"), lp.get("loginId"));
+				Predicate a3 = cb.equal(ocpm1.get("companyId"), lp.get("companyId"));
+				Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , startDate);
+				effectiveDate.where(a1,a2,a3,a4);
+
+				// Order By
+				//List<Order> orderList = new ArrayList<Order>();
+				//orderList.add(cb.asc(lp.get("effectiveDateStart")));
+				
+				// Where
+				Predicate n1 = cb.equal(lp.get("productId"), data.getProductId());
+				Predicate n2 = cb.equal(lp.get("loginId"), req.getLoginId());
+				Predicate n3 = cb.equal(lp.get("companyId"), req.getInsuranceId() );
+				Predicate n4 = cb.equal(lp.get("effectiveDateStart") , effectiveDate);
+
+				query.where(n1, n2, n3,n4);//.orderBy(orderList);
+
+				// Get Result
+				TypedQuery<LoginProductMaster> result = em.createQuery(query);
+				list = result.getResultList();
+				
+				if(list.size() > 0 ) {
+					loginProductRepo.delete(list.get(0));
+				}
+				Date endDate = sdf.parse("12/12/2050");
+				
+				LoginProductMaster save = new LoginProductMaster();
+				dozerMapper.map(data, save);
+				save.setCompanyId(req.getInsuranceId());
+				save.setEffectiveDateStart(effDate);	
+				save.setEffectiveDateEnd(endDate);
+				save.setEntryDate(new Date());
+				save.setLoginId(req.getLoginId());
+				loginProductRepo.saveAndFlush(save);
+				log.info("Saved Details is ---> " + json.toJson(save));
+				if(list.size() > 0 ) {
+					// Update Old Record
+					LoginProductMaster lastRecord = list.get(0) ;
+					lastRecord.setEffectiveDateEnd(oldEndDate);
+					loginProductRepo.saveAndFlush(lastRecord);
+				}
+			}		
+			
+			res.setResponse("Products Added Successfully");
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+
+
+	@Override
+	public List<Error> validateIssuerBranchReq(AttachCompaniesReq req) {
+		List<Error> errors = new ArrayList<Error>();
+		try {
+			// Branch Validation
+			if(StringUtils.isBlank(req.getLoginId()) ) {
+				errors.add(new Error("01", "LoginId", "Plese Enter LoginId" ));
+			}
+			
+			if(req.getAttachedCompanies()==null || req.getAttachedCompanies().size()== 0 ) {
+				errors.add(new Error("02", "Attached Companies", "Plese select Atleast One  Company" ));
+			} else {
+				Long rowNo = 0L ;
+				for(AttachedBranchesReq  data : req.getAttachedCompanies() ) {
+					rowNo = rowNo + 1L ;
+					if(StringUtils.isBlank(data.getInsuranceId()) ) {
+						errors.add(new Error("01", "Insurance Id", "Plese Select Atleast One Company" ));
+					}
+					
+					if(data.getAttachedBranches()==null || data.getAttachedBranches().size()== 0 ) {
+						errors.add(new Error("02", "Attached Companies", "Plese select Atleast One  Branch in Company Row No : " +  rowNo  ));
+					}
+				}	
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			errors.add(new Error("09", "Common Error", e.getMessage() ));
+		}
+		return errors;
+	}
+
+
+	@Override
+	public LoginCreationRes attachIssuerBranches(AttachCompaniesReq req) {
+		LoginCreationRes res = new LoginCreationRes();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+		SimpleDateFormat idf = new SimpleDateFormat("yyMMddhhssmmss"); 
+		try {
+			// Find Data 
+			LoginMaster findLogin = loginRepo.findByLoginId(req.getLoginId());
+			
+			// Save in Arch tables
+			String archId = "AI-" + idf.format(new Date());
+			LoginMasterArch  loginArch = dozerMapper.map(findLogin, LoginMasterArch.class )  ;
+			loginArch.setArchId(archId);
+			loginArchRepo.saveAndFlush(loginArch);
+			
+			// Branch Setup
+			String totalBranches  = "" ;
+			String companies = "" ;
+			List<String> branchIds = new ArrayList<String>();
+			
+			for(AttachedBranchesReq  data : req.getAttachedCompanies() ) {
+				 
+				String branches  = data.getAttachedBranches()==null  || data.getAttachedBranches().size()==0 ?"" : String.join(",", data.getAttachedBranches());
+				companies = StringUtils.isBlank(companies) ? data.getInsuranceId() : "," + data.getInsuranceId() ;
+				totalBranches  = StringUtils.isBlank(branches) ? totalBranches :totalBranches + "," + branches ; 
+				branchIds.addAll(data.getAttachedBranches());
+			}
+			List<BranchMaster> branchList = branchRepo.findByBranchCodeInOrderByBranchCodeAsc(branchIds);
+			List<String> rigionList = branchList.stream().map( o -> o.getRegionCode()  ).collect(Collectors.toList());
+			
+			// Remove Duplicate
+			rigionList = rigionList.stream().distinct().collect(Collectors.toList());
+			
+			String regions   = rigionList==null   || rigionList.size()==0 ?"" : String.join(",",rigionList);
+			
+			// Update Login Master
+			findLogin.setAttachedBranches(totalBranches);
+			findLogin.setAttachedRegions(regions);
+			findLogin.setAttachedCompanies(companies);
+			loginRepo.saveAndFlush(findLogin);
+			
+			log.info( "Login Master Updated Details ---> " + json.toJson(findLogin) );
+			
+			res.setResponse("Updated Successfully");
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+
+
+	@Override
+	public List<Error> validateIssuerReferalReq(AttachIssuerProductReq req) {
+		List<Error> errors = new ArrayList<Error>();
+		try {
+			//Referal Validation
+			if(StringUtils.isBlank(req.getLoginId()) ) {
+				errors.add(new Error("01", "LoginId", "Plese Enter LoginId" ));
+			}
+			
+			if(req.getAttachedReferals()==null || req.getAttachedReferals().size()== 0 ) {
+				errors.add(new Error("02", "Attached Companies", "Plese select Atleast One  Referal" ));
+			} else {
+				Long referalRow  = 0L;
+				boolean status = false ;
+				for (AttachReferalReq referal :  req.getAttachedReferals() ) {
+					referalRow = referalRow + 1L ;
+					if(StringUtils.isBlank(referal.getReferalId())) {
+						errors.add(new Error("02", "ReferalId", "Plese Enter ReferalId in  Referal Row No : " +  referalRow  ));
+					}
+					
+					if(StringUtils.isBlank(referal.getReferalName())) {
+						errors.add(new Error("02", "Product Name", "Plese Enter Product Name in  Referal Row No : " +  referalRow  ));
+					}
+					
+					if(referal.getEffectiveDate()==null ) {
+						errors.add(new Error("02", "Effective Date ", "Please select Effective Date  in  Referal Row No : " +  referalRow  ));
+					} else {
+						Calendar cal = new GregorianCalendar(); 
+						Date today = new Date();	
+						cal.setTime(today); cal.set(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
+						Date yesterday  = cal.getTime() ; 
+						if(referal.getEffectiveDate().before(yesterday) ) {
+							errors.add(new Error("02", "Effective Date ", "Plese Enter Future Date as Effective Date  in  Referal Row No : " +  referalRow ));
+						}
+					}
+					if(StringUtils.isBlank(referal.getStatus())) {
+						errors.add(new Error("02", "Status", "Plese Select Status in  Referal Row No : " +  referal ));
+					} else if (referal.getStatus().equalsIgnoreCase("Y") ) {
+						status = true ;
+					}
+					if(StringUtils.isBlank(referal.getSumInsuredStart())) {
+						errors.add(new Error("02", "Start Limit", "Plese Enter Sum Insured Start in  Referal Row No : " +  referalRow ));
+					} else if (! referal.getSumInsuredStart().matches("[0-9]+") ) {
+						errors.add(new Error("02", "Start Limit", "Plese Enter Valid Number Sum Insured Start  in  Referal Row No : " +  referalRow ));
+					}
+					if(StringUtils.isBlank(referal.getSumInsuredEnd())) {
+						errors.add(new Error("02", "End Limit", "Plese Enter Sum Insured End in  Referal Row No : " +  referalRow ));
+					} else if (! referal.getSumInsuredEnd().matches("[0-9]+") ) {
+						errors.add(new Error("02", "End Limit", "Plese Enter Valid Number Sum Insured End in  Referal Row No : " +  referalRow ));
+					} else if (StringUtils.isNotBlank(referal.getSumInsuredEnd()) && StringUtils.isBlank(referal.getSumInsuredEnd())  ) {
+						if (Long.valueOf(referal.getSumInsuredEnd()) > Long.valueOf(referal.getSumInsuredStart()) ) {
+							errors.add(new Error("02", "End Limit", "Sum Insured Start Greater Than Sum Insured End in  Referal Row No : " +  referalRow ));
+						}
+					}
+				}	
+				
+				if( status == false   ) {
+					errors.add(new Error("02", "Status", "Plese Select Active Status for Alteast One Referal " ));
+				}
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			errors.add(new Error("09", "Common Error", e.getMessage() ));
+		}
+		return errors;
+	}
+
+
+	@Transactional
+	@Override
+	public LoginCreationRes attachIssuerReferal(AttachIssuerProductReq req) {
+		LoginCreationRes res = new LoginCreationRes();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 
+		try { 
+				 
+			for ( AttachReferalReq data : req.getAttachedReferals() ) {
+				
+				Calendar cal = new GregorianCalendar();
+				cal.setTime(data.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
+				Date startDate = cal.getTime() ;
+				cal.setTime(data.getEffectiveDate());  cal.set(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, 0); cal.set(Calendar.MINUTE, 10);
+				Date oldEndDate = cal.getTime() ;
+				Date today = new Date();
+				cal.setTime(data.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes() );
+				Date effDate = cal.getTime();
+				
+				// Find Old Record 
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<LoginReferalMaster> query = cb.createQuery(LoginReferalMaster.class);
+				List<LoginReferalMaster> list = new ArrayList<LoginReferalMaster>();
+				
+				// Find All
+				Root<LoginReferalMaster> lr = query.from(LoginReferalMaster.class);
+
+				// Select
+				query.select(lr);
+
+				// Effective Date Max Filter
+				Subquery<Long> effectiveDate = query.subquery(Long.class);
+				Root<LoginReferalMaster> ocpm1 = effectiveDate.from(LoginReferalMaster.class);
+				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+				Predicate a1 = cb.equal(ocpm1.get("referalId"), lr.get("referalId"));
+				Predicate a2 = cb.equal(ocpm1.get("loginId"), lr.get("loginId"));
+				Predicate a3 = cb.equal(ocpm1.get("companyId"), lr.get("companyId"));
+				Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , startDate);
+				effectiveDate.where(a1,a2,a3,a4);
+
+				// Order By
+				//List<Order> orderList = new ArrayList<Order>();
+				//orderList.add(cb.asc(lp.get("effectiveDateStart")));
+				
+				// Where
+				Predicate n1 = cb.equal(lr.get("referalId"), data.getReferalId());
+				Predicate n2 = cb.equal(lr.get("loginId"), req.getLoginId());
+				Predicate n3 = cb.equal(lr.get("companyId"), req.getInsuranceId() );
+				Predicate n4 = cb.equal(lr.get("effectiveDateStart") , effectiveDate);
+
+				query.where(n1, n2, n3,n4);//.orderBy(orderList);
+
+				// Get Result
+				TypedQuery<LoginReferalMaster> result = em.createQuery(query);
+				list = result.getResultList();
+				
+				if(list.size() > 0 ) {
+					loginReferalRepo.delete(list.get(0));
+				}
+				Date endDate = sdf.parse("12/12/2050");
+				
+				LoginReferalMaster save = new LoginReferalMaster();
+				dozerMapper.map(data, save);
+				save.setCompanyId(req.getInsuranceId());
+				save.setEffectiveDateStart(effDate);	
+				save.setEffectiveDateEnd(endDate);
+				save.setEntryDate(new Date());
+				save.setLoginId(req.getLoginId());
+				loginReferalRepo.saveAndFlush(save);
+				log.info("Saved Details is ---> " + json.toJson(save));
+				if(list.size() > 0 ) {
+					// Update Old Record
+					LoginReferalMaster lastRecord = list.get(0) ;
+					lastRecord.setEffectiveDateEnd(oldEndDate);
+					loginReferalRepo.saveAndFlush(lastRecord);
+				}
+			}		
+			
+			res.setResponse("Referal Added Successfully");
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return res;
+	}
 
 }

@@ -61,28 +61,18 @@ private static final long serialVersionUID = 1L;
     private Integer    referalId ;
 
     @Id
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="REFERAL_EFFECTIVE_START", nullable=false)
-    private Date       referalEffectiveStart ;
-
-    @Id
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="REFERAL_EFFECTIVE_END", nullable=false)
-    private Date       referalEffectiveEnd ;
-
-    @Id
     @Column(name="COMPANY_ID", nullable=false, length=20)
     private String     companyId ;
 
     @Id
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EFFECTIVE_START_DATE", nullable=false)
-    private Date       effectiveStartDate ;
+    @Column(name="EFFECTIVE_DATE_START", nullable=false)
+    private Date       effectiveDateStart ;
 
     @Id
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EFFECTIVE_END_DATE", nullable=false)
-    private Date       effectiveEndDate ;
+    @Column(name="EFFECTIVE_DATE_END", nullable=false)
+    private Date       effectiveDateEnd ;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="REFERAL_NAME", length=100)

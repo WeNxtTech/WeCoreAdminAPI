@@ -59,13 +59,13 @@ private static final long serialVersionUID = 1L;
 
     @Id
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="REFERAL_EFFECTIVE_START", nullable=false)
-    private Date       referalEffectiveStart ;
+    @Column(name="EFFECTIVE_DATE_START", nullable=false)
+    private Date       effectiveDateStart ;
 
     @Id
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="REFERAL_EFFECTIVE_END", nullable=false)
-    private Date       referalEffectiveEnd ;
+    @Column(name="EFFECTIVE_DATE_END", nullable=false)
+    private Date       effectiveDateEnd ;
 
     @Id
     @Column(name="COMPANY_ID", nullable=false, length=20)

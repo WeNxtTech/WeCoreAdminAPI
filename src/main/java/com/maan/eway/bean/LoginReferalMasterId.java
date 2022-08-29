@@ -34,15 +34,11 @@ public class LoginReferalMasterId implements Serializable {
     
     private Integer    referalId ;
     
-    private Date       referalEffectiveStart ;
-    
-    private Date       referalEffectiveEnd ;
-    
     private String     companyId ;
     
-    private Date       effectiveStartDate ;
+    private Date       effectiveDateStart ;
     
-    private Date       effectiveEndDate ;
+    private Date       effectiveDateEnd ;
     
      
 }

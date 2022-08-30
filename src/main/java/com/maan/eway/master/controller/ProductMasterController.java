@@ -17,6 +17,7 @@ import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,7 @@ import java.util.List;
 */
 @RestController
 @RequestMapping("/master")
+@Api(tags = "MASTER : Product Master ", description = "API's")
 public class ProductMasterController {
 
 	@Autowired
@@ -107,7 +109,7 @@ public class ProductMasterController {
 	//  Get Active Product Master
 		
 			@PostMapping("/getactiveproduct")
-			@ApiOperation("This method is Active Product Details")
+			@ApiOperation("This method is get Active Product Details")
 			public ResponseEntity<CommonRes> getActiveProductDetails(@RequestBody ProductMasterGetAllReq req)
 			{
 				CommonRes data = new CommonRes();

@@ -20,6 +20,7 @@ import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,7 @@ import java.util.List;
 * <h2>BankMasterController</h2>
 */
 @RestController
+@Api(tags = "MASTER : Bank Master ", description = "API's")
 @RequestMapping("/master")
 public class BankMasterController {
 
@@ -51,7 +53,7 @@ public class BankMasterController {
 	
 	// save
 		@PostMapping("/insertbank")
-		@ApiOperation(value = "This method is Insert Branch Details")
+		@ApiOperation(value = "This method is Insert Bank Details")
 		public ResponseEntity<CommonRes> insertBank(@RequestBody BankMasterSaveReq req) {
 
 			reqPrinter.reqPrint(req);
@@ -110,7 +112,7 @@ public class BankMasterController {
 	//  Get Active Bank Master
 		
 			@PostMapping("/getactivebank")
-			@ApiOperation("This method is Active Bank Details")
+			@ApiOperation("This method is get Active Bank Details")
 			public ResponseEntity<CommonRes> getActiveBankDetails(@RequestBody BankMasterGetAllReq req)
 			{
 				CommonRes data = new CommonRes();

@@ -60,6 +60,7 @@ public class InsuranceCompanyMasterController {
 
 	//Insert or Update Insurance Company Master
 	@PostMapping("/savecompany")
+	@ApiOperation(value = "This method is Insert Company Details")
 	public ResponseEntity<CommonRes> createInsuranceCompanyMaster(@RequestBody  InsuranceCompanyMasterSaveReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
@@ -93,7 +94,7 @@ public class InsuranceCompanyMasterController {
 //  Get All Insurance Company Master
 	
 		@PostMapping("/getallinscompanydetails")
-		@ApiOperation("This method is getall Insurance Company Details")
+		@ApiOperation("This method is getall  Company Details")
 		public ResponseEntity<CommonRes> getallInsCompanyDetails(@RequestBody InsuranceCompanyMasterGetAllReq req)
 		{
 			CommonRes data = new CommonRes();
@@ -116,7 +117,7 @@ public class InsuranceCompanyMasterController {
 	//  Get Active Insurance Company Master
 		
 			@PostMapping("/getactiveinscompany")
-			@ApiOperation("This method is Active Insurance Company Details")
+			@ApiOperation("This method is get Active  Company Details")
 			public ResponseEntity<CommonRes> getActiveInsCompanyDetails(@RequestBody InsuranceCompanyMasterGetAllReq req)
 			{
 				CommonRes data = new CommonRes();
@@ -139,7 +140,7 @@ public class InsuranceCompanyMasterController {
 		// Get By Insurance Company Id
 		
 		@PostMapping("/getbycompanyid")
-		@ApiOperation("This Method is to get by InsuranceCompany id")
+		@ApiOperation("This Method is to get by Company id")
 		public ResponseEntity<CommonRes> getByCompanyId(@RequestBody InsuranceCompanyMasterGetReq req)
 		{
 		CommonRes data = new CommonRes();
@@ -159,7 +160,7 @@ public class InsuranceCompanyMasterController {
 		
 		// Bank Master Drop Down Type
 		@GetMapping("/dropdown/inscompanymaster")
-		@ApiOperation(value = "This method is get Bank Master Drop Down")
+		@ApiOperation(value = "This method is get Company Master Drop Down")
 
 		public ResponseEntity<CommonRes> getInscompanyMasterDropdown() {
 

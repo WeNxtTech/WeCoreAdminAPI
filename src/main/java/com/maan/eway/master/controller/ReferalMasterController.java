@@ -17,6 +17,7 @@ import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,7 @@ import java.util.List;
 */
 @RestController
 @RequestMapping("/master")
+@Api(tags = "MASTER : Referral Master ", description = "API's")
 public class ReferalMasterController {
 
 	@Autowired
@@ -107,7 +109,7 @@ public class ReferalMasterController {
 	//  Get Active Referral Master
 		
 			@PostMapping("/getactivereferal")
-			@ApiOperation("This method is Active Referal Details")
+			@ApiOperation("This method is get Active Referal Details")
 			public ResponseEntity<CommonRes> getActiveReferalDetails(@RequestBody ReferalMasterGetAllReq req)
 			{
 				CommonRes data = new CommonRes();

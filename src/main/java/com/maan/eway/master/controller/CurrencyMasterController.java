@@ -17,6 +17,7 @@ import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,7 @@ import java.util.List;
 * <h2>CurrencyMasterController</h2>
 */
 @RestController
+@Api(tags = "MASTER : Currency Master ", description = "API's")
 @RequestMapping("/master")
 public class CurrencyMasterController {
 
@@ -107,7 +109,7 @@ public class CurrencyMasterController {
 	//  Get Active Currency Master
 		
 			@PostMapping("/getactivecurrency")
-			@ApiOperation("This method is Active Currency Details")
+			@ApiOperation("This method is get Active Currency Details")
 			public ResponseEntity<CommonRes> getActiveCurrencyDetails(@RequestBody CurrencyMasterGetAllReq req)
 			{
 				CommonRes data = new CommonRes();

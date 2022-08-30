@@ -20,6 +20,7 @@ import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,7 @@ import java.util.List;
 * <h2>BranchMasterController</h2>
 */
 @RestController
+@Api(tags = "MASTER : Branch Master ", description = "API's")
 @RequestMapping("/master")
 public class BranchMasterController {
 
@@ -110,7 +112,7 @@ public class BranchMasterController {
 	//  Get Active Branch Master
 		
 			@PostMapping("/getactivebranch")
-			@ApiOperation("This method is Active Branch Details")
+			@ApiOperation("This method is get Active Branch Details")
 			public ResponseEntity<CommonRes> getActiveBranchDetails(@RequestBody BranchMasterGetAllReq req)
 			{
 				CommonRes data = new CommonRes();

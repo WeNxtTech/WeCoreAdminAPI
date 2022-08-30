@@ -78,11 +78,11 @@ private static final long serialVersionUID = 1L;
     @Column(name="REFERAL_NAME", length=100)
     private String     referalName ;
 
-    @Column(name="SUMINSURED_START")
-    private Double     suminsuredStart ;
+    @Column(name="SUM_INSURED_START")
+    private Double     sumInsuredStart ;
 
-    @Column(name="SUMINSURED_END")
-    private Double     suminsuredEnd ;
+    @Column(name="SUM_INSURED_END")
+    private Double     sumInsuredEnd ;
 
     @Column(name="REMARKS", length=100)
     private String     remarks ;

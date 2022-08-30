@@ -16,5 +16,5 @@ public class AttachCompnayProductRequest {
 	
 	
 	@JsonProperty("AttachedProducts")
-	private List<AttachedPreductReq> attachedProducts ;
+	private List<AttachedProductReq> attachedProducts ;
 }

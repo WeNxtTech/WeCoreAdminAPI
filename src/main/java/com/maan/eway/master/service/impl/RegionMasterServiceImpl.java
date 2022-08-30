@@ -38,6 +38,7 @@ import com.maan.eway.master.req.RegionMasterGetReq;
 import com.maan.eway.master.req.RegionMasterSaveReq;
 import com.maan.eway.master.res.RegionMasterRes;
 import com.maan.eway.master.service.RegionMasterService;
+import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.RegionMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.RegionMasterRepository;
@@ -84,12 +85,18 @@ public SuccessRes insertRegion(RegionMasterSaveReq req) {
 		Date effDate = cal.getTime();
 		Date endDate = sdformat.parse("12/12/2050");
 		
-		Long regionCode=0L;
+		String regionCode="";
 		
 		if (StringUtils.isBlank(req.getRegionCode())) {
 				// Save
-				Long totalCount = repo.count();
-				regionCode = Long.valueOf(totalCount + 01);
+				// Long totalCount = repo.count();
+				Long totalCount = getMasterTableCount();
+				if (totalCount >= 9) {
+					regionCode = Long.valueOf(totalCount + 1).toString();
+				} else {
+					regionCode = "0" + Long.valueOf(totalCount + 1);
+				}
+				
 				saveData.setRegionCode(regionCode.toString());
 				saveData.setShortCode(req.getShortCode());
 				res.setResponse("Saved Successfully ");
@@ -454,6 +461,45 @@ public List<RegionMasterRes> getActiveRegionDetails(RegionMasterGetAllReq req) {
 
 	}
 	return resList;
+}
+public Long getMasterTableCount() {
+
+	Long data=0L;
+	try {
+		
+	List<Long> list = new ArrayList<Long>();	
+	// 	Find Latest Record
+	CriteriaBuilder cb = em.getCriteriaBuilder();
+	CriteriaQuery<Long> query = cb.createQuery(Long.class);
+
+	// Find All
+	Root<RegionMaster> b = query.from(RegionMaster.class);
+
+	// Select
+	query.multiselect(cb.count(b));
+
+	// Effective Date Max Filter
+	Subquery<Long> effectiveDate = query.subquery(Long.class);
+	Root<RegionMaster> ocpm1 = effectiveDate.from(RegionMaster.class);
+	effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+	Predicate a1 = cb.equal(ocpm1.get("regionCode"), b.get("regionCode"));
+	effectiveDate.where(a1);
+
+	Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+	query.where(n1);
+	// Get Result
+	TypedQuery<Long> result = em.createQuery(query);
+	list = result.getResultList();
+	
+	data=list.get(0);
+
+	
+} catch (Exception e) {
+	e.printStackTrace();
+	log.info(e.getMessage());
+
+}
+	return data;
 }
 
 }

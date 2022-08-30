@@ -84,6 +84,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="STATUS", length=1)
     private String     status ;
+    
+    @Column(name="REMARKS", length=100)
+    private String     remarks;
 
     @Column(name="START_LIMIT")
     private Double     startLimit ;

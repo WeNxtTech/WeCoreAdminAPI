@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class AttachedPreductReq {
+public class AttachedProductReq {
 
 	@JsonProperty("ProductId")
 	private String productId ;
@@ -24,6 +24,9 @@ public class AttachedPreductReq {
 	
 	@JsonProperty("Status")
 	private String status ;
+	
+	@JsonProperty("Remarks")
+	private String remarks;
 	
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDate")

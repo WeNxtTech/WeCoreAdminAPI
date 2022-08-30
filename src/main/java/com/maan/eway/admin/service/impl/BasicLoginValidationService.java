@@ -23,7 +23,7 @@ import com.maan.eway.repository.LoginMasterRepository;
 @Service
 public class BasicLoginValidationService {
 	
-	private Logger log=LogManager.getLogger(LoginCreationServiceImpl.class);
+	private Logger log=LogManager.getLogger(BasicLoginValidationService.class);
 
 	@Autowired
 	private LoginMasterRepository loginRepo ;

@@ -26,6 +26,9 @@ public class AttachReferalReq {
 	@JsonProperty("Status")
 	private String status ;
 	
+	@JsonProperty("Remarks")
+	private String remarks ;
+	
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDate")
 	private Date effectiveDate ;

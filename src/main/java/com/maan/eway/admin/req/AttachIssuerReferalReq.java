@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class AttachIssuerProductReq {
+public class AttachIssuerReferalReq {
 
 	@JsonProperty("LoginId")
 	private String loginId ;

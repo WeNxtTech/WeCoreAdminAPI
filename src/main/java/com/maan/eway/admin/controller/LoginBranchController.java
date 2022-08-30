@@ -106,7 +106,7 @@ public class LoginBranchController {
 //*************************************** Get Branches By Login ID **********************************************************//
 	
 	@PostMapping("/getbrokerbranches")
-	@ApiOperation(value="This method is to Attach Broker Branches")
+	@ApiOperation(value="This method is to Get Broker Branches")
 	public ResponseEntity<CommonRes> getBrokerBranches(@RequestBody  BrokerBranchGetReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
@@ -125,7 +125,7 @@ public class LoginBranchController {
 	} 
 	
 	@PostMapping("/getissuerbranches")
-	@ApiOperation(value="This method is to Attach Issuer Branches")
+	@ApiOperation(value="This method is to Get Issuer Branches")
 	public ResponseEntity<CommonRes> getIssuerBranches(@RequestBody  IssuerBranchGetReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();

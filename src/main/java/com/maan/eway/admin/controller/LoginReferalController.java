@@ -12,6 +12,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.admin.req.AttachIssuerReferalReq;
+import com.maan.eway.admin.req.BrokerProductCompaniesRes;
+import com.maan.eway.admin.req.BrokerProductGetReq;
+import com.maan.eway.admin.req.IssuerCompanyReferalGetReq;
+import com.maan.eway.admin.req.IssuerReferalGetReq;
+import com.maan.eway.admin.res.IssuerReferalCompanyGetRes;
+import com.maan.eway.admin.res.IssuerReferalCompniesRes;
 import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.admin.service.LoginReferalService;
 import com.maan.eway.admin.service.LoginValidationService;
@@ -68,5 +74,47 @@ public class LoginReferalController {
 
 	}
 	
+//*************************************** Get Referal Apis **********************************************************//
+
+	@PostMapping("/getissuerreferals")
+	@ApiOperation(value="This method is to Get Issuer Referals")
+	public ResponseEntity<CommonRes> getIssuerReferals(@RequestBody  IssuerReferalGetReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		
+		/////// get
+		List<IssuerReferalCompniesRes> res = entityService.getIssuerReferals(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+//*************************************** Get One Company Referal Apis **********************************************************//
+
+	@PostMapping("/getissueronecompanyreferals")
+	@ApiOperation(value="This method is to Get Issuer One Company Referals")
+	public ResponseEntity<CommonRes> getIssuerCompanyReferal(@RequestBody  IssuerCompanyReferalGetReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		
+		/////// get
+		List<IssuerReferalCompanyGetRes> res = entityService.getIssuerCompanyReferal(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+		
 
 }

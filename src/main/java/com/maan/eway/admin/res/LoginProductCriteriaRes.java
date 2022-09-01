@@ -2,30 +2,38 @@ package com.maan.eway.admin.res;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-public class BrokerProductsGetRes {
+@NoArgsConstructor
+@AllArgsConstructor
+public class LoginProductCriteriaRes {
 
 	@JsonProperty("ProductId")
-	private String productId ;
+	private Integer productId ;
+	
+	@JsonProperty("CompanyId")
+	private String companyId ;
 	
 	@JsonProperty("ProductName")
 	private String productName ;
+	
 	
 	@JsonProperty("OldProductName")
 	private String oldProductName ;
 	
 	@JsonProperty("StartLimit")
-	private String startLimit ;
+	private Double startLimit ;
 	
 	@JsonProperty("EndLimit")
-	private String endLimit ;
+	private Double endLimit ;
 	
 	@JsonProperty("Status")
-	private String status ;
+	private String status;
 	
 	@JsonProperty("Remarks")
-	private String remarks;
+	private String remarks ;
 	
 }

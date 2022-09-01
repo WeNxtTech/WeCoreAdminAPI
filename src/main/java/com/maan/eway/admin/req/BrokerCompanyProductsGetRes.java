@@ -1,12 +1,13 @@
-package com.maan.eway.admin.res;
+package com.maan.eway.admin.req;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
 
 @Data
-public class BrokerProductsGetRes {
+public class BrokerCompanyProductsGetRes {
 
+	
 	@JsonProperty("ProductId")
 	private String productId ;
 	
@@ -22,10 +23,5 @@ public class BrokerProductsGetRes {
 	@JsonProperty("EndLimit")
 	private String endLimit ;
 	
-	@JsonProperty("Status")
-	private String status ;
-	
-	@JsonProperty("Remarks")
-	private String remarks;
 	
 }

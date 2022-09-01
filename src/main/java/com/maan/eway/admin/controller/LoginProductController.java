@@ -12,6 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.admin.req.AttachCompnayProductRequest;
+import com.maan.eway.admin.req.BrokerCompanyProductGetReq;
+import com.maan.eway.admin.req.BrokerCompanyProductsGetRes;
+import com.maan.eway.admin.req.BrokerProductCompaniesRes;
+import com.maan.eway.admin.req.BrokerProductGetReq;
 import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.admin.service.LoginProductService;
 import com.maan.eway.admin.service.LoginValidationService;
@@ -69,7 +73,48 @@ public class LoginProductController {
 		}
 
 	}
+
+//*************************************** Get Products Apis **********************************************************//
+	
+	@PostMapping("/getbrokerproducts")
+	@ApiOperation(value="This method is to Get Broker Products")
+	public ResponseEntity<CommonRes> getBrokerProducts(@RequestBody  BrokerProductGetReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		
+		/////// get
+		List<BrokerProductCompaniesRes> res = entityService.getBrokerProducts(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 	
 	
+//*************************************** Get One CompanyProducts Apis **********************************************************//	
 	
+
+	@PostMapping("/getbrokeronecompanyproducts")
+	@ApiOperation(value="This method is to Get Broker Company Products")
+	public ResponseEntity<CommonRes> getBrokerCompanyProducts(@RequestBody  BrokerCompanyProductGetReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		
+		/////// get
+		List<BrokerCompanyProductsGetRes> res = entityService.getBrokerCompanyProducts(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 }

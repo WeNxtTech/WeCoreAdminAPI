@@ -40,6 +40,7 @@ import com.maan.eway.master.req.CurrencyMasterGetReq;
 import com.maan.eway.master.req.CurrencyMasterSaveReq;
 import com.maan.eway.master.res.CurrencyMasterRes;
 import com.maan.eway.master.service.CurrencyMasterService;
+import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.CurrencyMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.CurrencyMasterRepository;
@@ -92,7 +93,8 @@ public SuccessRes insertCurrency(CurrencyMasterSaveReq req) {
 		
 		if (StringUtils.isBlank(req.getCurrencyId().toString())) {
 				// Save
-			    Long totalCount = repo.count();
+			   	//Long totalCount = repo.count();
+				Long totalCount =getMasterTableCount();
 				currencyId = Long.valueOf(totalCount + 1);
 				res.setResponse("Saved Successfully ");
 
@@ -232,6 +234,45 @@ public List<Error> validateCurrencyDetails(CurrencyMasterSaveReq req) {
 		e.printStackTrace();
 	}
 	return errorList;
+}
+
+public Long getMasterTableCount() {
+
+	Long data = 0L;
+	try {
+
+		List<Long> list = new ArrayList<Long>();
+		// Find Latest Record
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> query = cb.createQuery(Long.class);
+
+		// Find All
+		Root<CurrencyMaster> b = query.from(CurrencyMaster.class);
+
+		// Select
+		query.multiselect(cb.count(b));
+
+		// Effective Date Max Filter
+		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Root<CurrencyMaster> ocpm1 = effectiveDate.from(CurrencyMaster.class);
+		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		Predicate a1 = cb.equal(ocpm1.get("currencyId"), b.get("currencyId"));
+		effectiveDate.where(a1);
+
+		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+		query.where(n1);
+		// Get Result
+		TypedQuery<Long> result = em.createQuery(query);
+		list = result.getResultList();
+
+		data = list.get(0);
+
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info(e.getMessage());
+
+	}
+	return data;
 }
 ///*********************************************************************GET ALL******************************************************\\
 @Override

@@ -222,6 +222,45 @@ public List<Error> validateBranchDetails(BranchMasterSaveReq req) {
 	}
 	return errorList;
 }
+public Long getMasterTableCount() {
+
+	Long data = 0L;
+	try {
+
+		List<Long> list = new ArrayList<Long>();
+		// Find Latest Record
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> query = cb.createQuery(Long.class);
+
+		// Find All
+		Root<BranchMaster> b = query.from(BranchMaster.class);
+
+		// Select
+		query.multiselect(cb.count(b));
+
+		// Effective Date Max Filter
+		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Root<BranchMaster> ocpm1 = effectiveDate.from(BranchMaster.class);
+		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		Predicate a1 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+		effectiveDate.where(a1);
+
+		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+		query.where(n1);
+		// Get Result
+		TypedQuery<Long> result = em.createQuery(query);
+		list = result.getResultList();
+
+		data = list.get(0);
+
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info(e.getMessage());
+
+	}
+	return data;
+}
+
 ///*********************************************************************GET ALL******************************************************\\
 @Override
 public List<BranchMasterRes> getallBranchDetails(BranchMasterGetAllReq req) {
@@ -458,46 +497,6 @@ public List<BranchMasterRes> getActiveBranchDetails(BranchMasterGetAllReq req) {
 
 	}
 	return resList;
-}
-
-	public Long getMasterTableCount() {
-
-		Long data=0L;
-		try {
-			
-		List<Long> list = new ArrayList<Long>();	
-		// 	Find Latest Record
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> query = cb.createQuery(Long.class);
-
-		// Find All
-		Root<BranchMaster> b = query.from(BranchMaster.class);
-
-		// Select
-		query.multiselect(cb.count(b));
-
-		// Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
-		Root<BranchMaster> ocpm1 = effectiveDate.from(BranchMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-		Predicate a1 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
-		effectiveDate.where(a1);
-
-		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-		query.where(n1);
-		// Get Result
-		TypedQuery<Long> result = em.createQuery(query);
-		list = result.getResultList();
-		
-		data=list.get(0);
-
-		
-	} catch (Exception e) {
-		e.printStackTrace();
-		log.info(e.getMessage());
-
-	}
-		return data;
 }
 
 }

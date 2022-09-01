@@ -37,7 +37,7 @@ import com.maan.eway.master.req.InsuranceCompanyMasterGetReq;
 import com.maan.eway.master.req.InsuranceCompanyMasterSaveReq;
 import com.maan.eway.master.res.InsuranceCompanyMasterRes;
 import com.maan.eway.master.service.InsuranceCompanyMasterService;
-
+import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 
 import com.maan.eway.error.Error;
@@ -260,7 +260,8 @@ this.repository = repo;
 			Long insId=0L;
 			if (StringUtils.isBlank(req.getInsuranceId())) {
 				// Save
-				Long totalCount = repository.count();
+				//Long totalCount = repository.count();
+				Long totalCount =getMasterTableCount();
 				insId =Long.valueOf(totalCount + 100001);
 				saveData.setCompanyId(insId.toString());
 				res.setResponse("Saved Successfully ");
@@ -336,6 +337,45 @@ this.repository = repo;
 			return null;
 		}
 		return res;
+	}
+	
+	public Long getMasterTableCount() {
+
+		Long data = 0L;
+		try {
+
+			List<Long> list = new ArrayList<Long>();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Long> query = cb.createQuery(Long.class);
+
+			// Find All
+			Root<InsuranceCompanyMaster> b = query.from(InsuranceCompanyMaster.class);
+
+			// Select
+			query.multiselect(cb.count(b));
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<InsuranceCompanyMaster> ocpm1 = effectiveDate.from(InsuranceCompanyMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			effectiveDate.where(a1);
+
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			query.where(n1);
+			// Get Result
+			TypedQuery<Long> result = em.createQuery(query);
+			list = result.getResultList();
+
+			data = list.get(0);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+
+		}
+		return data;
 	}
 
 //***********************************************GET ALL***************************************\\

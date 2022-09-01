@@ -41,6 +41,7 @@ import com.maan.eway.master.req.ReferalMasterSaveReq;
 import com.maan.eway.master.res.ReferalMasterRes;
 import com.maan.eway.master.service.ReferalMasterService;
 import com.maan.eway.auth.token.passwordEnc;
+import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.ReferalMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.ReferalMasterRepository;
@@ -89,13 +90,14 @@ public SuccessRes insertReferal(ReferalMasterSaveReq req) {
 		Date endDate = sdformat.parse("12/12/2050");
 		
 		
-		Long referalId=0L;
+		String referalId="";
 		
 		if (StringUtils.isBlank(req.getReferalId().toString())) {
 				// Save
-			    Long totalCount = repo.count();
-				referalId = (Long.valueOf(totalCount + 1));
-				saveData.setReferalId(referalId);
+			   // Integer totalCount = repo.count();
+				Long totalCount=getMasterTableCount();			
+				referalId = Long.valueOf(totalCount + 1).toString();
+				saveData.setReferalId(Integer.valueOf(referalId));
 				saveData.setReferalName(req.getReferalName());
 				res.setResponse("Saved Successfully ");
 
@@ -103,7 +105,7 @@ public SuccessRes insertReferal(ReferalMasterSaveReq req) {
 				// Update
 				// Get Less than Equal Today Record 
 				// Criteria
-				referalId=Long.valueOf(req.getReferalId());
+				referalId=req.getReferalId();
 				CriteriaBuilder cb = em.getCriteriaBuilder();
 				CriteriaQuery<ReferalMaster> query = cb.createQuery(ReferalMaster.class);
 
@@ -144,7 +146,7 @@ public SuccessRes insertReferal(ReferalMasterSaveReq req) {
 			}
 		
 		    dozerMapper.map(req, saveData );
-			saveData.setReferalId(referalId);
+			saveData.setReferalId(Integer.valueOf(referalId));
 			saveData.setReferalName(req.getReferalName());
 			saveData.setEffectiveDateStart(effDate);
 			saveData.setEffectiveDateEnd(endDate);
@@ -231,6 +233,44 @@ public List<Error> validateReferalDetails(ReferalMasterSaveReq req) {
 		e.printStackTrace();
 	}
 	return errorList;
+}
+public Long getMasterTableCount() {
+
+	Long data = 0L;
+	try {
+
+		List<Long> list = new ArrayList<Long>();
+		// Find Latest Record
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> query = cb.createQuery(Long.class);
+
+		// Find All
+		Root<ReferalMaster> b = query.from(ReferalMaster.class);
+
+		// Select
+		query.multiselect(cb.count(b));
+
+		// Effective Date Max Filter
+		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Root<ReferalMaster> ocpm1 = effectiveDate.from(ReferalMaster.class);
+		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
+		effectiveDate.where(a1);
+
+		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+		query.where(n1);
+		// Get Result
+		TypedQuery<Long> result = em.createQuery(query);
+		list = result.getResultList();
+
+		data = list.get(0);
+
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info(e.getMessage());
+
+	}
+	return data;
 }
 ///*********************************************************************GET ALL******************************************************\\
 @Override

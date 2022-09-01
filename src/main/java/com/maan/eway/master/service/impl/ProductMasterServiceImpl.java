@@ -40,6 +40,7 @@ import com.maan.eway.master.req.ProductMasterGetReq;
 import com.maan.eway.master.req.ProductMasterSaveReq;
 import com.maan.eway.master.res.ProductMasterRes;
 import com.maan.eway.master.service.ProductMasterService;
+import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.ProductMasterRepository;
@@ -88,13 +89,14 @@ public SuccessRes insertProduct(ProductMasterSaveReq req) {
 		Date endDate = sdformat.parse("12/12/2050");
 		
 		
-		Long productId=0L;
+		String productId="";
 		
 		if (StringUtils.isBlank(req.getProductId().toString())) {
 				// Save
-			    Long totalCount = repo.count();
-				productId = Long.valueOf(totalCount + 01);
-				saveData.setProductId(productId);
+			    //Long totalCount = repo.count();
+				Long totalCount =getMasterTableCount();
+				productId = Long.valueOf(totalCount + 01).toString();
+				saveData.setProductId(Integer.valueOf(productId));
 				saveData.setProductName(req.getProductName());
 				res.setResponse("Saved Successfully ");
 
@@ -102,7 +104,7 @@ public SuccessRes insertProduct(ProductMasterSaveReq req) {
 				// Update
 				// Get Less than Equal Today Record 
 				// Criteria
-				productId=Long.valueOf(req.getProductId());
+				productId=req.getProductId();
 				CriteriaBuilder cb = em.getCriteriaBuilder();
 				CriteriaQuery<ProductMaster> query = cb.createQuery(ProductMaster.class);
 
@@ -143,7 +145,7 @@ public SuccessRes insertProduct(ProductMasterSaveReq req) {
 			}
 		
 		    dozerMapper.map(req, saveData );
-			saveData.setProductId(productId);
+			saveData.setProductId(Integer.valueOf(productId));
 			saveData.setProductName(req.getProductName());
 			saveData.setEffectiveDateStart(effDate);
 			saveData.setEffectiveDateEnd(endDate);
@@ -237,6 +239,46 @@ public List<Error> validateProductDetails(ProductMasterSaveReq req) {
 		e.printStackTrace();
 	}
 	return errorList;
+}
+public Long getMasterTableCount() {
+
+	Long data = 0L;
+	try {
+
+		List<Long> list = new ArrayList<Long>();
+		// Find Latest Record
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> query = cb.createQuery(Long.class);
+
+		// Find All
+		Root<ProductMaster> b = query.from(ProductMaster.class);
+
+		// Select
+		query.multiselect(cb.count(b));
+
+		// Effective Date Max Filter
+		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Root<ProductMaster> ocpm1 = effectiveDate.from(ProductMaster.class);
+		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+		effectiveDate.where(a1,a2);
+
+		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+	
+		query.where(n1);
+		// Get Result
+		TypedQuery<Long> result = em.createQuery(query);
+		list = result.getResultList();
+
+		data = list.get(0);
+
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info(e.getMessage());
+
+	}
+	return data;
 }
 ///*********************************************************************GET ALL******************************************************\\
 @Override

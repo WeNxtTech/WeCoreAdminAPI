@@ -22,7 +22,7 @@ import java.util.List;
 */
 public interface CityMasterService  {
 
-	List<DropDownRes> getCityMasterDropdown();
+	List<DropDownRes> getCityMasterDropdown(CityMasterGetReq req);
 
 	List<Error> validateCityDetails(CityMasterSaveReq req);
 
@@ -33,6 +33,8 @@ public interface CityMasterService  {
 	List<CityMasterRes> getallCityDetails(CityMasterGetAllReq req);
 
 	CityMasterRes getByCityId(CityMasterGetReq req);
+
+	List<Error> validateDropdownGet(CityMasterGetReq req);
 
 	
 	

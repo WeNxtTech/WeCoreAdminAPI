@@ -68,7 +68,7 @@ public class CityMasterServiceImpl implements CityMasterService {
 
 	private Logger log = LogManager.getLogger(CityMasterServiceImpl.class);
 
-//************************************************INSERT/UPDATE STATE DETAILS******************************************************\\
+//************************************************INSERT/UPDATE CITY DETAILS******************************************************\\
 	@Transactional
 	@Override
 	public SuccessRes insertCity(CityMasterSaveReq req) {
@@ -380,7 +380,24 @@ public class CityMasterServiceImpl implements CityMasterService {
 
 //**********************************************************DROPDOWN********************************************************************\\
 	@Override
-	public List<DropDownRes> getCityMasterDropdown() {
+	public List<Error> validateDropdownGet(CityMasterGetReq req) {
+		List<Error> errorList = new ArrayList<Error>();
+
+		try {
+
+			if (StringUtils.isBlank(req.getStateId()) || req.getStateId() == null) {
+				errorList.add(new Error("01", "StateId", "Please Enter State  Id "));
+			} 
+
+		} catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+		}
+		return errorList;
+	}
+
+	@Override
+	public List<DropDownRes> getCityMasterDropdown(CityMasterGetReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 			Date today = new Date();
@@ -438,7 +455,7 @@ public class CityMasterServiceImpl implements CityMasterService {
 		return resList;
 	}
 
-//************************************************GET ACTIVE STATE******************************************\\
+//************************************************GET ACTIVE CITY******************************************\\
 	@Override
 	public List<CityMasterRes> getActiveCityDetails(CityMasterGetAllReq req) {
 		List<CityMasterRes> resList = new ArrayList<CityMasterRes>();
@@ -501,5 +518,6 @@ public class CityMasterServiceImpl implements CityMasterService {
 		}
 		return resList;
 	}
+
 
 }

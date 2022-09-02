@@ -15,5 +15,9 @@ public class StateMasterGetReq implements Serializable {
 
 	@JsonProperty("StateId")
     private String     stateId     ;
+	
+
+	@JsonProperty("CountryId")
+    private String     countryId     ;
     
 }

@@ -154,24 +154,35 @@ public class CityMasterController {
 		@GetMapping("/dropdown/city")
 		@ApiOperation(value = "This method is get City Master Drop Down")
 
-		public ResponseEntity<CommonRes> getCityMasterDropdown() {
+		public ResponseEntity<CommonRes> getCityMasterDropdown(@RequestBody CityMasterGetReq req) {
 
 			CommonRes data = new CommonRes();
 
-			// Save
-			List<DropDownRes> res = cityService.getCityMasterDropdown();
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
+			List<Error> validation = cityService.validateDropdownGet(req);
+			// validation
+			if (validation != null && validation.size() != 0) {
+				data.setCommonResponse(null);
+				data.setIsError(true);
+				data.setErrorMessage(validation);
+				data.setMessage("Failed");
+				return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
 
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
 
+				
+				List<DropDownRes> res = cityService.getCityMasterDropdown(req);
+				data.setCommonResponse(res);
+				data.setIsError(false);
+				data.setErrorMessage(Collections.emptyList());
+				data.setMessage("Success");
+
+				if (res != null) {
+					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				} else {
+					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				}
+
+			}
 		}
-		
 
 }

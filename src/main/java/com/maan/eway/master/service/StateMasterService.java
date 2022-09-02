@@ -31,7 +31,7 @@ import java.util.List;
 */
 public interface StateMasterService  {
 
-	List<DropDownRes> getStateMasterDropdown();
+
 
 	List<Error> validateStateDetails(StateMasterSaveReq req);
 
@@ -42,6 +42,8 @@ public interface StateMasterService  {
 	List<StateMasterRes> getActiveStateDetails(StateMasterGetAllReq req);
 
 	StateMasterRes getByStateId(StateMasterGetReq req);
+
+	List<DropDownRes> getStateMasterDropdown(StateMasterGetReq req);
 
 	
 	

@@ -376,7 +376,7 @@ public class StateMasterServiceImpl implements StateMasterService {
 
 //**********************************************************DROPDOWN********************************************************************\\
 	@Override
-	public List<DropDownRes> getStateMasterDropdown() {
+	public List<DropDownRes> getStateMasterDropdown(StateMasterGetReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 			Date today = new Date();
@@ -386,6 +386,13 @@ public class StateMasterServiceImpl implements StateMasterService {
 			cal.set(Calendar.MINUTE, 1);
 			today = cal.getTime();
 
+			String counryId=null;
+		
+			if (StringUtils.isBlank(req.getCountryId()) || req.getCountryId() == null) {
+				counryId="1";
+			}else {
+				counryId=req.getCountryId();
+			}
 			// Criteria
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<StateMaster> query = cb.createQuery(StateMaster.class);
@@ -412,8 +419,8 @@ public class StateMasterServiceImpl implements StateMasterService {
 			// Where
 			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
-
-			query.where(n1, n2).orderBy(orderList);
+			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("countryId"), counryId);
+			query.where(n1, n2,n3).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<StateMaster> result = em.createQuery(query);

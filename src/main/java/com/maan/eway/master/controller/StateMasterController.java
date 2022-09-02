@@ -154,12 +154,12 @@ public class StateMasterController {
 		@GetMapping("/dropdown/state")
 		@ApiOperation(value = "This method is get State Master Drop Down")
 
-		public ResponseEntity<CommonRes> getStateMasterDropdown() {
+		public ResponseEntity<CommonRes> getStateMasterDropdown(@RequestBody StateMasterGetReq req) {
 
 			CommonRes data = new CommonRes();
 
 			// Save
-			List<DropDownRes> res = stateService.getStateMasterDropdown();
+			List<DropDownRes> res = stateService.getStateMasterDropdown(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());

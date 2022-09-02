@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.gson.Gson;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.repository.ListItemValueRepository;
+import com.maan.eway.req.SubUserTypeReq;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.service.DropDownService;
 
@@ -38,6 +39,46 @@ public class DropDownServiceImpl implements DropDownService {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("GENDER", "Y");
+
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+	@Override
+	public List<DropDownRes> getUserType() {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("USER_TYPE", "Y");
+
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+	@Override
+	public List<DropDownRes> getSubUserType(SubUserTypeReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc(req.getUserType(), "Y");
 
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();

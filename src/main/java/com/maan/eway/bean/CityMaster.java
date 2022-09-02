@@ -53,7 +53,7 @@ private static final long serialVersionUID = 1L;
     //--- ENTITY PRIMARY KEY 
     @Id
     @Column(name="CITY_ID", nullable=false)
-    private Long     cityId ;
+    private Integer     cityId ;
 
     @Id
     @Temporal(TemporalType.TIMESTAMP)

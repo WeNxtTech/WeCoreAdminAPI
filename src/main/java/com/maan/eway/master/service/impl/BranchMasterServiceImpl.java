@@ -182,7 +182,7 @@ public List<Error> validateBranchDetails(BranchMasterSaveReq req) {
 		}else if (StringUtils.isBlank(req.getBranchCode())) {
 			Long BranchCount = branchRepo.countByBranchNameOrderByEntryDateDesc(req.getBranchName());
 			if (BranchCount > 0 ) {
-				errorList.add(new Error("01", "BranchCode", "This BranchCode Alrady Exist "));
+				errorList.add(new Error("01", "BranchName", "This Branch Name Alrady Exist "));
 			}
 		}
 

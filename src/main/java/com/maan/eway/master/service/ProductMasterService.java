@@ -5,18 +5,11 @@
 */
 package com.maan.eway.master.service;
 
-import com.maan.eway.master.req.BankMasterGetAllReq;
-import com.maan.eway.master.req.BankMasterGetReq;
-import com.maan.eway.master.req.BankMasterSaveReq;
+
 import com.maan.eway.master.req.ProductMasterGetAllReq;
 import com.maan.eway.master.req.ProductMasterGetReq;
 import com.maan.eway.master.req.ProductMasterSaveReq;
-import com.maan.eway.master.req.RegionMasterGetAllReq;
-import com.maan.eway.master.req.RegionMasterGetReq;
-import com.maan.eway.master.req.RegionMasterSaveReq;
-import com.maan.eway.master.res.BankMasterRes;
 import com.maan.eway.master.res.ProductMasterRes;
-import com.maan.eway.master.res.RegionMasterRes;
 import com.maan.eway.error.Error;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;

@@ -68,7 +68,7 @@ Gson json = new Gson();
 
 private Logger log=LogManager.getLogger(ReferalMasterServiceImpl.class);
 
-//************************************************INSERT/UPDATE REGION DETAILS******************************************************\\
+//************************************************INSERT/UPDATE REFERAL DETAILS******************************************************\\
 @Transactional
 @Override
 public SuccessRes insertReferal(ReferalMasterSaveReq req) {
@@ -451,7 +451,7 @@ public List<DropDownRes> getReferalMasterDropdown() {
 	return resList;
 }
 
-//************************************************GET ACTIVE REGION******************************************\\
+//************************************************GET ACTIVE REFERAL******************************************\\
 @Override
 public List<ReferalMasterRes> getActiveReferalDetails(ReferalMasterGetAllReq req) {
 	List<ReferalMasterRes> resList = new ArrayList<ReferalMasterRes>();

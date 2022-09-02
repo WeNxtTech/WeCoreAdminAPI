@@ -67,7 +67,7 @@ Gson json = new Gson();
 
 private Logger log=LogManager.getLogger(CurrencyMasterServiceImpl.class);
 
-//************************************************INSERT/UPDATE REGION DETAILS******************************************************\\
+//************************************************INSERT/UPDATE CURRENCY DETAILS******************************************************\\
 @Transactional
 @Override
 public SuccessRes insertCurrency(CurrencyMasterSaveReq req) {
@@ -144,7 +144,6 @@ public SuccessRes insertCurrency(CurrencyMasterSaveReq req) {
 		
 		    dozerMapper.map(req, saveData );
 			saveData.setCurrencyId(currencyId);
-			saveData.setCountryId(req.getCountryId());
 			saveData.setCurrencyName(req.getCurrencyName());
 			saveData.setEffectiveDateStart(effDate);
 			saveData.setEffectiveDateEnd(endDate);
@@ -453,7 +452,7 @@ public List<DropDownRes> getCurrencyMasterDropdown() {
 	return resList;
 }
 
-//************************************************GET ACTIVE REGION******************************************\\
+//************************************************GET ACTIVE CURRENCY******************************************\\
 @Override
 public List<CurrencyMasterRes> getActiveCurrencyDetails(CurrencyMasterGetAllReq req) {
 	List<CurrencyMasterRes> resList = new ArrayList<CurrencyMasterRes>();

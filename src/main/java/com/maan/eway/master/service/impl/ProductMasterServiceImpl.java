@@ -67,7 +67,7 @@ Gson json = new Gson();
 
 private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 
-//************************************************INSERT/UPDATE REGION DETAILS******************************************************\\
+//************************************************INSERT/UPDATE PRODUCT DETAILS******************************************************\\
 @Transactional
 @Override
 public SuccessRes insertProduct(ProductMasterSaveReq req) {
@@ -459,7 +459,7 @@ public List<DropDownRes> getProductMasterDropdown() {
 	return resList;
 }
 
-//************************************************GET ACTIVE REGION******************************************\\
+//************************************************GET ACTIVE PRODUCT******************************************\\
 @Override
 public List<ProductMasterRes> getActiveProductDetails(ProductMasterGetAllReq req) {
 	List<ProductMasterRes> resList = new ArrayList<ProductMasterRes>();

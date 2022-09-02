@@ -1,0 +1,44 @@
+package com.maan.eway.master.res;
+
+import java.io.Serializable;
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.Data;
+
+@Data
+public class RiskMasterRes implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+ 
+	@JsonProperty("RiskId")
+    private String     riskId     ;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+    private Date       effectiveDateStart ;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateEnd")
+    private Date       effectiveDateEnd ;
+	
+	@JsonProperty("RiskName")
+    private String     riskName ;
+	
+	@JsonProperty("ProductId")
+    private String     productId ;
+	
+	@JsonProperty("CompanyId")
+    private String     companyId ;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EntryDate")
+    private Date       entryDate    ;
+	
+	@JsonProperty("Status")
+    private String     status       ;
+
+	
+}

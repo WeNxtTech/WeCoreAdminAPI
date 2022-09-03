@@ -34,14 +34,20 @@ public class ReferalMasterRes implements Serializable {
 	@JsonProperty("ReferalDesc")
 	private String referalDesc;
 
-	@JsonProperty("Remarks")
-	private String remarks;
-
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EntryDate")
 	private Date entryDate;
 
 	@JsonProperty("Status")
 	private String status;
+
+	@JsonProperty("CoreAppCode")
+	private String coreAppCode;
+
+	@JsonProperty("AmendId")
+	private Integer amendId;
+
+	@JsonProperty("Remarks")
+	private String remarks;
 
 }

@@ -55,6 +55,12 @@ public class ProductMasterSaveReq implements Serializable {
 	@JsonProperty("ProductCategory")
 	private String productCategory;
 
+	@JsonProperty("CoreAppCode")
+	private String coreAppCode;
+
+	@JsonProperty("AmendId")
+	private Integer amendId;
+
 	@JsonProperty("Remarks")
 	private String remarks;
 

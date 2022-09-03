@@ -50,7 +50,12 @@ public class CurrencyMasterSaveReq implements Serializable {
 	@JsonProperty("ExMaxlmt")
 	private String exMaxlmt;
 
+	@JsonProperty("CoreAppCode")
+	private String coreAppCode;
+
+	@JsonProperty("AmendId")
+	private Integer amendId;
+
 	@JsonProperty("Remarks")
 	private String remarks;
-
 }

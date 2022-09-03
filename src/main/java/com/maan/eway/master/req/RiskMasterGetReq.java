@@ -12,7 +12,8 @@ import lombok.Data;
 public class RiskMasterGetReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
-	@JsonProperty("RiskId")
+	
+    @JsonProperty("RiskId")
     private String     riskId     ;
     
 }

@@ -19,15 +19,4 @@ public class ReferalMasterGetAllReq implements Serializable {
     @JsonProperty("Offset")
     private String offset;
     
-	/*
-	 * @JsonProperty("BankCode") private String bankCode;
-	 */
-    
-	/*
-	 * @JsonFormat(pattern ="dd/MM/yyyy")
-	 * 
-	 * @JsonProperty("EffectiveDate") private Date effectiveDate;
-	 */
-
-
 }

@@ -29,6 +29,12 @@ public class ReferalMasterSaveReq implements Serializable {
 	@JsonProperty("ReferalDesc")
 	private String referalDesc;
 
+	@JsonProperty("CoreAppCode")
+	private String coreAppCode;
+
+	@JsonProperty("AmendId")
+	private Integer amendId;
+
 	@JsonProperty("Remarks")
 	private String remarks;
 

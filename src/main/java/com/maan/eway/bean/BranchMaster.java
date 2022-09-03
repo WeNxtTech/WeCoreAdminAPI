@@ -75,7 +75,14 @@ private static final long serialVersionUID = 1L;
     @Column(name="BRANCH_NAME", length=100)
     private String     branchName ;
 
-  
+    @Column(name="CORE_APP_CODE", length=20)
+    private String     coreAppCode ;
+
+    @Column(name="AMEND_ID")
+    private Integer     amendId ;
+
+    @Column(name="REMARKS", length=100)
+    private String     remarks ;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ENTRY_DATE")

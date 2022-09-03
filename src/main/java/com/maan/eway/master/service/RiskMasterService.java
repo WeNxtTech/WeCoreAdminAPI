@@ -14,9 +14,11 @@ import com.maan.eway.master.req.RiskMasterSaveReq;
 import com.maan.eway.master.res.BankMasterRes;
 import com.maan.eway.master.res.RiskMasterRes;
 import com.maan.eway.req.CustomerDetailsGetAllReq;
+import com.maan.eway.req.RiskDetailsGetAllReq;
 import com.maan.eway.error.Error;
 import com.maan.eway.res.CustomerDetailsRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.RiskDetailsRes;
 import com.maan.eway.res.SuccessRes;
 
 import java.util.List;
@@ -35,8 +37,8 @@ public interface RiskMasterService  {
 
 	RiskMasterRes getByRiskCode(RiskMasterGetReq req);
 
-	//Customer Get All
-	List<CustomerDetailsRes> getallCustomerDetails(CustomerDetailsGetAllReq req);
+	//Risk Get All
+	List<RiskDetailsRes> getallRiskWithCount(RiskDetailsGetAllReq req);
 
 
 

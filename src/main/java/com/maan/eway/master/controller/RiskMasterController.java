@@ -15,10 +15,12 @@ import com.maan.eway.master.req.RiskMasterSaveReq;
 import com.maan.eway.master.res.RiskMasterRes;
 import com.maan.eway.master.service.RiskMasterService;
 import com.maan.eway.req.CustomerDetailsGetAllReq;
+import com.maan.eway.req.RiskDetailsGetAllReq;
 import com.maan.eway.bean.RiskMaster;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.CustomerDetailsRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.RiskDetailsRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.CustomerDetailsService;
 import com.maan.eway.service.PrintReqService;
@@ -158,14 +160,14 @@ public class RiskMasterController {
 
 		//  Get All Customer Details With Reference Count
 		
-		@PostMapping("/getallcustomerdetails")
-		@ApiOperation("This method is getall Customer Details")
-		public ResponseEntity<CommonRes> getallCustomerDetails(@RequestBody CustomerDetailsGetAllReq req)
+		@PostMapping("/getallriskcountetails")
+		@ApiOperation("This method is getall Risk Details")
+		public ResponseEntity<CommonRes> getallCustomerDetails(@RequestBody RiskDetailsGetAllReq req)
 		{
 			CommonRes data = new CommonRes();
 			reqPrinter.reqPrint(req);
 			
-			List<CustomerDetailsRes> res = riskService.getallCustomerDetails(req);
+			List<RiskDetailsRes> res = riskService.getallRiskWithCount(req);
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);

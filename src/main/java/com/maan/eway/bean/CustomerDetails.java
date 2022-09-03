@@ -74,6 +74,11 @@ private static final long serialVersionUID = 1L;
     @Column(name="DATE_OF_BIRTH")
     private Date       dateOfBirth ;
 
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="ENTRY_DATE")
+    private Date       entryDate ;
+    
     @Column(name="NATIONALITY_ID")
     private Integer    nationalityId ;
 

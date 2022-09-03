@@ -41,7 +41,7 @@ public class CustomerDetailsController {
 	}
 */
 
-	@PostMapping(value = "/customerdetails")
+/*	@PostMapping(value = "/customerdetails")
 	public ResponseEntity<CustomerDetails> createCustomerDetails(@RequestBody  CustomerDetails model) {
 
    		 CustomerDetails data = entityService.create(model);

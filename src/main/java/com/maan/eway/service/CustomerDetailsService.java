@@ -14,12 +14,6 @@ import java.util.List;
 */
 public interface CustomerDetailsService  {
 
-CustomerDetails create(CustomerDetails d);
-CustomerDetails update(CustomerDetails d);
-//CustomerDetails getOne(long id) ;
- List<CustomerDetails> getAll();
-long getTotal();
-//boolean delete(long id);
 List<CustomerDetailsRes> getallCustomerDetails(CustomerDetailsGetAllReq req);
 
 }

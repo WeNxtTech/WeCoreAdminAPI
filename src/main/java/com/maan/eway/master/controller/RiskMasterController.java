@@ -51,10 +51,6 @@ public class RiskMasterController {
 	@Autowired
 	private  RiskMasterService riskService;
 	
-	
-	@Autowired
-	private  CustomerDetailsService customerService;
-	
 	@Autowired
 	private  PrintReqService reqPrinter;
 	
@@ -169,7 +165,7 @@ public class RiskMasterController {
 			CommonRes data = new CommonRes();
 			reqPrinter.reqPrint(req);
 			
-			List<CustomerDetailsRes> res = customerService.getallCustomerDetails(req);
+			List<CustomerDetailsRes> res = riskService.getallCustomerDetails(req);
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);

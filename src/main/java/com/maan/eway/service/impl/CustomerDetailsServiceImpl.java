@@ -34,7 +34,7 @@ this.repository = repo;
 }
 
   */
- @Override
+ /*@Override
     public CustomerDetails create(CustomerDetails d) {
 
        CustomerDetails entity;
@@ -80,7 +80,7 @@ this.repository = repo;
     }
 
 */
-    @Override
+/*    @Override
     public List<CustomerDetails> getAll() {
         List<CustomerDetails> lst;
 

@@ -14,6 +14,6 @@ import java.util.List;
 */
 public interface CustomerDetailsService  {
 
-List<CustomerDetailsRes> getallCustomerDetails(CustomerDetailsGetAllReq req);
+
 
 }

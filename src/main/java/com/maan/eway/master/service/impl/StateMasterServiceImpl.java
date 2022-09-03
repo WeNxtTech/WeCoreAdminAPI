@@ -68,7 +68,7 @@ public class StateMasterServiceImpl implements StateMasterService {
 
 	private Logger log = LogManager.getLogger(StateMasterServiceImpl.class);
 
-//************************************************INSERT/UPDATE CITY DETAILS******************************************************\\
+//************************************************INSERT/UPDATE STATE DETAILS******************************************************\\
 	@Transactional
 	@Override
 	public SuccessRes insertState(StateMasterSaveReq req) {
@@ -208,9 +208,9 @@ public class StateMasterServiceImpl implements StateMasterService {
 			if (StringUtils.isBlank(req.getStatus())) {
 				errorList.add(new Error("05", "Status", "Please Enter Status"));
 			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("05", "Status", "Insurance Company Status 1 Character Only"));
+				errorList.add(new Error("05", "Status", "Enter Status 1 Character Only"));
 			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()))) {
-				errorList.add(new Error("05", "Status", "Insurance Company Status 1 Character Only"));
+				errorList.add(new Error("05", "Status", "Enter Status Y or N Only"));
 			}
 
 		} catch (Exception e) {
@@ -265,7 +265,7 @@ public class StateMasterServiceImpl implements StateMasterService {
 		List<StateMasterRes> resList = new ArrayList<StateMasterRes>();
 		ModelMapper mapper = new ModelMapper();
 		try {
-			List<StateMaster> regionList = new ArrayList<StateMaster>();
+			List<StateMaster> list = new ArrayList<StateMaster>();
 			// Pagination
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
 			int offset = StringUtils.isBlank(req.getOffset()) ? 0 : Integer.valueOf(req.getOffset());
@@ -300,10 +300,10 @@ public class StateMasterServiceImpl implements StateMasterService {
 			TypedQuery<StateMaster> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
-			regionList = result.getResultList();
+			list = result.getResultList();
 
 			// Map
-			for (StateMaster data : regionList) {
+			for (StateMaster data : list) {
 				StateMasterRes res = new StateMasterRes();
 
 				res = mapper.map(data, StateMasterRes.class);
@@ -441,13 +441,13 @@ public class StateMasterServiceImpl implements StateMasterService {
 		return resList;
 	}
 
-//************************************************GET ACTIVE CITY******************************************\\
+//************************************************GET ACTIVE STATE******************************************\\
 	@Override
 	public List<StateMasterRes> getActiveStateDetails(StateMasterGetAllReq req) {
 		List<StateMasterRes> resList = new ArrayList<StateMasterRes>();
 		ModelMapper mapper = new ModelMapper();
 		try {
-			List<StateMaster> regionList = new ArrayList<StateMaster>();
+			List<StateMaster> list = new ArrayList<StateMaster>();
 
 			// Pagination
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
@@ -484,10 +484,10 @@ public class StateMasterServiceImpl implements StateMasterService {
 			TypedQuery<StateMaster> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
-			regionList = result.getResultList();
+			list = result.getResultList();
 
 			// Map
-			for (StateMaster data : regionList) {
+			for (StateMaster data : list) {
 				StateMasterRes res = new StateMasterRes();
 
 				res = mapper.map(data, StateMasterRes.class);

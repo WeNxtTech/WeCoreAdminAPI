@@ -81,9 +81,9 @@ public SuccessRes insertProduct(ProductMasterSaveReq req) {
 		Calendar cal = new GregorianCalendar();
 		cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
 		Date startDate = cal.getTime() ;
-		cal.setTime(req.getEffectiveDate());  cal.set(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, 0); cal.set(Calendar.MINUTE, 10);
-		Date oldEndDate = cal.getTime() ;
 		Date today = new Date();
+		cal.setTime(req.getEffectiveDate());  cal.add(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
+		Date oldEndDate = cal.getTime() ;
 		cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
 		Date effDate = cal.getTime();
 		Date endDate = sdformat.parse("12/12/2050");
@@ -210,9 +210,9 @@ public List<Error> validateProductDetails(ProductMasterSaveReq req) {
 		if (StringUtils.isBlank(req.getStatus())) {
 			errorList.add(new Error("05", "Status", "Please Enter Status"));
 		} else if (req.getStatus().length() > 1) {
-			errorList.add(new Error("05", "Status", "Insurance Company Status 1 Character Only"));
+			errorList.add(new Error("05", "Status", "Enter Status 1 Character Only"));
 		}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()))) {
-			errorList.add(new Error("05", "Status", "Insurance Company Status 1 Character Only"));
+			errorList.add(new Error("05", "Status", "Enter Status Y or N Only"));
 		}
 		if (StringUtils.isBlank(req.getCompanyId()) || req.getCompanyId() == null) {
 			errorList.add(new Error("06", "CompanyId", "Please Select Company Id  "));
@@ -286,7 +286,7 @@ public List<ProductMasterRes> getallProductDetails(ProductMasterGetAllReq req) {
 	List<ProductMasterRes> resList = new ArrayList<ProductMasterRes>();
 	ModelMapper mapper = new ModelMapper();
 	try {
-		List<ProductMaster> regionList = new ArrayList<ProductMaster>();
+		List<ProductMaster> list = new ArrayList<ProductMaster>();
 		//Pagination
 		int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
 		int offset = StringUtils.isBlank(req.getOffset()) ? 0 : Integer.valueOf(req.getOffset());
@@ -321,10 +321,10 @@ public List<ProductMasterRes> getallProductDetails(ProductMasterGetAllReq req) {
 		TypedQuery<ProductMaster> result = em.createQuery(query);
 		result.setFirstResult(limit * offset);
 		result.setMaxResults(offset);
-		regionList = result.getResultList();
+		list = result.getResultList();
 		
 		// Map
-		for (ProductMaster data : regionList) {
+		for (ProductMaster data : list) {
 			ProductMasterRes res = new ProductMasterRes();
 
 			res = mapper.map(data, ProductMasterRes.class);
@@ -465,7 +465,7 @@ public List<ProductMasterRes> getActiveProductDetails(ProductMasterGetAllReq req
 	List<ProductMasterRes> resList = new ArrayList<ProductMasterRes>();
 	ModelMapper mapper = new ModelMapper();
 	try {
-		List<ProductMaster> regionList = new ArrayList<ProductMaster>();
+		List<ProductMaster> list = new ArrayList<ProductMaster>();
 
 		//Pagination
 		int limit=StringUtils.isBlank(req.getLimit())?0:Integer.valueOf(req.getLimit());
@@ -502,10 +502,10 @@ public List<ProductMasterRes> getActiveProductDetails(ProductMasterGetAllReq req
 		TypedQuery<ProductMaster> result = em.createQuery(query);
 		result.setFirstResult(limit * offset);
 		result.setMaxResults(offset);
-		regionList = result.getResultList();
+		list = result.getResultList();
 
 		// Map
-		for (ProductMaster data : regionList) {
+		for (ProductMaster data : list) {
 			ProductMasterRes res = new ProductMasterRes();
 
 			res = mapper.map(data, ProductMasterRes.class);

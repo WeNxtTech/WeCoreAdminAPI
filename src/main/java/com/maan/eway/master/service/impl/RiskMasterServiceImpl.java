@@ -67,7 +67,7 @@ Gson json = new Gson();
 
 private Logger log=LogManager.getLogger(RiskMasterServiceImpl.class);
 
-//************************************************INSERT/UPDATE PRODUCT DETAILS******************************************************\\
+//************************************************INSERT/UPDATE RISK DETAILS******************************************************\\
 @Override
 public List<Error> validateRiskDetails(RiskMasterSaveReq req) {
 
@@ -104,9 +104,9 @@ public List<Error> validateRiskDetails(RiskMasterSaveReq req) {
 		if (StringUtils.isBlank(req.getStatus())) {
 			errorList.add(new Error("05", "Status", "Please Enter Status"));
 		} else if (req.getStatus().length() > 1) {
-			errorList.add(new Error("05", "Status", "Insurance Company Status 1 Character Only"));
+			errorList.add(new Error("05", "Status", "Enter Status 1 Character Only"));
 		}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()))) {
-			errorList.add(new Error("05", "Status", "Insurance Company Status 1 Character Only"));
+			errorList.add(new Error("05", "Status", "Enter Status Y or N Only"));
 		}
 		
 		
@@ -377,13 +377,13 @@ public RiskMasterRes getByRiskCode(RiskMasterGetReq req) {
 	return res;
 }
 
-//************************************************GET ACTIVE PRODUCT******************************************\\
+//************************************************GET ACTIVE RISK******************************************\\
 @Override
 public List<RiskMasterRes> getActiveRiskDetails(RiskMasterGetAllReq req) {
 	List<RiskMasterRes> resList = new ArrayList<RiskMasterRes>();
 	ModelMapper mapper = new ModelMapper();
 	try {
-		List<RiskMaster> regionList = new ArrayList<RiskMaster>();
+		List<RiskMaster> list = new ArrayList<RiskMaster>();
 
 		//Pagination
 		int limit=StringUtils.isBlank(req.getLimit())?0:Integer.valueOf(req.getLimit());
@@ -420,10 +420,10 @@ public List<RiskMasterRes> getActiveRiskDetails(RiskMasterGetAllReq req) {
 		TypedQuery<RiskMaster> result = em.createQuery(query);
 		result.setFirstResult(limit * offset);
 		result.setMaxResults(offset);
-		regionList = result.getResultList();
+		list = result.getResultList();
 
 		// Map
-		for (RiskMaster data : regionList) {
+		for (RiskMaster data : list) {
 			RiskMasterRes res = new RiskMasterRes();
 
 			res = mapper.map(data, RiskMasterRes.class);

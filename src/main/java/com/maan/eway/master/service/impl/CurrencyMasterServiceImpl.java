@@ -81,9 +81,9 @@ public SuccessRes insertCurrency(CurrencyMasterSaveReq req) {
 		Calendar cal = new GregorianCalendar();
 		cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
 		Date startDate = cal.getTime() ;
-		cal.setTime(req.getEffectiveDate());  cal.set(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, 0); cal.set(Calendar.MINUTE, 10);
-		Date oldEndDate = cal.getTime() ;
 		Date today = new Date();
+		cal.setTime(req.getEffectiveDate());  cal.add(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
+		Date oldEndDate = cal.getTime() ;
 		cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
 		Date effDate = cal.getTime();
 		Date endDate = sdformat.parse("12/12/2050");
@@ -208,9 +208,9 @@ public List<Error> validateCurrencyDetails(CurrencyMasterSaveReq req) {
 		if (StringUtils.isBlank(req.getStatus())) {
 			errorList.add(new Error("05", "Status", "Please Enter Status"));
 		} else if (req.getStatus().length() > 1) {
-			errorList.add(new Error("05", "Status", "Insurance Company Status 1 Character Only"));
+			errorList.add(new Error("05", "Status", "Enter Status in 1 Character Only"));
 		}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()))) {
-			errorList.add(new Error("05", "Status", "Insurance Company Status 1 Character Only"));
+			errorList.add(new Error("05", "Status", "Enter Status in Y or N Only"));
 		}
 		if (StringUtils.isBlank(req.getCountryId()) || req.getCountryId() == null) {
 			errorList.add(new Error("06", "CompanyId", "Please Select Company Id  "));
@@ -279,7 +279,7 @@ public List<CurrencyMasterRes> getallCurrencyDetails(CurrencyMasterGetAllReq req
 	List<CurrencyMasterRes> resList = new ArrayList<CurrencyMasterRes>();
 	ModelMapper mapper = new ModelMapper();
 	try {
-		List<CurrencyMaster> regionList = new ArrayList<CurrencyMaster>();
+		List<CurrencyMaster> list = new ArrayList<CurrencyMaster>();
 		//Pagination
 		int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
 		int offset = StringUtils.isBlank(req.getOffset()) ? 0 : Integer.valueOf(req.getOffset());
@@ -314,10 +314,10 @@ public List<CurrencyMasterRes> getallCurrencyDetails(CurrencyMasterGetAllReq req
 		TypedQuery<CurrencyMaster> result = em.createQuery(query);
 		result.setFirstResult(limit * offset);
 		result.setMaxResults(offset);
-		regionList = result.getResultList();
+		list = result.getResultList();
 		
 		// Map
-		for (CurrencyMaster data : regionList) {
+		for (CurrencyMaster data : list) {
 			CurrencyMasterRes res = new CurrencyMasterRes();
 
 			res = mapper.map(data, CurrencyMasterRes.class);
@@ -458,7 +458,7 @@ public List<CurrencyMasterRes> getActiveCurrencyDetails(CurrencyMasterGetAllReq 
 	List<CurrencyMasterRes> resList = new ArrayList<CurrencyMasterRes>();
 	ModelMapper mapper = new ModelMapper();
 	try {
-		List<CurrencyMaster> regionList = new ArrayList<CurrencyMaster>();
+		List<CurrencyMaster> list = new ArrayList<CurrencyMaster>();
 
 		//Pagination
 		int limit=StringUtils.isBlank(req.getLimit())?0:Integer.valueOf(req.getLimit());
@@ -495,10 +495,10 @@ public List<CurrencyMasterRes> getActiveCurrencyDetails(CurrencyMasterGetAllReq 
 		TypedQuery<CurrencyMaster> result = em.createQuery(query);
 		result.setFirstResult(limit * offset);
 		result.setMaxResults(offset);
-		regionList = result.getResultList();
+		list = result.getResultList();
 
 		// Map
-		for (CurrencyMaster data : regionList) {
+		for (CurrencyMaster data : list) {
 			CurrencyMasterRes res = new CurrencyMasterRes();
 
 			res = mapper.map(data, CurrencyMasterRes.class);

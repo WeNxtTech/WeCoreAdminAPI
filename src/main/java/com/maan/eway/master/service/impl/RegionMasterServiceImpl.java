@@ -78,9 +78,9 @@ public SuccessRes insertRegion(RegionMasterSaveReq req) {
 		Calendar cal = new GregorianCalendar();
 		cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
 		Date startDate = cal.getTime() ;
-		cal.setTime(req.getEffectiveDate());  cal.set(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, 0); cal.set(Calendar.MINUTE, 10);
-		Date oldEndDate = cal.getTime() ;
 		Date today = new Date();
+		cal.setTime(req.getEffectiveDate());  cal.add(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
+		Date oldEndDate = cal.getTime() ;
 		cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
 		Date effDate = cal.getTime();
 		Date endDate = sdformat.parse("12/12/2050");
@@ -185,7 +185,7 @@ public List<Error> validateRegionDetails(RegionMasterSaveReq req) {
 		}else if (StringUtils.isBlank(req.getShortCode())) {
 			Long RegionCount = repo.countByShortCodeOrderByEntryDateDesc(req.getRegionName());
 			if (RegionCount > 0 ) {
-				errorList.add(new Error("01", "ShortCode", "This RegionCode Alrady Exist "));
+				errorList.add(new Error("01", "ShortCode", "This Short Code Alrady Exist "));
 			}
 		}
 
@@ -207,9 +207,9 @@ public List<Error> validateRegionDetails(RegionMasterSaveReq req) {
 		if (StringUtils.isBlank(req.getStatus())) {
 			errorList.add(new Error("05", "Status", "Please Enter Status"));
 		} else if (req.getStatus().length() > 1) {
-			errorList.add(new Error("05", "Status", "Insurance Company Status 1 Character Only"));
+			errorList.add(new Error("05", "Status", "Enter Status 1 Character Only"));
 		}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()))) {
-			errorList.add(new Error("05", "Status", "Insurance Company Status 1 Character Only"));
+			errorList.add(new Error("05", "Status", "Enter Status Y or NOnly"));
 		}
 		if (StringUtils.isBlank(req.getCompanyId()) || req.getCompanyId() == null) {
 			errorList.add(new Error("06", "CompanyId", "Please Select Company Id  "));
@@ -229,7 +229,7 @@ public List<RegionMasterRes> getallRegionDetails(RegionMasterGetAllReq req) {
 	List<RegionMasterRes> resList = new ArrayList<RegionMasterRes>();
 	ModelMapper mapper = new ModelMapper();
 	try {
-		List<RegionMaster> regionList = new ArrayList<RegionMaster>();
+		List<RegionMaster> list = new ArrayList<RegionMaster>();
 		//Pagination
 		int limit = StringUtils.isBlank(req.getLimit())?0:Integer.valueOf(req.getLimit());
 		int offset = StringUtils.isBlank(req.getOffset())?100:Integer.valueOf(req.getOffset());
@@ -264,10 +264,10 @@ public List<RegionMasterRes> getallRegionDetails(RegionMasterGetAllReq req) {
 		TypedQuery<RegionMaster> result = em.createQuery(query);
 		result.setFirstResult(limit * offset);
 		result.setMaxResults(offset);
-		regionList = result.getResultList();
+		list = result.getResultList();
 		
 		// Map
-		for (RegionMaster data : regionList) {
+		for (RegionMaster data : list) {
 			RegionMasterRes res = new RegionMasterRes();
 
 			res = mapper.map(data, RegionMasterRes.class);
@@ -406,7 +406,7 @@ public List<RegionMasterRes> getActiveRegionDetails(RegionMasterGetAllReq req) {
 	List<RegionMasterRes> resList = new ArrayList<RegionMasterRes>();
 	ModelMapper mapper = new ModelMapper();
 	try {
-		List<RegionMaster> regionList = new ArrayList<RegionMaster>();
+		List<RegionMaster> list = new ArrayList<RegionMaster>();
 		
 		//Pagination
 		int limit=StringUtils.isBlank(req.getLimit())?0:Integer.valueOf(req.getLimit());
@@ -443,10 +443,10 @@ public List<RegionMasterRes> getActiveRegionDetails(RegionMasterGetAllReq req) {
 		TypedQuery<RegionMaster> result = em.createQuery(query);
 		result.setFirstResult(limit * offset);
 		result.setMaxResults(offset);
-		regionList = result.getResultList();
+		list = result.getResultList();
 
 		// Map
-		for (RegionMaster data : regionList) {
+		for (RegionMaster data : list) {
 			RegionMasterRes res = new RegionMasterRes();
 
 			res = mapper.map(data, RegionMasterRes.class);

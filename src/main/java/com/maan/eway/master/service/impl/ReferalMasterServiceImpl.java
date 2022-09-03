@@ -82,9 +82,9 @@ public SuccessRes insertReferal(ReferalMasterSaveReq req) {
 		Calendar cal = new GregorianCalendar();
 		cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
 		Date startDate = cal.getTime() ;
-		cal.setTime(req.getEffectiveDate());  cal.set(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, 0); cal.set(Calendar.MINUTE, 10);
-		Date oldEndDate = cal.getTime() ;
 		Date today = new Date();
+		cal.setTime(req.getEffectiveDate());  cal.add(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
+		Date oldEndDate = cal.getTime() ;
 		cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
 		Date effDate = cal.getTime();
 		Date endDate = sdformat.parse("12/12/2050");
@@ -211,9 +211,9 @@ public List<Error> validateReferalDetails(ReferalMasterSaveReq req) {
 		if (StringUtils.isBlank(req.getStatus())) {
 			errorList.add(new Error("05", "Status", "Please Enter Status"));
 		} else if (req.getStatus().length() > 1) {
-			errorList.add(new Error("05", "Status", "Insurance Company Status 1 Character Only"));
+			errorList.add(new Error("05", "Status", "Enter Status in 1 Character Only"));
 		}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()))) {
-			errorList.add(new Error("05", "Status", "Insurance Company Status 1 Character Only"));
+			errorList.add(new Error("05", "Status", "Enter Status Y or N Only"));
 		}
 		if (StringUtils.isBlank(req.getCompanyId()) || req.getCompanyId() == null) {
 			errorList.add(new Error("06", "CompanyId", "Please Select Company Id  "));
@@ -278,7 +278,7 @@ public List<ReferalMasterRes> getallReferalDetails(ReferalMasterGetAllReq req) {
 	List<ReferalMasterRes> resList = new ArrayList<ReferalMasterRes>();
 	ModelMapper mapper = new ModelMapper();
 	try {
-		List<ReferalMaster> regionList = new ArrayList<ReferalMaster>();
+		List<ReferalMaster> list = new ArrayList<ReferalMaster>();
 		//Pagination
 		int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
 		int offset = StringUtils.isBlank(req.getOffset()) ? 0 : Integer.valueOf(req.getOffset());
@@ -313,10 +313,10 @@ public List<ReferalMasterRes> getallReferalDetails(ReferalMasterGetAllReq req) {
 		TypedQuery<ReferalMaster> result = em.createQuery(query);
 		result.setFirstResult(limit * offset);
 		result.setMaxResults(offset);
-		regionList = result.getResultList();
+		list = result.getResultList();
 		
 		// Map
-		for (ReferalMaster data : regionList) {
+		for (ReferalMaster data : list) {
 			ReferalMasterRes res = new ReferalMasterRes();
 
 			res = mapper.map(data, ReferalMasterRes.class);
@@ -457,7 +457,7 @@ public List<ReferalMasterRes> getActiveReferalDetails(ReferalMasterGetAllReq req
 	List<ReferalMasterRes> resList = new ArrayList<ReferalMasterRes>();
 	ModelMapper mapper = new ModelMapper();
 	try {
-		List<ReferalMaster> regionList = new ArrayList<ReferalMaster>();
+		List<ReferalMaster> list = new ArrayList<ReferalMaster>();
 
 		//Pagination
 		int limit=StringUtils.isBlank(req.getLimit())?0:Integer.valueOf(req.getLimit());
@@ -494,10 +494,10 @@ public List<ReferalMasterRes> getActiveReferalDetails(ReferalMasterGetAllReq req
 		TypedQuery<ReferalMaster> result = em.createQuery(query);
 		result.setFirstResult(limit * offset);
 		result.setMaxResults(offset);
-		regionList = result.getResultList();
+		list = result.getResultList();
 
 		// Map
-		for (ReferalMaster data : regionList) {
+		for (ReferalMaster data : list) {
 			ReferalMasterRes res = new ReferalMasterRes();
 
 			res = mapper.map(data, ReferalMasterRes.class);

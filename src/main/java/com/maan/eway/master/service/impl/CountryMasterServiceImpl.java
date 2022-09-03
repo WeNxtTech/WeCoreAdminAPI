@@ -68,7 +68,7 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 
 	private Logger log = LogManager.getLogger(CountryMasterServiceImpl.class);
 
-//************************************************INSERT/UPDATE REGION DETAILS******************************************************\\
+//************************************************INSERT/UPDATE COUNTRY DETAILS******************************************************\\
 	@Transactional
 	@Override
 	public SuccessRes insertCountry(CountryMasterSaveReq req) {
@@ -82,9 +82,9 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(req.getEffectiveDate());cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 59);
 			Date startDate = cal.getTime();
-			cal.setTime(req.getEffectiveDate());cal.set(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, 0); cal.set(Calendar.MINUTE, 10);
-			Date oldEndDate = cal.getTime();
 			Date today = new Date();
+			cal.setTime(req.getEffectiveDate());  cal.add(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
+			Date oldEndDate = cal.getTime();
 			cal.setTime(req.getEffectiveDate());
 			cal.set(Calendar.HOUR_OF_DAY, today.getHours());cal.set(Calendar.MINUTE, today.getMinutes());
 			Date effDate = cal.getTime();
@@ -210,9 +210,9 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 			if (StringUtils.isBlank(req.getStatus())) {
 				errorList.add(new Error("05", "Status", "Please Enter Status"));
 			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("05", "Status", "Insurance Company Status 1 Character Only"));
+				errorList.add(new Error("05", "Status", " Status 1 Character Only"));
 			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()))) {
-				errorList.add(new Error("05", "Status", "Insurance Company Status 1 Character Only"));
+				errorList.add(new Error("05", "Status", " Status Y or N"));
 			}
 
 		} catch (Exception e) {
@@ -267,7 +267,7 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 		List<CountryMasterRes> resList = new ArrayList<CountryMasterRes>();
 		ModelMapper mapper = new ModelMapper();
 		try {
-			List<CountryMaster> regionList = new ArrayList<CountryMaster>();
+			List<CountryMaster> list = new ArrayList<CountryMaster>();
 			// Pagination
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
 			int offset = StringUtils.isBlank(req.getOffset()) ? 0 : Integer.valueOf(req.getOffset());
@@ -302,10 +302,10 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 			TypedQuery<CountryMaster> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
-			regionList = result.getResultList();
+			list = result.getResultList();
 
 			// Map
-			for (CountryMaster data : regionList) {
+			for (CountryMaster data : list) {
 				CountryMasterRes res = new CountryMasterRes();
 
 				res = mapper.map(data, CountryMasterRes.class);
@@ -436,13 +436,13 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 		return resList;
 	}
 
-//************************************************GET ACTIVE REGION******************************************\\
+//************************************************GET ACTIVE COUNTRY******************************************\\
 	@Override
 	public List<CountryMasterRes> getActiveCountryDetails(CountryMasterGetAllReq req) {
 		List<CountryMasterRes> resList = new ArrayList<CountryMasterRes>();
 		ModelMapper mapper = new ModelMapper();
 		try {
-			List<CountryMaster> regionList = new ArrayList<CountryMaster>();
+			List<CountryMaster> list = new ArrayList<CountryMaster>();
 
 			// Pagination
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
@@ -479,10 +479,10 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 			TypedQuery<CountryMaster> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
-			regionList = result.getResultList();
+			list = result.getResultList();
 
 			// Map
-			for (CountryMaster data : regionList) {
+			for (CountryMaster data : list) {
 				CountryMasterRes res = new CountryMasterRes();
 
 				res = mapper.map(data, CountryMasterRes.class);

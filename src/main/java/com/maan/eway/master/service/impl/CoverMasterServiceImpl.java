@@ -97,9 +97,9 @@ try {
 	if (StringUtils.isBlank(req.getStatus())) {
 		errorList.add(new Error("05", "Status", "Please Enter Status"));
 	} else if (req.getStatus().length() > 1) {
-		errorList.add(new Error("05", "Status", "Insurance Company Status 1 Character Only"));
+		errorList.add(new Error("05", "Status", "Enter Status in 1 Character Only"));
 	}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()))) {
-		errorList.add(new Error("05", "Status", "Insurance Company Status 1 Character Only"));
+		errorList.add(new Error("05", "Status", "Enter Status Y or N Only"));
 	}
 	if (StringUtils.isBlank(req.getCompanyId().toString()) || req.getCompanyId() == null) {
 		errorList.add(new Error("06", "CompanyId", "Please Enter Company Id "));
@@ -128,9 +128,9 @@ try {
 	Calendar cal = new GregorianCalendar();
 	cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
 	Date startDate = cal.getTime() ;
-	cal.setTime(req.getEffectiveDate());  cal.set(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, 0); cal.set(Calendar.MINUTE, 10);
-	Date oldEndDate = cal.getTime() ;
 	Date today = new Date();
+	cal.setTime(req.getEffectiveDate());  cal.add(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
+	Date oldEndDate = cal.getTime() ;
 	cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
 	Date effDate = cal.getTime();
 	Date endDate = sdformat.parse("12/12/2050");
@@ -381,7 +381,7 @@ public List<CoverMasterRes> getActiveCoverDetails(CoverMasterGetAllReq req) {
 List<CoverMasterRes> resList = new ArrayList<CoverMasterRes>();
 ModelMapper mapper = new ModelMapper();
 try {
-	List<CoverMaster> regionList = new ArrayList<CoverMaster>();
+	List<CoverMaster> list = new ArrayList<CoverMaster>();
 
 	//Pagination
 	int limit=StringUtils.isBlank(req.getLimit())?0:Integer.valueOf(req.getLimit());
@@ -418,10 +418,10 @@ try {
 	TypedQuery<CoverMaster> result = em.createQuery(query);
 	result.setFirstResult(limit * offset);
 	result.setMaxResults(offset);
-	regionList = result.getResultList();
+	list = result.getResultList();
 
 	// Map
-	for (CoverMaster data : regionList) {
+	for (CoverMaster data : list) {
 		CoverMasterRes res = new CoverMasterRes();
 
 		res = mapper.map(data, CoverMasterRes.class);

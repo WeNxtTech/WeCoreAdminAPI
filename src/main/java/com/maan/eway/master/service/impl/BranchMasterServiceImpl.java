@@ -64,7 +64,7 @@ Gson json = new Gson();
 
 private Logger log=LogManager.getLogger(BranchMasterServiceImpl.class);
 
-//************************************************INSERT/UPDATE Branch DETAILS******************************************************\\
+//************************************************INSERT/UPDATE BRANCH DETAILS******************************************************\\
 @Transactional
 @Override
 public SuccessRes insertBranch(BranchMasterSaveReq req) {
@@ -77,9 +77,9 @@ public SuccessRes insertBranch(BranchMasterSaveReq req) {
 		Calendar cal = new GregorianCalendar();
 		cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
 		Date startDate = cal.getTime() ;
-		cal.setTime(req.getEffectiveDate());  cal.set(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, 0); cal.set(Calendar.MINUTE, 10);
-		Date oldEndDate = cal.getTime() ;
 		Date today = new Date();
+		cal.setTime(req.getEffectiveDate());  cal.add(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
+		Date oldEndDate = cal.getTime() ;
 		cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
 		Date effDate = cal.getTime();
 		Date endDate = sdformat.parse("12/12/2050");
@@ -205,9 +205,9 @@ public List<Error> validateBranchDetails(BranchMasterSaveReq req) {
 		if (StringUtils.isBlank(req.getStatus())) {
 			errorList.add(new Error("05", "Status", "Please Enter Status"));
 		} else if (req.getStatus().length() > 1) {
-			errorList.add(new Error("05", "Status", "Insurance Company Status 1 Character Only"));
+			errorList.add(new Error("05", "Status", "Enter Status in 1 Character Only"));
 		}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()))) {
-			errorList.add(new Error("05", "Status", "Insurance Company Status 1 Character Only"));
+			errorList.add(new Error("05", "Status", "Enter Status Y or N Only"));
 		}
 		if (StringUtils.isBlank(req.getCompanyId()) || req.getCompanyId() == null) {
 			errorList.add(new Error("06", "CompanyId", "Please Select Company Id  "));

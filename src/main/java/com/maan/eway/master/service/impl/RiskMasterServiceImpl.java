@@ -41,10 +41,16 @@ import com.maan.eway.master.req.RiskMasterSaveReq;
 import com.maan.eway.master.res.RiskMasterRes;
 import com.maan.eway.master.service.RiskMasterService;
 import com.maan.eway.bean.BranchMaster;
+import com.maan.eway.bean.CustomerDetails;
+import com.maan.eway.bean.RiskDetails;
 import com.maan.eway.bean.RiskMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.RiskMasterRepository;
+import com.maan.eway.req.CustomerDetailsGetAllReq;
+import com.maan.eway.req.RiskDetailsGetAllReq;
+import com.maan.eway.res.CustomerDetailsRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.RiskDetailsRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.impl.BasicValidationService;
 /**
@@ -440,5 +446,61 @@ public List<RiskMasterRes> getActiveRiskDetails(RiskMasterGetAllReq req) {
 	}
 	return resList;
 }
+//************************************************GET ALL CUSTOMER DETAILS***********************************\\
+@Override
+public List<RiskDetailsRes> getallRiskWithCount(RiskDetailsGetAllReq req) {
+	List<RiskDetailsRes> resList = new ArrayList<RiskDetailsRes>();
+	 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+	try {
+		List<RiskDetails> list = new ArrayList<RiskDetails>();
+		//Pagination
+		int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+		int offset = StringUtils.isBlank(req.getOffset()) ? 0 : Integer.valueOf(req.getOffset());
+
+
+		// Find Latest Record
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<RiskDetails> query = cb.createQuery(RiskDetails.class);
+
+		// Find All
+		Root<RiskDetails> b = query.from(RiskDetails.class);
+
+		// Select
+		query.select(b);
+
+		// Effective Date Max Filter
+		Subquery<RiskDetails> effectiveDate = query.subquery(RiskDetails.class);
+		Root<RiskDetails> ocpm1 = effectiveDate.from(RiskDetails.class);
+		//effectiveDate.select(cb.count(b));
+		Predicate a1 = cb.equal(ocpm1.get("riskId"), b.get("riskId"));
+	
+		effectiveDate.where(a1);
+
+		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+	
+		query.where(n1);
+
+		// Get Result
+		TypedQuery<RiskDetails> result = em.createQuery(query);
+		result.setFirstResult(limit * offset);
+		result.setMaxResults(offset);
+		list = result.getResultList();
+		//data = list.get(0);
+		// Map
+		for (RiskDetails data : list) {
+			RiskDetailsRes res = new RiskDetailsRes();
+			
+			res=dozerMapper.map(data, RiskDetailsRes.class );
+	
+			resList.add(res);
+		}
+
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info(e.getMessage());
+		return null;
+
+	}
+	return resList;}
 
 }

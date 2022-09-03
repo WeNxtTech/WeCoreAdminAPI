@@ -14,10 +14,13 @@ import com.maan.eway.master.req.RiskMasterGetReq;
 import com.maan.eway.master.req.RiskMasterSaveReq;
 import com.maan.eway.master.res.RiskMasterRes;
 import com.maan.eway.master.service.RiskMasterService;
+import com.maan.eway.req.CustomerDetailsGetAllReq;
 import com.maan.eway.bean.RiskMaster;
 import com.maan.eway.res.CommonRes;
+import com.maan.eway.res.CustomerDetailsRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
+import com.maan.eway.service.CustomerDetailsService;
 import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.Api;
@@ -47,6 +50,10 @@ public class RiskMasterController {
 
 	@Autowired
 	private  RiskMasterService riskService;
+	
+	
+	@Autowired
+	private  CustomerDetailsService customerService;
 	
 	@Autowired
 	private  PrintReqService reqPrinter;
@@ -153,5 +160,27 @@ public class RiskMasterController {
 		}
 	}
 
-
+		//  Get All Customer Details With Reference Count
+		
+		@PostMapping("/getallcustomerdetails")
+		@ApiOperation("This method is getall Customer Details")
+		public ResponseEntity<CommonRes> getallCustomerDetails(@RequestBody CustomerDetailsGetAllReq req)
+		{
+			CommonRes data = new CommonRes();
+			reqPrinter.reqPrint(req);
+			
+			List<CustomerDetailsRes> res = customerService.getallCustomerDetails(req);
+			data.setCommonResponse(res);
+			data.setErrorMessage(Collections.emptyList());
+			data.setIsError(false);
+			data.setMessage("Success");
+			
+			if(res!= null) {
+				return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
+			}
+			else {
+				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+			}
+		}
+		
 }

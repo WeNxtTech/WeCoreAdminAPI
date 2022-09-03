@@ -173,9 +173,9 @@ public SuccessRes insertBank(BankMasterSaveReq req) {
 		Calendar cal = new GregorianCalendar();
 		cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
 		Date startDate = cal.getTime() ;
-		cal.setTime(req.getEffectiveDate());  cal.set(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, 0); cal.set(Calendar.MINUTE, 10);
-		Date oldEndDate = cal.getTime() ;
 		Date today = new Date();
+		cal.setTime(req.getEffectiveDate());  cal.add(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
+		Date oldEndDate = cal.getTime() ;
 		cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
 		Date effDate = cal.getTime();
 	

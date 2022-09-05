@@ -43,7 +43,9 @@ import com.maan.eway.master.req.RiskListSaveReq;
 import com.maan.eway.master.res.ReferalMasterRes;
 import com.maan.eway.master.service.ReferalMasterService;
 import com.maan.eway.auth.token.passwordEnc;
+import com.maan.eway.bean.BankMaster;
 import com.maan.eway.bean.BranchMaster;
+import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ReferalMaster;
 import com.maan.eway.bean.RiskDetails;
 import com.maan.eway.error.Error;
@@ -132,22 +134,20 @@ private Logger log=LogManager.getLogger(RiskDetailsServiceImpl.class);
 		SuccessRes  res = new SuccessRes();
 		try {
 			
-			String reqRefNo = "" ;
-			Date  entryDate = null ;
-			String createdBy = "" ;
-			String branch = "" ;
-			boolean update = false ;
+			String reqRefNo = "" , createdBy = "" , branch = "";
+			Date  entryDate = null ; boolean update = false ;
+			
 			List<RiskDetails> findRisks = new ArrayList<RiskDetails>();
 			if (StringUtils.isBlank(req.getRequestReferenceNo())  ) {
 				// Save
 				Long idCount =  repository.countByCustomerId(Integer.valueOf(req.getCustomerId()));
-				reqRefNo  = "Ref-" + req.getCustomerId() + "/" +String.valueOf(idCount+1) ; 
+				reqRefNo  = "Ref-" + req.getCustomerId() + "/" +  String.valueOf(idCount+1) ; 
 				res.setResponse("Saved Successfully");     
 				
 			} else {
 			   // Update
 				reqRefNo  = req.getRequestReferenceNo() ;
-				findRisks = repository.findByRequestReferanceNoOrderByRiskIdAsc(reqRefNo); 
+				findRisks = repository.findByRequestReferenceNoOrderByRiskIdAsc(reqRefNo); 
 				update = true ;
 				res.setResponse("Updated Successfully");
 			}
@@ -172,7 +172,7 @@ private Logger log=LogManager.getLogger(RiskDetailsServiceImpl.class);
 				save.setBranchCode(branch);
 				save.setCreatedBy(createdBy);
 				save.setEntryDate(entryDate);
-				save.setRequestReferanceNo(reqRefNo);
+				save.setRequestReferenceNo(reqRefNo);
 				
 				save.setCompanyId(req.getInsuranceId());
 				save.setCustomerId(Integer.valueOf(req.getCustomerId()));
@@ -189,9 +189,6 @@ private Logger log=LogManager.getLogger(RiskDetailsServiceImpl.class);
 				repository.saveAndFlush(save);
 				log.info("Saved Details  is --->" + json.toJson(save) );
 			}
-			
-			
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
@@ -215,5 +212,50 @@ private Logger log=LogManager.getLogger(RiskDetailsServiceImpl.class);
 			errors.add(new Error("01","Common Error", e.getMessage()));
 		}
 		return errors;
+	}
+	
+	
+	public Long getRiskDetailsCount(String customerId) {
+		Long  riskCount = 0L ; 
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Long> query = cb.createQuery(Long.class);
+
+			// Find All
+			Root<RiskDetails> r = query.from(RiskDetails.class);
+
+			// Select RefNo SubQuery for Max Filter 
+		/*	Subquery<Long> refNo = query.subquery(Long.class);
+			Root<RiskDetails> i = refNo.from(RiskDetails.class);
+			refNo.select( r.get("requestReferance") );
+			Predicate i1 = cb.equal(ins.get("companyId"), i.get("companyId"));
+			Predicate i2 = cb.lessThanOrEqualTo(i.get("effectiveDateStart") , today);
+			insEff.where(i1,i2); */
+			
+			// Select
+			query.select( cb.count(r) );
+
+			// Order By
+		//	List<Order> orderList = new ArrayList<Order>();
+		//	orderList.add(cb.asc(b.get("branchName")));
+			
+			// Where
+		/*	Predicate n1 = cb.equal(r.get("customerId"),customerId );
+			Predicate n2 = cb.countDistinct();
+			Predicate n3 =  cb.equal(b.get("bankCode"), req.getBankCode() );
+
+			query.where(n1, n2, n3);//.orderBy(orderList);
+
+			// Get Result
+			TypedQuery<BankMaster> result = em.createQuery(query);
+			list = result.getResultList(); */
+			
+		} catch (Exception e ) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null ;
+		}
+		return riskCount  ;
+		
 	}
 }

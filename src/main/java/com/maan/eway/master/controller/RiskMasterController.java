@@ -20,6 +20,7 @@ import com.maan.eway.bean.RiskMaster;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.CustomerDetailsRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.RiskDetailsGetAllRes;
 import com.maan.eway.res.RiskDetailsRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.CustomerDetailsService;
@@ -167,7 +168,7 @@ public class RiskMasterController {
 			CommonRes data = new CommonRes();
 			reqPrinter.reqPrint(req);
 			
-			List<RiskDetailsRes> res = riskService.getallRiskWithCount(req);
+			RiskDetailsGetAllRes res = riskService.getallRiskWithCount(req);
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);

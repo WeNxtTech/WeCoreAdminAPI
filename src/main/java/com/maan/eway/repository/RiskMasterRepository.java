@@ -12,20 +12,11 @@
 
 package com.maan.eway.repository;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-
-import com.maan.eway.bean.RiskDetails;
-import com.maan.eway.bean.RiskMaster;
-
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import com.maan.eway.bean.RiskMasterId;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.maan.eway.bean.RiskMaster;
+import com.maan.eway.bean.RiskMasterId;
 /**
  * <h2>RiskMasterRepository</h2>
  *

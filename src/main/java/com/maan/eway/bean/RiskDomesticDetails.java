@@ -44,9 +44,9 @@ import javax.persistence.*;
 @DynamicInsert
 @DynamicUpdate
 @Builder
-@IdClass(RiskDetailsId.class)
-@Table(name="risk_details")
-public class RiskDetails implements Serializable {
+@IdClass(RiskDomesticDetailsId.class)
+@Table(name="risk_domestic_details")
+public class RiskDomesticDetails implements Serializable {
  
 private static final long serialVersionUID = 1L;
  

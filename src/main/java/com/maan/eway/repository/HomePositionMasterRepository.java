@@ -12,15 +12,12 @@
 
 package com.maan.eway.repository;
 
-import java.util.List;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-import com.maan.eway.bean.RiskDetails;
-import com.maan.eway.bean.RiskDetailsId;
+import com.maan.eway.bean.HomePositionMaster;
+import com.maan.eway.bean.HomePositionMasterId;
+import com.maan.eway.bean.RiskDomesticDetails;
 /**
  * <h2>ReferalMasterRepository</h2>
  *
@@ -31,14 +28,7 @@ import com.maan.eway.bean.RiskDetailsId;
  
  
  
-public interface RiskDetailsRepository  extends JpaRepository<RiskDetails,RiskDetailsId > , JpaSpecificationExecutor<RiskDetails> {
-
-	Long countByCustomerId(Integer valueOf);
-
-	List<RiskDetails> findByRequestReferenceNoOrderByRiskIdAsc(String reqRefNo);
-
-	Page<RiskDetails> findByCompanyIdAndBranchCodeOrderByUpdatedDateDesc(Pageable paging, String insuranceId,
-			String branchCode);
+public interface HomePositionMasterRepository  extends JpaRepository<HomePositionMaster,HomePositionMasterId > , JpaSpecificationExecutor<HomePositionMaster> {
 
 
 }

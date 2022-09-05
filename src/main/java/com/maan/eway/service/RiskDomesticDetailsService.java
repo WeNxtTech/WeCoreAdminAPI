@@ -22,7 +22,7 @@ import java.util.List;
 /**
 * <h2>BankMasterServiceimpl</h2>
 */
-public interface RiskDetailsService  {
+public interface RiskDomesticDetailsService  {
 
 	List<Error> validateRiskDetails(RiskDetailsSaveReq req);
 

@@ -5,12 +5,8 @@
 */
 package com.maan.eway.service.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,7 +15,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
@@ -27,53 +22,37 @@ import javax.persistence.criteria.Subquery;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dozer.DozerBeanMapper;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-
-import com.maan.eway.master.req.ReferalMasterGetAllReq;
-import com.maan.eway.master.req.ReferalMasterGetReq;
-import com.maan.eway.master.req.ReferalMasterSaveReq;
+import com.maan.eway.bean.RiskDomesticDetails;
+import com.maan.eway.error.Error;
 import com.maan.eway.master.req.RiskDetailsSaveReq;
 import com.maan.eway.master.req.RiskListSaveReq;
-import com.maan.eway.master.res.ReferalMasterRes;
-import com.maan.eway.master.service.ReferalMasterService;
-import com.maan.eway.auth.token.passwordEnc;
-import com.maan.eway.bean.BankMaster;
-import com.maan.eway.bean.BranchMaster;
-import com.maan.eway.bean.InsuranceCompanyMaster;
-import com.maan.eway.bean.ReferalMaster;
-import com.maan.eway.bean.RiskDetails;
-import com.maan.eway.error.Error;
-import com.maan.eway.repository.ReferalMasterRepository;
-import com.maan.eway.repository.RiskDetailsRepository;
-import com.maan.eway.res.DropDownRes;
+import com.maan.eway.repository.RiskDomesticDetailsRepository;
 import com.maan.eway.res.SuccessRes;
-import com.maan.eway.service.RiskDetailsService;
-import com.maan.eway.service.impl.BasicValidationService;
+import com.maan.eway.service.RiskDomesticDetailsService;
 /**
 * <h2>ReferalMasterServiceimpl</h2>
 */
 @Service
 @Transactional
-public class RiskDetailsServiceImpl implements RiskDetailsService {
+public class RiskDomesticDetailsServiceImpl implements RiskDomesticDetailsService {
 
 @PersistenceContext
 private EntityManager em;
 
 @Autowired
-private RiskDetailsRepository repository;
+private RiskDomesticDetailsRepository repository;
 
 @Autowired
 private BasicValidationService basicvalidateService;
 
 Gson json = new Gson();
 
-private Logger log=LogManager.getLogger(RiskDetailsServiceImpl.class);
+private Logger log=LogManager.getLogger(RiskDomesticDetailsServiceImpl.class);
 
 	@Override
 	public List<Error> validateRiskDetails(RiskDetailsSaveReq req) {
@@ -137,12 +116,13 @@ private Logger log=LogManager.getLogger(RiskDetailsServiceImpl.class);
 			String reqRefNo = "" , createdBy = "" , branch = "";
 			Date  entryDate = null ; boolean update = false ;
 			
-			List<RiskDetails> findRisks = new ArrayList<RiskDetails>();
+			List<RiskDomesticDetails> findRisks = new ArrayList<RiskDomesticDetails>();
 			if (StringUtils.isBlank(req.getRequestReferenceNo())  ) {
 				// Save
-				Long idCount =  repository.countByCustomerId(Integer.valueOf(req.getCustomerId()));
+				Long idCount =  getRiskDetailsCount(req.getCustomerId()); // repository.countByCustomerId(Integer.valueOf(req.getCustomerId()));
 				reqRefNo  = "Ref-" + req.getCustomerId() + "/" +  String.valueOf(idCount+1) ; 
-				res.setResponse("Saved Successfully");     
+				res.setResponse("Saved Successfully"); 
+				res.setSuccessId(reqRefNo);
 				
 			} else {
 			   // Update
@@ -150,18 +130,18 @@ private Logger log=LogManager.getLogger(RiskDetailsServiceImpl.class);
 				findRisks = repository.findByRequestReferenceNoOrderByRiskIdAsc(reqRefNo); 
 				update = true ;
 				res.setResponse("Updated Successfully");
+				res.setSuccessId(reqRefNo);
 			}
 			
-			
 			for (RiskListSaveReq data :   req.getRiskList() ) {
-				RiskDetails save = new RiskDetails(); 
+				RiskDomesticDetails save = new RiskDomesticDetails(); 
 				
 				entryDate = new Date();
 				createdBy = req.getCreatedBy() ;
 				branch    = req.getBranchCode() ;
 				
 				if (update == true  ) {
-					List<RiskDetails> filterRisk = findRisks.stream().filter(o -> o.getRiskId().equals(Integer.valueOf(data.getRiskId())) ).collect(Collectors.toList());
+					List<RiskDomesticDetails> filterRisk = findRisks.stream().filter(o -> o.getRiskId().equals(Integer.valueOf(data.getRiskId())) ).collect(Collectors.toList());
 					if (filterRisk.size()>0  ) {
 						entryDate = filterRisk.get(0).getEntryDate(); 
 						createdBy = filterRisk.get(0).getCreatedBy();
@@ -222,33 +202,25 @@ private Logger log=LogManager.getLogger(RiskDetailsServiceImpl.class);
 			CriteriaQuery<Long> query = cb.createQuery(Long.class);
 
 			// Find All
-			Root<RiskDetails> r = query.from(RiskDetails.class);
+			Root<RiskDomesticDetails> r = query.from(RiskDomesticDetails.class);
 
-			// Select RefNo SubQuery for Max Filter 
-		/*	Subquery<Long> refNo = query.subquery(Long.class);
-			Root<RiskDetails> i = refNo.from(RiskDetails.class);
-			refNo.select( r.get("requestReferance") );
-			Predicate i1 = cb.equal(ins.get("companyId"), i.get("companyId"));
-			Predicate i2 = cb.lessThanOrEqualTo(i.get("effectiveDateStart") , today);
-			insEff.where(i1,i2); */
-			
 			// Select
-			query.select( cb.count(r) );
+			query.select( cb.countDistinct( r.get("requestReferenceNo")  ) );
 
 			// Order By
 		//	List<Order> orderList = new ArrayList<Order>();
 		//	orderList.add(cb.asc(b.get("branchName")));
 			
 			// Where
-		/*	Predicate n1 = cb.equal(r.get("customerId"),customerId );
-			Predicate n2 = cb.countDistinct();
-			Predicate n3 =  cb.equal(b.get("bankCode"), req.getBankCode() );
-
-			query.where(n1, n2, n3);//.orderBy(orderList);
+			Predicate n1 = cb.equal(r.get("customerId"),customerId );
+			query.where(n1);//.orderBy(orderList);
 
 			// Get Result
-			TypedQuery<BankMaster> result = em.createQuery(query);
-			list = result.getResultList(); */
+			TypedQuery<Long> result = em.createQuery(query);
+			List<Long> list = result.getResultList();
+			if (list.size()>0  ) {
+				riskCount = list.get(0);
+			}
 			
 		} catch (Exception e ) {
 			e.printStackTrace();

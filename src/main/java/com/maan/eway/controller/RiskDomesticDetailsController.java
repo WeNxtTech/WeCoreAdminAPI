@@ -8,35 +8,26 @@ package com.maan.eway.controller;
 
 
 
-import com.maan.eway.error.Error;
-import com.maan.eway.master.req.RiskDetailsSaveReq;
-import com.maan.eway.master.req.RiskMasterGetAllReq;
-import com.maan.eway.master.req.RiskMasterGetReq;
-import com.maan.eway.master.req.RiskMasterSaveReq;
-import com.maan.eway.master.res.RiskMasterRes;
-import com.maan.eway.master.service.RiskMasterService;
-import com.maan.eway.bean.RiskMaster;
-import com.maan.eway.res.CommonRes;
-import com.maan.eway.res.DropDownRes;
-import com.maan.eway.res.SuccessRes;
-import com.maan.eway.service.PrintReqService;
-import com.maan.eway.service.RiskDetailsService;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import java.util.Collections;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
-import java.util.List;
+import com.maan.eway.error.Error;
+import com.maan.eway.master.req.RiskDetailsSaveReq;
+import com.maan.eway.res.CommonRes;
+import com.maan.eway.res.SuccessRes;
+import com.maan.eway.service.PrintReqService;
+import com.maan.eway.service.RiskDomesticDetailsService;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 
 /**
@@ -45,10 +36,10 @@ import java.util.List;
 @RestController
 @Api(tags = "Risk Details ", description = "API's")
 @RequestMapping("/api")
-public class RiskDetailsController {
+public class RiskDomesticDetailsController {
 
 	@Autowired
-	private  RiskDetailsService enitityService;
+	private  RiskDomesticDetailsService	 enitityService;
 	
 	@Autowired
 	private  PrintReqService reqPrinter;

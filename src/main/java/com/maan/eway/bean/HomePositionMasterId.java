@@ -25,17 +25,22 @@ import java.util.Date;
 @AllArgsConstructor
 @ToString
 @Builder
-public class RiskDetailsId implements Serializable {
+public class HomePositionMasterId implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Integer     customerId ;
-	
-	private String     requestReferenceNo ;
-	
-	private Integer     riskId ;
-	
-	private Integer     productId ;
+    private String requestReferenceNo;
+    
+    private Integer quoteNo;
+
+	private Integer customerId;
+
+	private Integer productId;
+
+	private String loginId;
+
+	private String companyId;
+
     
      
 }

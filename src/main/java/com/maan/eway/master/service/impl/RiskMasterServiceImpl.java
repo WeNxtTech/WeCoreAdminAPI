@@ -7,7 +7,6 @@ package com.maan.eway.master.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -16,7 +15,6 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -39,23 +37,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-
+import com.maan.eway.bean.RiskDomesticDetails;
+import com.maan.eway.bean.RiskMaster;
+import com.maan.eway.error.Error;
 import com.maan.eway.master.req.RiskMasterGetAllReq;
 import com.maan.eway.master.req.RiskMasterGetReq;
 import com.maan.eway.master.req.RiskMasterSaveReq;
 import com.maan.eway.master.res.RiskMasterRes;
 import com.maan.eway.master.service.RiskMasterService;
-import com.maan.eway.bean.BranchMaster;
-import com.maan.eway.bean.CustomerDetails;
-import com.maan.eway.bean.RiskDetails;
-import com.maan.eway.bean.RiskMaster;
-import com.maan.eway.error.Error;
-import com.maan.eway.repository.RiskDetailsRepository;
+import com.maan.eway.repository.RiskDomesticDetailsRepository;
 import com.maan.eway.repository.RiskMasterRepository;
-import com.maan.eway.req.CustomerDetailsGetAllReq;
 import com.maan.eway.req.RiskDetailsGetAllReq;
-import com.maan.eway.res.CustomerDetailsRes;
-import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.RiskDetailsGetAllRes;
 import com.maan.eway.res.RiskDetailsRes;
 import com.maan.eway.res.SuccessRes;
@@ -71,7 +63,7 @@ public class RiskMasterServiceImpl implements RiskMasterService {
 private EntityManager em;
 
 @Autowired
-private RiskDetailsRepository riskDetailsRepo;
+private RiskDomesticDetailsRepository RiskDomesticDetailsRepo;
 @Autowired
 private RiskMasterRepository repo;
 
@@ -463,28 +455,28 @@ public RiskDetailsGetAllRes getallRiskWithCount(RiskDetailsGetAllReq req) {
 
 	 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 	try {
-		List<RiskDetails> list = new ArrayList<RiskDetails>();
+		List<RiskDomesticDetails> list = new ArrayList<RiskDomesticDetails>();
 		// Limit , Offset
 		Integer limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
 		Integer offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 		Pageable paging = PageRequest.of(limit, offset);
 
 		// Find All
-		Page<RiskDetails> riskDetails = riskDetailsRepo.findByCompanyIdAndBranchCodeOrderByUpdatedDateDesc(
+		Page<RiskDomesticDetails> riskDetails = RiskDomesticDetailsRepo.findByCompanyIdAndBranchCodeOrderByUpdatedDateDesc(
 				paging, req.getInsuranceId(), req.getBranchCode());
 
-		List<String> reqRefNo = riskDetails.getContent().stream().map(RiskDetails::getRequestReferenceNo)
+		List<String> reqRefNo = riskDetails.getContent().stream().map(RiskDomesticDetails::getRequestReferenceNo)
 				.collect(Collectors.toList());
 
 		// Criteria
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<RiskDetails> query = cb.createQuery(RiskDetails.class);
+		CriteriaQuery<RiskDomesticDetails> query = cb.createQuery(RiskDomesticDetails.class);
 
-		Root<RiskDetails> r = query.from(RiskDetails.class);
+		Root<RiskDomesticDetails> r = query.from(RiskDomesticDetails.class);
 	
 		// RequestReferenceNo Count SubQuery
 		Subquery<Long> refCount = query.subquery(Long.class);
-		Root<RiskDetails> e = refCount.from(RiskDetails.class);
+		Root<RiskDomesticDetails> e = refCount.from(RiskDomesticDetails.class);
 		refCount.select(cb.count(e));
 		javax.persistence.criteria.Predicate e1 = cb.equal(e.get("requestReferenceNo"), r.get("requestReferenceNo"));
 		refCount.where(e1);
@@ -498,18 +490,18 @@ public RiskDetailsGetAllRes getallRiskWithCount(RiskDetailsGetAllReq req) {
 		query.multiselect(r.get("requestReferenceNo").alias("RequestReferenceNo"),refCount.alias("ReferenceCount"));
 		
 		query.where(n1).groupBy(r.get("requestReferenceNo")).orderBy(orderList);
-		TypedQuery<RiskDetails> result = em.createQuery(query);
+		TypedQuery<RiskDomesticDetails> result = em.createQuery(query);
 		list = result.getResultList();
 
 		List<RiskDetailsRes> riskList = new ArrayList<RiskDetailsRes>();
-		for (RiskDetails data : riskDetails.getContent()) {
+		for (RiskDomesticDetails data : riskDetails.getContent()) {
 			
 			RiskDetailsRes riskData = new RiskDetailsRes();
 			riskData = dozerMapper.map(data, RiskDetailsRes.class);
 
-			List<RiskDetails> filterList   =   list.stream().filter(o -> o.getRequestReferenceNo().equals(data.getRequestReferenceNo())).collect(Collectors.toList());
+			List<RiskDomesticDetails> filterList   =   list.stream().filter(o -> o.getRequestReferenceNo().equals(data.getRequestReferenceNo())).collect(Collectors.toList());
 			if(filterList.size()>0    ) {
-				RiskDetails counts = filterList.get(0) ;
+				RiskDomesticDetails counts = filterList.get(0) ;
 				riskData.setRiskCount(counts.getRequestReferenceNo()==null?"0":counts.getRequestReferenceNo().toString());
 				
 			} else {

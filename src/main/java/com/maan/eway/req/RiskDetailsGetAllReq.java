@@ -13,6 +13,13 @@ public class RiskDetailsGetAllReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+	
+	@JsonProperty("InsuranceId")
+    private String     insuranceId ;
+	
+	@JsonProperty("BranchCode")
+    private String     branchCode;
+    
     @JsonProperty("Limit")
     private String limit;
     

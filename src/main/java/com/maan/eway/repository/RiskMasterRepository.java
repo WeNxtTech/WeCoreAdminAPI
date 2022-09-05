@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import com.maan.eway.bean.RiskDetails;
 import com.maan.eway.bean.RiskMaster;
 
 import org.springframework.data.domain.Pageable;

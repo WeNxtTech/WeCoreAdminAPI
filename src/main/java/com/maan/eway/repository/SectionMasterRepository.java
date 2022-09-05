@@ -13,6 +13,7 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.maan.eway.bean.SectionMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -31,5 +32,7 @@ import com.maan.eway.bean.SectionMasterId;
 public interface SectionMasterRepository  extends JpaRepository<SectionMaster,SectionMasterId > , JpaSpecificationExecutor<SectionMaster> {
 
 	Long countBySectionNameOrderByEntryDateDesc(String sectionName);
+
+	List<SectionMaster> findByProductIdAndCompanyId(Integer productId, String companyId);
 
 }

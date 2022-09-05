@@ -15,6 +15,8 @@ package com.maan.eway.repository;
 import java.math.BigDecimal;
 
 import com.maan.eway.bean.CustomerDetails;
+import com.maan.eway.bean.CustomerDetailsId;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 /**
@@ -27,6 +29,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  
  
  
-public interface CustomerDetailsRepository  extends JpaRepository<CustomerDetails,String > , JpaSpecificationExecutor<CustomerDetails> {
+public interface CustomerDetailsRepository  extends JpaRepository<CustomerDetails,CustomerDetailsId > , JpaSpecificationExecutor<CustomerDetails> {
+
+	CustomerDetails findByCustomerId(String customerId);
 
 }

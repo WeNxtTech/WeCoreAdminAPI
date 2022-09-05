@@ -43,34 +43,47 @@ import javax.persistence.*;
 @DynamicUpdate
 @Builder
 @Table(name="customer_details")
-
-
+@IdClass(CustomerDetailsId.class)
 public class CustomerDetails implements Serializable {
- 
 private static final long serialVersionUID = 1L;
  
     //--- ENTITY PRIMARY KEY 
     @Id
     @Column(name="CUSTOMER_ID", nullable=false, length=20)
-    private String     customerId ;
+    private String     customerId;
 
+    @Id 
+    @Column(name="GST_NO", length=20, nullable=false)
+    private String    gstNo;
+
+    @Column(name="VRNGST", length=20, nullable=false)
+    private String     vrngst ;
+
+    
     //--- ENTITY DATA FIELDS 
     @Column(name="COMPANY_ID", nullable=false, length=20)
-    private String     companyId ;
+    private String     companyId;
 
+    @Column(name="CREATED_BY", nullable=false, length=100)
+    private String     createdBy;
+
+    @Column(name="UPDATED_BY", nullable=false, length=100)
+    private String     updatedBy;
+
+    
     @Column(name="BRANCH_CODE", nullable=false, length=20)
-    private String     branchCode ;
+    private String     branchCode;
 
     @Column(name="TITLE_ID")
-    private Integer    titleId ;
+    private Integer    titleId;
 
     @Column(name="TITLE_DESC", length=20)
-    private String     titleDesc ;
+    private String     titleDesc;
 
     @Column(name="CLIENT_NAME", length=20)
-    private String     clientName ;
+    private String     clientName;
 
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     @Column(name="DATE_OF_BIRTH")
     private Date       dateOfBirth ;
 
@@ -118,10 +131,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="INSURER_EXCHANGE_RATE", length=20)
     private String     insurerExchangeRate ;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="INCEPTION_DATE")
-    private Date       inceptionDate ;
-
+  
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="EXPIRY_DATE")
     private Date       expiryDate ;
@@ -193,7 +203,7 @@ private static final long serialVersionUID = 1L;
     private String     clientStatusDesc ;
 
     @Column(name="ID_TYPE_ID")
-    private Integer    idTypeId ;
+    private Integer    idTypeId;
 
     @Column(name="ID_TYPE_DESC", length=20)
     private String     idTypeDesc ;
@@ -220,9 +230,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="REGISTRATION_DATE")
     private Date       registrationDate ;
 
-    @Column(name="VRNGST", length=20)
-    private String     vrngst ;
-
+  
     @Column(name="REGISTRATION_NUMBER", length=20)
     private String     registrationNumber ;
 

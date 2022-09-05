@@ -8,6 +8,7 @@ package com.maan.eway.master.service;
 import com.maan.eway.master.req.BankMasterGetAllReq;
 import com.maan.eway.master.req.BankMasterGetReq;
 import com.maan.eway.master.req.BankMasterSaveReq;
+import com.maan.eway.master.req.CustomerSaveReq;
 import com.maan.eway.master.res.BankMasterRes;
 import com.maan.eway.error.Error;
 import com.maan.eway.res.DropDownRes;
@@ -38,6 +39,8 @@ BankMasterRes getByBankCode(BankMasterGetReq req);
 List<DropDownRes> getBankMasterDropdown();
 
 List<BankMasterRes> getActiveBankDetails(BankMasterGetAllReq req);
+
+SuccessRes savecustomer(CustomerSaveReq req);
 
 
 

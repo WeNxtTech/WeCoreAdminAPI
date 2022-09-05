@@ -13,6 +13,7 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.maan.eway.bean.CoverMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -31,5 +32,7 @@ import com.maan.eway.bean.CoverMasterId;
 public interface CoverMasterRepository  extends JpaRepository<CoverMaster,CoverMasterId > , JpaSpecificationExecutor<CoverMaster> {
 
 	Long countByCoverNameOrderByEntryDateDesc(String coverName);
+
+	List<CoverMaster> findByProductIdAndCompanyId(Integer productId, String companyId);
 
 }

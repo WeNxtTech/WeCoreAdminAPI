@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.maan.eway.repository.CustomerDetailsRepository;
+import com.maan.eway.req.CustomerDetailsGetAllReq;
+import com.maan.eway.res.CustomerDetailsRes;
 import com.maan.eway.bean.CustomerDetails;
 import com.maan.eway.service.CustomerDetailsService;
 
@@ -23,104 +25,5 @@ import org.apache.logging.log4j.Logger;
 @Transactional
 public class CustomerDetailsServiceImpl implements CustomerDetailsService {
 
-@Autowired
-private CustomerDetailsRepository repository;
-
-
-private Logger log=LogManager.getLogger(CustomerDetailsServiceImpl.class);
-/*
-public CustomerDetailsServiceImpl(CustomerDetailsRepository repo) {
-this.repository = repo;
-}
-
-  */
- /*@Override
-    public CustomerDetails create(CustomerDetails d) {
-
-       CustomerDetails entity;
-
-        try {
-            entity = repository.save(d);
-
-        } catch (Exception ex) {
-			log.error(ex);
-            return null;
-        }
-        return entity;
-    }
-
-    
-    @Override
-    public CustomerDetails update(CustomerDetails d) {
-        CustomerDetails c;
-
-        try {
-            c = repository.saveAndFlush(d);
-
-        } catch (Exception ex) {
-			log.error(ex);
-            return null;
-        }
-        return c;
-    }
-
-/*
-    @Override
-    public CustomerDetails getOne(long id) {
-        CustomerDetails t;
-
-        try {
-            t = repository.findById(id).orElse(null);
-
-        } catch (Exception ex) {
-			log.error(ex);
-            return null;
-        }
-        return t;
-    }
-
-*/
-/*    @Override
-    public List<CustomerDetails> getAll() {
-        List<CustomerDetails> lst;
-
-        try {
-            lst = repository.findAll();
-
-        } catch (Exception ex) {
-			log.error(ex);
-            return Collections.emptyList();
-        }
-        return lst;
-    }
-
-
-    @Override
-    public long getTotal() {
-        long total;
-
-        try {
-            total = repository.count();
-        } catch (Exception ex) {
-            log.error(ex);
-			return 0;
-        }
-        return total;
-    }
-
-/*
-    @Override
-    public boolean delete(long id) {
-        try {
-            repository.deleteById(id);
-            return true;
-
-        } catch (Exception ex) {
-			log.error(ex);
-            return false;
-        }
-    }
-
- */
 
 }

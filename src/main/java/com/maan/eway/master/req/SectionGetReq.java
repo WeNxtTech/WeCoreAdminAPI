@@ -1,0 +1,19 @@
+package com.maan.eway.master.req;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.Data;
+
+@Data
+public class SectionGetReq {
+
+	@JsonProperty("ProductId")
+	private Integer productId;
+	
+	@JsonProperty("CompanyId")
+	private String companyId;
+	
+	@JsonProperty("LoginId")
+	private String loginId;
+	
+}

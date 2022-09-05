@@ -10,5 +10,7 @@ public class SuccessRes {
 	@JsonProperty("Response")
 	private String response;
 
-	
+	@JsonProperty("SuccessId")
+	private String successId;
+
 }

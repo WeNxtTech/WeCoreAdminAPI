@@ -12,6 +12,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -27,6 +28,7 @@ import javax.persistence.criteria.Subquery;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dozer.DozerBeanMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,11 +38,15 @@ import com.google.gson.Gson;
 import com.maan.eway.master.req.BankMasterGetAllReq;
 import com.maan.eway.master.req.BankMasterGetReq;
 import com.maan.eway.master.req.BankMasterSaveReq;
+import com.maan.eway.master.req.CustomerSaveReq;
 import com.maan.eway.master.res.BankMasterRes;
 import com.maan.eway.master.service.BankMasterService;
 import com.maan.eway.bean.BankMaster;
+import com.maan.eway.bean.CustomerDetails;
+import com.maan.eway.bean.CustomerDetailsId;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.BankMasterRepository;
+import com.maan.eway.repository.CustomerDetailsRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.impl.BasicValidationService;
@@ -56,6 +62,10 @@ private EntityManager em;
 
 @Autowired
 private BankMasterRepository bankRepo;
+
+@Autowired
+private CustomerDetailsRepository customerrepo;
+
 
 @Autowired
 private BasicValidationService bankValidateService;
@@ -545,5 +555,48 @@ public List<BankMasterRes> getActiveBankDetails(BankMasterGetAllReq req) {
 	}
 	return resList;
 }
+
+
+@Override
+public SuccessRes savecustomer(CustomerSaveReq req) {
+	SuccessRes res = new SuccessRes();
+	DozerBeanMapper mapper = new DozerBeanMapper();
+	try {
+		Long newId =0L;
+		Date entryDate = null;
+		CustomerDetails ent = new CustomerDetails();
+		CustomerDetailsId id = new CustomerDetailsId();
+		Optional<CustomerDetails> data=	customerrepo.findById(id);
+		if(data.isPresent()) {
+			ent= mapper.map(req, CustomerDetails.class);
+			ent.setCustomerId(data.get().getCustomerId());
+			ent.setGstNo(data.get().getGstNo());
+			ent.setGenderId(data.get().getGenderId());
+			ent.setGenderDesc(data.get().getGenderDesc());
+			ent.setBranchCode(data.get().getBranch());
+			res.setResponse("Updated Successful");	
+			res.setSuccessId(id.getCustomerId());
+			
+		}
+		else {
+			ent = mapper.map(req, CustomerDetails.class);
+			newId = customerrepo.count()+1;
+			ent.setGstNo(req.getGstNo());
+			ent.setEntryDate(new Date());
+			ent.setCustomerId(newId.toString());
+			ent.setStatus("Y");
+			res.setSuccessId(newId.toString());
+			res.setResponse("Inserted Successful");
+			}
+		customerrepo.save(ent);
+	}
+	catch(Exception e) {
+		e.printStackTrace();
+		log.info("Log Details"+e.getMessage());
+		return null;
+	}
+	return res;
+}
+
 
 }

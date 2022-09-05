@@ -12,7 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.master.req.CustomerDetailsGetAllReq;
+import com.maan.eway.master.req.CustomerGetReq;
 import com.maan.eway.master.req.CustomerSaveReq;
+import com.maan.eway.master.res.CustomerGetRes;
+import com.maan.eway.master.res.CustomerGetallRes;
 import com.maan.eway.master.service.CustomerDetailsService;
 import com.maan.eway.req.SubUserTypeReq;
 import com.maan.eway.res.CommonRes;
@@ -55,7 +59,45 @@ public class CustomerDetailsController {
 		
 	}
 	
-	
+	@PostMapping("/getcustomer")
+	@ApiOperation(value = "This method is to Get Customer")
+	public ResponseEntity<CommonRes> getcustomer(@RequestBody CustomerGetReq req){
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		CustomerGetRes res = service.getcustomer(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		if(data!=null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		}
+		else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+		
+	}
 
+	@PostMapping("/getallcustomer")
+	@ApiOperation(value = "This method is to Getall Customer")
+	public ResponseEntity<CommonRes> getallcustomer(@RequestBody CustomerDetailsGetAllReq req){
+		CommonRes data = new CommonRes();
+		List<CustomerGetallRes> res = service.getallcustomer(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		if(data!=null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		}
+		else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+		
+	}
+
+
+	
+	
 	}
 

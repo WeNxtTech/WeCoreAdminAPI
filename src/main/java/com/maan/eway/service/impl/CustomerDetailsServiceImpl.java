@@ -5,25 +5,42 @@
 */
 package com.maan.eway.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Root;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.provider.HibernateUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.CustomerDetails;
 import com.maan.eway.bean.CustomerDetailsId;
+import com.maan.eway.bean.CustomerRelationship;
+import com.maan.eway.bean.LoginMaster;
+import com.maan.eway.master.req.CustomerDetailsGetAllReq;
+import com.maan.eway.master.req.CustomerGetReq;
 import com.maan.eway.master.req.CustomerSaveReq;
+import com.maan.eway.master.res.CustomerGetRes;
+import com.maan.eway.master.res.CustomerGetallRes;
 import com.maan.eway.master.service.CustomerDetailsService;
 import com.maan.eway.repository.CustomerDetailsRepository;
+import com.maan.eway.repository.CustomerRelationshipRepository;
+import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.res.SuccessRes;
 /**
 * <h2>CustomerDetailsServiceimpl</h2>
@@ -38,6 +55,11 @@ private EntityManager em;
 @Autowired
 private CustomerDetailsRepository customerrepo;
 
+@Autowired
+private CustomerRelationshipRepository relationrepo;
+
+@Autowired
+private LoginMasterRepository loginrepo;
 
 Gson json = new Gson();
 
@@ -56,28 +78,43 @@ public SuccessRes savecustomer(CustomerSaveReq req) {
 		id.setCustomerId(req.getCustomerId());
 		id.setGstNo(req.getGstNo());
 		Optional<CustomerDetails> data=	customerrepo.findById(id);
-		if(data.isPresent()) {
+	/*	if(data.isPresent()) {
 			ent= mapper.map(req, CustomerDetails.class);
 			ent.setCustomerId(data.get().getCustomerId());
 			ent.setGstNo(data.get().getGstNo());
 			ent.setGenderId(data.get().getGenderId());
 			ent.setGenderDesc(data.get().getGenderDesc());
 			ent.setBranchCode(data.get().getBranch());
+			ent.setStatus(req.getStatus());
 			res.setResponse("Updated Successful");	
 			res.setSuccessId(id.getCustomerId());
 			
 		}
-		else {
+		*/
+			if(!data.isPresent()) {
 			ent = mapper.map(req, CustomerDetails.class);
-			newId = customerrepo.count()+1;
+			newId = customerrepo.count()+10001;
 			ent.setGstNo(req.getGstNo());
 			ent.setEntryDate(new Date());
 			ent.setCustomerId(newId.toString());
 			ent.setStatus("Y");
 			res.setSuccessId(newId.toString());
 			res.setResponse("Inserted Successful");
+			
 			}
 		customerrepo.save(ent);
+		
+		LoginMaster login = loginrepo.findByLoginId(req.getCreatedBy());
+		CustomerRelationship cus = new CustomerRelationship();
+		cus.setBranchCode(req.getBranchCode());
+		cus.setBrokerId(Integer.valueOf(login.getOaCode()));
+		cus.setCompanyId(req.getCompanyId());
+		cus.setCreatedBy(req.getCreatedBy());
+		cus.setCustomerId(Integer.valueOf(ent.getCustomerId()));
+		cus.setEntryDate(new Date());
+		cus.setGstNo(req.getGstNo());
+		cus.setStatus("Y");
+		relationrepo.save(cus);		
 	}
 	catch(Exception e) {
 		e.printStackTrace();
@@ -85,6 +122,62 @@ public SuccessRes savecustomer(CustomerSaveReq req) {
 		return null;
 	}
 	return res;
+}
+
+
+@Override
+public CustomerGetRes getcustomer(CustomerGetReq req) {
+	CustomerGetRes res = new CustomerGetRes();
+	DozerBeanMapper mapper = new DozerBeanMapper();
+	try {
+		CustomerDetails data = customerrepo.findByCustomerIdAndGstNo(req.getCustomerId(),req.getGstNo());
+		res =mapper.map(data,CustomerGetRes.class);
+		}
+	catch(Exception e) {
+		e.printStackTrace();
+		log.info("Log Details"+e.getMessage());
+		return null;
+	}
+	return res;
+}
+
+
+@Override
+public List<CustomerGetallRes> getallcustomer(CustomerDetailsGetAllReq req) {
+	List<CustomerGetallRes> resList  = new ArrayList<CustomerGetallRes>();
+	DozerBeanMapper mapper = new DozerBeanMapper();
+	try {
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<CustomerGetallRes> query = cb.createQuery(CustomerGetallRes.class);
+		List<CustomerGetallRes> list = new ArrayList<CustomerGetallRes>();
+		Root<CustomerDetails> c =query.from(CustomerDetails.class);
+	
+		query.multiselect(c.get("customerId").alias("customerId"),c.get("gstNo").alias("gstNo"),
+				c.get("companyId").alias("companyId"),c.get("branchCode").alias("branchCode"),
+				c.get("clientName").alias("clientName"),c.get("dateOfBirth").alias("dateOfBirth"),
+				c.get("createdBy").alias("createdBy"),c.get("mobileNo1").alias("mobileNo1")			
+				);
+		
+		//query.multiselect(c);
+		// Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.asc(c.get("customerId")));
+
+		TypedQuery<CustomerGetallRes> result = em.createQuery(query);
+		list= result.getResultList();
+		for(CustomerGetallRes data : list) {
+			CustomerGetallRes res = new CustomerGetallRes();
+			res = mapper.map(data, CustomerGetallRes.class);
+			resList.add(res);
+		}
+		}
+	catch(Exception e) {
+		e.printStackTrace();
+		log.info("Log Details"+e.getMessage());
+		return null;
+	}
+	return resList;
 }
 
 

@@ -5,7 +5,13 @@
 */
 package com.maan.eway.master.service;
 
+import java.util.List;
+
+import com.maan.eway.master.req.CustomerDetailsGetAllReq;
+import com.maan.eway.master.req.CustomerGetReq;
 import com.maan.eway.master.req.CustomerSaveReq;
+import com.maan.eway.master.res.CustomerGetRes;
+import com.maan.eway.master.res.CustomerGetallRes;
 import com.maan.eway.res.SuccessRes;
 /**
 * <h2>BankMasterServiceimpl</h2>
@@ -14,6 +20,10 @@ public interface CustomerDetailsService  {
 
 
 SuccessRes savecustomer(CustomerSaveReq req);
+
+CustomerGetRes getcustomer(CustomerGetReq req);
+
+List<CustomerGetallRes> getallcustomer(CustomerDetailsGetAllReq req);
 
 
 

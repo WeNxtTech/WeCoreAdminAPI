@@ -16,6 +16,8 @@ import java.math.BigDecimal;
 
 import com.maan.eway.bean.CustomerDetails;
 import com.maan.eway.bean.CustomerDetailsId;
+import com.maan.eway.bean.CustomerRelationship;
+import com.maan.eway.bean.CustomerRelationshipId;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -29,10 +31,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  
  
  
-public interface CustomerDetailsRepository  extends JpaRepository<CustomerDetails,CustomerDetailsId > , JpaSpecificationExecutor<CustomerDetails> {
-
-	CustomerDetails findByCustomerId(String customerId);
-
-	CustomerDetails findByCustomerIdAndGstNo(String customerId, String gstNo);
+public interface CustomerRelationshipRepository  extends JpaRepository<CustomerRelationship,CustomerRelationshipId > , JpaSpecificationExecutor<CustomerRelationship> {
 
 }

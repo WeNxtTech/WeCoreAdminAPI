@@ -31,7 +31,7 @@ public class RiskDetailsId implements Serializable {
 
     private Integer     customerId ;
 	
-	private String     requestReferanceNo ;
+	private String     requestReferenceNo ;
 	
 	private Integer     riskId ;
 	

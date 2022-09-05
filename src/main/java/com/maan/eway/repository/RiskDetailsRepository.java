@@ -33,7 +33,7 @@ public interface RiskDetailsRepository  extends JpaRepository<RiskDetails,RiskDe
 
 	Long countByCustomerId(Integer valueOf);
 
-	List<RiskDetails> findByRequestReferanceNoOrderByRiskIdAsc(String reqRefNo);
+	List<RiskDetails> findByRequestReferenceNoOrderByRiskIdAsc(String reqRefNo);
 
 
 }

@@ -57,8 +57,8 @@ private static final long serialVersionUID = 1L;
 	private Integer     customerId ;
 	
 	@Id
-	@Column(name="REQUEST_REFERANCE_NO", nullable=false)
-	private String     requestReferanceNo ;
+	@Column(name="REQUEST_REFERENCE_NO", nullable=false)
+	private String     requestReferenceNo ;
 	
 	@Id
 	@Column(name="RISK_ID", nullable=false)

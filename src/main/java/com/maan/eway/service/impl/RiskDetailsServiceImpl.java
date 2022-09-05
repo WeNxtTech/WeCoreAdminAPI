@@ -45,6 +45,7 @@ import com.maan.eway.master.service.ReferalMasterService;
 import com.maan.eway.auth.token.passwordEnc;
 import com.maan.eway.bean.BankMaster;
 import com.maan.eway.bean.BranchMaster;
+import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ReferalMaster;
 import com.maan.eway.bean.RiskDetails;
 import com.maan.eway.error.Error;
@@ -146,7 +147,7 @@ private Logger log=LogManager.getLogger(RiskDetailsServiceImpl.class);
 			} else {
 			   // Update
 				reqRefNo  = req.getRequestReferenceNo() ;
-				findRisks = repository.findByRequestReferanceNoOrderByRiskIdAsc(reqRefNo); 
+				findRisks = repository.findByRequestReferenceNoOrderByRiskIdAsc(reqRefNo); 
 				update = true ;
 				res.setResponse("Updated Successfully");
 			}
@@ -171,7 +172,7 @@ private Logger log=LogManager.getLogger(RiskDetailsServiceImpl.class);
 				save.setBranchCode(branch);
 				save.setCreatedBy(createdBy);
 				save.setEntryDate(entryDate);
-				save.setRequestReferanceNo(reqRefNo);
+				save.setRequestReferenceNo(reqRefNo);
 				
 				save.setCompanyId(req.getInsuranceId());
 				save.setCustomerId(Integer.valueOf(req.getCustomerId()));
@@ -223,6 +224,14 @@ private Logger log=LogManager.getLogger(RiskDetailsServiceImpl.class);
 			// Find All
 			Root<RiskDetails> r = query.from(RiskDetails.class);
 
+			// Select RefNo SubQuery for Max Filter 
+		/*	Subquery<Long> refNo = query.subquery(Long.class);
+			Root<RiskDetails> i = refNo.from(RiskDetails.class);
+			refNo.select( r.get("requestReferance") );
+			Predicate i1 = cb.equal(ins.get("companyId"), i.get("companyId"));
+			Predicate i2 = cb.lessThanOrEqualTo(i.get("effectiveDateStart") , today);
+			insEff.where(i1,i2); */
+			
 			// Select
 			query.select( cb.count(r) );
 

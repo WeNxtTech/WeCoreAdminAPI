@@ -40,7 +40,6 @@ List<DropDownRes> getBankMasterDropdown();
 
 List<BankMasterRes> getActiveBankDetails(BankMasterGetAllReq req);
 
-SuccessRes savecustomer(CustomerSaveReq req);
 
 
 

@@ -8,39 +8,31 @@ package com.maan.eway.master.controller;
 
 
 
+import java.util.Collections;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.RiskMasterGetAllReq;
 import com.maan.eway.master.req.RiskMasterGetReq;
 import com.maan.eway.master.req.RiskMasterSaveReq;
 import com.maan.eway.master.res.RiskMasterRes;
 import com.maan.eway.master.service.RiskMasterService;
-import com.maan.eway.req.CustomerDetailsGetAllReq;
 import com.maan.eway.req.RiskDetailsGetAllReq;
-import com.maan.eway.bean.RiskMaster;
 import com.maan.eway.res.CommonRes;
-import com.maan.eway.res.CustomerDetailsRes;
-import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.RiskDetailsGetAllRes;
-import com.maan.eway.res.RiskDetailsRes;
 import com.maan.eway.res.SuccessRes;
-import com.maan.eway.service.CustomerDetailsService;
 import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Collections;
-import java.util.List;
 
 
 /**

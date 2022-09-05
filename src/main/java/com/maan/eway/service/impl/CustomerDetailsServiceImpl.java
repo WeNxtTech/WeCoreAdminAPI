@@ -5,25 +5,88 @@
 */
 package com.maan.eway.service.impl;
 
+import java.util.Date;
+import java.util.Optional;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.maan.eway.repository.CustomerDetailsRepository;
-import com.maan.eway.req.CustomerDetailsGetAllReq;
-import com.maan.eway.res.CustomerDetailsRes;
-import com.maan.eway.bean.CustomerDetails;
-import com.maan.eway.service.CustomerDetailsService;
 
-import java.util.Collections;
-import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.google.gson.Gson;
+import com.maan.eway.bean.CustomerDetails;
+import com.maan.eway.bean.CustomerDetailsId;
+import com.maan.eway.master.req.CustomerSaveReq;
+import com.maan.eway.master.service.CustomerDetailsService;
+import com.maan.eway.repository.CustomerDetailsRepository;
+import com.maan.eway.res.SuccessRes;
 /**
 * <h2>CustomerDetailsServiceimpl</h2>
 */
 @Service
 @Transactional
 public class CustomerDetailsServiceImpl implements CustomerDetailsService {
+
+@PersistenceContext
+private EntityManager em;
+
+@Autowired
+private CustomerDetailsRepository customerrepo;
+
+
+Gson json = new Gson();
+
+private Logger log=LogManager.getLogger(CustomerDetailsServiceImpl.class);
+
+
+@Override
+public SuccessRes savecustomer(CustomerSaveReq req) {
+	SuccessRes res = new SuccessRes();
+	DozerBeanMapper mapper = new DozerBeanMapper();
+	try {
+		Long newId =0L;
+		Date entryDate = null;
+		CustomerDetails ent = new CustomerDetails();
+		CustomerDetailsId id = new CustomerDetailsId();
+		id.setCustomerId(req.getCustomerId());
+		id.setGstNo(req.getGstNo());
+		Optional<CustomerDetails> data=	customerrepo.findById(id);
+		if(data.isPresent()) {
+			ent= mapper.map(req, CustomerDetails.class);
+			ent.setCustomerId(data.get().getCustomerId());
+			ent.setGstNo(data.get().getGstNo());
+			ent.setGenderId(data.get().getGenderId());
+			ent.setGenderDesc(data.get().getGenderDesc());
+			ent.setBranchCode(data.get().getBranch());
+			res.setResponse("Updated Successful");	
+			res.setSuccessId(id.getCustomerId());
+			
+		}
+		else {
+			ent = mapper.map(req, CustomerDetails.class);
+			newId = customerrepo.count()+1;
+			ent.setGstNo(req.getGstNo());
+			ent.setEntryDate(new Date());
+			ent.setCustomerId(newId.toString());
+			ent.setStatus("Y");
+			res.setSuccessId(newId.toString());
+			res.setResponse("Inserted Successful");
+			}
+		customerrepo.save(ent);
+	}
+	catch(Exception e) {
+		e.printStackTrace();
+		log.info("Log Details"+e.getMessage());
+		return null;
+	}
+	return res;
+}
+
 
 
 }

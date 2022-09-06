@@ -33,4 +33,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  
 public interface CustomerRelationshipRepository  extends JpaRepository<CustomerRelationship,CustomerRelationshipId > , JpaSpecificationExecutor<CustomerRelationship> {
 
+	CustomerRelationship findByCustomerIdAndCreatedBy(Integer valueOf, String createdBy);
+
 }

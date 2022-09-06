@@ -10,7 +10,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -24,10 +23,8 @@ import javax.persistence.criteria.Subquery;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dozer.DozerBeanMapper;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,7 +34,6 @@ import com.maan.eway.bean.CustomerDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.LoginMaster;
-import com.maan.eway.repository.CustomerDetailsSearchRepository;
 import com.maan.eway.req.CustomerDetailsSearchReq;
 import com.maan.eway.res.CustomerDetailsCriteriaRes;
 import com.maan.eway.res.CustomerDetailsSearchRes;
@@ -51,9 +47,6 @@ public class CustomerDetailsSearchServiceImpl implements CustomerDetailsSearchSe
 
 @PersistenceContext
 private EntityManager em;
-
-@Autowired
-private CustomerDetailsSearchRepository repository;
 
 Gson json = new Gson();
 

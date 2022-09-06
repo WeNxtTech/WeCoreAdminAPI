@@ -27,20 +27,21 @@ public class CustomerGetRes {
     private Date       dateOfBirth  ;
 	@JsonProperty("GstNo")
     private String    gstNo  ;
+	@JsonProperty("CreatedBy")
+	private String createdBy;
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EntryDate")
     private Date     entryDate  ;
-	@JsonProperty("Status")
-    private String     status       ;
-	@JsonProperty("CreatedBy")
-	private String createdBy;
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("UpdatedDate")
     private Date  updatedDate  ;
 	@JsonProperty("UpdatedBy")
 	private String updatedBy;	
-	
-	@JsonProperty("NationalityId")
+    @JsonProperty("Status")
+    private String     status       ;
+    @JsonProperty("Vrngst")
+    private String     vrngst       ;
+    @JsonProperty("NationalityId")
     private String    nationalityId ;
 	@JsonProperty("NationalityDesc")
     private String     nationalityDesc ;
@@ -85,10 +86,11 @@ public class CustomerGetRes {
     private String     branch       ;
 	@JsonProperty("BusinessBy")
     private String     businessBy   ;
-	@JsonProperty("BusinessType")
-    private String     businessType ;
 	@JsonProperty("ContactPerson")
     private String     contactPerson ;
+	@JsonProperty("ContactPersonMobile")
+    private String     contactPersonMobile ;
+	
 	@JsonProperty("InsuredName")
     private String     insuredName  ;
 	@JsonProperty("FirstLossPayee")
@@ -132,14 +134,8 @@ public class CustomerGetRes {
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("RegistrationDate")
     private Date       registrationDate ;
-	@JsonProperty("Vrngst")
-    private String     vrngst       ;
 	@JsonProperty("RegistrationNumber")
     private String     registrationNumber ;
-	@JsonProperty("RegionId")
-    private String    regionId     ;
-	@JsonProperty("RegionDesc")
-    private String     regionDesc   ;
 	@JsonProperty("DistrictId")
     private String    districtId   ;
 	@JsonProperty("DistrictDesc")
@@ -176,6 +172,9 @@ public class CustomerGetRes {
     private String     email3       ;
 	@JsonProperty("PreferredSystemNotification")
     private String     preferredSystemNotification ;
+	@JsonProperty("PreferredSystemNotificationId")
+    private String     preferredSystemNotificationId ;
+	
 	@JsonProperty("TaxExempted")
     private String     taxExempted  ;
 	@JsonFormat(pattern="dd/MM/yyyy")

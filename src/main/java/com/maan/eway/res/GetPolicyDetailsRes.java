@@ -8,8 +8,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class GetQuoteDetailsRes {
-	
+public class GetPolicyDetailsRes {
+
 	@JsonProperty("QuoteNo")
 	private String quoteNo ;
 	
@@ -46,6 +46,13 @@ public class GetQuoteDetailsRes {
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EntryDate")
 	private Date entryDate;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("UpdatedDate")
+	private Date updatedDate;
+	
+	@JsonProperty("UpdatedBy")
+	private String updatedBy;
 	
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("ExpiryDate")

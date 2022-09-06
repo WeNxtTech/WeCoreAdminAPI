@@ -1,0 +1,336 @@
+package com.maan.eway.service.impl;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.maan.eway.bean.CustomerDetails;
+import com.maan.eway.error.Error;
+import com.maan.eway.master.req.CustomerSaveReq;
+import com.maan.eway.repository.CustomerDetailsRepository;
+import com.maan.eway.service.ValidationService;
+
+@Service
+public class ValidationServiceImpl implements ValidationService {
+
+	private Logger log=LogManager.getLogger(CustomerDetailsServiceImpl.class);
+	
+	@Autowired
+	private CustomerDetailsRepository custRepo ;
+	
+	@Override
+	public List<Error> validateCustomerSave(CustomerSaveReq req) {
+		List<Error>  errors = new ArrayList<Error>();
+		try {
+			List<Error>  commonErrors = commonCustomerErrors(req);
+			if(commonErrors.size()>0 ) {
+				errors.addAll(commonErrors);
+			}
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(" Exception is ---> " + e.getMessage());
+			errors.add(new Error("01","Common Error" , e.getMessage() ));
+		}
+		return errors;
+	}
+	
+	@Override
+	public List<Error> validateCustomerUpdate(CustomerSaveReq req) {
+		List<Error>  errors = new ArrayList<Error>();
+		try {
+			List<Error>  commonErrors = commonCustomerErrors(req);
+			if(commonErrors.size()>0 ) {
+				errors.addAll(commonErrors);
+			}
+			if(StringUtils.isBlank(req.getCustomerId() ) ) {
+				errors.add(new Error("35","CustomerId" , "Please Enter CustomerId" ));
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(" Exception is ---> " + e.getMessage());
+			errors.add(new Error("01","Common Error" , e.getMessage() ));
+		}
+		return errors;
+	}
+	
+	
+	public List<Error> commonCustomerErrors(CustomerSaveReq req) {
+		List<Error>  errors = new ArrayList<Error>();
+		try {
+			// PRimary Ids
+			if(StringUtils.isBlank(req.getCompanyId() ) ) {
+				errors.add(new Error("01","CompanyId" , "Please Select CompanyId" ));
+			}
+			if(StringUtils.isBlank(req.getCreatedBy() ) ) {
+				errors.add(new Error("01","CreatedBy" , "Please Select CreatedBy" ));
+			}
+			if(StringUtils.isBlank(req.getBranchCode() ) ) {
+				errors.add(new Error("01","BranchCode" , "Please Select BranchCode" ));
+			}
+			
+			if(StringUtils.isBlank(req.getTitleId() ) ) {
+				errors.add(new Error("01","TitleId" , "Please Select TitleId" ));
+			}else if(StringUtils.isBlank(req.getTitleDesc() ) ) {
+				errors.add(new Error("01","TitleDesc" , "Please Select TitleDesc" ));
+			}
+			
+			
+			if(StringUtils.isBlank(req.getClientName() ) ) {
+				errors.add(new Error("02","ClientName" , "Please Enter ClientName" ));
+			} else if (isNotValidName(req.getClientName())  ) {
+				errors.add(new Error("02","ClientName" , "Please Enter Valid ClientName" ));
+			} else if (isNotValidName(req.getClientName())  ) {
+				errors.add(new Error("02","ClientName" , "ClientName must be Under 1000" ));
+			}
+			
+			if(req.getDateOfBirth() == null  ) {
+				errors.add(new Error("03","DateOfBirth" , "Please Select DateOfBirth" ));
+			}  else {
+				Date today = new Date();
+				Calendar cal = new GregorianCalendar();
+				cal.setTime(today); cal.add(Calendar.YEAR, -18); 
+				cal.set(Calendar.HOUR , 23); cal.set(Calendar.MINUTE , 59);
+				Date years18 = cal.getTime();
+				if(  req.getDateOfBirth().after(years18) ) {
+					errors.add(new Error("03","DateOfBirth" , "DateOfBirth Before 18 YEars Must Not Be Allowed" ));
+				}
+				
+			}
+			
+			if(StringUtils.isBlank(req.getGstNo() ) ) {
+				errors.add(new Error("04","GstNo" , "Please Enter GstNo" ));
+			} else if (req.getGstNo().length() > 20 ) {
+				errors.add(new Error("04","GstNo" , "Please Enter Valid GstNo" ));
+			} else if(StringUtils.isBlank(req.getCustomerId())  ){
+			  long count = custRepo.countByGstNo(req.getGstNo() );
+			  if(count >0 ) {
+				  errors.add(new Error("04","GstNo" , "GstNo Already Exist" ));
+			  }
+ 			}
+			
+			if(StringUtils.isBlank(req.getNationalityId() ) ) {
+				errors.add(new Error("05","NationalityId" , "Please Select NationalityId" ));
+			} else if(StringUtils.isBlank(req.getNationalityDesc() ) ) {
+				errors.add(new Error("05","NationalityDesc" , "Please Select NationalityDesc" ));
+			}
+			
+			if(StringUtils.isBlank(req.getPlaceOfBirth() ) ) {
+				errors.add(new Error("06","PlaceOfBirth" , "Please Enter PlaceOfBirth" ));
+			} else if (req.getPlaceOfBirth().length()>100 ) {
+				errors.add(new Error("06","PlaceOfBirth" , "PlaceOfBirth must be under 100 letters only allowed" ));
+			}
+			
+			if(StringUtils.isBlank(req.getGenderId() ) ) {
+				errors.add(new Error("07","GenderId" , "Please Select GenderId" ));
+			}else if(StringUtils.isBlank(req.getGenderDesc() ) ) {
+				errors.add(new Error("07","GenderDesc" , "Please Select GenderDesc" ));
+			}
+			
+			if(StringUtils.isBlank(req.getOccupationId() ) ) {
+				errors.add(new Error("08","OccupationId" , "Please Select OccupationId" ));
+			}else if(StringUtils.isBlank(req.getOccupationDesc() ) ) {
+				errors.add(new Error("08","OccupationDesc" , "Please Select OccupationDesc" ));
+			}
+			
+			if(StringUtils.isBlank(req.getAddress1() ) ) {
+				errors.add(new Error("09","Address1" , "Please Enter Address1" ));
+			} else if(req.getAddress1().length()>100  ) {
+				errors.add(new Error("09","Address1" , "Address1 Must be under 100 Characters Only Allowed" ));
+			}
+			if(StringUtils.isBlank(req.getAddress2() ) ) {
+				errors.add(new Error("10","Address2" , "Please Enter Address2" ));
+			} else if(req.getAddress2().length()>100  ) {
+				errors.add(new Error("10","Address2" , "Address2 Must be under 100 Characters Only Allowed" ));
+			}
+			
+			if(StringUtils.isBlank(req.getInsurer() ) ) {
+				errors.add(new Error("11","Insurer" , "Please Enter Insurer" ));
+			} else if(req.getInsurer().length()>100  ) {
+				errors.add(new Error("11","Insurer" , "Isurer Must be under 100 Characters Only Allowed" ));
+			}
+			
+			if(StringUtils.isBlank(req.getCurrencyId() ) ) {
+				errors.add(new Error("12","CurrenyId" , "Please Select CurrenyId" ));
+			} else if(StringUtils.isBlank(req.getCurrencyName() ) ) {
+				errors.add(new Error("12","CurrenyName" , "Please Select CurrenyName" ));
+			}
+			
+			if(StringUtils.isBlank(req.getExchangeRate())) {
+				errors.add(new Error("13","ExchangeRate" , "Please Enter ExchangeRate" ));
+			} else if(! req.getExchangeRate().matches("[0-9.]+")) {
+				errors.add(new Error("13","ExchangeRate" , "Please Enter Valid ExchangeRate" ));
+			}
+			
+			if(StringUtils.isBlank(req.getInsurerExchangeRate())) {
+				errors.add(new Error("14","InsurerExchangeRate" , "Please Enter InsurerExchangeRate" ));
+			} else if(! req.getInsurerExchangeRate().matches("[0-9.]+")) {
+				errors.add(new Error("14","InsurerExchangeRate" , "Please Enter Valid InsurerExchangeRate" ));
+			}
+		
+			// Policy Details Validation 
+			if( req.getExpiryDate()==null ) {
+				errors.add(new Error("15","Expiry Date" , "Please Select Expiry Date" ));
+			}
+			
+			if(StringUtils.isBlank(req.getNoOfDaysPolicy()) ) {
+				errors.add(new Error("16","NoOfDaysPolicy" , "Please Enter NoOfDaysPolicy" ));
+			} else if(! req.getNoOfDaysPolicy().matches("[0-9.]+") ) {
+				errors.add(new Error("16","NoOfDaysPolicy" , "Please Enter Valid Numbe In NoOfDaysPolicy" ));
+			}
+			
+			if(StringUtils.isBlank(req.getUniquePropertyIdentification()) ) {
+				errors.add(new Error("17","UniquePropertyIdentification" , "Please Enter UniquePropertyIdentification" ));
+			} else if(req.getUniquePropertyIdentification().length()>100  ) {
+				errors.add(new Error("17","UniquePropertyIdentification" , "UniquePropertyIdentification Must be under 100 Characters Only Allowed" ));
+			}
+			
+			if(StringUtils.isBlank(req.getContactPerson()) ) {
+				errors.add(new Error("18","ContactPerson" , "Please Enter ContactPerson" ));
+			}  else if(req.getContactPerson().length()>100  ) {
+				errors.add(new Error("18","ContactPerson" , "ContactPerson Must be under 100 Characters Only Allowed" ));
+			} 
+			
+			if(StringUtils.isBlank(req.getContactPersonMobile()) ) {
+				errors.add(new Error("19","ContactPersonMobile" , "Please Enter ContactPersonMobile" ));
+			} else if(req.getContactPersonMobile().length()>100  ) {
+				errors.add(new Error("19","ContactPersonMobile" , "ContactPersonMobile Must be under 100 Characters Only Allowed" ));
+			} 
+			
+			if(StringUtils.isBlank(req.getInsuredName()) ) {
+				errors.add(new Error("20","InsuredName" , "Please Enter InsuredName" ));
+			} else if(req.getInsuredName().length()>100  ) {
+				errors.add(new Error("20","InsuredName" , "InsuredName Must be under 100 Characters Only Allowed" ));
+			}
+			
+			if(StringUtils.isBlank(req.getBusinessTypeId()) ) {
+				errors.add(new Error("21","BusinessTypeId" , "Please Select BusinessTypeId" ));
+			} else if(StringUtils.isBlank(req.getBusinessTypeIdDesc()) ) {
+				errors.add(new Error("21","BusinessTypeIdDesc" , "Please Enter BusinessTypeIdDesc" ));
+			}
+			
+			if(StringUtils.isBlank(req.getCountryOfRegistrationId()) ) {
+				errors.add(new Error("22","CountryOfRegistrationId" , "Please Select CountryOfRegistrationId" ));
+			} else if(StringUtils.isBlank(req.getCountryOfRegistrationDesc()) ) {
+				errors.add(new Error("22","CountryOfRegistrationDesc" , "Please Enter CountryOfRegistrationDesc" ));
+			}
+			
+			if(req.getRegistrationDate()==null ) {
+				errors.add(new Error("23","RegistrationDate" , "Please Enter RegistrationDate" ));
+			} else {
+				Date today = new Date();
+				if( req.getRegistrationDate().after(today) ) {
+					errors.add(new Error("23","RegistrationDate" , "Future Date Not Allowed As RegistrationDate" ));
+				}
+			}
+			
+			if(StringUtils.isBlank(req.getRegistrationNumber()) ) {
+				errors.add(new Error("24","RegistrationNumber" , "Please Enter RegistrationNumber" ));
+			} else if(req.getRegistrationNumber().length()>20 ) {
+				errors.add(new Error("24","RegistrationNumber" , "RegistrationNumber must br Under 20 Charecters only allowed" ));
+			}
+			if(StringUtils.isBlank(req.getDistrictId()) ) {
+				errors.add(new Error("25","District ID" , "Please Enter District ID" ));
+			} else if(StringUtils.isBlank(req.getDistrictDesc()) ) {
+				errors.add(new Error("25","District Desc" , "Please Enter District Desc" ));
+			}
+			
+			if(StringUtils.isBlank(req.getStreet()) ) {
+				errors.add(new Error("25","Street" , "Please Enter Street" ));
+			} else if(req.getStreet().length()>100 ) {
+				errors.add(new Error("25","Street" , "Street Must be under 100 Charecters only allowed" ));
+			} 
+				
+			if(StringUtils.isBlank(req.getFax()) ) {
+				errors.add(new Error("26","Fax" , "Please Enter Fax" ));
+			} else if( req.getFax().length()>20 ) {
+				errors.add(new Error("26","Fax" , "Fax Must be under 100 Charectes only allowed" ));
+			}
+			
+			if(StringUtils.isBlank(req.getProfileId()) ) {
+				errors.add(new Error("27","ProfileId" , "Please Enter ProfileId" ));
+			}
+			
+			if(StringUtils.isBlank(req.getProfileCategoryId()) ) {
+				errors.add(new Error("28","ProfileCategoryId" , "Please Enter ProfileCategoryId" ));
+			} else if(StringUtils.isBlank(req.getProfileCategoryDesc()) ) {
+				errors.add(new Error("28","ProfileCategoryDesc" , "Please Enter ProfileCategoryDesc" ));
+			}
+			
+			if(StringUtils.isBlank(req.getMobileNo1()) ) {
+				errors.add(new Error("29","MobileNo1" , "Please Enter MobileNo1" ));
+			} else if(req.getMobileNo1().length()>20 ) {
+				errors.add(new Error("29","MobileNo1" , "MobileNo1 must be under 20 number only allowed" ));
+			} 
+			
+			if(StringUtils.isBlank(req.getEmail1()) ) {
+				errors.add(new Error("30","Email1" , "Please Enter Email1" ));
+			} else if(req.getEmail1().length()>100 ) {
+				errors.add(new Error("30","Email1" , "Email1 must be under 100 number only allowed" ));
+			} else if (isNotValidMail(req.getEmail1()) ) {
+				errors.add(new Error("30","Email1" , "Please Enter Valid Email1" ));
+			}
+			
+			if(StringUtils.isBlank(req.getPreferredSystemNotificationId()) ) {
+				errors.add(new Error("31","PreferredSystemNotificationId" , "Please Enter PreferredSystemNotificationId" ));
+			} else if(StringUtils.isBlank(req.getPreferredSystemNotification()) ) {
+				errors.add(new Error("31","PreferredSystemNotification" , "Please Enter PreferredSystemNotification" ));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(" Exception is ---> " + e.getMessage());
+			errors.add(new Error("32","Common Error" , e.getMessage() ));
+		}
+		return errors;
+	}
+	
+	public boolean isNotValidName(String name) {
+		String s = name;
+		String regx = "^[\\p{L} .'-]+$";
+		Pattern p = Pattern.compile(regx);
+		Matcher m = p.matcher(s);
+		try {
+			if (m.matches()) {
+				return false;
+			}
+
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			e.printStackTrace();
+			return true;
+		}
+		return true;
+	}
+	
+	public boolean isNotValidMail(String mail) {
+		String regex = "^[a-zA-Z0-9_+&*-]+(?:\\." + "[a-zA-Z0-9_+&*-]+)*@" + "(?:[a-zA-Z0-9-]+\\.)+[a-z"
+				+ "A-Z]{2,7}$";
+		Pattern pattern = Pattern.compile(regex);
+		Matcher m = pattern.matcher(mail);
+		try {
+			if (m.matches()) {
+				return false;
+			}
+
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			e.printStackTrace();
+			return true;
+		}
+		return true;
+	}
+
+
+	
+}

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class GetQuoteDetailsReq {
+public class GetPolicyDetailsReq {
 
 	@JsonProperty("CustomerId")
 	private String customerId ;

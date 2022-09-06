@@ -10,7 +10,7 @@ public class CustomerGetReq {
 	@JsonProperty("CustomerId")
 	private String customerId;
 	
-
+/*
 	@JsonProperty("GstNo")
-	private String gstNo;
+	private String gstNo; */
 }

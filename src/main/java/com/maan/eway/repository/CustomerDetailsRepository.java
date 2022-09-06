@@ -34,6 +34,6 @@ public interface CustomerDetailsRepository  extends JpaRepository<CustomerDetail
   
 	CustomerDetails findByCustomerId(Integer valueOf);
 
-	CustomerDetails findByCustomerIdAndGstNo(String customerId, String gstNo);
+	long countByGstNo(String valueOf);
 
 }

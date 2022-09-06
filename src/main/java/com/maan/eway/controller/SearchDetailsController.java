@@ -44,22 +44,22 @@ public class SearchDetailsController {
 	private  PrintReqService reqPrinter;
 	// Search Lead Count
 	
-			@PostMapping("/search/customerdetails")
-			@ApiOperation(value = "This method is to Search Customer Deatils ")
-			public ResponseEntity<CommonRes> searchCustDetails(@RequestBody CustomerDetailsSearchReq req) {
-				CommonRes data = new CommonRes();
+	@PostMapping("/search/customerdetails")
+	@ApiOperation(value = "This method is to Search Customer Deatils ")
+	public ResponseEntity<CommonRes> searchCustDetails(@RequestBody CustomerDetailsSearchReq req) {
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		List<CustomerDetailsSearchRes> res = custService.searchCustDetails(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
 
-				List<CustomerDetailsSearchRes> res = custService.searchCustDetails(req);
-				data.setCommonResponse(res);
-				data.setIsError(false);
-				data.setErrorMessage(Collections.emptyList());
-				data.setMessage("Success");
-
-				if (res != null) {
-					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-				}
-			}
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 	
 }

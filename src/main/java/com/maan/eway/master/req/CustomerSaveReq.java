@@ -22,24 +22,37 @@ public class CustomerSaveReq {
 	@JsonProperty("TitleDesc")
     private String     titleDesc;
 	@JsonProperty("ClientName")
-    private String     clientName;
-	@JsonFormat(pattern="dd/MM/yyyy")
-	@JsonProperty("DateOfBirth")
-    private Date       dateOfBirth  ;
-	@JsonProperty("GstNo")
-    private String    gstNo  ;
-	@JsonFormat(pattern="dd/MM/yyyy")
+    private String     clientName; 
+	
+/*  @JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EntryDate")
     private Date     entryDate  ;
-	@JsonProperty("Status")
-    private String     status       ;
-	@JsonProperty("CreatedBy")
-	private String createdBy;
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("UpdatedDate")
     private Date  updatedDate  ;
 	@JsonProperty("UpdatedBy")
 	private String updatedBy;	
+    @JsonProperty("Status")
+    private String     status       ;
+    @JsonProperty("ClientStatusId")
+    private String    clientStatusId ;
+	@JsonProperty("ClientStatusDesc")
+    private String     clientStatusDesc ;
+    @JsonProperty("Vrngst")
+    private String     vrngst       ;\	@JsonProperty("RegionId")
+    private String    regionId     ;
+	@JsonProperty("RegionDesc")
+    private String     regionDesc   ;
+    */
+	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("DateOfBirth")
+    private Date       dateOfBirth  ;
+	@JsonProperty("GstNo")
+    private String    gstNo  ;
+	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+	
 	
 	@JsonProperty("NationalityId")
     private String    nationalityId ;
@@ -61,8 +74,11 @@ public class CustomerSaveReq {
     private String     address2     ;
 	@JsonProperty("Insurer")
     private String     insurer      ;
-	@JsonProperty("Currency")
-    private String     currency     ;
+	@JsonProperty("CurrencyId")
+    private String     currencyId     ;
+	@JsonProperty("CurrencyName")
+    private String     currencyName     ;
+	
 	@JsonProperty("ExchangeRate")
     private String     exchangeRate ;
 	@JsonProperty("InsurerExchangeRate")
@@ -74,54 +90,16 @@ public class CustomerSaveReq {
     private String     noOfDaysPolicy ;
 	@JsonProperty("UniquePropertyIdentification")
     private String     uniquePropertyIdentification ;
-	@JsonProperty("FrontingBusiness")
-    private String     frontingBusiness ;
-	@JsonProperty("NonRenewable")
-    private String     nonRenewable ;
-	@JsonProperty("TinNo")
-    private String     tinNo        ;
-	@JsonProperty("VrnNumber")
-    private String     vrnNumber    ;
-	@JsonProperty("Branch")
-    private String     branch       ;
-	@JsonProperty("BusinessBy")
-    private String     businessBy   ;
-	@JsonProperty("BusinessType")
-    private String     businessType ;
+	
+/*	@JsonProperty("BusinessType")
+    private String     businessType ; */
 	@JsonProperty("ContactPerson")
     private String     contactPerson ;
+	@JsonProperty("ContactPersonMobile")
+    private String     contactPersonMobile ;
 	@JsonProperty("InsuredName")
     private String     insuredName  ;
-	@JsonProperty("FirstLossPayee")
-    private String     firstLossPayee ;
-	@JsonProperty("BorrowerType")
-    private String     borrowerType ;
-	@JsonProperty("VatPercentage")
-    private String     vatPercentage ;
-	@JsonProperty("BindToCollateral")
-    private String     bindToCollateral ;
-	@JsonProperty("CollateralName")
-    private String     collateralName ;
-	@JsonProperty("CoveringDetails")
-    private String     coveringDetails ;
-	@JsonProperty("DescriptionOfRisk")
-    private String     descriptionOfRisk ;
-	@JsonProperty("ClientDetails")
-    private String     clientDetails ;
-	@JsonProperty("AccountNumber")
-    private String     accountNumber ;
-	@JsonProperty("ClientStatusId")
-    private String    clientStatusId ;
-	@JsonProperty("ClientStatusDesc")
-    private String     clientStatusDesc ;
-	@JsonProperty("IdTypeId")
-    private String    idTypeId;
-	@JsonProperty("IdTypeDesc")
-    private String     idTypeDesc   ;
-	@JsonProperty("IdNumber")
-    private String    idNumber     ;
-	@JsonProperty("TinPan")
-    private String     tinPan       ;
+	
 	@JsonProperty("BusinessTypeId")
     private String    businessTypeId ;
 	@JsonProperty("BusinessTypeIdDesc")
@@ -133,14 +111,10 @@ public class CustomerSaveReq {
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("RegistrationDate")
     private Date       registrationDate ;
-	@JsonProperty("Vrngst")
-    private String     vrngst       ;
+	
 	@JsonProperty("RegistrationNumber")
     private String     registrationNumber ;
-	@JsonProperty("RegionId")
-    private String    regionId     ;
-	@JsonProperty("RegionDesc")
-    private String     regionDesc   ;
+
 	@JsonProperty("DistrictId")
     private String    districtId   ;
 	@JsonProperty("DistrictDesc")
@@ -175,8 +149,56 @@ public class CustomerSaveReq {
     private String     email2       ;
 	@JsonProperty("Email3")
     private String     email3       ;
+	@JsonProperty("PreferredSystemNotificationId")
+    private String     preferredSystemNotificationId ;
 	@JsonProperty("PreferredSystemNotification")
     private String     preferredSystemNotification ;
+	
+	@JsonProperty("SelectLanguageId")
+    private String    selectLanguageId ;
+	@JsonProperty("SelectLanguageDesc")
+    private String     selectLanguageDesc ;
+
+	@JsonProperty("FrontingBusiness")
+    private String     frontingBusiness ;
+	
+	
+	@JsonProperty("NonRenewable")
+    private String     nonRenewable ;
+	@JsonProperty("TinNo")
+    private String     tinNo        ;
+	@JsonProperty("VrnNumber")
+    private String     vrnNumber    ;
+	@JsonProperty("Branch")
+    private String     branch       ;
+	@JsonProperty("BusinessBy")
+    private String     businessBy   ;
+	@JsonProperty("FirstLossPayee")
+    private String     firstLossPayee ;
+	@JsonProperty("BorrowerType")
+    private String     borrowerType ;
+	@JsonProperty("VatPercentage")
+    private String     vatPercentage ;
+	@JsonProperty("BindToCollateral")
+    private String     bindToCollateral ;
+	@JsonProperty("CollateralName")
+    private String     collateralName ;
+	@JsonProperty("CoveringDetails")
+    private String     coveringDetails ;
+	@JsonProperty("DescriptionOfRisk")
+    private String     descriptionOfRisk ;
+	@JsonProperty("AccountNumber")
+    private String     accountNumber ;
+
+	
+	@JsonProperty("IdTypeId")
+    private String    idTypeId;
+	@JsonProperty("IdTypeDesc")
+    private String     idTypeDesc   ;
+	@JsonProperty("IdNumber")
+    private String    idNumber     ;
+	@JsonProperty("TinPan")
+    private String     tinPan       ;
 	@JsonProperty("TaxExempted")
     private String     taxExempted  ;
 	@JsonFormat(pattern="dd/MM/yyyy")
@@ -185,10 +207,6 @@ public class CustomerSaveReq {
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("MandateExpiry")
     private Date       mandateExpiry ;
-	@JsonProperty("SelectLanguageId")
-    private String    selectLanguageId ;
-	@JsonProperty("SelectLanguageDesc")
-    private String     selectLanguageDesc ;
-
+	
 	
 }

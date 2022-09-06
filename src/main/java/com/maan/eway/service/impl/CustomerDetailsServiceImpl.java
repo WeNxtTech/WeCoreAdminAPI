@@ -16,8 +16,10 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
@@ -42,6 +44,7 @@ import com.maan.eway.repository.CustomerDetailsRepository;
 import com.maan.eway.repository.CustomerRelationshipRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.res.SuccessRes;
+import com.maan.eway.error.Error;
 /**
 * <h2>CustomerDetailsServiceimpl</h2>
 */
@@ -53,7 +56,7 @@ public class CustomerDetailsServiceImpl implements CustomerDetailsService {
 private EntityManager em;
 
 @Autowired
-private CustomerDetailsRepository customerrepo;
+private CustomerDetailsRepository repository;
 
 @Autowired
 private CustomerRelationshipRepository relationrepo;
@@ -66,100 +69,151 @@ Gson json = new Gson();
 private Logger log=LogManager.getLogger(CustomerDetailsServiceImpl.class);
 
 
-@Override
-public SuccessRes savecustomer(CustomerSaveReq req) {
-	SuccessRes res = new SuccessRes();
-	DozerBeanMapper mapper = new DozerBeanMapper();
-	try {
-		Long newId =0L;
-		CustomerDetails ent = new CustomerDetails();
-
-		ent = mapper.map(req, CustomerDetails.class);
-		newId = customerrepo.count()+10001;
-		ent.setGstNo(req.getGstNo());
-		ent.setEntryDate(new Date());
-		ent.setCustomerId(Integer.valueOf(newId.toString()));
-		ent.setStatus("Y");
-		res.setSuccessId(newId.toString());
-		res.setResponse("Inserted Successful");
-
-		customerrepo.save(ent);
-		
-		LoginMaster login = loginrepo.findByLoginId(req.getCreatedBy());
-		CustomerRelationship cus = new CustomerRelationship();
-		cus.setBranchCode(req.getBranchCode());
-		cus.setBrokerId(Integer.valueOf(login.getOaCode()));
-		cus.setCompanyId(req.getCompanyId());
-		cus.setCreatedBy(req.getCreatedBy());
-		cus.setCustomerId(Integer.valueOf(ent.getCustomerId()));
-		cus.setEntryDate(new Date());
-		cus.setGstNo(req.getGstNo());
-		cus.setStatus("Y");
-		relationrepo.save(cus);		
-	}
-	catch(Exception e) {
-		e.printStackTrace();
-		log.info("Log Details"+e.getMessage());
-		return null;
-	}
-	return res;
-}
-
-
-@Override
-public CustomerGetRes getcustomer(CustomerGetReq req) {
-	CustomerGetRes res = new CustomerGetRes();
-	DozerBeanMapper mapper = new DozerBeanMapper();
-	try {
-		CustomerDetails data = customerrepo.findByCustomerIdAndGstNo(req.getCustomerId(),req.getGstNo());
-		res =mapper.map(data,CustomerGetRes.class);
-		}
-	catch(Exception e) {
-		e.printStackTrace();
-		log.info("Log Details"+e.getMessage());
-		return null;
-	}
-	return res;
-}
-
-
-@Override
-public List<CustomerGetallRes> getallcustomer(CustomerDetailsGetAllReq req) {
-	List<CustomerGetallRes> resList  = new ArrayList<CustomerGetallRes>();
-	DozerBeanMapper mapper = new DozerBeanMapper();
-	try {
-		
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<CustomerGetallRes> query = cb.createQuery(CustomerGetallRes.class);
-		List<CustomerGetallRes> list = new ArrayList<CustomerGetallRes>();
-		Root<CustomerDetails> c =query.from(CustomerDetails.class);
+	@Override
+	public SuccessRes savecustomer(CustomerSaveReq req) {
+		SuccessRes res = new SuccessRes();
+		DozerBeanMapper mapper = new DozerBeanMapper();
+		try {
+			Long newId =0L;
+			CustomerDetails ent = new CustomerDetails();
 	
-		query.multiselect(c.get("customerId").alias("customerId"),c.get("gstNo").alias("gstNo"),
-				c.get("companyId").alias("companyId"),c.get("branchCode").alias("branchCode"),
-				c.get("clientName").alias("clientName"),c.get("dateOfBirth").alias("dateOfBirth"),
-				c.get("createdBy").alias("createdBy"),c.get("mobileNo1").alias("mobileNo1")			
-				);
-		
-		//query.multiselect(c);
-		// Order By
-		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(c.get("customerId")));
-
-		TypedQuery<CustomerGetallRes> result = em.createQuery(query);
-		list= result.getResultList();
-		for(CustomerGetallRes data : list) {
-			CustomerGetallRes res = new CustomerGetallRes();
-			res = mapper.map(data, CustomerGetallRes.class);
-			resList.add(res);
+			ent = mapper.map(req, CustomerDetails.class);
+			newId = repository.count()+10001;
+			ent.setGstNo(req.getGstNo());
+			ent.setEntryDate(new Date());
+			ent.setCustomerId(Integer.valueOf(newId.toString()));
+			ent.setStatus("Y");
+			ent.setUpdatedBy(req.getCreatedBy());
+			ent.setUpdatedDate(new Date());
+			ent.setVrngst(req.getGstNo());
+			res.setSuccessId(newId.toString());
+			res.setResponse("Inserted Successfully");
+	
+			repository.save(ent);
+			
+			LoginMaster login = loginrepo.findByLoginId(req.getCreatedBy());
+			CustomerRelationship cus = new CustomerRelationship();
+			cus.setBranchCode(req.getBranchCode());
+			cus.setBrokerId(Integer.valueOf(login.getOaCode()));
+			cus.setCompanyId(req.getCompanyId());
+			cus.setCreatedBy(req.getCreatedBy());
+			cus.setCustomerId(Integer.valueOf(ent.getCustomerId()));
+			cus.setEntryDate(new Date());
+			cus.setGstNo(req.getGstNo());
+			cus.setStatus("Y");
+			relationrepo.save(cus);		
 		}
+		catch(Exception e) {
+			e.printStackTrace();
+			log.info("Log Details"+e.getMessage());
+			return null;
 		}
-	catch(Exception e) {
-		e.printStackTrace();
-		log.info("Log Details"+e.getMessage());
-		return null;
+		return res;
 	}
-	return resList;
-}
+	
+	
+	@Override
+	public CustomerGetRes getcustomer(CustomerGetReq req) {
+		CustomerGetRes res = new CustomerGetRes();
+		DozerBeanMapper mapper = new DozerBeanMapper();
+		try {
+			CustomerDetails data = repository.findByCustomerId(Integer.valueOf(req.getCustomerId()));
+			res =mapper.map(data,CustomerGetRes.class);
+			}
+		catch(Exception e) {
+			e.printStackTrace();
+			log.info("Log Details"+e.getMessage());
+			return null;
+		}
+		return res;
+	}
+	
+	
+	@Override
+	public List<CustomerGetallRes> getallcustomer(CustomerDetailsGetAllReq req) {
+		List<CustomerGetallRes> resList  = new ArrayList<CustomerGetallRes>();
+		DozerBeanMapper mapper = new DozerBeanMapper();
+		try {
+			
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CustomerGetallRes> query = cb.createQuery(CustomerGetallRes.class);
+			List<CustomerGetallRes> list = new ArrayList<CustomerGetallRes>();
+			Root<CustomerDetails> c =query.from(CustomerDetails.class);
+		
+			query.multiselect(c.get("customerId").alias("customerId"),c.get("gstNo").alias("gstNo"),
+					c.get("companyId").alias("companyId"),c.get("branchCode").alias("branchCode"),
+					c.get("clientName").alias("clientName"),c.get("dateOfBirth").alias("dateOfBirth"),
+					c.get("createdBy").alias("createdBy"),c.get("mobileNo1").alias("mobileNo1")			
+					);
+			
+			//query.multiselect(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("customerId")));
+			
+			//Predicate n1 = cb.equal(c.get("createdBy")   )
+
+			TypedQuery<CustomerGetallRes> result = em.createQuery(query);
+			list= result.getResultList();
+			for(CustomerGetallRes data : list) {
+				CustomerGetallRes res = new CustomerGetallRes();
+				res = mapper.map(data, CustomerGetallRes.class);
+				resList.add(res);
+			}
+			}
+		catch(Exception e) {
+			e.printStackTrace();
+			log.info("Log Details"+e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+	@Override
+	public SuccessRes updateCustomer(CustomerSaveReq req) {
+		SuccessRes res = new SuccessRes();
+		//DozerBeanMapper mapper = new DozerBeanMapper();
+		try {
+			Long newId =0L;
+			CustomerDetails ent = repository.findByCustomerId(Integer.valueOf(req.getCustomerId()))  ;
+	
+		//	ent = mapper.map(req, CustomerDetails.class);
+			ent.setUpdatedBy(req.getCreatedBy());
+			ent.setUpdatedDate(new Date());
+			res.setSuccessId(req.getCustomerId());
+			res.setResponse("Updated Successfully");
+	
+			repository.save(ent);
+			
+			LoginMaster login = loginrepo.findByLoginId(req.getCreatedBy());
+			CustomerRelationship cus = new CustomerRelationship();
+			CustomerRelationship  findRelation = relationrepo.findByCustomerIdAndCreatedBy(Integer.valueOf(req.getCustomerId()) , req.getCreatedBy());
+			
+			if(findRelation != null ) {
+				cus = findRelation ;
+			} else {
+				cus.setCustomerId(Integer.valueOf(ent.getCustomerId()));
+				cus.setEntryDate(new Date());
+				cus.setCreatedBy(req.getCreatedBy());
+				cus.setBranchCode(req.getBranchCode());
+				cus.setBrokerId(Integer.valueOf(login.getOaCode()));
+				cus.setCompanyId(req.getCompanyId());
+				cus.setStatus("Y");
+				cus.setGstNo(req.getGstNo());
+			}
+			cus.setUpdatedBy(req.getCreatedBy());
+			cus.setUpdatedDate(new Date());
+			relationrepo.save(cus);		
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			log.info("Log Details"+e.getMessage());
+			return null;
+		}
+		return res;
+	}
+
 
 
 

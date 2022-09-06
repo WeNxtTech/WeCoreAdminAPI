@@ -7,12 +7,14 @@ package com.maan.eway.master.service;
 
 import java.util.List;
 
+
 import com.maan.eway.master.req.CustomerDetailsGetAllReq;
 import com.maan.eway.master.req.CustomerGetReq;
 import com.maan.eway.master.req.CustomerSaveReq;
 import com.maan.eway.master.res.CustomerGetRes;
 import com.maan.eway.master.res.CustomerGetallRes;
 import com.maan.eway.res.SuccessRes;
+import com.maan.eway.error.Error;
 /**
 * <h2>BankMasterServiceimpl</h2>
 */
@@ -24,6 +26,8 @@ SuccessRes savecustomer(CustomerSaveReq req);
 CustomerGetRes getcustomer(CustomerGetReq req);
 
 List<CustomerGetallRes> getallcustomer(CustomerDetailsGetAllReq req);
+
+SuccessRes updateCustomer(CustomerSaveReq req);
 
 
 

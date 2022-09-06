@@ -12,11 +12,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.GetPolicyDetailsReq;
 import com.maan.eway.master.req.GetQuoteCountReq;
 import com.maan.eway.master.req.GetQuoteDetailsReq;
 import com.maan.eway.master.req.RiskDetailsSaveReq;
 import com.maan.eway.res.CommonRes;
+import com.maan.eway.res.GetPolicyDetailsRes;
 import com.maan.eway.res.GetQuoteCountRes;
+import com.maan.eway.res.GetQuoteDetailsRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.HomePositionMasterService;
 import com.maan.eway.service.PrintReqService;
@@ -57,14 +60,14 @@ public class HomePositionMasterController {
 
 	}
 	
-/*	@PostMapping("/getquotedetails")
+	@PostMapping("/getquotedetails")
 	@ApiOperation(value = "This method is Get Quote Details")
 	public ResponseEntity<CommonRes> getCustomerQuoteDetails(@RequestBody GetQuoteDetailsReq req) {
 
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
 		// Save
-		List<GetQuoteCountRes> res = entityService.getCustomerQuoteCount(req);
+		List<GetQuoteDetailsRes> res = entityService.getCustomerQuoteDetails(req);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());
@@ -76,7 +79,28 @@ public class HomePositionMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 
-	} */
+	} 
+	
+	@PostMapping("/getpolicydetails")
+	@ApiOperation(value = "This method is Get Policy Details")
+	public ResponseEntity<CommonRes> getCustomerPolicyDetails(@RequestBody GetPolicyDetailsReq req) {
+
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		// Save
+		List<GetPolicyDetailsRes> res = entityService.getCustomerPolicyDetails(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	} 
 	
 	
 }

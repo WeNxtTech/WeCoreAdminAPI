@@ -122,14 +122,17 @@ private static final long serialVersionUID = 1L;
     @Column(name="INSURER", length=20)
     private String     insurer ;
 
-    @Column(name="CURRENCY", length=20)
-    private String     currency ;
+    @Column(name="CURRENCY_ID", length=20)
+    private String     currencyId ;
+    
+    @Column(name="CURRENCY_NAME", length=20)
+    private String     currencyName ;
 
     @Column(name="EXCHANGE_RATE", length=20)
-    private String     exchangeRate ;
+    private Double     exchangeRate ;
 
     @Column(name="INSURER_EXCHANGE_RATE", length=20)
-    private String     insurerExchangeRate ;
+    private Double insurerExchangeRate ;
 
   
     @Temporal(TemporalType.TIMESTAMP)
@@ -165,6 +168,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="CONTACT_PERSON", length=20)
     private String     contactPerson ;
+    
+    @Column(name="CONTACT_PERSON_MOBILE", length=20)
+    private String     contactPersonMobile ;
 
     @Column(name="INSURED_NAME", length=20)
     private String     insuredName ;
@@ -176,7 +182,7 @@ private static final long serialVersionUID = 1L;
     private String     borrowerType ;
 
     @Column(name="VAT_PERCENTAGE", length=20)
-    private String     vatPercentage ;
+    private Integer     vatPercentage ;
 
     @Column(name="BIND_TO_COLLATERAL", length=20)
     private String     bindToCollateral ;
@@ -229,6 +235,10 @@ private static final long serialVersionUID = 1L;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="REGISTRATION_DATE")
     private Date       registrationDate ;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="UPDATED_DATE")
+    private Date       updatedDate ;
 
   
     @Column(name="REGISTRATION_NUMBER", length=20)
@@ -290,6 +300,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="EMAIL_3", length=20)
     private String     email3 ;
+    
+    @Column(name="PREFERRED_SYSTEM_NOTIFICATION_ID", length=20)
+    private String     preferredSystemNotificationId ;
 
     @Column(name="PREFERRED_SYSTEM_NOTIFICATION", length=20)
     private String     preferredSystemNotification ;

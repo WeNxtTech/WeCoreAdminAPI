@@ -3,11 +3,9 @@ package com.maan.eway.service.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -20,17 +18,20 @@ import javax.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ProductMaster;
-import com.maan.eway.bean.RiskDomesticDetails;
+import com.maan.eway.master.req.GetPolicyDetailsReq;
 import com.maan.eway.master.req.GetQuoteCountReq;
-import com.maan.eway.master.req.RiskListSaveReq;
+import com.maan.eway.master.req.GetQuoteDetailsReq;
 import com.maan.eway.repository.HomePositionMasterRepository;
+import com.maan.eway.res.GetPolicyDetailsRes;
 import com.maan.eway.res.GetQuoteCountRes;
+import com.maan.eway.res.GetQuoteDetailsRes;
 import com.maan.eway.service.HomePositionMasterService;
 
 @Service
@@ -121,5 +122,99 @@ public class HomePositionMasterServiceImpl implements HomePositionMasterService 
 		return resList;
 	}
 
+	@Override
+	public List<GetQuoteDetailsRes> getCustomerQuoteDetails(GetQuoteDetailsReq req) {
+		 List<GetQuoteDetailsRes>  resList = new  ArrayList<GetQuoteDetailsRes>();
+		 DozerBeanMapper dozerMapper = new DozerBeanMapper(); 
+			try {
+			//	List<HomePositionMaster> list = repository.findByCustomerIdAndProductIdAndLoginIdOrderByUpdatedDateAsc(Integer.valueOf(req.getCustomerId()) ,Integer.valueOf(req.getProductId()) , req.getCreatedBy());
+				
+				// Criteria
+			    CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<HomePositionMaster> query = cb.createQuery(HomePositionMaster.class);
+				List<HomePositionMaster> list = new ArrayList<HomePositionMaster>();
+				
+				// Find All
+				Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
+				
+				// Select
+				query.select( h );
+
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+			    orderList.add(cb.desc(h.get("updatedDate")));
+				
+				// Where
+				Predicate n1 = cb.equal(h.get("customerId"),req.getCustomerId());
+				Predicate n2 = cb.equal(h.get("productId"),req.getProductId());
+				Predicate n3 = cb.equal(h.get("loginId"),req.getCreatedBy());
+				query.where(n1,n2,n3).orderBy(orderList);
+				
+				// Get Result
+				TypedQuery<HomePositionMaster> result = em.createQuery(query);
+				list = result.getResultList(); 
+				
+				for (HomePositionMaster data : list) {
+					GetQuoteDetailsRes res = new GetQuoteDetailsRes();
+					
+					res = dozerMapper.map(data, GetQuoteDetailsRes.class ); 
+					resList.add(res);
+				}
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Exception is --->" + e.getMessage());
+				return null;
+			}
+			return resList;
+		}
+
+	@Override
+	public List<GetPolicyDetailsRes> getCustomerPolicyDetails(GetPolicyDetailsReq req) {
+		List<GetPolicyDetailsRes>  resList = new  ArrayList<GetPolicyDetailsRes>();
+		 DozerBeanMapper dozerMapper = new DozerBeanMapper(); 
+			try {
+			//	List<HomePositionMaster> list = repository.findByCustomerIdAndProductIdAndLoginIdOrderByUpdatedDateAsc(Integer.valueOf(req.getCustomerId()) ,Integer.valueOf(req.getProductId()) , req.getCreatedBy());
+				
+				// Criteria
+			    CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<HomePositionMaster> query = cb.createQuery(HomePositionMaster.class);
+				List<HomePositionMaster> list = new ArrayList<HomePositionMaster>();
+				
+				// Find All
+				Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
+				
+				// Select
+				query.select( h );
+
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+			    orderList.add(cb.desc(h.get("updatedDate")));
+				
+				// Where
+				Predicate n1 = cb.equal(h.get("customerId"),req.getCustomerId());
+				Predicate n2 = cb.equal(h.get("productId"),req.getProductId());
+				Predicate n3 = cb.equal(h.get("loginId"),req.getCreatedBy());
+				Predicate n4 = cb.isNotNull(h.get("policyNo"));
+				query.where(n1,n2,n3,n4).orderBy(orderList);
+				
+				// Get Result
+				TypedQuery<HomePositionMaster> result = em.createQuery(query);
+				list = result.getResultList(); 
+				
+				for (HomePositionMaster data : list) {
+					GetPolicyDetailsRes res = new GetPolicyDetailsRes();
+					
+					res = dozerMapper.map(data, GetPolicyDetailsRes.class ); 
+					resList.add(res);
+				}
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Exception is --->" + e.getMessage());
+				return null;
+			}
+			return resList;
+		}
 	
 }

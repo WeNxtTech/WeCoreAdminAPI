@@ -15,9 +15,11 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -33,11 +35,13 @@ import com.google.gson.Gson;
 import com.maan.eway.bean.CustomerDetails;
 import com.maan.eway.bean.CustomerDetailsId;
 import com.maan.eway.bean.CustomerRelationship;
+import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.master.req.CustomerDetailsGetAllReq;
 import com.maan.eway.master.req.CustomerGetReq;
 import com.maan.eway.master.req.CustomerSaveReq;
 import com.maan.eway.master.res.CustomerGetRes;
+import com.maan.eway.master.res.CustomerGetallCriteriaRes;
 import com.maan.eway.master.res.CustomerGetallRes;
 import com.maan.eway.master.service.CustomerDetailsService;
 import com.maan.eway.repository.CustomerDetailsRepository;
@@ -136,26 +140,53 @@ private Logger log=LogManager.getLogger(CustomerDetailsServiceImpl.class);
 		try {
 			
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<CustomerGetallRes> query = cb.createQuery(CustomerGetallRes.class);
-			List<CustomerGetallRes> list = new ArrayList<CustomerGetallRes>();
+			CriteriaQuery<CustomerGetallCriteriaRes> query = cb.createQuery(CustomerGetallCriteriaRes.class);
+			List<CustomerGetallCriteriaRes> list = new ArrayList<CustomerGetallCriteriaRes>();
 			Root<CustomerDetails> c =query.from(CustomerDetails.class);
 		
+			// Customer Id Filter
+			Subquery<Long> customerIds = query.subquery(Long.class);
+			Root<CustomerRelationship> cr = customerIds.from(CustomerRelationship.class);
+			
+			customerIds.select(cr.get("customerId"));
+			Predicate cr1 = cb.equal(cr.get("createdBy"), req.getCreatedBy() );
+			Predicate cr2 = cb.equal(cr.get("companyId"), req.getInsuranceId());
+			customerIds.where(cr1,cr2);
+			
+			// Product Count
+			// Product Count
+			Subquery<Long> productCount = query.subquery(Long.class);
+			Root<HomePositionMaster> hm= productCount.from(HomePositionMaster.class);
+			
+			productCount.select( cb.countDistinct(hm.get("productId")) );
+			Predicate hm1 = cb.equal(hm.get("loginId"), c.get("createdBy"));
+			Predicate hm2 = cb.equal(hm.get("customerId"), c.get("customerId"));
+			productCount.where(hm1,hm2); 
+			
+				
 			query.multiselect(c.get("customerId").alias("customerId"),c.get("gstNo").alias("gstNo"),
 					c.get("companyId").alias("companyId"),c.get("branchCode").alias("branchCode"),
 					c.get("clientName").alias("clientName"),c.get("dateOfBirth").alias("dateOfBirth"),
-					c.get("createdBy").alias("createdBy"),c.get("mobileNo1").alias("mobileNo1")			
-					);
+					c.get("createdBy").alias("createdBy"),c.get("mobileNo1").alias("mobileNo1")		,
+					c.get("email1").alias("email1") , productCount.alias("productCount") ,
+					c.get("updatedDate").alias("updatedDate") , c.get("updatedBy").alias("updatedBy") ,
+					c.get("entryDate").alias("entryDate"));
 			
-			//query.multiselect(c);
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(c.get("customerId")));
-			
-			//Predicate n1 = cb.equal(c.get("createdBy")   )
-
-			TypedQuery<CustomerGetallRes> result = em.createQuery(query);
+			orderList.add(cb.desc(c.get("updatedDate")));
+			Expression<String>e0= c.get("customerId");
+			Predicate n1 = e0.in(customerIds);	
+			query.where(n1).orderBy(orderList);
+			TypedQuery<CustomerGetallCriteriaRes> result = em.createQuery(query);
+			// Limit Offset
+			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
 			list= result.getResultList();
-			for(CustomerGetallRes data : list) {
+			
+			for(CustomerGetallCriteriaRes data : list) {
 				CustomerGetallRes res = new CustomerGetallRes();
 				res = mapper.map(data, CustomerGetallRes.class);
 				resList.add(res);

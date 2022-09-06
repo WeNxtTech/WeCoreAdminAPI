@@ -5,14 +5,17 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-public class CustomerGetallRes {
-	
+@NoArgsConstructor
+@AllArgsConstructor
+public class CustomerGetallCriteriaRes {
 
 	@JsonProperty("CustomerId")
-    private String     customerId;
+    private Integer     customerId;
 	@JsonProperty("GstNo")
     private String    gstNo  ;
 	
@@ -22,8 +25,6 @@ public class CustomerGetallRes {
     private String     branchCode;
 	@JsonProperty("ClientName")
     private String     clientName;
-	
-	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("DateOfBirth")
     private Date       dateOfBirth  ;
 
@@ -31,17 +32,18 @@ public class CustomerGetallRes {
 	private String createdBy;
 	@JsonProperty("MobileNo1")
     private String     mobileNo1    ;
+	@JsonProperty("Email1")
+    private String     email1    ;
 
 	@JsonProperty("ProductCount")
-	private String productCount;
+	private Long productCount;
 	
-	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("UpdatedDate")
     private Date       updatedDate;
 	@JsonProperty("UpdatedBy")
     private String       updatedBy;
-	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EntryDate")
     private Date       entryDate;
+
 
 }

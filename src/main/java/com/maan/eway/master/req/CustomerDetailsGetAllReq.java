@@ -13,11 +13,17 @@ public class CustomerDetailsGetAllReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @JsonProperty("CompanyId")
-    private String companyId;
+    @JsonProperty("InsuranceId")
+    private String insuranceId;
     
     @JsonProperty("CreatedBy")
     private String createdBy;
+    
+    @JsonProperty("Limit")
+    private String limit;
+    
+    @JsonProperty("Offset")
+    private String offset;
     
 
 }

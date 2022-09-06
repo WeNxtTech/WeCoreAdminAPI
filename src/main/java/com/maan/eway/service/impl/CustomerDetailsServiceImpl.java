@@ -72,36 +72,17 @@ public SuccessRes savecustomer(CustomerSaveReq req) {
 	DozerBeanMapper mapper = new DozerBeanMapper();
 	try {
 		Long newId =0L;
-		Date entryDate = null;
 		CustomerDetails ent = new CustomerDetails();
-		CustomerDetailsId id = new CustomerDetailsId();
-		id.setCustomerId(req.getCustomerId());
-		id.setGstNo(req.getGstNo());
-		Optional<CustomerDetails> data=	customerrepo.findById(id);
-	/*	if(data.isPresent()) {
-			ent= mapper.map(req, CustomerDetails.class);
-			ent.setCustomerId(data.get().getCustomerId());
-			ent.setGstNo(data.get().getGstNo());
-			ent.setGenderId(data.get().getGenderId());
-			ent.setGenderDesc(data.get().getGenderDesc());
-			ent.setBranchCode(data.get().getBranch());
-			ent.setStatus(req.getStatus());
-			res.setResponse("Updated Successful");	
-			res.setSuccessId(id.getCustomerId());
-			
-		}
-		*/
-			if(!data.isPresent()) {
-			ent = mapper.map(req, CustomerDetails.class);
-			newId = customerrepo.count()+10001;
-			ent.setGstNo(req.getGstNo());
-			ent.setEntryDate(new Date());
-			ent.setCustomerId(newId.toString());
-			ent.setStatus("Y");
-			res.setSuccessId(newId.toString());
-			res.setResponse("Inserted Successful");
-			
-			}
+
+		ent = mapper.map(req, CustomerDetails.class);
+		newId = customerrepo.count()+10001;
+		ent.setGstNo(req.getGstNo());
+		ent.setEntryDate(new Date());
+		ent.setCustomerId(Integer.valueOf(newId.toString()));
+		ent.setStatus("Y");
+		res.setSuccessId(newId.toString());
+		res.setResponse("Inserted Successful");
+
 		customerrepo.save(ent);
 		
 		LoginMaster login = loginrepo.findByLoginId(req.getCreatedBy());

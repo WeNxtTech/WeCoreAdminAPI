@@ -258,7 +258,8 @@ public class LoginReferalServiceImpl implements LoginReferalService {
 			company.select( ins.get("companyName")) ;
 			Predicate ins1 = cb.equal(ins.get("companyId"), rm  .get("companyId"));
 			Predicate ins2  = cb.equal(ins.get("effectiveDateStart"),insEff);
-			company.where(ins1,ins2);
+			Predicate ins3  = cb.equal(ins.get("status"),"Y");
+			company.where(ins1,ins2,ins3);
 			
 			// Select
 			query.multiselect( rm  .get("referalId").alias("referalId") , rm  .get("referalName").alias("referalName") , rm.get("companyId").alias("companyId") ,
@@ -324,7 +325,8 @@ public class LoginReferalServiceImpl implements LoginReferalService {
 			Predicate rm1 = cb.equal(r.get("companyId"), lm.get("companyId"));
 			Predicate rm2 = cb.equal(r.get("referalId"), lm.get("referalId"));
 			Predicate rm3   = cb.equal(r.get("effectiveDateStart"),rmEff);
-			referal.where(rm1,rm2,rm3);
+			Predicate rm4  = cb.equal(r.get("status"),"Y");
+			referal.where(rm1,rm2,rm3,rm4);
 			
 			// Select
 			query.multiselect( lm.get("referalId").alias("referalId"), lm.get("companyId").alias("companyId") ,

@@ -251,7 +251,8 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			company.select( ins.get("companyName")) ;
 			Predicate ins1 = cb.equal(ins.get("companyId"), pm.get("companyId"));
 			Predicate ins2  = cb.equal(ins.get("effectiveDateStart"),insEff);
-			company.where(ins1,ins2);
+			Predicate ins3  = cb.equal(ins.get("status"),"Y");
+			company.where(ins1,ins2,ins3);
 			
 			// Select
 			query.multiselect( pm.get("productId").alias("productId") , pm.get("productName").alias("productName") ,pm.get("companyId").alias("companyId") ,
@@ -317,7 +318,8 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			Predicate pm1 = cb.equal(p.get("companyId"), lm.get("companyId"));
 			Predicate pm2 = cb.equal(p.get("productId"), lm.get("productId"));
 			Predicate pm3   = cb.equal(p.get("effectiveDateStart"),pmEff);
-			product.where(pm1,pm2,pm3);
+			Predicate pm4  = cb.equal(p.get("status"),"Y");
+			product.where(pm1,pm2,pm3,pm4);
 			
 			// Select
 			query.multiselect( lm.get("productId").alias("productId") ,  lm.get("companyId").alias("companyId") , product.alias("productName") ,

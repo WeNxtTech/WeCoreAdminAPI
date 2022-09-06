@@ -50,7 +50,7 @@ private static final long serialVersionUID = 1L;
     //--- ENTITY PRIMARY KEY 
     @Id
     @Column(name="CUSTOMER_ID", nullable=false, length=20)
-    private String     customerId;
+    private Integer     customerId;
 
     @Id 
     @Column(name="GST_NO", length=20, nullable=false)

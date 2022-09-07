@@ -30,7 +30,7 @@ public class RiskMasterRes implements Serializable {
 	@JsonProperty("ProductId")
     private String     productId ;
 	
-	@JsonProperty("CompanyId")
+	@JsonProperty("InsuranceId")
     private String     companyId ;
 	
 	@JsonFormat(pattern = "dd/MM/yyyy")

@@ -1,4 +1,4 @@
-package com.maan.eway.master.req;
+package com.maan.eway.req;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -9,11 +9,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class InsuranceCompanyMasterGetReq implements Serializable {
+public class RawBuildingDetailsGetReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-	@JsonProperty("InsuranceId")
-    private String     companyId     ;
     
+	@JsonProperty("Requestreferenceno")
+    private String     requestReferenceNo ;
+    
+
 }

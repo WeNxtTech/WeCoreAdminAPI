@@ -19,7 +19,7 @@ public class ProductCriteriaRes {
 	@JsonProperty("ProductName")
 	private String productName ;
 	
-	@JsonProperty("CompanyId")
+	@JsonProperty("InsuranceId")
 	private String companyId ;
 	
 	@JsonProperty("CompanyName")

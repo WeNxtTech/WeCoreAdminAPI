@@ -29,7 +29,7 @@ public class BranchMasterSaveReq implements Serializable {
 	@JsonProperty("RegionCode")
 	private String regionCode;
 	
-	@JsonProperty("CompanyId")
+	@JsonProperty("InsuranceId")
 	private String companyId;
 	
 	@JsonProperty("CoreAppCode")

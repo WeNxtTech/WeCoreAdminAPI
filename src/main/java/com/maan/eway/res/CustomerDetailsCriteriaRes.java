@@ -28,7 +28,7 @@ public class CustomerDetailsCriteriaRes {
 	@JsonProperty("EntryDate")
 	private Date entryDate ;
 	
-	@JsonProperty("CompanyId")
+	@JsonProperty("InsuranceId")
 	private String companyId ;
 	
 	@JsonProperty("CompanyName")

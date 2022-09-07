@@ -10,21 +10,21 @@ import lombok.Data;
 public class SectionGetRes {
 
 	
-	@JsonProperty("Sectionid")
+	@JsonProperty("SectionId")
     private Integer    sectionId    ;
-	@JsonProperty("Riskid")
+	@JsonProperty("RiskId")
     private Integer    riskId       ;
-	@JsonProperty("Productid")
+	@JsonProperty("ProductId")
     private Integer    productId    ;
-	@JsonProperty("Companyid")
+	@JsonProperty("InsuranceId")
     private String     companyId    ;
-	@JsonProperty("Effectivedatestart")
+	@JsonProperty("EffectiveDateStart")
     private Date       effectiveDateStart ;
-	@JsonProperty("Effectivedateend")
+	@JsonProperty("EffectiveDateEnd")
     private Date       effectiveDateEnd ;
-	@JsonProperty("Sectionname")
+	@JsonProperty("SectionName")
     private String     sectionName  ;
-	@JsonProperty("Entrydate")
+	@JsonProperty("EntryDate")
     private Date       entryDate    ;
 	@JsonProperty("Status")
     private String     status       ;

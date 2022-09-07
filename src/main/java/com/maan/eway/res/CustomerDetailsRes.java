@@ -18,7 +18,7 @@ public class CustomerDetailsRes {
     //----------------------------------------------------------------------
     // ENTITY DATA FIELDS 
     //----------------------------------------------------------------------    
-	@JsonProperty("CompanyId")
+	@JsonProperty("InsuranceId")
     private String     companyId    ;
 	@JsonProperty("BranchCode")
     private String     branchCode   ;

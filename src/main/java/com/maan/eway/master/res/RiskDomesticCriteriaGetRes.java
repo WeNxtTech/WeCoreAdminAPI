@@ -36,7 +36,7 @@ public class RiskDomesticCriteriaGetRes {
     @JsonProperty("OldProductName")
     private String     oldProductName ;
 
-    @JsonProperty("CompanyId")
+    @JsonProperty("InsuranceId")
     private String     companyId ;
 
     

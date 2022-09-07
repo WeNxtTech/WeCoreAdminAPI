@@ -17,7 +17,7 @@ public class ReferalCriteriaRes {
 	@JsonProperty("ReferalName")
 	private String referalName ;
 	
-	@JsonProperty("CompanyId")
+	@JsonProperty("InsuranceId")
 	private String companyId ;
 	
 	@JsonProperty("CompanyName")

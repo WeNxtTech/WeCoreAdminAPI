@@ -19,7 +19,7 @@ public class CustomerGetallCriteriaRes {
 	@JsonProperty("GstNo")
     private String    gstNo  ;
 	
-	@JsonProperty("CompanyId")
+	@JsonProperty("InsuranceId")
     private String     companyId;
 	@JsonProperty("BranchCode")
     private String     branchCode;

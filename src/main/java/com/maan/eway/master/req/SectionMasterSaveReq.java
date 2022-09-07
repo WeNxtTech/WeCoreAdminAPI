@@ -43,7 +43,7 @@ public class SectionMasterSaveReq implements Serializable {
 	@JsonProperty("ProductId")
     private Integer    productId    ;
 
-	@JsonProperty("CompanyId")
+	@JsonProperty("InsuranceId")
 	private String companyId;
 
 	@JsonFormat(pattern = "dd/MM/yyyy")

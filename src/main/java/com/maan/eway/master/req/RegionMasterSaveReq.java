@@ -29,7 +29,7 @@ public class RegionMasterSaveReq implements Serializable {
 	@JsonProperty("Status")
 	private String status;
 
-	@JsonProperty("CompanyId")
+	@JsonProperty("InsuranceId")
 	private String companyId;
 
 	@JsonProperty("CoreAppCode")

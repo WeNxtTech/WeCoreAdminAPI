@@ -14,7 +14,7 @@ public class IssuerReferalCriteriaRes {
 	@JsonProperty("ReferalId")
 	private Integer referalId ;
 	
-	@JsonProperty("CompanyId")
+	@JsonProperty("InsuranceId")
 	private String companyId ;
 	
 	@JsonProperty("ReferalName")

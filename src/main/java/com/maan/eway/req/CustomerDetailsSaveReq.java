@@ -45,7 +45,7 @@ public class CustomerDetailsSaveReq implements Serializable {
     //----------------------------------------------------------------------
     // ENTITY DATA FIELDS 
     //----------------------------------------------------------------------    
-	@JsonProperty("CompanyId")
+	@JsonProperty("InsuranceId")
     private String     companyId    ;
 	@JsonProperty("BranchCode")
     private String     branchCode   ;

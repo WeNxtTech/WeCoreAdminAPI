@@ -21,7 +21,7 @@ public class BranchCriteriaRes {
 	private String regionCode ;
 	@JsonProperty("RegionCode")
 	private String regionName ;
-	@JsonProperty("CompanyId")
+	@JsonProperty("InsuranceId")
 	private String companyId ;
 	@JsonProperty("CompanyName")
 	private String companyName ;

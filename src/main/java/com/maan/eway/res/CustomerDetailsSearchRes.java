@@ -20,7 +20,7 @@ public class CustomerDetailsSearchRes {
 	@JsonProperty("ClientName")
     private String     clientName   ;
 	
-	@JsonProperty("CompanyId")
+	@JsonProperty("InsuranceId")
     private String     companyId    ;
 
 	@JsonProperty("CompanyName")

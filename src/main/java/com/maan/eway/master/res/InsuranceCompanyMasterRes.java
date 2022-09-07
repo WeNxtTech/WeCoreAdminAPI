@@ -13,7 +13,7 @@ public class InsuranceCompanyMasterRes implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @JsonProperty("companyId")
+    @JsonProperty("InsuranceId")
     private String     companyId     ;
 	
 	@JsonFormat(pattern = "dd/MM/yyyy")

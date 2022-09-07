@@ -9,24 +9,24 @@ import lombok.Data;
 @Data
 public class CoverGetRes {
 
-	@JsonProperty("Coverid")
+	@JsonProperty("CoverId")
     private Integer    coverId      ;
-	@JsonProperty("Sectionid")
+	@JsonProperty("SectionId")
     private Integer    sectionId    ;
-	@JsonProperty("Productid")
+	@JsonProperty("ProductId")
     private Integer    productId    ;
-	@JsonProperty("Companyid")
+	@JsonProperty("InsuranceId")
     private String     companyId    ;
-	@JsonProperty("Effectivedatestart")
+	@JsonProperty("EffectiveDateStart")
     private Date       effectiveDateStart ;
-	@JsonProperty("Effectivedateend")
+	@JsonProperty("EffectiveDateEnd")
     private Date       effectiveDateEnd ;
 
-	@JsonProperty("Covername")
+	@JsonProperty("CoverName")
     private String     coverName    ;
-	@JsonProperty("Coverdesc")
+	@JsonProperty("CoverDesc")
     private String     coverDesc    ;
-	@JsonProperty("Entrydate")
+	@JsonProperty("EntryDate")
     private Date       entryDate    ;
 	@JsonProperty("Status")
     private String     status       ;

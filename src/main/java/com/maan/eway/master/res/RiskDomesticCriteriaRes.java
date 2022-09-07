@@ -25,7 +25,7 @@ public class RiskDomesticCriteriaRes {
 	@JsonProperty("CustomerId")
 	private Integer customerId ;
 	
-	@JsonProperty("CompanyId")
+	@JsonProperty("InsuranceId")
 	private String companyId ;
 	
 	@JsonProperty("RequestReferenceNo")

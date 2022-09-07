@@ -25,7 +25,7 @@ public class ReferalMasterRes implements Serializable {
 	@JsonProperty("EffectiveDateEnd")
 	private Date EffectiveDateEnd;
 
-	@JsonProperty("CompanyId")
+	@JsonProperty("InsuranceId")
 	private String companyId;
 
 	@JsonProperty("ReferalName")

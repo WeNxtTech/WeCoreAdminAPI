@@ -13,7 +13,7 @@ public class CustomerSaveReq {
 	
 	@JsonProperty("CustomerId")
     private String     customerId;
-	@JsonProperty("CompanyId")
+	@JsonProperty("InsuranceId")
     private String     companyId;
 	@JsonProperty("BranchCode")
     private String     branchCode;

@@ -9,7 +9,7 @@ public class CoverGetReq {
 	@JsonProperty("ProductId")
 	private Integer productId;
 	
-	@JsonProperty("CompanyId")
+	@JsonProperty("InsuranceId")
 	private String companyId;
 	
 	@JsonProperty("LoginId")

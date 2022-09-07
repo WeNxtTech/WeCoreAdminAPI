@@ -20,7 +20,7 @@ public class ReferalMasterSaveReq implements Serializable {
 	@JsonProperty("EffectiveDate")
 	private Date effectiveDate;
 
-	@JsonProperty("CompanyId")
+	@JsonProperty("InsuranceId")
 	private String companyId;
 
 	@JsonProperty("ReferalName")

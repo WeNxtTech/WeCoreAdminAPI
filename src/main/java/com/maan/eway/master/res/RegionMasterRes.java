@@ -37,7 +37,7 @@ public class RegionMasterRes implements Serializable {
 	@JsonProperty("EntryDate")
 	private Date entryDate;
 
-	@JsonProperty("CompanyId")
+	@JsonProperty("InsuranceId")
 	private String companyId;
 
 	@JsonProperty("CoreAppCode")

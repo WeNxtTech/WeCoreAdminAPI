@@ -26,7 +26,7 @@ public class RiskMasterSaveReq implements Serializable {
 	@JsonProperty("ProductId")
     private String     productId ;
 	
-	@JsonProperty("CompanyId")
+	@JsonProperty("InsuranceId")
     private String     companyId ;
 	
 	@JsonProperty("Status")

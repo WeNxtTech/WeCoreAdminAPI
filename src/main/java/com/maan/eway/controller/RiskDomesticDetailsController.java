@@ -28,6 +28,7 @@ import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 import com.maan.eway.service.RiskDomesticDetailsService;
+import com.maan.eway.service.ValidationService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -40,6 +41,9 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags = "Risk Domestic Details ", description = "API's")
 @RequestMapping("/api")
 public class RiskDomesticDetailsController {
+	
+	@Autowired
+	private  ValidationService	 validationService;
 
 	@Autowired
 	private  RiskDomesticDetailsService	 enitityService;
@@ -48,48 +52,25 @@ public class RiskDomesticDetailsController {
 	private  PrintReqService reqPrinter;
 	
 	// save
-		@PostMapping("/savedomesticrisks")
-		@ApiOperation(value = "This method is Insert Risk Details")
-		public ResponseEntity<CommonRes> saveRiskDetails(@RequestBody RiskDomesticDetailsSaveReq req) {
+	@PostMapping("/savedomesticrisks")
+	@ApiOperation(value = "This method is Insert Risk Details")
+	public ResponseEntity<CommonRes> saveRiskDetails(@RequestBody RiskDomesticDetailsSaveReq req) {
 
-			reqPrinter.reqPrint(req);
-			CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
 
-			List<Error> validation = enitityService.validateRiskDetails(req);
-			// validation
-			if (validation != null && validation.size() != 0) {
-				data.setCommonResponse(null);
-				data.setIsError(true);
-				data.setErrorMessage(validation);
-				data.setMessage("Failed");
-				return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+		List<Error> validation = validationService.validateRiskDetails(req);
+		// validation
+		if (validation != null && validation.size() != 0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
 
-			} else {
-				// Save
-				SuccessRes res = enitityService.saveRiskDetails(req);
-				data.setCommonResponse(res);
-				data.setIsError(false);
-				data.setErrorMessage(Collections.emptyList());
-				data.setMessage("Success");
-
-				if (res != null) {
-					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-				}
-			}
-
-		}
-		
-		
-		@PostMapping("/getdomesticriskbycustomerid")
-		@ApiOperation(value = "This method is Get Customer Risk Details")
-		public ResponseEntity<CommonRes> getCutomerRiskDetails(@RequestBody RiskDomesticDetailsSaveReq req) {
-			reqPrinter.reqPrint(req);
-			CommonRes data = new CommonRes();
-			
-			// Get
-			List<RiskDomesticDetailsListRes> res = enitityService.getCutomerRiskDetails(req);
+		} else {
+			// Save
+			SuccessRes res = enitityService.saveRiskDetails(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());
@@ -101,27 +82,50 @@ public class RiskDomesticDetailsController {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
 		}
-		
-		@PostMapping("/getdomesticriskbyrefNo")
-		@ApiOperation(value = "This method is Get Risk Details")
-		public ResponseEntity<CommonRes> getRiskDetails(@RequestBody RiskDetailsGetReq req) {
-			reqPrinter.reqPrint(req);
-			CommonRes data = new CommonRes();
-			
-			// Get
-			RiskDomesticGetRes res = enitityService.getRiskDetails(req);
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
 
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
-		}
+	}
 		
+		
+	@PostMapping("/getdomesticriskbycustomerid")
+	@ApiOperation(value = "This method is Get Customer Risk Details")
+	public ResponseEntity<CommonRes> getCutomerRiskDetails(@RequestBody RiskDomesticDetailsSaveReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		
+		// Get
+		List<RiskDomesticDetailsListRes> res = enitityService.getCutomerRiskDetails(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PostMapping("/getdomesticriskbyrefNo")
+	@ApiOperation(value = "This method is Get Risk Details")
+	public ResponseEntity<CommonRes> getRiskDetails(@RequestBody RiskDetailsGetReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		
+		// Get
+		RiskDomesticGetRes res = enitityService.getRiskDetails(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
 		//  Get All Risk Master
 		
 /*		@PostMapping("/getallriskdetails")

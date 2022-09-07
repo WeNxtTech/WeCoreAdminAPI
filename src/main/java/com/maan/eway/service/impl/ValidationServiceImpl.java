@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 import com.maan.eway.bean.CustomerDetails;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CustomerSaveReq;
+import com.maan.eway.master.req.RiskDomesticDetailsSaveReq;
+import com.maan.eway.master.req.RiskListSaveReq;
 import com.maan.eway.repository.CustomerDetailsRepository;
 import com.maan.eway.service.ValidationService;
 
@@ -332,5 +334,60 @@ public class ValidationServiceImpl implements ValidationService {
 	}
 
 
+	@Override
+	public List<Error> validateRiskDetails(RiskDomesticDetailsSaveReq req) {
+		List<Error> errors = new ArrayList<Error>();
+		try {
+			if (StringUtils.isBlank(req.getBranchCode()) ) {
+				errors.add(new Error("01","Branch Code", "Please Enter BranchCode"));
+			}
+			if (StringUtils.isBlank(req.getCreatedBy()) ) {
+				errors.add(new Error("02","Created By", "Please Enter CreatedBy"));
+			}
+			if (StringUtils.isBlank(req.getCustomerId()) ) {
+				errors.add(new Error("03","Customer Id", "Please Enter Customer Id"));
+			}
+			if (StringUtils.isBlank(req.getInsuranceId()) ) {
+				errors.add(new Error("04","Insurance Id", "Please Enter Insurance Id"));
+			}
+			if (StringUtils.isBlank(req.getProductId()) ) {
+				errors.add(new Error("05","Product Id", "Please Enter Product Id"));
+			}
+			if (StringUtils.isBlank(req.getProductName()) ) {
+				errors.add(new Error("06","Product Name", "Please Enter Product Name"));
+			}
+			
+			if (req.getRiskList()==null || req.getRiskList().size() <= 0 ) {
+				errors.add(new Error("08","Risk List", "Please Select atleast One Risk"));
+			} else {
+				Long rowNo = 0L ;
+				for (RiskListSaveReq data :  req.getRiskList()) {
+					
+					if (StringUtils.isBlank(data.getRiskId())  ) {
+						errors.add(new Error("09","Risk Id", "Please Select atleast One Risk"));
+					}
+					
+					// Domestic Product Validations
+					if (StringUtils.isBlank(data.getOwnHouseYn())  ) {
+						errors.add(new Error("10","Own House Yn", "Please Select Own House Or Rental in Row : " + rowNo));
+					}
+					
+				}
+			}
+			
+			
+		} catch (Exception e ) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			errors.add(new Error("01","Common Error", e.getMessage()));
+		}
+		return errors;
+	}
+
+	@Override
+	public List<Error> validateProductSections(RiskDomesticDetailsSaveReq req) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }

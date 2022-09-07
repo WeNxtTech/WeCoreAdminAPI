@@ -152,7 +152,7 @@ public class SectionMasterController {
 	}
 		
 		@PostMapping("/getproductsections")
-		@ApiOperation("This Method is to get by Section id")
+		@ApiOperation("This Method is to get by Product  Sections")
 		public ResponseEntity<CommonRes> getProductSections(@RequestBody ProductSectionsGetReq req) {
 			CommonRes data = new CommonRes();
 			List<ProductSectionGetRes> res = sectionService.getProductSections(req);

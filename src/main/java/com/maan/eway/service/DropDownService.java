@@ -13,4 +13,12 @@ public interface DropDownService {
 
 	List<DropDownRes> getSubUserType(SubUserTypeReq req);
 
+	List<DropDownRes> getConstMaterial();
+
+	List<DropDownRes> getOutbuildingConst();
+
+	List<DropDownRes> getAboutBuilding();
+
+	List<DropDownRes> getStateExtent();
+
 }

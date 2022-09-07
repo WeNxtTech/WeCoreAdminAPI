@@ -94,5 +94,84 @@ public class DropDownServiceImpl implements DropDownService {
 		return resList;
 	}
 
-	
+	@Override
+	public List<DropDownRes> getConstMaterial() {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("CONST_MATERIAL", "Y");
+
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+	@Override
+	public List<DropDownRes> getOutbuildingConst() {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("OUTBUILDING_CONST", "Y");
+
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;	
+		
+	}
+
+	@Override
+	public List<DropDownRes> getAboutBuilding() {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("ABOUT_BUILDING", "Y");
+
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+	@Override
+	public List<DropDownRes> getStateExtent() {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("STATE_EXTENT", "Y");
+
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
 }

@@ -14,7 +14,7 @@ public class LoginProductCriteriaRes {
 	@JsonProperty("ProductId")
 	private Integer productId ;
 	
-	@JsonProperty("InsurancId")
+	@JsonProperty("InsuranceId")
 	private String companyId ;
 	
 	@JsonProperty("ProductName")

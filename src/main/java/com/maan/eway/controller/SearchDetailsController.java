@@ -33,8 +33,8 @@ import io.swagger.annotations.ApiOperation;
 * <h2>RiskMasterController</h2>
 */
 @RestController
-@Api(tags = "Searh Details ", description = "API's")
-@RequestMapping("/api")
+@Api(tags = "SEARCH DETAILS ", description = "API's")
+@RequestMapping("/api1")
 public class SearchDetailsController {
 
 	@Autowired

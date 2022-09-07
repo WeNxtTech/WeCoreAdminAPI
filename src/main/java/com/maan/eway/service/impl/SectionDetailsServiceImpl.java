@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.maan.eway.repository.SectionDetailsRepository;
+import com.maan.eway.res.SuccessRes;
 import com.maan.eway.bean.SectionDetails;
+import com.maan.eway.master.req.RiskDomesticDetailsSaveReq;
 import com.maan.eway.service.SectionDetailsService;
 
 import java.util.Collections;
@@ -107,6 +109,13 @@ this.repository = repo;
         }
         return total;
     }
+
+
+	@Override
+	public SuccessRes saveProductSections(RiskDomesticDetailsSaveReq req) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 /*
     @Override

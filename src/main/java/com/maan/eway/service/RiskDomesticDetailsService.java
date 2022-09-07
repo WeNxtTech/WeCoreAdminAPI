@@ -5,28 +5,26 @@
 */
 package com.maan.eway.service;
 
-import com.maan.eway.master.req.BankMasterGetAllReq;
-import com.maan.eway.master.req.BankMasterGetReq;
-import com.maan.eway.master.req.BankMasterSaveReq;
-import com.maan.eway.master.req.RiskDetailsSaveReq;
-import com.maan.eway.master.req.RiskMasterGetAllReq;
-import com.maan.eway.master.req.RiskMasterGetReq;
-import com.maan.eway.master.req.RiskMasterSaveReq;
-import com.maan.eway.master.res.BankMasterRes;
-import com.maan.eway.master.res.RiskMasterRes;
-import com.maan.eway.error.Error;
-import com.maan.eway.res.DropDownRes;
-import com.maan.eway.res.SuccessRes;
-
 import java.util.List;
+
+import com.maan.eway.error.Error;
+import com.maan.eway.master.req.RiskDetailsGetReq;
+import com.maan.eway.master.req.RiskDomesticDetailsSaveReq;
+import com.maan.eway.master.res.RiskDomesticDetailsListRes;
+import com.maan.eway.master.res.RiskDomesticGetRes;
+import com.maan.eway.res.SuccessRes;
 /**
 * <h2>BankMasterServiceimpl</h2>
 */
 public interface RiskDomesticDetailsService  {
 
-	List<Error> validateRiskDetails(RiskDetailsSaveReq req);
+	List<Error> validateRiskDetails(RiskDomesticDetailsSaveReq req);
 
-	SuccessRes saveRiskDetails(RiskDetailsSaveReq req);
+	SuccessRes saveRiskDetails(RiskDomesticDetailsSaveReq req);
+
+	List<RiskDomesticDetailsListRes> getCutomerRiskDetails(RiskDomesticDetailsSaveReq req);
+
+	RiskDomesticGetRes getRiskDetails(RiskDetailsGetReq req);
 
 
 }

@@ -7,9 +7,11 @@ package com.maan.eway.master.controller;
 
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.ProductSectionsGetReq;
 import com.maan.eway.master.req.SectionMasterGetAllReq;
 import com.maan.eway.master.req.SectionMasterGetReq;
 import com.maan.eway.master.req.SectionMasterSaveReq;
+import com.maan.eway.master.res.ProductSectionGetRes;
 import com.maan.eway.master.res.SectionMasterRes;
 import com.maan.eway.master.service.SectionMasterService;
 import com.maan.eway.res.CommonRes;
@@ -148,6 +150,24 @@ public class SectionMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
+		
+		@PostMapping("/getproductsections")
+		@ApiOperation("This Method is to get by Section id")
+		public ResponseEntity<CommonRes> getProductSections(@RequestBody ProductSectionsGetReq req) {
+			CommonRes data = new CommonRes();
+			List<ProductSectionGetRes> res = sectionService.getProductSections(req);
+			data.setCommonResponse(res);
+			data.setErrorMessage(Collections.emptyList());
+			data.setIsError(false);
+			data.setMessage("Success");
+	
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+	
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
 
 
 

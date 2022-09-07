@@ -141,7 +141,7 @@ try {
 	if (StringUtils.isBlank(req.getCoverId().toString())) {
 			// Save
 		    //Long totalCount = repo.count();
-			Long totalCount =getMasterTableCount();
+			Long totalCount =getMasterTableCount(req.getSectionId() ,req.getProductId() , req.getCompanyId() );
 			coverId = Long.valueOf(totalCount + 1).toString();
 			saveData.setCoverId(Integer.valueOf(coverId));
 			saveData.setCoverName(req.getCoverName());
@@ -217,7 +217,7 @@ try {
 return res;
 }
 
-public Long getMasterTableCount() {
+public Long getMasterTableCount(Integer sectionId , Integer productId , String companyId) {
 
 Long data = 0L;
 try {
@@ -238,12 +238,16 @@ try {
 	Root<CoverMaster> ocpm1 = effectiveDate.from(CoverMaster.class);
 	effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 	Predicate a1 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
-	//Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-	effectiveDate.where(a1);
+	Predicate a2 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
+	Predicate a3 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+	Predicate a4 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+	effectiveDate.where(a1,a2,a3,a4);
 
 	Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-
-	query.where(n1);
+	Predicate n2 = cb.equal(b.get("sectionId"), sectionId);
+	Predicate n3 = cb.equal(b.get("productId"), productId);
+	Predicate n4 = cb.equal(b.get("companyId"), companyId);
+	query.where(n1,n2,n3,n4);
 	// Get Result
 	TypedQuery<Long> result = em.createQuery(query);
 	list = result.getResultList();

@@ -11,19 +11,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.maan.eway.error.Error;
 import com.maan.eway.master.req.GetPolicyDetailsReq;
 import com.maan.eway.master.req.GetQuoteCountReq;
 import com.maan.eway.master.req.GetQuoteDetailsReq;
-import com.maan.eway.master.req.RiskDetailsSaveReq;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.GetPolicyDetailsRes;
 import com.maan.eway.res.GetQuoteCountRes;
 import com.maan.eway.res.GetQuoteDetailsRes;
-import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.HomePositionMasterService;
 import com.maan.eway.service.PrintReqService;
-import com.maan.eway.service.RiskDomesticDetailsService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

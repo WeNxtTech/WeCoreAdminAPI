@@ -5,6 +5,7 @@
 */
 package com.maan.eway.service.impl;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,6 +16,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
@@ -22,15 +24,26 @@ import javax.persistence.criteria.Subquery;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dozer.DozerBeanMapper;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
+import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.RiskDomesticDetails;
 import com.maan.eway.error.Error;
-import com.maan.eway.master.req.RiskDetailsSaveReq;
+import com.maan.eway.master.req.RiskDetailsGetReq;
+import com.maan.eway.master.req.RiskDomesticDetailsSaveReq;
 import com.maan.eway.master.req.RiskListSaveReq;
+import com.maan.eway.master.res.RiskDomesticCriteriaGetRes;
+import com.maan.eway.master.res.RiskDomesticCriteriaRes;
+import com.maan.eway.master.res.RiskDomesticDetailsListRes;
+import com.maan.eway.master.res.RiskDomesticGetRes;
+import com.maan.eway.master.res.RisksListRes;
 import com.maan.eway.repository.RiskDomesticDetailsRepository;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.RiskDomesticDetailsService;
@@ -55,7 +68,7 @@ Gson json = new Gson();
 private Logger log=LogManager.getLogger(RiskDomesticDetailsServiceImpl.class);
 
 	@Override
-	public List<Error> validateRiskDetails(RiskDetailsSaveReq req) {
+	public List<Error> validateRiskDetails(RiskDomesticDetailsSaveReq req) {
 		List<Error> errors = new ArrayList<Error>();
 		try {
 			if (StringUtils.isBlank(req.getBranchCode()) ) {
@@ -109,7 +122,7 @@ private Logger log=LogManager.getLogger(RiskDomesticDetailsServiceImpl.class);
 	}
 	
 	@Override
-	public SuccessRes saveRiskDetails(RiskDetailsSaveReq req) {
+	public SuccessRes saveRiskDetails(RiskDomesticDetailsSaveReq req) {
 		SuccessRes  res = new SuccessRes();
 		try {
 			
@@ -228,6 +241,171 @@ private Logger log=LogManager.getLogger(RiskDomesticDetailsServiceImpl.class);
 			return null ;
 		}
 		return riskCount  ;
+		
+	}
+
+	@Override
+	public List<RiskDomesticDetailsListRes> getCutomerRiskDetails(RiskDomesticDetailsSaveReq req) {
+		List<RiskDomesticDetailsListRes> resList = new ArrayList<RiskDomesticDetailsListRes>();
+		ModelMapper mapper = new ModelMapper(); 
+		try {
+			Date today = new Date();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<RiskDomesticCriteriaRes> query = cb.createQuery(RiskDomesticCriteriaRes.class);
+			
+			// Find All
+			Root<RiskDomesticDetails> r = query.from(RiskDomesticDetails.class);
+
+			// Select Product Name SubQuery for Effective Date Max Filter 
+			Subquery<Long> pmEff = query.subquery(Long.class);
+			Root<ProductMaster> pm = pmEff.from(ProductMaster.class);
+			Subquery<Long> product = query.subquery(Long.class);
+			Root<ProductMaster> p = product.from(ProductMaster.class);
+			
+			pmEff.select( cb.max(pm.get("effectiveDateStart")) );
+			Predicate p1 = cb.equal(p.get("companyId"), pm.get("companyId"));
+			Predicate p2 = cb.equal(p.get("productId"), pm.get("productId"));
+			Predicate p3 = cb.lessThanOrEqualTo(pm.get("effectiveDateStart") , today);
+			pmEff.where(p1,p2,p3);
+			
+			product.select( p.get("productName")) ;
+			Predicate pm1 = cb.equal(p.get("companyId"), r.get("companyId"));
+			Predicate pm2 = cb.equal(p.get("productId"), r.get("productId"));
+			Predicate pm3   = cb.equal(p.get("effectiveDateStart"),pmEff);
+			product.where(pm1,pm2,pm3); 
+			
+			// EntryDate
+			Subquery<Long> entryDate = query.subquery(Long.class);
+			Root<RiskDomesticDetails> eDr = entryDate.from(RiskDomesticDetails.class);
+			entryDate.select(cb.max( eDr.get("entryDate") ) ) ;
+			Predicate eDr1 = cb.equal(eDr.get("companyId"), r.get("companyId"));
+			Predicate eDr2 = cb.equal(eDr.get("productId"), r.get("productId"));
+			Predicate eDr3 = cb.equal(eDr.get("customerId"), r.get("customerId"));
+			Predicate eDr4 = cb.equal(eDr.get("requestReferenceNo"), r.get("requestReferenceNo"));
+			entryDate.where(eDr1,eDr2,eDr3,eDr4); 
+			
+			// Updated Date
+			Subquery<Long> updatedDate = query.subquery(Long.class);
+			Root<RiskDomesticDetails> uDr = updatedDate.from(RiskDomesticDetails.class);
+			updatedDate.select( cb.max(uDr.get("updatedDate"))) ;
+			Predicate uDr1 = cb.equal(uDr.get("companyId"), r.get("companyId"));
+			Predicate uDr2 = cb.equal(uDr.get("productId"), r.get("productId"));
+			Predicate uDr3 = cb.equal(uDr.get("customerId"), r.get("customerId"));
+			Predicate uDr4 = cb.equal(uDr.get("requestReferenceNo"), r.get("requestReferenceNo"));
+			updatedDate.where(uDr1,uDr2,uDr3,uDr4);  
+			
+			// Select
+			query.multiselect(  cb.countDistinct(r.get("riskId")).alias("riskCount") , r.get("productId").alias("productId") , product.alias("productName") ,
+					 r.get("customerId").alias("customerId") , r.get("companyId").alias("companyId") , r.get("requestReferenceNo").alias("requestReferenceNo")  ,
+					 r.get("createdBy").alias("createdBy") , r.get("updatedBy").alias("updatedBy") , entryDate.alias("entrytDate")
+					, updatedDate.alias("updatedDate")
+					 );
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(r.get("updatedDate")));
+			
+			// Where
+			Predicate n1 = cb.equal( r.get("customerId"),req.getCustomerId() );
+			Predicate n2 = cb.equal( r.get("companyId"),req.getInsuranceId() );
+			Predicate n3 = cb.equal( r.get("createdBy"),req.getCreatedBy() );
+			query.where(n1,n2,n3).groupBy( r.get("productId") ,  r.get("customerId") , r.get("companyId") ,  r.get("requestReferenceNo") , 
+									 r.get("createdBy"), r.get("updatedBy") ).orderBy(orderList);
+
+			// Get Result
+			TypedQuery<RiskDomesticCriteriaRes> result = em.createQuery(query);
+			List<RiskDomesticCriteriaRes> list = result.getResultList();
+			Type listType = new TypeToken<List<RiskDomesticDetailsListRes>>(){}.getType();
+			resList = mapper.map(list ,listType);
+			
+		} catch (Exception e ) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null ;
+		}
+		return resList  ;
+		
+	}
+
+	@Override
+	public RiskDomesticGetRes getRiskDetails(RiskDetailsGetReq req) {
+		RiskDomesticGetRes res = new RiskDomesticGetRes();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper(); 
+		try {
+			Date today = new Date();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<RiskDomesticCriteriaGetRes> query = cb.createQuery(RiskDomesticCriteriaGetRes.class);
+			
+			// Find All
+			Root<RiskDomesticDetails> r = query.from(RiskDomesticDetails.class);
+
+			// Select Product Name SubQuery for Effective Date Max Filter 
+			Subquery<Long> pmEff = query.subquery(Long.class);
+			Root<ProductMaster> pm = pmEff.from(ProductMaster.class);
+			Subquery<Long> product = query.subquery(Long.class);
+			Root<ProductMaster> p = product.from(ProductMaster.class);
+			
+			pmEff.select( cb.max(pm.get("effectiveDateStart")) );
+			Predicate p1 = cb.equal(p.get("companyId"), pm.get("companyId"));
+			Predicate p2 = cb.equal(p.get("productId"), pm.get("productId"));
+			Predicate p3 = cb.lessThanOrEqualTo(pm.get("effectiveDateStart") , today);
+			pmEff.where(p1,p2,p3);
+			
+			product.select( p.get("productName")) ;
+			Predicate pm1 = cb.equal(p.get("companyId"), r.get("companyId"));
+			Predicate pm2 = cb.equal(p.get("productId"), r.get("productId"));
+			Predicate pm3   = cb.equal(p.get("effectiveDateStart"),pmEff);
+			product.where(pm1,pm2,pm3); 
+			
+			// Select
+			query.multiselect( r.get("customerId").alias("customerId") , r.get("requestReferenceNo").alias("requestReferenceNo") , r.get("riskId").alias("riskId") ,
+					r.get("productId").alias("productId") , r.get("branchCode").alias("branchCode") , r.get("productName").alias("oldProductName") , 
+					r.get("companyId").alias("companyId") , r.get("entryDate").alias("entryDate") , r.get("status").alias("status") ,
+					r.get("ownHouseYn").alias("ownHouseYn") , r.get("remarks").alias("remarks") , r.get("createdBy").alias("createdBy") ,
+					r.get("updatedBy").alias("updatedBy") , r.get("updatedDate").alias("updatedDate") , product.alias("productName") );
+	
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(r.get("riskId")));
+			
+			// Where
+			Predicate n1 = cb.equal( r.get("customerId"),req.getCustomerId() );
+			Predicate n2 = cb.equal( r.get("requestReferenceNo"),req.getRequestReferenceNo() );
+			Predicate n3 = cb.equal( r.get("companyId"),req.getInsuranceId() );
+			Predicate n4 = cb.equal( r.get("createdBy"),req.getCreatedBy() );
+			query.where(n1,n2,n3,n4).orderBy(orderList);
+
+			// Get Result
+			TypedQuery<RiskDomesticCriteriaGetRes> result = em.createQuery(query);
+			List<RiskDomesticCriteriaGetRes> list = result.getResultList();
+			if ( list.size()> 0) {
+				List<RisksListRes> riskList = new ArrayList<RisksListRes>();
+				for (RiskDomesticCriteriaGetRes data : list) {
+					RisksListRes   risk = new RisksListRes();
+					risk.setRiskId(data.getRiskId().toString());
+					risk.setRemarks(data.getRemarks());
+					risk.setOwnHouseYn(data.getOwnHouseYn());
+					
+					riskList.add(risk);
+				}
+				
+				//Response
+				res = dozerMapper.map(list.get(0) , RiskDomesticGetRes.class );
+				res.setOldProductName(list.get(0).getOldProductName() );
+				res.setRiskList(riskList);
+			}
+			
+			
+		} catch (Exception e ) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null ;
+		}
+		return res  ;
 		
 	}
 }

@@ -94,7 +94,7 @@ public SuccessRes insertProduct(ProductMasterSaveReq req) {
 		if (StringUtils.isBlank(req.getProductId().toString())) {
 				// Save
 			    //Long totalCount = repo.count();
-				Long totalCount =getMasterTableCount();
+				Long totalCount =getMasterTableCount(req.getCompanyId());
 				productId = Long.valueOf(totalCount + 01).toString();
 				saveData.setProductId(Integer.valueOf(productId));
 				saveData.setProductName(req.getProductName());
@@ -240,7 +240,7 @@ public List<Error> validateProductDetails(ProductMasterSaveReq req) {
 	}
 	return errorList;
 }
-public Long getMasterTableCount() {
+public Long getMasterTableCount(String companyId) {
 
 	Long data = 0L;
 	try {
@@ -265,8 +265,8 @@ public Long getMasterTableCount() {
 		effectiveDate.where(a1,a2);
 
 		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-	
-		query.where(n1);
+		Predicate n2 = cb.equal(b.get("companyId"), companyId);
+		query.where(n1,n2);
 		// Get Result
 		TypedQuery<Long> result = em.createQuery(query);
 		list = result.getResultList();

@@ -1,13 +1,17 @@
-package com.maan.eway.master.req;
+package com.maan.eway.master.res;
 
+import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.maan.eway.master.req.RiskListRes;
+import com.maan.eway.master.req.RiskListSaveReq;
 
 import lombok.Data;
 
 @Data
-public class RiskDetailsSaveReq {
+public class RiskDetailsListGetRes {
 
 	@JsonProperty("ProductId")
     private String     productId ;
@@ -30,10 +34,17 @@ public class RiskDetailsSaveReq {
 	@JsonProperty("CreatedBy")
     private String     createdBy;
 	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EntryDate")
+    private Date entryDate;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("UpdatedDate")
+    private Date updatedDate;
+	
+	@JsonProperty("UpdatedBy")
+    private String updatedBy;
+	
 	@JsonProperty("RiskList")
-    private List<RiskListSaveReq>     riskList ;
-    
-	
-	
-
+    private List<RiskListRes>     riskList ;
 }

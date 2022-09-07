@@ -445,7 +445,6 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 	@Override
 	public List<ProductSectionGetRes> getProductSections(ProductSectionsGetReq req) {
 		List<ProductSectionGetRes> resList = new ArrayList<ProductSectionGetRes>();
-		ModelMapper mapper = new ModelMapper();
 		try {
 			List<SectionMaster> list = new ArrayList<SectionMaster>();
 	
@@ -468,7 +467,7 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("sectionName")));
+			orderList.add(cb.asc(b.get("sectionId")));
 	
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);

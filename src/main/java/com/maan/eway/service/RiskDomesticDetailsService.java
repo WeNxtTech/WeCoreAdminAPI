@@ -18,8 +18,6 @@ import com.maan.eway.res.SuccessRes;
 */
 public interface RiskDomesticDetailsService  {
 
-	List<Error> validateRiskDetails(RiskDomesticDetailsSaveReq req);
-
 	SuccessRes saveRiskDetails(RiskDomesticDetailsSaveReq req);
 
 	List<RiskDomesticDetailsListRes> getCutomerRiskDetails(RiskDomesticDetailsSaveReq req);

@@ -20,6 +20,8 @@ import com.maan.eway.master.req.CustomerSaveReq;
 import com.maan.eway.master.req.RiskDomesticDetailsSaveReq;
 import com.maan.eway.master.req.RiskListSaveReq;
 import com.maan.eway.repository.CustomerDetailsRepository;
+import com.maan.eway.req.AccidentDetails;
+import com.maan.eway.req.RawPersonalAccidentSaveReq;
 import com.maan.eway.service.ValidationService;
 
 @Service
@@ -388,6 +390,62 @@ public class ValidationServiceImpl implements ValidationService {
 	public List<Error> validateProductSections(RiskDomesticDetailsSaveReq req) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public List<Error> validatePersonalAccident(RawPersonalAccidentSaveReq req) {
+		List<Error> errors = new ArrayList<Error>();
+		try {
+			if (StringUtils.isBlank(req.getBranchCode()) ) {
+				errors.add(new Error("01","Branch Code", "Please Enter BranchCode"));
+			}
+			if (StringUtils.isBlank(req.getCompanyId()) ) {
+				errors.add(new Error("02","Company Id", "Please Enter Company Id"));
+			}
+			if (StringUtils.isBlank(req.getCustomerId().toString()) ) {
+				errors.add(new Error("03","Customer Id", "Please Enter Customer Id"));
+			}
+			if (StringUtils.isBlank(req.getRiskId().toString()) ) {
+				errors.add(new Error("04","Risk Id", "Please Enter Risk Id"));
+			}
+			if (StringUtils.isBlank(req.getSectionId().toString())) {
+				errors.add(new Error("05","Section Id", "Please Enter Section Id"));
+			}
+			for(AccidentDetails ac : req.getAccidentDetails()) {
+				if (StringUtils.isBlank(ac.getNameOfPerson())) {
+					errors.add(new Error("06","Name of Person", "Please Enter Name of Person"));
+				}
+				if (ac.getNameOfPerson().length()>100) {
+					errors.add(new Error("06","Name Of Person", "Please Enter Name Of Person within 100 Characters"));
+				}
+				if (StringUtils.isBlank(ac.getDescription())) {
+					errors.add(new Error("07","Description", "Please Enter Description"));
+				}
+				if (ac.getDescription().length()>100) {
+					errors.add(new Error("07","Description", "Please Enter Description within 100 Characters"));
+				}
+				if (StringUtils.isBlank(ac.getAge().toString())) {
+					errors.add(new Error("08","Age", "Please Enter Age"));
+				}
+				if (StringUtils.isBlank(ac.getDateOfBirth().toString())) {
+					errors.add(new Error("09","Date Of Birth", "Please Enter Date Of Birth"));
+				}
+				if (StringUtils.isBlank(ac.getHeight().toString())) {
+					errors.add(new Error("10","Height", "Please Enter Height"));
+				}
+				if (StringUtils.isBlank(ac.getSumInsured().toString())) {
+					errors.add(new Error("11","Sum Insured", "Please Enter Sum Insured"));
+				}
+				if (StringUtils.isBlank(ac.getWeight().toString())) {
+					errors.add(new Error("12","Weight", "Please Enter Weight"));
+				}
+			}
+		} catch (Exception e ) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			errors.add(new Error("01","Common Error", e.getMessage()));
+		}
+		return errors;
 	}
 	
 }

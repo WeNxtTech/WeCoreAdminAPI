@@ -5,6 +5,7 @@
 */
 package com.maan.eway.service;
 import com.maan.eway.bean.SectionDetails;
+import com.maan.eway.master.req.ProductsRiskSaveReq;
 import com.maan.eway.master.req.RiskDomesticDetailsSaveReq;
 import com.maan.eway.res.SuccessRes;
 
@@ -20,6 +21,6 @@ SectionDetails update(SectionDetails d);
  List<SectionDetails> getAll();
 long getTotal();
 //boolean delete(long id);
-SuccessRes saveProductSections(RiskDomesticDetailsSaveReq req);
+SuccessRes saveProductSections(ProductsRiskSaveReq req);
 
 }

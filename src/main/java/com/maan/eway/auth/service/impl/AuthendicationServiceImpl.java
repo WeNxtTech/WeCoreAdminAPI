@@ -289,7 +289,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			LoginMaster table = loginRepo.save(master);
 			
 			if(table!=null) {
-				res  = "SUCCESS";
+				res  = "Password Changed Successfully";
 			}
 			else {
 				res  = "FAILED" ;

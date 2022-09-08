@@ -17,8 +17,11 @@ import org.springframework.stereotype.Service;
 import com.maan.eway.bean.CustomerDetails;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CustomerSaveReq;
+import com.maan.eway.master.req.ProductSectionsSaveReq;
+import com.maan.eway.master.req.ProductsRiskSaveReq;
 import com.maan.eway.master.req.RiskDomesticDetailsSaveReq;
 import com.maan.eway.master.req.RiskListSaveReq;
+import com.maan.eway.master.req.SectionListReq;
 import com.maan.eway.repository.CustomerDetailsRepository;
 import com.maan.eway.req.AccidentDetails;
 import com.maan.eway.req.RawPersonalAccidentSaveReq;
@@ -387,11 +390,71 @@ public class ValidationServiceImpl implements ValidationService {
 	}
 
 	@Override
-	public List<Error> validateProductSections(RiskDomesticDetailsSaveReq req) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Error> validateProductSections(ProductsRiskSaveReq req) {
+		List<Error> errors = new ArrayList<Error>();
+		try {
+			if (StringUtils.isBlank(req.getBranchCode()) ) {
+				errors.add(new Error("01","Branch Code", "Please Enter BranchCode"));
+			}
+			if (StringUtils.isBlank(req.getCreatedBy()) ) {
+				errors.add(new Error("02","Created By", "Please Enter CreatedBy"));
+			}
+			if (StringUtils.isBlank(req.getCustomerId()) ) {
+				errors.add(new Error("03","Customer Id", "Please Enter Customer Id"));
+			}
+			if (StringUtils.isBlank(req.getInsuranceId()) ) {
+				errors.add(new Error("04","Insurance Id", "Please Enter Insurance Id"));
+			}
+			if (StringUtils.isBlank(req.getProductId()) ) {
+				errors.add(new Error("05","Product Id", "Please Enter Product Id"));
+			}
+			if (StringUtils.isBlank(req.getProductName()) ) {
+				errors.add(new Error("06","Product Name", "Please Enter Product Name"));
+			}
+			
+			if (StringUtils.isBlank(req.getRequestReferenceNo()) ) {
+				errors.add(new Error("06","Request Reference No", "Please Enter Request Reference No"));
+			}
+			
+			if (req.getProductRiskList()==null || req.getProductRiskList().size() <= 0 ) {
+				errors.add(new Error("08","Risk List", "Please Select atleast One Risk"));
+			} else {
+				Long riskRowNo = 0L ;
+				for (ProductSectionsSaveReq data :  req.getProductRiskList()) {
+					riskRowNo = riskRowNo + 1 ;
+					if (StringUtils.isBlank(data.getRiskId())  ) {
+						errors.add(new Error("09","Risk Id", "Please Select atleast One Risk in Risk Row No :" + riskRowNo));
+					}
+					
+				    if( data.getSectionList() ==null || data.getSectionList().size()<=0  ) {
+				    	errors.add(new Error("09","Risk Id", "Please Select atleast One Section in Risk Row No :" + riskRowNo));
+				    } else {
+				    	Long sectionsRowNo = 0L ;
+				    	for (  SectionListReq data2 : data.getSectionList()) {
+				    		sectionsRowNo = sectionsRowNo + 1 ;
+				    		if (StringUtils.isBlank(data2.getSectionId())  ) {
+								errors.add(new Error("09","Section Id",  "Please Select Section Id in Risk "+  riskRowNo + "& Section Row No :" + sectionsRowNo));
+							}
+				    		if (StringUtils.isBlank(data2.getSectionName()) ) {
+								errors.add(new Error("09","Risk Id", "Please Select Section Name in Risk "+  riskRowNo + "& Section Row No :" + sectionsRowNo));
+							}
+				    	}
+				    	
+				    }
+				}
+			}
+			
+			
+		} catch (Exception e ) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			errors.add(new Error("01","Common Error", e.getMessage()));
+		}
+		return errors;
 	}
 
+
+	
 	@Override
 	public List<Error> validatePersonalAccident(RawPersonalAccidentSaveReq req) {
 		List<Error> errors = new ArrayList<Error>();
@@ -447,5 +510,6 @@ public class ValidationServiceImpl implements ValidationService {
 		}
 		return errors;
 	}
+
 	
 }

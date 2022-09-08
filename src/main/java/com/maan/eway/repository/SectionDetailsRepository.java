@@ -13,6 +13,7 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.maan.eway.bean.SectionDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,5 +30,7 @@ import com.maan.eway.bean.SectionDetailsId;
  
  
 public interface SectionDetailsRepository  extends JpaRepository<SectionDetails,SectionDetailsId > , JpaSpecificationExecutor<SectionDetails> {
+
+	List<SectionDetails> findByRequestReferenceNo(String requestReferenceNo);
 
 }

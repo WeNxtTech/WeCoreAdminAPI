@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.bean.SectionDetails;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.ProductsRiskSaveReq;
 import com.maan.eway.master.req.RiskDomesticDetailsSaveReq;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.SuccessRes;
@@ -47,7 +48,7 @@ public class SectionDetailsController {
 
 	@PostMapping("/saveproductsections")
 	@ApiOperation(value = "This method is Insert Risk Details")
-	public ResponseEntity<CommonRes> saveProductSectionDetails(@RequestBody RiskDomesticDetailsSaveReq req) {
+	public ResponseEntity<CommonRes> saveProductSectionDetails(@RequestBody ProductsRiskSaveReq req) {
 
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();

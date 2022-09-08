@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.maan.eway.repository.SectionDetailsRepository;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.bean.SectionDetails;
+import com.maan.eway.master.req.ProductSectionsSaveReq;
+import com.maan.eway.master.req.ProductsRiskSaveReq;
 import com.maan.eway.master.req.RiskDomesticDetailsSaveReq;
 import com.maan.eway.service.SectionDetailsService;
 
@@ -112,10 +114,40 @@ this.repository = repo;
 
 
 	@Override
-	public SuccessRes saveProductSections(RiskDomesticDetailsSaveReq req) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	@Transactional
+	public SuccessRes saveProductSections(ProductsRiskSaveReq req) {
+		SuccessRes res = new SuccessRes(); 
+		try {
+			// Delete Old Record
+			List<SectionDetails> oldRecord = repository.findByRequestReferenceNo(req.getRequestReferenceNo() );
+			if(oldRecord.size()>0 ) {
+				repository.deleteAll(oldRecord);
+			}
+			
+			
+			// Product Details
+	/*		for (ProductSectionsSaveReq data : req.getProductRiskList() ) {
+				
+				for (  data.getSectionList() ) {
+					
+				}
+				
+				
+			} */
+			
+			
+			
+			
+			
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null ;
+		}
+		return res ;
+	}	
+
 
 /*
     @Override

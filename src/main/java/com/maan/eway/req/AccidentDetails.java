@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Date;
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 
@@ -36,6 +37,7 @@ public class AccidentDetails implements Serializable {
 	
 	@JsonProperty("NameOfPerson")
     private String     nameOfPerson ;
+	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("DateOfBirth")
     private Date       dateOfBirth  ;
 	@JsonProperty("Age")

@@ -31,7 +31,7 @@ import com.maan.eway.req.RawPersonalAccidentSaveReq;
 import com.maan.eway.req.RawAllRisksSaveReq;
 import com.maan.eway.req.RawBuildingsDetailsSaveReq;
 import com.maan.eway.req.RawContentsDetailsSaveReq;
-
+import com.maan.eway.req.RawContentsItemListReq;
 import com.maan.eway.service.ValidationService;
 
 @Service
@@ -395,7 +395,7 @@ public class ValidationServiceImpl implements ValidationService {
 		}
 		return errors;
 	}
-
+	//____________________________________________PRODUCT SECTION VALIDATION_____________________________________________\\
 	@Override
 	public List<Error> validateProductSections(ProductsRiskSaveReq req) {
 		List<Error> errors = new ArrayList<Error>();
@@ -461,7 +461,7 @@ public class ValidationServiceImpl implements ValidationService {
 	}
 
 
-
+	//____________________________________________PERSONAL ACCIDENT VALIDATION_____________________________________________\\
 	
 	@Override
 	public List<Error> validatePersonalAccident(RawPersonalAccidentSaveReq req) {
@@ -633,6 +633,24 @@ public List<Error> validateRawContentDetails(RawContentsDetailsSaveReq req) {
 	}
 	if(StringUtils.isBlank(req.getBranchCode())) {
 		errors.add(new Error("06","BranchCode","please Enter BranchCode"));
+	}else {
+	
+		for (RawContentsItemListReq data :  req.getItemList()) {
+			
+			if (StringUtils.isBlank(data.getItemId())  ) {
+				errors.add(new Error("09","ItemId", "Please Select Item Id"));
+			}
+			if (StringUtils.isBlank(data.getItemName())  ) {
+				errors.add(new Error("10","ItemName", "Please Select ItemName : " ));
+			}
+			if (StringUtils.isBlank(data.getItemDesc())  ) {
+				errors.add(new Error("11","ItemDesc", "Please Enter ItemDesc"));
+			}
+			if (StringUtils.isBlank(data.getItemValue())  ) {
+				errors.add(new Error("12","Value", "Please Enter Value : " ));
+			}
+		
+		}
 	}
 	}catch(Exception e) {
 		e.printStackTrace();
@@ -641,7 +659,7 @@ public List<Error> validateRawContentDetails(RawContentsDetailsSaveReq req) {
 	}
 	return null;
 }
-
+//____________________________________________ALL RISK VALIDATION_____________________________________________\\
 @Override
 public List<Error> validateRawAllRisk(RawAllRisksSaveReq req) {
 

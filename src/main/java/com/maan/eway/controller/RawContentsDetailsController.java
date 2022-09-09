@@ -6,7 +6,16 @@
 package com.maan.eway.controller;
 
 import com.maan.eway.bean.RawContentsDetails;
+import com.maan.eway.error.Error;
+import com.maan.eway.req.RawBuildingsDetailsSaveReq;
+import com.maan.eway.req.RawContentsDetailsSaveReq;
+import com.maan.eway.res.CommonRes;
+import com.maan.eway.res.SuccessRes;
+import com.maan.eway.service.PrintReqService;
 import com.maan.eway.service.RawContentsDetailsService;
+import com.maan.eway.service.ValidationService;
+
+import io.swagger.annotations.ApiOperation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
+import java.util.Collections;
 import java.util.List;
 
 
@@ -32,43 +41,43 @@ public class RawContentsDetailsController {
 	@Autowired
 	private  RawContentsDetailsService entityService;
 
-/*
-	private static final String ENTITY_TITLE = "RawContentsDetails";
+	@Autowired
+	private ValidationService validateService;
+	
+	@Autowired
+	private  PrintReqService reqPrinter;
+	// save
+		@PostMapping("/savecontentdetails")
+		@ApiOperation(value = "This method is Insert Raw Content Details")
+		public ResponseEntity<CommonRes> saveRawBuildingDetails(@RequestBody RawContentsDetailsSaveReq req) {
 
+			reqPrinter.reqPrint(req);
+			CommonRes data = new CommonRes();
 
- 	public RawContentsDetailsController (RawContentsDetailsService entityService) {
-		this.entityService = entityService;
-	}
-*/
+			List<Error> validation = validateService.validateRawContentDetails(req);
+			// validation
+			if (validation != null && validation.size() != 0) {
+				data.setCommonResponse(null);
+				data.setIsError(true);
+				data.setErrorMessage(validation);
+				data.setMessage("Failed");
+				return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
 
-	@PostMapping(value = "/rawcontentsdetails")
-	public ResponseEntity<RawContentsDetails> createRawContentsDetails(@RequestBody  RawContentsDetails model) {
+			} else {
+				// Save
+				SuccessRes res = entityService.saveRawContentDetails(req);
+				data.setCommonResponse(res);
+				data.setIsError(false);
+				data.setErrorMessage(Collections.emptyList());
+				data.setMessage("Success");
 
-   		 RawContentsDetails data = entityService.create(model);
-    		if (data != null) {
-    			return new ResponseEntity<>(data,HttpStatus.CREATED);
-  			  } else {
-    			return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
-   			 }
-    }
+				if (res != null) {
+					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				} else {
+					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				}
+			}
 
-    @GetMapping(value = "/rawcontentsdetails")
-    public ResponseEntity<List<RawContentsDetails>> getAllRawContentsDetails() {
-        List<RawContentsDetails> lst = entityService.getAll();
-
-        return new ResponseEntity<>(lst,HttpStatus.OK);
-    }
-/*
-        @GetMapping(value = "/rawcontentsdetails/{id}")
-    public ResponseEntity<RawContentsDetails> getOneRawContentsDetails(@PathVariable("id") long id) {
-
-            RawContentsDetails e = entityService.getOne(id);
-            if (e == null) {
-            	return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
-            }
-            return new ResponseEntity<>(e, HttpStatus.OK);
-    }
-
-*/
+		}
 
 }

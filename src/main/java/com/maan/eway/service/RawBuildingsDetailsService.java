@@ -18,7 +18,6 @@ import java.util.List;
 public interface RawBuildingsDetailsService  {
 
 
-List<Error> validateRawBuildingDetails(RawBuildingsDetailsSaveReq req);
 SuccessRes saveRawBuildingDetails(RawBuildingsDetailsSaveReq req);
 RawBuildingsDetailsRes getBuildingDetails(RawBuildingDetailsGetReq req);
 

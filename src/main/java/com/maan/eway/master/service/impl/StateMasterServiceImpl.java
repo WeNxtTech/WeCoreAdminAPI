@@ -98,6 +98,7 @@ public class StateMasterServiceImpl implements StateMasterService {
 				Long totalCount = getMasterTableCount();
 				stateId = Long.valueOf(totalCount + 1).toString();
 				res.setResponse("Saved Successfully ");
+				res.setSuccessId(stateId);
 
 			} else {
 				// Update

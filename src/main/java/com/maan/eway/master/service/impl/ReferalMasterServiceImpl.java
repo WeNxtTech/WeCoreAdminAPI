@@ -100,6 +100,7 @@ public SuccessRes insertReferal(ReferalMasterSaveReq req) {
 				saveData.setReferalId(Integer.valueOf(referalId));
 				saveData.setReferalName(req.getReferalName());
 				res.setResponse("Saved Successfully ");
+				res.setSuccessId(referalId);
 
 			} else {
 				// Update

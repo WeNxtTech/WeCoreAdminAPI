@@ -9,13 +9,35 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.maan.eway.repository.RawContentsDetailsRepository;
+import com.maan.eway.req.RawContentsDetailsSaveReq;
+import com.maan.eway.req.RawContentsItemListReq;
+import com.maan.eway.res.SuccessRes;
+import com.google.gson.Gson;
+import com.maan.eway.bean.RawBuildingsDetails;
 import com.maan.eway.bean.RawContentsDetails;
+import com.maan.eway.bean.RiskDomesticDetails;
+import com.maan.eway.error.Error;
+import com.maan.eway.master.req.RiskListSaveReq;
 import com.maan.eway.service.RawContentsDetailsService;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dozer.DozerBeanMapper;
 /**
 * <h2>RawContentsDetailsServiceimpl</h2>
 */
@@ -24,103 +46,115 @@ import org.apache.logging.log4j.Logger;
 public class RawContentsDetailsServiceImpl implements RawContentsDetailsService {
 
 @Autowired
-private RawContentsDetailsRepository repository;
+private RawContentsDetailsRepository repo;
 
+@PersistenceContext
+private EntityManager em;
 
 private Logger log=LogManager.getLogger(RawContentsDetailsServiceImpl.class);
-/*
-public RawContentsDetailsServiceImpl(RawContentsDetailsRepository repo) {
-this.repository = repo;
+
+Gson json = new Gson();
+
+@Override
+public SuccessRes saveRawContentDetails(RawContentsDetailsSaveReq req) {
+	SuccessRes res = new SuccessRes();
+	DozerBeanMapper mapper = new DozerBeanMapper();
+	try {
+		String reqRefNo = ""  , branch = "";
+		Date  entryDate = null ; boolean update = false ;
+		
+		List<RawContentsDetails> findRisks = new ArrayList<RawContentsDetails>();
+		if (StringUtils.isBlank(req.getRequestReferenceNo())  ) {
+			// Save
+			Long idCount =  getContentDetailsCount(req.getCustomerId()); 
+			reqRefNo  = "Ref-" + req.getCustomerId() + "/" +  String.valueOf(idCount+1) ; 
+			res.setResponse("Saved Successfully"); 
+			res.setSuccessId(reqRefNo);
+			
+		} else {
+		   // Update
+			reqRefNo  = req.getRequestReferenceNo() ;
+			findRisks = repo.findByRequestReferenceNoOrderByRiskIdAsc(reqRefNo); 
+			update = true ;
+			res.setResponse("Updated Successfully");
+			res.setSuccessId(reqRefNo);
+		}
+		
+		for (RawContentsItemListReq data :   req.getItemList() ) {
+			RawContentsDetails save = new RawContentsDetails(); 
+			
+			entryDate = new Date();
+			branch    = req.getBranchCode() ;
+			
+			if (update == true  ) {
+				List<RawContentsDetails> filterItem = findRisks.stream().filter(o -> o.getItemId().equals(Integer.valueOf(data.getItemId())) ).collect(Collectors.toList());
+				if (filterItem.size()>0  ) {
+					entryDate = filterItem.get(0).getEntryDate(); 
+					branch    = filterItem.get(0).getBranchCode();
+				}
+			}
+			
+			save.setBranchCode(branch);
+			
+			save.setEntryDate(entryDate);
+			save.setRequestReferenceNo(reqRefNo);
+			save.setStatus("Y");
+			
+			save.setCustomerId(Integer.valueOf(req.getCustomerId()));
+			save.setCompanyId(req.getCompanyId());
+			save.setRiskId(Integer.valueOf(req.getRiskId()));
+			save.setSectionId(Integer.valueOf(req.getSectionId()));
+			
+			save.setItemId(Integer.valueOf(data.getItemId()));
+			save.setItemDesc(data.getItemDesc());
+			save.setItemName(data.getItemName());
+			save.setItemValue(Double.valueOf(data.getItemValue()));
+			
+			repo.saveAndFlush(save);
+			log.info("Saved Details  is --->" + json.toJson(save) );
+		}
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is --->" + e.getMessage());
+		return null;
+	}
+	return res;
+}
+public Long getContentDetailsCount(String customerId) {
+	Long  riskCount = 0L ; 
+	try {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> query = cb.createQuery(Long.class);
+
+		// Find All
+		Root<RawContentsDetails> r = query.from(RawContentsDetails.class);
+
+		// Select
+		query.select( cb.countDistinct( r.get("requestReferenceNo")  ) );
+
+		// Order By
+	//	List<Order> orderList = new ArrayList<Order>();
+	//	orderList.add(cb.asc(b.get("branchName")));
+		
+		// Where
+		Predicate n1 = cb.equal(r.get("customerId"),customerId );
+		query.where(n1);//.orderBy(orderList);
+
+		// Get Result
+		TypedQuery<Long> result = em.createQuery(query);
+		List<Long> list = result.getResultList();
+		if (list.size()>0  ) {
+			riskCount = list.get(0);
+		}
+		
+	} catch (Exception e ) {
+		e.printStackTrace();
+		log.info("Exception is --->" + e.getMessage());
+		return null ;
+	}
+	return riskCount  ;
+	
 }
 
-  */
- @Override
-    public RawContentsDetails create(RawContentsDetails d) {
-
-       RawContentsDetails entity;
-
-        try {
-            entity = repository.save(d);
-
-        } catch (Exception ex) {
-			log.error(ex);
-            return null;
-        }
-        return entity;
-    }
-
-    
-    @Override
-    public RawContentsDetails update(RawContentsDetails d) {
-        RawContentsDetails c;
-
-        try {
-            c = repository.saveAndFlush(d);
-
-        } catch (Exception ex) {
-			log.error(ex);
-            return null;
-        }
-        return c;
-    }
-
-/*
-    @Override
-    public RawContentsDetails getOne(long id) {
-        RawContentsDetails t;
-
-        try {
-            t = repository.findById(id).orElse(null);
-
-        } catch (Exception ex) {
-			log.error(ex);
-            return null;
-        }
-        return t;
-    }
-
-*/
-    @Override
-    public List<RawContentsDetails> getAll() {
-        List<RawContentsDetails> lst;
-
-        try {
-            lst = repository.findAll();
-
-        } catch (Exception ex) {
-			log.error(ex);
-            return Collections.emptyList();
-        }
-        return lst;
-    }
-
-
-    @Override
-    public long getTotal() {
-        long total;
-
-        try {
-            total = repository.count();
-        } catch (Exception ex) {
-            log.error(ex);
-			return 0;
-        }
-        return total;
-    }
-
-/*
-    @Override
-    public boolean delete(long id) {
-        try {
-            repository.deleteById(id);
-            return true;
-
-        } catch (Exception ex) {
-			log.error(ex);
-            return false;
-        }
-    }
-
- */
 
 }

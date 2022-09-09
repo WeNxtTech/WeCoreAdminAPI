@@ -5,6 +5,9 @@
 */
 package com.maan.eway.service;
 import com.maan.eway.bean.RawContentsDetails;
+import com.maan.eway.error.Error;
+import com.maan.eway.req.RawContentsDetailsSaveReq;
+import com.maan.eway.res.SuccessRes;
 
 import java.util.List;
 /**
@@ -12,11 +15,6 @@ import java.util.List;
 */
 public interface RawContentsDetailsService  {
 
-RawContentsDetails create(RawContentsDetails d);
-RawContentsDetails update(RawContentsDetails d);
-//RawContentsDetails getOne(long id) ;
- List<RawContentsDetails> getAll();
-long getTotal();
-//boolean delete(long id);
+	SuccessRes saveRawContentDetails(RawContentsDetailsSaveReq req);
 
 }

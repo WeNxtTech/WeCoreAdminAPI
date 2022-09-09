@@ -75,6 +75,10 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="BRANCH_CODE", nullable=false, length=20)
     private String     branchCode ;
+    
+    @Id
+    @Column(name="ITEM_ID")
+    private Integer     itemId ;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="STATUS", length=1)
@@ -90,9 +94,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="ITEM_VALUE")
     private Double     itemValue ;
 
-
-    //--- ENTITY LINKS ( RELATIONSHIP )
-
+    @Column(name="ITEM_DESC", length=100)
+    private String     itemDesc ;
 
 }
 

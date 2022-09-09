@@ -21,4 +21,8 @@ public interface DropDownService {
 
 	List<DropDownRes> getStateExtent();
 
+	List<DropDownRes> getContentName();
+
+	List<DropDownRes> getPropertyName();
+
 }

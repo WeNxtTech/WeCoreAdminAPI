@@ -147,6 +147,7 @@ public class LoginReferalServiceImpl implements LoginReferalService {
 				save.setEffectiveDateEnd(endDate);
 				save.setEntryDate(new Date());
 				save.setLoginId(req.getLoginId());
+				save.setReferalYn("Y");
 				loginReferalRepo.saveAndFlush(save);
 				log.info("Saved Details is ---> " + json.toJson(save));
 				if(list.size() > 0 ) {

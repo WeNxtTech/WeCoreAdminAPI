@@ -16,6 +16,7 @@ import com.maan.eway.res.RawBuildingsDetailsRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 import com.maan.eway.service.RawBuildingsDetailsService;
+import com.maan.eway.service.ValidationService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -46,6 +47,9 @@ public class RawBuildingsDetailsController {
 	private  RawBuildingsDetailsService entityService;
 
 	@Autowired
+	private ValidationService validateService;
+	
+	@Autowired
 	private  PrintReqService reqPrinter;
 	// save
 	@PostMapping("/savebuildingdetails")
@@ -55,7 +59,7 @@ public class RawBuildingsDetailsController {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
 
-		List<Error> validation = entityService.validateRawBuildingDetails(req);
+		List<Error> validation = validateService.validateRawBuildingDetails(req);
 		// validation
 		if (validation != null && validation.size() != 0) {
 			data.setCommonResponse(null);

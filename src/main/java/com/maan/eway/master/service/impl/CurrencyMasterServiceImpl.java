@@ -97,6 +97,7 @@ public SuccessRes insertCurrency(CurrencyMasterSaveReq req) {
 				Long totalCount =getMasterTableCount();
 				currencyId = Long.valueOf(totalCount + 1);
 				res.setResponse("Saved Successfully ");
+				res.setSuccessId(currencyId.toString());
 
 			} else {
 				// Update

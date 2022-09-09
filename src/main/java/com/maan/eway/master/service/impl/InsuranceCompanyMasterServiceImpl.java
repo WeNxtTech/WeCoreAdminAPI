@@ -265,6 +265,7 @@ this.repository = repo;
 				insId =Long.valueOf(totalCount + 100001);
 				saveData.setCompanyId(insId.toString());
 				res.setResponse("Saved Successfully ");
+				res.setSuccessId(insId.toString());
 
 			} else {
 				// Update

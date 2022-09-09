@@ -155,6 +155,7 @@ public SuccessRes insertRisk(RiskMasterSaveReq req) {
 				saveData.setRiskId(Integer.valueOf(riskId));
 				saveData.setRiskName(req.getRiskName());
 				res.setResponse("Saved Successfully ");
+				res.setSuccessId(riskId);
 
 			} else {
 				// Update

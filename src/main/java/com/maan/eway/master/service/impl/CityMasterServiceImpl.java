@@ -98,6 +98,7 @@ public class CityMasterServiceImpl implements CityMasterService {
 				Long totalCount = getMasterTableCount();
 				cityId = Long.valueOf(totalCount + 1).toString();
 				res.setResponse("Saved Successfully ");
+				res.setSuccessId(cityId);
 
 			} else {
 				// Update

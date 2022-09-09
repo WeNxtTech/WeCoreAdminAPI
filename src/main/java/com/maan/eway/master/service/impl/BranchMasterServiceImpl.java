@@ -97,7 +97,8 @@ public SuccessRes insertBranch(BranchMasterSaveReq req) {
 				saveData.setBranchCode(branchCode.toString());
 				saveData.setBranchName(req.getBranchName());
 				res.setResponse("Saved Successfully ");
-
+				res.setSuccessId(branchCode);
+				
 			} else {
 				// Update
 				// Get Less than Equal Today Record 

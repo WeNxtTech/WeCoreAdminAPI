@@ -41,5 +41,7 @@ public class RawContentsDetailsId implements Serializable {
     
     private String     branchCode ;
     
+    private Integer     itemId ;
+    
      
 }

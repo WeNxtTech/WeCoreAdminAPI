@@ -146,6 +146,7 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 					saveData.setSectionId(Integer.valueOf(sectionId));
 					saveData.setSectionName(req.getSectionName());
 					res.setResponse("Saved Successfully ");
+					res.setSuccessId(sectionId);
 	
 				} else {
 					// Update

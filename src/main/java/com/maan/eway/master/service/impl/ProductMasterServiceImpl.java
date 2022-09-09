@@ -99,6 +99,7 @@ public SuccessRes insertProduct(ProductMasterSaveReq req) {
 				saveData.setProductId(Integer.valueOf(productId));
 				saveData.setProductName(req.getProductName());
 				res.setResponse("Saved Successfully ");
+				res.setSuccessId(productId);
 
 			} else {
 				// Update

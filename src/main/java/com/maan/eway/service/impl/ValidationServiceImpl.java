@@ -14,7 +14,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.maan.eway.bean.CustomerDetails;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CustomerSaveReq;
 import com.maan.eway.master.req.ProductSectionsSaveReq;
@@ -23,7 +22,7 @@ import com.maan.eway.master.req.RiskDomesticDetailsSaveReq;
 import com.maan.eway.master.req.RiskListSaveReq;
 import com.maan.eway.master.req.SectionListReq;
 import com.maan.eway.repository.CustomerDetailsRepository;
-import com.maan.eway.req.AccidentDetails;
+import com.maan.eway.req.AccidentDetailsReq;
 import com.maan.eway.req.RawPersonalAccidentSaveReq;
 import com.maan.eway.service.ValidationService;
 
@@ -474,7 +473,7 @@ public class ValidationServiceImpl implements ValidationService {
 			if (StringUtils.isBlank(req.getSectionId().toString())) {
 				errors.add(new Error("05","Section Id", "Please Enter Section Id"));
 			}
-			for(AccidentDetails ac : req.getAccidentDetails()) {
+			for(AccidentDetailsReq ac : req.getAccidentDetails()) {
 				if (StringUtils.isBlank(ac.getNameOfPerson())) {
 					errors.add(new Error("06","Name of Person", "Please Enter Name of Person"));
 				}

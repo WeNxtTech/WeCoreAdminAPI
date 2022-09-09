@@ -15,26 +15,11 @@ import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+@Data
+public class AccidentDetailsReq  {
 
-
-
-/**
- * Domain class for entity "RawPersonalAccident"
- *
- * @author Telosys Tools Generator
- *
- */
- 
- 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
-public class AccidentDetails implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-	
+	@JsonProperty("PersonId")
+    private String    personId     ;
 	@JsonProperty("NameOfPerson")
     private String     nameOfPerson ;
 	@JsonFormat(pattern="dd/MM/yyyy")

@@ -32,8 +32,8 @@ import com.maan.eway.bean.RawPersonalAccidentId;
 public interface RawPersonalAccidentRepository  extends JpaRepository<RawPersonalAccident,RawPersonalAccidentId > , JpaSpecificationExecutor<RawPersonalAccident> {
 
 	
-	List<RawPersonalAccident> findByRequestReferenceNoAndSectionIdAndRiskIdAndCustomerIdAndCompanyIdAndBranchCodeAndPersonId(
-			String requestReferenceNo, Integer sectionId, Integer riskId, Integer customerId, String companyId,
-			String branchCode, String personId);
+	
+	List<RawPersonalAccident> findByRequestReferenceNoAndSectionIdAndRiskId(String requestReferenceNo,
+			Integer sectionId, Integer riskId);
 
 }

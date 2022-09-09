@@ -5,69 +5,48 @@
 */
 package com.maan.eway.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import com.maan.eway.repository.RawPersonalAccidentRepository;
-import com.maan.eway.req.AccidentDetails;
-import com.maan.eway.req.RawPersonalAccidentSaveReq;
-import com.maan.eway.res.SuccessRes;
-import com.maan.eway.bean.RawPersonalAccident;
-import com.maan.eway.bean.RawPersonalAccidentId;
-import com.maan.eway.service.RawPersonalAccidentService;
-
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.maan.eway.bean.RawPersonalAccident;
+import com.maan.eway.repository.RawPersonalAccidentRepository;
+import com.maan.eway.req.AccidentDetailsReq;
+import com.maan.eway.req.RawPersonalAccidentSaveReq;
+import com.maan.eway.res.SuccessRes;
+import com.maan.eway.service.RawPersonalAccidentService;
+
 /**
-* <h2>RawPersonalAccidentServiceimpl</h2>
-*/
+ * <h2>RawPersonalAccidentServiceimpl</h2>
+ */
 @Service
 @Transactional
 public class RawPersonalAccidentServiceImpl implements RawPersonalAccidentService {
 
-@Autowired
-private RawPersonalAccidentRepository accidentrepo;
+	@Autowired
+	private RawPersonalAccidentRepository accidentrepo;
 
+	private Logger log = LogManager.getLogger(RawPersonalAccidentServiceImpl.class);
 
-private Logger log=LogManager.getLogger(RawPersonalAccidentServiceImpl.class);
-
-
-@Override
-public SuccessRes savePersonalAccident(RawPersonalAccidentSaveReq req) {
-	SuccessRes res = new SuccessRes();
-	DozerBeanMapper mapper = new DozerBeanMapper();
-	try {
-		RawPersonalAccident ent = new RawPersonalAccident();
-		Date entryDate=null;
-		Integer newId = 0;
-		List<RawPersonalAccident> raw = accidentrepo.findByRequestReferenceNoAndSectionIdAndRiskIdAndCustomerIdAndCompanyIdAndBranchCodeAndPersonId(req.getRequestReferenceNo(),req.getSectionId(),req.getRiskId(), req.getCustomerId(),req.getCompanyId(),req.getBranchCode(),req.getPersonId()); 
-		if(raw.size()>=0) {
-			accidentrepo.deleteAll();
-			for(RawPersonalAccident data : raw) {
-			for(AccidentDetails accident : req.getAccidentDetails()) {
-				mapper.map(data,RawPersonalAccident.class);
-				data.setAge(accident.getAge());
-				data.setDateOfBirth(accident.getDateOfBirth());
-				data.setDescription(accident.getDescription());
-				data.setHeight(accident.getHeight());
-				data.setNameOfPerson(accident.getNameOfPerson());
-				data.setSumInsured(accident.getSumInsured());
-				data.setWeight(accident.getWeight());
-				accidentrepo.save(data);
-			}
-			}
-			res.setSuccessId(req.getPersonId());
-			res.setResponse("Updated Successful");
-			}
-		else {
-					for(AccidentDetails accident : req.getAccidentDetails()) {	
-					ent = mapper.map(req,RawPersonalAccident.class);					
+	@Override
+	public SuccessRes savePersonalAccident(RawPersonalAccidentSaveReq req) {
+		SuccessRes res = new SuccessRes();
+		DozerBeanMapper mapper = new DozerBeanMapper();
+		try {
+			RawPersonalAccident ent = new RawPersonalAccident();
+			Date entryDate = null;
+			List<RawPersonalAccident> raw = accidentrepo.findByRequestReferenceNoAndSectionIdAndRiskId(
+					req.getRequestReferenceNo(), req.getSectionId(), req.getRiskId());
+			if (raw.size() > 0) {
+				accidentrepo.deleteAll();
+				for (AccidentDetailsReq accident : req.getAccidentDetails()) {
+					ent =mapper.map(req, RawPersonalAccident.class);
 					ent.setAge(accident.getAge());
 					ent.setDateOfBirth(accident.getDateOfBirth());
 					ent.setDescription(accident.getDescription());
@@ -75,23 +54,42 @@ public SuccessRes savePersonalAccident(RawPersonalAccidentSaveReq req) {
 					ent.setNameOfPerson(accident.getNameOfPerson());
 					ent.setSumInsured(accident.getSumInsured());
 					ent.setWeight(accident.getWeight());
+					ent.setPersonId(Integer.valueOf(accident.getPersonId()));
+
+					accidentrepo.save(ent);
+				}
+				res.setSuccessId(req.getRequestReferenceNo());
+				res.setResponse("Updated Successful");
+			}
+
+			else {
+
+				for (AccidentDetailsReq accident : req.getAccidentDetails()) {
+					ent = mapper.map(req, RawPersonalAccident.class);
+					ent.setAge(accident.getAge());
+					ent.setDateOfBirth(accident.getDateOfBirth());
+					ent.setDescription(accident.getDescription());
+					ent.setHeight(accident.getHeight());
+					ent.setNameOfPerson(accident.getNameOfPerson());
+					ent.setSumInsured(accident.getSumInsured());
+					ent.setWeight(accident.getWeight());
+					ent.setPersonId(Integer.valueOf(accident.getPersonId()));
 					ent.setStatus("Y");
 					ent.setEntryDate(new Date());
-					ent.setPersonId(newId+1);					
 					accidentrepo.save(ent);
-					}
-					res.setSuccessId(newId.toString());
-					res.setResponse("Inserted Successful");		
-		
 				}
-				
-	}
-	catch(Exception e) {
-		e.printStackTrace();
-		log.info("LogDetails"+e.getMessage());
-		return null;
-	}
-	return res;
-}
+				res.setSuccessId(req.getRequestReferenceNo());
+				res.setResponse("Inserted Successful");
 
+			}
+			
+			
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("LogDetails" + e.getMessage());
+			return null;
+		}
+		return res;
+	}
 }

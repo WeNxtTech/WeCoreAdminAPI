@@ -146,6 +146,7 @@ try {
 			saveData.setCoverId(Integer.valueOf(coverId));
 			saveData.setCoverName(req.getCoverName());
 			res.setResponse("Saved Successfully ");
+			res.setSuccessId(coverId);
 
 		} else {
 			// Update

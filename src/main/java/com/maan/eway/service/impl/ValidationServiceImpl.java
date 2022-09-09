@@ -23,7 +23,12 @@ import com.maan.eway.master.req.RiskListSaveReq;
 import com.maan.eway.master.req.SectionListReq;
 import com.maan.eway.repository.CustomerDetailsRepository;
 import com.maan.eway.req.AccidentDetailsReq;
+import com.maan.eway.req.RawAllRisksListReq;
 import com.maan.eway.req.RawPersonalAccidentSaveReq;
+import com.maan.eway.req.RawAllRisksSaveReq;
+import com.maan.eway.req.RawBuildingsDetailsSaveReq;
+import com.maan.eway.req.RawContentsDetailsSaveReq;
+import com.maan.eway.req.RawContentsItemListReq;
 import com.maan.eway.service.ValidationService;
 
 @Service
@@ -71,7 +76,7 @@ public class ValidationServiceImpl implements ValidationService {
 		return errors;
 	}
 	
-	
+	//____________________________________________COMMON CUSTOMER ERRORS_____________________________________________\\
 	public List<Error> commonCustomerErrors(CustomerSaveReq req) {
 		List<Error>  errors = new ArrayList<Error>();
 		try {
@@ -337,7 +342,7 @@ public class ValidationServiceImpl implements ValidationService {
 		return true;
 	}
 
-
+	//____________________________________________RISK DETAILS VALIDATION_____________________________________________\\
 	@Override
 	public List<Error> validateRiskDetails(RiskDomesticDetailsSaveReq req) {
 		List<Error> errors = new ArrayList<Error>();
@@ -387,7 +392,7 @@ public class ValidationServiceImpl implements ValidationService {
 		}
 		return errors;
 	}
-
+	//____________________________________________PRODUCT SECTION VALIDATION_____________________________________________\\
 	@Override
 	public List<Error> validateProductSections(ProductsRiskSaveReq req) {
 		List<Error> errors = new ArrayList<Error>();
@@ -453,6 +458,7 @@ public class ValidationServiceImpl implements ValidationService {
 	}
 
 
+	//____________________________________________PERSONAL ACCIDENT VALIDATION_____________________________________________\\
 	
 	@Override
 	public List<Error> validatePersonalAccident(RawPersonalAccidentSaveReq req) {
@@ -510,5 +516,208 @@ public class ValidationServiceImpl implements ValidationService {
 		return errors;
 	}
 
+
+//____________________________________________RAW BUILDING DETAILS VALIDATION_____________________________________________\\
+
+@Override
+public List<Error> validateRawBuildingDetails(RawBuildingsDetailsSaveReq req) {
+	List<Error> errors =new ArrayList<Error>();
+	try {
+		if (StringUtils.isBlank(req.getBuildingAddress().toString())) {
+			errors.add(new Error("01", "BuildingAddress", "Please Enter BuildingAddress"));
+		} else if (req.getBuildingAddress().length()>200) {
+			errors.add(new Error("01", "BuildingAddress", "Please Enter BuildingAddress Character within 200"));
+		}
+		if (StringUtils.isBlank(req.getConstMaterialId().toString())) {
+			errors.add(new Error("02", "ConstMaterialId", "Please Select ConstMaterialId"));
+		} else if (StringUtils.isBlank(req.getConstMaterialDesc())) {
+			errors.add(new Error("02", "ConstMaterialDesc", "Please Select ConstMaterialDesc"));
+		} 
+		if(!("01".equals(req.getConstMaterialId())||"02".equals(req.getConstMaterialId()) )){
+			errors.add(new Error("02","ConstMaterialDesc()","Select any one ConstMaterialDesc"));
+		}else if(!("Walls".equals(req.getConstMaterialDesc())||"Roof".equals(req.getConstMaterialDesc()) )){
+				errors.add(new Error("02","ConstMaterialDesc()","Select any one ConstMaterialDesc"));
+		}
+		if (!StringUtils.isNumeric(req.getStoreysHeight().toString())) {
+			errors.add(new Error("03", "StoreysHeight", "Please Enter StoreysHeight Integer"));
+		}
+		if (StringUtils.isBlank(req.getOutbuildingConstId().toString())) {
+			errors.add(new Error("04", "OutbuildingConstId", "Please Select OutbuildingConstId"));
+		} else if (StringUtils.isBlank(req.getOutbuildingConstDesc())) {
+			errors.add(new Error("04", "OutbuildingConstDesc", "Please Select OutbuildingConstDesc"));
+		}else if(!("01".equals(req.getOutbuildingConstId())||"02".equals(req.getOutbuildingConstId()) )){
+			errors.add(new Error("04","OutbuildingConstId()","Select any one OutbuildingConstId"));
+		}else if(!("Walls".equals(req.getOutbuildingConstDesc())||"Roof".equals(req.getOutbuildingConstDesc()) )){
+				errors.add(new Error("04","OutbuildingConstDesc()","Select any one OutbuildingConstDesc"));
+		}
+		if (StringUtils.isBlank(req.getBusinessPortionDetails().toString())) {
+			errors.add(new Error("05", "BusinessPortionDetails", "Please Enter BusinessPortionDetails"));
+		} else if (req.getBusinessPortionDetails().length()>20) {
+			errors.add(new Error("05", "BusinessPortionDetails", "Please Enter BusinessPortionDetails  within 20 Character"));
+		}
+		if (StringUtils.isBlank(req.getAboutBuildingId().toString())) {
+			errors.add(new Error("06", "AboutBuildingId", "Please Select AboutBuildingId"));
+		} else if (StringUtils.isBlank(req.getAboutBuildingDesc())) {
+			errors.add(new Error("06", "AboutBuildingDesc", "Please Select AboutBuildingDesc"));
+		}
+		if(!("01".equals(req.getAboutBuildingId())||"02".equals(req.getAboutBuildingId())|| "03".equals(req.getAboutBuildingId()) )){
+			errors.add(new Error("06","AboutBuildingId()","Select any one AboutBuildingId"));
+		}else if(!("Private".equals(req.getAboutBuildingDesc())||" SelfContained".equals(req.getAboutBuildingDesc())||"NotSelfContained".equals(req.getAboutBuildingDesc()))){
+			errors.add(new Error("06","AboutBuildingDesc()","Select any one AboutBuildingDesc"));
+		}
+		
+		
+		if (StringUtils.isBlank(req.getYouOccupyTheBuilding().toString())) {
+			errors.add(new Error("07", "YouOccupyTheBuilding", "Please Enter YouOccupyTheBuilding"));
+		} else if (req.getYouOccupyTheBuilding().length()>20) {
+			errors.add(new Error("07", "YouOccupyTheBuilding", "Please Enter YouOccupyTheBuilding within 20 Character "));
+		}
+		
+		if (StringUtils.isBlank(req.getStateExtentId().toString())) {
+			errors.add(new Error("09", "StateExtentId", "Please Select StateExtentId"));
+		} else if (StringUtils.isBlank(req.getStateExtentDesc())) {
+			errors.add(new Error("09", "StateExtentDesc", "Please Select StateExtentDesc"));
+		}else if(!("01".equals(req.getStateExtentId())||"02".equals(req.getStateExtentId()) )){
+			errors.add(new Error("09","StateExtentId()","Select any one StateExtentId"));
+		}
+		if(!("More than 7 Days".equals(req.getStateExtentDesc())||" More than 30 Days".equals(req.getStateExtentDesc()))){
+			errors.add(new Error("09","StateExtentDesc()","Select any one StateExtentDesc"));
+		}
+		
+		if (StringUtils.isBlank(req.getMaintanenceDesc().toString())) {
+			errors.add(new Error("10", "MaintanenceDesc", "Please Enter MaintanenceDesc"));
+		} else if (req.getMaintanenceDesc().length()>20) {
+			errors.add(new Error("10", "MaintanenceDesc", "Please Enter MaintanenceDesc within 20 Character "));
+		}
+		if (StringUtils.isBlank(req.getSectionId().toString())) {
+			errors.add(new Error("11", "SectionId", "Please Enter SectionId"));
+		}
+		if(StringUtils.isBlank(req.getCustomerId())){
+			errors.add(new Error ("12","CustomerId","Please Enter CustomerId"));
+		}
+		if(StringUtils.isBlank(req.getCompanyId())) {
+			errors.add(new Error("13","CompanyId","Please Enter CompanyId"));
+		}
+		if(StringUtils.isBlank(req.getRiskId())) {
+			errors.add(new Error("14","RiskId","Please Enter RiskId"));
+		}
+		if(StringUtils.isBlank(req.getBranchCode())) {
+			errors.add(new Error("15","BranchCode","please Enter BranchCode"));
+		}
+	}catch(Exception e) {		
+		e.printStackTrace();
+		log.info("Exception is --->", e.getMessage());
+		errors.add(new Error("16","Common Error",e.getMessage()));
+	}
+	return errors;
+}
+//____________________________________________RAW CONTENT DETAILS VALIDATION_____________________________________________\\
+@Override
+public List<Error> validateRawContentDetails(RawContentsDetailsSaveReq req) {
+	List<Error> errors=new ArrayList<Error>();
+	try {
+	if (StringUtils.isBlank(req.getSectionId().toString())) {
+		errors.add(new Error("02", "SectionId", "Please Enter SectionId"));
+	}
+	if(StringUtils.isBlank(req.getCustomerId().toString())){
+		errors.add(new Error ("03","CustomerId","Please Enter CustomerId"));
+	}
+	if(StringUtils.isBlank(req.getCompanyId())) {
+		errors.add(new Error("04","CompanyId","Please Enter CompanyId"));
+	}
+	if(StringUtils.isBlank(req.getRiskId().toString())) {
+		errors.add(new Error("05","RiskId","Please Enter RiskId"));
+	}
+	if(StringUtils.isBlank(req.getBranchCode())) {
+		errors.add(new Error("06","BranchCode","please Enter BranchCode"));
+	}else {
+	
+		for (RawContentsItemListReq data :  req.getItemList()) {
+			
+			if (StringUtils.isBlank(data.getItemId())  ) {
+				errors.add(new Error("09","ItemId", "Please Select Item Id"));
+			}
+			if (StringUtils.isBlank(data.getItemName())  ) {
+				errors.add(new Error("10","ItemName", "Please Select ItemName : " ));
+			}
+			if (StringUtils.isBlank(data.getItemDesc())  ) {
+				errors.add(new Error("11","ItemDesc", "Please Enter ItemDesc"));
+			}
+			if (StringUtils.isBlank(data.getItemValue())  ) {
+				errors.add(new Error("12","Value", "Please Enter Value : " ));
+			}
+		
+		}
+	}
+	}catch(Exception e) {
+		e.printStackTrace();
+		log.info("Exception is -->", e.getMessage());
+		errors.add(new Error("01","CommonError",e.getMessage()));
+	}
+	return null;
+}
+//____________________________________________ALL RISK VALIDATION_____________________________________________\\
+@Override
+public List<Error> validateRawAllRisk(RawAllRisksSaveReq req) {
+
+List<Error> errors =new ArrayList<Error>();
+try {
+	if (StringUtils.isBlank(req.getSectionId().toString())) {
+		errors.add(new Error("02", "SectionId", "Please Enter SectionId"));
+	}
+	if(StringUtils.isBlank(req.getCustomerId().toString())){
+		errors.add(new Error ("03","CustomerId","Please Enter CustomerId"));
+	}
+	if(StringUtils.isBlank(req.getCompanyId())) {
+		errors.add(new Error("04","CompanyId","Please Enter CompanyId"));
+	}
+	if(StringUtils.isBlank(req.getRiskId().toString())) {
+		errors.add(new Error("05","RiskId","Please Enter RiskId"));
+	}
+	if(StringUtils.isBlank(req.getBranchCode())) {
+		errors.add(new Error("06","BranchCode","please Enter BranchCode"));
+	}
+	if (req.getRawAllRisksList()==null || req.getRawAllRisksList().size() <= 0 ) {
+		errors.add(new Error("08","Risk List", "Please Select atleast One Risk"));
+	} else {
+	
+		for (RawAllRisksListReq data :  req.getRawAllRisksList()) {
+			
+			if (StringUtils.isBlank(data.getItemId())  ) {
+				errors.add(new Error("09","ItemId", "Please Select Item Id"));
+			}
+			if (StringUtils.isBlank(data.getItemName())  ) {
+				errors.add(new Error("10","ItemName", "Please Select ItemName : " ));
+			}
+			if (StringUtils.isBlank(data.getMake())  ) {
+				errors.add(new Error("11","Make", "Please Enter Make"));
+			}
+			if (StringUtils.isBlank(data.getModel())  ) {
+				errors.add(new Error("12","Model", "Please Enter Model : " ));
+			}
+			if (StringUtils.isBlank(data.getSerialNo())  ) {
+				errors.add(new Error("13","SerialNo", "Please Enter SerialNo : " ));
+			}
+			if (StringUtils.isBlank(data.getValue().toString())  ) {
+				errors.add(new Error("14","Value", "Please Enter Value : " ));
+			} 	/*else if (data.getValue()>80000)   {
+				errors.add(new Error("14","Value", "Please Enter Value Greater than 80000: " ));
+			}*/
+		}
+	}
+}catch(Exception e) {
+	e.printStackTrace();
+	log.info("Exception is-->", e.getMessage());
+	errors.add(new Error("01","CommonError",e.getMessage()));
+}
+	return null;
+}
+
+
+@Override
+public List<Error> validateProductSections(RiskDomesticDetailsSaveReq req) {
+	// TODO Auto-generated method stub
+	return null;
+}
 	
 }

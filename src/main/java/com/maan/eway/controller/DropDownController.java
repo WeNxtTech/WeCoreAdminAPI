@@ -172,5 +172,46 @@ public class DropDownController {
 		}
 
 	}
+	
+	@GetMapping("/contentname")
+	@ApiOperation(value = "This method is to Content Name Drop Down")
+	public ResponseEntity<CommonRes> getContentName() {
+		CommonRes data = new CommonRes();
+
+		// Save
+		List<DropDownRes> res = dropDownService.getContentName();
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
+	
+	
+	@GetMapping("/propertyname")
+	@ApiOperation(value = "This method is to Property Name Drop Down")
+	public ResponseEntity<CommonRes> getPropertyName() {
+		CommonRes data = new CommonRes();
+
+		// Save
+		List<DropDownRes> res = dropDownService.getPropertyName();
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
 }
 

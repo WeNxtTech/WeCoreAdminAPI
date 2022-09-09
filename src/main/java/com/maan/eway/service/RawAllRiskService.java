@@ -6,6 +6,7 @@
 package com.maan.eway.service;
 import com.maan.eway.bean.RawContentsDetails;
 import com.maan.eway.error.Error;
+import com.maan.eway.req.RawAllRisksSaveReq;
 import com.maan.eway.req.RawContentsDetailsSaveReq;
 import com.maan.eway.res.SuccessRes;
 
@@ -13,8 +14,8 @@ import java.util.List;
 /**
 * <h2>RawContentsDetailsServiceimpl</h2>
 */
-public interface RawContentsDetailsService  {
+public interface RawAllRiskService  {
 
-	SuccessRes saveRawContentDetails(RawContentsDetailsSaveReq req);
+	SuccessRes saveRawAllRiskDetails(RawAllRisksSaveReq req);
 
 }

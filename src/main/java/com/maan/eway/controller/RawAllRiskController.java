@@ -7,12 +7,14 @@ package com.maan.eway.controller;
 
 import com.maan.eway.bean.RawContentsDetails;
 import com.maan.eway.error.Error;
+import com.maan.eway.req.RawAllRisksSaveReq;
 import com.maan.eway.req.RawBuildingsDetailsSaveReq;
 import com.maan.eway.req.RawContentsDetailsSaveReq;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 import com.maan.eway.service.RawContentsDetailsService;
+import com.maan.eway.service.RawAllRiskService;
 import com.maan.eway.service.ValidationService;
 
 import io.swagger.annotations.ApiOperation;
@@ -36,10 +38,10 @@ import java.util.List;
 */
 @RestController
 @RequestMapping("/api")
-public class RawContentsDetailsController {
+public class RawAllRiskController {
 
 	@Autowired
-	private  RawContentsDetailsService entityService;
+	private  RawAllRiskService entityService;
 
 	@Autowired
 	private ValidationService validateService;
@@ -47,14 +49,14 @@ public class RawContentsDetailsController {
 	@Autowired
 	private  PrintReqService reqPrinter;
 	// save
-		@PostMapping("/savecontentdetails")
-		@ApiOperation(value = "This method is Insert Raw Content Details")
-		public ResponseEntity<CommonRes> saveRawBuildingDetails(@RequestBody RawContentsDetailsSaveReq req) {
+		@PostMapping("/saveallrispropertydetails")
+		@ApiOperation(value = "This method is Insert Raw All Risk-Property Details")
+		public ResponseEntity<CommonRes> saveRawAllRiskDetails(@RequestBody RawAllRisksSaveReq req) {
 
 			reqPrinter.reqPrint(req);
 			CommonRes data = new CommonRes();
 
-			List<Error> validation = validateService.validateRawContentDetails(req);
+			List<Error> validation = validateService.validateRawAllRisk(req);
 			// validation
 			if (validation != null && validation.size() != 0) {
 				data.setCommonResponse(null);
@@ -65,7 +67,7 @@ public class RawContentsDetailsController {
 
 			} else {
 				// Save
-				SuccessRes res = entityService.saveRawContentDetails(req);
+				SuccessRes res = entityService.saveRawAllRiskDetails(req);
 				data.setCommonResponse(res);
 				data.setIsError(false);
 				data.setErrorMessage(Collections.emptyList());

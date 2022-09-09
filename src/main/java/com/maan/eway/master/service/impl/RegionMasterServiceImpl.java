@@ -100,6 +100,7 @@ public SuccessRes insertRegion(RegionMasterSaveReq req) {
 				saveData.setRegionCode(regionCode.toString());
 				saveData.setShortCode(req.getShortCode());
 				res.setResponse("Saved Successfully ");
+				res.setSuccessId(regionCode);
 
 			} else {
 				// Update

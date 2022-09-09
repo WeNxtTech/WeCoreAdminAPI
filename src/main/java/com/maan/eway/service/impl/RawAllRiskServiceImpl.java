@@ -8,20 +8,20 @@ package com.maan.eway.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.maan.eway.repository.RawContentsDetailsRepository;
-import com.maan.eway.req.RawContentsDetailsSaveReq;
-import com.maan.eway.req.RawContentsItemListReq;
+
+import com.maan.eway.repository.RawAllRisksRepository;
+
+import com.maan.eway.req.RawAllRisksListReq;
+import com.maan.eway.req.RawAllRisksSaveReq;
+
 import com.maan.eway.res.SuccessRes;
 import com.google.gson.Gson;
-import com.maan.eway.bean.RawBuildingsDetails;
-import com.maan.eway.bean.RawContentsDetails;
-import com.maan.eway.bean.RiskDomesticDetails;
-import com.maan.eway.error.Error;
-import com.maan.eway.master.req.RiskListSaveReq;
-import com.maan.eway.service.RawContentsDetailsService;
+import com.maan.eway.bean.RawAllRisks;
+
+import com.maan.eway.service.RawAllRiskService;
 
 import java.util.ArrayList;
-import java.util.Collections;
+
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,33 +37,33 @@ import javax.persistence.criteria.Root;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dozer.DozerBeanMapper;
+
 /**
-* <h2>RawContentsDetailsServiceimpl</h2>
+* <h2>RawAllRisksServiceimpl</h2>
 */
 @Service
 @Transactional
-public class RawContentsDetailsServiceImpl implements RawContentsDetailsService {
+public class RawAllRiskServiceImpl implements RawAllRiskService {
 
 @Autowired
-private RawContentsDetailsRepository repo;
+private RawAllRisksRepository repo;
 
 @PersistenceContext
 private EntityManager em;
 
-private Logger log=LogManager.getLogger(RawContentsDetailsServiceImpl.class);
+private Logger log=LogManager.getLogger(RawAllRiskServiceImpl.class);
 
 Gson json = new Gson();
 
 @Override
-public SuccessRes saveRawContentDetails(RawContentsDetailsSaveReq req) {
+public SuccessRes saveRawAllRiskDetails(RawAllRisksSaveReq req) {
 	SuccessRes res = new SuccessRes();
-	DozerBeanMapper mapper = new DozerBeanMapper();
+
 	try {
 		String reqRefNo = ""  , branch = "";
 		Date  entryDate = null ; boolean update = false ;
 		
-		List<RawContentsDetails> findRisks = new ArrayList<RawContentsDetails>();
+		List<RawAllRisks> findRisks = new ArrayList<RawAllRisks>();
 		if (StringUtils.isBlank(req.getRequestReferenceNo())  ) {
 			// Save
 			Long idCount =  getContentDetailsCount(req.getCustomerId()); 
@@ -80,14 +80,14 @@ public SuccessRes saveRawContentDetails(RawContentsDetailsSaveReq req) {
 			res.setSuccessId(reqRefNo);
 		}
 		
-		for (RawContentsItemListReq data :   req.getItemList() ) {
-			RawContentsDetails save = new RawContentsDetails(); 
+		for (RawAllRisksListReq data :   req.getRawAllRisksList() ) {
+			RawAllRisks save = new RawAllRisks(); 
 			
 			entryDate = new Date();
 			branch    = req.getBranchCode() ;
 			
 			if (update == true  ) {
-				List<RawContentsDetails> filterItem = findRisks.stream().filter(o -> o.getItemId().equals(Integer.valueOf(data.getItemId())) ).collect(Collectors.toList());
+				List<RawAllRisks> filterItem = findRisks.stream().filter(o -> o.getItemId().equals(Integer.valueOf(data.getItemId())) ).collect(Collectors.toList());
 				if (filterItem.size()>0  ) {
 					entryDate = filterItem.get(0).getEntryDate(); 
 					branch    = filterItem.get(0).getBranchCode();
@@ -106,9 +106,11 @@ public SuccessRes saveRawContentDetails(RawContentsDetailsSaveReq req) {
 			save.setSectionId(Integer.valueOf(req.getSectionId()));
 			
 			save.setItemId(Integer.valueOf(data.getItemId()));
-			save.setItemDesc(data.getItemDesc());
+			save.setMake(data.getMake());
+			save.setModel(data.getModel());
+			save.setSerialNo(data.getSerialNo());
 			save.setItemName(data.getItemName());
-			save.setItemValue(Double.valueOf(data.getItemValue()));
+			save.setValue(Double.valueOf(data.getValue()));
 			
 			repo.saveAndFlush(save);
 			log.info("Saved Details  is --->" + json.toJson(save) );
@@ -127,7 +129,7 @@ public Long getContentDetailsCount(String customerId) {
 		CriteriaQuery<Long> query = cb.createQuery(Long.class);
 
 		// Find All
-		Root<RawContentsDetails> r = query.from(RawContentsDetails.class);
+		Root<RawAllRisks> r = query.from(RawAllRisks.class);
 
 		// Select
 		query.select( cb.countDistinct( r.get("requestReferenceNo")  ) );

@@ -98,6 +98,7 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 				Long totalCount = getMasterTableCount();
 				countryId = Long.valueOf(totalCount + 1).toString();
 				res.setResponse("Saved Successfully ");
+				res.setSuccessId(countryId);
 
 			} else {
 				// Update

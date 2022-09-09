@@ -184,6 +184,7 @@ public SuccessRes insertBank(BankMasterSaveReq req) {
 				saveData.setBankCode(req.getBankShortName());
 				saveData.setBankShortName(req.getBankShortName());
 				res.setResponse("Saved Successfully ");
+				res.setSuccessId(req.getBankShortName());
 
 			} else {
 				// Update

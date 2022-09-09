@@ -25,6 +25,7 @@ import com.maan.eway.master.req.SectionListReq;
 import com.maan.eway.repository.CustomerDetailsRepository;
 
 import com.maan.eway.req.AccidentDetails;
+import com.maan.eway.req.RawAllRisksListReq;
 import com.maan.eway.req.RawPersonalAccidentSaveReq;
 
 import com.maan.eway.req.RawAllRisksSaveReq;
@@ -643,7 +644,57 @@ public List<Error> validateRawContentDetails(RawContentsDetailsSaveReq req) {
 
 @Override
 public List<Error> validateRawAllRisk(RawAllRisksSaveReq req) {
-	// TODO Auto-generated method stub
+
+List<Error> errors =new ArrayList<Error>();
+try {
+	if (StringUtils.isBlank(req.getSectionId().toString())) {
+		errors.add(new Error("02", "SectionId", "Please Enter SectionId"));
+	}
+	if(StringUtils.isBlank(req.getCustomerId().toString())){
+		errors.add(new Error ("03","CustomerId","Please Enter CustomerId"));
+	}
+	if(StringUtils.isBlank(req.getCompanyId())) {
+		errors.add(new Error("04","CompanyId","Please Enter CompanyId"));
+	}
+	if(StringUtils.isBlank(req.getRiskId().toString())) {
+		errors.add(new Error("05","RiskId","Please Enter RiskId"));
+	}
+	if(StringUtils.isBlank(req.getBranchCode())) {
+		errors.add(new Error("06","BranchCode","please Enter BranchCode"));
+	}
+	if (req.getRawAllRisksList()==null || req.getRawAllRisksList().size() <= 0 ) {
+		errors.add(new Error("08","Risk List", "Please Select atleast One Risk"));
+	} else {
+	
+		for (RawAllRisksListReq data :  req.getRawAllRisksList()) {
+			
+			if (StringUtils.isBlank(data.getItemId())  ) {
+				errors.add(new Error("09","ItemId", "Please Select Item Id"));
+			}
+			if (StringUtils.isBlank(data.getItemName())  ) {
+				errors.add(new Error("10","ItemName", "Please Select ItemName : " ));
+			}
+			if (StringUtils.isBlank(data.getMake())  ) {
+				errors.add(new Error("11","Make", "Please Enter Make"));
+			}
+			if (StringUtils.isBlank(data.getModel())  ) {
+				errors.add(new Error("12","Model", "Please Enter Model : " ));
+			}
+			if (StringUtils.isBlank(data.getSerialNo())  ) {
+				errors.add(new Error("13","SerialNo", "Please Enter SerialNo : " ));
+			}
+			if (StringUtils.isBlank(data.getValue().toString())  ) {
+				errors.add(new Error("14","Value", "Please Enter Value : " ));
+			} 	/*else if (data.getValue()>80000)   {
+				errors.add(new Error("14","Value", "Please Enter Value Greater than 80000: " ));
+			}*/
+		}
+	}
+}catch(Exception e) {
+	e.printStackTrace();
+	log.info("Exception is-->", e.getMessage());
+	errors.add(new Error("01","CommonError",e.getMessage()));
+}
 	return null;
 }
 

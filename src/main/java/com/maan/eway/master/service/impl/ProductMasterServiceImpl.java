@@ -311,12 +311,13 @@ public List<ProductMasterRes> getallProductDetails(ProductMasterGetAllReq req) {
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(b.get("productName")));
+		orderList.add(cb.asc(b.get("productId")));
 		
 		// Where
 		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+		Predicate n2 = cb.equal(b.get("companyId"),req.getCompanyId()) ;
 
-		query.where(n1).orderBy(orderList);
+		query.where(n1,n2).orderBy(orderList);
 
 		// Get Result
 		TypedQuery<ProductMaster> result = em.createQuery(query);
@@ -491,7 +492,7 @@ public List<ProductMasterRes> getActiveProductDetails(ProductMasterGetAllReq req
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(b.get("productName")));
+		orderList.add(cb.asc(b.get("productId")));
 
 		// Where
 		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);

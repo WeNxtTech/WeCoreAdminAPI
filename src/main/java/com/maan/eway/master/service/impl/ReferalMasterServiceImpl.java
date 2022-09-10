@@ -228,7 +228,7 @@ public List<Error> validateReferalDetails(ReferalMasterSaveReq req) {
 		}
 		if (StringUtils.isBlank(req.getBranchCode()) || req.getBranchCode() == null) {
 			errorList.add(new Error("07", "BranchCode", "Please Select BranchCode  "));
-		}else if (req.getReferalDesc().length() > 100){
+		}else if (req.getBranchCode().length() > 100){
 			errorList.add(new Error("07","BranchCode", "Please Enter BranchCode within 100 Characters")); 
 		}
 		
@@ -308,7 +308,10 @@ public List<ReferalMasterRes> getallReferalDetails(ReferalMasterGetAllReq req) {
 		Root<ReferalMaster> ocpm1 = effectiveDate.from(ReferalMaster.class);
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
-		effectiveDate.where(a1);
+		Predicate a2 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
+		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+		
+		effectiveDate.where(a1,a2,a3);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -316,8 +319,9 @@ public List<ReferalMasterRes> getallReferalDetails(ReferalMasterGetAllReq req) {
 		
 		// Where
 		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-
-		query.where(n1).orderBy(orderList);
+		Predicate n2 = cb.equal(b.get("branchCode"),req.getBranchCode());
+		
+		query.where(n1,n2).orderBy(orderList);
 
 		// Get Result
 		TypedQuery<ReferalMaster> result = em.createQuery(query);

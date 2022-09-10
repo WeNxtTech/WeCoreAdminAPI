@@ -65,7 +65,7 @@ public class CoverMasterController {
 
 			} else {
 
-				// Get All
+				// Save
 				SuccessRes res = coverService.insertCover(req);
 				data.setCommonResponse(res);
 				data.setIsError(false);

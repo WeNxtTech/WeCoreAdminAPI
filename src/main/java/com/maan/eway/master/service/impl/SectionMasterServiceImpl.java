@@ -218,7 +218,7 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 		return res;
 	}
 	
-	public Long getMasterTableCount(Integer productId , String companyId) {
+	public Long getMasterTableCount(String productId , String companyId) {
 	
 		Long data = 0L;
 		try {
@@ -239,9 +239,9 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			Root<SectionMaster> ocpm1 = effectiveDate.from(SectionMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-			Predicate a2 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+//			Predicate a2 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			effectiveDate.where(a1,a2,a3);
+			effectiveDate.where(a1,a3);
 	
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("productId"), productId);

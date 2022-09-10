@@ -218,7 +218,7 @@ try {
 return res;
 }
 
-public Long getMasterTableCount(Integer sectionId , Integer productId , String companyId) {
+public Long getMasterTableCount(String sectionId , String productId , String companyId) {
 
 Long data = 0L;
 try {

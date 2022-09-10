@@ -38,10 +38,10 @@ public class SectionMasterSaveReq implements Serializable {
 
   
 	@JsonProperty("SectionId")
-    private Integer    sectionId    ;
+    private String    sectionId    ;
 	
 	@JsonProperty("ProductId")
-    private Integer    productId    ;
+    private String    productId    ;
 
 	@JsonProperty("InsuranceId")
 	private String companyId;
@@ -60,7 +60,7 @@ public class SectionMasterSaveReq implements Serializable {
 	private String coreAppCode;
 
 	@JsonProperty("AmendId")
-	private Integer amendId;
+	private String amendId;
 
 	@JsonProperty("Remarks")
 	private String remarks;

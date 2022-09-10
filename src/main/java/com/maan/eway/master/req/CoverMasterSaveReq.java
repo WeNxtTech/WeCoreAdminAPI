@@ -39,13 +39,13 @@ public class CoverMasterSaveReq implements Serializable {
     private static final long serialVersionUID = 1L;
 
 	@JsonProperty("CoverId")
-	private Integer coverId;
+	private String coverId;
 	
 	@JsonProperty("SectionId")
-	private Integer sectionId;
+	private String sectionId;
 	
 	@JsonProperty("ProductId")
-	private Integer productId;
+	private String productId;
 	
 	@JsonProperty("InsuranceId")
 	private String companyId;
@@ -67,7 +67,7 @@ public class CoverMasterSaveReq implements Serializable {
 	private String coreAppCode;
 
 	@JsonProperty("AmendId")
-	private Integer amendId;
+	private String amendId;
 
 	@JsonProperty("Remarks")
 	private String remarks;  

@@ -19,4 +19,10 @@ public class ReferalMasterGetAllReq implements Serializable {
     @JsonProperty("Offset")
     private String offset;
     
+    @JsonProperty("InsuranceId")
+    private String companyId;
+    
+    @JsonProperty("BranchCode")
+    private String branchCode;
+    
 }

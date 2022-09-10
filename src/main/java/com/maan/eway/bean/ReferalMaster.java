@@ -70,6 +70,10 @@ private static final long serialVersionUID = 1L;
     @Column(name="COMPANY_ID", nullable=false, length=20)
     private String     companyId ;
 
+    @Id
+    @Column(name="BRANCH_CODE", length=100)
+    private String   branchCode;
+
     //--- ENTITY DATA FIELDS 
     @Column(name="REFERAL_NAME", length=100)
     private String     referalName ;
@@ -93,8 +97,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="STATUS", length=1)
     private String     status ;
 
-    @Column(name="BRANCH_CODE", length=100)
-    private String   branchCode;
 
 }
 

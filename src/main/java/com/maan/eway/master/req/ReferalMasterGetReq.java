@@ -15,5 +15,12 @@ public class ReferalMasterGetReq implements Serializable {
 
 	@JsonProperty("ReferalId")
     private String     referalId     ;
-    
+	
+	
+	@JsonProperty("InsuranceId")
+    private String   companyId     ;
+	
+	@JsonProperty("BranchCode")
+    private String    branchCode     ;
+	
 }

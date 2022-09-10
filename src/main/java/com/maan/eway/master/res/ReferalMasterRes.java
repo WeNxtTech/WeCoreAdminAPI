@@ -50,4 +50,6 @@ public class ReferalMasterRes implements Serializable {
 	@JsonProperty("Remarks")
 	private String remarks;
 
+	@JsonProperty("BranchCode")
+	private String branchCode;
 }

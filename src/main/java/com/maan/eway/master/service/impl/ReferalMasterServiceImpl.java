@@ -95,7 +95,7 @@ public SuccessRes insertReferal(ReferalMasterSaveReq req) {
 		if (StringUtils.isBlank(req.getReferalId().toString())) {
 				// Save
 			   // Integer totalCount = repo.count();
-				Long totalCount=getMasterTableCount();			
+				Long totalCount=getMasterTableCount(req.getCompanyId(),req.getBranchCode());			
 				referalId = Long.valueOf(totalCount + 1).toString();
 				saveData.setReferalId(Integer.valueOf(referalId));
 				saveData.setReferalName(req.getReferalName());
@@ -226,7 +226,11 @@ public List<Error> validateReferalDetails(ReferalMasterSaveReq req) {
 		}else if (req.getReferalDesc().length() > 300){
 			errorList.add(new Error("06","ReferalDesc", "Please Enter Referal Description within 300 Characters")); 
 		}
-		
+		if (StringUtils.isBlank(req.getBranchCode()) || req.getBranchCode() == null) {
+			errorList.add(new Error("07", "BranchCode", "Please Select BranchCode  "));
+		}else if (req.getReferalDesc().length() > 100){
+			errorList.add(new Error("07","BranchCode", "Please Enter BranchCode within 100 Characters")); 
+		}
 		
 		
 	} catch (Exception e) {
@@ -235,7 +239,7 @@ public List<Error> validateReferalDetails(ReferalMasterSaveReq req) {
 	}
 	return errorList;
 }
-public Long getMasterTableCount() {
+public Long getMasterTableCount(String InsuranceId, String branchCode) {
 
 	Long data = 0L;
 	try {
@@ -256,10 +260,15 @@ public Long getMasterTableCount() {
 		Root<ReferalMaster> ocpm1 = effectiveDate.from(ReferalMaster.class);
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
-		effectiveDate.where(a1);
+		Predicate a2 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
+		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+		
+		effectiveDate.where(a1,a2,a3);
 
 		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-		query.where(n1);
+		Predicate n2 = cb.equal(b.get("companyId"),InsuranceId);
+		Predicate n3 = cb.equal(b.get("branchCode"), branchCode);
+		query.where(n1,n2,n3);
 		// Get Result
 		TypedQuery<Long> result = em.createQuery(query);
 		list = result.getResultList();
@@ -359,7 +368,10 @@ public ReferalMasterRes getByReferalId(ReferalMasterGetReq req) {
 		Root<ReferalMaster> ocpm1 = effectiveDate.from(ReferalMaster.class);
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 		javax.persistence.criteria.Predicate a1 = cb.equal(c.get("referalId"),ocpm1.get("referalId") );
-		effectiveDate.where(a1);
+		javax.persistence.criteria.Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
+		javax.persistence.criteria.Predicate a3 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
+		
+		effectiveDate.where(a1,a2,a3);
 		
 		
 		
@@ -371,9 +383,11 @@ public ReferalMasterRes getByReferalId(ReferalMasterGetReq req) {
 	
 		javax.persistence.criteria.Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate);		
 		javax.persistence.criteria.Predicate n2 = cb.equal(c.get("referalId"),req.getReferalId()) ;
+		javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"),req.getCompanyId());
+		javax.persistence.criteria.Predicate n4 = cb.equal(c.get("branchCode"),req.getBranchCode());
+		
 
-
-		query.where(n1 ,n2).orderBy(orderList);
+		query.where(n1 ,n2,n3,n4).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<ReferalMaster> result = em.createQuery(query);			

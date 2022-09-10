@@ -93,6 +93,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="STATUS", length=1)
     private String     status ;
 
+    @Column(name="BRANCH_CODE", length=100)
+    private String   branchCode;
+
 }
 
 

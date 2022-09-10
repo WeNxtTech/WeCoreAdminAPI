@@ -41,4 +41,7 @@ public class ReferalMasterSaveReq implements Serializable {
 	@JsonProperty("Status")
 	private String status;
 
+	@JsonProperty("BranchCode")
+	private String branchCode;
+
 }

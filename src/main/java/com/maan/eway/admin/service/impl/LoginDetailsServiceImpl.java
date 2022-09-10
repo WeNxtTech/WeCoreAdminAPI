@@ -53,6 +53,7 @@ import com.maan.eway.admin.res.BrokerPersonalDetailsGetRes;
 import com.maan.eway.admin.res.IssuerDatailsGetRes;
 import com.maan.eway.admin.res.IssuerLoginGetRes;
 import com.maan.eway.admin.res.IssuerPersonalInfoGetRes;
+import com.maan.eway.admin.res.LoginBrokerDetailsGetRes;
 import com.maan.eway.admin.res.LoginBrokerDetailsGridRes;
 import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.admin.res.LoginIssuerGridRes;
@@ -451,8 +452,68 @@ this.repository = repo;
 
  */
 
+	@Override
+	public List<LoginBrokerDetailsGetRes> getBrokerLoginDetailsSubUserType(BrokerLoginGridReq req) {
+		List<LoginBrokerDetailsGetRes> resList = new ArrayList<LoginBrokerDetailsGetRes>();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 
+		try { 
+			// Limit Offset
+			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+			
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+			List<Tuple> list = new ArrayList<Tuple>();
+			
+			// Find All
+			Root<LoginMaster> l = query.from(LoginMaster.class);
 
-
+			
+			// Select
+			query.multiselect( l.get("loginId").alias("LoginId") , l.get("attachedBranches").alias("AttachedBranches") ,
+					l.get("attachedCompanies").alias("AttachedCompanies") ,
+					l.get("oaCode").alias("OaCode"));
+			
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(l.get("entryDate")));
+			
+			// Where
+			Predicate n1 = cb.equal(l.get("userType"), "Broker");
+			Predicate n2 = cb.equal(l.get("status"), "Y");
+			
+			if(StringUtils.isNotBlank( req.getSubUserType())  ) {
+				if("b2b".equals(req.getSubUserType())||"b2c".equals(req.getSubUserType())) {
+				Predicate n3 = cb.equal(l.get("subUserType"), req.getSubUserType());
+				query.where(n1,n2,n3).orderBy(orderList);
+				}
+				
+			} else if("All".equals(req.getSubUserType())) {
+				query.where(n1,n2).orderBy(orderList);
+			}
+			
+			// Get Result
+			TypedQuery<Tuple> result = em.createQuery(query);
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			list = result.getResultList();
+			
+			for (Tuple data :  list) {
+				LoginBrokerDetailsGetRes res = new LoginBrokerDetailsGetRes();
+				res.setLoginId(data.get("LoginId") ==null?"" :data.get("LoginId").toString());	
+				res.setOaCode(data.get("OaCode") ==null?"" :data.get("OaCode").toString());
+				res.setCompanyId(data.get("AttachedCompanies") ==null?"" :data.get("AttachedCompanies").toString());
+				res.setBranchCodes(data.get("AttachedBranches") ==null?"" :data.get("AttachedBranches").toString());
+				resList.add(res);				
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
 
 	@Override
 	public List<LoginBrokerDetailsGridRes> getBrokerLoginDetailsByUserType(BrokerLoginGridReq req) {
@@ -531,8 +592,7 @@ this.repository = repo;
 		}
 		return resList;
 	}
-
-
+	
 	@Override
 	public List<LoginUserGridRes> getUserLoginDetailsByUserType(UserLoginGridReq req) {
 		List<LoginUserGridRes> resList = new ArrayList<LoginUserGridRes>();

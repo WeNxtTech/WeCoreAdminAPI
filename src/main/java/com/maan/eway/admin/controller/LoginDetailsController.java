@@ -30,6 +30,7 @@ import com.maan.eway.admin.req.UserDetailsGetReq;
 import com.maan.eway.admin.req.UserLoginGridReq;
 import com.maan.eway.admin.res.BrokerDatailsGetRes;
 import com.maan.eway.admin.res.IssuerDatailsGetRes;
+import com.maan.eway.admin.res.LoginBrokerDetailsGetRes;
 import com.maan.eway.admin.res.LoginBrokerDetailsGridRes;
 import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.admin.res.LoginIssuerGridRes;
@@ -184,7 +185,24 @@ public class LoginDetailsController {
 		}
 	}
 	
-	
+	@PostMapping("/getbrokers")
+	@ApiOperation(value="This method is to Get Brokers")
+	public ResponseEntity<CommonRes> getBrokerLoginDetailsSubUserType(@RequestBody  BrokerLoginGridReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		
+		/////// grid
+		List<LoginBrokerDetailsGetRes> res = entityService.getBrokerLoginDetailsSubUserType(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 	@PostMapping("/getallusers")
 	@ApiOperation(value="This method is to Get All Brokers Employees")
 	public ResponseEntity<CommonRes> getUserLoginDetailsByUserType(@RequestBody  UserLoginGridReq req) {
@@ -342,4 +360,8 @@ public class LoginDetailsController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
+
+
+
+
 }

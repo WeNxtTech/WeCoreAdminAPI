@@ -497,7 +497,10 @@ public List<ReferalMasterRes> getActiveReferalDetails(ReferalMasterGetAllReq req
 		Root<ReferalMaster> ocpm1 = effectiveDate.from(ReferalMaster.class);
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
-		effectiveDate.where(a1);
+		Predicate a2 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
+		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+
+		effectiveDate.where(a1,a2,a3);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -506,8 +509,9 @@ public List<ReferalMasterRes> getActiveReferalDetails(ReferalMasterGetAllReq req
 		// Where
 		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 		Predicate n2 = cb.equal(b.get("status"), "Y");
+		Predicate n3 = cb.equal(b.get("branchCode"),req.getBranchCode());
 
-		query.where(n1,n2).orderBy(orderList);
+		query.where(n1,n2,n3).orderBy(orderList);
 
 		// Get Result
 		TypedQuery<ReferalMaster> result = em.createQuery(query);

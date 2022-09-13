@@ -31,5 +31,8 @@ List<InsuranceCompanyMasterRes> getallInsCompanyDetails(InsuranceCompanyMasterGe
 List<InsuranceCompanyMasterRes> getActiveInsCompanyDetails(InsuranceCompanyMasterGetAllReq req);
 InsuranceCompanyMasterRes getByCompanyId(InsuranceCompanyMasterGetReq req);
 List<DropDownRes> getInscompanyMasterDropdown();
+List<InsuranceCompanyMasterRes> getallbrokerCompanyDetails(InsuranceCompanyMasterGetAllReq req);
+InsuranceCompanyMasterRes getByBrokerCompanyId(InsuranceCompanyMasterGetReq req);
+List<DropDownRes> getBrokercompanyDropdown();
 
 }

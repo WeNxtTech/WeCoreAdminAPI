@@ -158,7 +158,7 @@ public class InsuranceCompanyMasterController {
 		}
 	}
 		
-		// Bank Master Drop Down Type
+		// Insurance Company Master Drop Down Type
 		@GetMapping("/dropdown/inscompanymaster")
 		@ApiOperation(value = "This method is get Company Master Drop Down")
 
@@ -180,17 +180,72 @@ public class InsuranceCompanyMasterController {
 			}
 
 		}
-/*
-        @GetMapping(value = "/insurancecompanymaster/{id}")
-    public ResponseEntity<InsuranceCompanyMaster> getOneInsuranceCompanyMaster(@PathVariable("id") long id) {
+		
+//********************************************* BROKER COMPANY ******************************************\\		
+	//  Get All Broker Company 
+		
+			@PostMapping("/getallbrokercompanydetails")
+			@ApiOperation("This method is getall Broker Company Details")
+			public ResponseEntity<CommonRes> getallbrokerCompanyDetails(@RequestBody InsuranceCompanyMasterGetAllReq req)
+			{
+				CommonRes data = new CommonRes();
+				reqPrinter.reqPrint(req);
+				
+				List<InsuranceCompanyMasterRes> res = insService.getallbrokerCompanyDetails(req);
+				data.setCommonResponse(res);
+				data.setErrorMessage(Collections.emptyList());
+				data.setIsError(false);
+				data.setMessage("Success");
+				
+				if(res!= null) {
+					return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
+				}
+				else {
+					return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+				}
+			}
 
-            InsuranceCompanyMaster e = entityService.getOne(id);
-            if (e == null) {
-            	return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
-            }
-            return new ResponseEntity<>(e, HttpStatus.OK);
-    }
+			// Get By Broker Company Id
+			
+			@PostMapping("/getbybrokercompanyid")
+			@ApiOperation("This Method is to get byBroker Company id")
+			public ResponseEntity<CommonRes> getByBrokerCompanyId(@RequestBody InsuranceCompanyMasterGetReq req)
+			{
+			CommonRes data = new CommonRes();
+			InsuranceCompanyMasterRes res = insService.getByBrokerCompanyId(req);
+			data.setCommonResponse(res);
+			data.setErrorMessage(Collections.emptyList());
+			data.setIsError(false);
+			data.setMessage("Success");
 
-*/
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+		
+		// Broker Company Drop Down Type
+		@GetMapping("/dropdown/brokercompany")
+		@ApiOperation(value = "This method is get Broker Company  Drop Down")
+
+		public ResponseEntity<CommonRes> getBrokercompanyDropdown() {
+
+			CommonRes data = new CommonRes();
+
+			// Save
+			List<DropDownRes> res = insService.getBrokercompanyDropdown();
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+
+		}
 }

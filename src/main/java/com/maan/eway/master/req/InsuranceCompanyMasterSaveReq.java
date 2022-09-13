@@ -38,10 +38,7 @@ public class InsuranceCompanyMasterSaveReq {
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDate")
 	private Date effectiveDate;
-	/*
-	 * @JsonProperty("EffectiveDateEnd") private Date effectiveDateEnd ;
-	 */
-
+	
 	@JsonProperty("CompanyName")
 	private String companyName;
 
@@ -60,6 +57,9 @@ public class InsuranceCompanyMasterSaveReq {
 	@JsonProperty("Regards")
 	private String regards;
 
+	@JsonProperty("BrokerYn")
+	private String brokerYn;
+	
 	@JsonProperty("Status")
 	private String status;
 
@@ -71,5 +71,7 @@ public class InsuranceCompanyMasterSaveReq {
 
 	@JsonProperty("Remarks")
 	private String remarks;
+	
+	
   
 }

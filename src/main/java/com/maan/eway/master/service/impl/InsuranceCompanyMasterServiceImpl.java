@@ -163,7 +163,7 @@ this.repository = repo;
 
 		try {
 
-			if (StringUtils.isBlank(req.getInsuranceId())) {
+			if (StringUtils.isBlank(req.getInsuranceId())) {	
 				Long companyCount = repository.countByCompanyNameOrderByEntryDateDesc(req.getCompanyName());
 				if (companyCount > 0) {
 					errors.add(new Error("01", "CompanyId", "This Company Alrady Exist "));
@@ -186,49 +186,59 @@ this.repository = repo;
 			} else if (req.getCompanyLogo().length() > 200) {
 				errors.add(new Error("04", "Company Logo", "Company Logo under 200 Characters only allowed"));
 			}*/
-			
-			if (StringUtils.isBlank(req.getCompanyName())) {
-				errors.add(new Error("05", "Company Name", "Please Enter Company Name"));
-			} else if (req.getCompanyName().length() > 200) {
-				errors.add(new Error("05", "Company Name", "Company Name under 200 Characters only allowed"));
-			}
-			
-			if (StringUtils.isBlank(req.getCompanyPhone())) {
-				errors.add(new Error("06", "Company Phone", "Please Enter Company Phone"));
-			} else if (req.getCompanyPhone().length() > 200) {
-				errors.add(new Error("06", "Company Phone", "Company Phone under 200 Characters only allowed"));
-			}
+		// Date Validation
+		Calendar cal = new GregorianCalendar();
+		Date today = new Date();
+		cal.setTime(today);
+		cal.add(Calendar.DAY_OF_MONTH, -1);
+		cal.set(Calendar.HOUR_OF_DAY, 23);
+		cal.set(Calendar.MINUTE, 50);
+		today = cal.getTime();
+		if (req.getEffectiveDate() == null || StringUtils.isBlank(req.getEffectiveDate().toString())) {
+			errors.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start"));
 
-			if (StringUtils.isBlank(req.getRegards())) {
-				errors.add(new Error("07", "Regards", "Please Enter Company Regards"));
-			} else if (req.getRegards().length() > 100) {
-				errors.add(new Error("07", "Regards", "Company Regards under 200 Characters only allowed"));
-			}
-			
-			if (StringUtils.isBlank(req.getRemarks())) {
-				errors.add(new Error("08", "Remark", "Please Enter Insurance Company Remark"));
-			} else if (req.getRemarks().length() > 100) {
-				errors.add(new Error("08", "Remark", "Insurance Company Remark under 100 Characters only allowed"));
-			}
-			
-			if (StringUtils.isBlank(req.getStatus())) {
-				errors.add(new Error("09", "Status", "Please Enter Status"));
-			} else if (req.getStatus().length() > 1) {
-				errors.add(new Error("09", "Status", "Insurance Company Status 1 Character Only"));
-			}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()))) {
-				errors.add(new Error("09", "Status", "Insurance Company Valid Status Y N"));
-			}
-			// Date Validation 
-			Calendar cal = new GregorianCalendar();  
-			Date today =  new Date(); 
-			cal.setTime(today); cal.add(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 50);
-			today = cal.getTime();
-			if(req.getEffectiveDate() == null || StringUtils.isBlank(req.getEffectiveDate().toString())) {
-				errors.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start"));
+		} else if (req.getEffectiveDate().before(today)) {
+			errors.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+		}
+		if (StringUtils.isBlank(req.getCompanyName())) {
+			errors.add(new Error("05", "Company Name", "Please Enter Company Name"));
+		} else if (req.getCompanyName().length() > 200) {
+			errors.add(new Error("05", "Company Name", "Company Name under 200 Characters only allowed"));
+		}
 
-			} else if (req.getEffectiveDate().before(today)) {
-				errors.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
-			}
+		if (StringUtils.isBlank(req.getCompanyPhone())) {
+			errors.add(new Error("06", "Company Phone", "Please Enter Company Phone"));
+		} else if (req.getCompanyPhone().length() > 200) {
+			errors.add(new Error("06", "Company Phone", "Company Phone under 200 Characters only allowed"));
+		}
+
+		if (StringUtils.isBlank(req.getRegards())) {
+			errors.add(new Error("07", "Regards", "Please Enter Company Regards"));
+		} else if (req.getRegards().length() > 100) {
+			errors.add(new Error("07", "Regards", "Company Regards under 200 Characters only allowed"));
+		}
+
+		if (StringUtils.isBlank(req.getRemarks())) {
+			errors.add(new Error("08", "Remark", "Please Enter Insurance Company Remark"));
+		} else if (req.getRemarks().length() > 100) {
+			errors.add(new Error("08", "Remark", "Insurance Company Remark under 100 Characters only allowed"));
+		}
+
+		if (StringUtils.isBlank(req.getStatus())) {
+			errors.add(new Error("09", "Status", "Please Enter Status"));
+		} else if (req.getStatus().length() > 1) {
+			errors.add(new Error("09", "Status", "Insurance Company Status 1 Character Only"));
+		} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()))) {
+			errors.add(new Error("09", "Status", "Insurance Company Valid Status Y N"));
+		}
+
+		if (StringUtils.isBlank(req.getBrokerYn())) {
+			errors.add(new Error("10", "BrokerYn", "Please Enter BrokerYn"));
+		} else if (req.getBrokerYn().length() > 1) {
+			errors.add(new Error("10", "BrokerYn", "Insurance Company BrokerYn 1 Character Only"));
+		} else if (!("Y".equals(req.getBrokerYn()) || "N".equals(req.getBrokerYn()))) {
+			errors.add(new Error("10", "BrokerYn", "Insurance Company Valid BrokerYn Y  or N"));
+		}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -320,6 +330,7 @@ this.repository = repo;
 			saveData.setEffectiveDateStart(effDate);
 			saveData.setEffectiveDateEnd(endDate);
 			saveData.setStatus(req.getStatus());
+			saveData.setBrokerYn(req.getBrokerYn());
 			saveData.setEntryDate(new Date());
 			repository.saveAndFlush(saveData);
 
@@ -598,6 +609,190 @@ this.repository = repo;
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			
 			query.where(n1,n2).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<InsuranceCompanyMaster> result = em.createQuery(query);			
+			list =  result.getResultList();  
+			
+			for(InsuranceCompanyMaster data : list ) {
+				// Response
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getCompanyId().toString());
+				res.setCodeDesc(data.getCompanyName());
+				resList.add(res);
+			}		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+//***************************************** BROKER COMPANY ***************************************\\
+
+	//GET ALL BROKER COMPANY 
+	@Override
+	public List<InsuranceCompanyMasterRes> getallbrokerCompanyDetails(InsuranceCompanyMasterGetAllReq req) {
+		List<InsuranceCompanyMasterRes> resList = new ArrayList<InsuranceCompanyMasterRes>();
+		ModelMapper mapper = new ModelMapper();
+		try {
+			List<InsuranceCompanyMaster> companyList = new ArrayList<InsuranceCompanyMaster>();
+			//Pagination
+			int limit=StringUtils.isBlank(req.getLimit())?0:Integer.valueOf(req.getLimit());
+			int offset=StringUtils.isBlank(req.getOffset())?0:Integer.valueOf(req.getOffset());
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<InsuranceCompanyMaster> query = cb.createQuery(InsuranceCompanyMaster.class);
+
+			// Find All
+			Root<InsuranceCompanyMaster> b = query.from(InsuranceCompanyMaster.class);
+
+			// Select
+			query.select(b);
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<InsuranceCompanyMaster> ocpm1 = effectiveDate.from(InsuranceCompanyMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			effectiveDate.where(a1);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("companyName")));
+			
+			// Where
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("brokerYn"), "Y");
+			Predicate n3 = cb.equal(b.get("status"), "Y");
+			
+			query.where(n1,n2,n3).orderBy(orderList);
+
+			// Get Result
+			TypedQuery<InsuranceCompanyMaster> result = em.createQuery(query);
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			companyList = result.getResultList();
+			
+			// Map
+			for (InsuranceCompanyMaster data : companyList) {
+				InsuranceCompanyMasterRes res = new InsuranceCompanyMasterRes();
+
+				res = mapper.map(data, InsuranceCompanyMasterRes.class);
+				mapper.getConfiguration().setAmbiguityIgnored(true);
+				resList.add(res);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+
+		}
+		return resList;
+
+	}
+
+//_________________________________________________________________________________________________________
+	//GET BY ID
+	@Override
+	public InsuranceCompanyMasterRes getByBrokerCompanyId(InsuranceCompanyMasterGetReq req) {
+		InsuranceCompanyMasterRes res = new InsuranceCompanyMasterRes();
+		ModelMapper mapper = new ModelMapper();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
+		try {
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<InsuranceCompanyMaster> query = cb.createQuery(InsuranceCompanyMaster.class);
+			List<InsuranceCompanyMaster> list = new ArrayList<InsuranceCompanyMaster>();
+			
+			// Find All
+			Root<InsuranceCompanyMaster>    c = query.from(InsuranceCompanyMaster.class);		
+			
+			// Select
+			query.select(c );
+			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<InsuranceCompanyMaster> ocpm1 = effectiveDate.from(InsuranceCompanyMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
+			effectiveDate.where(a1);
+			
+			
+			
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("effectiveDateStart")));
+			
+		    // Where	
+		
+			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate);		
+			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("companyId"),req.getCompanyId()) ;
+			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("brokerYn"),"Y") ;
+
+			query.where(n1 ,n2,n3).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<InsuranceCompanyMaster> result = em.createQuery(query);			
+			list =  result.getResultList();  
+			res = mapper.map(list.get(0) , InsuranceCompanyMasterRes.class);
+			res.setEntryDate(list.get(0).getEntryDate());
+			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
+			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+
+//______________________________________________________________________________________________________	
+	
+//BROKER COMPANY DROPDOWN 
+	@Override
+	public List<DropDownRes> getBrokercompanyDropdown() {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<InsuranceCompanyMaster> query = cb.createQuery(InsuranceCompanyMaster.class);
+			List<InsuranceCompanyMaster> list = new ArrayList<InsuranceCompanyMaster>();
+			
+			// Find All
+			Root<InsuranceCompanyMaster>    c = query.from(InsuranceCompanyMaster.class);		
+			
+			// Select
+			query.select(c );
+			
+		
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("companyName")));
+			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<InsuranceCompanyMaster> ocpm1 = effectiveDate.from(InsuranceCompanyMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
+			javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2);
+			
+		    // Where	
+			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
+			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("brokerYn"), "Y");
+			
+			query.where(n1,n2,n3).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<InsuranceCompanyMaster> result = em.createQuery(query);			

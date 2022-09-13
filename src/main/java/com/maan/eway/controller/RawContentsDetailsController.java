@@ -15,6 +15,7 @@ import com.maan.eway.service.PrintReqService;
 import com.maan.eway.service.RawContentsDetailsService;
 import com.maan.eway.service.ValidationService;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,7 @@ import java.util.List;
 * <h2>RawContentsDetailsController</h2>
 */
 @RestController
+@Api(  tags="RAW CONTENT DETAILS ", description = "API's")
 @RequestMapping("/api")
 public class RawContentsDetailsController {
 

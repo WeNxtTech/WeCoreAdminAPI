@@ -27,6 +27,7 @@ import com.maan.eway.service.PrintReqService;
 import com.maan.eway.service.SectionDetailsService;
 import com.maan.eway.service.ValidationService;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 
@@ -34,6 +35,7 @@ import io.swagger.annotations.ApiOperation;
 * <h2>SectionDetailsController</h2>
 */
 @RestController
+@Api(tags = "SECTION : Details ", description = "API's")
 @RequestMapping("/api")
 public class SectionDetailsController {
 
@@ -47,7 +49,7 @@ public class SectionDetailsController {
 	private  SectionDetailsService entityService;
 
 	@PostMapping("/saveproductsections")
-	@ApiOperation(value = "This method is Insert Risk Details")
+	@ApiOperation(value = "This method is Insert Section Details")
 	public ResponseEntity<CommonRes> saveProductSectionDetails(@RequestBody ProductsRiskSaveReq req) {
 
 		reqPrinter.reqPrint(req);

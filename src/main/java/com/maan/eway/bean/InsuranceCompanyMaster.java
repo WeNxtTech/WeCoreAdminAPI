@@ -84,6 +84,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="REGARDS", length=50)
     private String     regards ;
+    
+    @Column(name="BROKER_YN", length=2)
+	private String brokerYn;
 
     @Column(name="STATUS", length=1)
     private String     status ;

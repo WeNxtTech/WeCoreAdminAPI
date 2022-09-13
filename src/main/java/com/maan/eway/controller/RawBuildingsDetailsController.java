@@ -39,7 +39,7 @@ import java.util.List;
 * <h2>RawBuildingsDetailsController</h2>
 */
 @RestController
-@Api(tags = "Raw Buliding Details ", description = "API's")
+@Api(tags = "RAW BULIDING DETAILS ", description = "API's")
 @RequestMapping("/api")
 public class RawBuildingsDetailsController {
 

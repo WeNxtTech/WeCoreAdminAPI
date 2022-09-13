@@ -58,4 +58,7 @@ public class InsuranceCompanyMasterRes implements Serializable {
 	@JsonProperty("Remarks")
 	private String remarks;
 	
+	@JsonProperty("BrokerYn")
+	private String brokerYn;
+	
 }

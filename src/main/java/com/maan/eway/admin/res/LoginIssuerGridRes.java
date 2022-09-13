@@ -13,6 +13,9 @@ public class LoginIssuerGridRes {
 	
 	@JsonProperty("OaCode")
 	private String oaCode ;
+
+	@JsonProperty("AgencyCode")
+	private String agencyCode ;
 	
 	@JsonProperty("EntryDate")
 	private String entryDate ;

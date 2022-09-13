@@ -12,9 +12,10 @@ public class IssuerReferalCompniesRes {
 	
 	@JsonProperty("InsuranceId")
 	private String  insuranceId;  
-	@JsonProperty("CompanyName")
-	private String  companyName;  
-	
+	@JsonProperty("BranchName")
+	private String  branchName;  
+	@JsonProperty("BranchCode")
+	private String  branchCode;  
 	
 	@JsonProperty("AttachedReferals")
 	private List<IssuerReferalGetRes> attachedReferals ;

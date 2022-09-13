@@ -45,9 +45,9 @@ public class BasicLoginValidationService {
 			} else {
 				LoginMaster  loginData = loginRepo.findByLoginId(loginReq.getLoginId());
 				if(loginData!=null ) {
-					if (StringUtils.isBlank( loginReq.getOaCode()) ) {
+					if (StringUtils.isBlank( loginReq.getAgencyCode()) ) {
 						errors.add(new Error("02", "Login Id", "Login Id Already Exist"));
-					} else if(! loginReq.getOaCode().equalsIgnoreCase(loginData.getOaCode() ) ) {
+					} else if(! loginReq.getAgencyCode().equalsIgnoreCase(loginData.getAgencyCode() ) ) {
 						errors.add(new Error("02", "Login Id", "Login Id Already Exist"));
 					}
 				} 
@@ -56,7 +56,7 @@ public class BasicLoginValidationService {
 			if (StringUtils.isBlank(loginReq.getPassword())) {
 				errors.add(new Error("04", "Password", "Please Enter Password"));
 			} else if (loginReq.getPassword().length() > 50) {
-				errors.add(new Error("03", "Oa Code", "Password Must Be Under 50 Characters Only Allowed"));
+				errors.add(new Error("03", "PassWord", "Password Must Be Under 50 Characters Only Allowed"));
 			}
 			
 			if (StringUtils.isBlank(loginReq.getStatus())) {

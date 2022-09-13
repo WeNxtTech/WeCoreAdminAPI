@@ -5,6 +5,7 @@
 */
 package com.maan.eway.admin.service.impl;
 
+import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
@@ -27,6 +28,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,6 +59,7 @@ import com.maan.eway.admin.res.IssuerPersonalInfoGetRes;
 import com.maan.eway.admin.res.LoginBrokerDetailsGetRes;
 import com.maan.eway.admin.res.LoginBrokerDetailsGridRes;
 import com.maan.eway.admin.res.LoginCreationRes;
+import com.maan.eway.admin.res.LoginDetailsCriteriaRes;
 import com.maan.eway.admin.res.LoginIssuerGridRes;
 import com.maan.eway.admin.res.LoginUserGridRes;
 import com.maan.eway.admin.res.UserDetailsGetRes;
@@ -67,11 +71,8 @@ import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginMasterArch;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.LoginUserInfoArch;
-import com.maan.eway.repository.BranchMasterRepository;
 import com.maan.eway.repository.LoginMasterArchRepository;
 import com.maan.eway.repository.LoginMasterRepository;
-import com.maan.eway.repository.LoginProductMasterRepository;
-import com.maan.eway.repository.LoginReferalMasterRepository;
 import com.maan.eway.repository.LoginUserInfoArchRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
 /**
@@ -313,7 +314,11 @@ this.repository = repo;
 			dozerMapper.map(loginReq, saveLogin);
 			saveLogin.setPassword(newpass);
 			saveLogin.setLoginId(loginReq.getLoginId());
-			saveLogin.setOaCode(countId.toString());
+			if( loginReq.getUserType().equalsIgnoreCase("User")  ) {
+				saveLogin.setOaCode(loginReq.getOaCode());	
+			} else {
+				saveLogin.setOaCode(countId.toString());
+			}
 			saveLogin.setAgencyCode(countId.toString());
 			saveLogin.setEntryDate(new Date());
 			saveLogin.setUpdatedDate(new Date());
@@ -413,6 +418,7 @@ this.repository = repo;
 			updateLogin.setCreatedBy(findLogin.getCreatedBy() );
 			updateUser.setLoginId(loginReq.getLoginId());
 			updateUser.setOaCode(loginReq.getOaCode());
+			updateUser.setAgencyCode(loginReq.getAgencyCode());
 			updateUser.setUpdatedDate(new Date());
 			updateUser.setUpdatedBy(loginReq.getCreatedBy());
 			loginUserRepo.saveAndFlush(updateUser);
@@ -519,28 +525,29 @@ this.repository = repo;
 	public List<LoginBrokerDetailsGridRes> getBrokerLoginDetailsByUserType(BrokerLoginGridReq req) {
 		List<LoginBrokerDetailsGridRes> resList = new ArrayList<LoginBrokerDetailsGridRes>();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 
+		ModelMapper mapper = new ModelMapper(); 
 		try { 
 			// Limit Offset
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
 			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 			
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
-			List<Tuple> list = new ArrayList<Tuple>();
+			CriteriaQuery<LoginDetailsCriteriaRes> query = cb.createQuery(LoginDetailsCriteriaRes.class);
+			List<LoginDetailsCriteriaRes> list = new ArrayList<LoginDetailsCriteriaRes>();
 			
 			// Find All
 			Root<LoginMaster> l = query.from(LoginMaster.class);
 			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
 			
 			// Select
-			query.multiselect( l.get("loginId").alias("LoginId") , l.get("createdBy").alias("CreatedBy") , 
-					l.get("entryDate").alias("EntryDate") , l.get("updatedDate").alias("UpdatedDate") ,
-					l.get("updatedBy").alias("UpdatedBy") , l.get("attachedBranches").alias("AttachedBranches") ,
-					l.get("status").alias("Status") ,  l.get("oaCode").alias("OaCode") ,l.get("subUserType").alias("SubUserType"), 
-					 l.get("bankCode").alias("BankCode") ,
+			query.multiselect( l.get("loginId").alias("loginId") , l.get("createdBy").alias("createdBy") , 
+					l.get("entryDate").alias("entryDate") , l.get("updatedDate").alias("updatedDate") ,
+					l.get("updatedBy").alias("updatedBy") , l.get("attachedBranches").alias("attachedBranches") ,
+					l.get("status").alias("status") ,  l.get("oaCode").alias("oaCode"),l.get("agencyCode").alias("agencyCode") ,l.get("subUserType").alias("subUserType"), 
+					 l.get("bankCode").alias("bankCode") ,
 					//cb.selectCase().when(l.get("bankCode").isNotNull(), l.get("bankCode") ).otherwise("No Bank").alias("BankCode") ,
-					u.get("userName").alias("UserName")  ,
-					u.get("userMobile").alias("UserMobile") , u.get("userMail").alias("UserMail")    );
+					u.get("userName").alias("userName")  ,
+					u.get("userMobile").alias("userMobile") , u.get("userMail").alias("userMail")    );
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -559,31 +566,13 @@ this.repository = repo;
 			}
 			
 			// Get Result
-			TypedQuery<Tuple> result = em.createQuery(query);
+			TypedQuery<LoginDetailsCriteriaRes> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			list = result.getResultList();
 			
-			for (Tuple data :  list) {
-				LoginBrokerDetailsGridRes res = new LoginBrokerDetailsGridRes();
-				
-				res.setBankCode(data.get("BankCode") ==null?"" :data.get("BankCode").toString());
-				res.setBranchCodes(data.get("AttachedBranches") ==null?"" :data.get("AttachedBranches").toString());
-				res.setCreatedBy(data.get("CreatedBy") ==null?"" :data.get("CreatedBy").toString());			
-				res.setEntryDate(data.get("EntryDate") ==null?"" : sdf.format(data.get("EntryDate")) );
-				res.setLoginId(data.get("LoginId") ==null?"" :data.get("LoginId").toString());	
-				res.setOaCode(data.get("OaCode") ==null?"" :data.get("OaCode").toString());
-				res.setStatus(data.get("Status") ==null?"" :data.get("Status").toString());
-				res.setUpdatedBy(data.get("UpdatedBy") ==null?"" :data.get("UpdatedBy").toString());
-				res.setUpdatedDate(data.get("UpdatedDate") ==null?"" : sdf.format(data.get("UpdatedDate")));
-				res.setUserMail(data.get("UserMail") ==null?"" :data.get("UserMail").toString());
-				res.setUserMobile(data.get("UserMobile") ==null?"" :data.get("UserMobile").toString());
-				res.setUserName(data.get("UserName") ==null?"" :data.get("UserName").toString());
-				res.setSubUserType(data.get("SubUserType") ==null?"" :data.get("SubUserType").toString());
-				res.setUserType(req.getUserType());
-				
-				resList.add(res);				
-			}
+			Type listType = new TypeToken<List<LoginBrokerDetailsGridRes>>(){}.getType();
+			resList = mapper.map(list,listType);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -597,28 +586,29 @@ this.repository = repo;
 	public List<LoginUserGridRes> getUserLoginDetailsByUserType(UserLoginGridReq req) {
 		List<LoginUserGridRes> resList = new ArrayList<LoginUserGridRes>();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 
+		ModelMapper mapper = new ModelMapper(); 
 		try { 
 			// Limit Offset
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
 			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 			
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
-			List<Tuple> list = new ArrayList<Tuple>();
+			CriteriaQuery<LoginDetailsCriteriaRes> query = cb.createQuery(LoginDetailsCriteriaRes.class);
+			List<LoginDetailsCriteriaRes> list = new ArrayList<LoginDetailsCriteriaRes>();
 			
 			// Find All
 			Root<LoginMaster> l = query.from(LoginMaster.class);
 			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
 			
 			// Select
-			query.multiselect( l.get("loginId").alias("LoginId") , l.get("createdBy").alias("CreatedBy") , 
-					l.get("entryDate").alias("EntryDate") , l.get("updatedDate").alias("UpdatedDate") ,
-					l.get("updatedBy").alias("UpdatedBy") , l.get("attachedBranches").alias("AttachedBranches") ,
-					l.get("status").alias("Status") ,  l.get("oaCode").alias("OaCode") ,l.get("subUserType").alias("SubUserType"), 
-					 l.get("bankCode").alias("BankCode") ,
+			query.multiselect( l.get("loginId").alias("loginId") , l.get("createdBy").alias("createdBy") , 
+					l.get("entryDate").alias("entryDate") , l.get("updatedDate").alias("updatedDate") ,
+					l.get("updatedBy").alias("updatedBy") , l.get("attachedBranches").alias("attachedBranches") ,
+					l.get("status").alias("status") ,  l.get("oaCode").alias("oaCode"),l.get("agencyCode").alias("agencyCode") ,l.get("subUserType").alias("subUserType"), 
+					 l.get("bankCode").alias("bankCode") ,
 					//cb.selectCase().when(l.get("bankCode").isNotNull(), l.get("bankCode") ).otherwise("No Bank").alias("BankCode") ,
-					u.get("userName").alias("UserName")  ,
-					u.get("userMobile").alias("UserMobile") , u.get("userMail").alias("UserMail")    );
+					u.get("userName").alias("userName")  ,
+					u.get("userMobile").alias("userMobile") , u.get("userMail").alias("userMail")    );
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -637,31 +627,14 @@ this.repository = repo;
 			}
 			
 			// Get Result
-			TypedQuery<Tuple> result = em.createQuery(query);
+			TypedQuery<LoginDetailsCriteriaRes> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			list = result.getResultList();
 			
-			for (Tuple data :  list) {
-				LoginUserGridRes res = new LoginUserGridRes();
-				
-				res.setBankCode(data.get("BankCode") ==null?"" :data.get("BankCode").toString());
-				res.setBranchCodes(data.get("AttachedBranches") ==null?"" :data.get("AttachedBranches").toString());
-				res.setCreatedBy(data.get("CreatedBy") ==null?"" :data.get("CreatedBy").toString());			
-				res.setEntryDate(data.get("EntryDate") ==null?"" : sdf.format(data.get("EntryDate")) );
-				res.setLoginId(data.get("LoginId") ==null?"" :data.get("LoginId").toString());	
-				res.setOaCode(data.get("OaCode") ==null?"" :data.get("OaCode").toString());
-				res.setStatus(data.get("Status") ==null?"" :data.get("Status").toString());
-				res.setUpdatedBy(data.get("UpdatedBy") ==null?"" :data.get("UpdatedBy").toString());
-				res.setUpdatedDate(data.get("UpdatedDate") ==null?"" : sdf.format(data.get("UpdatedDate")));
-				res.setUserMail(data.get("UserMail") ==null?"" :data.get("UserMail").toString());
-				res.setUserMobile(data.get("UserMobile") ==null?"" :data.get("UserMobile").toString());
-				res.setUserName(data.get("UserName") ==null?"" :data.get("UserName").toString());
-				res.setSubUserType(data.get("SubUserType") ==null?"" :data.get("SubUserType").toString());
-				res.setUserType(req.getUserType());
-				
-				resList.add(res);				
-			}
+
+			Type listType = new TypeToken<List<LoginUserGridRes>>(){}.getType();
+			resList = mapper.map(list,listType);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -676,28 +649,30 @@ this.repository = repo;
 	public List<LoginIssuerGridRes> getIssuerLoginDetailsByUserType(IssuerLoginGridReq req) {
 		List<LoginIssuerGridRes> resList = new ArrayList<LoginIssuerGridRes>();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 
+		ModelMapper mapper = new ModelMapper(); 
 		try { 
 			// Limit Offset
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
 			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 			
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
-			List<Tuple> list = new ArrayList<Tuple>();
+			CriteriaQuery<LoginDetailsCriteriaRes> query = cb.createQuery(LoginDetailsCriteriaRes.class);
+			List<LoginDetailsCriteriaRes> list = new ArrayList<LoginDetailsCriteriaRes>();
 			
 			// Find All
 			Root<LoginMaster> l = query.from(LoginMaster.class);
 			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
 			
+
 			// Select
-			query.multiselect( l.get("loginId").alias("LoginId") , l.get("createdBy").alias("CreatedBy") , 
-					l.get("entryDate").alias("EntryDate") , l.get("updatedDate").alias("UpdatedDate") ,
-					l.get("updatedBy").alias("UpdatedBy") , l.get("attachedBranches").alias("AttachedBranches") ,
-					l.get("status").alias("Status") ,  l.get("oaCode").alias("OaCode") ,l.get("subUserType").alias("SubUserType"), 
-					 l.get("bankCode").alias("BankCode") ,
+			query.multiselect( l.get("loginId").alias("loginId") , l.get("createdBy").alias("createdBy") , 
+					l.get("entryDate").alias("entryDate") , l.get("updatedDate").alias("updatedDate") ,
+					l.get("updatedBy").alias("updatedBy") , l.get("attachedBranches").alias("attachedBranches") ,
+					l.get("status").alias("status") ,  l.get("oaCode").alias("oaCode"),l.get("agencyCode").alias("agencyCode") ,l.get("subUserType").alias("subUserType"), 
+					 l.get("bankCode").alias("bankCode") ,
 					//cb.selectCase().when(l.get("bankCode").isNotNull(), l.get("bankCode") ).otherwise("No Bank").alias("BankCode") ,
-					u.get("userName").alias("UserName")  ,
-					u.get("userMobile").alias("UserMobile") , u.get("userMail").alias("UserMail")    );
+					u.get("userName").alias("userName")  ,
+					u.get("userMobile").alias("userMobile") , u.get("userMail").alias("userMail")    );
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -716,31 +691,13 @@ this.repository = repo;
 			}
 			
 			// Get Result
-			TypedQuery<Tuple> result = em.createQuery(query);
+			TypedQuery<LoginDetailsCriteriaRes> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			list = result.getResultList();
 			
-			for (Tuple data :  list) {
-				LoginIssuerGridRes res = new LoginIssuerGridRes();
-				
-				res.setBankCode(data.get("BankCode") ==null?"" :data.get("BankCode").toString());
-				res.setBranchCodes(data.get("AttachedBranches") ==null?"" :data.get("AttachedBranches").toString());
-				res.setCreatedBy(data.get("CreatedBy") ==null?"" :data.get("CreatedBy").toString());			
-				res.setEntryDate(data.get("EntryDate") ==null?"" : sdf.format(data.get("EntryDate")) );
-				res.setLoginId(data.get("LoginId") ==null?"" :data.get("LoginId").toString());	
-				res.setOaCode(data.get("OaCode") ==null?"" :data.get("OaCode").toString());
-				res.setStatus(data.get("Status") ==null?"" :data.get("Status").toString());
-				res.setUpdatedBy(data.get("UpdatedBy") ==null?"" :data.get("UpdatedBy").toString());
-				res.setUpdatedDate(data.get("UpdatedDate") ==null?"" : sdf.format(data.get("UpdatedDate")));
-				res.setUserMail(data.get("UserMail") ==null?"" :data.get("UserMail").toString());
-				res.setUserMobile(data.get("UserMobile") ==null?"" :data.get("UserMobile").toString());
-				res.setUserName(data.get("UserName") ==null?"" :data.get("UserName").toString());
-				res.setSubUserType(data.get("SubUserType") ==null?"" :data.get("SubUserType").toString());
-				res.setUserType(req.getUserType());
-				
-				resList.add(res);				
-			}
+			Type listType = new TypeToken<List<LoginIssuerGridRes>>(){}.getType();
+			resList = mapper.map(list,listType);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -755,28 +712,30 @@ this.repository = repo;
 	public List<LoginBrokerDetailsGridRes> getBrokerActiveDetailsByUserType(BrokerActiveGridReq req) {
 		List<LoginBrokerDetailsGridRes> resList = new ArrayList<LoginBrokerDetailsGridRes>();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 
+		ModelMapper mapper = new ModelMapper(); 
 		try { 
 			// Limit Offset
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
 			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 			
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
-			List<Tuple> list = new ArrayList<Tuple>();
+			CriteriaQuery<LoginDetailsCriteriaRes> query = cb.createQuery(LoginDetailsCriteriaRes.class);
+			List<LoginDetailsCriteriaRes> list = new ArrayList<LoginDetailsCriteriaRes>();
 			
 			// Find All
 			Root<LoginMaster> l = query.from(LoginMaster.class);
 			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
 			
+
 			// Select
-			query.multiselect( l.get("loginId").alias("LoginId") , l.get("createdBy").alias("CreatedBy") , 
-					l.get("entryDate").alias("EntryDate") , l.get("updatedDate").alias("UpdatedDate") ,
-					l.get("updatedBy").alias("UpdatedBy") , l.get("attachedBranches").alias("AttachedBranches") ,
-					l.get("status").alias("Status") ,  l.get("oaCode").alias("OaCode") ,l.get("subUserType").alias("SubUserType"), 
-					 l.get("bankCode").alias("BankCode") ,
+			query.multiselect( l.get("loginId").alias("loginId") , l.get("createdBy").alias("createdBy") , 
+					l.get("entryDate").alias("entryDate") , l.get("updatedDate").alias("updatedDate") ,
+					l.get("updatedBy").alias("updatedBy") , l.get("attachedBranches").alias("attachedBranches") ,
+					l.get("status").alias("status") ,  l.get("oaCode").alias("oaCode"),l.get("agencyCode").alias("agencyCode") ,l.get("subUserType").alias("subUserType"), 
+					 l.get("bankCode").alias("bankCode") ,
 					//cb.selectCase().when(l.get("bankCode").isNotNull(), l.get("bankCode") ).otherwise("No Bank").alias("BankCode") ,
-					u.get("userName").alias("UserName")  ,
-					u.get("userMobile").alias("UserMobile") , u.get("userMail").alias("UserMail")    );
+					u.get("userName").alias("userName")  ,
+					u.get("userMobile").alias("userMobile") , u.get("userMail").alias("userMail")    );
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -796,31 +755,13 @@ this.repository = repo;
 			}
 			
 			// Get Result
-			TypedQuery<Tuple> result = em.createQuery(query);
+			TypedQuery<LoginDetailsCriteriaRes> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			list = result.getResultList();
 			
-			for (Tuple data :  list) {
-				LoginBrokerDetailsGridRes res = new LoginBrokerDetailsGridRes();
-				
-				res.setBankCode(data.get("BankCode") ==null?"" :data.get("BankCode").toString());
-				res.setBranchCodes(data.get("AttachedBranches") ==null?"" :data.get("AttachedBranches").toString());
-				res.setCreatedBy(data.get("CreatedBy") ==null?"" :data.get("CreatedBy").toString());			
-				res.setEntryDate(data.get("EntryDate") ==null?"" : sdf.format(data.get("EntryDate")) );
-				res.setLoginId(data.get("LoginId") ==null?"" :data.get("LoginId").toString());	
-				res.setOaCode(data.get("OaCode") ==null?"" :data.get("OaCode").toString());
-				res.setStatus(data.get("Status") ==null?"" :data.get("Status").toString());
-				res.setUpdatedBy(data.get("UpdatedBy") ==null?"" :data.get("UpdatedBy").toString());
-				res.setUpdatedDate(data.get("UpdatedDate") ==null?"" : sdf.format(data.get("UpdatedDate")));
-				res.setUserMail(data.get("UserMail") ==null?"" :data.get("UserMail").toString());
-				res.setUserMobile(data.get("UserMobile") ==null?"" :data.get("UserMobile").toString());
-				res.setUserName(data.get("UserName") ==null?"" :data.get("UserName").toString());
-				res.setSubUserType(data.get("SubUserType") ==null?"" :data.get("SubUserType").toString());
-				res.setUserType(req.getUserType());
-				
-				resList.add(res);				
-			}
+			Type listType = new TypeToken<List<LoginBrokerDetailsGridRes>>(){}.getType();
+			resList = mapper.map(list,listType);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -835,28 +776,30 @@ this.repository = repo;
 	public List<LoginUserGridRes> getUserActiveDetailsByUserType(UserActiveGridReq req) {
 		List<LoginUserGridRes> resList = new ArrayList<LoginUserGridRes>();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 
+		ModelMapper mapper = new ModelMapper(); 
 		try { 
 			// Limit Offset
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
 			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 			
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
-			List<Tuple> list = new ArrayList<Tuple>();
+			CriteriaQuery<LoginDetailsCriteriaRes> query = cb.createQuery(LoginDetailsCriteriaRes.class);
+			List<LoginDetailsCriteriaRes> list = new ArrayList<LoginDetailsCriteriaRes>();
 			
 			// Find All
 			Root<LoginMaster> l = query.from(LoginMaster.class);
 			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
 			
+
 			// Select
-			query.multiselect( l.get("loginId").alias("LoginId") , l.get("createdBy").alias("CreatedBy") , 
-					l.get("entryDate").alias("EntryDate") , l.get("updatedDate").alias("UpdatedDate") ,
-					l.get("updatedBy").alias("UpdatedBy") , l.get("attachedBranches").alias("AttachedBranches") ,
-					l.get("status").alias("Status") ,  l.get("oaCode").alias("OaCode") ,l.get("subUserType").alias("SubUserType"), 
-					 l.get("bankCode").alias("BankCode") ,
+			query.multiselect( l.get("loginId").alias("loginId") , l.get("createdBy").alias("createdBy") , 
+					l.get("entryDate").alias("entryDate") , l.get("updatedDate").alias("updatedDate") ,
+					l.get("updatedBy").alias("updatedBy") , l.get("attachedBranches").alias("attachedBranches") ,
+					l.get("status").alias("status") ,  l.get("oaCode").alias("oaCode"),l.get("agencyCode").alias("agencyCode") ,l.get("subUserType").alias("subUserType"), 
+					 l.get("bankCode").alias("bankCode") ,
 					//cb.selectCase().when(l.get("bankCode").isNotNull(), l.get("bankCode") ).otherwise("No Bank").alias("BankCode") ,
-					u.get("userName").alias("UserName")  ,
-					u.get("userMobile").alias("UserMobile") , u.get("userMail").alias("UserMail")    );
+					u.get("userName").alias("userName")  ,
+					u.get("userMobile").alias("userMobile") , u.get("userMail").alias("userMail")    );
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -876,31 +819,13 @@ this.repository = repo;
 			}
 			
 			// Get Result
-			TypedQuery<Tuple> result = em.createQuery(query);
+			TypedQuery<LoginDetailsCriteriaRes> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			list = result.getResultList();
 			
-			for (Tuple data :  list) {
-				LoginUserGridRes res = new LoginUserGridRes();
-				
-				res.setBankCode(data.get("BankCode") ==null?"" :data.get("BankCode").toString());
-				res.setBranchCodes(data.get("AttachedBranches") ==null?"" :data.get("AttachedBranches").toString());
-				res.setCreatedBy(data.get("CreatedBy") ==null?"" :data.get("CreatedBy").toString());			
-				res.setEntryDate(data.get("EntryDate") ==null?"" : sdf.format(data.get("EntryDate")) );
-				res.setLoginId(data.get("LoginId") ==null?"" :data.get("LoginId").toString());	
-				res.setOaCode(data.get("OaCode") ==null?"" :data.get("OaCode").toString());
-				res.setStatus(data.get("Status") ==null?"" :data.get("Status").toString());
-				res.setUpdatedBy(data.get("UpdatedBy") ==null?"" :data.get("UpdatedBy").toString());
-				res.setUpdatedDate(data.get("UpdatedDate") ==null?"" : sdf.format(data.get("UpdatedDate")));
-				res.setUserMail(data.get("UserMail") ==null?"" :data.get("UserMail").toString());
-				res.setUserMobile(data.get("UserMobile") ==null?"" :data.get("UserMobile").toString());
-				res.setUserName(data.get("UserName") ==null?"" :data.get("UserName").toString());
-				res.setSubUserType(data.get("SubUserType") ==null?"" :data.get("SubUserType").toString());
-				res.setUserType(req.getUserType());
-				
-				resList.add(res);				
-			}
+			Type listType = new TypeToken<List<LoginUserGridRes>>(){}.getType();
+			resList = mapper.map(list,listType);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -915,28 +840,30 @@ this.repository = repo;
 	public List<LoginIssuerGridRes> getIssuerActiveDetailsByUserType(IssuerActiveGridReq req) {
 		List<LoginIssuerGridRes> resList = new ArrayList<LoginIssuerGridRes>();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 
+		ModelMapper mapper = new ModelMapper(); 
 		try { 
 			// Limit Offset
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
 			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 			
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
-			List<Tuple> list = new ArrayList<Tuple>();
+			CriteriaQuery<LoginDetailsCriteriaRes> query = cb.createQuery(LoginDetailsCriteriaRes.class);
+			List<LoginDetailsCriteriaRes> list = new ArrayList<LoginDetailsCriteriaRes>();
 			
 			// Find All
 			Root<LoginMaster> l = query.from(LoginMaster.class);
 			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
 			
+
 			// Select
-			query.multiselect( l.get("loginId").alias("LoginId") , l.get("createdBy").alias("CreatedBy") , 
-					l.get("entryDate").alias("EntryDate") , l.get("updatedDate").alias("UpdatedDate") ,
-					l.get("updatedBy").alias("UpdatedBy") , l.get("attachedBranches").alias("AttachedBranches") ,
-					l.get("status").alias("Status") ,  l.get("oaCode").alias("OaCode") ,l.get("subUserType").alias("SubUserType"), 
-					 l.get("bankCode").alias("BankCode") ,
+			query.multiselect( l.get("loginId").alias("loginId") , l.get("createdBy").alias("createdBy") , 
+					l.get("entryDate").alias("entryDate") , l.get("updatedDate").alias("updatedDate") ,
+					l.get("updatedBy").alias("updatedBy") , l.get("attachedBranches").alias("attachedBranches") ,
+					l.get("status").alias("status") ,  l.get("oaCode").alias("oaCode"),l.get("agencyCode").alias("agencyCode") ,l.get("subUserType").alias("subUserType"), 
+					 l.get("bankCode").alias("bankCode") ,
 					//cb.selectCase().when(l.get("bankCode").isNotNull(), l.get("bankCode") ).otherwise("No Bank").alias("BankCode") ,
-					u.get("userName").alias("UserName")  ,
-					u.get("userMobile").alias("UserMobile") , u.get("userMail").alias("UserMail")    );
+					u.get("userName").alias("userName")  ,
+					u.get("userMobile").alias("userMobile") , u.get("userMail").alias("userMail")    );
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -956,31 +883,13 @@ this.repository = repo;
 			}
 			
 			// Get Result
-			TypedQuery<Tuple> result = em.createQuery(query);
+			TypedQuery<LoginDetailsCriteriaRes> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			list = result.getResultList();
 			
-			for (Tuple data :  list) {
-				LoginIssuerGridRes res = new LoginIssuerGridRes();
-				
-				res.setBankCode(data.get("BankCode") ==null?"" :data.get("BankCode").toString());
-				res.setBranchCodes(data.get("AttachedBranches") ==null?"" :data.get("AttachedBranches").toString());
-				res.setCreatedBy(data.get("CreatedBy") ==null?"" :data.get("CreatedBy").toString());			
-				res.setEntryDate(data.get("EntryDate") ==null?"" : sdf.format(data.get("EntryDate")) );
-				res.setLoginId(data.get("LoginId") ==null?"" :data.get("LoginId").toString());	
-				res.setOaCode(data.get("OaCode") ==null?"" :data.get("OaCode").toString());
-				res.setStatus(data.get("Status") ==null?"" :data.get("Status").toString());
-				res.setUpdatedBy(data.get("UpdatedBy") ==null?"" :data.get("UpdatedBy").toString());
-				res.setUpdatedDate(data.get("UpdatedDate") ==null?"" : sdf.format(data.get("UpdatedDate")));
-				res.setUserMail(data.get("UserMail") ==null?"" :data.get("UserMail").toString());
-				res.setUserMobile(data.get("UserMobile") ==null?"" :data.get("UserMobile").toString());
-				res.setUserName(data.get("UserName") ==null?"" :data.get("UserName").toString());
-				res.setSubUserType(data.get("SubUserType") ==null?"" :data.get("SubUserType").toString());
-				res.setUserType(req.getUserType());
-				
-				resList.add(res);				
-			}
+			Type listType = new TypeToken<List<LoginIssuerGridRes>>(){}.getType();
+			resList = mapper.map(list,listType);
 			
 		} catch (Exception e) {
 			e.printStackTrace();

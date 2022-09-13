@@ -22,4 +22,7 @@ public class IssuerReferalCompanyGetRes {
 	@JsonProperty("SumInsuredEnd")
 	private String sumInsuredEnd ;
 	
+	@JsonProperty("Status")
+	private String status ;
+	
 }

@@ -18,6 +18,8 @@ public class IssuerLoginReq {
     private String     subUserType  ;
 	@JsonProperty("OaCode")
     private String     oaCode       ;
+	@JsonProperty("AgencyCode")
+    private String     agencyCode       ;
 	
 	@JsonProperty("AttachedBranches")
     private List<String>     attachedBranches ;

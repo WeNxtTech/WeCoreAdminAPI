@@ -11,6 +11,7 @@ public class AttachedBranchesReq {
 
 	@JsonProperty("InsuranceId")
 	private String insuranceId ;
+	
 	@JsonProperty("AttachedBranches")
-	private List<String> attachedBranches ;
+	private List<BrokerBranchesReq> attachedBranches ;
 }

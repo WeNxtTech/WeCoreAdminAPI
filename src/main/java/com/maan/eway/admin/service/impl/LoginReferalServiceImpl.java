@@ -45,6 +45,7 @@ import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.admin.res.ProductCriteriaRes;
 import com.maan.eway.admin.res.ReferalCriteriaRes;
 import com.maan.eway.admin.service.LoginReferalService;
+import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginProductMaster;
@@ -83,10 +84,86 @@ public class LoginReferalServiceImpl implements LoginReferalService {
 	@Override
 	public LoginCreationRes attachIssuerReferal(AttachIssuerReferalReq req) {
 		LoginCreationRes res = new LoginCreationRes();
+		try { 
+			
+			 String  successRes = "" ;
+			if(req.getBranchCode().equalsIgnoreCase("All") ) {
+				LoginMaster loginData = loginRepo.findByLoginId(req.getLoginId());				
+				List<String> branches = new ArrayList<>(Arrays.asList(loginData.getAttachedBranches().split(","))) ;
+				
+				 List<BranchMaster>  branchList = branchCompanyIds(branches);
+				 
+				for (BranchMaster branch :  branchList) {
+					successRes = attachIssuerReferal(req , branch.getBranchCode() ,branch.getCompanyId()  );	
+				}
+						
+			} else {
+					successRes = attachIssuerReferal(req , req.getBranchCode() , req.getInsuranceId());
+			}
+			
+			res.setResponse(successRes);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+	
+	public List<BranchMaster> branchCompanyIds(List<String> branchCodes) {
+		List<BranchMaster> branchList = new ArrayList<BranchMaster>();
+		try {
+			Date today = new Date();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<BranchMaster> query = cb.createQuery(BranchMaster.class);
+
+			// Find All
+			Root<BranchMaster> b = query.from(BranchMaster.class);
+
+			// Select
+			query.select(b);
+			
+			//In 
+			Expression<String>e0=b.get("branchCode");
+			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<BranchMaster> ocpm1 = effectiveDate.from(BranchMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("entryDate")));
+
+			// Where
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("status"), "Y");
+			Predicate n3 = e0.in(branchCodes);
+
+			query.where(n1, n2,n3).orderBy(orderList);
+
+			// Get Result
+			TypedQuery<BranchMaster> result = em.createQuery(query);
+			branchList = result.getResultList();
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return branchList;
+	}
+	
+	
+	public String attachIssuerReferal(AttachIssuerReferalReq req ,String branchCode , String insCompanyId) {
+		String res = "";
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 
-		try { 
-				 
+		try {
 			for ( AttachReferalReq data : req.getAttachedReferals() ) {
 				
 				Calendar cal = new GregorianCalendar();
@@ -105,10 +182,10 @@ public class LoginReferalServiceImpl implements LoginReferalService {
 				
 				// Find All
 				Root<LoginReferalMaster> lr = query.from(LoginReferalMaster.class);
-
+	
 				// Select
 				query.select(lr);
-
+	
 				// Effective Date Max Filter
 				Subquery<Long> effectiveDate = query.subquery(Long.class);
 				Root<LoginReferalMaster> ocpm1 = effectiveDate.from(LoginReferalMaster.class);
@@ -116,9 +193,10 @@ public class LoginReferalServiceImpl implements LoginReferalService {
 				Predicate a1 = cb.equal(ocpm1.get("referalId"), lr.get("referalId"));
 				Predicate a2 = cb.equal(ocpm1.get("loginId"), lr.get("loginId"));
 				Predicate a3 = cb.equal(ocpm1.get("companyId"), lr.get("companyId"));
-				Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , startDate);
-				effectiveDate.where(a1,a2,a3,a4);
-
+				Predicate a4 = cb.equal(ocpm1.get("branchCode"), lr.get("branchCode"));
+				Predicate a5 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , startDate);
+				effectiveDate.where(a1,a2,a3,a4,a5);
+	
 				// Order By
 				//List<Order> orderList = new ArrayList<Order>();
 				//orderList.add(cb.asc(lp.get("effectiveDateStart")));
@@ -126,11 +204,12 @@ public class LoginReferalServiceImpl implements LoginReferalService {
 				// Where
 				Predicate n1 = cb.equal(lr.get("referalId"), data.getReferalId());
 				Predicate n2 = cb.equal(lr.get("loginId"), req.getLoginId());
-				Predicate n3 = cb.equal(lr.get("companyId"), req.getInsuranceId() );
-				Predicate n4 = cb.equal(lr.get("effectiveDateStart") , effectiveDate);
-
-				query.where(n1, n2, n3,n4);//.orderBy(orderList);
-
+				Predicate n3 = cb.equal(lr.get("companyId"),insCompanyId );
+				Predicate n4 = cb.equal(lr.get("branchCode"),branchCode );
+				Predicate n5 = cb.equal(lr.get("effectiveDateStart") , effectiveDate);
+	
+				query.where(n1, n2, n3,n4,n5);//.orderBy(orderList);
+	
 				// Get Result
 				TypedQuery<LoginReferalMaster> result = em.createQuery(query);
 				list = result.getResultList();
@@ -142,7 +221,8 @@ public class LoginReferalServiceImpl implements LoginReferalService {
 				
 				LoginReferalMaster save = new LoginReferalMaster();
 				dozerMapper.map(data, save);
-				save.setCompanyId(req.getInsuranceId());
+				save.setCompanyId(insCompanyId);
+				save.setBranchCode(branchCode);
 				save.setEffectiveDateStart(effDate);	
 				save.setEffectiveDateEnd(endDate);
 				save.setEntryDate(new Date());
@@ -155,10 +235,9 @@ public class LoginReferalServiceImpl implements LoginReferalService {
 					lastRecord.setEffectiveDateEnd(oldEndDate);
 					loginReferalRepo.saveAndFlush(lastRecord);
 				}
-			}		
+			}
 			
-			res.setResponse("Referal Added Successfully");
-			
+			res = "Referal Added Successfully" ;
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
@@ -180,26 +259,26 @@ public class LoginReferalServiceImpl implements LoginReferalService {
 			
 			String loginId = req.getLoginId() ;
 			LoginMaster loginData = loginRepo.findByLoginId(loginId);
-			List<String> companyIds = new ArrayList<>(Arrays.asList(loginData.getAttachedCompanies().split(","))) ;
+			List<String> branchIds = new ArrayList<>(Arrays.asList(loginData.getAttachedBranches().split(","))) ;
 			
-			if(companyIds.size()>0 ) {
+			if(branchIds.size()>0 ) {
 				
-				List<ReferalCriteriaRes> referals = getReferalDetails( companyIds , today  );
-				List<IssuerReferalCriteriaRes> loginReferals = getIssuerReferalDetails (loginId , companyIds , today ) ;
+				List<ReferalCriteriaRes> referals = getReferalDetails( branchIds , today  );
+				List<IssuerReferalCriteriaRes> loginReferals = getIssuerReferalDetails (loginId , branchIds , today ) ;
 				
 				// Grouping
-				Map<String ,List<ReferalCriteriaRes>> groupByCompany = referals.stream().collect(Collectors.groupingBy(ReferalCriteriaRes :: getCompanyId )) ;
-				for (String company : groupByCompany.keySet()) { 
+				Map<String ,List<ReferalCriteriaRes>> groupByBranch = referals.stream().collect(Collectors.groupingBy(ReferalCriteriaRes :: getBranchCode )) ;
+				for (String branch : groupByBranch.keySet()) { 
 					IssuerReferalCompniesRes companyRes = new IssuerReferalCompniesRes();
 					List<IssuerReferalGetRes> attachedReferals = new ArrayList<IssuerReferalGetRes>();
 					
-					List<ReferalCriteriaRes> filterReferals = groupByCompany.get(company);
+					List<ReferalCriteriaRes> filterReferals = groupByBranch.get(branch);
 					
 					for(ReferalCriteriaRes data :  filterReferals) {
 						IssuerReferalGetRes referalRes = new IssuerReferalGetRes();
 						
 						// Filter Login Referals
-						List<IssuerReferalCriteriaRes> filterLoginReferals = loginReferals.stream().filter( o -> o.getCompanyId().equalsIgnoreCase(data.getCompanyId()) && o.getReferalId().equals(data.getReferalId()) ).collect(Collectors.toList());
+						List<IssuerReferalCriteriaRes> filterLoginReferals = loginReferals.stream().filter( o -> o.getBranchCode().equalsIgnoreCase(data.getBranchCode()) && o.getReferalId().equals(data.getReferalId()) ).collect(Collectors.toList());
 						
 						referalRes.setStatus("N");
 						if (filterLoginReferals.size() > 0 ) {
@@ -220,8 +299,9 @@ public class LoginReferalServiceImpl implements LoginReferalService {
 					}
 					
 					// Response 
+					companyRes.setBranchCode(filterReferals.get(0).getBranchCode() );
 					companyRes.setInsuranceId(filterReferals.get(0).getCompanyId() );
-					companyRes.setCompanyName(filterReferals.get(0).getCompanyName() );
+					companyRes.setBranchName(filterReferals.get(0).getBranchName() );
 					companyRes.setAttachedReferals(attachedReferals);
 					companyList.add(companyRes);
 				}
@@ -235,7 +315,8 @@ public class LoginReferalServiceImpl implements LoginReferalService {
 	}
 
 	
-	public List<ReferalCriteriaRes> getReferalDetails(List<String> companyIds , Date today ) {
+
+	public List<ReferalCriteriaRes> getReferalDetails(List<String> branchIds , Date today ) {
 		List<ReferalCriteriaRes> list = new ArrayList<ReferalCriteriaRes>();  
 		try {
 			// Product Query 	
@@ -245,32 +326,32 @@ public class LoginReferalServiceImpl implements LoginReferalService {
 			Root<ReferalMaster> rm  = query.from(ReferalMaster.class);
 			
 			// Select Company Name SubQuery for Effective Date Max Filter 
-			Subquery<Long> insEff = query.subquery(Long.class);
-			Root<InsuranceCompanyMaster> i = insEff.from(InsuranceCompanyMaster.class);
-			Subquery<Long> company = query.subquery(Long.class);
-			Root<InsuranceCompanyMaster> ins = company.from(InsuranceCompanyMaster.class);
+			Subquery<Long> bmEff = query.subquery(Long.class);
+			Root<BranchMaster> b = bmEff.from(BranchMaster.class);
+			Subquery<Long> branch = query.subquery(Long.class);
+			Root<BranchMaster> bm = branch.from(BranchMaster.class);
 			
-			insEff.select( cb.max(i.get("effectiveDateStart")) );
-			Predicate i1 = cb.equal(ins.get("companyId"), i.get("companyId"));
-			Predicate i2 = cb.lessThanOrEqualTo(i.get("effectiveDateStart") , today);
-			insEff.where(i1,i2);
+			bmEff.select( cb.max(b.get("effectiveDateStart")) );
+			Predicate b1 = cb.equal(bm.get("branchCode"), b.get("branchCode"));
+			Predicate b2 = cb.lessThanOrEqualTo(b.get("effectiveDateStart") , today);
+			bmEff.where(b1,b2);
 			
-			company.select( ins.get("companyName")) ;
-			Predicate ins1 = cb.equal(ins.get("companyId"), rm  .get("companyId"));
-			Predicate ins2  = cb.equal(ins.get("effectiveDateStart"),insEff);
-			Predicate ins3  = cb.equal(ins.get("status"),"Y");
-			company.where(ins1,ins2,ins3);
+			branch.select( bm.get("branchName")) ;
+			Predicate bm1 = cb.equal(bm.get("branchCode"), rm.get("branchCode"));
+			Predicate bm2  = cb.equal(bm.get("effectiveDateStart"),bmEff);
+			Predicate bm3  = cb.equal(bm.get("status"),"Y");
+			branch.where(bm1,bm2,bm3);
 			
 			// Select
 			query.multiselect( rm  .get("referalId").alias("referalId") , rm  .get("referalName").alias("referalName") , rm.get("companyId").alias("companyId") ,
-					company.alias("companyName") , rm.get("referalDesc").alias("referalDesc")  );
+					rm.get("branchCode").alias("branchCode") , branch.alias("branchName") , rm.get("referalDesc").alias("referalDesc")  );
 
 			// Product Effective Date Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
 			Root<ReferalMaster> ocpm1 = effectiveDate.from(ReferalMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("referalId"), rm.get("referalId"));
-			Predicate a2 = cb.equal(ocpm1.get("companyId"), rm.get("companyId"));
+			Predicate a2 = cb.equal(ocpm1.get("branchCode"), rm.get("branchCode"));
 			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , today);
 			effectiveDate.where(a1,a2,a3); 
 					
@@ -279,12 +360,12 @@ public class LoginReferalServiceImpl implements LoginReferalService {
 			orderList.add(cb.asc(rm.get("entryDate")));
 			
 			//In 
-			Expression<String>e0=rm.get("companyId");
+			Expression<String>e0=rm.get("branchCode");
 			
 			// Where
 			Predicate n1 = cb.equal(rm.get("status"), "Y");
 			Predicate n2 = cb.equal(rm.get("effectiveDateStart"), effectiveDate);
-			Predicate n3 = e0.in(companyIds);
+			Predicate n3 = e0.in(branchIds);
 			
 			query.where(n1, n2, n3).orderBy(orderList);
 		
@@ -300,7 +381,7 @@ public class LoginReferalServiceImpl implements LoginReferalService {
 		return list  ; 
 	}
 
-	public List<IssuerReferalCriteriaRes> getIssuerReferalDetails(String loginId , List<String> companyIds , Date today ) {
+	public List<IssuerReferalCriteriaRes> getIssuerReferalDetails(String loginId , List<String> branchIds , Date today ) {
 		List<IssuerReferalCriteriaRes> list = new ArrayList<IssuerReferalCriteriaRes>(); 
 		try {
 			// Login Product Query	
@@ -316,20 +397,20 @@ public class LoginReferalServiceImpl implements LoginReferalService {
 			Root<ReferalMaster> r = referal.from(ReferalMaster.class);
 			
 			rmEff .select( cb.max(rm.get("effectiveDateStart")) );
-			Predicate i1 = cb.equal(r.get("companyId"), rm.get("companyId"));
+			Predicate i1 = cb.equal(r.get("branchCode"), rm.get("branchCode"));
 			Predicate i2 = cb.equal(r.get("referalId"), rm.get("referalId"));
 			Predicate i3 = cb.lessThanOrEqualTo(rm.get("effectiveDateStart") , today);
 			rmEff .where(i1,i2,i3);
 			
 			referal.select( r.get("referalName")) ;
-			Predicate rm1 = cb.equal(r.get("companyId"), lm.get("companyId"));
+			Predicate rm1 = cb.equal(r.get("branchCode"), lm.get("branchCode"));
 			Predicate rm2 = cb.equal(r.get("referalId"), lm.get("referalId"));
 			Predicate rm3   = cb.equal(r.get("effectiveDateStart"),rmEff);
 			Predicate rm4  = cb.equal(r.get("status"),"Y");
 			referal.where(rm1,rm2,rm3,rm4);
 			
 			// Select
-			query.multiselect( lm.get("referalId").alias("referalId"), lm.get("companyId").alias("companyId") ,
+			query.multiselect( lm.get("referalId").alias("referalId"), lm.get("companyId").alias("companyId") ,lm.get("branchCode").alias("branchCode"),
 					referal.alias("referalName")  , lm.get("referalName").alias("oldReferalName") , 
 					lm.get("sumInsuredStart").alias("sumInsuredStart")  , lm.get("sumInsuredEnd").alias("sumInsuredEnd")  ,
 					 lm.get("status").alias("status") , lm.get("remarks").alias("remarks"));
@@ -340,7 +421,7 @@ public class LoginReferalServiceImpl implements LoginReferalService {
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("loginId"), lm.get("loginId"));
 			Predicate a2 = cb.equal(ocpm1.get("referalId"), lm.get("referalId"));
-			Predicate a3 = cb.equal(ocpm1.get("companyId"), lm.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("branchCode"), lm.get("branchCode"));
 			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , today);
 			effectiveDate.where(a1,a2,a3,a4); 
 					
@@ -349,12 +430,12 @@ public class LoginReferalServiceImpl implements LoginReferalService {
 			orderList.add(cb.asc(lm.get("entryDate")));
 			
 			//In 
-			Expression<String>e0=lm.get("companyId");
+			Expression<String>e0=lm.get("branchCode");
 			
 			// Where
 			Predicate n1 = cb.equal(lm.get("loginId"), loginId );
 			Predicate n2 = cb.equal(lm.get("effectiveDateStart"), effectiveDate);
-			Predicate n3 = e0.in(companyIds);
+			Predicate n3 = e0.in(branchIds);
 			
 			query.where(n1, n2, n3).orderBy(orderList);
 		
@@ -380,10 +461,10 @@ public class LoginReferalServiceImpl implements LoginReferalService {
 			today = cal.getTime() ;
 			
 			String loginId = req.getLoginId() ;
-			List<String> companyIds = new ArrayList<String>() ;
-			companyIds.add(req.getInsuranceId());
+			List<String> branchIds = new ArrayList<String>() ;
+			branchIds.add(req.getBranchCode());
 			
-			List<IssuerReferalCriteriaRes> loginReferals = getIssuerReferalDetails (loginId , companyIds , today ) ;
+			List<IssuerReferalCriteriaRes> loginReferals = getIssuerReferalDetails (loginId , branchIds , today ) ;
 				
 			for(IssuerReferalCriteriaRes data :  loginReferals) {
 				IssuerReferalCompanyGetRes referalRes = new IssuerReferalCompanyGetRes();
@@ -395,6 +476,7 @@ public class LoginReferalServiceImpl implements LoginReferalService {
 				referalRes.setSumInsuredEnd(data.getSumInsuredEnd()==null?"" :df.format(data.getSumInsuredEnd()) );
 				referalRes.setReferalId(data.getReferalId().toString());
 				referalRes.setReferalName(data.getReferalName());
+				referalRes.setStatus(data.getStatus());
 				referalList.add(referalRes);
 			}
 			

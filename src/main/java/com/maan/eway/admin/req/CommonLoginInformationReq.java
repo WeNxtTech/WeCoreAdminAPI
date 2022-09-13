@@ -18,6 +18,8 @@ public class CommonLoginInformationReq {
     private String     subUserType  ;
 	@JsonProperty("Oacode")
     private String     oaCode       ;
+	@JsonProperty("AgencyCode")
+    private String     agencyCode       ;
 	
 	@JsonProperty("AttachedBranches")
     private List<String>     attachedBranches ;

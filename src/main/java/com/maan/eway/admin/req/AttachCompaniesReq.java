@@ -12,6 +12,10 @@ public class AttachCompaniesReq {
 	@JsonProperty("LoginId")
 	private String loginId ;
 	
+	@JsonProperty("BrokerCompanyYn")
+	private String brokerCompanyYn;
+	
+	
 	@JsonProperty("AttachedCompanies")
 	private List<AttachedBranchesReq> attachedCompanies ;
 }

@@ -32,6 +32,7 @@ import com.google.gson.Gson;
 import com.maan.eway.admin.req.AttachCompaniesReq;
 import com.maan.eway.admin.req.AttachedBranchesReq;
 import com.maan.eway.admin.req.BrokerBranchGetReq;
+import com.maan.eway.admin.req.BrokerBranchesReq;
 import com.maan.eway.admin.req.IssuerBranchGetReq;
 import com.maan.eway.admin.res.BranchCriteriaRes;
 import com.maan.eway.admin.res.BrokerBranchGetRes;
@@ -92,11 +93,14 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 			List<String> branchIds = new ArrayList<String>();
 			
 			for(AttachedBranchesReq  data : req.getAttachedCompanies() ) {
-				 
-				String branches  = data.getAttachedBranches()==null  || data.getAttachedBranches().size()==0 ?"" : String.join(",", data.getAttachedBranches());
+				String branches  = "" ;
+				for(BrokerBranchesReq data2 :  data.getAttachedBranches() ) {
+					branches =  StringUtils.isBlank(branches) ?  data2.getBranchCode() : branches + "," + data2.getBranchCode();
+					branchIds.add( data2.getBranchCode());
+				}
+				
 				companies = StringUtils.isBlank(companies) ? data.getInsuranceId() : "," + data.getInsuranceId() ;
 				totalBranches  = StringUtils.isBlank(branches) ? totalBranches :totalBranches + "," + branches ; 
-				branchIds.addAll(data.getAttachedBranches());
 			}
 			List<BranchMaster> branchList = getBranchList(branchIds);
 			List<String> rigionList = branchList.stream().map( o -> o.getRegionCode()  ).collect(Collectors.toList());
@@ -146,10 +150,14 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 			
 			for(AttachedBranchesReq  data : req.getAttachedCompanies() ) {
 				 
-				String branches  = data.getAttachedBranches()==null  || data.getAttachedBranches().size()==0 ?"" : String.join(",", data.getAttachedBranches());
+				String branches  = "" ;
+				for(BrokerBranchesReq data2 :  data.getAttachedBranches() ) {
+					branches =  StringUtils.isBlank(branches) ?  data2.getBranchCode() : branches + "," + data2.getBranchCode();
+					branchIds.add( data2.getBranchCode());
+				}
+				
 				companies = StringUtils.isBlank(companies) ? data.getInsuranceId() : "," + data.getInsuranceId() ;
 				totalBranches  = StringUtils.isBlank(branches) ? totalBranches :totalBranches + "," + branches ; 
-				branchIds.addAll(data.getAttachedBranches());
 			}
 			List<BranchMaster> branchList = getBranchList(branchIds);
 			List<String> rigionList = branchList.stream().map( o -> o.getRegionCode()  ).collect(Collectors.toList());

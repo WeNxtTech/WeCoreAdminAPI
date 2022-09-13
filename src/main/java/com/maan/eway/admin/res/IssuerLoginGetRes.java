@@ -21,6 +21,10 @@ public class IssuerLoginGetRes {
 	@JsonProperty("OaCode")
     private String     oaCode       ;
 	
+
+	@JsonProperty("AgencyCode")
+	private String agencyCode ;
+	
 /*	@JsonProperty("AttachedBranches")
     private List<String>     getBranches ;
 	

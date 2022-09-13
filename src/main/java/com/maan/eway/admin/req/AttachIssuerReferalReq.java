@@ -14,6 +14,8 @@ public class AttachIssuerReferalReq {
 	@JsonProperty("InsuranceId")
 	private String  insuranceId;  
 	
+	@JsonProperty("BranchCode")
+	private String  branchCode;  
 	
 	@JsonProperty("AttachedReferals")
 	private List<AttachReferalReq> attachedReferals;

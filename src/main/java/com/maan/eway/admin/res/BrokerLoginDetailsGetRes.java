@@ -20,6 +20,9 @@ public class BrokerLoginDetailsGetRes {
     private String     subUserType  ;
 	@JsonProperty("OaCode")
     private String     oaCode       ;
+
+	@JsonProperty("AgencyCode")
+	private String agencyCode ;
 	
 	
 /*	@JsonProperty("AttachedBranches")

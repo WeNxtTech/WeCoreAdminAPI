@@ -36,6 +36,8 @@ public class LoginReferalMasterId implements Serializable {
     
     private String     companyId ;
     
+    private String     branchCode;
+    
     private Date       effectiveDateStart ;
     
     private Date       effectiveDateEnd ;

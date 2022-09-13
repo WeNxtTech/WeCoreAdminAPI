@@ -97,8 +97,8 @@ public class LoginReferalController {
 	
 //*************************************** Get One Company Referal Apis **********************************************************//
 
-	@PostMapping("/getissueronecompanyreferals")
-	@ApiOperation(value="This method is to Get Issuer One Company Referals")
+	@PostMapping("/getissueronebranchreferals")
+	@ApiOperation(value="This method is to Get Issuer One Branch Referals")
 	public ResponseEntity<CommonRes> getIssuerCompanyReferal(@RequestBody  IssuerCompanyReferalGetReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();

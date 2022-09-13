@@ -119,6 +119,11 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 				errors.addAll(brokerErrors);
 			}
 			
+			if(StringUtils.isBlank(req.getLoginInformation().getOaCode())  ) {
+				errors.add(new Error("06","Broker","Please Select Broker OaCode"));
+			}
+			
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
@@ -152,6 +157,8 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 					if(data.getAttachedBranches()==null || data.getAttachedBranches().size()== 0 ) {
 						errors.add(new Error("02", "Attached Companies", "Plese select Atleast One  Branch in Company Row No : " +  rowNo  ));
 					}
+					
+					
 				}	
 			}
 			
@@ -282,8 +289,15 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 				errors.add(new Error("01", "LoginId", "Plese Enter LoginId" ));
 			}
 			
+			if(StringUtils.isBlank(req.getInsuranceId()) ) {
+				errors.add(new Error("02", "InsuranceId", "Plese Enter InsuranceId" ));
+			}
+			if(StringUtils.isBlank(req.getBranchCode()) ) {
+				errors.add(new Error("03", "BrnchCode", "Plese Enter BranchCode" ));
+			}
+			
 			if(req.getAttachedReferals()==null || req.getAttachedReferals().size()== 0 ) {
-				errors.add(new Error("02", "Attached Companies", "Plese select Atleast One  Referal" ));
+				errors.add(new Error("02", "Attached Referals", "Plese select Atleast One  Referal" ));
 			} else {
 				Long referalRow  = 0L;
 				boolean status = false ;
@@ -294,7 +308,7 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 					}
 					
 					if(StringUtils.isBlank(referal.getReferalName())) {
-						errors.add(new Error("02", "Product Name", "Plese Enter Product Name in  Referal Row No : " +  referalRow  ));
+						errors.add(new Error("02", "Referal Name", "Plese Enter Referal Name in  Referal Row No : " +  referalRow  ));
 					}
 					
 					if(referal.getEffectiveDate()==null ) {

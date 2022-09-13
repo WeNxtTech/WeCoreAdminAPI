@@ -36,8 +36,8 @@ public class RawPersonalAccidentSaveReq {
     private String     requestReferenceNo ;
 	@JsonProperty("SectionId")
     private Integer    sectionId    ;
-	@JsonProperty("RiskId")
-    private Integer    riskId       ;
+	@JsonProperty("LocationId")
+    private Integer    locationId       ;
 	@JsonProperty("CustomerId")
     private Integer    customerId   ;
 	@JsonProperty("InsuranceId")

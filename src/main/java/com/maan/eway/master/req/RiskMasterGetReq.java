@@ -13,7 +13,7 @@ public class RiskMasterGetReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
 	
-    @JsonProperty("RiskId")
-    private String     riskId     ;
+    @JsonProperty("LocationId")
+    private String     locationId     ;
     
 }

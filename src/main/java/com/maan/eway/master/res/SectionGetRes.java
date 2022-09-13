@@ -12,8 +12,8 @@ public class SectionGetRes {
 	
 	@JsonProperty("SectionId")
     private Integer    sectionId    ;
-	@JsonProperty("RiskId")
-    private Integer    riskId       ;
+	@JsonProperty("LocationId")
+    private Integer    locationId       ;
 	@JsonProperty("ProductId")
     private Integer    productId    ;
 	@JsonProperty("InsuranceId")

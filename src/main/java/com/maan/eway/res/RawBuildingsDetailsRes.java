@@ -45,8 +45,8 @@ public class RawBuildingsDetailsRes implements Serializable {
     private String    customerId   ;
 	@JsonProperty("SectionId")
     private String    sectionId    ;
-	@JsonProperty("RiskId")
-    private String    riskId       ;
+	@JsonProperty("LocationId")
+    private String    locationId       ;
 	@JsonProperty("InsuranceId")
     private String     companyId    ;
 	@JsonProperty("BranchCode")

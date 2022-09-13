@@ -9,8 +9,8 @@ import lombok.Data;
 @Data
 public class ProductSectionsSaveReq {
 
-	@JsonProperty("RiskId")
-    private String     riskId     ;
+	@JsonProperty("LocationId")
+    private String     locationId     ;
     
 	@JsonProperty("SectionList")
     private List<SectionListReq>     sectionList     ;

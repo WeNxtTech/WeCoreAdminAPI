@@ -13,8 +13,8 @@ public class RiskMasterRes implements Serializable {
 
     private static final long serialVersionUID = 1L;
  
-	@JsonProperty("RiskId")
-    private String     riskId     ;
+	@JsonProperty("LocationId")
+    private String     locationId     ;
 	
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")

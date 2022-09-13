@@ -7,8 +7,8 @@ import lombok.Data;
 @Data
 public class RiskListSaveReq {
 	
-	@JsonProperty("RiskId")
-    private String     riskId     ;
+	@JsonProperty("LocationId")
+    private String     locationId     ;
     
 	@JsonProperty("OwnHouseYn")
     private String     ownHouseYn     ;

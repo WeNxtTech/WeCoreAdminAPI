@@ -41,8 +41,8 @@ public class RawAllRisksSaveReq implements Serializable {
 	@JsonProperty("SectionId")
     private String    sectionId    ;
 	
-	@JsonProperty("RiskId")
-    private String    riskId       ;
+	@JsonProperty("LocationId")
+    private String    locationId       ;
 	
 	@JsonProperty("CustomerId")
     private String    customerId   ;

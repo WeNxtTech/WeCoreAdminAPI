@@ -18,17 +18,17 @@ import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CustomerSaveReq;
 import com.maan.eway.master.req.ProductSectionsSaveReq;
 import com.maan.eway.master.req.ProductsRiskSaveReq;
-import com.maan.eway.master.req.RiskDomesticDetailsSaveReq;
+
 import com.maan.eway.master.req.RiskListSaveReq;
 import com.maan.eway.master.req.SectionListReq;
 import com.maan.eway.repository.CustomerDetailsRepository;
 import com.maan.eway.req.AccidentDetailsReq;
-import com.maan.eway.req.RawAllRisksListReq;
-import com.maan.eway.req.RawPersonalAccidentSaveReq;
-import com.maan.eway.req.RawAllRisksSaveReq;
-import com.maan.eway.req.RawBuildingsDetailsSaveReq;
-import com.maan.eway.req.RawContentsDetailsSaveReq;
-import com.maan.eway.req.RawContentsItemListReq;
+import com.maan.eway.req.EserviceAllRisksListReq;
+import com.maan.eway.req.EservicePersonalAccidentSaveReq;
+import com.maan.eway.req.EserviceAllRisksSaveReq;
+import com.maan.eway.req.EserviceBuildingsDetailsSaveReq;
+import com.maan.eway.req.EserviceContentsDetailsSaveReq;
+import com.maan.eway.req.EserviceContentsItemListReq;
 import com.maan.eway.service.ValidationService;
 
 @Service
@@ -342,56 +342,7 @@ public class ValidationServiceImpl implements ValidationService {
 		return true;
 	}
 
-	//____________________________________________RISK DETAILS VALIDATION_____________________________________________\\
-	@Override
-	public List<Error> validateRiskDetails(RiskDomesticDetailsSaveReq req) {
-		List<Error> errors = new ArrayList<Error>();
-		try {
-			if (StringUtils.isBlank(req.getBranchCode()) ) {
-				errors.add(new Error("01","Branch Code", "Please Enter BranchCode"));
-			}
-			if (StringUtils.isBlank(req.getCreatedBy()) ) {
-				errors.add(new Error("02","Created By", "Please Enter CreatedBy"));
-			}
-			if (StringUtils.isBlank(req.getCustomerId()) ) {
-				errors.add(new Error("03","Customer Id", "Please Enter Customer Id"));
-			}
-			if (StringUtils.isBlank(req.getInsuranceId()) ) {
-				errors.add(new Error("04","Insurance Id", "Please Enter Insurance Id"));
-			}
-			if (StringUtils.isBlank(req.getProductId()) ) {
-				errors.add(new Error("05","Product Id", "Please Enter Product Id"));
-			}
-			if (StringUtils.isBlank(req.getProductName()) ) {
-				errors.add(new Error("06","Product Name", "Please Enter Product Name"));
-			}
-			
-			if (req.getRiskList()==null || req.getRiskList().size() <= 0 ) {
-				errors.add(new Error("08","Risk List", "Please Select atleast One Risk"));
-			} else {
-				Long rowNo = 0L ;
-				for (RiskListSaveReq data :  req.getRiskList()) {
-					
-					if (StringUtils.isBlank(data.getRiskId())  ) {
-						errors.add(new Error("09","Risk Id", "Please Select atleast One Risk"));
-					}
-					
-					// Domestic Product Validations
-					if (StringUtils.isBlank(data.getOwnHouseYn())  ) {
-						errors.add(new Error("10","Own House Yn", "Please Select Own House Or Rental in Row : " + rowNo));
-					}
-					
-				}
-			}
-			
-			
-		} catch (Exception e ) {
-			e.printStackTrace();
-			log.info("Exception is --->" + e.getMessage());
-			errors.add(new Error("01","Common Error", e.getMessage()));
-		}
-		return errors;
-	}
+	
 	//____________________________________________PRODUCT SECTION VALIDATION_____________________________________________\\
 	@Override
 	public List<Error> validateProductSections(ProductsRiskSaveReq req) {
@@ -426,7 +377,7 @@ public class ValidationServiceImpl implements ValidationService {
 				Long riskRowNo = 0L ;
 				for (ProductSectionsSaveReq data :  req.getProductRiskList()) {
 					riskRowNo = riskRowNo + 1 ;
-					if (StringUtils.isBlank(data.getRiskId())  ) {
+					if (StringUtils.isBlank(data.getLocationId())  ) {
 						errors.add(new Error("09","Risk Id", "Please Select atleast One Risk in Risk Row No :" + riskRowNo));
 					}
 					
@@ -461,7 +412,7 @@ public class ValidationServiceImpl implements ValidationService {
 	//____________________________________________PERSONAL ACCIDENT VALIDATION_____________________________________________\\
 	
 	@Override
-	public List<Error> validatePersonalAccident(RawPersonalAccidentSaveReq req) {
+	public List<Error> validatePersonalAccident(EservicePersonalAccidentSaveReq req) {
 		List<Error> errors = new ArrayList<Error>();
 		try {
 			if (StringUtils.isBlank(req.getBranchCode()) ) {
@@ -473,8 +424,8 @@ public class ValidationServiceImpl implements ValidationService {
 			if (StringUtils.isBlank(req.getCustomerId().toString()) ) {
 				errors.add(new Error("03","Customer Id", "Please Enter Customer Id"));
 			}
-			if (StringUtils.isBlank(req.getRiskId().toString()) ) {
-				errors.add(new Error("04","Risk Id", "Please Enter Risk Id"));
+			if (StringUtils.isBlank(req.getLocationId().toString()) ) {
+				errors.add(new Error("04","Location Id", "Please Enter Location Id"));
 			}
 			if (StringUtils.isBlank(req.getSectionId().toString())) {
 				errors.add(new Error("05","Section Id", "Please Enter Section Id"));
@@ -520,7 +471,7 @@ public class ValidationServiceImpl implements ValidationService {
 //____________________________________________RAW BUILDING DETAILS VALIDATION_____________________________________________\\
 
 @Override
-public List<Error> validateRawBuildingDetails(RawBuildingsDetailsSaveReq req) {
+public List<Error> validateEserviceBuildingDetails(EserviceBuildingsDetailsSaveReq req) {
 	List<Error> errors =new ArrayList<Error>();
 	try {
 		if (StringUtils.isBlank(req.getBuildingAddress().toString())) {
@@ -598,8 +549,8 @@ public List<Error> validateRawBuildingDetails(RawBuildingsDetailsSaveReq req) {
 		if(StringUtils.isBlank(req.getCompanyId())) {
 			errors.add(new Error("13","CompanyId","Please Enter CompanyId"));
 		}
-		if(StringUtils.isBlank(req.getRiskId())) {
-			errors.add(new Error("14","RiskId","Please Enter RiskId"));
+		if(StringUtils.isBlank(req.getLocationId())) {
+			errors.add(new Error("14","LocationId","Please Enter Location Id"));
 		}
 		if(StringUtils.isBlank(req.getBranchCode())) {
 			errors.add(new Error("15","BranchCode","please Enter BranchCode"));
@@ -613,7 +564,7 @@ public List<Error> validateRawBuildingDetails(RawBuildingsDetailsSaveReq req) {
 }
 //____________________________________________RAW CONTENT DETAILS VALIDATION_____________________________________________\\
 @Override
-public List<Error> validateRawContentDetails(RawContentsDetailsSaveReq req) {
+public List<Error> validateEserviceContentDetails(EserviceContentsDetailsSaveReq req) {
 	List<Error> errors=new ArrayList<Error>();
 	try {
 	if (StringUtils.isBlank(req.getSectionId().toString())) {
@@ -625,14 +576,14 @@ public List<Error> validateRawContentDetails(RawContentsDetailsSaveReq req) {
 	if(StringUtils.isBlank(req.getCompanyId())) {
 		errors.add(new Error("04","CompanyId","Please Enter CompanyId"));
 	}
-	if(StringUtils.isBlank(req.getRiskId().toString())) {
-		errors.add(new Error("05","RiskId","Please Enter RiskId"));
+	if(StringUtils.isBlank(req.getLocationId().toString())) {
+		errors.add(new Error("05","Location ID","Please Enter Location Id"));
 	}
 	if(StringUtils.isBlank(req.getBranchCode())) {
 		errors.add(new Error("06","BranchCode","please Enter BranchCode"));
 	}else {
 	
-		for (RawContentsItemListReq data :  req.getItemList()) {
+		for (EserviceContentsItemListReq data :  req.getItemList()) {
 			
 			if (StringUtils.isBlank(data.getItemId())  ) {
 				errors.add(new Error("09","ItemId", "Please Select Item Id"));
@@ -658,7 +609,7 @@ public List<Error> validateRawContentDetails(RawContentsDetailsSaveReq req) {
 }
 //____________________________________________ALL RISK VALIDATION_____________________________________________\\
 @Override
-public List<Error> validateRawAllRisk(RawAllRisksSaveReq req) {
+public List<Error> validateEserviceAllRisk(EserviceAllRisksSaveReq req) {
 
 List<Error> errors =new ArrayList<Error>();
 try {
@@ -671,17 +622,17 @@ try {
 	if(StringUtils.isBlank(req.getCompanyId())) {
 		errors.add(new Error("04","CompanyId","Please Enter CompanyId"));
 	}
-	if(StringUtils.isBlank(req.getRiskId().toString())) {
-		errors.add(new Error("05","RiskId","Please Enter RiskId"));
+	if(StringUtils.isBlank(req.getLocationId().toString())) {
+		errors.add(new Error("05","Location Id","Please Enter Location Id"));
 	}
 	if(StringUtils.isBlank(req.getBranchCode())) {
 		errors.add(new Error("06","BranchCode","please Enter BranchCode"));
 	}
-	if (req.getRawAllRisksList()==null || req.getRawAllRisksList().size() <= 0 ) {
+	if (req.getEserviceAllRisksList()==null || req.getEserviceAllRisksList().size() <= 0 ) {
 		errors.add(new Error("08","Risk List", "Please Select atleast One Risk"));
 	} else {
 	
-		for (RawAllRisksListReq data :  req.getRawAllRisksList()) {
+		for (EserviceAllRisksListReq data :  req.getEserviceAllRisksList()) {
 			
 			if (StringUtils.isBlank(data.getItemId())  ) {
 				errors.add(new Error("09","ItemId", "Please Select Item Id"));
@@ -714,10 +665,7 @@ try {
 }
 
 
-@Override
-public List<Error> validateProductSections(RiskDomesticDetailsSaveReq req) {
-	// TODO Auto-generated method stub
-	return null;
+
 }
 	
-}
+

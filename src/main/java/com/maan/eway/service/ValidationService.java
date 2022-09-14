@@ -5,13 +5,13 @@ import java.util.List;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CustomerSaveReq;
 import com.maan.eway.master.req.ProductsRiskSaveReq;
-import com.maan.eway.master.req.RiskDomesticDetailsSaveReq;
 
-import com.maan.eway.req.RawPersonalAccidentSaveReq;
 
-import com.maan.eway.req.RawAllRisksSaveReq;
-import com.maan.eway.req.RawBuildingsDetailsSaveReq;
-import com.maan.eway.req.RawContentsDetailsSaveReq;
+import com.maan.eway.req.EservicePersonalAccidentSaveReq;
+
+import com.maan.eway.req.EserviceAllRisksSaveReq;
+import com.maan.eway.req.EserviceBuildingsDetailsSaveReq;
+import com.maan.eway.req.EserviceContentsDetailsSaveReq;
 
 
 public interface ValidationService {
@@ -20,20 +20,20 @@ public interface ValidationService {
 
 	List<Error> validateCustomerUpdate(CustomerSaveReq req);
 
-	List<Error> validateRiskDetails(RiskDomesticDetailsSaveReq req);
 
 
- List<Error> validatePersonalAccident(RawPersonalAccidentSaveReq req);
+
+ List<Error> validatePersonalAccident(EservicePersonalAccidentSaveReq req);
 
 	List<Error> validateProductSections(ProductsRiskSaveReq req);
 
-	List<Error> validateProductSections(RiskDomesticDetailsSaveReq req);
 
-	List<Error> validateRawBuildingDetails(RawBuildingsDetailsSaveReq req);
 
-	List<Error> validateRawContentDetails(RawContentsDetailsSaveReq req);
+	List<Error> validateEserviceBuildingDetails(EserviceBuildingsDetailsSaveReq req);
 
-	List<Error> validateRawAllRisk(RawAllRisksSaveReq req);
+	List<Error> validateEserviceContentDetails(EserviceContentsDetailsSaveReq req);
+
+	List<Error> validateEserviceAllRisk(EserviceAllRisksSaveReq req);
 
 
 

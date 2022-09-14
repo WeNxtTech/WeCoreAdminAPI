@@ -34,6 +34,6 @@ public interface EservicePersonalAccidentRepository  extends JpaRepository<Eserv
 	
 	
 	List<EservicePersonalAccident> findByRequestReferenceNoAndSectionIdAndLocationId(String requestReferenceNo,
-			Integer sectionId, Integer riskId);
+			Integer sectionId, Integer locationId);
 
 }

@@ -9,7 +9,7 @@ import com.maan.eway.req.EservicePersonalAccidentSaveReq;
 import com.maan.eway.res.SuccessRes;
 
 /**
-* <h2>RawPersonalAccidentServiceimpl</h2>
+* <h2>EservicePersonalAccidentServiceimpl</h2>
 */
 public interface EservicePersonalAccidentService  {
 

@@ -11,7 +11,7 @@ import com.maan.eway.res.SuccessRes;
 
 import java.util.List;
 /**
-* <h2>RawContentsDetailsServiceimpl</h2>
+* <h2>EserviceContentsDetailsServiceimpl</h2>
 */
 public interface EserviceContentsDetailsService  {
 

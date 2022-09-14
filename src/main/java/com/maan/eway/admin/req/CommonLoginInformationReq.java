@@ -30,6 +30,9 @@ public class CommonLoginInformationReq {
 	@JsonProperty("AttachedRegions")
     private List<String>     attachedRegions ;
 	
+	@JsonProperty("MenuId")
+    private List<String>     MenuId ;
+	
 	@JsonProperty("Password")
     private String     password     ;
 	@JsonProperty("Createdby")

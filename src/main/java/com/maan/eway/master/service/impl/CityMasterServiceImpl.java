@@ -141,6 +141,7 @@ public class CityMasterServiceImpl implements CityMasterService {
 					repo.delete(list.get(0));
 				}
 				res.setResponse("Updated Successfully ");
+				res.setSuccessId(cityId);
 
 			}
 

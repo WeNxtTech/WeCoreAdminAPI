@@ -13,7 +13,7 @@ public class BrokerProductCompaniesRes {
 	@JsonProperty("InsuranceId")
 	private String  insuranceId;  
 	@JsonProperty("CompanyName")
-	private String  companyName;  
+	private String  companyName;   
 	
 	
 	@JsonProperty("AttachedProducts")

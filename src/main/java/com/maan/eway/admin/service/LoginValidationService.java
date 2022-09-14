@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.maan.eway.admin.req.AttachCompaniesReq;
 import com.maan.eway.admin.req.AttachCompnayProductRequest;
+import com.maan.eway.admin.req.AttachIssuerBrannchReq;
 import com.maan.eway.admin.req.AttachIssuerReferalReq;
 import com.maan.eway.admin.req.BrokerActiveGridReq;
 import com.maan.eway.admin.req.BrokerCreationReq;
@@ -26,7 +27,7 @@ List<Error> validateIssuerCreation(IssuerCraeationReq req);
 List<Error> validateUserCreation(UserCreationReq req);
 List<Error> validateBrokerBranchReq(AttachCompaniesReq req);
 List<Error> validateBrokerProductReq(AttachCompnayProductRequest req);
-List<Error> validateIssuerBranchReq(AttachCompaniesReq req);
+List<Error> validateIssuerBranchReq(AttachIssuerBrannchReq req);
 List<Error> validateIssuerReferalReq(AttachIssuerReferalReq req);
 
 

@@ -75,6 +75,9 @@ public class BasicLoginValidationService {
 			} else if (loginReq.getSubUserType().equalsIgnoreCase("bank") && StringUtils.isBlank(loginReq.getBankCode()) ) {
 				errors.add(new Error("05", "Bank Code", "Please Select Bank Code"));
 			}
+			if(StringUtils.isNotBlank(loginReq.getSubUserType() ) && loginReq.getSubUserType().equalsIgnoreCase("bank") &&   StringUtils.isNotBlank(loginReq.getBankCode())   ) {
+				errors.add(new Error("06","BrankCode","You Can't Enter BankCode"));
+			}
 		/*	if( loginReq.getAttachedBranches()==null || loginReq.getAttachedBranches().size() == 0 ) {
 				errors.add(new Error("06", "Attached Branch", "Please Choose Atleast One Branch"));
 			} */
@@ -106,6 +109,7 @@ public class BasicLoginValidationService {
 				errors.add(new Error("08", "User Name ", "Please Enter Valid User Name"));
 			} 
 			 
+		
 			
 		} catch (Exception e) {
 			e.printStackTrace();

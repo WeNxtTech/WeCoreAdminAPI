@@ -9,10 +9,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class SectionMasterGetReq implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class SectionMasterGetReq {
 	@JsonProperty("SectionId")
     private Integer     sectionId     ;
+	
+	@JsonProperty("ProductId")
+    private Integer     productId     ;
+	
+	@JsonProperty("InsuranceId")
+    private String insuranceId;
     
 }

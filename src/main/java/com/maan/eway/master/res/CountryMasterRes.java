@@ -23,7 +23,7 @@ public class CountryMasterRes implements Serializable {
 
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateEnd")
-	private Date EffectiveDateEnd;
+	private Date effectiveDateEnd;
 
 	@JsonProperty("CountryName")
 	private String countryName;

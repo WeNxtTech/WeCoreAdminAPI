@@ -99,6 +99,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="LPASS3", length=50)
     private String     lpass3 ;
 
+    @Column(name="MENU_IDS", length=10)
+    private String     menuIds ;
+    
     @Column(name="CREATED_BY", length=20)
     private String     createdBy ;
 

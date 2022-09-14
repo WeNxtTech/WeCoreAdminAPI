@@ -1,5 +1,8 @@
 package com.maan.eway.admin.res;
 
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
@@ -17,14 +20,16 @@ public class LoginBrokerDetailsGridRes {
 	@JsonProperty("AgencyCode")
 	private String agencyCode ;
 	
+	@JsonFormat(pattern= "dd/MM/yyyy")
 	@JsonProperty("EntryDate")
-	private String entryDate ;
+	private Date entryDate ;
 	
 	@JsonProperty("CreatedBy")
 	private String createdBy ;
 	
+	@JsonFormat(pattern= "dd/MM/yyyy")
 	@JsonProperty("UpdatedDate")
-	private String updatedDate ;
+	private Date updatedDate ;
 	
 	@JsonProperty("UpdatedBy")
 	private String updatedBy ;
@@ -39,7 +44,7 @@ public class LoginBrokerDetailsGridRes {
 	private String userMail ;
 	
 	@JsonProperty("BranchCodes")
-	private String branchCodes ;
+	private String attachedBranches;
 	
 	@JsonProperty("BankCode")
 	private String bankCode;

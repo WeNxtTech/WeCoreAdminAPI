@@ -35,10 +35,10 @@ public class LoginDetailsCriteriaRes {
 	private String  status;
 	
 	@JsonProperty("OaCode")
-	private Integer oaCode ;
+	private String oaCode ;
 	
 	@JsonProperty("AgencyCode")
-	private Integer agencyCode;
+	private String agencyCode;
 	
 	@JsonProperty("SubUserType")
 	private String subUserType;

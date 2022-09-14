@@ -30,6 +30,8 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 import com.maan.eway.admin.req.AttachCompaniesReq;
+import com.maan.eway.admin.req.AttachIssuerBrannchReq;
+import com.maan.eway.admin.req.AttacheIssuerBranchReq;
 import com.maan.eway.admin.req.AttachedBranchesReq;
 import com.maan.eway.admin.req.BrokerBranchGetReq;
 import com.maan.eway.admin.req.BrokerBranchesReq;
@@ -129,7 +131,7 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 	}
 
 	@Override
-	public LoginCreationRes attachIssuerBranches(AttachCompaniesReq req) {
+	public LoginCreationRes attachIssuerBranches(AttachIssuerBrannchReq req) {
 		LoginCreationRes res = new LoginCreationRes();
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		SimpleDateFormat idf = new SimpleDateFormat("yyMMddhhssmmss"); 
@@ -148,12 +150,12 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 			String companies = "" ;
 			List<String> branchIds = new ArrayList<String>();
 			
-			for(AttachedBranchesReq  data : req.getAttachedCompanies() ) {
+			for(AttacheIssuerBranchReq  data : req.getAttachedCompanies() ) {
 				 
 				String branches  = "" ;
-				for(BrokerBranchesReq data2 :  data.getAttachedBranches() ) {
-					branches =  StringUtils.isBlank(branches) ?  data2.getBranchCode() : branches + "," + data2.getBranchCode();
-					branchIds.add( data2.getBranchCode());
+				for(String data2 :  data.getAttachedBranches() ) {
+					branches =  StringUtils.isBlank(branches) ?  data2 : branches + "," + data2;
+					branchIds.add( data2);
 				}
 				
 				companies = StringUtils.isBlank(companies) ? data.getInsuranceId() : "," + data.getInsuranceId() ;

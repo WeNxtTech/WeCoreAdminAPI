@@ -3,6 +3,8 @@ package com.maan.eway.auth.dto;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.maan.eway.admin.req.BrokerProductCompaniesRes;
+import com.maan.eway.admin.res.BrokerProductsGetRes;
 
 import lombok.Data;
 
@@ -34,6 +36,10 @@ public class ClaimLoginResponse {
 	
 	@JsonProperty("LoginBranchDetails")
     private List<LoginBranchDetailsRes> loginBranchDetails;
+
+	@JsonProperty("BrokerCompanyProducts")
+	private List<BrokerProductCompaniesRes> companyProducts;
+	
 
 
 }

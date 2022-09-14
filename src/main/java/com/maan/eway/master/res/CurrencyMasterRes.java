@@ -31,8 +31,8 @@ public class CurrencyMasterRes implements Serializable {
 	@JsonProperty("EntryDate")
 	private Date entryDate;
 	
-	@JsonProperty("Sno")
-	private String sno;
+/*	@JsonProperty("Sno")
+	private String sno; */
 
 	@JsonProperty("CurrencyName")
 	private String currencyName;

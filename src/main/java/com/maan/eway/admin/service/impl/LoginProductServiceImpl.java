@@ -293,6 +293,7 @@ public class LoginProductServiceImpl  implements LoginProductService {
 		return list  ; 
 	}
 
+	@Override
 	public List<LoginProductCriteriaRes> getBrokerProductDetails(String loginId , List<String> companyIds , Date today ) {
 		List<LoginProductCriteriaRes> list = new ArrayList<LoginProductCriteriaRes>(); 
 		try {

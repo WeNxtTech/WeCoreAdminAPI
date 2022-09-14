@@ -141,6 +141,7 @@ public SuccessRes insertBranch(BranchMasterSaveReq req) {
 				saveData.setBranchCode(req.getBranchCode());
 				saveData.setBranchName(req.getBranchName());
 				res.setResponse("Updated Successfully ");
+				res.setSuccessId( req.getBranchCode() );
 
 			}
 			saveData.setRegionCode(req.getRegionCode());
@@ -292,7 +293,7 @@ public List<BranchMasterRes> getallBranchDetails(BranchMasterGetAllReq req) {
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(b.get("branchName")));
+		orderList.add(cb.asc(b.get("entryDate")));
 		
 		// Where
 		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
@@ -351,7 +352,7 @@ public BranchMasterRes getByBranchCode(BranchMasterGetReq req) {
 		
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(c.get("effectiveDateStart")));
+		orderList.add(cb.asc(c.get("entryDate")));
 		
 	    // Where	
 	

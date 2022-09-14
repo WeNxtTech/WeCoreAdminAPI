@@ -31,8 +31,9 @@ import com.maan.eway.bean.SectionMasterId;
  
 public interface SectionMasterRepository  extends JpaRepository<SectionMaster,SectionMasterId > , JpaSpecificationExecutor<SectionMaster> {
 
-	Long countBySectionNameOrderByEntryDateDesc(String sectionName);
-
 	List<SectionMaster> findByProductIdAndCompanyId(Integer productId, String companyId);
+
+	Long countBySectionNameAndCompanyIdAndProductIdOrderByEntryDateDesc(String sectionName, String companyId,
+			Integer productId);
 
 }

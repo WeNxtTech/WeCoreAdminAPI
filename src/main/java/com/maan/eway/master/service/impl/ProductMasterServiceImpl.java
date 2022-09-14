@@ -142,7 +142,7 @@ public SuccessRes insertProduct(ProductMasterSaveReq req) {
 					repo.delete(list.get(0));
 				} 
 				res.setResponse("Updated Successfully ");
-
+				res.setSuccessId(productId);
 			}
 		
 		    dozerMapper.map(req, saveData );
@@ -184,7 +184,7 @@ public List<Error> validateProductDetails(ProductMasterSaveReq req) {
 		}else if (req.getProductName().length() > 100){
 			errorList.add(new Error("02","ProductName", "Please Enter Product  Name within 100 Characters")); 
 		}else if (StringUtils.isBlank(req.getProductId().toString())) {
-			Long ProductCount = repo.countByProductNameOrderByEntryDateDesc(req.getProductName());
+			Long ProductCount = repo.countByProductNameAndCompanyIdOrderByEntryDateDesc(req.getProductName(), req.getCompanyId());
 			if (ProductCount > 0 ) {
 				errorList.add(new Error("01", "Product", "This Product Alrady Exist "));
 			}

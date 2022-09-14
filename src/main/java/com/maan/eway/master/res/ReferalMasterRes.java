@@ -9,9 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class ReferalMasterRes implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class ReferalMasterRes  {
 
 
 	@JsonProperty("ReferalId")
@@ -23,7 +21,7 @@ public class ReferalMasterRes implements Serializable {
 
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateEnd")
-	private Date EffectiveDateEnd;
+	private Date effectiveDateEnd;
 
 	@JsonProperty("InsuranceId")
 	private String companyId;

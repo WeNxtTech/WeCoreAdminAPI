@@ -67,10 +67,7 @@ private static final long serialVersionUID = 1L;
     private Date       effectiveDateEnd ;
 
     //--- ENTITY DATA FIELDS 
-    
-    @Column(name="SNO",  length=20)
-    private String     sno ;
-    
+      
     @Column(name="CURRENCY_NAME", length=100)
     private String     currencyName ;
 

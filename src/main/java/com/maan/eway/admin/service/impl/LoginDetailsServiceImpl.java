@@ -10,9 +10,11 @@ import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -20,6 +22,7 @@ import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -46,6 +49,7 @@ import com.maan.eway.admin.req.IssuerActiveGridReq;
 import com.maan.eway.admin.req.IssuerCraeationReq;
 import com.maan.eway.admin.req.IssuerDetailsGetReq;
 import com.maan.eway.admin.req.IssuerLoginGridReq;
+import com.maan.eway.admin.req.MenuListReq;
 import com.maan.eway.admin.req.UserActiveGridReq;
 import com.maan.eway.admin.req.UserCreationReq;
 import com.maan.eway.admin.req.UserDetailsGetReq;
@@ -66,11 +70,14 @@ import com.maan.eway.admin.res.UserDetailsGetRes;
 import com.maan.eway.admin.res.UserLoginGetRes;
 import com.maan.eway.admin.res.UserPersonalInfoGetRes;
 import com.maan.eway.admin.service.LoginDetailsService;
+import com.maan.eway.auth.dto.Menu;
 import com.maan.eway.auth.token.passwordEnc;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginMasterArch;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.LoginUserInfoArch;
+import com.maan.eway.bean.MenuMaster;
+import com.maan.eway.master.req.GetPolicyDetailsReq;
 import com.maan.eway.repository.LoginMasterArchRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.LoginUserInfoArchRepository;
@@ -982,6 +989,80 @@ this.repository = repo;
 		}
 		return res;
 	}
+
+
+	@Override
+	public List<Menu> getMenuList( MenuListReq req){
+		List<Menu> menusret=new ArrayList<Menu>();
+		try {
+			LoginMaster login =loginRepo.findByLoginId(req.getLoginId());
+			// Menu Ids
+			  if(login.getMenuIds()!=null && login.getMenuIds().indexOf(",")!=-1) {
+				  String[] split = login.getMenuIds().split(",");
+				  List<String> asList = Arrays.asList(split);
+
+			  List<MenuMaster> findBymenuList = getMenuListCriteria(asList , req.getUserType() , req.getSubUserType());
+				List<Menu> menus=new ArrayList<Menu>();
+				for (MenuMaster menuMaster : findBymenuList) {
+					Menu m = Menu.builder().name(menuMaster.getMenuName()).url(menuMaster.getMenuUrl()).id(menuMaster.getMenuId().toString()).parent(menuMaster.getParentMenu())
+							.orderby(menuMaster.getDisplayOrder()==null?0:menuMaster.getDisplayOrder().longValue()).build();
+					menus.add(m);
+				}
+				 List<Menu> collect = menus.stream().filter(i-> "99999".equals(i.getParent())).collect(Collectors.toList());
+				log.info("collect"+collect);
+				 for (Menu menu : collect) {
+					 Menu m = menu;
+					 m.setChildren(menus.stream().filter(i -> (!"99999".equals(i.getParent()) && menu.getId().equals(i.getParent()))).collect(Collectors.toList()));
+					 menusret.add(m);
+				}
+			  }					
+			return menusret;
+		}catch(Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage() );
+			return null;
+		}
+	} 
+	
+	
+	public List<MenuMaster> getMenuListCriteria( List<String> menuids, String usertype , String subUsertype ){
+		List<MenuMaster> menuList = new ArrayList<MenuMaster>();
+		try {
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<MenuMaster> query = cb.createQuery(MenuMaster.class);
+			Root<MenuMaster> m = query.from(MenuMaster.class);
+
+			//In 
+			Expression<String>e0=m.get("menuId");
+			
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(m.get("menuId")));
+			
+			Predicate p1 = cb.equal(m.get("status"), "Y");
+			Predicate p2 = e0.in(menuids);
+			Predicate p3 = null ;
+			
+			if(subUsertype.equalsIgnoreCase("high") ) {
+				p3 =  cb.like(m.get("usertype"), "%" + "admin" + "%" );
+			} else {
+				p3 =  cb.like(m.get("usertype"), "%" + usertype + "%" );
+			}
+			
+			query.select(m ).where(p1,p2,p3).orderBy(orderList) ;
+
+			TypedQuery<MenuMaster> result = em.createQuery(query);
+			menuList = result.getResultList();
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage() );
+			return null ;
+		}
+		return menuList;
+	} 
+
 
 
 }

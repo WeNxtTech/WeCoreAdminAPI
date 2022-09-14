@@ -85,7 +85,7 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 				}
 			} 
 			
-			if(req.getReLoginKey()!=null && req.getReLoginKey().equalsIgnoreCase("Y") ) {
+			if(req.getReLoginKey()!=null && req.getReLoginKey().equalsIgnoreCase("Y") &&  sessionlist.size()>0 ) {
 				SessionMaster updatelogout = sessionlist.get(0);
 					updatelogout.setLogoutDate(new Date());
 					updatelogout.setStatus("DE-ACTIVE");

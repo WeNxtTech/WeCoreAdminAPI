@@ -319,6 +319,7 @@ this.repository = repo;
 				saveData.setCompanyId(req.getInsuranceId());
 				
 				res.setResponse("Updated Successfully ");
+				res.setSuccessId(req.getInsuranceId());
 
 			}
 			saveData.setCompanyName(req.getCompanyName());
@@ -419,7 +420,7 @@ this.repository = repo;
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("companyName")));
+			orderList.add(cb.asc(b.get("entryDate")));
 			
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
@@ -480,7 +481,7 @@ this.repository = repo;
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("companyName")));
+			orderList.add(cb.asc(b.get("entryDate")));
 
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);

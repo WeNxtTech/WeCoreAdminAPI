@@ -141,7 +141,7 @@ public class StateMasterServiceImpl implements StateMasterService {
 					repo.delete(list.get(0));
 				}
 				res.setResponse("Updated Successfully ");
-
+				res.setSuccessId(stateId);
 			}
 
 			dozerMapper.map(req, saveData);

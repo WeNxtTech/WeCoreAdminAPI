@@ -17,8 +17,10 @@ import org.springframework.stereotype.Service;
 import com.maan.eway.admin.req.AdditionalInfoReq;
 import com.maan.eway.admin.req.AttachCompaniesReq;
 import com.maan.eway.admin.req.AttachCompnayProductRequest;
+import com.maan.eway.admin.req.AttachIssuerBrannchReq;
 import com.maan.eway.admin.req.AttachIssuerReferalReq;
 import com.maan.eway.admin.req.AttachReferalReq;
+import com.maan.eway.admin.req.AttacheIssuerBranchReq;
 import com.maan.eway.admin.req.AttachedBranchesReq;
 import com.maan.eway.admin.req.AttachedProductReq;
 import com.maan.eway.admin.req.BrokerCreationReq;
@@ -59,6 +61,8 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 			if(brokerErrors.size()>0  ) {
 				errors.addAll(brokerErrors);
 			}
+			
+			
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -172,7 +176,7 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 
 
 	@Override
-	public List<Error> validateIssuerBranchReq(AttachCompaniesReq req) {
+	public List<Error> validateIssuerBranchReq(AttachIssuerBrannchReq req) {
 		List<Error> errors = new ArrayList<Error>();
 		try {
 			// Branch Validation
@@ -184,7 +188,7 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 				errors.add(new Error("02", "Attached Companies", "Plese select Atleast One  Company" ));
 			} else {
 				Long rowNo = 0L ;
-				for(AttachedBranchesReq  data : req.getAttachedCompanies() ) {
+				for(AttacheIssuerBranchReq  data : req.getAttachedCompanies() ) {
 					rowNo = rowNo + 1L ;
 					if(StringUtils.isBlank(data.getInsuranceId()) ) {
 						errors.add(new Error("01", "Insurance Id", "Plese Select Atleast One Company" ));

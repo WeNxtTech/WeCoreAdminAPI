@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.admin.req.AttachCompaniesReq;
+import com.maan.eway.admin.req.AttachIssuerBrannchReq;
 import com.maan.eway.admin.req.BrokerBranchGetReq;
 import com.maan.eway.admin.req.IssuerBranchGetReq;
 import com.maan.eway.admin.res.BrokerCompanyGetRes;
@@ -75,7 +76,7 @@ public class LoginBranchController {
 	
 	@PostMapping("/attachissuerbranches")
 	@ApiOperation(value="This method is to Attach Issuer Branches")
-	public ResponseEntity<CommonRes> attachIssuerBranches(@RequestBody  AttachCompaniesReq req) {
+	public ResponseEntity<CommonRes> attachIssuerBranches(@RequestBody  AttachIssuerBrannchReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
 		List<Error> validation = validationService.validateIssuerBranchReq(req);

@@ -1,5 +1,6 @@
 package com.maan.eway.auth.service.impl;
 
+import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -10,7 +11,9 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -37,11 +40,19 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.maan.eway.admin.req.BrokerProductCompaniesRes;
+import com.maan.eway.admin.req.BrokerProductGetReq;
+import com.maan.eway.admin.req.MenuListReq;
+import com.maan.eway.admin.res.BrokerProductsGetRes;
+import com.maan.eway.admin.res.LoginProductCriteriaRes;
+import com.maan.eway.admin.res.ProductCriteriaRes;
+import com.maan.eway.admin.service.LoginProductService;
 import com.maan.eway.auth.dto.ChangePasswordReq;
 import com.maan.eway.auth.dto.ClaimLoginResponse;
 import com.maan.eway.auth.dto.CommonLoginRes;
 import com.maan.eway.auth.dto.LoginBranchDetailsRes;
 import com.maan.eway.auth.dto.LoginRequest;
+import com.maan.eway.auth.dto.Menu;
 import com.maan.eway.auth.service.AuthendicationService;
 import com.maan.eway.auth.token.EncryDecryService;
 import com.maan.eway.auth.token.JwtTokenUtil;
@@ -50,6 +61,7 @@ import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginMasterId;
 import com.maan.eway.bean.LoginUserInfo;
+import com.maan.eway.bean.MenuMaster;
 import com.maan.eway.bean.SessionMaster;
 import com.maan.eway.repository.BranchMasterRepository;
 import com.maan.eway.repository.LoginMasterRepository;
@@ -76,6 +88,9 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 	
 	@Autowired
 	private LoginUserInfoRepository loginUserRepo ;
+	
+	@Autowired
+	private LoginProductService loginProductsService ;
 
 	
 	
@@ -146,6 +161,15 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			List<LoginBranchDetailsRes> loginBranchDetails = getBranchDetails(branches);
 			r.setLoginBranchDetails(loginBranchDetails);
 			
+			// Products
+			r.setCompanyProducts( getBrokerProducts(login.getLoginId() , login.getAttachedCompanies()));
+			
+			// Menu Ids
+		  if(login.getMenuIds()!=null && login.getMenuIds().indexOf(",")!=-1) {
+			  String[] split = login.getMenuIds().split(",");
+			  List<String> asList = Arrays.asList(split);
+			//  r.setMenuList(getMenuList( asList));
+		  }				
 			
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -154,7 +178,60 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 		return r;
 		
 	}
+	
+	
 
+	public List<BrokerProductCompaniesRes> getBrokerProducts(String loginId , String companies  ) {
+		List<BrokerProductCompaniesRes> companyList = new ArrayList<BrokerProductCompaniesRes>();
+		try {
+			Calendar cal = new GregorianCalendar();
+			Date today = new Date();
+			cal.setTime(today); cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
+			today = cal.getTime() ;
+			
+			List<String> companyIds = new ArrayList<>(Arrays.asList(companies.split(","))) ;
+			
+			List<LoginProductCriteriaRes> loginProducts = loginProductsService.getBrokerProductDetails(loginId , companyIds , today ) ;
+				
+			// Grouping
+			Map<String ,List<LoginProductCriteriaRes>> groupByCompany = loginProducts.stream().collect(Collectors.groupingBy(LoginProductCriteriaRes :: getCompanyId )) ;
+			for (String company : groupByCompany.keySet()) { 
+				BrokerProductCompaniesRes companyRes = new BrokerProductCompaniesRes();
+				List<BrokerProductsGetRes> attachedProducts = new ArrayList<BrokerProductsGetRes>();
+				
+				List<LoginProductCriteriaRes> filterProduct = groupByCompany.get(company);
+				
+				for(LoginProductCriteriaRes data :  filterProduct) {
+					BrokerProductsGetRes productRes = new BrokerProductsGetRes();
+					
+					if(StringUtils.isNotBlank(data.getStatus()) && data.getStatus().equalsIgnoreCase("Y")  ) {
+						String pattern = "#####0";
+						DecimalFormat df = new DecimalFormat(pattern);
+						productRes.setOldProductName(data.getOldProductName() );
+						productRes.setStartLimit(data.getStartLimit()==null?"" : df.format(data.getStartLimit()) );
+						productRes.setEndLimit(data.getEndLimit()==null?"" :df.format(data.getEndLimit()) );
+						productRes.setStatus(data.getStatus());
+						productRes.setRemarks(data.getRemarks());
+
+						productRes.setProductId(data.getProductId().toString());
+						productRes.setProductName(data.getProductName());
+						attachedProducts.add(productRes);
+					}
+				}
+				
+				// Response 
+				companyRes.setInsuranceId(filterProduct.get(0).getCompanyId() );
+				companyRes.setAttachedProducts(attachedProducts);
+				companyList.add(companyRes);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return companyList;
+	}
+	
 	private List<LoginBranchDetailsRes> getBranchDetails(List<String> branches) {
 		List<LoginBranchDetailsRes> loginBranchDetails = new ArrayList<LoginBranchDetailsRes>();
 		try {
@@ -305,6 +382,8 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 		return res;
 
 	}
+
+	
 }
 
 

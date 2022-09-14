@@ -143,7 +143,7 @@ public SuccessRes insertReferal(ReferalMasterSaveReq req) {
 					repo.delete(list.get(0));
 				} 
 				res.setResponse("Updated Successfully ");
-
+				res.setSuccessId(referalId);
 			}
 		
 		    dozerMapper.map(req, saveData );
@@ -387,11 +387,11 @@ public ReferalMasterRes getByReferalId(ReferalMasterGetReq req) {
 	
 		javax.persistence.criteria.Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate);		
 		javax.persistence.criteria.Predicate n2 = cb.equal(c.get("referalId"),req.getReferalId()) ;
-		javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"),req.getCompanyId());
+	//	javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"),req.getCompanyId());
 		javax.persistence.criteria.Predicate n4 = cb.equal(c.get("branchCode"),req.getBranchCode());
 		
 
-		query.where(n1 ,n2,n3,n4).orderBy(orderList);
+		query.where(n1 ,n2,n4).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<ReferalMaster> result = em.createQuery(query);			

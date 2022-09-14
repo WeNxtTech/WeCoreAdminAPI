@@ -57,6 +57,7 @@ public class SectionMasterRes implements Serializable {
 	@JsonProperty("SectionName")
     private String     sectionName  ;
 	
+	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EntryDate")
     private Date       entryDate    ;
 	

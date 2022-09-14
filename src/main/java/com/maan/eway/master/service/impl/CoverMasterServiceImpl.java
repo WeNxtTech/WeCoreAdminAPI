@@ -73,7 +73,7 @@ try {
 	}else if (req.getCoverName().length() > 100){
 		errorList.add(new Error("02","CoverName", "Please Enter Cover  Name within 100 Characters")); 
 	}else if (StringUtils.isBlank(req.getCoverId().toString())) {
-		Long CoverCount = repo.countByCoverNameOrderByEntryDateDesc(req.getCoverName());
+		Long CoverCount = repo.countByCoverNameAndProductIdAndCompanyIdAndSectionIdOrderByEntryDateDesc(req.getCoverName() , Integer.valueOf(req.getProductId()) , req.getCompanyId() , Integer.valueOf(req.getSectionId()) );
 		if (CoverCount > 0 ) {
 			errorList.add(new Error("01", "Cover", "This Cover Alrady Exist "));
 		}
@@ -189,7 +189,7 @@ try {
 				repo.delete(list.get(0));
 			} 
 			res.setResponse("Updated Successfully ");
-
+			res.setSuccessId(coverId);
 		}
 	
 	    dozerMapper.map(req, saveData );
@@ -348,7 +348,10 @@ try {
 	Root<CoverMaster> ocpm1 = effectiveDate.from(CoverMaster.class);
 	effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 	javax.persistence.criteria.Predicate a1 = cb.equal(c.get("coverId"),ocpm1.get("coverId") );
-	effectiveDate.where(a1);
+	javax.persistence.criteria.Predicate a3 = cb.equal(c.get("sectionId"),ocpm1.get("sectionId")) ;
+	javax.persistence.criteria.Predicate a4 = cb.equal(c.get("companyId"),ocpm1.get("companyId")) ;
+	javax.persistence.criteria.Predicate a5 = cb.equal(c.get("productId"),ocpm1.get("productId")) ;
+	effectiveDate.where(a1,a3,a4,a5);
 	
 	
 	
@@ -360,9 +363,12 @@ try {
 
 	javax.persistence.criteria.Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate);		
 	javax.persistence.criteria.Predicate n2 = cb.equal(c.get("coverId"),req.getCoverId()) ;
+	javax.persistence.criteria.Predicate n3 = cb.equal(c.get("sectionId"),req.getSectionId()) ;
+	javax.persistence.criteria.Predicate n4 = cb.equal(c.get("companyId"),req.getCompanyId()) ;
+	javax.persistence.criteria.Predicate n5 = cb.equal(c.get("productId"),req.getProductId()) ;
 
 
-	query.where(n1 ,n2).orderBy(orderList);
+	query.where(n1 ,n2,n3,n4,n5).orderBy(orderList);
 	
 	// Get Result
 	TypedQuery<CoverMaster> result = em.createQuery(query);			

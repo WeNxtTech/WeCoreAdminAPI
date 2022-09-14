@@ -144,7 +144,7 @@ public SuccessRes insertRegion(RegionMasterSaveReq req) {
 				saveData.setRegionCode(req.getRegionCode());
 				saveData.setShortCode(req.getShortCode());
 				res.setResponse("Updated Successfully ");
-
+				res.setSuccessId(req.getRegionCode());
 			}
 			saveData.setCompanyId(req.getCompanyId());
 			saveData.setRegionName(req.getRegionName());
@@ -254,7 +254,7 @@ public List<RegionMasterRes> getallRegionDetails(RegionMasterGetAllReq req) {
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(b.get("regionName")));
+		orderList.add(cb.asc(b.get("entryDate")));
 		
 		// Where
 		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
@@ -432,7 +432,7 @@ public List<RegionMasterRes> getActiveRegionDetails(RegionMasterGetAllReq req) {
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(b.get("regionName")));
+		orderList.add(cb.asc(b.get("entryDate")));
 
 		// Where
 		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);

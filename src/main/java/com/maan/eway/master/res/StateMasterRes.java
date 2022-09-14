@@ -29,7 +29,7 @@ public class StateMasterRes implements Serializable {
 
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateEnd")
-	private Date EffectiveDateEnd;
+	private Date effectiveDateEnd;
 
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EntryDate")

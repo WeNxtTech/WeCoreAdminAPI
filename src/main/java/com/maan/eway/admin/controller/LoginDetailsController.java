@@ -24,6 +24,7 @@ import com.maan.eway.admin.req.IssuerActiveGridReq;
 import com.maan.eway.admin.req.IssuerCraeationReq;
 import com.maan.eway.admin.req.IssuerDetailsGetReq;
 import com.maan.eway.admin.req.IssuerLoginGridReq;
+import com.maan.eway.admin.req.MenuListReq;
 import com.maan.eway.admin.req.UserActiveGridReq;
 import com.maan.eway.admin.req.UserCreationReq;
 import com.maan.eway.admin.req.UserDetailsGetReq;
@@ -38,6 +39,7 @@ import com.maan.eway.admin.res.LoginUserGridRes;
 import com.maan.eway.admin.res.UserDetailsGetRes;
 import com.maan.eway.admin.service.LoginDetailsService;
 import com.maan.eway.admin.service.LoginValidationService;
+import com.maan.eway.auth.dto.Menu;
 import com.maan.eway.error.Error;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.service.PrintReqService;
@@ -220,8 +222,6 @@ public class LoginDetailsController {
 		} else {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
-	
-
 	}
 	
 	@PostMapping("/getallissuers")
@@ -361,7 +361,23 @@ public class LoginDetailsController {
 		}
 	}
 
-
-
+	@PostMapping("/getmenulist")
+	@ApiOperation(value="This method is to Get Brokers")
+	public ResponseEntity<CommonRes> getBrokerLoginDetailsSubUserType(@RequestBody  MenuListReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		
+		/////// grid
+		List<Menu>  res = entityService.getMenuList(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 
 }

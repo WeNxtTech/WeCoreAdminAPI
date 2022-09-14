@@ -140,7 +140,7 @@ public SuccessRes insertCurrency(CurrencyMasterSaveReq req) {
 					repo.delete(list.get(0));
 				} 
 				res.setResponse("Updated Successfully ");
-
+				res.setSuccessId(currencyId.toString());
 			}
 		
 		    dozerMapper.map(req, saveData );

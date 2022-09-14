@@ -31,7 +31,7 @@ public class MenuMasterController {
 	@ApiOperation(value="This method is to Display Menu Service")
 	public ResponseEntity<CommonRes> menudisplay(@RequestBody MenuServiceReq req){
 	CommonRes data = new CommonRes();
-	List<MenuServiceRes> res = menuservice.menudisplay(req);
+	MenuServiceRes res = menuservice.menudisplay(req);
 		data.setCommonResponse(res);
 		data.setErrorMessage(Collections.emptyList());
 		data.setIsError(false);

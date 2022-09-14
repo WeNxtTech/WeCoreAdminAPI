@@ -7,6 +7,6 @@ import com.maan.eway.admin.res.MenuServiceRes;
 
 public interface MenuMasterService {
 
-	List<MenuServiceRes> menudisplay(MenuServiceReq req);
+	MenuServiceRes menudisplay(MenuServiceReq req);
 
 }

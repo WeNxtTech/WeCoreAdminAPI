@@ -13,6 +13,7 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import com.maan.eway.bean.CityMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -31,6 +32,9 @@ import com.maan.eway.bean.CityMasterId;
 public interface CityMasterRepository  extends JpaRepository<CityMaster,CityMasterId > , JpaSpecificationExecutor<CityMaster> {
 
 	Long countByCityNameOrderByEntryDateDesc(String cityName);
+
+	Long countByCityIdAndStateIdAndCountryIdAndStatusAndEffectiveDateStartLessThanEqual(Integer valueOf,
+			Integer valueOf2, Integer valueOf3, String string, Date today);
 
 
 

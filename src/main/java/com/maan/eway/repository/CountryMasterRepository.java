@@ -17,6 +17,8 @@ package com.maan.eway.repository;
 import com.maan.eway.bean.CountryMaster;
 import com.maan.eway.bean.CountryMasterId;
 
+import java.util.Date;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -33,6 +35,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 public interface CountryMasterRepository  extends JpaRepository<CountryMaster,CountryMasterId > , JpaSpecificationExecutor<CountryMaster> {
 
 	Long countByCountryNameOrderByEntryDateDesc(String countryName);
+
+	Long countByCountryIdAndStatusAndEffectiveDateStartLessThanEqual(Integer valueOf, String string, Date today);
 
 
 

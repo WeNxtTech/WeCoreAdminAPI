@@ -13,6 +13,7 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -32,6 +33,9 @@ import com.maan.eway.bean.StateMasterId;
 public interface StateMasterRepository  extends JpaRepository<StateMaster,StateMasterId > , JpaSpecificationExecutor<StateMaster> {
 
 	Long countByStateNameOrderByEntryDateDesc(String stateName);
+
+	Long countByStateIdAndCountryIdAndStatusAndEffectiveDateStartLessThanEqual(Integer valueOf, Integer valueOf2,
+			String string, Date today);
 
 
 

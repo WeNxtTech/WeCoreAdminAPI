@@ -29,14 +29,14 @@ public class BrokerPersonalInfoReq {
     @JsonProperty("Address3")
     private String    address3 ;
     
-    @JsonProperty("City")
-    private String    city ;
+    @JsonProperty("CityCode")
+    private String    cityCode ;
     
-    @JsonProperty("State")
-    private String    state ;
+    @JsonProperty("StateCode")
+    private String    stateCode ;
     
-    @JsonProperty("Country")
-    private String    country ;
+    @JsonProperty("CountryCode")
+    private String    countryCode ;
     
     @JsonProperty("Pobox")
     private String    pobox ;
@@ -59,8 +59,8 @@ public class BrokerPersonalInfoReq {
     @JsonProperty("ApprovedPreparedBy")
     private String    approvedPreparedBy ;
     
-    @JsonProperty("RsaBrokerCode")
-    private String    rsaBrokerCode ;
+    @JsonProperty("CoreAppBrokerCode")
+    private String    coreAppBrokerCode ;
     
     @JsonProperty("AcExecutiveId")
     private String    acExecutiveId ;

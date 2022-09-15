@@ -27,14 +27,17 @@ public class UserPersonalInfoReq {
     @JsonProperty("Address3")
     private String    address3 ;
     
-    @JsonProperty("City")
-    private String    city ;
+    @JsonProperty("CityCode")
+    private String    cityCode ;
     
-    @JsonProperty("State")
-    private String    state ;
+    @JsonProperty("StateCode")
+    private String    stateCode ;
     
-    @JsonProperty("Country")
-    private String    country ;
+    @JsonProperty("CountryCode")
+    private String    countryCode ;
+    
+    @JsonProperty("CoreAppBrokerCode")
+    private String    coreAppBrokerCode ;
     
     @JsonProperty("Pobox")
     private String    pobox ;
@@ -42,23 +45,15 @@ public class UserPersonalInfoReq {
     @JsonProperty("Fax")
     private String    fax ;
     
-    @JsonProperty("Emirate")
-    private String    emirate;
-    
+  
     @JsonProperty("Remarks")
     private String    remarks ;
-    
-    @JsonProperty("CustomerId")
-    private String    customerId ;
-    
+   
     @JsonProperty("MissippiId")
     private String    missippiId ;
     
     @JsonProperty("ApprovedPreparedBy")
     private String    approvedPreparedBy ;
-    
-    @JsonProperty("RsaBrokerCode")
-    private String    rsaBrokerCode ;
     
     @JsonProperty("AcExecutiveId")
     private String    acExecutiveId ;

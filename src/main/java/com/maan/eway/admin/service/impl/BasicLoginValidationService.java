@@ -1,6 +1,7 @@
 package com.maan.eway.admin.service.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -69,17 +70,9 @@ public class BasicLoginValidationService {
 			if (StringUtils.isBlank(loginReq.getLoginId())) {
 				errors.add(new Error("02", "Login Id", "Please Enter Login Id"));
 			} else if (loginReq.getLoginId().length() > 50 || loginReq.getLoginId().length() < 5  ) {
-				errors.add(new Error("02", "Login Id", "Login Id Under 5 - 50 Characters Only Allowed"));
-			} else {
-				LoginMaster  loginData = loginRepo.findByLoginId(loginReq.getLoginId());
-				if(loginData!=null ) {
-					if (StringUtils.isBlank( loginReq.getOaCode()) ) {
-						errors.add(new Error("02", "Login Id", "Login Id Already Exist"));
-					} else if(! loginReq.getOaCode().equalsIgnoreCase(loginData.getOaCode() ) ) {
-						errors.add(new Error("02", "Login Id", "Login Id Already Exist"));
-					}
-				} 
-			}
+				errors.add(new Error("02", "Login Id", "Logi"
+						+ "n Id Under 5 - 50 Characters Only Allowed"));
+			} 
 			
 			if (StringUtils.isBlank(loginReq.getPassword())) {
 				errors.add(new Error("04", "Password", "Please Enter Password"));
@@ -102,7 +95,28 @@ public class BasicLoginValidationService {
 				errors.add(new Error("05", "Sub UserType", "Sub UserType Under 20 Characters Only Allowed"));
 			} else if (loginReq.getSubUserType().equalsIgnoreCase("bank") && StringUtils.isBlank(loginReq.getBankCode()) ) {
 				errors.add(new Error("05", "Bank Code", "Please Select Bank Code"));
+				
+			}else if ( loginReq.getUserType().equalsIgnoreCase("User") ) {
+				LoginMaster  loginData = loginRepo.findByLoginId(loginReq.getLoginId());
+				if(loginData!=null ) {
+					if (StringUtils.isBlank( loginReq.getAgencyCode()) ) {
+						errors.add(new Error("02", "Login Id", "Login Id Already Exist"));
+					} else if(! loginReq.getAgencyCode().equalsIgnoreCase(loginData.getAgencyCode() ) ) {
+						errors.add(new Error("02", "Login Id", "Login Id Already Exist"));
+					}
+				} 
+			} else {
+				LoginMaster  loginData = loginRepo.findByLoginId(loginReq.getLoginId());
+				if(loginData!=null ) {
+					if (StringUtils.isBlank( loginReq.getOaCode()) ) {
+						errors.add(new Error("02", "Login Id", "Login Id Already Exist"));
+					} else if(! loginReq.getOaCode().equalsIgnoreCase(loginData.getOaCode() ) ) {
+						errors.add(new Error("02", "Login Id", "Login Id Already Exist"));
+					}
+				} 
 			}
+			
+			
 			if(StringUtils.isNotBlank(loginReq.getSubUserType() ) && ! loginReq.getSubUserType().equalsIgnoreCase("bank") &&   StringUtils.isNotBlank(loginReq.getBankCode())   ) {
 				errors.add(new Error("06","BankCode","You Can't Enter BankCode"));
 			}
@@ -117,11 +131,7 @@ public class BasicLoginValidationService {
 			}
 			// Personal Info Validation
 			CommonPersonalInforReq personalReq = req.getPersonalInformation() ; 
-			if (StringUtils.isBlank(personalReq.getMakerYn())) {
-				errors.add(new Error("0", "MakeYn", "Please Select MakeYN"));
-			} else if (!("Y".equals(personalReq.getMakerYn()) || "N".equals(personalReq.getMakerYn()))) {
-				errors.add(new Error("0", "MakeYn()", "Select any Y or N"));
-			}
+			
 		
 			
 		/*	CityMaster countCity=cityRepo.findByCityIdAndStatus(personalReq.getCityCode(),"Y")
@@ -201,19 +211,7 @@ public class BasicLoginValidationService {
 				errors.add(new Error("13", "ApprovedPreparedBy", "ApprovedPreparedBy Must Be Under 30 Character Only Allowed" ));
 			}
 			
-			if(StringUtils.isBlank(brokerReq.getCheckerYn())  ) {
-				errors.add(new Error("14", "CheckerYn", "Plese Select Checker Yes or No" ));
-			}
 			
-			if(StringUtils.isBlank(brokerReq.getCity())  ) {
-				errors.add(new Error("15", "City", "Plese Select City" ));
-			} else if(! brokerReq.getCity().matches("[0-9]+")  ) {
-				errors.add(new Error("15", "City", "Plese Enter Valid Number In City" ));
-			}
-			
-			if(StringUtils.isBlank(brokerReq.getCommissionVatYn())  ) {
-				errors.add(new Error("16", "Commission Vat Yn", "Plese Enter Commission Vat Yn" ));
-			}
 			
 			if(StringUtils.isBlank(brokerReq.getCompanyName())  ) {
 				errors.add(new Error("17", "CompanyName", "Plese Enter CompanyName" ));
@@ -221,36 +219,37 @@ public class BasicLoginValidationService {
 				errors.add(new Error("17", "CompanyName", "CompanyName Must Be Under 100 Character Only Allowed" ));
 			}
 			
-			if(StringUtils.isBlank(brokerReq.getCountry())  ) {
-				errors.add(new Error("18", "Country", "Plese Select Country" ));
-			} else if(! brokerReq.getCountry().matches("[0-9]+")  ) {
-				errors.add(new Error("18", "Country", "Plese Enter Valid Number In Country" ));
-			}
 			
-			if(StringUtils.isBlank(brokerReq.getCustConfirmYn())  ) {
-				errors.add(new Error("19", "Customer Confirm Yn", "Plese Select Customer Confirm Yn" ));
-			}
-			
-			if(StringUtils.isBlank(brokerReq.getCustomerId())  ) {
-				errors.add(new Error("20", "CustomerId", "Plese Select CustomerId" ));
-			} else if(! brokerReq.getCountry().matches("[0-9]+")  ) {
-				errors.add(new Error("21", "CustomerId", "Plese Enter Valid Number In CustomerId" ));
-			}
-			
-			if(StringUtils.isBlank(brokerReq.getEmirate())  ) {
-				errors.add(new Error("21", "Emirate", "Plese Select Country" ));
-			} else if(brokerReq.getEmirate().length() > 50  ) {
-				errors.add(new Error("21", "Emirate", "Emirate Must Be Under 50 Character Only Allowed" ));
-			}
 			
 			if(StringUtils.isBlank(brokerReq.getFax())  ) {
 				errors.add(new Error("22", "Fax", "Plese Select Fax" ));
-			} else if(brokerReq.getEmirate().length() > 50  ) {
+			} else if(brokerReq.getFax().length() > 50  ) {
 				errors.add(new Error("22", "Fax", "Fax Must Be Under 50 Character Only Allowed" ));
 			}
 			
-			if(StringUtils.isBlank(brokerReq.getMakerYn())  ) {
-				errors.add(new Error("23", "MakerYn", "Plese Select MakerYn" ));
+			// Yn Validation
+			if (StringUtils.isBlank(brokerReq.getMakerYn())) {
+				errors.add(new Error("23", "Maker", "Please Select Maker Y or N"));
+			} else if (!("Y".equals(brokerReq.getMakerYn()) || "N".equals(brokerReq.getMakerYn()))) {
+				errors.add(new Error("23", "Maker", "Please Select Maker Y or N"));
+			}
+			
+			if (StringUtils.isBlank(brokerReq.getCheckerYn())) {
+				errors.add(new Error("24", "CheckerYn", "Please Select Checker Y or N"));
+			} else if (!("Y".equals(brokerReq.getCheckerYn()) || "N".equals(brokerReq.getCheckerYn()))) {
+				errors.add(new Error("24", "CheckerYn", "Please Select Checker Y or N"));
+			}
+			
+			if (StringUtils.isBlank(brokerReq.getCommissionVatYn())) {
+				errors.add(new Error("25", "CommissionVat", "Please Select CommissionVat Y or N"));
+			} else if (!("Y".equals(brokerReq.getMakerYn()) || "N".equals(brokerReq.getMakerYn()))) {
+				errors.add(new Error("25", "CommissionVat", "Please Select CommissionVat Y or N"));
+			}
+			
+			if (StringUtils.isBlank(brokerReq.getCustConfirmYn())) {
+				errors.add(new Error("26", "Customer Confirm ", "Please Select Customer Confirm Y or N"));
+			} else if (!("Y".equals(brokerReq.getCustConfirmYn()) || "N".equals(brokerReq.getCustConfirmYn()))) {
+				errors.add(new Error("26", "Customer Confirm ", "Please Select Customer Confirm  Y or N"));
 			}
 			
 			if(StringUtils.isBlank(brokerReq.getMissippiId())  ) {
@@ -271,15 +270,47 @@ public class BasicLoginValidationService {
 				errors.add(new Error("26", "Remarks", "Remarks Must Be Under 100 Characters Only Allowed" ));
 			}
 			
-			if(StringUtils.isBlank(brokerReq.getRsaBrokerCode())  ) {
-				errors.add(new Error("27", "RsaBrokerCode", "Plese Enter RsaBrokeCode" ));
-			} else if(brokerReq.getRsaBrokerCode().length()>100  ) {
-				errors.add(new Error("26", "RsaBrokerCode", "RsaBrokerCode Must Be Under 25 Characters Only Allowed" ));
+			if(StringUtils.isBlank(brokerReq.getCoreAppBrokerCode())  ) {
+				errors.add(new Error("27", "CoreAppBrokerCode", "Plese Enter CoreAppBrokerCode" ));
+			} else if(brokerReq.getCoreAppBrokerCode().length()>100  ) {
+				errors.add(new Error("27", "CoreAppBrokerCode", "RsaBrokerCode Must Be Under 100 Characters Only Allowed" ));
+			}
+			Date today = new Date();
+			if(StringUtils.isBlank(brokerReq.getCountryCode())  ) {
+				errors.add(new Error("18", "Country", "Plese Select Country" ));
+			} else if(! brokerReq.getCountryCode().matches("[0-9]+")  ) {
+				errors.add(new Error("18", "Country", "Plese Enter Valid Number In Country" ));
+			} else {
+				Long countryCount  = countryRepo.countByCountryIdAndStatusAndEffectiveDateStartLessThanEqual(Integer.valueOf(brokerReq.getCountryCode()),"Y", today );
+				if(countryCount <=0 ) {
+					errors.add(new Error("18", "Country", "Please Select Valid Country" ));
+				}
 			}
 			
-			if(StringUtils.isBlank(brokerReq.getState())  ) {
+			if(StringUtils.isBlank(brokerReq.getStateCode())  ) {
 				errors.add(new Error("28", "State", "Plese Select State" ));
+			} else if(! brokerReq.getStateCode().matches("[0-9]+")  ) {
+				errors.add(new Error("18", "Country", "Plese Enter Valid Number In Country" ));
+			}else if(StringUtils.isNotBlank(brokerReq.getCountryCode()) &&   brokerReq.getCountryCode().matches("[0-9]+")  ){
+	
+				Long stateCount  = stateRepo.countByStateIdAndCountryIdAndStatusAndEffectiveDateStartLessThanEqual(Integer.valueOf(brokerReq.getStateCode()) , Integer.valueOf(brokerReq.getCountryCode()),"Y", today );
+				if(stateCount <=0 ) {
+					errors.add(new Error("18", "State", "Please Select Valid State" ));
+				}
 			}
+			
+			if(StringUtils.isBlank(brokerReq.getCityCode())  ) {
+				errors.add(new Error("15", "City", "Plese Select City" ));
+			} else if(! brokerReq.getCityCode().matches("[0-9]+")  ) {
+				errors.add(new Error("15", "City", "Plese Enter Valid Number In City" ));
+			}else if(StringUtils.isNotBlank(brokerReq.getCountryCode()) &&   brokerReq.getCountryCode().matches("[0-9]+")  ){
+	
+				Long cityCount  = cityRepo.countByCityIdAndStateIdAndCountryIdAndStatusAndEffectiveDateStartLessThanEqual(Integer.valueOf(brokerReq.getCityCode()) , Integer.valueOf(brokerReq.getStateCode()) , Integer.valueOf(brokerReq.getCountryCode()),"Y", today );
+				if(cityCount  <=0 ) {
+					errors.add(new Error("18", "City", "Please Select Valid City" ));
+				}
+			} 
+			
 			
 			if(StringUtils.isBlank(brokerReq.getVatRegNo())  ) {
 				errors.add(new Error("29", "VatRegNo", "Plese Select Country" ));
@@ -332,58 +363,6 @@ public class BasicLoginValidationService {
 		return true;
 	}
 	
-	public Long getCount() {
-
-		Long data = 0L;
-		try {
-
-			List<Long> list = new ArrayList<Long>();
-			// Find Latest Record
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<Long> query = cb.createQuery(Long.class);
-
-			// Find All
-			Root<CountryMaster> b = query.from(CountryMaster.class);
-
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<CountryMaster> ocpm1 = effectiveDate.from(CountryMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			Predicate a1 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
-			effectiveDate.where(a1);
-			
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate1 = query.subquery(Long.class);
-			Root<StateMaster> ocpm2 = effectiveDate1.from(StateMaster.class);
-			effectiveDate1.select(cb.max(ocpm2.get("effectiveDateStart")));
-			Predicate sa1 = cb.equal(ocpm2.get("stateId"), b.get("stateId"));
-			effectiveDate1.where(sa1);
-			
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
-			Root<StateMaster> ocpm3 = effectiveDate2.from(StateMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateStart")));
-			Predicate c1 = cb.equal(ocpm2.get("cityId"), b.get("cityId"));
-			effectiveDate2.where(c1);
-			
-
-			// Select
-			query.multiselect(cb.count(b));
-			
-			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			query.where(n1);
-			// Get Result
-			TypedQuery<Long> result = em.createQuery(query);
-			list = result.getResultList();
-
-			data = list.get(0);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			log.info(e.getMessage());
-
-		}
-		return data;
-	}
+	
 	
 }

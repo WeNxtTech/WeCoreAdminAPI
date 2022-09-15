@@ -83,7 +83,7 @@ public class JwtTokenUtil implements Serializable {
                 .setClaims(claims)
                 .setIssuer("http://devglan.com")
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1800000 )) 
+                .setExpiration(new Date(System.currentTimeMillis() + 900000 )) 
                 .signWith(SignatureAlgorithm.HS256, SIGNING_KEY)
                 .compact();
         return token;

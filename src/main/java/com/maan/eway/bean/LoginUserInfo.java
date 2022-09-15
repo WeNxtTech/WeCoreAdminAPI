@@ -129,9 +129,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="REMARKS")
     private String    remarks ;
     
-    @Column(name="CUSTOMER_ID")
-    private Long    customerId ;
-    
     @Column(name="BRANCH_CODE")
     private String    branchCode ;
     

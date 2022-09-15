@@ -379,11 +379,11 @@ public class ValidationServiceImpl implements ValidationService {
 				for (ProductSectionsSaveReq data :  req.getProductRiskList()) {
 					riskRowNo = riskRowNo + 1 ;
 					if (StringUtils.isBlank(data.getLocationId())  ) {
-						errors.add(new Error("09","Risk Id", "Please Select atleast One Risk in Risk Row No :" + riskRowNo));
+						errors.add(new Error("09","Location Id", "Please Select atleast One Location in Location Row No :" + riskRowNo));
 					}
 					
 				    if( data.getSectionList() ==null || data.getSectionList().size()<=0  ) {
-				    	errors.add(new Error("09","Risk Id", "Please Select atleast One Section in Risk Row No :" + riskRowNo));
+				    	errors.add(new Error("09","Location Id", "Please Select atleast One Section in Location Row No :" + riskRowNo));
 				    } else {
 				    	Long sectionsRowNo = 0L ;
 				    	for (  SectionListReq data2 : data.getSectionList()) {

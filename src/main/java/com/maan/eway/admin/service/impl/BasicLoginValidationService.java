@@ -5,6 +5,15 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,17 +25,36 @@ import com.maan.eway.admin.req.BrokerPersonalInfoReq;
 import com.maan.eway.admin.req.CommonLoginCreationReq;
 import com.maan.eway.admin.req.CommonLoginInformationReq;
 import com.maan.eway.admin.req.CommonPersonalInforReq;
+import com.maan.eway.bean.CityMaster;
+import com.maan.eway.bean.CountryMaster;
 import com.maan.eway.bean.LoginMaster;
+import com.maan.eway.bean.StateMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.repository.CityMasterRepository;
+import com.maan.eway.repository.CountryMasterRepository;
 import com.maan.eway.repository.LoginMasterRepository;
+import com.maan.eway.repository.StateMasterRepository;
 
 @Service
 public class BasicLoginValidationService {
 	
 	private Logger log=LogManager.getLogger(BasicLoginValidationService.class);
 
+	@PersistenceContext
+	private EntityManager em;
+	
 	@Autowired
 	private LoginMasterRepository loginRepo ;
+	
+	@Autowired
+	private CityMasterRepository cityRepo;
+	
+	@Autowired
+	private StateMasterRepository stateRepo;
+	
+	@Autowired
+	private CountryMasterRepository countryRepo;
+	
 	
 	public List<Error>  commonLoginCreationValidation(CommonLoginCreationReq req ) {
 		List<Error> errors = new ArrayList<Error>();
@@ -89,6 +117,20 @@ public class BasicLoginValidationService {
 			}
 			// Personal Info Validation
 			CommonPersonalInforReq personalReq = req.getPersonalInformation() ; 
+			if (StringUtils.isBlank(personalReq.getMakerYn())) {
+				errors.add(new Error("0", "MakeYn", "Please Select MakeYN"));
+			} else if (!("Y".equals(personalReq.getMakerYn()) || "N".equals(personalReq.getMakerYn()))) {
+				errors.add(new Error("0", "MakeYn()", "Select any Y or N"));
+			}
+		
+			
+		/*	CityMaster countCity=cityRepo.findByCityIdAndStatus(personalReq.getCityCode(),"Y")
+			if( StringUtils.isBlank(personalReq.getCityCode()) ) {
+				errors.add(new Error("0", "CityCode", "Please Enter City Code"));
+			}else if(countCity < 0) {
+				errors.add(new Error("0", "CityCode", "Please Enter Valid City Code"));
+			} */
+			
 			
 			if( StringUtils.isBlank(personalReq.getUserMail()) ) {
 				errors.add(new Error("06", "User Mail", "Please Select User Mail"));
@@ -288,6 +330,60 @@ public class BasicLoginValidationService {
 			return true;
 		}
 		return true;
+	}
+	
+	public Long getCount() {
+
+		Long data = 0L;
+		try {
+
+			List<Long> list = new ArrayList<Long>();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Long> query = cb.createQuery(Long.class);
+
+			// Find All
+			Root<CountryMaster> b = query.from(CountryMaster.class);
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CountryMaster> ocpm1 = effectiveDate.from(CountryMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
+			effectiveDate.where(a1);
+			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate1 = query.subquery(Long.class);
+			Root<StateMaster> ocpm2 = effectiveDate1.from(StateMaster.class);
+			effectiveDate1.select(cb.max(ocpm2.get("effectiveDateStart")));
+			Predicate sa1 = cb.equal(ocpm2.get("stateId"), b.get("stateId"));
+			effectiveDate1.where(sa1);
+			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<StateMaster> ocpm3 = effectiveDate2.from(StateMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateStart")));
+			Predicate c1 = cb.equal(ocpm2.get("cityId"), b.get("cityId"));
+			effectiveDate2.where(c1);
+			
+
+			// Select
+			query.multiselect(cb.count(b));
+			
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			query.where(n1);
+			// Get Result
+			TypedQuery<Long> result = em.createQuery(query);
+			list = result.getResultList();
+
+			data = list.get(0);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+
+		}
+		return data;
 	}
 	
 }

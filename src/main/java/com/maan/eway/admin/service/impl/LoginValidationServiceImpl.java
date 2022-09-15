@@ -23,6 +23,7 @@ import com.maan.eway.admin.req.AttachReferalReq;
 import com.maan.eway.admin.req.AttacheIssuerBranchReq;
 import com.maan.eway.admin.req.AttachedBranchesReq;
 import com.maan.eway.admin.req.AttachedProductReq;
+import com.maan.eway.admin.req.BrokerBranchesReq;
 import com.maan.eway.admin.req.BrokerCreationReq;
 import com.maan.eway.admin.req.CommonLoginCreationReq;
 import com.maan.eway.admin.req.IssuerCraeationReq;
@@ -147,22 +148,34 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 			if(StringUtils.isBlank(req.getLoginId()) ) {
 				errors.add(new Error("01", "LoginId", "Plese Enter LoginId" ));
 			}
-			
+			if (StringUtils.isBlank(req.getBrokerCompanyYn())) {
+				errors.add(new Error("02", "BrokerCompanyYn", "Plese Enter BrokerCompanyYn"));
+			}  
+				
 			if(req.getAttachedCompanies()==null || req.getAttachedCompanies().size()== 0 ) {
-				errors.add(new Error("02", "Attached Companies", "Plese select Atleast One  Company" ));
+				errors.add(new Error("03", "Attached Companies", "Plese select Atleast One  Company" ));
 			} else {
 				Long rowNo = 0L ;
 				for(AttachedBranchesReq  data : req.getAttachedCompanies() ) {
 					rowNo = rowNo + 1L ;
 					if(StringUtils.isBlank(data.getInsuranceId()) ) {
-						errors.add(new Error("01", "Insurance Id", "Plese Select Atleast One Company" ));
+						errors.add(new Error("03", "Insurance Id", "Plese Select Atleast One Company" ));
 					}
 					
 					if(data.getAttachedBranches()==null || data.getAttachedBranches().size()== 0 ) {
-						errors.add(new Error("02", "Attached Companies", "Plese select Atleast One  Branch in Company Row No : " +  rowNo  ));
+						errors.add(new Error("03", "Attached Companies", "Plese select Atleast One  Branch in Company Row No : " +  rowNo  ));
 					}
-					
-					
+					for (BrokerBranchesReq data2 : data.getAttachedBranches()) {
+						if (req.getBrokerCompanyYn().equals("N")) {
+							if (StringUtils.isBlank(data2.getBranchCode())) {
+								errors.add(new Error("04", "Branch Code", "Plese Enter Branch Code"));
+							} else if (req.getBrokerCompanyYn().equals("Y")) {
+								if (data2.getBrokerBranchCode() == null || data2.getBrokerBranchCode().size() == 0) {
+									errors.add(new Error("04", "Broker Branch Code", "Plese select Atleast One  Broker Branch Code"+rowNo));
+								}
+							}
+						}
+					}
 				}	
 			}
 			

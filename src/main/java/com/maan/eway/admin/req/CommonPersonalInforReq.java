@@ -1,5 +1,7 @@
 package com.maan.eway.admin.req;
 
+import javax.persistence.Column;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
@@ -25,24 +27,30 @@ public class CommonPersonalInforReq {
     
     @JsonProperty("Address3")
     private String    address3 ;
+  
+    @JsonProperty("CityCode")
+    private String    cityCode ;
     
-    @JsonProperty("City")
-    private String    city ;
+    @JsonProperty("CityName")
+    private String    cityName ;
     
-    @JsonProperty("State")
-    private String    state ;
+    @JsonProperty("StateCode")
+    private String    stateCode ;
     
-    @JsonProperty("Country")
-    private String    country ;
+    @JsonProperty("StateName")
+    private String    stateName ;
+    
+    @JsonProperty("CountryCode")
+    private String    countryCode ;
+    
+    @JsonProperty("CountryName")
+    private String    countryName ;
     
     @JsonProperty("Pobox")
     private String    pobox ;
     
     @JsonProperty("Fax")
     private String    fax ;
-    
-    @JsonProperty("Emirate")
-    private String    emirate;
     
     @JsonProperty("Remarks")
     private String    remarks ;
@@ -56,8 +64,8 @@ public class CommonPersonalInforReq {
     @JsonProperty("ApprovedPreparedBy")
     private String    approvedPreparedBy ;
     
-    @JsonProperty("RsaBrokerCode")
-    private String    rsaBrokerCode ;
+    @JsonProperty("CoreAppBrokerCode")
+    private String    coreAppBrokerCode ;
     
     @JsonProperty("AcExecutiveId")
     private String    acExecutiveId ;

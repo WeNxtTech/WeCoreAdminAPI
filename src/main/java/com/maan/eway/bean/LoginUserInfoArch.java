@@ -106,23 +106,11 @@ private static final long serialVersionUID = 1L;
     @Column(name="ADDRESS3")
     private String    address3 ;
     
-    @Column(name="CITY")
-    private String    city ;
-    
-    @Column(name="STATE")
-    private String    state ;
-    
-    @Column(name="COUNTRY")
-    private String    country ;
-    
     @Column(name="POBOX")
     private Long    pobox ;
     
     @Column(name="FAX")
     private String    fax ;
-    
-    @Column(name="EMIRATE")
-    private String    emirate;
     
     @Column(name="REMARKS")
     private String    remarks ;
@@ -139,8 +127,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="APPROVED_PREPARED_BY")
     private String    approvedPreparedBy ;
     
-    @Column(name="RSA_BROKER_CODE")
-    private String    rsaBrokerCode ;
+    @Column(name="CORE_APP_BROKER_CODE")
+    private String    coreAppBrokerCode ;
     
     @Column(name="AC_EXECUTIVE_ID")
     private Long    acExecutiveId ;
@@ -160,6 +148,24 @@ private static final long serialVersionUID = 1L;
     @Column(name="MAKER_YN")
     private String    makerYn ;
     //--- ENTITY LINKS ( RELATIONSHIP )
+    
+    @Column(name="CITY_CODE")
+    private Integer    cityCode ;
+    
+    @Column(name="CITY_NAME",length = 50)
+    private String    cityName ;
+    
+    @Column(name="STATE_CODE")
+    private Integer    stateCode ;
+    
+    @Column(name="STATE_NAME",length = 50)
+    private String    stateName ;
+    
+    @Column(name="COUNTRY_CODE")
+    private Integer    countryCode ;
+    
+    @Column(name="COUNTRY_NAME",length = 50)
+    private String    countryName ;
 
 
 }

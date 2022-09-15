@@ -45,10 +45,14 @@ import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.admin.service.LoginBranchService;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
+import com.maan.eway.bean.LoginBrokerBranchMaster;
+import com.maan.eway.bean.LoginBrokerBranchMasterArch;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginMasterArch;
 import com.maan.eway.bean.RegionMaster;
 import com.maan.eway.repository.BranchMasterRepository;
+import com.maan.eway.repository.LoginBrokerBranchMasterArchRepository;
+import com.maan.eway.repository.LoginBrokerBranchMasterRepository;
 import com.maan.eway.repository.LoginMasterArchRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 
@@ -60,6 +64,13 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 	
 	@Autowired
 	private LoginMasterArchRepository loginArchRepo;
+	
+
+	@Autowired
+	private LoginBrokerBranchMasterRepository loginBrokerRepo;
+	
+	@Autowired
+	private LoginBrokerBranchMasterArchRepository loginBrokerArchRepo;
 	
 	@Autowired
 	private BranchMasterRepository branchRepo ;
@@ -116,6 +127,7 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 			findLogin.setAttachedBranches(totalBranches);
 			findLogin.setAttachedRegions(regions);
 			findLogin.setAttachedCompanies(companies);
+		
 			loginRepo.saveAndFlush(findLogin);
 			
 			log.info( "Login Master Updated Details ---> " + json.toJson(findLogin) );
@@ -145,6 +157,15 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 			loginArch.setArchId(archId);
 			loginArchRepo.saveAndFlush(loginArch);
 			
+		/*	//Login Broker Branch Master
+			LoginBrokerBranchMaster loginBroker =new LoginBrokerBranchMaster();
+			loginBroker=loginBrokerRepo.findByLoginId(req.getLoginId());
+			// Save in Arch tables
+			String brokerArchId = "AI-" + idf.format(new Date());
+			LoginBrokerBranchMasterArch loginBrokerArch = dozerMapper.map(loginBroker, LoginBrokerBranchMasterArch.class);
+			loginBrokerArch.setArchId(brokerArchId);
+			loginBrokerArchRepo.saveAndFlush(loginBrokerArch);*/
+			
 			// Branch Setup
 			String totalBranches  = "" ;
 			String companies = "" ;
@@ -157,7 +178,6 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 					branches =  StringUtils.isBlank(branches) ?  data2 : branches + "," + data2;
 					branchIds.add( data2);
 				}
-				
 				companies = StringUtils.isBlank(companies) ? data.getInsuranceId() : "," + data.getInsuranceId() ;
 				totalBranches  = StringUtils.isBlank(branches) ? totalBranches :totalBranches + "," + branches ; 
 			}
@@ -178,6 +198,7 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 			log.info( "Login Master Updated Details ---> " + json.toJson(findLogin) );
 			
 			res.setResponse("Updated Successfully");
+			
 			
 		} catch (Exception e) {
 			e.printStackTrace();

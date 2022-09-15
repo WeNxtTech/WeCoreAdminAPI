@@ -30,6 +30,6 @@ import com.maan.eway.bean.LoginMasterArchId;
  
  
  
-public interface LoginMasterArchRepository  extends JpaRepository<LoginMasterArch,LoginMasterArchId > , JpaSpecificationExecutor<LoginMasterArch> {
+public interface LoginBrokerBranchMasterArchRepository  extends JpaRepository<LoginBrokerBranchMasterArch,LoginBrokerBranchMasterArchId > , JpaSpecificationExecutor<LoginBrokerBranchMasterArch> {
 
 }

@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public class BrokerBranchesReq {
 
-	@JsonProperty("BranchCode")
+	 @JsonProperty("BranchCode")
 	private String branchCode ;
 	
 	@JsonProperty("BrokerBranchCode")

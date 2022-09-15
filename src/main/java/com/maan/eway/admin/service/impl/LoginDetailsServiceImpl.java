@@ -307,6 +307,7 @@ this.repository = repo;
 			String branches  = loginReq.getAttachedBranches()==null  || loginReq.getAttachedBranches().size()==0 ?"" : String.join(",", loginReq.getAttachedBranches());
 			String regions   = loginReq.getAttachedRegions()==null   || loginReq.getAttachedRegions().size()==0 ?"" : String.join(",", loginReq.getAttachedRegions());
 			String companies = loginReq.getAttachedCompanies()==null || loginReq.getAttachedCompanies().size()==0 ?"" : String.join(",", loginReq.getAttachedCompanies());
+			String menuId = loginReq.getMenuId()==null || loginReq.getMenuId().size()==0 ?"" : String.join(",", loginReq.getMenuId());
 			
 			passwordEnc passEnc = new passwordEnc();
 			String newpass =  passEnc.crypt(loginReq.getPassword().trim());
@@ -337,6 +338,7 @@ this.repository = repo;
 			saveLogin.setAttachedBranches(branches);
 			saveLogin.setAttachedRegions(regions);
 			saveLogin.setAttachedCompanies(companies);
+			saveLogin.setMenuIds(menuId);
 			if( ! loginReq.getSubUserType().equalsIgnoreCase("bank") ) {
 				saveLogin.setBankCode("");
 			}
@@ -398,7 +400,7 @@ this.repository = repo;
 			String branches  = loginReq.getAttachedBranches()==null  || loginReq.getAttachedBranches().size()==0 ?"" : String.join(",", loginReq.getAttachedBranches());
 			String regions   = loginReq.getAttachedRegions()==null   || loginReq.getAttachedRegions().size()==0 ?"" : String.join(",", loginReq.getAttachedRegions());
 			String companies = loginReq.getAttachedCompanies()==null || loginReq.getAttachedCompanies().size()==0 ?"" : String.join(",", loginReq.getAttachedCompanies());
-			
+			String menuId = loginReq.getMenuId()==null || loginReq.getMenuId().size()==0 ?"" : String.join(",", loginReq.getMenuId());
 			dozerMapper.map(loginReq, updateLogin);
 			
 			if (StringUtils.isNotBlank(loginReq.getPassword())) {
@@ -414,6 +416,7 @@ this.repository = repo;
 			updateLogin.setAttachedBranches(branches);
 			updateLogin.setAttachedRegions(regions);
 			updateLogin.setAttachedCompanies(companies);
+			updateLogin.setMenuIds(menuId);
 			if( ! loginReq.getSubUserType().equalsIgnoreCase("bank") ) {
 				updateLogin.setBankCode("");
 			}

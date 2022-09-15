@@ -45,9 +45,9 @@ public class BasicLoginValidationService {
 			} else {
 				LoginMaster  loginData = loginRepo.findByLoginId(loginReq.getLoginId());
 				if(loginData!=null ) {
-					if (StringUtils.isBlank( loginReq.getAgencyCode()) ) {
+					if (StringUtils.isBlank( loginReq.getOaCode()) ) {
 						errors.add(new Error("02", "Login Id", "Login Id Already Exist"));
-					} else if(! loginReq.getAgencyCode().equalsIgnoreCase(loginData.getAgencyCode() ) ) {
+					} else if(! loginReq.getOaCode().equalsIgnoreCase(loginData.getOaCode() ) ) {
 						errors.add(new Error("02", "Login Id", "Login Id Already Exist"));
 					}
 				} 
@@ -75,13 +75,18 @@ public class BasicLoginValidationService {
 			} else if (loginReq.getSubUserType().equalsIgnoreCase("bank") && StringUtils.isBlank(loginReq.getBankCode()) ) {
 				errors.add(new Error("05", "Bank Code", "Please Select Bank Code"));
 			}
-			if(StringUtils.isNotBlank(loginReq.getSubUserType() ) && loginReq.getSubUserType().equalsIgnoreCase("bank") &&   StringUtils.isNotBlank(loginReq.getBankCode())   ) {
-				errors.add(new Error("06","BrankCode","You Can't Enter BankCode"));
+			if(StringUtils.isNotBlank(loginReq.getSubUserType() ) && ! loginReq.getSubUserType().equalsIgnoreCase("bank") &&   StringUtils.isNotBlank(loginReq.getBankCode())   ) {
+				errors.add(new Error("06","BankCode","You Can't Enter BankCode"));
 			}
-		/*	if( loginReq.getAttachedBranches()==null || loginReq.getAttachedBranches().size() == 0 ) {
+			if( loginReq.getAttachedBranches()==null || loginReq.getAttachedBranches().size() == 0 ) {
 				errors.add(new Error("06", "Attached Branch", "Please Choose Atleast One Branch"));
-			} */
-			
+			} 
+			if( loginReq.getAttachedRegions()==null || loginReq.getAttachedRegions().size() == 0 ) {
+				errors.add(new Error("06", "Attached Region", "Please Choose Atleast One Region"));
+			}
+			if( loginReq.getAttachedCompanies()==null || loginReq.getAttachedCompanies().size() == 0 ) {
+				errors.add(new Error("06", "Attached Branch", "Please Choose Atleast One Branch"));
+			}
 			// Personal Info Validation
 			CommonPersonalInforReq personalReq = req.getPersonalInformation() ; 
 			

@@ -322,11 +322,12 @@ this.repository = repo;
 			saveLogin.setPassword(newpass);
 			saveLogin.setLoginId(loginReq.getLoginId());
 			if( loginReq.getUserType().equalsIgnoreCase("User")  ) {
-				saveLogin.setOaCode(loginReq.getOaCode());	
+				saveLogin.setAgencyCode(loginReq.getAgencyCode());
+				saveLogin.setOaCode(countId.toString());	
 			} else {
 				saveLogin.setOaCode(countId.toString());
+				saveLogin.setAgencyCode(countId.toString());
 			}
-			saveLogin.setAgencyCode(countId.toString());
 			saveLogin.setEntryDate(new Date());
 			saveLogin.setUpdatedDate(new Date());
 			saveLogin.setUpdatedBy(loginReq.getCreatedBy());
@@ -406,6 +407,7 @@ this.repository = repo;
 				updateLogin.setPassword(newpass);
 			}
 			updateLogin.setCreatedBy(findLogin.getCreatedBy() );
+			updateLogin.setOaCode(loginReq.getOaCode());
 			updateLogin.setUpdatedDate(new Date());
 			updateLogin.setUpdatedBy(loginReq.getCreatedBy());
 			updateLogin.setLoginId(loginReq.getLoginId());
@@ -424,8 +426,8 @@ this.repository = repo;
 			dozerMapper.map(personalReq , updateUser);
 			updateLogin.setCreatedBy(findLogin.getCreatedBy() );
 			updateUser.setLoginId(loginReq.getLoginId());
-			updateUser.setOaCode(loginReq.getOaCode());
-			updateUser.setAgencyCode(loginReq.getAgencyCode());
+			updateUser.setOaCode(updateLogin.getOaCode());
+			updateUser.setAgencyCode(updateLogin.getAgencyCode());
 			updateUser.setUpdatedDate(new Date());
 			updateUser.setUpdatedBy(loginReq.getCreatedBy());
 			loginUserRepo.saveAndFlush(updateUser);
@@ -558,7 +560,7 @@ this.repository = repo;
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(l.get("entryDate")));
+			orderList.add(cb.desc(l.get("entryDate")));
 			
 			// Where
 			Predicate n1 = cb.equal(l.get("loginId"), u.get("loginId"));
@@ -683,7 +685,7 @@ this.repository = repo;
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(l.get("entryDate")));
+			orderList.add(cb.desc(l.get("entryDate")));
 			
 			// Where
 			Predicate n1 = cb.equal(l.get("loginId"), u.get("loginId"));
@@ -746,7 +748,7 @@ this.repository = repo;
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(l.get("entryDate")));
+			orderList.add(cb.desc(l.get("entryDate")));
 			
 			// Where
 			Predicate n1 = cb.equal(l.get("loginId"), u.get("loginId"));

@@ -128,10 +128,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="PWD_COUNT", length=10)
     private String     pwdCount ;
 
-    @Column(name="MENU_IDS", length=10)
-    private String     menuIds ;
-
-
+    @Column(name="BROKER_COMPANY_YN")
+    private String     brokerCompanyYn ;
 
 
 }

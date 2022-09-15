@@ -12,5 +12,5 @@ import com.maan.eway.bean.MenuMaster;
 public interface MenuMasterRepository  extends JpaRepository<MenuMaster, Integer>, JpaSpecificationExecutor<MenuMaster> {
 
 
-
+                                                                              
 }

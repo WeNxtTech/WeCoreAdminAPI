@@ -28,16 +28,14 @@ public class SubCoverMasterSaveReq implements Serializable {
     private String subCoverDesc;
     
     @JsonFormat(pattern="dd/MM/yyyy")
-    @JsonProperty("EffectiveDateStart")
-    private Date effectiveDateStart;
-    
-    @JsonFormat(pattern="dd/MM/yyyy")
-    @JsonProperty("EffectiveDateEnd")
-    private Date effectiveDateEnd;
+    @JsonProperty("EffectiveDate")
+    private Date effectiveDate;
     
     @JsonProperty("CoreAppCode")
     private String coreAppCode;
     
+    @JsonProperty("Status")
+    private String status;
 
     @JsonProperty("Remarks")
     private String remarks;

@@ -11,6 +11,7 @@ import com.maan.eway.master.req.ProductSectionsGetReq;
 import com.maan.eway.master.req.SectionMasterGetAllReq;
 import com.maan.eway.master.req.SectionMasterGetReq;
 import com.maan.eway.master.req.SectionMasterSaveReq;
+import com.maan.eway.master.req.SubCoverMasterGetAllReq;
 import com.maan.eway.master.req.SubCoverMasterGetReq;
 import com.maan.eway.master.req.SubCoverMasterSaveReq;
 import com.maan.eway.master.res.ProductSectionGetRes;
@@ -73,7 +74,7 @@ public class SubCoverMasterController {
 
 			} else {
 
-				// Get All
+				//Save
 				SuccessRes res = service.insertSubCover(req);
 				data.setCommonResponse(res);
 				data.setIsError(false);
@@ -93,11 +94,11 @@ public class SubCoverMasterController {
 		
 		@GetMapping("/getallsubcover")
 		@ApiOperation("This method is getall SubCover")
-		public ResponseEntity<CommonRes> getallSubCover()
+		public ResponseEntity<CommonRes> getallSubCover(@RequestBody SubCoverMasterGetAllReq req)
 		{
 			CommonRes data = new CommonRes();
 			
-			List<SubCoverMasterGetAllRes> res =service.getallSubCover();
+			List<SubCoverMasterGetAllRes> res =service.getallSubCover(req);
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);

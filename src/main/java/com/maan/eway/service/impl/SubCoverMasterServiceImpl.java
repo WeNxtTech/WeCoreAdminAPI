@@ -85,13 +85,13 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 				ent = mapper.map(data, SubCoverMaster.class);
 				repo.save(ent);
 				res.setResponse("Updated Successful");
-				res.setSuccessId(data.getSubCoverId());
+				res.setSuccessId(data.getSubCoverId().toString());
 			} else {
 			
 				ent = mapper.map(req, SubCoverMaster.class);
 				ent.setEntryDate(new Date());
 				ent.setAmendId(0);
-				ent.setSubCoverId(count.toString());
+				ent.setSubCoverId(count.intValue());
 				ent.setStatus("Y");
 				repo.save(ent);
 				

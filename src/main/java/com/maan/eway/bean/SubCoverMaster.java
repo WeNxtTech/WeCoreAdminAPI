@@ -56,7 +56,7 @@ private static final long serialVersionUID = 1L;
    
     @Id
     @Column(name="SUB_COVER_ID", nullable=false)
-    private String     subCoverId;
+    private Integer    subCoverId;
 
     @Id
     @Column(name="COMPANY_ID", nullable=false, length=100)

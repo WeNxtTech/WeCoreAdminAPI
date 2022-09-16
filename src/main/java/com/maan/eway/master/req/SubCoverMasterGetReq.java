@@ -14,7 +14,7 @@ public class SubCoverMasterGetReq implements Serializable {
     private static final long serialVersionUID = 1L;
 
 	@JsonProperty("SubCoverId")
-    private String subCoverId ;
+    private Integer subCoverId ;
     
 
 	@JsonProperty("InsuranceId")

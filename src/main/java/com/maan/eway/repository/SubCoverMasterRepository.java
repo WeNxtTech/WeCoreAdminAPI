@@ -43,7 +43,5 @@ public interface SubCoverMasterRepository  extends JpaRepository<SubCoverMaster,
 
 	SubCoverMaster findBySubCoverIdAndCompanyId(Integer subCoverId, String companyId);
 
-	SubCoverMaster findBySubCoverIdAndCompanyId(String subCoverId, String companyId);
-
 	
 }

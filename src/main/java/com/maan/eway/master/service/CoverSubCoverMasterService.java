@@ -8,13 +8,10 @@ package com.maan.eway.master.service;
 import com.maan.eway.master.req.BankMasterGetAllReq;
 import com.maan.eway.master.req.BankMasterGetReq;
 import com.maan.eway.master.req.BankMasterSaveReq;
-import com.maan.eway.master.req.CoverMasterGetAllReq;
 import com.maan.eway.master.req.CustomerSaveReq;
-import com.maan.eway.master.req.SubCoverMasterGetAllReq;
 import com.maan.eway.master.req.SubCoverMasterGetReq;
 import com.maan.eway.master.req.SubCoverMasterSaveReq;
 import com.maan.eway.master.res.BankMasterRes;
-import com.maan.eway.master.res.CoverMasterRes;
 import com.maan.eway.master.res.SubCoverMasterGetAllRes;
 import com.maan.eway.master.res.SubCoverMasterGetRes;
 import com.maan.eway.error.Error;
@@ -25,16 +22,15 @@ import java.util.List;
 /**
 * <h2>BankMasterServiceimpl</h2>
 */
-public interface SubCoverMasterService  {
+public interface CoverSubCoverMasterService  {
 
 	List<Error> validateSubCover(SubCoverMasterSaveReq req);
 
 	SuccessRes insertSubCover(SubCoverMasterSaveReq req);
 
-	List<SubCoverMasterGetAllRes> getallSubCover(SubCoverMasterGetAllReq req);
+	List<SubCoverMasterGetAllRes> getallSubCover();
 
 	SubCoverMasterGetRes getBySubCoverId(SubCoverMasterGetReq req);
 
-	List<SubCoverMasterGetAllRes> getActiveSubCover(SubCoverMasterGetAllReq req);
 
 }

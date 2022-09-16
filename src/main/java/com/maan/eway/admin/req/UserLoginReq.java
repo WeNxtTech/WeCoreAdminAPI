@@ -39,4 +39,7 @@ public class UserLoginReq {
 	
 	@JsonProperty("BankCode")
     private String     bankCode       ;
+	
+	@JsonProperty("BrokerCompanyYn")
+    private String brokerCompanyYn       ;
 }

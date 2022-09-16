@@ -41,6 +41,12 @@ public class CoverMasterSaveReq implements Serializable {
 	@JsonProperty("CoverId")
 	private String coverId;
 	
+	@JsonProperty("ProductId")
+	private String productId;
+	
+	@JsonProperty("SectionId")
+	private String sectionId;
+	
 	@JsonProperty("InsuranceId")
 	private String companyId;
 	

@@ -15,5 +15,8 @@ public class ProductMasterGetReq implements Serializable {
 
 	@JsonProperty("ProductId")
     private String     productId     ;
+	
+	@JsonProperty("InsuranceId")
+    private String     insuranceId     ;
     
 }

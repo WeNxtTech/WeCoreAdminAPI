@@ -39,4 +39,7 @@ public class BrokerLoginInfoReq {
     private String     status       ;
 	@JsonProperty("BankCode")
     private String     bankCode    ;
+	
+	@JsonProperty("BrokerCompanyYn")
+    private String    brokerCompanyYn ;
 }

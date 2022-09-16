@@ -12,6 +12,7 @@ import com.maan.eway.error.Error;
 import com.maan.eway.master.req.BranchMasterGetAllReq;
 import com.maan.eway.master.req.BranchMasterGetReq;
 import com.maan.eway.master.req.BranchMasterSaveReq;
+import com.maan.eway.master.req.CompanyBranchGetReq;
 import com.maan.eway.master.res.BranchMasterRes;
 import com.maan.eway.master.service.BranchMasterService;
 import com.maan.eway.bean.BranchMaster;
@@ -158,6 +159,50 @@ public class BranchMasterController {
 		@ApiOperation(value = "This method is get Branch Master Drop Down")
 
 		public ResponseEntity<CommonRes> getBranchMasterDropdown() {
+
+			CommonRes data = new CommonRes();
+
+			// Save
+			List<DropDownRes> res = branchService.getBranchMasterDropdown();
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+
+		}
+		
+		@GetMapping("/getallcompanybranches")
+		@ApiOperation(value = "This method is get Branch Master Drop Down")
+
+		public ResponseEntity<CommonRes> getAllCompanyBranch() {
+
+			CommonRes data = new CommonRes();
+
+			// Save
+			List<DropDownRes> res = branchService.getBranchMasterDropdown();
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+
+		}
+		
+		@GetMapping("/getinduvidualcompanybranches")
+		@ApiOperation(value = "This method is get Branch Master Drop Down")
+
+		public ResponseEntity<CommonRes> getBranchMasterDropdown(@RequestBody CompanyBranchGetReq req ) {
 
 			CommonRes data = new CommonRes();
 

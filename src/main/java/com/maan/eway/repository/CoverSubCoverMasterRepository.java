@@ -22,6 +22,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import com.maan.eway.bean.BankMasterId;
+import com.maan.eway.bean.CoverSubCoverMaster;
+import com.maan.eway.bean.CoverSubCoverMasterId;
 import com.maan.eway.bean.SubCoverMaster;
 import com.maan.eway.bean.SubCoverMasterId;
 
@@ -37,15 +39,11 @@ import org.springframework.data.domain.Pageable;
  
  
  
-public interface SubCoverMasterRepository  extends JpaRepository<SubCoverMaster,SubCoverMasterId > , JpaSpecificationExecutor<SubCoverMaster> {
+public interface CoverSubCoverMasterRepository  extends JpaRepository<CoverSubCoverMaster,CoverSubCoverMasterId > , JpaSpecificationExecutor<CoverSubCoverMaster> {
 
-	Long countBySubCoverNameAndCompanyIdOrderByEntryDateDesc(String subCoverName, String companyId);
+	List<CoverSubCoverMaster> OrderByEntryDateDesc();
 
-	SubCoverMaster findBySubCoverIdAndCompanyId(Integer subCoverId, String companyId);
-
-	List<SubCoverMaster> OrderByEntryDateDesc();
-
-	SubCoverMaster findBySubCoverIdAndCompanyId(String subCoverId, String companyId);
+	CoverSubCoverMaster findBySubCoverIdAndCoverIdAndSectionIdAndProductIdAndCompanyId(Integer subCoverId,Integer coverId,Integer sectionId,Integer productId, String companyId);
 
 	
 }

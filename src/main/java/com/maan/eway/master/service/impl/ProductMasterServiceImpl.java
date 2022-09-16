@@ -34,7 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-
+import com.maan.eway.master.req.ProductDropDownReq;
 import com.maan.eway.master.req.ProductMasterGetAllReq;
 import com.maan.eway.master.req.ProductMasterGetReq;
 import com.maan.eway.master.req.ProductMasterSaveReq;
@@ -83,8 +83,10 @@ public SuccessRes insertProduct(ProductMasterSaveReq req) {
 		Date startDate = cal.getTime() ;
 		Date today = new Date();
 		cal.setTime(req.getEffectiveDate());  cal.add(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
+		cal.set(Calendar.SECOND, today.getSeconds());
 		Date oldEndDate = cal.getTime() ;
 		cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
+		cal.set(Calendar.SECOND, today.getSeconds());
 		Date effDate = cal.getTime();
 		Date endDate = sdformat.parse("12/12/2050");
 		
@@ -307,7 +309,8 @@ public List<ProductMasterRes> getallProductDetails(ProductMasterGetAllReq req) {
 		Root<ProductMaster> ocpm1 = effectiveDate.from(ProductMaster.class);
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-		effectiveDate.where(a1);
+		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+		effectiveDate.where(a1,a2);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -368,7 +371,8 @@ public ProductMasterRes getByProductCode(ProductMasterGetReq req) {
 		Root<ProductMaster> ocpm1 = effectiveDate.from(ProductMaster.class);
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 		javax.persistence.criteria.Predicate a1 = cb.equal(c.get("productId"),ocpm1.get("productId") );
-		effectiveDate.where(a1);
+		javax.persistence.criteria.Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
+		effectiveDate.where(a1,a2);
 		
 		
 		
@@ -380,9 +384,9 @@ public ProductMasterRes getByProductCode(ProductMasterGetReq req) {
 	
 		javax.persistence.criteria.Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate);		
 		javax.persistence.criteria.Predicate n2 = cb.equal(c.get("productId"),req.getProductId()) ;
+		javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"),req.getInsuranceId());
 
-
-		query.where(n1 ,n2).orderBy(orderList);
+		query.where(n1 ,n2,n3).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<ProductMaster> result = em.createQuery(query);			
@@ -402,7 +406,7 @@ public ProductMasterRes getByProductCode(ProductMasterGetReq req) {
 
 //**********************************************************DROPDOWN********************************************************************\\
 @Override
-public List<DropDownRes> getProductMasterDropdown() {
+public List<DropDownRes> getProductMasterDropdown(ProductDropDownReq req) {
 	List<DropDownRes> resList = new ArrayList<DropDownRes>();
 	try {
 		Date today  = new Date();
@@ -434,13 +438,15 @@ public List<DropDownRes> getProductMasterDropdown() {
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 		javax.persistence.criteria.Predicate a1 = cb.equal(c.get("productId"),ocpm1.get("productId") );
 		javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-		effectiveDate.where(a1,a2);
+		javax.persistence.criteria.Predicate a3 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
+		effectiveDate.where(a1,a2,a3);
 		
 	    // Where	
 		javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
 		javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+		javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"),req.getInsuranceId());
 		
-		query.where(n1,n2).orderBy(orderList);
+		query.where(n1,n2,n3).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<ProductMaster> result = em.createQuery(query);			
@@ -488,7 +494,8 @@ public List<ProductMasterRes> getActiveProductDetails(ProductMasterGetAllReq req
 		Root<ProductMaster> ocpm1 = effectiveDate.from(ProductMaster.class);
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-		effectiveDate.where(a1);
+		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+		effectiveDate.where(a1,a2);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -496,9 +503,10 @@ public List<ProductMasterRes> getActiveProductDetails(ProductMasterGetAllReq req
 
 		// Where
 		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-		Predicate n2 = cb.equal(b.get("status"), "Y");
+		Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
+		Predicate n3 = cb.equal(b.get("status"), "Y");
 
-		query.where(n1,n2).orderBy(orderList);
+		query.where(n1,n2,n3).orderBy(orderList);
 
 		// Get Result
 		TypedQuery<ProductMaster> result = em.createQuery(query);
@@ -524,5 +532,62 @@ public List<ProductMasterRes> getActiveProductDetails(ProductMasterGetAllReq req
 	}
 	return resList;
 }
+
+
+	@Override
+	public ProductMasterRes getTodayProductCode(ProductMasterGetReq req) {
+		ProductMasterRes res = new ProductMasterRes();
+		ModelMapper mapper = new ModelMapper();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ProductMaster> query = cb.createQuery(ProductMaster.class);
+			List<ProductMaster> list = new ArrayList<ProductMaster>();
+			
+			// Find All
+			Root<ProductMaster>    c = query.from(ProductMaster.class);		
+			
+			// Select
+			query.select(c );
+			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<ProductMaster> ocpm1 = effectiveDate.from(ProductMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("productId"),ocpm1.get("productId") );
+			javax.persistence.criteria.Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
+			javax.persistence.criteria.Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);		
+			effectiveDate.where(a1,a2,a3);
+			
+			
+			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate);		
+			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("productId"),req.getProductId()) ;
+			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"),req.getInsuranceId());
+
+			query.where(n1 ,n2,n3);
+			
+			// Get Result
+			TypedQuery<ProductMaster> result = em.createQuery(query);			
+			list =  result.getResultList();  
+			res = mapper.map(list.get(0) , ProductMasterRes.class);
+			res.setProductId(list.get(0).getProductId().toString());
+			res.setEntryDate(list.get(0).getEntryDate());
+			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
+			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return res;
+	}
 
 }

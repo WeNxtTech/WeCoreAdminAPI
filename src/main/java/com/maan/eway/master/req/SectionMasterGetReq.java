@@ -13,6 +13,9 @@ public class SectionMasterGetReq {
 	@JsonProperty("SectionId")
     private Integer     sectionId     ;
 	
+	@JsonProperty("ProductId")
+    private Integer     productId     ;
+	
 	@JsonProperty("InsuranceId")
     private String insuranceId;
     

@@ -6,6 +6,7 @@
 package com.maan.eway.master.service;
 
 
+import com.maan.eway.master.req.ProductDropDownReq;
 import com.maan.eway.master.req.ProductMasterGetAllReq;
 import com.maan.eway.master.req.ProductMasterGetReq;
 import com.maan.eway.master.req.ProductMasterSaveReq;
@@ -30,7 +31,9 @@ public interface ProductMasterService  {
 
 	ProductMasterRes getByProductCode(ProductMasterGetReq req);
 
-	List<DropDownRes> getProductMasterDropdown();
+	List<DropDownRes> getProductMasterDropdown(ProductDropDownReq req);
+
+	ProductMasterRes getTodayProductCode(ProductMasterGetReq req);
 
 	
 

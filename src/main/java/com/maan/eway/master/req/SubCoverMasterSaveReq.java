@@ -15,7 +15,7 @@ public class SubCoverMasterSaveReq implements Serializable {
 
     
     @JsonProperty("SubCoverId")
-    private Integer subCoverId;
+    private String subCoverId;
     
     @JsonProperty("InsuranceId")
     private String companyId;

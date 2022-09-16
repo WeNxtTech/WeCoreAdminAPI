@@ -79,6 +79,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="DISPLAY_ORDER")
     private Integer displayOrder ;
+    
+    @Column(name="DISPLAY_YN")
+    private String  displayYn ;
 
 
     //--- ENTITY LINKS ( RELATIONSHIP )

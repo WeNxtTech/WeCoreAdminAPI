@@ -17,6 +17,9 @@ public class AdditionalInfoReq {
 
 	@JsonProperty("CompanyName")
     private String    companyName ;
+	
+	@JsonProperty("BrokerCompanyYn")
+    private String    brokerCompanyYn ;
     
     @JsonProperty("Address1")
     private String    address1 ;

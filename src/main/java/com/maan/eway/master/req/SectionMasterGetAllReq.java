@@ -16,6 +16,12 @@ public class SectionMasterGetAllReq implements Serializable {
     @JsonProperty("Limit")
     private String limit;
     
+    @JsonProperty("InsuranceId")
+    private String insuranceId;
+    
+    @JsonProperty("ProductId")
+    private String productId;
+    
     @JsonProperty("Offset")
     private String offset;
   

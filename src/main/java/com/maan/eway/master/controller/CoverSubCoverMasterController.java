@@ -11,13 +11,13 @@ import com.maan.eway.master.req.ProductSectionsGetReq;
 import com.maan.eway.master.req.SectionMasterGetAllReq;
 import com.maan.eway.master.req.SectionMasterGetReq;
 import com.maan.eway.master.req.SectionMasterSaveReq;
-import com.maan.eway.master.req.SubCoverMasterGetAllReq;
 import com.maan.eway.master.req.SubCoverMasterGetReq;
 import com.maan.eway.master.req.SubCoverMasterSaveReq;
 import com.maan.eway.master.res.ProductSectionGetRes;
 import com.maan.eway.master.res.SectionMasterRes;
 import com.maan.eway.master.res.SubCoverMasterGetAllRes;
 import com.maan.eway.master.res.SubCoverMasterGetRes;
+import com.maan.eway.master.service.CoverSubCoverMasterService;
 import com.maan.eway.master.service.SectionMasterService;
 import com.maan.eway.master.service.SubCoverMasterService;
 import com.maan.eway.res.CommonRes;
@@ -48,16 +48,16 @@ import java.util.List;
 @RestController
 @RequestMapping("/master")
 @Api(tags = "MASTER : SubCover Master ", description = "API's")
-public class SubCoverMasterController {
+public class CoverSubCoverMasterController {
 
 	@Autowired
-	private  SubCoverMasterService service;
+	private  CoverSubCoverMasterService service;
 
 	@Autowired
 	private  PrintReqService reqPrinter;
 	
 	// save
-		@PostMapping("/insertsubcover")
+		@PostMapping("/insertproductsubcover")
 		@ApiOperation(value = "This method is Insert Subcover")
 		public ResponseEntity<CommonRes> insertSubCover(@RequestBody SubCoverMasterSaveReq req) {
 
@@ -74,7 +74,7 @@ public class SubCoverMasterController {
 
 			} else {
 
-				//Save
+				// Get All
 				SuccessRes res = service.insertSubCover(req);
 				data.setCommonResponse(res);
 				data.setIsError(false);
@@ -92,33 +92,13 @@ public class SubCoverMasterController {
 		
 		//  Get All Section Master
 		
-		@PostMapping("/getallsubcover")
+		@GetMapping("/getallproductsubcover")
 		@ApiOperation("This method is getall SubCover")
-		public ResponseEntity<CommonRes> getallSubCover(@RequestBody SubCoverMasterGetAllReq req)
+		public ResponseEntity<CommonRes> getallSubCover()
 		{
 			CommonRes data = new CommonRes();
 			
-			List<SubCoverMasterGetAllRes> res =service.getallSubCover(req);
-			data.setCommonResponse(res);
-			data.setErrorMessage(Collections.emptyList());
-			data.setIsError(false);
-			data.setMessage("Success");
-			
-			if(res!= null) {
-				return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
-			}
-			else {
-				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
-			}
-		}
-		
-		@PostMapping("/getactivesubcover")
-		@ApiOperation("This method is getall SubCover")
-		public ResponseEntity<CommonRes> getActiveSubCover(@RequestBody SubCoverMasterGetAllReq req)
-		{
-			CommonRes data = new CommonRes();
-			
-			List<SubCoverMasterGetAllRes> res =service.getActiveSubCover(req);
+			List<SubCoverMasterGetAllRes> res =service.getallSubCover();
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);
@@ -133,7 +113,7 @@ public class SubCoverMasterController {
 		}
 		// Get By Section Id
 		
-		@PostMapping("/getbysubcover")
+		@PostMapping("/getbyproductsubcover")
 		@ApiOperation("This Method is to get by Sub Cover Id")
 		public ResponseEntity<CommonRes> getBySubCoverId(@RequestBody SubCoverMasterGetReq req)
 		{

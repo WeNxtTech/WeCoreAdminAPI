@@ -19,6 +19,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -38,6 +39,7 @@ import com.maan.eway.master.req.BranchMasterGetReq;
 import com.maan.eway.master.req.BranchMasterSaveReq;
 import com.maan.eway.master.res.BranchMasterRes;
 import com.maan.eway.master.service.BranchMasterService;
+import com.maan.eway.auth.dto.LoginBranchDetailsRes;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.BranchMasterRepository;
@@ -499,6 +501,70 @@ public List<BranchMasterRes> getActiveBranchDetails(BranchMasterGetAllReq req) {
 
 	}
 	return resList;
+}
+
+private List<LoginBranchDetailsRes> getBranchDetails(List<String> branches) {
+	List<LoginBranchDetailsRes> loginBranchDetails = new ArrayList<LoginBranchDetailsRes>();
+	try {
+		Date today = new Date();
+		Calendar cal = new GregorianCalendar();
+		cal.setTime(today);
+		cal.set(Calendar.HOUR_OF_DAY, 23);
+		cal.set(Calendar.MINUTE, 59);
+		today = cal.getTime();
+
+		
+		// Criteria
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<BranchMaster> query = cb.createQuery(BranchMaster.class);
+		List<BranchMaster> list = new ArrayList<BranchMaster>();
+
+		// Find All
+		Root<BranchMaster> b = query.from(BranchMaster.class);
+
+		// Select
+		query.select(b);
+
+		// Effective Date Max Filter
+		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Root<BranchMaster> ocpm1 = effectiveDate.from(BranchMaster.class);
+		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		Predicate a1 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , today);
+		effectiveDate.where(a1,a2);
+
+		// Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.asc(b.get("branchName")));
+		//In 
+		Expression<String>e0=b.get("branchCode");
+		
+		// Where
+		Predicate n1 = cb.equal(b.get("status"), "Y");
+		Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+		Predicate n3 = e0.in(branches) ;
+
+		query.where(n1, n2, n3).orderBy(orderList);
+
+		// Get Result
+		TypedQuery<BranchMaster> result = em.createQuery(query);
+		list = result.getResultList();
+		
+		for(BranchMaster data :  list) {
+			LoginBranchDetailsRes branchRes = new LoginBranchDetailsRes();
+			branchRes.setInsuranceId(data.getCompanyId());
+			branchRes.setBranchCode(data.getBranchCode());
+			branchRes.setRegionCode(data.getRegionCode());
+			branchRes.setBranchName(data.getBranchName());;
+			loginBranchDetails.add(branchRes);
+		}
+		
+	}catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is ---> " + e.getMessage());
+	}
+	return loginBranchDetails;
+	
 }
 
 }

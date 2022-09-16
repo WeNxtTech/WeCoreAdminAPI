@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -176,6 +177,141 @@ public class BasicLoginValidationService {
 		return errors;
 	}
 	
+	public Long getCountryCount(String countryId) {
+		Long countryCount = 0L ;
+		try {
+			Date today = new Date();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Long> query = cb.createQuery(Long.class);
+
+			// Find All
+			Root<CountryMaster> c = query.from(CountryMaster.class);
+			
+			// Country Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CountryMaster> ocpm1 = effectiveDate.from(CountryMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate c1 = cb.equal(ocpm1.get("countryId"), c.get("countryId"));
+			Predicate c2 = cb.equal(ocpm1.get("status"),c.get("status"));
+			Predicate c3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(c1,c2,c3);
+			
+			Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(c.get("countryId"), countryId);
+			Predicate n3 = cb.equal(c.get("status"), "Y");
+			
+			// Select
+			query.multiselect( cb.count(c) );
+			
+			query.where(n1,n2,n3);
+			// Get Result
+			TypedQuery<Long> result = em.createQuery(query);
+			List<Long> list = result.getResultList();
+			if( list.size()>0) {
+				countryCount = list.get(0);
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+		}
+		return countryCount;
+	}
+	
+	public Long getStateCount(String countryId, String stateId ) {
+		Long stateCount = 0L ;
+		try {
+			Date today = new Date();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Long> query = cb.createQuery(Long.class);
+
+			// Find All
+			Root<StateMaster> s = query.from(StateMaster.class);
+			
+			// State Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<StateMaster> ocpm1 = effectiveDate.from(StateMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate c1 = cb.equal(ocpm1.get("countryId"), s.get("countryId"));
+			Predicate c2 = cb.equal(ocpm1.get("status"),s.get("status"));
+			Predicate c3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate c4 = cb.equal(ocpm1.get("stateId"), s.get("stateId"));
+			effectiveDate.where(c1,c2,c3,c4);
+			
+			Predicate n1 = cb.equal(s.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(s.get("countryId"), countryId);
+			Predicate n3 = cb.equal(s.get("stateId"), stateId);
+			Predicate n4 = cb.equal(s.get("status"), "Y");
+			
+			// Select
+			query.multiselect( cb.count(s) );
+			
+			query.where(n1,n2,n3,n4);
+			// Get Result
+			TypedQuery<Long> result = em.createQuery(query);
+			List<Long> list = result.getResultList();
+			if( list.size()>0) {
+				stateCount = list.get(0);
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+		}
+		return stateCount;
+	}
+	
+	public Long getCityCount(String countryId, String stateId ,String cityId) {
+		Long cityCount = 0L ;
+		try {
+			Date today = new Date();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Long> query = cb.createQuery(Long.class);
+
+			// Find All
+			Root<CityMaster> c = query.from(CityMaster.class);
+			
+			// City Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CityMaster> ocpm1 = effectiveDate.from(CityMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate c1 = cb.equal(ocpm1.get("countryId"), c.get("countryId"));
+			Predicate c2 = cb.equal(ocpm1.get("status"),c.get("status"));
+			Predicate c3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate c4 = cb.equal(ocpm1.get("stateId"), c.get("stateId"));
+			Predicate c5 = cb.equal(ocpm1.get("cityId"), c.get("cityId"));
+			effectiveDate.where(c1,c2,c3,c4,c5);
+			
+			Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(c.get("countryId"), countryId);
+			Predicate n3 = cb.equal(c.get("stateId"), stateId);
+			Predicate n4 = cb.equal(c.get("cityId"), cityId );
+			Predicate n5 = cb.equal(c.get("status"), "Y");
+			
+			// Select
+			query.multiselect( cb.count(c) );
+			
+			query.where(n1,n2,n3,n4,n5);
+			// Get Result
+			TypedQuery<Long> result = em.createQuery(query);
+			List<Long> list = result.getResultList();
+			if( list.size()>0) {
+				cityCount = list.get(0);
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+		}
+		return cityCount;
+	}
+	
 	
 	public List<Error>  commonBrokerPersonalValidation(AdditionalInfoReq brokerReq ) {
 		List<Error> errors = new ArrayList<Error>();
@@ -281,7 +417,7 @@ public class BasicLoginValidationService {
 			} else if(! brokerReq.getCountryCode().matches("[0-9]+")  ) {
 				errors.add(new Error("18", "Country", "Plese Enter Valid Number In Country" ));
 			} else {
-				Long countryCount  = countryRepo.countByCountryIdAndStatusAndEffectiveDateStartLessThanEqual(Integer.valueOf(brokerReq.getCountryCode()),"Y", today );
+				Long countryCount  = getCountryCount(brokerReq.getCountryCode());// countryRepo.countByCountryIdAndStatusAndEffectiveDateStartLessThanEqual(Integer.valueOf(brokerReq.getCountryCode()),"Y", today );
 				if(countryCount <=0 ) {
 					errors.add(new Error("18", "Country", "Please Select Valid Country" ));
 				}
@@ -293,7 +429,7 @@ public class BasicLoginValidationService {
 				errors.add(new Error("18", "Country", "Plese Enter Valid Number In Country" ));
 			}else if(StringUtils.isNotBlank(brokerReq.getCountryCode()) &&   brokerReq.getCountryCode().matches("[0-9]+")  ){
 	
-				Long stateCount  = stateRepo.countByStateIdAndCountryIdAndStatusAndEffectiveDateStartLessThanEqual(Integer.valueOf(brokerReq.getStateCode()) , Integer.valueOf(brokerReq.getCountryCode()),"Y", today );
+				Long stateCount  = getStateCount( brokerReq.getCountryCode(),brokerReq.getStateCode() );//stateRepo.countByStateIdAndCountryIdAndStatusAndEffectiveDateStartLessThanEqual(Integer.valueOf(brokerReq.getStateCode()) , Integer.valueOf(brokerReq.getCountryCode()),"Y", today );
 				if(stateCount <=0 ) {
 					errors.add(new Error("18", "State", "Please Select Valid State" ));
 				}
@@ -305,12 +441,11 @@ public class BasicLoginValidationService {
 				errors.add(new Error("15", "City", "Plese Enter Valid Number In City" ));
 			}else if(StringUtils.isNotBlank(brokerReq.getCountryCode()) &&   brokerReq.getCountryCode().matches("[0-9]+")  ){
 	
-				Long cityCount  = cityRepo.countByCityIdAndStateIdAndCountryIdAndStatusAndEffectiveDateStartLessThanEqual(Integer.valueOf(brokerReq.getCityCode()) , Integer.valueOf(brokerReq.getStateCode()) , Integer.valueOf(brokerReq.getCountryCode()),"Y", today );
+				Long cityCount  = getCityCount(brokerReq.getCountryCode() , brokerReq.getStateCode() , brokerReq.getCityCode());//cityRepo.countByCityIdAndStateIdAndCountryIdAndStatusAndEffectiveDateStartLessThanEqual(Integer.valueOf(brokerReq.getCityCode()) , Integer.valueOf(brokerReq.getStateCode()) , Integer.valueOf(brokerReq.getCountryCode()),"Y", today );
 				if(cityCount  <=0 ) {
 					errors.add(new Error("18", "City", "Please Select Valid City" ));
 				}
 			} 
-			
 			
 			if(StringUtils.isBlank(brokerReq.getVatRegNo())  ) {
 				errors.add(new Error("29", "VatRegNo", "Plese Select Country" ));

@@ -27,14 +27,23 @@ public class UserPersonalInfoGetRes {
     @JsonProperty("Address3")
     private String    address3 ;
     
-    @JsonProperty("City")
-    private String    city ;
+    @JsonProperty("CityCode;")
+    private String    cityCode;
     
-    @JsonProperty("State")
-    private String    state ;
+    @JsonProperty("CityName")
+    private String    cityName ; 
     
-    @JsonProperty("Country")
-    private String    country ;
+    @JsonProperty("StateCode")
+    private String    stateCode;
+    
+    @JsonProperty("StateName")
+    private String    stateName ;
+    
+    @JsonProperty("CountryCode")
+    private String    countryCode;
+    
+    @JsonProperty("CountryName")
+    private String    countryName ;
     
     @JsonProperty("Pobox")
     private String    pobox ;
@@ -42,14 +51,8 @@ public class UserPersonalInfoGetRes {
     @JsonProperty("Fax")
     private String    fax ;
     
-    @JsonProperty("Emirate")
-    private String    emirate;
-    
     @JsonProperty("Remarks")
     private String    remarks ;
-    
-    @JsonProperty("CustomerId")
-    private String    customerId ;
     
     @JsonProperty("MissippiId")
     private String    missippiId ;
@@ -57,8 +60,8 @@ public class UserPersonalInfoGetRes {
     @JsonProperty("ApprovedPreparedBy")
     private String    approvedPreparedBy ;
     
-    @JsonProperty("RsaBrokerCode")
-    private String    rsaBrokerCode ;
+    @JsonProperty("CoreAppBrokerCode")
+    private String    coreAppBrokerCode ;
     
     @JsonProperty("AcExecutiveId")
     private String    acExecutiveId ;

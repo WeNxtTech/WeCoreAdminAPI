@@ -29,29 +29,32 @@ public class BrokerPersonalInfoReq {
     @JsonProperty("Address3")
     private String    address3 ;
     
-    @JsonProperty("CityCode")
-    private String    cityCode ;
+    @JsonProperty("CityCode;")
+    private String    cityCode;
+    
+    @JsonProperty("CityName")
+    private String    cityName ; 
     
     @JsonProperty("StateCode")
-    private String    stateCode ;
+    private String    stateCode;
+    
+    @JsonProperty("StateName")
+    private String    stateName ;
     
     @JsonProperty("CountryCode")
-    private String    countryCode ;
+    private String    countryCode;
+    
+    @JsonProperty("CountryName")
+    private String    countryName ;
     
     @JsonProperty("Pobox")
     private String    pobox ;
     
     @JsonProperty("Fax")
     private String    fax ;
-    
-    @JsonProperty("Emirate")
-    private String    emirate;
-    
+   
     @JsonProperty("Remarks")
     private String    remarks ;
-    
-    @JsonProperty("CustomerId")
-    private String    customerId ;
     
     @JsonProperty("MissippiId")
     private String    missippiId ;

@@ -205,7 +205,7 @@ public class InsuranceCompanyMasterController {
 				}
 			}
 
-			// Get By Broker Company Id
+	/*		// Get By Broker Company Id
 			
 			@PostMapping("/getbybrokercompanyid")
 			@ApiOperation("This Method is to get byBroker Company id")
@@ -247,5 +247,5 @@ public class InsuranceCompanyMasterController {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
 
-		}
+		}*/
 }

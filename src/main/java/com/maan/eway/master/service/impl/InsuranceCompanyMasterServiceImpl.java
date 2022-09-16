@@ -695,7 +695,7 @@ this.repository = repo;
 	}
 
 //_________________________________________________________________________________________________________
-	//GET BY ID
+/*	//GET BY ID
 	@Override
 	public InsuranceCompanyMasterRes getByBrokerCompanyId(InsuranceCompanyMasterGetReq req) {
 		InsuranceCompanyMasterRes res = new InsuranceCompanyMasterRes();
@@ -814,5 +814,5 @@ this.repository = repo;
 		return resList;
 	}
 
-
+*/
 }

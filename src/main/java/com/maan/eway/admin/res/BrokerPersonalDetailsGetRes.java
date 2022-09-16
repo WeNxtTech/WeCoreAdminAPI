@@ -27,23 +27,31 @@ public class BrokerPersonalDetailsGetRes {
     @JsonProperty("Address3")
     private String    address3 ;
     
-    @JsonProperty("City")
-    private String    city ;
     
-    @JsonProperty("State")
-    private String    state ;
+    @JsonProperty("CityCode;")
+    private String    cityCode;
     
-    @JsonProperty("Country")
-    private String    country ;
+    @JsonProperty("CityName")
+    private String    cityName ; 
+
+    
+    @JsonProperty("StateCode")
+    private String    stateCode;
+    
+    @JsonProperty("StateName")
+    private String    stateName ;
+    
+    @JsonProperty("CountryCode")
+    private String    countryCode;
+    
+    @JsonProperty("CountryName")
+    private String    countryName ;
     
     @JsonProperty("Pobox")
     private String    pobox ;
     
     @JsonProperty("Fax")
     private String    fax ;
-    
-    @JsonProperty("Emirate")
-    private String    emirate;
     
     @JsonProperty("Remarks")
     private String    remarks ;
@@ -57,8 +65,8 @@ public class BrokerPersonalDetailsGetRes {
     @JsonProperty("ApprovedPreparedBy")
     private String    approvedPreparedBy ;
     
-    @JsonProperty("RsaBrokerCode")
-    private String    rsaBrokerCode ;
+    @JsonProperty("CoreAppBrokerCode")
+    private String    CoreAppBrokerCode ;
     
     @JsonProperty("AcExecutiveId")
     private String    acExecutiveId ;

@@ -41,14 +41,8 @@ public class CoverMasterRes implements Serializable {
 	@JsonProperty("CoverId")
 	private Integer coverId;
 	
-	@JsonProperty("SectionId")
-	private Integer sectionId;
-	
 /*	@JsonProperty("LocationId")
 	private Integer locationId; */
-	
-	@JsonProperty("ProductId")
-	private Integer productId;
 	
 	@JsonProperty("InsuranceId")
 	private String companyId;

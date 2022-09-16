@@ -73,15 +73,13 @@ try {
 	}else if (req.getCoverName().length() > 100){
 		errorList.add(new Error("02","CoverName", "Please Enter Cover  Name within 100 Characters")); 
 	}else if (StringUtils.isBlank(req.getCoverId().toString())) {
-		Long CoverCount = repo.countByCoverNameAndProductIdAndCompanyIdAndSectionIdOrderByEntryDateDesc(req.getCoverName() , Integer.valueOf(req.getProductId()) , req.getCompanyId() , Integer.valueOf(req.getSectionId()) );
+		Long CoverCount = repo.countByCoverNameAndCompanyIdOrderByEntryDateDesc(req.getCoverName() ,  req.getCompanyId() );
 		if (CoverCount > 0 ) {
 			errorList.add(new Error("01", "Cover", "This Cover Alrady Exist "));
 		}
 	}
 
-	if (StringUtils.isBlank(req.getProductId().toString()) || req.getProductId() == null) {
-		errorList.add(new Error("03", "ProductId", "Please Enter Product Id "));
-	}
+	
 	// Date Validation 
 	Calendar cal = new GregorianCalendar();
 	Date today = new Date();
@@ -104,9 +102,7 @@ try {
 	if (StringUtils.isBlank(req.getCompanyId().toString()) || req.getCompanyId() == null) {
 		errorList.add(new Error("06", "CompanyId", "Please Enter Company Id "));
 	}
-	if (StringUtils.isBlank(req.getSectionId().toString()) || req.getSectionId() == null) {
-		errorList.add(new Error("07", "SectionId", "Please Enter Section Id "));
-	}
+	
 	
 	
 } catch (Exception e) {
@@ -141,7 +137,7 @@ try {
 	if (StringUtils.isBlank(req.getCoverId().toString())) {
 			// Save
 		    //Long totalCount = repo.count();
-			Long totalCount =getMasterTableCount(req.getSectionId() ,req.getProductId() , req.getCompanyId() );
+			Long totalCount =getMasterTableCount( req.getCompanyId() );
 			coverId = Long.valueOf(totalCount + 1).toString();
 			saveData.setCoverId(Integer.valueOf(coverId));
 			saveData.setCoverName(req.getCoverName());
@@ -218,7 +214,7 @@ try {
 return res;
 }
 
-public Long getMasterTableCount(String sectionId , String productId , String companyId) {
+public Long getMasterTableCount( String companyId) {
 
 Long data = 0L;
 try {
@@ -239,16 +235,12 @@ try {
 	Root<CoverMaster> ocpm1 = effectiveDate.from(CoverMaster.class);
 	effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 	Predicate a1 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
-	Predicate a2 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-	Predicate a3 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-	Predicate a4 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-	effectiveDate.where(a1,a2,a3,a4);
+	Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+	effectiveDate.where(a1,a2);
 
 	Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-	Predicate n2 = cb.equal(b.get("sectionId"), sectionId);
-	Predicate n3 = cb.equal(b.get("productId"), productId);
-	Predicate n4 = cb.equal(b.get("companyId"), companyId);
-	query.where(n1,n2,n3,n4);
+	Predicate n2 = cb.equal(b.get("companyId"), companyId);
+	query.where(n1,n2);
 	// Get Result
 	TypedQuery<Long> result = em.createQuery(query);
 	list = result.getResultList();
@@ -348,10 +340,9 @@ try {
 	Root<CoverMaster> ocpm1 = effectiveDate.from(CoverMaster.class);
 	effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 	javax.persistence.criteria.Predicate a1 = cb.equal(c.get("coverId"),ocpm1.get("coverId") );
-	javax.persistence.criteria.Predicate a3 = cb.equal(c.get("sectionId"),ocpm1.get("sectionId")) ;
-	javax.persistence.criteria.Predicate a4 = cb.equal(c.get("companyId"),ocpm1.get("companyId")) ;
-	javax.persistence.criteria.Predicate a5 = cb.equal(c.get("productId"),ocpm1.get("productId")) ;
-	effectiveDate.where(a1,a3,a4,a5);
+	javax.persistence.criteria.Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId")) ;
+	
+	effectiveDate.where(a1,a2);
 	
 	
 	
@@ -363,12 +354,11 @@ try {
 
 	javax.persistence.criteria.Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate);		
 	javax.persistence.criteria.Predicate n2 = cb.equal(c.get("coverId"),req.getCoverId()) ;
-	javax.persistence.criteria.Predicate n3 = cb.equal(c.get("sectionId"),req.getSectionId()) ;
-	javax.persistence.criteria.Predicate n4 = cb.equal(c.get("companyId"),req.getCompanyId()) ;
-	javax.persistence.criteria.Predicate n5 = cb.equal(c.get("productId"),req.getProductId()) ;
+	javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"),req.getCompanyId()) ;
+	
 
 
-	query.where(n1 ,n2,n3,n4,n5).orderBy(orderList);
+	query.where(n1 ,n2,n3).orderBy(orderList);
 	
 	// Get Result
 	TypedQuery<CoverMaster> result = em.createQuery(query);			

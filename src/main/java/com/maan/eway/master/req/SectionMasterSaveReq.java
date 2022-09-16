@@ -39,9 +39,6 @@ public class SectionMasterSaveReq implements Serializable {
   
 	@JsonProperty("SectionId")
     private String    sectionId    ;
-	
-	@JsonProperty("ProductId")
-    private String    productId    ;
 
 	@JsonProperty("InsuranceId")
 	private String companyId;

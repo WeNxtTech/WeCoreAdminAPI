@@ -32,10 +32,6 @@ public class CoverMasterId implements Serializable {
     //--- ENTITY KEY ATTRIBUTES 
     private Integer    coverId ;
     
-    private Integer    sectionId ;
-    
-    private Integer    productId ;
-    
     private String     companyId ;
     
     private Date       effectiveDateStart ;

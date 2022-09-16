@@ -76,15 +76,13 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			}else if (req.getSectionName().length() > 100){
 				errorList.add(new Error("02","SectionName", "Please Enter Section  Name within 100 Characters")); 
 			}else if (StringUtils.isBlank(req.getSectionId().toString())) {
-				Long SectionCount = repo.countBySectionNameAndCompanyIdAndProductIdOrderByEntryDateDesc(req.getSectionName(), req.getCompanyId(),Integer.valueOf(req.getProductId()));
+				Long SectionCount = repo.countBySectionNameAndCompanyIdOrderByEntryDateDesc(req.getSectionName(), req.getCompanyId());
 				if (SectionCount > 0 ) {
 					errorList.add(new Error("01", "Section", "This Section Alrady Exist "));
 				}
 			}
 	
-			if (StringUtils.isBlank(req.getProductId().toString()) || req.getProductId() == null) {
-				errorList.add(new Error("03", "ProductId", "Please Enter Product Id "));
-			}
+			
 			// Date Validation 
 			Calendar cal = new GregorianCalendar();
 			Date today = new Date();
@@ -141,7 +139,7 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			if (StringUtils.isBlank(req.getSectionId().toString())) {
 					// Save
 				    //Long totalCount = repo.count();
-					Long totalCount = getMasterTableCount( req.getProductId() , req.getCompanyId() );
+					Long totalCount = getMasterTableCount( req.getCompanyId() );
 					sectionId = Long.valueOf(totalCount + 1).toString();
 					saveData.setSectionId(Integer.valueOf(sectionId));
 					saveData.setSectionName(req.getSectionName());
@@ -218,7 +216,7 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 		return res;
 	}
 	
-	public Long getMasterTableCount(String productId , String companyId) {
+	public Long getMasterTableCount( String companyId) {
 	
 		Long data = 0L;
 		try {
@@ -239,15 +237,13 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			Root<SectionMaster> ocpm1 = effectiveDate.from(SectionMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-//			Predicate a2 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-			Predicate a3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			effectiveDate.where(a1,a3);
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			effectiveDate.where(a1,a2);
 	
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			Predicate n2 = cb.equal(b.get("productId"), productId);
-			Predicate n3 = cb.equal(b.get("companyId"), companyId);
+			Predicate n2 = cb.equal(b.get("companyId"), companyId);
 		
-			query.where(n1,n2,n3);
+			query.where(n1,n2);
 			// Get Result
 			TypedQuery<Long> result = em.createQuery(query);
 			list = result.getResultList();
@@ -347,9 +343,8 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			Root<SectionMaster> ocpm1 = effectiveDate.from(SectionMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("sectionId"),ocpm1.get("sectionId") );
-			javax.persistence.criteria.Predicate a2 = cb.equal(c.get("productId"),ocpm1.get("productId") ) ;
-			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("companyId"),ocpm1.get("companyId") ) ;
-			effectiveDate.where(a1,a2,a3);
+			javax.persistence.criteria.Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId") ) ;
+			effectiveDate.where(a1,a2);
 			
 			
 			
@@ -361,11 +356,10 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 		
 			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate);		
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("sectionId"),req.getSectionId()) ;
-			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("productId"),req.getProductId()) ;
-			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("companyId"),req.getInsuranceId()) ;
+			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"),req.getInsuranceId()) ;
 	
 	
-			query.where(n1 ,n2,n3,n4).orderBy(orderList);
+			query.where(n1 ,n2,n3).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<SectionMaster> result = em.createQuery(query);			

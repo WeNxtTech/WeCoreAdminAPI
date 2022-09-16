@@ -16,7 +16,7 @@ public class SubCoverMasterGetRes implements Serializable {
     @JsonProperty("SubCoverId")
     private Integer subCoverId;
     
-    @JsonProperty("CompanyId")
+    @JsonProperty("InsuranceId")
     private String companyId;
     
     @JsonProperty("SubCoverName")

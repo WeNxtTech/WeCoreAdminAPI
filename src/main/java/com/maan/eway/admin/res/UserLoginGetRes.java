@@ -56,4 +56,7 @@ public class UserLoginGetRes {
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("UpdatedBy")
     private String     updatedBy;
+	
+	@JsonProperty("BrokerCompanyYn")
+    private String    brokerCompanyYn ;
 }

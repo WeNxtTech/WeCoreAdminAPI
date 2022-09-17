@@ -11,6 +11,7 @@ import com.maan.eway.master.req.ProductSectionsGetReq;
 import com.maan.eway.master.req.SectionMasterGetAllReq;
 import com.maan.eway.master.req.SectionMasterGetReq;
 import com.maan.eway.master.req.SectionMasterSaveReq;
+import com.maan.eway.master.req.SubCoverGetAllReq;
 import com.maan.eway.master.req.SubCoverMasterGetReq;
 import com.maan.eway.master.req.SubCoverMasterSaveReq;
 import com.maan.eway.master.res.ProductSectionGetRes;
@@ -131,5 +132,25 @@ public class CoverSubCoverMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
+		
+		@PostMapping("/getallnonselectedcoversubcover")
+		@ApiOperation("This method is getall SubCover")
+		public ResponseEntity<CommonRes> getallNonSelectedSubCover(@RequestBody SubCoverGetAllReq req)
+		{
+			CommonRes data = new CommonRes();
+			
+			List<SubCoverMasterGetAllRes> res =service.getallNonSelectedSubCover(req);
+			data.setCommonResponse(res);
+			data.setErrorMessage(Collections.emptyList());
+			data.setIsError(false);
+			data.setMessage("Success");
+			
+			if(res!= null) {
+				return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
+			}
+			else {
+				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+			}
+		}
 		
 }

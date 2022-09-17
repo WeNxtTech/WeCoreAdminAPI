@@ -11,11 +11,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.admin.req.AttachBrokerBranchReq;
 import com.maan.eway.admin.req.AttachCompaniesReq;
 import com.maan.eway.admin.req.AttachIssuerBrannchReq;
 import com.maan.eway.admin.req.BrokerBranchGetReq;
+import com.maan.eway.admin.req.GetAllBrokerBranchReq;
+import com.maan.eway.admin.req.GetBrokerBranchReq;
 import com.maan.eway.admin.req.IssuerBranchGetReq;
 import com.maan.eway.admin.res.BrokerCompanyGetRes;
+import com.maan.eway.admin.res.GetBrokerBranchRes;
 import com.maan.eway.admin.res.IssuerCompanyGetRes;
 import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.admin.service.LoginBranchService;
@@ -143,4 +147,74 @@ public class LoginBranchController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	} 
+	
+	@PostMapping("/attachbrokercompanybranches")
+	@ApiOperation(value="This method is to Attach Broker Company Branches")
+	public ResponseEntity<CommonRes> attachBrokerCompanyBranch(@RequestBody  AttachBrokerBranchReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<Error> validation = validationService.validateBrokerCompanyBranchReq(req);
+		//// validation
+		if (validation != null && validation.size() != 0) 	{
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+		} else {
+			/////// save
+			LoginCreationRes res = entityService.attachBrokerCompanyBranch(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+
+	}
+	
+	@PostMapping("/getbrokercompanybranch")
+	@ApiOperation(value="This method is to Attach Broker Company Branches")
+	public ResponseEntity<CommonRes> getBrokerCompanyBranch(@RequestBody  GetBrokerBranchReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		
+		/////// save
+		GetBrokerBranchRes res = entityService.getBrokerCompanyBranch(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PostMapping("/getallbrokercompanybranch")
+	@ApiOperation(value="This method is to Attach Broker Company Branches")
+	public ResponseEntity<CommonRes> getallBrokerCompanyBranch(@RequestBody  GetAllBrokerBranchReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		
+		/////// save
+		List<GetBrokerBranchRes> res = entityService.getallBrokerCompanyBranch(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	
 }

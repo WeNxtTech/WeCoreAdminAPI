@@ -37,6 +37,7 @@ import com.google.gson.Gson;
 import com.maan.eway.master.req.BranchMasterGetAllReq;
 import com.maan.eway.master.req.BranchMasterGetReq;
 import com.maan.eway.master.req.BranchMasterSaveReq;
+import com.maan.eway.master.req.CompanyBranchReq;
 import com.maan.eway.master.res.BranchMasterRes;
 import com.maan.eway.master.service.BranchMasterService;
 import com.maan.eway.auth.dto.LoginBranchDetailsRes;
@@ -565,6 +566,69 @@ private List<LoginBranchDetailsRes> getBranchDetails(List<String> branches) {
 	}
 	return loginBranchDetails;
 	
+}
+
+
+@Override
+public List<DropDownRes> getCompanyBranchMasterDropdown(CompanyBranchReq req) {
+	List<DropDownRes> resList = new ArrayList<DropDownRes>();
+	try {
+		Date today  = new Date();
+		Calendar cal = new GregorianCalendar(); 
+		cal.setTime(today);
+		cal.set(Calendar.HOUR_OF_DAY, 23);
+		cal.set(Calendar.MINUTE, 1);
+		today   = cal.getTime();
+		
+		// Criteria
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<BranchMaster> query = cb.createQuery(BranchMaster.class);
+		List<BranchMaster> list = new ArrayList<BranchMaster>();
+		
+		// Find All
+		Root<BranchMaster>    c = query.from(BranchMaster.class);		
+		
+		// Select
+		query.select(c );
+		
+	
+		// Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.asc(c.get("branchName")));
+		
+		// Effective Date Max Filter
+		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Root<BranchMaster> ocpm1 = effectiveDate.from(BranchMaster.class);
+		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		javax.persistence.criteria.Predicate a1 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode") );
+		javax.persistence.criteria.Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
+		javax.persistence.criteria.Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+		effectiveDate.where(a1,a2,a3);
+		
+	    // Where	
+		javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
+		javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+		javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"),req.getInsuranceId() );
+		
+		query.where(n1,n2,n3).orderBy(orderList);
+		
+		// Get Result
+		TypedQuery<BranchMaster> result = em.createQuery(query);			
+		list =  result.getResultList();  
+		
+		for(BranchMaster data : list ) {
+			// Response
+			DropDownRes res = new DropDownRes();
+			res.setCode(data.getBranchCode().toString());
+			res.setCodeDesc(data.getBranchName());
+			resList.add(res);
+		}		
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is ---> " + e.getMessage());
+		return null;
+	}
+	return resList;
 }
 
 }

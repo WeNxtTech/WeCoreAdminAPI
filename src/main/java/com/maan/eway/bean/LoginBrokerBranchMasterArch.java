@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -43,8 +42,7 @@ import javax.persistence.*;
 @DynamicInsert
 @DynamicUpdate
 @Builder
-@IdClass(LoginBrokerBranchMasterId.class)
-@Table(name="login_broker_branch_master")
+@Table(name="login_broker_branch_master_arch")
 
 
 public class LoginBrokerBranchMasterArch implements Serializable {
@@ -52,27 +50,30 @@ public class LoginBrokerBranchMasterArch implements Serializable {
 private static final long serialVersionUID = 1L;
  
     //--- ENTITY PRIMARY KEY 
-    @Id
+	@Id
+	@Column(name="ARCH_ID", length=20)
+	private String   archId ;
+
     @Column(name="LOGIN_ID", nullable=false, length=50)
     private String     loginId ;
 
-    @Id
+   
     @Column(name="BRANCH_CODE", nullable=false, length=20)
     private String     branchCode ;
 
-    @Id
+    
     @Column(name="COMPANY_ID", nullable=false, length=20)
     private String     companyId ;
 
     //--- ENTITY DATA FIELDS 
-    @Column(name="ARCH_ID", length=20)
-    private String   archId ;
+   
     
     @Column(name="AGENCY_CODE")
     private Integer     agencyCode ;
 
-    @Column(name="BROKER_ATTACHED_COMAPNY", length=300)
-    private String     brokerAttachedComapny ;
+    @Column(name="BROKER_ATTACHED_COMPANY", length=300)
+    private String     brokerAttachedCompany ;
+    
     
     @Column(name="ATTACHED_BRANCH", length=300)
     private String     attachedBranch ;

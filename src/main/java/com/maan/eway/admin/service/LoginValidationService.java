@@ -2,6 +2,7 @@ package com.maan.eway.admin.service;
 
 import java.util.List;
 
+import com.maan.eway.admin.req.AttachBrokerBranchReq;
 import com.maan.eway.admin.req.AttachCompaniesReq;
 import com.maan.eway.admin.req.AttachCompnayProductRequest;
 import com.maan.eway.admin.req.AttachIssuerBrannchReq;
@@ -29,6 +30,7 @@ List<Error> validateBrokerBranchReq(AttachCompaniesReq req);
 List<Error> validateBrokerProductReq(AttachCompnayProductRequest req);
 List<Error> validateIssuerBranchReq(AttachIssuerBrannchReq req);
 List<Error> validateIssuerReferalReq(AttachIssuerReferalReq req);
+List<Error> validateBrokerCompanyBranchReq(AttachBrokerBranchReq req);
 
 
 }

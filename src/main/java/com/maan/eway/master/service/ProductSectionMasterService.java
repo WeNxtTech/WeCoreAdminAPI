@@ -33,5 +33,7 @@ public interface ProductSectionMasterService  {
 
 	List<ProductSectionGetRes> getProductSections(ProductSectionsGetReq req);
 
+	List<SectionMasterRes> getallNonSelectedSections(SectionMasterGetAllReq req);
+
 
 }

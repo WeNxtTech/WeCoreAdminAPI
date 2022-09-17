@@ -9,6 +9,7 @@ import java.util.List;
 import com.maan.eway.master.req.InsuranceCompanyMasterGetAllReq;
 import com.maan.eway.master.req.InsuranceCompanyMasterGetReq;
 import com.maan.eway.master.req.InsuranceCompanyMasterSaveReq;
+import com.maan.eway.master.res.BrokerCompanyRes;
 import com.maan.eway.master.res.InsuranceCompanyMasterRes;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.error.Error;
@@ -31,7 +32,7 @@ List<InsuranceCompanyMasterRes> getallInsCompanyDetails(InsuranceCompanyMasterGe
 List<InsuranceCompanyMasterRes> getActiveInsCompanyDetails(InsuranceCompanyMasterGetAllReq req);
 InsuranceCompanyMasterRes getByCompanyId(InsuranceCompanyMasterGetReq req);
 List<DropDownRes> getInscompanyMasterDropdown();
-List<InsuranceCompanyMasterRes> getallbrokerCompanyDetails(InsuranceCompanyMasterGetAllReq req);
+List<BrokerCompanyRes> getallbrokerCompanyDetails(InsuranceCompanyMasterGetAllReq req);
 
 
 }

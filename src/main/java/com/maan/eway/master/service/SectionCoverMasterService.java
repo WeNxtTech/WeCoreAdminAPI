@@ -28,5 +28,7 @@ public interface SectionCoverMasterService  {
 
 	CoverMasterRes getByCoverId(CoverMasterGetReq req);
 
+	List<CoverMasterRes> getallNonSelectedCovers(CoverMasterGetAllReq req);
+
 
 }

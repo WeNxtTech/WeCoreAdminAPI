@@ -1,5 +1,6 @@
 package com.maan.eway.admin.service.impl;
 
+import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,20 +26,26 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
+import com.maan.eway.admin.req.AttachBrokerBranchReq;
 import com.maan.eway.admin.req.AttachCompaniesReq;
 import com.maan.eway.admin.req.AttachIssuerBrannchReq;
 import com.maan.eway.admin.req.AttacheIssuerBranchReq;
 import com.maan.eway.admin.req.AttachedBranchesReq;
 import com.maan.eway.admin.req.BrokerBranchGetReq;
 import com.maan.eway.admin.req.BrokerBranchesReq;
+import com.maan.eway.admin.req.GetAllBrokerBranchReq;
+import com.maan.eway.admin.req.GetBrokerBranchReq;
 import com.maan.eway.admin.req.IssuerBranchGetReq;
 import com.maan.eway.admin.res.BranchCriteriaRes;
 import com.maan.eway.admin.res.BrokerBranchGetRes;
 import com.maan.eway.admin.res.BrokerCompanyGetRes;
+import com.maan.eway.admin.res.GetBrokerBranchRes;
 import com.maan.eway.admin.res.IssuerBranchGetRes;
 import com.maan.eway.admin.res.IssuerCompanyGetRes;
 import com.maan.eway.admin.res.LoginCreationRes;
@@ -429,6 +436,91 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 			return null;
 		}
 		return list  ; 
+	}
+
+	@Override
+	public LoginCreationRes attachBrokerCompanyBranch(AttachBrokerBranchReq req) {
+		LoginCreationRes res = new LoginCreationRes();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+		SimpleDateFormat idf = new SimpleDateFormat("yyMMddhhssmmss"); 
+		try {
+			// Login Data 
+			LoginMaster loginData = loginRepo.findByLoginId(req.getLoginId());
+			
+			// Find Data 
+			LoginBrokerBranchMaster findBranch = loginBrokerRepo.findByLoginIdAndBranchCodeAndCompanyId(req.getLoginId() , req.getBranchCode() , req.getCompanyId());
+			
+			LoginBrokerBranchMaster save = dozerMapper.map(req, LoginBrokerBranchMaster.class )  ;
+			if(findBranch !=null  ) {
+				//Delete Old Record
+				loginBrokerRepo.delete(findBranch);
+				// Save in Arch tables
+				String archId = "AI-" + idf.format(new Date());
+				LoginBrokerBranchMasterArch  loginArch = dozerMapper.map(findBranch, LoginBrokerBranchMasterArch.class )  ;
+				loginArch.setArchId(archId);
+				loginBrokerArchRepo.saveAndFlush(loginArch);
+				
+				save.setEntryDate(findBranch.getEntryDate() );
+				save.setCreatedBy(findBranch.getCreatedBy());
+				save.setUpdatedBy(req.getCreatedBy());
+				save.setUpdatedDate(new Date());
+			} else {
+				save.setEntryDate(new Date());
+				save.setCreatedBy(req.getCreatedBy());
+				save.setUpdatedBy(req.getCreatedBy());
+				save.setUpdatedDate(new Date());
+			}
+			
+			save.setOaCode(loginData.getOaCode());
+			save.setAgencyCode(Integer.valueOf(loginData.getAgencyCode()));	
+			loginBrokerRepo.save(save);
+			
+			
+			log.info( "Login Master Updated Details ---> " + json.toJson(save) );
+			res.setResponse("Branch Added Successfully");
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+
+	@Override
+	public GetBrokerBranchRes getBrokerCompanyBranch(GetBrokerBranchReq req) {
+		GetBrokerBranchRes res = new GetBrokerBranchRes();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+		SimpleDateFormat idf = new SimpleDateFormat("yyMMddhhssmmss"); 
+		try {
+			// Find Data 
+			LoginBrokerBranchMaster findBranch = loginBrokerRepo.findByLoginIdAndBranchCodeAndCompanyId(req.getLoginId() , req.getBranchCode() , req.getInsuranceId());
+			res = dozerMapper.map(findBranch, GetBrokerBranchRes.class);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+
+	@Override
+	public List<GetBrokerBranchRes> getallBrokerCompanyBranch(GetAllBrokerBranchReq req) {
+		List<GetBrokerBranchRes> resList = new ArrayList<GetBrokerBranchRes>();
+		ModelMapper mapper = new  ModelMapper();
+		SimpleDateFormat idf = new SimpleDateFormat("yyMMddhhssmmss"); 
+		try {
+			// Find Data 
+			List<LoginBrokerBranchMaster> findBranches = loginBrokerRepo.findByLoginIdOrderByUpdatedDateDesc(req.getLoginId() );
+			Type listType = new TypeToken<List<GetBrokerBranchRes>>(){}.getType();
+			resList = mapper.map(findBranches ,listType);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return resList;
 	}
 
 	

@@ -35,6 +35,7 @@ import com.google.gson.Gson;
 import com.maan.eway.master.req.InsuranceCompanyMasterGetAllReq;
 import com.maan.eway.master.req.InsuranceCompanyMasterGetReq;
 import com.maan.eway.master.req.InsuranceCompanyMasterSaveReq;
+import com.maan.eway.master.res.BrokerCompanyRes;
 import com.maan.eway.master.res.InsuranceCompanyMasterRes;
 import com.maan.eway.master.service.InsuranceCompanyMasterService;
 import com.maan.eway.bean.BranchMaster;
@@ -607,9 +608,10 @@ this.repository = repo;
 			
 		    // Where	
 			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
-			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			javax.persistence.criteria.Predicate n2 = cb.notEqual(c.get("brokerYn"), "Y");
+			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			
-			query.where(n1,n2).orderBy(orderList);
+			query.where(n1,n2,n3).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<InsuranceCompanyMaster> result = em.createQuery(query);			
@@ -633,8 +635,8 @@ this.repository = repo;
 
 	//GET ALL BROKER COMPANY 
 	@Override
-	public List<InsuranceCompanyMasterRes> getallbrokerCompanyDetails(InsuranceCompanyMasterGetAllReq req) {
-		List<InsuranceCompanyMasterRes> resList = new ArrayList<InsuranceCompanyMasterRes>();
+	public List<BrokerCompanyRes> getallbrokerCompanyDetails(InsuranceCompanyMasterGetAllReq req) {
+		List<BrokerCompanyRes> resList = new ArrayList<BrokerCompanyRes>();
 		ModelMapper mapper = new ModelMapper();
 		try {
 			List<InsuranceCompanyMaster> companyList = new ArrayList<InsuranceCompanyMaster>();
@@ -660,7 +662,7 @@ this.repository = repo;
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("companyName")));
+			orderList.add(cb.desc(b.get("entryDate")));
 			
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
@@ -677,9 +679,9 @@ this.repository = repo;
 			
 			// Map
 			for (InsuranceCompanyMaster data : companyList) {
-				InsuranceCompanyMasterRes res = new InsuranceCompanyMasterRes();
+				BrokerCompanyRes res = new BrokerCompanyRes();
 
-				res = mapper.map(data, InsuranceCompanyMasterRes.class);
+				res = mapper.map(data, BrokerCompanyRes.class);
 				mapper.getConfiguration().setAmbiguityIgnored(true);
 				resList.add(res);
 			}

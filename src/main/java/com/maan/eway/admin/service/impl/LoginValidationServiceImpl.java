@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.maan.eway.admin.req.AdditionalInfoReq;
+import com.maan.eway.admin.req.AttachBrokerBranchReq;
 import com.maan.eway.admin.req.AttachCompaniesReq;
 import com.maan.eway.admin.req.AttachCompnayProductRequest;
 import com.maan.eway.admin.req.AttachIssuerBrannchReq;
@@ -380,6 +381,40 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 		}
 		return errors;
 	}
+
+
+@Override
+public List<Error> validateBrokerCompanyBranchReq(AttachBrokerBranchReq req) {
+	List<Error> errors = new ArrayList<Error>();
+	try {
+		//Referal Validation
+		if(StringUtils.isBlank(req.getLoginId()) ) {
+			errors.add(new Error("01", "LoginId", "Plese Enter LoginId" ));
+		}
+		
+		if(StringUtils.isBlank(req.getCompanyId()) ) {
+			errors.add(new Error("02", "InsuranceId", "Plese Enter InsuranceId" ));
+		}
+		if(StringUtils.isBlank(req.getBranchCode()) ) {
+			errors.add(new Error("03", "BranchCode", "Plese Enter BranchCode" ));
+		}
+		if(StringUtils.isBlank(req.getAttachedBranch()) ) {
+			errors.add(new Error("03", "AttachedBranchCode", "Plese Enter AttachedBranchCode" ));
+		}
+		if(StringUtils.isBlank(req.getBrokerAttachedCompany()) ) {
+			errors.add(new Error("03", "AttachedComapany", "Plese Enter AttachedComapany" ));
+		}
+		
+	
+		
+		
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is --->" + e.getMessage());
+		errors.add(new Error("09", "Common Error", e.getMessage() ));
+	}
+	return errors;
+}
 	
 
 

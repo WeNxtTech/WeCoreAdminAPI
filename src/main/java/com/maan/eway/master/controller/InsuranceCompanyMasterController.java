@@ -23,6 +23,7 @@ import com.maan.eway.master.req.InsuranceCompanyMasterGetAllReq;
 import com.maan.eway.master.req.InsuranceCompanyMasterGetReq;
 import com.maan.eway.master.req.InsuranceCompanyMasterSaveReq;
 import com.maan.eway.master.res.BankMasterRes;
+import com.maan.eway.master.res.BrokerCompanyRes;
 import com.maan.eway.master.res.InsuranceCompanyMasterRes;
 import com.maan.eway.master.service.InsuranceCompanyMasterService;
 import com.maan.eway.bean.InsuranceCompanyMaster;
@@ -159,7 +160,7 @@ public class InsuranceCompanyMasterController {
 	}
 		
 		// Insurance Company Master Drop Down Type
-		@GetMapping("/dropdown/inscompanymaster")
+		@GetMapping("/dropdown/company")
 		@ApiOperation(value = "This method is get Company Master Drop Down")
 
 		public ResponseEntity<CommonRes> getInscompanyMasterDropdown() {
@@ -191,7 +192,7 @@ public class InsuranceCompanyMasterController {
 				CommonRes data = new CommonRes();
 				reqPrinter.reqPrint(req);
 				
-				List<InsuranceCompanyMasterRes> res = insService.getallbrokerCompanyDetails(req);
+				List<BrokerCompanyRes> res = insService.getallbrokerCompanyDetails(req);
 				data.setCommonResponse(res);
 				data.setErrorMessage(Collections.emptyList());
 				data.setIsError(false);

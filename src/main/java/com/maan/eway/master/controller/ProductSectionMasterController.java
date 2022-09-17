@@ -171,6 +171,26 @@ public class ProductSectionMasterController {
 			}
 		}
 
+		@PostMapping("/getallnonselectedsections")
+		@ApiOperation("This method is getall Section Details")
+		public ResponseEntity<CommonRes> getallNonSelectedSections(@RequestBody SectionMasterGetAllReq req)
+		{
+			CommonRes data = new CommonRes();
+			reqPrinter.reqPrint(req);
+			
+			List<SectionMasterRes> res = sectionService.getallNonSelectedSections(req);
+			data.setCommonResponse(res);
+			data.setErrorMessage(Collections.emptyList());
+			data.setIsError(false);
+			data.setMessage("Success");
+			
+			if(res!= null) {
+				return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
+			}
+			else {
+				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+			}
+		}
 
 
 }

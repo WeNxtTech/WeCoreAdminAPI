@@ -68,8 +68,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="AGENCY_CODE")
     private Integer     agencyCode ;
 
-    @Column(name="BROKER_ATTACHED_COMAPNY", length=300)
-    private String     brokerAttachedComapny ;
+    @Column(name="BROKER_ATTACHED_COMPANY", length=300)
+    private String     brokerAttachedCompany ;
     
     @Column(name="ATTACHED_BRANCH", length=300)
     private String     attachedBranch ;
@@ -94,6 +94,25 @@ private static final long serialVersionUID = 1L;
     @Column(name="ENTRY_DATE")
     private Date       entryDate ;
 
+    @Column(name="BRANCH_NAME", length=100)
+    private String     branchName ;
+    
+    @Column(name="ADDRESS1", length=100)
+    private String     address1 ;
+    
+    @Column(name="ADDRESS2", length=100)
+    private String     address2 ;
+    
+    @Column(name="EMAIL", length=100)
+    private String     email ;
+    
+    @Column(name="MOBILE", length=100)
+    private String     mobile ;
+    
+    @Column(name="CORE_APP_CODE", length=100)
+    private String     coreAppCode ;
+	
+	
 
 }
 

@@ -57,5 +57,8 @@ public class LoginUserGridRes {
 	
 	@JsonProperty("SubUserType")
 	private String subUserType;
+	
+	@JsonProperty("BrokerCompanyYn")
+    private String    brokerCompanyYn ;
 
 }

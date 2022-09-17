@@ -1,17 +1,12 @@
 package com.maan.eway.master.req;
 
-import java.io.Serializable;
-import java.util.Date;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
 
 @Data
-public class SubCoverMasterGetReq implements Serializable {
+public class SubCoverGetAllReq {
 
-    private static final long serialVersionUID = 1L;
 
 	@JsonProperty("CoverId")
     private String coverId; 
@@ -21,8 +16,16 @@ public class SubCoverMasterGetReq implements Serializable {
 	
 	@JsonProperty("ProductId")
     private String productId; 
+	
+	@JsonProperty("SectionId")
+    private String sectionId; 
 
 	@JsonProperty("InsuranceId")
-    private String companyId;
-    
+    private String insuranceId;
+	
+	@JsonProperty("Limit")
+    private String limit;
+	
+	@JsonProperty("Offset")
+    private String offset;
 }

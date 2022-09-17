@@ -40,6 +40,9 @@ public class SectionMasterRes implements Serializable {
 	@JsonProperty("SectionId")
     private Integer    sectionId    ;
 	
+	@JsonProperty("ProductId")
+    private Integer    productId    ;
+	
 	@JsonProperty("InsuranceId")
     private String     companyId    ;
 	
@@ -63,9 +66,6 @@ public class SectionMasterRes implements Serializable {
 
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
-
-	@JsonProperty("AmendId")
-	private Integer amendId;
 
 	@JsonProperty("Remarks")
 	private String remarks;

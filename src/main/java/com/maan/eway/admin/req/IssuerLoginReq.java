@@ -36,4 +36,6 @@ public class IssuerLoginReq {
     private String     createdBy    ;
 	@JsonProperty("Status")
     private String     status       ;
+	@JsonProperty("BrokerCompanyYn")
+    private String    brokerCompanyYn ;
 }

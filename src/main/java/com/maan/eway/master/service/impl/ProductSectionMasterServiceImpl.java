@@ -79,7 +79,7 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 		
 			Long row = 0L ;
 			for (ProductSectionMasterReq req : reqList) {
-				
+				row = row + 1 ;
 				if (StringUtils.isBlank(req.getSectionName()) || req.getSectionName() == null) {
 					errorList.add(new Error("02", "SectionName", "Please Select Section  Name in  Row No : " + row));
 				}else if (req.getSectionName().length() > 100){

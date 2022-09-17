@@ -139,13 +139,14 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 		try {
 			for (SectionCoverMasterSaveReq req : reqList) {
 				Calendar cal = new GregorianCalendar();
-				cal.setTime(req.getEffectiveDate());cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 59);
-				Date startDate = cal.getTime();
+				cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
+				Date startDate = cal.getTime() ;
 				Date today = new Date();
-				cal.setTime(req.getEffectiveDate());
-				cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, today.getHours());cal.set(Calendar.MINUTE, today.getMinutes());cal.set(Calendar.SECOND, today.getSeconds());
-				Date oldEndDate = cal.getTime();
-				cal.setTime(req.getEffectiveDate());cal.set(Calendar.HOUR_OF_DAY, today.getHours());cal.set(Calendar.MINUTE, today.getMinutes());cal.set(Calendar.SECOND, today.getSeconds());
+				cal.setTime(req.getEffectiveDate());  cal.add(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
+				cal.set(Calendar.SECOND, today.getSeconds());
+				Date oldEndDate = cal.getTime() ;
+				cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
+				cal.set(Calendar.SECOND, today.getSeconds());
 				Date effDate = cal.getTime();
 				Date endDate = sdformat.parse("12/12/2050");
 
@@ -170,8 +171,11 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 				Predicate a1 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
 				Predicate a2 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-				Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
-				effectiveDate.where(a1, a2,a3);
+				Predicate a3 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
+				Predicate a4 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+				Predicate a5 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+				Predicate a6 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
+				effectiveDate.where(a1, a2,a3,a4,a5,a6);
 
 				// Order By
 				// List<Order> orderList = new ArrayList<Order>();
@@ -181,8 +185,11 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				Predicate n1 = cb.equal(b.get("status"), "Y");
 				Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 				Predicate n3 = cb.equal(b.get("coverId"), req.getCoverId());
+				Predicate n4 = cb.equal(b.get("sectionId"), req.getSectionId());
+				Predicate n5 = cb.equal(b.get("productId"), req.getProductId());
+				Predicate n6 = cb.equal(b.get("companyId"), req.getCompanyId());
 
-				query.where(n1, n2, n3);
+				query.where(n1, n2, n3,n4,n5,n6);
 
 				// Get Result
 				TypedQuery<SectionCoverMaster> result = em.createQuery(query);
@@ -191,7 +198,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				if (list.size() > 0) {
 					repo.delete(list.get(0));
 				}
-				res.setResponse("Updated Successfully ");
+				res.setResponse("Cover Added Successfully ");
 				res.setSuccessId(coverId);
 
 				dozerMapper.map(req, saveData);
@@ -352,11 +359,10 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 		List<CoverMasterRes> resList = new ArrayList<CoverMasterRes>();
 		ModelMapper mapper = new ModelMapper();
 		try {
-			List<SectionCoverMaster> list = new ArrayList<SectionCoverMaster>();
-
+			List<SectionCoverMaster> coverList = new ArrayList<SectionCoverMaster>();
 			// Pagination
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 10 : Integer.valueOf(req.getOffset());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -375,29 +381,27 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate a1 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
 			Predicate a2 = cb.equal(b.get("productId"), ocpm1.get("productId"));
 			Predicate a3 = cb.equal(b.get("companyId"), ocpm1.get("companyId"));
-
-			effectiveDate.where(a1);
+			effectiveDate.where(a1, a2, a3);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("coverName")));
+			orderList.add(cb.asc(b.get("sectionId")));
 
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			Predicate n2 = cb.equal(b.get("productId"), ocpm1.get("productId"));
-			Predicate n3 = cb.equal(b.get("companyId"), ocpm1.get("companyId"));
-			Predicate n4 = cb.equal(b.get("status"), "Y");
-
-			query.where(n1, n2, n3, n4).orderBy(orderList);
+			Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
+			Predicate n3 = cb.equal(b.get("companyId"), req.getInsuranceId());
+			Predicate n4 = cb.equal(b.get("status"),"Y");
+			query.where(n1, n2, n3,n4).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<SectionCoverMaster> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
-			list = result.getResultList();
+			coverList = result.getResultList();
 
 			// Map
-			for (SectionCoverMaster data : list) {
+			for (SectionCoverMaster data : coverList) {
 				CoverMasterRes res = new CoverMasterRes();
 
 				res = mapper.map(data, CoverMasterRes.class);
@@ -413,7 +417,6 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 
 		}
 		return resList;
-
 	}
 	
 	@Override

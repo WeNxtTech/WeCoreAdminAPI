@@ -1,9 +1,7 @@
 package com.maan.eway.master.req;
 
 import java.io.Serializable;
-import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
@@ -30,7 +28,4 @@ public class CoverMasterGetAllReq implements Serializable {
     private String sectionId;
 
    
-    @JsonProperty("SectionId")
-    private String sectionId;
-
 }

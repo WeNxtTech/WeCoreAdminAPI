@@ -45,7 +45,7 @@ import javax.persistence.*;
 @DynamicUpdate
 @Builder
 @IdClass(CoverSubCoverMasterId.class)
-@Table(name="sub_cover_master")
+@Table(name="cover_sub_cover_master")
 
 
 public class CoverSubCoverMaster implements Serializable {

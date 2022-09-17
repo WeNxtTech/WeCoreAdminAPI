@@ -43,6 +43,7 @@ import com.maan.eway.master.req.SubCoverMasterGetReq;
 import com.maan.eway.master.res.CoverMasterRes;
 import com.maan.eway.master.res.SubCoverMasterGetAllRes;
 import com.maan.eway.master.res.SubCoverMasterGetRes;
+import com.maan.eway.master.res.SubCoverMasterRes;
 import com.maan.eway.master.service.CoverSubCoverMasterService;
 import com.maan.eway.repository.CoverSubCoverMasterRepository;
 import com.maan.eway.res.SuccessRes;
@@ -139,12 +140,12 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 				Date effDate = cal.getTime();
 				Date endDate = sdformat.parse("12/12/2050");
 
-				String coverId = "";
+				String subCoverId = "";
 
 				// Update
 				// Get Less than Equal Today Record
 				// Criteria
-				coverId = req.getSubCoverId().toString();
+				subCoverId = req.getSubCoverId().toString();
 				CriteriaBuilder cb = em.getCriteriaBuilder();
 				CriteriaQuery<CoverSubCoverMaster> query = cb.createQuery(CoverSubCoverMaster.class);
 
@@ -159,9 +160,12 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 				Root<CoverSubCoverMaster> ocpm1 = effectiveDate.from(CoverSubCoverMaster.class);
 				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 				Predicate a1 = cb.equal(ocpm1.get("subCoverId"), b.get("subCoverId"));
-				Predicate a2 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-				Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
-				effectiveDate.where(a1, a2,a3);
+				Predicate a2 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
+				Predicate a3 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
+				Predicate a4 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+				Predicate a5 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+				Predicate a6 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
+				effectiveDate.where(a1, a2,a3,a4,a5,a6);
 
 				// Order By
 				// List<Order> orderList = new ArrayList<Order>();
@@ -170,9 +174,13 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 				// Where
 				Predicate n1 = cb.equal(b.get("status"), "Y");
 				Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-				Predicate n3 = cb.equal(b.get("coverId"), req.getCoverId());
+				Predicate n3 = cb.equal(b.get("subCoverId"), req.getSubCoverId());
+				Predicate n4 = cb.equal(b.get("coverId"), req.getCoverId());
+				Predicate n5 = cb.equal(b.get("sectionId"), req.getSectionId());
+				Predicate n6 = cb.equal(b.get("productId"), req.getProductId());
+				Predicate n7 = cb.equal(b.get("companyId"), req.getCompanyId());
 
-				query.where(n1, n2, n3);
+				query.where(n1, n2, n3,n4,n5,n6,n7);
 
 				// Get Result
 				TypedQuery<CoverSubCoverMaster> result = em.createQuery(query);
@@ -181,11 +189,11 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 				if (list.size() > 0) {
 					repo.delete(list.get(0));
 				}
-				res.setResponse("Updated Successfully ");
-				res.setSuccessId(coverId);
+				res.setResponse("Sub Cover Added Successfully");
+				res.setSuccessId(subCoverId);
 
 				dozerMapper.map(req, saveData);
-				saveData.setCoverId(Integer.valueOf(coverId));
+				saveData.setCoverId(Integer.valueOf(subCoverId));
 				saveData.setSubCoverName(req.getSubCoverName());
 				saveData.setEffectiveDateStart(effDate);
 				saveData.setEffectiveDateEnd(endDate);
@@ -211,8 +219,8 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 	}
 
 	@Override
-	public List<CoverMasterRes> getallCoverSubCoverDetails(SubCoverMasterGetAllReq req) {
-		List<CoverMasterRes> resList = new ArrayList<CoverMasterRes>();
+	public List<SubCoverMasterRes> getallCoverSubCoverDetails(SubCoverMasterGetAllReq req) {
+		List<SubCoverMasterRes> resList = new ArrayList<SubCoverMasterRes>();
 		ModelMapper mapper = new ModelMapper();
 		try {
 			List<CoverSubCoverMaster> coverList = new ArrayList<CoverSubCoverMaster>();
@@ -235,9 +243,10 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			Root<CoverSubCoverMaster> ocpm1 = effectiveDate.from(CoverSubCoverMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("subCoverId"), b.get("subCoverId"));
-			Predicate a2 = cb.equal(b.get("productId"), ocpm1.get("productId"));
-			Predicate a3 = cb.equal(b.get("companyId"), ocpm1.get("companyId"));
-			effectiveDate.where(a1, a2, a3);
+			Predicate a2 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
+			Predicate a3 = cb.equal(b.get("productId"), ocpm1.get("productId"));
+			Predicate a4 = cb.equal(b.get("companyId"), ocpm1.get("companyId"));
+			effectiveDate.where(a1, a2, a3,a4);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -257,9 +266,9 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 
 			// Map
 			for (CoverSubCoverMaster data : coverList) {
-				CoverMasterRes res = new CoverMasterRes();
+				SubCoverMasterRes res = new SubCoverMasterRes();
 
-				res = mapper.map(data, CoverMasterRes.class);
+				res = mapper.map(data, SubCoverMasterRes.class);
 				mapper.getConfiguration().setAmbiguityIgnored(true);
 				res.setCoverId(data.getCoverId());
 				resList.add(res);
@@ -424,6 +433,72 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 		}
 		return resList;
 		}
+
+	@Override
+	public List<SubCoverMasterRes> getActiveCoverSubCoverDetails(SubCoverMasterGetAllReq req) {
+		List<SubCoverMasterRes> resList = new ArrayList<SubCoverMasterRes>();
+		ModelMapper mapper = new ModelMapper();
+		try {
+			List<CoverSubCoverMaster> coverList = new ArrayList<CoverSubCoverMaster>();
+			// Pagination
+			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 0 : Integer.valueOf(req.getOffset());
+
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CoverSubCoverMaster> query = cb.createQuery(CoverSubCoverMaster.class);
+
+			// Find All
+			Root<CoverSubCoverMaster> b = query.from(CoverSubCoverMaster.class);
+
+			// Select
+			query.select(b);
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CoverSubCoverMaster> ocpm1 = effectiveDate.from(CoverSubCoverMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("subCoverId"), b.get("subCoverId"));
+			Predicate a2 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
+			Predicate a3 = cb.equal(b.get("productId"), ocpm1.get("productId"));
+			Predicate a4 = cb.equal(b.get("companyId"), ocpm1.get("companyId"));
+			effectiveDate.where(a1, a2, a3,a4);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("sectionId")));
+
+			// Where
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
+			Predicate n3 = cb.equal(b.get("companyId"), req.getInsuranceId());
+			Predicate n4 = cb.equal(b.get("status"), "Y");
+			query.where(n1, n2, n3,n4).orderBy(orderList);
+
+			// Get Result
+			TypedQuery<CoverSubCoverMaster> result = em.createQuery(query);
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			coverList = result.getResultList();
+
+			// Map
+			for (CoverSubCoverMaster data : coverList) {
+				SubCoverMasterRes res = new SubCoverMasterRes();
+
+				res = mapper.map(data, SubCoverMasterRes.class);
+				mapper.getConfiguration().setAmbiguityIgnored(true);
+				res.setCoverId(data.getCoverId());
+				resList.add(res);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+
+		}
+		return resList;
+	}
 
 
 }

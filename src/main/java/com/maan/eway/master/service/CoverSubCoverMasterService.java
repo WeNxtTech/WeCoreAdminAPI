@@ -15,6 +15,7 @@ import com.maan.eway.master.req.SubCoverMasterGetReq;
 import com.maan.eway.master.res.CoverMasterRes;
 import com.maan.eway.master.res.SubCoverMasterGetAllRes;
 import com.maan.eway.master.res.SubCoverMasterGetRes;
+import com.maan.eway.master.res.SubCoverMasterRes;
 import com.maan.eway.res.SuccessRes;
 /**
 * <h2>BankMasterServiceimpl</h2>
@@ -27,9 +28,11 @@ public interface CoverSubCoverMasterService  {
 
 	SubCoverMasterGetRes getByCoverSubCoverId(SubCoverMasterGetReq req);
 
-	List<CoverMasterRes> getallCoverSubCoverDetails(SubCoverMasterGetAllReq req);
+	List<SubCoverMasterRes> getallCoverSubCoverDetails(SubCoverMasterGetAllReq req);
 
 	List<SubCoverMasterGetAllRes> getallNonSelectedSubCover(SubCoverGetAllReq req);
+
+	List<SubCoverMasterRes> getActiveCoverSubCoverDetails(SubCoverMasterGetAllReq req);
 
 
 }

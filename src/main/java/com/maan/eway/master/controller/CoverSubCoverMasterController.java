@@ -24,6 +24,7 @@ import com.maan.eway.master.req.SubCoverMasterGetReq;
 import com.maan.eway.master.res.CoverMasterRes;
 import com.maan.eway.master.res.SubCoverMasterGetAllRes;
 import com.maan.eway.master.res.SubCoverMasterGetRes;
+import com.maan.eway.master.res.SubCoverMasterRes;
 import com.maan.eway.master.service.CoverSubCoverMasterService;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.SuccessRes;
@@ -90,7 +91,7 @@ public class CoverSubCoverMasterController {
 			CommonRes data = new CommonRes();
 			reqPrinter.reqPrint(req);
 			
-			List<CoverMasterRes> res = service.getallCoverSubCoverDetails(req);
+			List<SubCoverMasterRes> res = service.getallCoverSubCoverDetails(req);
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);
@@ -103,6 +104,29 @@ public class CoverSubCoverMasterController {
 				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
 			}
 		}
+		
+		
+		@PostMapping("/getactivecoversubcoverdetails")
+		@ApiOperation("This method is getall Section Cover Details")
+		public ResponseEntity<CommonRes> getActiveCoverSubCoverDetails(@RequestBody SubCoverMasterGetAllReq req)
+		{
+			CommonRes data = new CommonRes();
+			reqPrinter.reqPrint(req);
+			
+			List<SubCoverMasterRes> res = service.getActiveCoverSubCoverDetails(req);
+			data.setCommonResponse(res);
+			data.setErrorMessage(Collections.emptyList());
+			data.setIsError(false);
+			data.setMessage("Success");
+			
+			if(res!= null) {
+				return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
+			}
+			else {
+				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+			}
+		}
+		
 		// Get By Section Id
 		
 		@PostMapping("/getbycoversubcover")

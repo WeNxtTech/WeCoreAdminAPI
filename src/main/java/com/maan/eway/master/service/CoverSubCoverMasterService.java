@@ -5,33 +5,29 @@
 */
 package com.maan.eway.master.service;
 
-import com.maan.eway.master.req.BankMasterGetAllReq;
-import com.maan.eway.master.req.BankMasterGetReq;
-import com.maan.eway.master.req.BankMasterSaveReq;
-import com.maan.eway.master.req.CustomerSaveReq;
+import java.util.List;
+
+import com.maan.eway.error.Error;
+import com.maan.eway.master.req.CoverSubCoverMasterSaveReq;
 import com.maan.eway.master.req.SubCoverGetAllReq;
+import com.maan.eway.master.req.SubCoverMasterGetAllReq;
 import com.maan.eway.master.req.SubCoverMasterGetReq;
-import com.maan.eway.master.req.SubCoverMasterSaveReq;
-import com.maan.eway.master.res.BankMasterRes;
+import com.maan.eway.master.res.CoverMasterRes;
 import com.maan.eway.master.res.SubCoverMasterGetAllRes;
 import com.maan.eway.master.res.SubCoverMasterGetRes;
-import com.maan.eway.error.Error;
-import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
-
-import java.util.List;
 /**
 * <h2>BankMasterServiceimpl</h2>
 */
 public interface CoverSubCoverMasterService  {
 
-	List<Error> validateSubCover(SubCoverMasterSaveReq req);
+	List<Error> validateSubCover(List<CoverSubCoverMasterSaveReq> req);
 
-	SuccessRes insertSubCover(SubCoverMasterSaveReq req);
+	SuccessRes insertSubCover(List<CoverSubCoverMasterSaveReq> req);
 
-	List<SubCoverMasterGetAllRes> getallSubCover();
+	SubCoverMasterGetRes getByCoverSubCoverId(SubCoverMasterGetReq req);
 
-	SubCoverMasterGetRes getBySubCoverId(SubCoverMasterGetReq req);
+	List<CoverMasterRes> getallCoverSubCoverDetails(SubCoverMasterGetAllReq req);
 
 	List<SubCoverMasterGetAllRes> getallNonSelectedSubCover(SubCoverGetAllReq req);
 

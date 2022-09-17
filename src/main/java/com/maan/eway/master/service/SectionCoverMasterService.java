@@ -9,7 +9,9 @@ import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CoverMasterGetAllReq;
 import com.maan.eway.master.req.CoverMasterGetReq;
 import com.maan.eway.master.req.CoverMasterSaveReq;
+import com.maan.eway.master.req.SectionCoverMasterSaveReq;
 import com.maan.eway.master.res.CoverMasterRes;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 
 import java.util.List;
@@ -18,15 +20,18 @@ import java.util.List;
 */
 public interface SectionCoverMasterService  {
 
-	List<Error> validateCoverDetails(CoverMasterSaveReq req);
+	List<Error> validateSectionCoverDetails(List<SectionCoverMasterSaveReq> req);
 
-	SuccessRes insertCover(CoverMasterSaveReq req);
+	SuccessRes insertSectionCover(List<SectionCoverMasterSaveReq> req);
 
-	List<CoverMasterRes> getallCoverDetails(CoverMasterGetAllReq req);
+	List<CoverMasterRes> getallSectionCoverDetails(CoverMasterGetAllReq req);
 
-	List<CoverMasterRes> getActiveCoverDetails(CoverMasterGetAllReq req);
+	List<CoverMasterRes> getActiveSectionCoverDetails(CoverMasterGetAllReq req);
 
-	CoverMasterRes getByCoverId(CoverMasterGetReq req);
+	CoverMasterRes getBySectionCoverId(CoverMasterGetReq req);
+
+	List<DropDownRes> getsectionCoverMasterDropdown(CoverMasterGetReq req);
+
 
 	List<CoverMasterRes> getallNonSelectedCovers(CoverMasterGetAllReq req);
 

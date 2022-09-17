@@ -10,10 +10,12 @@ import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CoverMasterGetAllReq;
 import com.maan.eway.master.req.CoverMasterGetReq;
 import com.maan.eway.master.req.CoverMasterSaveReq;
+import com.maan.eway.master.req.SectionCoverMasterSaveReq;
 import com.maan.eway.master.res.CoverMasterRes;
 import com.maan.eway.master.service.CoverMasterService;
 import com.maan.eway.master.service.SectionCoverMasterService;
 import com.maan.eway.res.CommonRes;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
@@ -39,23 +41,23 @@ import java.util.List;
 */
 @RestController
 @RequestMapping("/master")
-@Api(tags = "MASTER : Cover Master ", description = "API's")
+@Api(tags = "MASTER : Section Cover Master ", description = "API's")
 public class SectionCoverMasterController {
 
 	@Autowired
-	private  SectionCoverMasterService coverService;
+	private  SectionCoverMasterService sectionCoverService;
 	@Autowired
 	private  PrintReqService reqPrinter;
 	
 	// save
 		@PostMapping("/insertsectioncover")
-		@ApiOperation(value = "This method is Insert Cover Details")
-		public ResponseEntity<CommonRes> insertCover(@RequestBody CoverMasterSaveReq req) {
+		@ApiOperation(value = "This method is Insert Section  Cover Details")
+		public ResponseEntity<CommonRes> insertSectionCover(@RequestBody List<SectionCoverMasterSaveReq> req) {
 
 			reqPrinter.reqPrint(req);
 			CommonRes data = new CommonRes();
 
-			List<Error> validation = coverService.validateCoverDetails(req);
+			List<Error> validation = sectionCoverService.validateSectionCoverDetails(req);
 			// validation
 			if (validation != null && validation.size() != 0) {
 				data.setCommonResponse(null);
@@ -67,7 +69,7 @@ public class SectionCoverMasterController {
 			} else {
 
 				// Save
-				SuccessRes res = coverService.insertCover(req);
+				SuccessRes res = sectionCoverService.insertSectionCover(req);
 				data.setCommonResponse(res);
 				data.setIsError(false);
 				data.setErrorMessage(Collections.emptyList());
@@ -85,13 +87,13 @@ public class SectionCoverMasterController {
 		//  Get All Cover Master
 		
 		@PostMapping("/getallsectioncoverdetails")
-		@ApiOperation("This method is getall Cover Details")
-		public ResponseEntity<CommonRes> getallCoverDetails(@RequestBody CoverMasterGetAllReq req)
+		@ApiOperation("This method is getall Section Cover Details")
+		public ResponseEntity<CommonRes> getallSectionCoverDetails(@RequestBody CoverMasterGetAllReq req)
 		{
 			CommonRes data = new CommonRes();
 			reqPrinter.reqPrint(req);
 			
-			List<CoverMasterRes> res = coverService.getallCoverDetails(req);
+			List<CoverMasterRes> res = sectionCoverService.getallSectionCoverDetails(req);
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);
@@ -108,13 +110,13 @@ public class SectionCoverMasterController {
 	//  Get Active Cover Master
 		
 			@PostMapping("/getactivesectioncover")
-			@ApiOperation("This method is get Active Cover Details")
+			@ApiOperation("This method is get Section Active Cover Details")
 			public ResponseEntity<CommonRes> getActiveCoverDetails(@RequestBody CoverMasterGetAllReq req)
 			{
 				CommonRes data = new CommonRes();
 				reqPrinter.reqPrint(req);
 				
-				List<CoverMasterRes> res = coverService.getActiveCoverDetails(req);
+				List<CoverMasterRes> res = sectionCoverService.getActiveSectionCoverDetails(req);
 				data.setCommonResponse(res);
 				data.setErrorMessage(Collections.emptyList());
 				data.setIsError(false);
@@ -131,11 +133,11 @@ public class SectionCoverMasterController {
 		// Get By Cover Id
 		
 		@PostMapping("/getbysectioncoverid")
-		@ApiOperation("This Method is to get by Cover id")
-		public ResponseEntity<CommonRes> getByCoverId(@RequestBody CoverMasterGetReq req)
+		@ApiOperation("This Method is to get by Section Cover id")
+		public ResponseEntity<CommonRes> getBySectionCoverId(@RequestBody CoverMasterGetReq req)
 		{
 		CommonRes data = new CommonRes();
-		CoverMasterRes res = coverService.getByCoverId(req);
+		CoverMasterRes res = sectionCoverService.getBySectionCoverId(req);
 		data.setCommonResponse(res);
 		data.setErrorMessage(Collections.emptyList());
 		data.setIsError(false);
@@ -149,6 +151,7 @@ public class SectionCoverMasterController {
 		}
 	}
 
+
 		
 		@PostMapping("/getallnonselectedsectioncovers")
 		@ApiOperation("This method is getall Cover Details")
@@ -157,7 +160,7 @@ public class SectionCoverMasterController {
 			CommonRes data = new CommonRes();
 			reqPrinter.reqPrint(req);
 			
-			List<CoverMasterRes> res = coverService.getallNonSelectedCovers(req);
+			List<CoverMasterRes> res = sectionCoverService.getallNonSelectedCovers(req);
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);
@@ -171,6 +174,27 @@ public class SectionCoverMasterController {
 			}
 		}
 
+		@PostMapping("/dropdown/sectioncover")
+		@ApiOperation(value = "This method is get Section Cover Master Drop Down")
+
+		public ResponseEntity<CommonRes> getSectionCoverMasterDropdown(@RequestBody CoverMasterGetReq req) {
+
+			CommonRes data = new CommonRes();
+
+			// Save
+			List<DropDownRes> res = sectionCoverService.getsectionCoverMasterDropdown(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+
+		}
 
 
 }

@@ -16,6 +16,9 @@ public class SubCoverMasterGetAllReq implements Serializable {
     @JsonProperty("InsuranceId")
     private String insuranceId;
     
+    @JsonProperty("ProductId")
+    private String productId;
+    
     @JsonProperty("Limit")
     private String limit;
     

@@ -5,42 +5,32 @@
 */
 package com.maan.eway.master.controller;
 
-import com.maan.eway.bean.SectionMaster;
+import java.util.Collections;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.maan.eway.error.Error;
-import com.maan.eway.master.req.ProductSectionsGetReq;
-import com.maan.eway.master.req.SectionMasterGetAllReq;
-import com.maan.eway.master.req.SectionMasterGetReq;
-import com.maan.eway.master.req.SectionMasterSaveReq;
+import com.maan.eway.master.req.CoverSubCoverMasterSaveReq;
 import com.maan.eway.master.req.SubCoverGetAllReq;
+import com.maan.eway.master.req.SubCoverMasterGetAllReq;
 import com.maan.eway.master.req.SubCoverMasterGetReq;
-import com.maan.eway.master.req.SubCoverMasterSaveReq;
-import com.maan.eway.master.res.ProductSectionGetRes;
-import com.maan.eway.master.res.SectionMasterRes;
+import com.maan.eway.master.res.CoverMasterRes;
 import com.maan.eway.master.res.SubCoverMasterGetAllRes;
 import com.maan.eway.master.res.SubCoverMasterGetRes;
 import com.maan.eway.master.service.CoverSubCoverMasterService;
-import com.maan.eway.master.service.SectionMasterService;
-import com.maan.eway.master.service.SubCoverMasterService;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
 
 
 /**
@@ -58,9 +48,9 @@ public class CoverSubCoverMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
-		@PostMapping("/insertproductsubcover")
-		@ApiOperation(value = "This method is Insert Subcover")
-		public ResponseEntity<CommonRes> insertSubCover(@RequestBody SubCoverMasterSaveReq req) {
+		@PostMapping("/insertcoversubcover")
+		@ApiOperation(value = "This method is Insert CoverSubcover")
+		public ResponseEntity<CommonRes> insertSubCover(@RequestBody List<CoverSubCoverMasterSaveReq> req) {
 
 			reqPrinter.reqPrint(req);
 			CommonRes data = new CommonRes();
@@ -93,13 +83,14 @@ public class CoverSubCoverMasterController {
 		
 		//  Get All Section Master
 		
-		@GetMapping("/getallproductsubcover")
-		@ApiOperation("This method is getall SubCover")
-		public ResponseEntity<CommonRes> getallSubCover()
+		@PostMapping("/getallcoversubcoverdetails")
+		@ApiOperation("This method is getall Section Cover Details")
+		public ResponseEntity<CommonRes> getallCoverSubCoverDetails(@RequestBody SubCoverMasterGetAllReq req)
 		{
 			CommonRes data = new CommonRes();
+			reqPrinter.reqPrint(req);
 			
-			List<SubCoverMasterGetAllRes> res =service.getallSubCover();
+			List<CoverMasterRes> res = service.getallCoverSubCoverDetails(req);
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);
@@ -114,12 +105,12 @@ public class CoverSubCoverMasterController {
 		}
 		// Get By Section Id
 		
-		@PostMapping("/getbyproductsubcover")
+		@PostMapping("/getbycoversubcover")
 		@ApiOperation("This Method is to get by Sub Cover Id")
 		public ResponseEntity<CommonRes> getBySubCoverId(@RequestBody SubCoverMasterGetReq req)
 		{
 		CommonRes data = new CommonRes();
-		SubCoverMasterGetRes res = service.getBySubCoverId(req);
+		SubCoverMasterGetRes res = service.getByCoverSubCoverId(req);
 		data.setCommonResponse(res);
 		data.setErrorMessage(Collections.emptyList());
 		data.setIsError(false);

@@ -45,5 +45,7 @@ public interface CoverSubCoverMasterRepository  extends JpaRepository<CoverSubCo
 
 	CoverSubCoverMaster findBySubCoverIdAndCoverIdAndSectionIdAndProductIdAndCompanyId(Integer subCoverId,Integer coverId,Integer sectionId,Integer productId, String companyId);
 
+	Long countBySubCoverNameAndCompanyIdOrderByEntryDateDesc(String subCoverName, String companyId);
+
 	
 }

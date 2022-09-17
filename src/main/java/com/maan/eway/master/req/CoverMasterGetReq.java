@@ -16,6 +16,7 @@ public class CoverMasterGetReq {
 	
 	@JsonProperty("ProductId")
 	private String productId;
+	
 	@JsonProperty("SectionId")
 	private String sectionId;
 	

@@ -30,5 +30,7 @@ public class CoverMasterGetAllReq implements Serializable {
     private String sectionId;
 
    
+    @JsonProperty("SectionId")
+    private String sectionId;
 
 }

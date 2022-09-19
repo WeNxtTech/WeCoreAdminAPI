@@ -71,7 +71,7 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 	
 		try {
 		
-			if (StringUtils.isBlank(req.getSectionName()) || req.getSectionName() == null) {
+			if (StringUtils.isBlank(req.getSectionName()) ) {
 				errorList.add(new Error("02", "SectionName", "Please Select Section  Name "));
 			}else if (req.getSectionName().length() > 100){
 				errorList.add(new Error("02","SectionName", "Please Enter Section  Name within 100 Characters")); 

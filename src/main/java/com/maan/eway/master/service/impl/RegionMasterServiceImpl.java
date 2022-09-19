@@ -179,7 +179,7 @@ public List<Error> validateRegionDetails(RegionMasterSaveReq req) {
 
 	try {
 	
-		if (StringUtils.isBlank(req.getRegionName()) || req.getRegionName() == null) {
+		if (StringUtils.isBlank(req.getRegionName()) ) {
 			errorList.add(new Error("02", "RegionName", "Please Select Region  Name "));
 		}else if (req.getRegionName().length() > 100){
 			errorList.add(new Error("02","RegionName", "Please Enter Region  Name within 100 Characters")); 

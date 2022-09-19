@@ -68,7 +68,7 @@ List<Error> errorList = new ArrayList<Error>();
 
 try {
 
-	if (StringUtils.isBlank(req.getCoverName()) || req.getCoverName() == null) {
+	if (StringUtils.isBlank(req.getCoverName()) ) {
 		errorList.add(new Error("02", "CoverName", "Please Select Cover  Name "));
 	}else if (req.getCoverName().length() > 100){
 		errorList.add(new Error("02","CoverName", "Please Enter Cover  Name within 100 Characters")); 

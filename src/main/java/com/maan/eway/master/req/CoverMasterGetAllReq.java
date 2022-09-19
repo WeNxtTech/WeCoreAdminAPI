@@ -20,7 +20,6 @@ public class CoverMasterGetAllReq implements Serializable {
     @JsonProperty("InsuranceId")
     private String insuranceId;
     
-
     @JsonProperty("ProductId")
     private String productId;
 

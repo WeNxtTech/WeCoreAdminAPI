@@ -178,7 +178,7 @@ public class CityMasterServiceImpl implements CityMasterService {
 
 		try {
 
-			if (StringUtils.isBlank(req.getCityName()) || req.getCityName() == null) {
+			if (StringUtils.isBlank(req.getCityName())) {
 				errorList.add(new Error("02", "CityName", "Please Select City  Name "));
 			} else if (req.getCityName().length() > 100) {
 				errorList.add(new Error("02", "CityName", "Please Enter City  Name within 100 Characters"));

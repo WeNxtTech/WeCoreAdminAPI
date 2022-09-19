@@ -181,7 +181,7 @@ public List<Error> validateProductDetails(ProductMasterSaveReq req) {
 
 	try {
 	
-		if (StringUtils.isBlank(req.getProductName()) || req.getProductName() == null) {
+		if (StringUtils.isBlank(req.getProductName())) {
 			errorList.add(new Error("02", "ProductName", "Please Select Product  Name "));
 		}else if (req.getProductName().length() > 100){
 			errorList.add(new Error("02","ProductName", "Please Enter Product  Name within 100 Characters")); 
@@ -192,7 +192,7 @@ public List<Error> validateProductDetails(ProductMasterSaveReq req) {
 			}
 		}
 
-		if (StringUtils.isBlank(req.getRemarks()) || req.getRemarks() == null) {
+		if (StringUtils.isBlank(req.getRemarks())) {
 			errorList.add(new Error("03", "Remark", "Please Select Remark "));
 		}else if (req.getRemarks().length() > 100){
 			errorList.add(new Error("03","Remark", "Please Enter Remark within 100 Characters")); 

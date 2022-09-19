@@ -177,7 +177,7 @@ public List<Error> validateCurrencyDetails(CurrencyMasterSaveReq req) {
 
 	try {
 	
-		if (StringUtils.isBlank(req.getCurrencyName()) || req.getCurrencyName() == null) {
+		if (StringUtils.isBlank(req.getCurrencyName()) ) {
 			errorList.add(new Error("02", "CurrencyName", "Please Select Currency  Name "));
 		}else if (req.getCurrencyName().length() > 100){
 			errorList.add(new Error("02","CurrencyName", "Please Enter Currency  Name within 100 Characters")); 
@@ -188,7 +188,7 @@ public List<Error> validateCurrencyDetails(CurrencyMasterSaveReq req) {
 			}
 		}
 
-		if (StringUtils.isBlank(req.getRemarks()) || req.getRemarks() == null) {
+		if (StringUtils.isBlank(req.getRemarks())) {
 			errorList.add(new Error("03", "Remark", "Please Select Remark "));
 		}else if (req.getRemarks().length() > 100){
 			errorList.add(new Error("03","Remark", "Please Enter Remark within 100 Characters")); 

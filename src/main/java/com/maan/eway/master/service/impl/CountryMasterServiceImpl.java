@@ -177,7 +177,7 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 
 		try {
 
-			if (StringUtils.isBlank(req.getCountryName()) || req.getCountryName() == null) {
+			if (StringUtils.isBlank(req.getCountryName()) ) {
 				errorList.add(new Error("02", "CountryName", "Please Select Country  Name "));
 			} else if (req.getCountryName().length() > 100) {
 				errorList.add(new Error("02", "CountryName", "Please Enter Country  Name within 100 Characters"));

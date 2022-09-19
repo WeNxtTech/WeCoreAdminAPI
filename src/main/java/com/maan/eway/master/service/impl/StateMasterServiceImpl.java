@@ -177,7 +177,7 @@ public class StateMasterServiceImpl implements StateMasterService {
 
 		try {
 
-			if (StringUtils.isBlank(req.getStateName()) || req.getStateName() == null) {
+			if (StringUtils.isBlank(req.getStateName())) {
 				errorList.add(new Error("02", "StateName", "Please Select State  Name "));
 			} else if (req.getStateName().length() > 100) {
 				errorList.add(new Error("02", "StateName", "Please Enter State  Name within 100 Characters"));

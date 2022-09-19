@@ -72,7 +72,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 		try {
 
 			for(CoverSubCoverMasterSaveReq req: reqList) {
-			if (StringUtils.isBlank(req.getSubCoverName()) || req.getSubCoverName() == null) {
+			if (StringUtils.isBlank(req.getSubCoverName()) ) {
 				errorList.add(new Error("02", "SubCoverName", "Please Select Sub Cover  Name "));
 			}else if (req.getSubCoverName().length() > 100){
 				errorList.add(new Error("02","CoverName", "Please Enter Cover  Name within 100 Characters")); 
@@ -83,7 +83,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 				}
 			}
 
-			if (StringUtils.isBlank(req.getSubCoverDesc().toString()) || req.getSubCoverDesc() == null) {
+			if (StringUtils.isBlank(req.getSubCoverDesc().toString()) ) {
 				errorList.add(new Error("03", "SubCoverDesc", "Please Enter Sub Cover Desc"));
 			}
 			

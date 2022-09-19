@@ -180,7 +180,7 @@ public List<Error> validateBranchDetails(BranchMasterSaveReq req) {
 
 	try {
 	
-		if (StringUtils.isBlank(req.getBranchName()) || req.getBranchName() == null) {
+		if (StringUtils.isBlank(req.getBranchName()) ) {
 			errorList.add(new Error("02", "BranchName", "Please Select Branch Name "));
 		}else if (req.getBranchName().length() > 100){
 			errorList.add(new Error("02","BranchName", "Please Enter Branch  Name within 100 Characters")); 
@@ -191,7 +191,7 @@ public List<Error> validateBranchDetails(BranchMasterSaveReq req) {
 			}
 		}
 
-		if (StringUtils.isBlank(req.getRegionCode()) || req.getRegionCode() == null) {
+		if (StringUtils.isBlank(req.getRegionCode())) {
 			errorList.add(new Error("03", "RegionCode", "Please Select Region Code "));
 		}else if (req.getRegionCode().length() > 20){
 			errorList.add(new Error("03","RegionCode", "Please Enter Region Code within 20 Characters")); 

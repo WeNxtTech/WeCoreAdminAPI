@@ -263,7 +263,7 @@ public List<Error> validateBankDetails(BankMasterSaveReq req) {
 
 	try {
 	
-		if (StringUtils.isBlank(req.getBankShortName()) || req.getBankShortName() == null) {
+		if (StringUtils.isBlank(req.getBankShortName()) ) {
 			errorList.add(new Error("02", "BankShortName", "Please Select Bank Short Name "));
 		}else if (req.getBankShortName().length() > 20){
 			errorList.add(new Error("02","BankShortName", "Please Enter Bank Short Name within 20 Characters")); 
@@ -274,7 +274,7 @@ public List<Error> validateBankDetails(BankMasterSaveReq req) {
 			}
 		}
 
-		if (StringUtils.isBlank(req.getBankFullName()) || req.getBankShortName() == null) {
+		if (StringUtils.isBlank(req.getBankFullName()) ) {
 			errorList.add(new Error("03", "BankFullName", "Please Select Bank Full Name "));
 		}else if (req.getBankFullName().length() > 100){
 			errorList.add(new Error("03","BankFullName", "Please Enter Bank Full Name within 100 Characters")); 

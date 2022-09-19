@@ -180,7 +180,7 @@ public List<Error> validateReferalDetails(ReferalMasterSaveReq req) {
 
 	try {
 	
-		if (StringUtils.isBlank(req.getReferalName()) || req.getReferalName() == null) {
+		if (StringUtils.isBlank(req.getReferalName()) ) {
 			errorList.add(new Error("02", "ReferalName", "Please Select Referal  Name "));
 		}else if (req.getReferalName().length() > 100){
 			errorList.add(new Error("02","ReferalName", "Please Enter Referal  Name within 100 Characters")); 
@@ -191,7 +191,7 @@ public List<Error> validateReferalDetails(ReferalMasterSaveReq req) {
 			}
 		}
 
-		if (StringUtils.isBlank(req.getRemarks()) || req.getRemarks() == null) {
+		if (StringUtils.isBlank(req.getRemarks()) ) {
 			errorList.add(new Error("03", "Remark", "Please Select Remark "));
 		}else if (req.getRemarks().length() > 100){
 			errorList.add(new Error("03","Remark", "Please Enter Remark within 100 Characters")); 
@@ -221,12 +221,12 @@ public List<Error> validateReferalDetails(ReferalMasterSaveReq req) {
 		}else if (req.getCompanyId().length() > 20){
 			errorList.add(new Error("06","CompanyId", "Please Enter Company Id within 20 Characters")); 
 		}
-		if (StringUtils.isBlank(req.getReferalDesc()) || req.getCompanyId() == null) {
+		if (StringUtils.isBlank(req.getReferalDesc())) {
 			errorList.add(new Error("06", "ReferalDesc", "Please Select Referal Description  "));
 		}else if (req.getReferalDesc().length() > 300){
 			errorList.add(new Error("06","ReferalDesc", "Please Enter Referal Description within 300 Characters")); 
 		}
-		if (StringUtils.isBlank(req.getBranchCode()) || req.getBranchCode() == null) {
+		if (StringUtils.isBlank(req.getBranchCode()) ) {
 			errorList.add(new Error("07", "BranchCode", "Please Select BranchCode  "));
 		}else if (req.getBranchCode().length() > 100){
 			errorList.add(new Error("07","BranchCode", "Please Enter BranchCode within 100 Characters")); 

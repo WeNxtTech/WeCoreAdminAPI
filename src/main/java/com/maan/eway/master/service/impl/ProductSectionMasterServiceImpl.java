@@ -11,9 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.repository.ProductSectionMasterRepository;
 import com.maan.eway.repository.SectionMasterRepository;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.google.gson.Gson;
 import com.maan.eway.bean.ProductSectionMaster;
+import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.error.Error;
@@ -604,6 +606,68 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			log.info(e.getMessage());
 			return null;
 	
+		}
+		return resList;
+	}
+	@Override
+	public List<DropDownRes> getProductSectionDropdown(ProductSectionsGetReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ProductSectionMaster> query = cb.createQuery(ProductSectionMaster.class);
+			List<ProductSectionMaster> list = new ArrayList<ProductSectionMaster>();
+			
+			// Find All
+			Root<ProductSectionMaster>    c = query.from(ProductSectionMaster.class);		
+			
+			// Select
+			query.select(c );
+			
+		
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("sectionName")));
+			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<ProductSectionMaster> ocpm1 = effectiveDate.from(ProductSectionMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("sectionId"),ocpm1.get("sectionId") );
+			javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2);
+			
+		    // Where	
+			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
+			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"), req.getInsuranceId());
+			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("productId"), req.getProductId());
+			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("sectionId"), req.getSectionId());
+			
+			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<ProductSectionMaster> result = em.createQuery(query);			
+			list =  result.getResultList();  
+			
+			for(ProductSectionMaster data : list ) {
+				// Response
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getSectionId().toString());
+				res.setCodeDesc(data.getSectionName());
+				resList.add(res);
+			}		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
 		}
 		return resList;
 	}

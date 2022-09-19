@@ -10,5 +10,13 @@ public class ProductSectionsGetReq {
 
 	@JsonProperty("InsuranceId")
 	private String insuranceId ;
+	
+
+	@JsonProperty("SectionId")
+	private String sectionId ;
+	
+
+	@JsonProperty("ProductId")
+	private String productId ;
 
 }

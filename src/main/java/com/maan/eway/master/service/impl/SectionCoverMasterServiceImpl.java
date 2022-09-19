@@ -556,7 +556,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"), req.getCompanyId());
 			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("productId"), req.getProductId());
 			
-			query.where(n1,n2).orderBy(orderList);
+			query.where(n1,n2,n3,n4).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<SectionCoverMaster> result = em.createQuery(query);			

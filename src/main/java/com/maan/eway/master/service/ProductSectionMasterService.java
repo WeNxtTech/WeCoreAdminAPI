@@ -13,6 +13,7 @@ import com.maan.eway.master.req.SectionMasterGetReq;
 import com.maan.eway.master.req.SectionMasterSaveReq;
 import com.maan.eway.master.res.ProductSectionGetRes;
 import com.maan.eway.master.res.SectionMasterRes;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 
 import java.util.List;
@@ -34,6 +35,8 @@ public interface ProductSectionMasterService  {
 	List<ProductSectionGetRes> getProductSections(ProductSectionsGetReq req);
 
 	List<SectionMasterRes> getallNonSelectedSections(SectionMasterGetAllReq req);
+
+	List<DropDownRes> getProductSectionDropdown(ProductSectionsGetReq req);
 
 
 }

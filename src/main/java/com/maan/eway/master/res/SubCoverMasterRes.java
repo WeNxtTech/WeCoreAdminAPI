@@ -48,4 +48,16 @@ public class SubCoverMasterRes {
 
 	@JsonProperty("Remarks")
 	private String remarks;
+	
+	@JsonProperty("SectionId")
+	private Integer sectionId;
+	
+	@JsonProperty("ProductId")
+	private Integer productId;
+	
+	@JsonProperty("SectionName")
+	private String sectionName;
+	
+   	@JsonProperty("CoverName")
+    private String   coverName;
 }

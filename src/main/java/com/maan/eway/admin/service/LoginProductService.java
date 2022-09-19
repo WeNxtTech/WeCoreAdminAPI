@@ -10,6 +10,7 @@ import com.maan.eway.admin.req.BrokerProductCompaniesRes;
 import com.maan.eway.admin.req.BrokerProductGetReq;
 import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.admin.res.LoginProductCriteriaRes;
+import com.maan.eway.res.DropDownRes;
 
 public interface LoginProductService {
 
@@ -20,4 +21,6 @@ public interface LoginProductService {
 	List<BrokerCompanyProductsGetRes> getBrokerCompanyProducts(BrokerCompanyProductGetReq req);
 
 	List<LoginProductCriteriaRes> getBrokerProductDetails(String loginId, List<String> companyIds, Date today);
+
+	
 }

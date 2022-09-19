@@ -97,5 +97,8 @@ public class CoverMasterSaveReq implements Serializable {
 	//Ofs Grid
 	@JsonProperty("OfsGridList")
 	private List <OfsGridSaveReq> ofsGridList;
-	
+
+	@JsonProperty("ToolTip")
+	private String toolTip;  
+
 }

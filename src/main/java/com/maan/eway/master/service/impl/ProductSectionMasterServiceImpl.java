@@ -640,18 +640,19 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
 			Root<ProductSectionMaster> ocpm1 = effectiveDate.from(ProductSectionMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("sectionId"),ocpm1.get("sectionId") );
-			javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			effectiveDate.where(a1,a2);
+			Predicate a1 = cb.equal(c.get("sectionId"),ocpm1.get("sectionId") );
+			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId") );
+			Predicate a3 = cb.equal(c.get("productId"), ocpm1.get("productId") );
+			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2,a3,a4);
 			
 		    // Where	
 			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"), req.getInsuranceId());
 			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("productId"), req.getProductId());
-			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("sectionId"), req.getSectionId());
 			
-			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+			query.where(n1,n2,n3,n4).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<ProductSectionMaster> result = em.createQuery(query);			

@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +22,8 @@ import com.maan.eway.admin.service.LoginProductService;
 import com.maan.eway.admin.service.LoginValidationService;
 import com.maan.eway.error.Error;
 import com.maan.eway.res.CommonRes;
+import com.maan.eway.res.DropDownRes;
+import com.maan.eway.service.DropDownService;
 import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.Api;
@@ -117,4 +120,6 @@ public class LoginProductController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
+	
+	
 }

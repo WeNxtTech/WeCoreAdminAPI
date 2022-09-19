@@ -42,11 +42,11 @@ import javax.persistence.*;
 @DynamicInsert
 @DynamicUpdate
 @Builder
-@IdClass(DocumentMasterId.class)
-@Table(name="document_master")
+@IdClass(ProductDocumentMasterId.class)
+@Table(name="product_document_master")
 
 
-public class DocumentMaster implements Serializable {
+public class ProductDocumentMaster implements Serializable {
  
 private static final long serialVersionUID = 1L;
  
@@ -59,6 +59,15 @@ private static final long serialVersionUID = 1L;
     @Column(name="COMPANY_ID", nullable=false, length=20)
     private String     companyId ;
 
+    @Id
+    @Column(name="PRODUCT_ID", nullable=false)
+    private Integer    productId ;
+
+
+    @Id
+    @Column(name="SECTION_ID", nullable=false)
+    private Integer   sectionId ;
+     
     @Id
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="EFFECTIVE_DATE_START", nullable=false)

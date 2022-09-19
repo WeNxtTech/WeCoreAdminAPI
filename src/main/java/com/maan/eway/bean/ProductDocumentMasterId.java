@@ -25,7 +25,7 @@ import java.util.Date;
 @AllArgsConstructor
 @ToString
 @Builder
-public class DocumentMasterId implements Serializable {
+public class ProductDocumentMasterId implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -33,10 +33,14 @@ public class DocumentMasterId implements Serializable {
     private Integer    documentId ;
     
     private String     companyId ;
-       
+    
+    private Integer    productId ;
+    
     private Date       effectiveDateStart ;
     
     private Date       effectiveDateEnd ;
     
+    private Integer   sectionId ;
+
      
 }

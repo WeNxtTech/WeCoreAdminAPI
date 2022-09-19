@@ -18,7 +18,10 @@ import com.maan.eway.bean.DocumentMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import com.maan.eway.bean.DocumentMasterId;
+import com.maan.eway.bean.ProductDocumentMaster;
+import com.maan.eway.bean.ProductDocumentMasterId;
 
-public interface DocumentMasterRepository  extends JpaRepository<DocumentMaster,DocumentMasterId > , JpaSpecificationExecutor<DocumentMaster> {
+ 
+public interface ProductDocumentMasterRepository  extends JpaRepository<ProductDocumentMaster,ProductDocumentMasterId > , JpaSpecificationExecutor<ProductDocumentMaster> {
 
 }

@@ -73,6 +73,9 @@ public class CoverMasterSaveReq implements Serializable {
 	
 	//Rating Cover 
 
+	@JsonProperty("RatingId")
+	 private String    ratingId ;
+	
 	@JsonProperty("Excess")
 	private String excess;
 	

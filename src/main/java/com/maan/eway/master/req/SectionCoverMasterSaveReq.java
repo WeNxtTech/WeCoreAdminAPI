@@ -41,4 +41,10 @@ public class SectionCoverMasterSaveReq {
 
 	@JsonProperty("Remarks")
 	private String remarks;
+	
+	@JsonProperty("ToolTip")
+	private String toolTip;
+	
+	
+	
 }

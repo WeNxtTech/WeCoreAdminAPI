@@ -195,4 +195,25 @@ public class ProductMasterController {
 		}
 		
 
+		
+		@GetMapping("/dropdown/producticons")
+		@ApiOperation(value = "This method is to UserType  Drop Down")
+		public ResponseEntity<CommonRes> getUserType() {
+			CommonRes data = new CommonRes();
+
+			// Save
+			List<DropDownRes> res = productService.getProductIcons();
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+
+		}
+		
 }

@@ -49,12 +49,15 @@ import com.maan.eway.admin.res.ProductCriteriaRes;
 import com.maan.eway.admin.service.LoginProductService;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
+import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.RegionMaster;
+import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.LoginProductMasterRepository;
+import com.maan.eway.res.DropDownRes;
 
 @Service
 public class LoginProductServiceImpl  implements LoginProductService {
@@ -67,6 +70,9 @@ public class LoginProductServiceImpl  implements LoginProductService {
 	
 	@PersistenceContext
 	private EntityManager em;
+	
+	@Autowired
+	private ListItemValueRepository listRepo ;
 
 	Gson json = new Gson();
 
@@ -401,4 +407,7 @@ public class LoginProductServiceImpl  implements LoginProductService {
 		}
 		return productList;
 	}
+
+	
+	
 }

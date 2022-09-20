@@ -63,5 +63,8 @@ public class ProductMasterSaveReq implements Serializable {
 
 	@JsonProperty("Remarks")
 	private String remarks;
+	
+	@JsonProperty("ProductIconId")
+	private String productIconId;
 
 }

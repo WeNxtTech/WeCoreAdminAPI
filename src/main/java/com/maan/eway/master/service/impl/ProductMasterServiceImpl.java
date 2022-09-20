@@ -41,8 +41,10 @@ import com.maan.eway.master.req.ProductMasterSaveReq;
 import com.maan.eway.master.res.ProductMasterRes;
 import com.maan.eway.master.service.ProductMasterService;
 import com.maan.eway.bean.BranchMaster;
+import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.ProductMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
@@ -62,6 +64,9 @@ private ProductMasterRepository repo;
 
 @Autowired
 private BasicValidationService basicvalidateService;
+
+@Autowired
+private ListItemValueRepository listRepo ;
 
 Gson json = new Gson();
 
@@ -154,6 +159,10 @@ public SuccessRes insertProduct(ProductMasterSaveReq req) {
 			saveData.setEffectiveDateEnd(endDate);
 			saveData.setStatus(req.getStatus());
 			saveData.setEntryDate(new Date());
+			
+			ListItemValue icon = listRepo.findByItemTypeAndItemCodeAndStatus("PRODUCT_ICONS" , req.getProductIconId() ,"Y");
+			saveData.setProductIconId(Integer.valueOf(icon.getItemCode()));
+			saveData.setProductIconName(icon.getItemValue());
 			repo.saveAndFlush(saveData);
 			
 			if(list.size() > 0 ) {
@@ -192,7 +201,20 @@ public List<Error> validateProductDetails(ProductMasterSaveReq req) {
 			}
 		}
 
-		if (StringUtils.isBlank(req.getRemarks())) {
+
+		if (StringUtils.isBlank(req.getProductIconId()) ) {
+			errorList.add(new Error("02", "ProductIconId", "Please Select Product Icon"));
+		} else if (! req.getProductIconId().matches("[0-9]+")  ) {
+			errorList.add(new Error("02", "ProductIconId", "Please Select  Valid Product Icon"));
+		}else {
+			ListItemValue icon = listRepo.findByItemTypeAndItemCodeAndStatus("PRODUCT_ICONS" , req.getProductIconId() ,"Y");
+			if( icon ==null ) {
+				errorList.add(new Error("02", "ProductIconId", "Please Select  Valid Product Icon"));	
+			}
+		}
+		
+		if (StringUtils.isBlank(req.getRemarks()) || req.getRemarks() == null) {
+
 			errorList.add(new Error("03", "Remark", "Please Select Remark "));
 		}else if (req.getRemarks().length() > 100){
 			errorList.add(new Error("03","Remark", "Please Enter Remark within 100 Characters")); 
@@ -590,4 +612,23 @@ public List<ProductMasterRes> getActiveProductDetails(ProductMasterGetAllReq req
 		return res;
 	}
 
+	@Override
+	public List<DropDownRes> getProductIcons() {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("PRODUCT_ICONS", "Y");
+
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
 }

@@ -79,7 +79,9 @@ try {
 		}
 	}
 
-	
+	if (StringUtils.isBlank(req.getToolTip())) {
+		errorList.add(new Error("02", "Tooltip", "Please Enter Tool Tip"));
+	}
 	// Date Validation 
 	Calendar cal = new GregorianCalendar();
 	Date today = new Date();
@@ -99,7 +101,7 @@ try {
 	}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()))) {
 		errorList.add(new Error("05", "Status", "Enter Status Y or N Only"));
 	}
-	if (StringUtils.isBlank(req.getCompanyId().toString()) || req.getCompanyId() == null) {
+	if (StringUtils.isBlank(req.getCompanyId()) || req.getCompanyId() == null) {
 		errorList.add(new Error("06", "CompanyId", "Please Enter Company Id "));
 	}
 	

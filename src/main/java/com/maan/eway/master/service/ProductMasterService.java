@@ -35,7 +35,7 @@ public interface ProductMasterService  {
 
 	ProductMasterRes getTodayProductCode(ProductMasterGetReq req);
 
-	
+	List<DropDownRes> getProductIcons();
 
 
 }

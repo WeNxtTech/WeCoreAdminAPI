@@ -11,8 +11,7 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.util.Date;
-
-
+import java.util.List;
 import java.util.Date;
 import javax.persistence.*;
 
@@ -70,5 +69,39 @@ public class CoverMasterSaveReq implements Serializable {
 	private String amendId;
 
 	@JsonProperty("Remarks")
-	private String remarks;  
+	private String remarks; 
+	
+	//Rating Cover 
+
+	@JsonProperty("RatingId")
+	 private String    ratingId ;
+	
+	@JsonProperty("Excess")
+	private String excess;
+	
+	@JsonProperty("CalcYn")
+	private String calcYn;
+
+	@JsonProperty("CoverageType")
+	private String coverageType;
+	
+	@JsonProperty("UploadOption")
+	private String uploadOption;
+	
+	@JsonProperty("CoverageLimit")
+	private String coverageLimit;
+	
+	@JsonProperty("CalcType")
+	private String calcType;
+	
+	@JsonProperty("CalcStatus")
+	private String calcStatus;
+	
+	//Ofs Grid
+	@JsonProperty("OfsGridList")
+	private List <OfsGridSaveReq> ofsGridList;
+
+	@JsonProperty("ToolTip")
+	private String toolTip;  
+
 }

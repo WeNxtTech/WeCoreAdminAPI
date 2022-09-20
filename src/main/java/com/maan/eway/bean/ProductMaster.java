@@ -116,6 +116,11 @@ private static final long serialVersionUID = 1L;
     @Column(name="REMARKS", length=100)
     private String     remarks ;
   
+    @Column(name="PRODUCT_ICON_ID")
+    private Integer    productIconId ;
+    
+    @Column(name="PRODUCT_ICON_NAME")
+    private String    productIconName ;
 
 }
 

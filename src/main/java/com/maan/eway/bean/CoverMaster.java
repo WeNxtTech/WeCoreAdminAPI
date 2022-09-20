@@ -92,6 +92,8 @@ private static final long serialVersionUID = 1L;
     private String     remarks ;
 
 
+    @Column(name="TOOL_TIP", length=100)
+    private String     toolTip ;
 }
 
 

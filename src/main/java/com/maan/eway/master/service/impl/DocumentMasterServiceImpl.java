@@ -236,8 +236,9 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 		Subquery<Long> effectiveDate = query.subquery(Long.class);
 		Root<DocumentMaster> ocpm1 = effectiveDate.from(DocumentMaster.class);
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		javax.persistence.criteria.Predicate a1 = cb.equal(c.get("documentId"),ocpm1.get("documentId") ) ;
 		javax.persistence.criteria.Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId") ) ;
-		effectiveDate.where(a2);
+		effectiveDate.where(a1,a2);
 		
 		
 		

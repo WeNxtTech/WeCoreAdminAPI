@@ -40,6 +40,7 @@ import com.maan.eway.bean.CustomerDetails;
 import com.maan.eway.bean.DocumentMaster;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
+import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.bean.SubCoverMaster;
@@ -56,10 +57,12 @@ import com.maan.eway.master.res.SubCoverMasterGetRes;
 import com.maan.eway.master.service.DocumentMasterService;
 import com.maan.eway.master.service.SubCoverMasterService;
 import com.maan.eway.repository.DocumentMasterRepository;
+import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.SubCoverMasterRepository;
 import com.maan.eway.req.CustomerDetailsSearchReq;
 import com.maan.eway.res.CustomerDetailsCriteriaRes;
 import com.maan.eway.res.CustomerDetailsSearchRes;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.CustomerDetailsSearchService;
 
@@ -81,6 +84,8 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 	@Autowired
 	private DocumentMasterRepository repo;
 	
+	@Autowired
+	private ListItemValueRepository dropdownrepo;
 	
 	@Transactional
 	@Override
@@ -446,6 +451,29 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 		return errorList;
 	}
 
+	@Override
+	public List<DropDownRes> getDocumentDropDown() {
+	List<DropDownRes> resList = new ArrayList<DropDownRes>();
+	try {
 
+		List<ListItemValue> datas = dropdownrepo.findByItemTypeAndStatusOrderByItemCodeAsc("DOCUMENTS","Y");
+		for(ListItemValue data : datas) {
+			DropDownRes res = new DropDownRes();
+			res.setCode(data.getItemCode());
+			res.setCodeDesc(data.getItemValue());
+			resList.add(res);
+		}
+	}
+	catch(Exception e) {
+		e.printStackTrace();
+		log.info("Log Details", e.getMessage());
+		return null;
+	}
+	return resList;
+
+}
+
+	
+	
 	
 }

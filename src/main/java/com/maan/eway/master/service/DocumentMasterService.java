@@ -24,6 +24,8 @@ public interface DocumentMasterService  {
 
 	List<DocumentMasterGetRes> getActiveDocument(DocumentMasterGetAllReq req);
 
+	List<Error> validateDocument(DocumentMasterSaveReq req);
+
 
 
 

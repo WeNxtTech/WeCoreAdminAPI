@@ -72,7 +72,7 @@ public class DocumentMasterController {
 
 			reqPrinter.reqPrint(req);
 			CommonRes data = new CommonRes();
-			List<Error> validation = basicvalidateService.validateDocument(req);
+			List<Error> validation = documentservice.validateDocument(req);
 			// validation
 			if (validation != null && validation.size() != 0) {
 				data.setCommonResponse(null);

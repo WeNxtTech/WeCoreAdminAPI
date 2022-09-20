@@ -395,5 +395,57 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 
 }
 
+	@Override
+	public List<Error> validateDocument(DocumentMasterSaveReq req) {
+		List<Error> errorList = new ArrayList<Error>();
+		
+		try {
+		
+			if (StringUtils.isBlank(req.getDocumentDesc()) ) {
+				errorList.add(new Error("01", "Document Desc", "Please Enter Document Desc "));
+			}else if (req.getDocumentDesc().length() > 100){
+				errorList.add(new Error("01","Document Desc", "Please Enter Document Desc within 100 Characters")); 
+			}
+			// Date Validation 
+			Calendar cal = new GregorianCalendar();
+			Date today = new Date();
+			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
+			today = cal.getTime();
+			if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
+				errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start"));
+	
+			} else if (req.getEffectiveDateStart().before(today)) {
+				errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			}
+			if (StringUtils.isBlank(req.getCompanyId().toString()) || req.getCompanyId() == null) {
+				errorList.add(new Error("03", "CompanyId", "Please Enter Company Id "));
+			}
+			else if (req.getDocumentDesc().length() > 20){
+				errorList.add(new Error("03","Document Desc", "Please Enter Document Desc within 20 Characters")); 
+			}
+			if (StringUtils.isBlank(req.getDocApplicableId().toString()) ) {
+				errorList.add(new Error("04", "Document Applicable Id", "Please Enter Document Applicable Id"));
+			}
+			if (req.getDocApplicable().length() > 100){
+				errorList.add(new Error("05","Document Applicable", "Please Enter Document Applicable within 100 Characters")); 
+			}
+			if (StringUtils.isBlank(req.getMandatoryStatus().toString()) ) {
+				errorList.add(new Error("06", "Mandatory Status", "Please Enter Mandatory Status"));
+			}
+			else if (req.getMandatoryStatus().length() > 1){
+				errorList.add(new Error("06","Mandatory Status", "Please Enter Mandatory Status within 1 Character")); 
+			}
+			if (req.getRemarks().length() > 100){
+				errorList.add(new Error("07","Remarks", "Please Enter Remarks within 100 Characters")); 
+			}
+			
+		} catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+		}
+		return errorList;
+	}
+
+
 	
 }

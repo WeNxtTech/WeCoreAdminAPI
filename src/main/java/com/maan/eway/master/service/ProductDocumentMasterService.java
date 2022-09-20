@@ -31,6 +31,8 @@ public interface ProductDocumentMasterService  {
 
 	List<ProductDocumentMasterGetRes> getallNonSelectedProductDocument(ProductDocumentMasterGetAllReq req);
 
+	List<Error> validateDocument(List<ProductDocumentMasterSaveReq> reqList);
+
 
 
 

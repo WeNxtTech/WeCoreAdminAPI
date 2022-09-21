@@ -42,6 +42,7 @@ import com.maan.eway.master.res.CurrencyMasterRes;
 import com.maan.eway.master.service.CurrencyMasterService;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.CurrencyMaster;
+import com.maan.eway.bean.StateMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.CurrencyMasterRepository;
 import com.maan.eway.res.DropDownRes;
@@ -87,15 +88,13 @@ public SuccessRes insertCurrency(CurrencyMasterSaveReq req) {
 		cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
 		Date effDate = cal.getTime();
 		Date endDate = sdformat.parse("12/12/2050");
-		
-		
+			
 		Long currencyId=0L;
 		
-		if (StringUtils.isBlank(req.getCurrencyId().toString())) {
+		if (StringUtils.isBlank(req.getCurrencyId())) {
 				// Save
 			   	//Long totalCount = repo.count();
-				Long totalCount =getMasterTableCount();
-				currencyId = Long.valueOf(totalCount + 1);
+				currencyId = req.getCurrencyShortCode();
 				res.setResponse("Saved Successfully ");
 				res.setSuccessId(currencyId.toString());
 
@@ -176,18 +175,6 @@ public List<Error> validateCurrencyDetails(CurrencyMasterSaveReq req) {
 	List<Error> errorList = new ArrayList<Error>();
 
 	try {
-	
-		if (StringUtils.isBlank(req.getCurrencyName()) ) {
-			errorList.add(new Error("02", "CurrencyName", "Please Select Currency  Name "));
-		}else if (req.getCurrencyName().length() > 100){
-			errorList.add(new Error("02","CurrencyName", "Please Enter Currency  Name within 100 Characters")); 
-		}else if (StringUtils.isBlank(req.getCurrencyId().toString())) {
-			Long CurrencyCount = repo.countByShortNameOrderByEntryDateDesc(req.getShortName());
-			if (CurrencyCount > 0 ) {
-				errorList.add(new Error("01", "ShortName", "This ShortName Alrady Exist "));
-			}
-		}
-
 		if (StringUtils.isBlank(req.getRemarks())) {
 			errorList.add(new Error("03", "Remark", "Please Select Remark "));
 		}else if (req.getRemarks().length() > 100){
@@ -213,17 +200,37 @@ public List<Error> validateCurrencyDetails(CurrencyMasterSaveReq req) {
 		}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()))) {
 			errorList.add(new Error("05", "Status", "Enter Status in Y or N Only"));
 		}
-		if (StringUtils.isBlank(req.getCountryId()) || req.getCountryId() == null) {
-			errorList.add(new Error("06", "CompanyId", "Please Select Company Id  "));
-		}else if (req.getCountryId().length() > 20){
-			errorList.add(new Error("06","CompanyId", "Please Enter Company Id within 20 Characters")); 
+
+		if (StringUtils.isBlank(req.getCurrencyShortCode())) {
+			errorList.add(new Error("05", "CurrencyShortCode", "Please Enter CurrencyShortCode"));
+		} else if (req.getCurrencyShortCode().length() > 5) {
+			errorList.add(new Error("08", "Currency", "Please Enter CurrencyShortCode within 5 Characters"));	
+		} else {
+			CurrencyMaster currencyShortCode =   getCurrencyShortCodeRes(req.getCurrencyShortCode());
+			if(StringUtils.isBlank(req.getCurrencyId()) &&  currencyShortCode !=null ) {
+				errorList.add(new Error("08", "Currency", "This CurrencyShortCode Already Exist"));
+			} else if( currencyShortCode !=null  && StringUtils.isNotBlank(req.getCurrencyId()) ) {
+				if(! currencyShortCode.getCurrencyId().equalsIgnoreCase(req.getCurrencyId()) ) {
+					errorList.add(new Error("08", "Currency", "This CurrencyShortCode Already Exist"));	
+				}			
+			}
 		}
-		if (req.getRsacode().length() > 10) {
-			errorList.add(new Error("07", "RSACODE", "Please Enter RSACODE within 10 Characters"));
-		}
-		if (req.getCurrencyName().length() > 25) {
+		
+		if (StringUtils.isBlank(req.getCurrencyName())) {
+			errorList.add(new Error("05", "CurrencyName", "Please Enter CurrencyName"));
+		} else if (req.getCurrencyName().length() > 25) {
 			errorList.add(new Error("08", "Currency", "Please Enter Currency Name within 25 Characters"));
+		} else {
+			CurrencyMaster currencyName =   getCurrencyNameRes(req.getCurrencyName());
+			if(StringUtils.isBlank(req.getCurrencyId()) &&  currencyName !=null ) {
+				errorList.add(new Error("08", "Currency", "This Currency Name Already Exist"));
+			} else if( currencyName !=null  && StringUtils.isNotBlank(req.getCurrencyId()) ) {
+				if(! currencyName.getCurrencyId().equalsIgnoreCase(req.getCurrencyId()) ) {
+					errorList.add(new Error("08", "Currency", "This Currency Name Already Exist"));	
+				}			
+			}
 		}
+		
 		if (req.getSubCurrency().length() > 10) {
 			errorList.add(new Error("09", "SubCurrency", "Please Enter SubCurrency within 10 Characters"));
 		}
@@ -234,6 +241,95 @@ public List<Error> validateCurrencyDetails(CurrencyMasterSaveReq req) {
 		e.printStackTrace();
 	}
 	return errorList;
+}
+
+public CurrencyMaster getCurrencyShortCodeRes(String currencyShortCode) {
+	CurrencyMaster currencyRes =null ;
+	try {
+		Date today = new Date();
+		// Find Latest Record
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<CurrencyMaster> query = cb.createQuery(CurrencyMaster.class);
+
+		// Find All
+		Root<CurrencyMaster> s = query.from(CurrencyMaster.class);
+		
+		// State Effective Date Max Filter
+		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Root<CurrencyMaster> ocpm1 = effectiveDate.from(CurrencyMaster.class);
+		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		Predicate c1 = cb.equal(ocpm1.get("currencyId"), s.get("currencyId"));
+		Predicate c2 = cb.equal(ocpm1.get("status"),s.get("status"));
+		Predicate c3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+		Predicate c4 = cb.equal(ocpm1.get("currencyShortCode"), s.get("currencyShortCode"));
+		effectiveDate.where(c1,c2,c3,c4);
+		
+		Predicate n1 = cb.equal(s.get("effectiveDateStart"), effectiveDate);
+		Predicate n2 = cb.equal(s.get("currencyShortCode"), currencyShortCode);
+		Predicate n3 = cb.equal(s.get("status"), "Y");
+		
+		// Select
+		query.select( s );
+		
+		query.where(n1,n2,n3);
+		// Get Result
+		TypedQuery<CurrencyMaster> result = em.createQuery(query);
+		List<CurrencyMaster> list = result.getResultList();
+		if( list.size()>0) {
+			currencyRes = list.get(0);
+		}
+		
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info(e.getMessage());
+		return null;
+	}
+	return currencyRes;
+}
+
+
+public CurrencyMaster getCurrencyNameRes(String currencyName) {
+	CurrencyMaster currencyRes =null;
+	try {
+		Date today = new Date();
+		// Find Latest Record
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<CurrencyMaster> query = cb.createQuery(CurrencyMaster.class);
+
+		// Find All
+		Root<CurrencyMaster> s = query.from(CurrencyMaster.class);
+		
+		// State Effective Date Max Filter
+		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Root<CurrencyMaster> ocpm1 = effectiveDate.from(CurrencyMaster.class);
+		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		Predicate c1 = cb.equal(ocpm1.get("currencyId"), s.get("currencyId"));
+		Predicate c2 = cb.equal(ocpm1.get("status"),s.get("status"));
+		Predicate c3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+		Predicate c4 = cb.equal(ocpm1.get("currencyShortCode"), s.get("currencyShortCode"));
+		effectiveDate.where(c1,c2,c3,c4);
+		
+		Predicate n1 = cb.equal(s.get("effectiveDateStart"), effectiveDate);
+		Predicate n2 = cb.equal(s.get("currencyName"), currencyName);
+		Predicate n3 = cb.equal(s.get("status"), "Y");
+		
+		// Select
+		query.select( s );
+		
+		query.where(n1,n2,n3);
+		// Get Result
+		TypedQuery<CurrencyMaster> result = em.createQuery(query);
+		List<CurrencyMaster> list = result.getResultList();
+		if( list.size()>0) {
+			currencyRes = list.get(0);
+		}
+		
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info(e.getMessage());
+		return null;
+	}
+	return currencyRes;
 }
 
 public Long getMasterTableCount() {

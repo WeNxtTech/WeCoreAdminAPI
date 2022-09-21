@@ -30,7 +30,9 @@ public class CurrencyMasterId implements Serializable {
     private static final long serialVersionUID = 1L;
 
     //--- ENTITY KEY ATTRIBUTES 
-    private Long    currencyId ;
+    private String currencyId ;
+    
+    private String    currencyShortCode ;
     
     private Date       effectiveDateStart ;
     

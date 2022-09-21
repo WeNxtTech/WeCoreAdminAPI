@@ -34,6 +34,8 @@ public interface CurrencyMasterRepository  extends JpaRepository<CurrencyMaster,
 
 	Long countByShortNameOrderByEntryDateDesc(String shortName);
 
+	CurrencyMaster findByCurrencyName(String currencyName);
+
 	
 
 }

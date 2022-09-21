@@ -89,7 +89,7 @@ public SuccessRes insertCurrency(CurrencyMasterSaveReq req) {
 		Date effDate = cal.getTime();
 		Date endDate = sdformat.parse("12/12/2050");
 			
-		Long currencyId=0L;
+		String currencyId="";
 		
 		if (StringUtils.isBlank(req.getCurrencyId())) {
 				// Save
@@ -102,7 +102,7 @@ public SuccessRes insertCurrency(CurrencyMasterSaveReq req) {
 				// Update
 				// Get Less than Equal Today Record 
 				// Criteria
-				currencyId=Long.valueOf(req.getCurrencyId());
+				currencyId=req.getCurrencyId();
 				CriteriaBuilder cb = em.getCriteriaBuilder();
 				CriteriaQuery<CurrencyMaster> query = cb.createQuery(CurrencyMaster.class);
 

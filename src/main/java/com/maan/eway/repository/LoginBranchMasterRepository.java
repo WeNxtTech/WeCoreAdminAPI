@@ -15,8 +15,8 @@ package com.maan.eway.repository;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.maan.eway.bean.LoginBrokerBranchMaster;
-import com.maan.eway.bean.LoginBrokerBranchMasterId;
+import com.maan.eway.bean.LoginBranchMaster;
+import com.maan.eway.bean.LoginBranchMasterId;
 import com.maan.eway.bean.LoginMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -31,14 +31,14 @@ import com.maan.eway.bean.LoginMasterId;
  
  
  
-public interface LoginBrokerBranchMasterRepository  extends JpaRepository<LoginBrokerBranchMaster,LoginBrokerBranchMasterId > , JpaSpecificationExecutor<LoginBrokerBranchMaster> {
+public interface LoginBranchMasterRepository  extends JpaRepository<LoginBranchMaster,LoginBranchMasterId > , JpaSpecificationExecutor<LoginBranchMaster> {
 
-	LoginBrokerBranchMaster findByLoginId(String loginId);
+	List<LoginBranchMaster> findByLoginId(String loginId);
 
-	LoginBrokerBranchMaster findByLoginIdAndBranchCodeAndCompanyId(String loginId, String branchCode,
+	LoginBranchMaster findByLoginIdAndBranchCodeAndCompanyId(String loginId, String branchCode,
 			String insuranceId);
 
-	List<LoginBrokerBranchMaster> findByLoginIdOrderByUpdatedDateDesc(String loginId);
+	List<LoginBranchMaster> findByLoginIdOrderByUpdatedDateDesc(String loginId);
 
 	
 

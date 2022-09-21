@@ -166,7 +166,9 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				// Rating Master Insert
 				successRes = ratingMasterInsert(req ,startDate , effDate , endDate , oldEndDate );
 				
+				// Ofs Grid Master Insert
 				successRes = ofsGridMasterInsert(req);
+				
 				res.setResponse(successRes);
 				res.setSuccessId(req.getCoverId());
 				
@@ -321,6 +323,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			
 			dozerMapper.map(req, saveData);
 			saveData.setCoverId(Integer.valueOf(coverId));
+			saveData.setRatingId(Integer.valueOf(coverId));
 			saveData.setCoverName(req.getCoverName());
 			saveData.setEffectiveDateStart(effDate);
 			saveData.setEffectiveDateEnd(endDate);

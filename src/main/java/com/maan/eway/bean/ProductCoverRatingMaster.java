@@ -68,7 +68,7 @@ private static final long serialVersionUID = 1L;
 	
 	@Id
 	@Column(name="COMPANY_ID", nullable=false)
-	private Integer    companyId ;
+	private String    companyId ;
 	
 	@Id
     @Temporal(TemporalType.TIMESTAMP)

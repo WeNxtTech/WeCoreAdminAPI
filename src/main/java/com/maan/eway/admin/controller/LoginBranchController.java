@@ -148,7 +148,7 @@ public class LoginBranchController {
 		}
 	} 
 	
-	@PostMapping("/attachbrokercompanybranches")
+	@PostMapping("/attachcompanybranches")
 	@ApiOperation(value="This method is to Attach Broker Company Branches")
 	public ResponseEntity<CommonRes> attachBrokerCompanyBranch(@RequestBody  AttachBrokerBranchReq req) {
 		reqPrinter.reqPrint(req);

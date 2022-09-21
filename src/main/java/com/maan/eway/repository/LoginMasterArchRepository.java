@@ -14,8 +14,8 @@ package com.maan.eway.repository;
 
 import java.math.BigDecimal;
 
-import com.maan.eway.bean.LoginBrokerBranchMasterArch;
-import com.maan.eway.bean.LoginBrokerBranchMasterArchId;
+import com.maan.eway.bean.LoginBranchMasterArch;
+import com.maan.eway.bean.LoginBranchMasterArchId;
 import com.maan.eway.bean.LoginMasterArch;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;

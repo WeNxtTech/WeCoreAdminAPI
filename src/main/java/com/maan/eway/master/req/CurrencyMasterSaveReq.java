@@ -16,9 +16,6 @@ public class CurrencyMasterSaveReq implements Serializable {
 	@JsonProperty("CurrencyId")
 	private String currencyId;
 
-	@JsonProperty("CountryId")
-	private String countryId;
-
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDate")
 	private Date effectiveDate;
@@ -29,20 +26,20 @@ public class CurrencyMasterSaveReq implements Serializable {
 	@JsonProperty("CurrencyName")
 	private String currencyName;
 
-	@JsonProperty("ShortName")
-	private String shortName;
+	@JsonProperty("CurrencyShortCode")
+	private String currencyShortCode;
 
-	@JsonProperty("Rfactor")
-	private String rfactor;
+	@JsonProperty("CurrencyShortName")
+	private String currencyShortName;
+	
+/*	@JsonProperty("Rfactor")
+	private String rfactor; */
 
 	@JsonProperty("SubCurrency")
 	private String subCurrency;
 
 	@JsonProperty("Status")
 	private String status;
-
-	@JsonProperty("Rsacode")
-	private String rsacode;
 
 	@JsonProperty("ExMinlmt")
 	private String exMinlmt;

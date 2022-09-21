@@ -1,8 +1,5 @@
 package com.maan.eway.auth.controller;
 
-import java.util.Collections;
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,16 +10,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.maan.eway.admin.req.MenuListReq;
-import com.maan.eway.admin.res.LoginBrokerDetailsGetRes;
 import com.maan.eway.auth.dto.CommonLoginRes;
 import com.maan.eway.auth.dto.LoginRequest;
-import com.maan.eway.auth.dto.LogoutRequest;
-import com.maan.eway.auth.dto.Menu;
 import com.maan.eway.auth.service.AuthendicationService;
 import com.maan.eway.auth.service.LoginValidatedService;
-import com.maan.eway.res.CommonRes;
 import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.Api;

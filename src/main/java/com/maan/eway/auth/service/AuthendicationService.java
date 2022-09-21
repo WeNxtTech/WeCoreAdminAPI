@@ -1,16 +1,10 @@
 package com.maan.eway.auth.service;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 
-import com.maan.eway.admin.req.MenuListReq;
 import com.maan.eway.auth.dto.ChangePasswordReq;
 import com.maan.eway.auth.dto.CommonLoginRes;
 import com.maan.eway.auth.dto.LoginRequest;
-import com.maan.eway.auth.dto.LogoutRequest;
-import com.maan.eway.auth.dto.Menu;
-import com.maan.eway.res.CommonRes;
 
 public interface AuthendicationService {
 

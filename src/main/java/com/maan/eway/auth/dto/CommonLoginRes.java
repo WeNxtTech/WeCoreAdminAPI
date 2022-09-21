@@ -3,8 +3,9 @@ package com.maan.eway.auth.dto;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.maan.eway.error.Error;
+
 import lombok.Data;
+import com.maan.eway.error.Error;
 
 @Data
 public class CommonLoginRes {

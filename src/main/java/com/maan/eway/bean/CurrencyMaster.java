@@ -54,7 +54,11 @@ private static final long serialVersionUID = 1L;
     //--- ENTITY PRIMARY KEY 
     @Id
     @Column(name="CURRENCY_ID", nullable=false)
-    private Long    currencyId ;
+    private String    currencyId ;
+    
+    @Id
+    @Column(name="CURRENCY_SHORT_CODE", nullable=false)
+    private String    currencyShortCode ;
 
     @Id
     @Temporal(TemporalType.TIMESTAMP)
@@ -71,9 +75,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="CURRENCY_NAME", length=100)
     private String     currencyName ;
 
-    @Column(name="COUNTRY_ID",  length=20)
-    private String     countryId ;
-    
     @Column(name="DISPLAY_ORDER")
     private Integer    displayOrder ;
 
@@ -88,9 +89,6 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="STATUS", length=1)
     private String     status ;
-
-    @Column(name="RSACODE", length=10)
-    private String     rsacode ;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ENTRY_DATE")

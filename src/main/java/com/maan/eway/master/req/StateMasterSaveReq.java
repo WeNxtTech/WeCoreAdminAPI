@@ -19,12 +19,29 @@ public class StateMasterSaveReq implements Serializable {
 	@JsonProperty("StateName")
 	private String stateName;
 
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDate")
-	private Date effectiveDate;
+	@JsonProperty("StateShortCode")
+	private String stateShortCode;
 
 	@JsonProperty("CountryId")
-	private String countryId;
+	private Integer countryId;
+
+	@JsonProperty("CountryName")
+	private String countryName;
+	
+	@JsonProperty("RegionCode")
+	private Integer regionCode;
+
+	@JsonProperty("RegionName")
+	private String regionName;
+ 
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateEnd")
+	private Date effectiveDateEnd;
+
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
+
 
 	@JsonProperty("Status")
 	private String status;

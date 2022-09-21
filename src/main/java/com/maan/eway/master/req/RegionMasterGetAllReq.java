@@ -19,4 +19,7 @@ public class RegionMasterGetAllReq implements Serializable {
     @JsonProperty("Offset")
     private String offset;
     
+    @JsonProperty("CountryId")
+    private Integer countryId;
+    
 }

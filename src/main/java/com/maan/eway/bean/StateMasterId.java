@@ -35,6 +35,9 @@ public class StateMasterId implements Serializable {
     private Date       effectiveDateStart ;
     
     private Date       effectiveDateEnd ;
-    
+    private String stateShortCode;
+    private Integer     countryId ;
+    private Integer   regionCode;
+
      
 }

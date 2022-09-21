@@ -5,6 +5,7 @@
 */
 package com.maan.eway.master.controller;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.RegionMasterDropDownReq;
 import com.maan.eway.master.req.RegionMasterGetAllReq;
 import com.maan.eway.master.req.RegionMasterGetReq;
 import com.maan.eway.master.req.RegionMasterSaveReq;
@@ -150,15 +151,15 @@ public class RegionMasterController {
 	}
 		
 		// Region Master Drop Down Type
-		@GetMapping("/dropdown/region")
+		@PostMapping("/dropdown/region")
 		@ApiOperation(value = "This method is get Region Master Drop Down")
 
-		public ResponseEntity<CommonRes> getRegionMasterDropdown() {
+		public ResponseEntity<CommonRes> getRegionMasterDropdown(@RequestBody RegionMasterDropDownReq req) {
 
 			CommonRes data = new CommonRes();
 
 			// Save
-			List<DropDownRes> res = regionService.getRegionMasterDropdown();
+			List<DropDownRes> res = regionService.getRegionMasterDropdown(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());

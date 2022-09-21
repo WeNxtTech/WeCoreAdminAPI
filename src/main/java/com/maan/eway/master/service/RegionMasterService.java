@@ -8,6 +8,7 @@ package com.maan.eway.master.service;
 import com.maan.eway.master.req.BankMasterGetAllReq;
 import com.maan.eway.master.req.BankMasterGetReq;
 import com.maan.eway.master.req.BankMasterSaveReq;
+import com.maan.eway.master.req.RegionMasterDropDownReq;
 import com.maan.eway.master.req.RegionMasterGetAllReq;
 import com.maan.eway.master.req.RegionMasterGetReq;
 import com.maan.eway.master.req.RegionMasterSaveReq;
@@ -33,7 +34,8 @@ public interface RegionMasterService  {
 
 	RegionMasterRes getByRegionCode(RegionMasterGetReq req);
 
-	List<DropDownRes> getRegionMasterDropdown();
+	List<DropDownRes> getRegionMasterDropdown(RegionMasterDropDownReq req);
+
 
 
 }

@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.master.req.RegionMasterDropDownReq;
 import com.maan.eway.master.req.RegionMasterGetAllReq;
 import com.maan.eway.master.req.RegionMasterGetReq;
 import com.maan.eway.master.req.RegionMasterSaveReq;
@@ -98,7 +99,7 @@ public SuccessRes insertRegion(RegionMasterSaveReq req) {
 				}
 				
 				saveData.setRegionCode(regionCode.toString());
-				saveData.setShortCode(req.getShortCode());
+				saveData.setRegionShortCode(req.getRegionShortCode());
 				res.setResponse("Saved Successfully ");
 				res.setSuccessId(regionCode);
 
@@ -121,7 +122,9 @@ public SuccessRes insertRegion(RegionMasterSaveReq req) {
 				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 				Predicate a1 = cb.equal(ocpm1.get("regionCode"), b.get("regionCode"));
 				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , startDate);
-				effectiveDate.where(a1,a2);
+				Predicate a3 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
+
+				effectiveDate.where(a1,a2,a3);
 
 				// Order By
 			//	List<Order> orderList = new ArrayList<Order>();
@@ -131,8 +134,9 @@ public SuccessRes insertRegion(RegionMasterSaveReq req) {
 				Predicate n1 = cb.equal(b.get("status"), "Y");
 				Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 				Predicate n3 =  cb.equal(b.get("regionCode"), req.getRegionCode() );
+				Predicate n4 =  cb.equal(b.get("countryId"), req.getCountryId() );
 
-				query.where(n1, n2, n3);//.orderBy(orderList);
+				query.where(n1, n2, n3,n4);//.orderBy(orderList);
 
 				// Get Result
 				TypedQuery<RegionMaster> result = em.createQuery(query);
@@ -142,16 +146,18 @@ public SuccessRes insertRegion(RegionMasterSaveReq req) {
 					repo.delete(list.get(0));
 				} 
 				saveData.setRegionCode(req.getRegionCode());
-				saveData.setShortCode(req.getShortCode());
+				saveData.setRegionShortCode(req.getRegionShortCode());
 				res.setResponse("Updated Successfully ");
 				res.setSuccessId(req.getRegionCode());
 			}
-			saveData.setCompanyId(req.getCompanyId());
 			saveData.setRegionName(req.getRegionName());
 			saveData.setEffectiveDateStart(effDate);
 			saveData.setEffectiveDateEnd(endDate);
 			saveData.setStatus(req.getStatus());
 			saveData.setEntryDate(new Date());
+			saveData.setCountryId(req.getCountryId());
+			saveData.setCountryName(req.getCountryName());
+
 			repo.saveAndFlush(saveData);
 			
 			if(list.size() > 0 ) {
@@ -183,10 +189,10 @@ public List<Error> validateRegionDetails(RegionMasterSaveReq req) {
 			errorList.add(new Error("02", "RegionName", "Please Select Region  Name "));
 		}else if (req.getRegionName().length() > 100){
 			errorList.add(new Error("02","RegionName", "Please Enter Region  Name within 100 Characters")); 
-		}else if (StringUtils.isBlank(req.getShortCode())) {
-			Long RegionCount = repo.countByShortCodeOrderByEntryDateDesc(req.getRegionName());
+		}else if (StringUtils.isBlank(req.getRegionShortCode())) {
+			Long RegionCount = repo.countByRegionShortCodeOrderByEntryDateDesc(req.getRegionName());
 			if (RegionCount > 0 ) {
-				errorList.add(new Error("01", "ShortCode", "This Short Code Alrady Exist "));
+				errorList.add(new Error("01", "Region Short Code", "This Region Short Code Alrady Exist "));
 			}
 		}
 
@@ -212,12 +218,9 @@ public List<Error> validateRegionDetails(RegionMasterSaveReq req) {
 		}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()))) {
 			errorList.add(new Error("05", "Status", "Enter Status Y or NOnly"));
 		}
-		if (StringUtils.isBlank(req.getCompanyId()) || req.getCompanyId() == null) {
-			errorList.add(new Error("06", "CompanyId", "Please Select Company Id  "));
-		}else if (req.getCompanyId().length() > 20){
-			errorList.add(new Error("06","CompanyId", "Please Enter Company Id within 20 Characters")); 
+		if (StringUtils.isBlank(req.getCountryId().toString()) ) {
+			errorList.add(new Error("06", "Country Id", "Please Select Country Id  "));
 		}
-
 	} catch (Exception e) {
 		log.error(e);
 		e.printStackTrace();
@@ -250,7 +253,9 @@ public List<RegionMasterRes> getallRegionDetails(RegionMasterGetAllReq req) {
 		Root<RegionMaster> ocpm1 = effectiveDate.from(RegionMaster.class);
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(ocpm1.get("regionCode"), b.get("regionCode"));
-		effectiveDate.where(a1);
+		Predicate a2 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
+		
+		effectiveDate.where(a1,a2);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -258,8 +263,9 @@ public List<RegionMasterRes> getallRegionDetails(RegionMasterGetAllReq req) {
 		
 		// Where
 		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+		Predicate n2 = cb.equal(b.get("countryId"),req.getCountryId());
 
-		query.where(n1).orderBy(orderList);
+		query.where(n1,n2).orderBy(orderList);
 
 		// Get Result
 		TypedQuery<RegionMaster> result = em.createQuery(query);
@@ -309,7 +315,9 @@ public RegionMasterRes getByRegionCode(RegionMasterGetReq req) {
 		Root<RegionMaster> ocpm1 = effectiveDate.from(RegionMaster.class);
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 		javax.persistence.criteria.Predicate a1 = cb.equal(c.get("regionCode"),ocpm1.get("regionCode") );
-		effectiveDate.where(a1);
+		javax.persistence.criteria.Predicate a2 = cb.equal(c.get("countryId"),ocpm1.get("countryId") );
+
+		effectiveDate.where(a1,a2);
 		
 		
 		
@@ -321,9 +329,10 @@ public RegionMasterRes getByRegionCode(RegionMasterGetReq req) {
 	
 		javax.persistence.criteria.Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate);		
 		javax.persistence.criteria.Predicate n2 = cb.equal(c.get("regionCode"),req.getRegionCode()) ;
+		javax.persistence.criteria.Predicate n3 = cb.equal(c.get("countryId"),req.getCountryId()) ;
 
 
-		query.where(n1 ,n2).orderBy(orderList);
+		query.where(n1 ,n2,n3).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<RegionMaster> result = em.createQuery(query);			
@@ -342,7 +351,7 @@ public RegionMasterRes getByRegionCode(RegionMasterGetReq req) {
 
 //**********************************************************DROPDOWN********************************************************************\\
 @Override
-public List<DropDownRes> getRegionMasterDropdown() {
+public List<DropDownRes> getRegionMasterDropdown(RegionMasterDropDownReq req) {
 	List<DropDownRes> resList = new ArrayList<DropDownRes>();
 	try {
 		Date today  = new Date();
@@ -363,6 +372,7 @@ public List<DropDownRes> getRegionMasterDropdown() {
 		// Select
 		query.select(c );
 		
+		
 	
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -374,13 +384,16 @@ public List<DropDownRes> getRegionMasterDropdown() {
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 		javax.persistence.criteria.Predicate a1 = cb.equal(c.get("regionCode"),ocpm1.get("regionCode") );
 		javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-		effectiveDate.where(a1,a2);
+		javax.persistence.criteria.Predicate a3 = cb.equal(c.get("countryId"),ocpm1.get("countryId") );
+
+		effectiveDate.where(a1,a2,a3);
 		
 	    // Where	
 		javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
 		javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+		javax.persistence.criteria.Predicate n3 = cb.equal(c.get("countryId"),req.getCountryId() );
 		
-		query.where(n1,n2).orderBy(orderList);
+		query.where(n1,n2,n3).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<RegionMaster> result = em.createQuery(query);			
@@ -428,7 +441,9 @@ public List<RegionMasterRes> getActiveRegionDetails(RegionMasterGetAllReq req) {
 		Root<RegionMaster> ocpm1 = effectiveDate.from(RegionMaster.class);
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(ocpm1.get("regionCode"), b.get("regionCode"));
-		effectiveDate.where(a1);
+		Predicate a2 = cb.equal(ocpm1.get("countryId"),b.get("countryId") );
+
+		effectiveDate.where(a1,a2);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -437,8 +452,9 @@ public List<RegionMasterRes> getActiveRegionDetails(RegionMasterGetAllReq req) {
 		// Where
 		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 		Predicate n2 = cb.equal(b.get("status"), "Y");
+		Predicate n3 = cb.equal(b.get("countryId"),req.getCountryId() );
 
-		query.where(n1,n2).orderBy(orderList);
+		query.where(n1,n2,n3).orderBy(orderList);
 
 		// Get Result
 		TypedQuery<RegionMaster> result = em.createQuery(query);
@@ -502,5 +518,6 @@ public Long getMasterTableCount() {
 }
 	return data;
 }
+
 
 }

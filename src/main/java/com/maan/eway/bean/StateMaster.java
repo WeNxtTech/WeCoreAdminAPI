@@ -56,6 +56,11 @@ private static final long serialVersionUID = 1L;
     private Integer     stateId ;
 
     @Id
+    @Column(name="STATE_SHORT_CODE", nullable=false, length=20)
+    private String stateShortCode;
+
+    
+    @Id
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="EFFECTIVE_DATE_START", nullable=false)
     private Date       effectiveDateStart ;
@@ -65,13 +70,19 @@ private static final long serialVersionUID = 1L;
     @Column(name="EFFECTIVE_DATE_END", nullable=false)
     private Date       effectiveDateEnd ;
     
+    @Id
+    @Column(name="COUNTRY_ID",nullable=false)
+    private Integer     countryId ;
+
+    @Id
+    @Column(name="REGION_CODE",nullable=false)
+    private Integer   regionCode;
+
+    
     //--- ENTITY DATA FIELDS 
     @Column(name="STATE_NAME", length=100)
     private String     stateName ;
     
-    @Column(name="COUNTRY_ID")
-    private Integer     countryId ;
-
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ENTRY_DATE")
     private Date       entryDate ;
@@ -87,6 +98,13 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="REMARKS", length=100)
     private String     remarks ;
+    
+    @Column(name="COUNTRY_NAME", length=100)
+    private String     countryName ;
+   
+    @Column(name="REGION_NAME", length=100)
+    private String     regionName ;
+   
 }
 
 

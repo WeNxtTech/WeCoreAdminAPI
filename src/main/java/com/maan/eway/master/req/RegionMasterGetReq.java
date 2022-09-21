@@ -16,4 +16,7 @@ public class RegionMasterGetReq implements Serializable {
 	@JsonProperty("RegionCode")
     private String     regionCode     ;
     
+	@JsonProperty("CountryId")
+    private Integer countryId    ;
+    
 }

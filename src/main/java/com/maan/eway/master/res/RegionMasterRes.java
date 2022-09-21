@@ -24,8 +24,8 @@ public class RegionMasterRes implements Serializable {
 	@JsonProperty("EffectiveDateEnd")
 	private Date effectiveDateEnd;
 
-	@JsonProperty("ShortCode")
-	private String shortCode;
+	@JsonProperty("RegionShortCode")
+	private String regionShortCode;
 
 	@JsonProperty("RegionName")
 	private String regionName;
@@ -37,9 +37,6 @@ public class RegionMasterRes implements Serializable {
 	@JsonProperty("EntryDate")
 	private Date entryDate;
 
-	@JsonProperty("InsuranceId")
-	private String companyId;
-
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
 
@@ -48,4 +45,10 @@ public class RegionMasterRes implements Serializable {
 
 	@JsonProperty("Remarks")
 	private String remarks;
+	
+	@JsonProperty("CountryId")
+	private Integer countryId;
+
+	@JsonProperty("CountryName")
+	private String countryName;
 }

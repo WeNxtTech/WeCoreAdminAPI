@@ -14,6 +14,7 @@ import com.maan.eway.master.req.ReferalMasterSaveReq;
 import com.maan.eway.master.req.RegionMasterGetAllReq;
 import com.maan.eway.master.req.RegionMasterGetReq;
 import com.maan.eway.master.req.RegionMasterSaveReq;
+import com.maan.eway.master.req.StateMasterDropDownReq;
 import com.maan.eway.master.req.StateMasterGetAllReq;
 import com.maan.eway.master.req.StateMasterGetReq;
 import com.maan.eway.master.req.StateMasterSaveReq;
@@ -43,7 +44,7 @@ public interface StateMasterService  {
 
 	StateMasterRes getByStateId(StateMasterGetReq req);
 
-	List<DropDownRes> getStateMasterDropdown(StateMasterGetReq req);
+	List<DropDownRes> getStateMasterDropdown(StateMasterDropDownReq req);
 
 	
 	

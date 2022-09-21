@@ -20,17 +20,14 @@ public class RegionMasterSaveReq implements Serializable {
 	@JsonProperty("EffectiveDate")
 	private Date effectiveDate;
 
-	@JsonProperty("ShortCode")
-	private String shortCode;
+	@JsonProperty("RegionShortCode")
+	private String regionShortCode;
 
 	@JsonProperty("RegionName")
 	private String regionName;
 
 	@JsonProperty("Status")
 	private String status;
-
-	@JsonProperty("InsuranceId")
-	private String companyId;
 
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
@@ -40,5 +37,11 @@ public class RegionMasterSaveReq implements Serializable {
 
 	@JsonProperty("Remarks")
 	private String remarks;
+	
+	@JsonProperty("CountryId")
+	private Integer countryId;
 
+	@JsonProperty("CountryName")
+	private String countryName;
+	
 }

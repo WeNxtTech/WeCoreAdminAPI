@@ -9,14 +9,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.maan.eway.repository.CoverMasterRepository;
+import com.maan.eway.req.EserviceAllRisksListReq;
 import com.maan.eway.res.SuccessRes;
 import com.google.gson.Gson;
 import com.maan.eway.bean.CoverMaster;
+import com.maan.eway.bean.EserviceAllRisks;
+import com.maan.eway.bean.OfsGridMaster;
 import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CoverMasterGetAllReq;
 import com.maan.eway.master.req.CoverMasterGetReq;
 import com.maan.eway.master.req.CoverMasterSaveReq;
+import com.maan.eway.master.req.OfsGridSaveReq;
 import com.maan.eway.master.res.CoverMasterRes;
 import com.maan.eway.master.service.CoverMasterService;
 
@@ -27,6 +31,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -105,6 +110,49 @@ try {
 		errorList.add(new Error("06", "CompanyId", "Please Enter Company Id "));
 	}
 	
+	//Rating Master Validation
+	if (StringUtils.isBlank(req.getCalcType())) {
+		errorList.add(new Error("07", "CalcType", "Please Enter CalcType  "));
+	}
+	
+	if (StringUtils.isBlank(req.getCalcStatus())) {
+		errorList.add(new Error("08", "CalcStatus", "Please Enter CalcStatus  "));
+	}
+
+	if (StringUtils.isBlank(req.getCoverageType())) {
+		errorList.add(new Error("09", "CoverageType", "Please Enter CoverageType  "));
+	}
+	if (!"Y".equals(req.getCalcYn())||!"|N".equals(req.getCalcYn())) {
+		errorList.add(new Error("10", "CalcYn", "Please Enter Y or N  "));
+	}
+	if (StringUtils.isBlank(req.getCoverageLimit())) {
+		errorList.add(new Error("11", "CoverageLimit", "Please Enter CoverageLimit "));
+	}
+	if (StringUtils.isBlank(req.getCoverageLimit())) {
+		errorList.add(new Error("11", "CoverageLimit", "Please Enter CoverageLimit "));
+	}
+	
+	//Ofs Grid Validation
+	if ("G".equals(req.getCalcType())) {
+	for(OfsGridSaveReq data:req.getOfsGridList()) {
+		if (StringUtils.isBlank(data.getCalcType())) {
+			errorList.add(new Error("12", "CalcType", "Please Enter CalcType "));
+		}
+		if (StringUtils.isBlank(data.getMaxSuminsured())) {
+			errorList.add(new Error("13", "MaxSuminsured", "Please Enter MaxSuminsured "));
+		}
+		if (StringUtils.isBlank(data.getMinSuminsured())) {
+			errorList.add(new Error("14", "MinSuminsured", "Please Enter MinSuminsured "));
+		}
+		if (StringUtils.isBlank(data.getMinPremium())) {
+			errorList.add(new Error("15", "MinPremium", "Please Enter MinPremium "));
+		}
+		if (StringUtils.isBlank(data.getBaseRate())) {
+			errorList.add(new Error("16", "BaseRate", "Please Enter BaseRate "));
+		}
+	}
+		
+	}
 	
 	
 } catch (Exception e) {
@@ -135,9 +183,10 @@ try {
 	Date effDate = cal.getTime();
 	Date endDate = sdformat.parse("12/12/2050");
 	
-	
+	Date  entryDate = null ; boolean update = false ;
 	String coverId="";
 	
+	List<CoverMaster> find=new ArrayList<CoverMaster>();
 	if (StringUtils.isBlank(req.getCoverId().toString())) {
 			// Save
 		    //Long totalCount = repo.count();
@@ -199,6 +248,23 @@ try {
 		saveData.setEffectiveDateEnd(endDate);
 		saveData.setStatus(req.getStatus());
 		saveData.setEntryDate(new Date());
+
+	/*	List<OfsGridMaster> ofsList=new ArrayList<OfsGridMaster>();
+		if (req.getCalcType().equals("G")) {
+			for (OfsGridSaveReq data : req.getOfsGridList()) {
+				OfsGridMaster save = new OfsGridMaster();
+
+				if (update == true) {
+					List<OfsGridMaster> filterItem = ofsList.stream()
+							.filter(o -> o.getCalcType().equals(Integer.valueOf(data.getCalcType())))
+							.collect(Collectors.toList());
+					if (filterItem.size() > 0) {
+						entryDate = filterItem.get(0).getEntryDate();
+
+					}
+				}
+			}
+		}*/
 		repo.saveAndFlush(saveData);
 		
 		if(list.size() > 0 ) {

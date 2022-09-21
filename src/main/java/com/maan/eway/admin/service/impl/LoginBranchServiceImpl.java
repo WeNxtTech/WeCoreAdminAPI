@@ -52,14 +52,14 @@ import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.admin.service.LoginBranchService;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
-import com.maan.eway.bean.LoginBrokerBranchMaster;
-import com.maan.eway.bean.LoginBrokerBranchMasterArch;
+import com.maan.eway.bean.LoginBranchMaster;
+import com.maan.eway.bean.LoginBranchMasterArch;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginMasterArch;
 import com.maan.eway.bean.RegionMaster;
 import com.maan.eway.repository.BranchMasterRepository;
-import com.maan.eway.repository.LoginBrokerBranchMasterArchRepository;
-import com.maan.eway.repository.LoginBrokerBranchMasterRepository;
+import com.maan.eway.repository.LoginBranchMasterArchRepository;
+import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.LoginMasterArchRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 
@@ -74,10 +74,10 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 	
 
 	@Autowired
-	private LoginBrokerBranchMasterRepository loginBrokerRepo;
+	private LoginBranchMasterRepository loginBrokerRepo;
 	
 	@Autowired
-	private LoginBrokerBranchMasterArchRepository loginBrokerArchRepo;
+	private LoginBranchMasterArchRepository loginBrokerArchRepo;
 	
 	@Autowired
 	private BranchMasterRepository branchRepo ;
@@ -448,15 +448,15 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 			LoginMaster loginData = loginRepo.findByLoginId(req.getLoginId());
 			
 			// Find Data 
-			LoginBrokerBranchMaster findBranch = loginBrokerRepo.findByLoginIdAndBranchCodeAndCompanyId(req.getLoginId() , req.getBranchCode() , req.getCompanyId());
+			LoginBranchMaster findBranch = loginBrokerRepo.findByLoginIdAndBranchCodeAndCompanyId(req.getLoginId() , req.getBranchCode() , req.getCompanyId());
 			
-			LoginBrokerBranchMaster save = dozerMapper.map(req, LoginBrokerBranchMaster.class )  ;
+			LoginBranchMaster save = dozerMapper.map(req, LoginBranchMaster.class )  ;
 			if(findBranch !=null  ) {
 				//Delete Old Record
 				loginBrokerRepo.delete(findBranch);
 				// Save in Arch tables
 				String archId = "AI-" + idf.format(new Date());
-				LoginBrokerBranchMasterArch  loginArch = dozerMapper.map(findBranch, LoginBrokerBranchMasterArch.class )  ;
+				LoginBranchMasterArch  loginArch = dozerMapper.map(findBranch, LoginBranchMasterArch.class )  ;
 				loginArch.setArchId(archId);
 				loginBrokerArchRepo.saveAndFlush(loginArch);
 				
@@ -494,7 +494,7 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 		SimpleDateFormat idf = new SimpleDateFormat("yyMMddhhssmmss"); 
 		try {
 			// Find Data 
-			LoginBrokerBranchMaster findBranch = loginBrokerRepo.findByLoginIdAndBranchCodeAndCompanyId(req.getLoginId() , req.getBranchCode() , req.getInsuranceId());
+			LoginBranchMaster findBranch = loginBrokerRepo.findByLoginIdAndBranchCodeAndCompanyId(req.getLoginId() , req.getBranchCode() , req.getInsuranceId());
 			res = dozerMapper.map(findBranch, GetBrokerBranchRes.class);
 			
 		} catch (Exception e) {
@@ -512,7 +512,7 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 		SimpleDateFormat idf = new SimpleDateFormat("yyMMddhhssmmss"); 
 		try {
 			// Find Data 
-			List<LoginBrokerBranchMaster> findBranches = loginBrokerRepo.findByLoginIdOrderByUpdatedDateDesc(req.getLoginId() );
+			List<LoginBranchMaster> findBranches = loginBrokerRepo.findByLoginIdOrderByUpdatedDateDesc(req.getLoginId() );
 			Type listType = new TypeToken<List<GetBrokerBranchRes>>(){}.getType();
 			resList = mapper.map(findBranches ,listType);
 		} catch (Exception e) {

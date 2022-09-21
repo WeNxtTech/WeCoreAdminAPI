@@ -24,7 +24,7 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 @Builder
-public class LoginBrokerBranchMasterId implements Serializable {
+public class LoginBranchMasterId implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

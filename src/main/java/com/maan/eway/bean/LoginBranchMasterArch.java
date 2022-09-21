@@ -42,10 +42,10 @@ import javax.persistence.*;
 @DynamicInsert
 @DynamicUpdate
 @Builder
-@Table(name="login_broker_branch_master_arch")
+@Table(name="login_branch_master_arch")
 
 
-public class LoginBrokerBranchMasterArch implements Serializable {
+public class LoginBranchMasterArch implements Serializable {
  
 private static final long serialVersionUID = 1L;
  
@@ -71,8 +71,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="AGENCY_CODE")
     private Integer     agencyCode ;
 
-    @Column(name="BROKER_ATTACHED_COMPANY", length=300)
-    private String     brokerAttachedCompany ;
+    @Column(name="ATTACHED_COMPANY", length=300)
+    private String     attachedCompany ;
     
     
     @Column(name="ATTACHED_BRANCH", length=300)

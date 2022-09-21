@@ -28,10 +28,13 @@ public class OfsGridSaveReq implements Serializable {
 	@JsonProperty("MinPremium")
 	private String minPremium;
 
-	@JsonProperty("ToolTip")
+
+	
+	/*
+	 	@JsonProperty("ToolTip")
 	private String toolTip;
 	
-	/*@JsonProperty("CoreCode")
+	 @JsonProperty("CoreCode")
 	private String coreCode;
 
 	@JsonProperty("RatingId")

@@ -12,6 +12,7 @@ import com.maan.eway.master.req.DocumentMasterGetAllReq;
 import com.maan.eway.master.req.DocumentMasterGetReq;
 import com.maan.eway.master.req.DocumentMasterSaveReq;
 import com.maan.eway.master.res.DocumentMasterGetRes;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 
 public interface DocumentMasterService  {
@@ -23,6 +24,10 @@ public interface DocumentMasterService  {
 	List<DocumentMasterGetRes> getallDocuments(DocumentMasterGetAllReq req);
 
 	List<DocumentMasterGetRes> getActiveDocument(DocumentMasterGetAllReq req);
+
+	List<Error> validateDocument(DocumentMasterSaveReq req);
+
+	List<DropDownRes> getDocumentDropDown();
 
 
 

@@ -31,14 +31,5 @@ public class BasicValidationService {
 		}
 	}
 
-	public List<Error> validateDocument(DocumentMasterSaveReq req) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public List<Error> validateDocument(List<ProductDocumentMasterSaveReq> reqList) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	
 }

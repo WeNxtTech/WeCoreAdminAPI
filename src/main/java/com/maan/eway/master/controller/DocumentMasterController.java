@@ -25,6 +25,7 @@ import com.maan.eway.master.service.DocumentMasterService;
 import com.maan.eway.master.service.SectionMasterService;
 import com.maan.eway.master.service.SubCoverMasterService;
 import com.maan.eway.res.CommonRes;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 import com.maan.eway.service.impl.BasicValidationService;
@@ -72,7 +73,7 @@ public class DocumentMasterController {
 
 			reqPrinter.reqPrint(req);
 			CommonRes data = new CommonRes();
-			List<Error> validation = basicvalidateService.validateDocument(req);
+			List<Error> validation = documentservice.validateDocument(req);
 			// validation
 			if (validation != null && validation.size() != 0) {
 				data.setCommonResponse(null);
@@ -162,5 +163,24 @@ public class DocumentMasterController {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}			
 		}
+		
+		// Document Drop Down
+		
+		@GetMapping("/dropdown/document")
+		@ApiOperation(value="This Method is to Drop Down Document")
+		public ResponseEntity<CommonRes> getDocumentDropdown()
+		{
+			CommonRes data = new CommonRes();
+			List<DropDownRes> res = documentservice.getDocumentDropDown();
+			data.setCommonResponse(res);
+			data.setErrorMessage(Collections.emptyList());
+			data.setIsError(false);
+			data.setMessage("Success");
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}			
+		}
 }

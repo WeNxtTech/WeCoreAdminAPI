@@ -68,9 +68,6 @@ public class ProductDocumentMasterController {
 	@Autowired
 	private  PrintReqService reqPrinter;
 	
-	@Autowired
-	private BasicValidationService basicvalidateService;
-
 	
 	// save
 		@PostMapping("/insertproductdocument")
@@ -79,7 +76,7 @@ public class ProductDocumentMasterController {
 
 			reqPrinter.reqPrint(reqList);
 			CommonRes data = new CommonRes();
-			List<Error> validation = basicvalidateService.validateDocument(reqList);
+			List<Error> validation = documentservice.validateDocument(reqList);
 			// validation
 			if (validation != null && validation.size() != 0) {
 				data.setCommonResponse(null);

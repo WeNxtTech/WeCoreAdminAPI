@@ -26,6 +26,7 @@ import com.maan.eway.error.Error;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.SessionMasterRepository;
 
+
 @Component
 public class LoginValidatedServiceImpl implements LoginValidatedService {
 

@@ -9,7 +9,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,11 +18,8 @@ import com.maan.eway.auth.dto.ChangePasswordReq;
 import com.maan.eway.auth.dto.CommonLoginRes;
 import com.maan.eway.auth.service.AuthendicationService;
 import com.maan.eway.auth.service.LoginValidatedService;
-import com.maan.eway.error.Error;
-import com.maan.eway.res.CommonRes;
-import com.maan.eway.res.DropDownRes;
-import com.maan.eway.service.DropDownService;
 import com.maan.eway.service.PrintReqService;
+import com.maan.eway.error.Error;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -33,9 +29,6 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/basicauth")
 public class BasicAuthController {
 
-	@Autowired
-	private DropDownService dropDownService;
-	
 	@Autowired
 	private PrintReqService reqPrinter;
 	

@@ -40,19 +40,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.maan.eway.admin.req.BrokerProductCompaniesRes;
-import com.maan.eway.admin.req.BrokerProductGetReq;
-import com.maan.eway.admin.req.MenuListReq;
-import com.maan.eway.admin.res.BrokerProductsGetRes;
-import com.maan.eway.admin.res.LoginProductCriteriaRes;
-import com.maan.eway.admin.res.ProductCriteriaRes;
-import com.maan.eway.admin.service.LoginProductService;
+import com.maan.eway.auth.dto.BrokerProductCompaniesRes;
+import com.maan.eway.auth.dto.BrokerProductsGetRes;
 import com.maan.eway.auth.dto.ChangePasswordReq;
 import com.maan.eway.auth.dto.ClaimLoginResponse;
 import com.maan.eway.auth.dto.CommonLoginRes;
 import com.maan.eway.auth.dto.LoginBranchDetailsRes;
+import com.maan.eway.auth.dto.LoginProductCriteriaRes;
 import com.maan.eway.auth.dto.LoginRequest;
-import com.maan.eway.auth.dto.Menu;
 import com.maan.eway.auth.service.AuthendicationService;
 import com.maan.eway.auth.token.EncryDecryService;
 import com.maan.eway.auth.token.JwtTokenUtil;
@@ -60,8 +55,9 @@ import com.maan.eway.auth.token.passwordEnc;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginMasterId;
+import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginUserInfo;
-import com.maan.eway.bean.MenuMaster;
+import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.SessionMaster;
 import com.maan.eway.repository.BranchMasterRepository;
 import com.maan.eway.repository.LoginMasterRepository;
@@ -89,8 +85,6 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 	@Autowired
 	private LoginUserInfoRepository loginUserRepo ;
 	
-	@Autowired
-	private LoginProductService loginProductsService ;
 
 	
 	
@@ -191,7 +185,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			
 			List<String> companyIds = new ArrayList<>(Arrays.asList(companies.split(","))) ;
 			
-			List<LoginProductCriteriaRes> loginProducts = loginProductsService.getBrokerProductDetails(loginId , companyIds , today ) ;
+			List<LoginProductCriteriaRes> loginProducts = getBrokerProductDetails(loginId , companyIds , today ) ;
 				
 			// Grouping
 			Map<String ,List<LoginProductCriteriaRes>> groupByCompany = loginProducts.stream().collect(Collectors.groupingBy(LoginProductCriteriaRes :: getCompanyId )) ;
@@ -383,6 +377,75 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 
 	}
 
+	public List<LoginProductCriteriaRes> getBrokerProductDetails(String loginId , List<String> companyIds , Date today ) {
+		List<LoginProductCriteriaRes> list = new ArrayList<LoginProductCriteriaRes>(); 
+		try {
+			// Login Product Query	
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<LoginProductCriteriaRes> query = cb.createQuery(LoginProductCriteriaRes.class);
+
+			Root<LoginProductMaster> lm  = query.from(LoginProductMaster.class);
+			
+			// Select Product Name SubQuery for Effective Date Max Filter 
+			Subquery<Long> pmEff = query.subquery(Long.class);
+			Root<ProductMaster> pm = pmEff.from(ProductMaster.class);
+			Subquery<Long> product = query.subquery(Long.class);
+			Root<ProductMaster> p = product.from(ProductMaster.class);
+			
+			pmEff.select( cb.max(pm.get("effectiveDateStart")) );
+			Predicate i1 = cb.equal(p.get("companyId"), pm.get("companyId"));
+			Predicate i2 = cb.equal(p.get("productId"), pm.get("productId"));
+			Predicate i3 = cb.lessThanOrEqualTo(pm.get("effectiveDateStart") , today);
+			pmEff.where(i1,i2,i3);
+			
+			product.select( p.get("productName")) ;
+			Predicate pm1 = cb.equal(p.get("companyId"), lm.get("companyId"));
+			Predicate pm2 = cb.equal(p.get("productId"), lm.get("productId"));
+			Predicate pm3   = cb.equal(p.get("effectiveDateStart"),pmEff);
+			Predicate pm4  = cb.equal(p.get("status"),"Y");
+			product.where(pm1,pm2,pm3,pm4);
+			
+			// Select
+			query.multiselect( lm.get("productId").alias("productId") ,  lm.get("companyId").alias("companyId") , product.alias("productName") ,
+					lm.get("productName").alias("oldProductName") ,  lm.get("startLimit").alias("startLimit") , lm.get("endLimit").alias("endLimit") ,
+					 lm.get("status").alias("status")  ,  lm.get("remarks").alias("remarks")  
+					);
+
+			// Product Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<LoginProductMaster> ocpm1 = effectiveDate.from(LoginProductMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("loginId"), lm.get("loginId"));
+			Predicate a2 = cb.equal(ocpm1.get("productId"), lm.get("productId"));
+			Predicate a3 = cb.equal(ocpm1.get("companyId"), lm.get("companyId"));
+			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , today);
+			effectiveDate.where(a1,a2,a3,a4); 
+					
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(lm.get("entryDate")));
+			
+			//In 
+			Expression<String>e0=lm.get("companyId");
+			
+			// Where
+			Predicate n1 = cb.equal(lm.get("loginId"), loginId );
+			Predicate n2 = cb.equal(lm.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = e0.in(companyIds);
+			
+			query.where(n1, n2, n3).orderBy(orderList);
+		
+			// Get Result
+			TypedQuery<LoginProductCriteriaRes> result = em.createQuery(query);
+			list = result.getResultList();
+				
+		} catch(Exception e ) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return list  ; 
+	}
 	
 }
 

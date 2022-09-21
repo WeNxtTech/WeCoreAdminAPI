@@ -6,7 +6,6 @@ import com.maan.eway.auth.dto.ChangePasswordReq;
 import com.maan.eway.auth.dto.CommonLoginRes;
 import com.maan.eway.auth.dto.LoginRequest;
 import com.maan.eway.error.Error;
-import com.maan.eway.res.CommonRes;
 
 public interface LoginValidatedService {
 

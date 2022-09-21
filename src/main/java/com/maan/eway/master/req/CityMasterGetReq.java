@@ -19,4 +19,11 @@ public class CityMasterGetReq implements Serializable {
 	@JsonProperty("StateId")
     private String     stateId     ;
     
+	@JsonProperty("CountryId")
+    private String     countryId     ;
+    
+	
+	@JsonProperty("RegionId")
+    private String    regionId     ;
+    
 }

@@ -5,6 +5,7 @@ import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JacksonStdImpl;
 
 import lombok.Data;
 
@@ -19,5 +20,12 @@ public class CityMasterGetAllReq implements Serializable {
     @JsonProperty("Offset")
     private String offset;
    
-
+    @JsonProperty("CountryId")
+    private String countryId;
+    
+    @JsonProperty("StateId")
+    private String stateId;
+    
+    @JsonProperty("RegionId")
+    private String regionId;
 }

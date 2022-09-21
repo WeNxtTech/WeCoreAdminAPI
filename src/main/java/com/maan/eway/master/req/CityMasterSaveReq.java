@@ -20,14 +20,18 @@ public class CityMasterSaveReq implements Serializable {
 	private String cityName;
 
 	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDate")
-	private Date effectiveDate;
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
 
 	@JsonProperty("StateId")
 	private String stateId;
 
 	@JsonProperty("CountryId")
 	private String countryId;
+	
+
+	@JsonProperty("RegionId")
+	private String regionId;
 	
 	@JsonProperty("Status")
 	private String status;

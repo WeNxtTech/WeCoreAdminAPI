@@ -80,12 +80,12 @@ public class CityMasterServiceImpl implements CityMasterService {
 
 		try {
 			Calendar cal = new GregorianCalendar();
-			cal.setTime(req.getEffectiveDate());cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 59);
+			cal.setTime(req.getEffectiveDateStart());cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 59);
 			Date startDate = cal.getTime();
 			Date today = new Date();
-			cal.setTime(req.getEffectiveDate());  cal.add(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
+			cal.setTime(req.getEffectiveDateStart());  cal.add(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
 			Date oldEndDate = cal.getTime();
-			cal.setTime(req.getEffectiveDate());
+			cal.setTime(req.getEffectiveDateStart());
 			cal.set(Calendar.HOUR_OF_DAY, today.getHours());cal.set(Calendar.MINUTE, today.getMinutes());
 			Date effDate = cal.getTime();
 			Date endDate = sdformat.parse("12/12/2050");
@@ -120,7 +120,11 @@ public class CityMasterServiceImpl implements CityMasterService {
 				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 				Predicate a1 = cb.equal(ocpm1.get("cityId"), b.get("cityId"));
 				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
-				effectiveDate.where(a1, a2);
+				Predicate a3 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
+				Predicate a4 = cb.equal(ocpm1.get("regionId"), b.get("regionId"));
+				Predicate a5 = cb.equal(ocpm1.get("stateId"), b.get("stateId"));
+
+				effectiveDate.where(a1, a2,a3,a4,a5);
 
 				// Order By
 				// List<Order> orderList = new ArrayList<Order>();
@@ -130,8 +134,11 @@ public class CityMasterServiceImpl implements CityMasterService {
 				Predicate n1 = cb.equal(b.get("status"), "Y");
 				Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 				Predicate n3 = cb.equal(b.get("cityId"), req.getCityId());
+				Predicate n4 = cb.equal(b.get("countryId"),req.getCountryId());
+				Predicate n5 = cb.equal(b.get("regionId"), req.getRegionId());
+				Predicate n6 = cb.equal(b.get("stateId"), req.getStateId());
 
-				query.where(n1, n2, n3);// .orderBy(orderList);
+				query.where(n1, n2, n3,n4,n5,n6);// .orderBy(orderList);
 
 				// Get Result
 				TypedQuery<CityMaster> result = em.createQuery(query);
@@ -199,10 +206,10 @@ public class CityMasterServiceImpl implements CityMasterService {
 			cal.setTime(today);
 			cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
 			today = cal.getTime();
-			if (req.getEffectiveDate() == null || StringUtils.isBlank(req.getEffectiveDate().toString())) {
+			if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
 				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start"));
 
-			} else if (req.getEffectiveDate().before(today)) {
+			} else if (req.getEffectiveDateStart().before(today)) {
 				errorList
 						.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
 			}
@@ -291,7 +298,11 @@ public class CityMasterServiceImpl implements CityMasterService {
 			Root<CityMaster> ocpm1 = effectiveDate.from(CityMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("cityId"), b.get("cityId"));
-			effectiveDate.where(a1);
+			Predicate a2 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
+			Predicate a3 = cb.equal(ocpm1.get("regionId"), b.get("regionId"));
+			Predicate a4 = cb.equal(ocpm1.get("stateId"), b.get("stateId"));
+
+			effectiveDate.where(a1,a2,a3,a4);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -299,8 +310,11 @@ public class CityMasterServiceImpl implements CityMasterService {
 
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("countryId"),req.getCountryId());
+			Predicate n3 = cb.equal(b.get("regionId"),req.getRegionId());
+			Predicate n4 = cb.equal(b.get("stateId"),req.getStateId());
 
-			query.where(n1).orderBy(orderList);
+			query.where(n1,n2,n3,n4).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CityMaster> result = em.createQuery(query);
@@ -351,7 +365,11 @@ public class CityMasterServiceImpl implements CityMasterService {
 			Root<CityMaster> ocpm1 = effectiveDate.from(CityMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("cityId"), ocpm1.get("cityId"));
-			effectiveDate.where(a1);
+			Predicate a2 = cb.equal(c.get("countryId"), ocpm1.get("countryId"));
+			Predicate a3 = cb.equal(c.get("regionId"), ocpm1.get("regionId"));
+			Predicate a4 = cb.equal(c.get("stateId"), ocpm1.get("stateId"));
+
+			effectiveDate.where(a1,a2,a3,a4);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -361,8 +379,11 @@ public class CityMasterServiceImpl implements CityMasterService {
 
 			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("cityId"), req.getCityId());
+			Predicate n3 = cb.equal(c.get("countryId"),req.getRegionId());
+			Predicate n4 = cb.equal(c.get("regionId"),req.getRegionId());
+			Predicate n5 = cb.equal(c.get("stateId"), req.getStateId());
 
-			query.where(n1, n2).orderBy(orderList);
+			query.where(n1, n2,n3,n4,n5).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CityMaster> result = em.createQuery(query);
@@ -484,7 +505,12 @@ public class CityMasterServiceImpl implements CityMasterService {
 			Root<CityMaster> ocpm1 = effectiveDate.from(CityMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("cityId"), b.get("cityId"));
-			effectiveDate.where(a1);
+			Predicate a2 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
+			Predicate a3 = cb.equal(ocpm1.get("regionId"), b.get("regionId"));
+			Predicate a4 = cb.equal(ocpm1.get("stateId"), b.get("stateId"));
+
+
+			effectiveDate.where(a1,a2,a3,a4);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -493,8 +519,12 @@ public class CityMasterServiceImpl implements CityMasterService {
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("status"), "Y");
+			Predicate n3 = cb.equal(b.get("countryId"),req.getCountryId());
+			Predicate n4 = cb.equal(b.get("regionId"), req.getRegionId());
+			Predicate n5 = cb.equal(b.get("stateId"), req.getStateId());
 
-			query.where(n1, n2).orderBy(orderList);
+
+			query.where(n1, n2,n3,n4,n5).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CityMaster> result = em.createQuery(query);

@@ -46,6 +46,7 @@ import com.maan.eway.admin.req.BrokerLoginGridReq;
 import com.maan.eway.admin.req.CommonLoginCreationReq;
 import com.maan.eway.admin.req.CommonLoginInformationReq;
 import com.maan.eway.admin.req.CommonPersonalInforReq;
+import com.maan.eway.admin.req.InsertUserLoginReq;
 import com.maan.eway.admin.req.IssuerActiveGridReq;
 import com.maan.eway.admin.req.IssuerCraeationReq;
 import com.maan.eway.admin.req.IssuerDetailsGetReq;
@@ -1184,7 +1185,55 @@ this.repository = repo;
 			return null ;
 		}
 		return menuList;
-	} 
+	}
+
+
+	@Override
+	public LoginCreationRes insertUserLogin(InsertUserLoginReq req) {
+		ModelMapper mapper = new  ModelMapper();
+		SimpleDateFormat idf = new SimpleDateFormat("yyMMddhhssmmss"); 
+		LoginCreationRes res = new LoginCreationRes();
+		try {
+			// Find Data 
+			String loginId = req.getLoginId() ;
+			LoginMaster findLogin = loginRepo.findByLoginId(loginId);
+			
+			// Delete Old Records
+			LoginMaster  updateLogin = findLogin;
+			loginRepo.delete(findLogin);
+			// Save in Arch tables
+						String archId = "AI-" + idf.format(new Date());
+						LoginMasterArch  loginArch = mapper.map(findLogin, LoginMasterArch.class )  ;
+						loginArch.setArchId(archId);
+						loginArchRepo.saveAndFlush(loginArch);
+						
+						
+			LoginMaster ent =  mapper.map(updateLogin, LoginMaster.class);
+			ent.setLoginId(req.getLoginId());
+			String key = "";
+			if (req.getMenuId() != null) {
+				List<String> keys = req.getMenuId();
+				for (int i = 0; i < keys.size(); i++) {
+					if (i == 0) {
+						key = keys.get(i);
+					} else {
+						key = key + "," + keys.get(i);
+					}
+				}
+			}
+			ent.setMenuIds(key);
+			loginRepo.save(ent);
+			res.setResponse(req.getLoginId());
+			
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return res;
+	}
 
 
 

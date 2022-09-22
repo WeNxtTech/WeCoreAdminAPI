@@ -14,6 +14,7 @@ import com.maan.eway.admin.req.BrokerBranchGetReq;
 import com.maan.eway.admin.req.BrokerCreationReq;
 import com.maan.eway.admin.req.BrokerDetailsGetReq;
 import com.maan.eway.admin.req.BrokerLoginGridReq;
+import com.maan.eway.admin.req.InsertUserLoginReq;
 import com.maan.eway.admin.req.IssuerActiveGridReq;
 import com.maan.eway.admin.req.IssuerCraeationReq;
 import com.maan.eway.admin.req.IssuerDetailsGetReq;
@@ -62,5 +63,6 @@ IssuerDatailsGetRes getIssuerDetailsById(IssuerDetailsGetReq req);
 UserDetailsGetRes getUserDetailsById(UserDetailsGetReq req);
 List<LoginBrokerDetailsGetRes> getBrokerLoginDetailsSubUserType(BrokerLoginGridReq req);
 List<Menu> getMenuList(MenuListReq req);
+LoginCreationRes insertUserLogin(InsertUserLoginReq req);
 
 }

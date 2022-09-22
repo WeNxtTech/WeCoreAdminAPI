@@ -20,6 +20,7 @@ import com.maan.eway.admin.req.BrokerActiveGridReq;
 import com.maan.eway.admin.req.BrokerCreationReq;
 import com.maan.eway.admin.req.BrokerDetailsGetReq;
 import com.maan.eway.admin.req.BrokerLoginGridReq;
+import com.maan.eway.admin.req.InsertUserLoginReq;
 import com.maan.eway.admin.req.IssuerActiveGridReq;
 import com.maan.eway.admin.req.IssuerCraeationReq;
 import com.maan.eway.admin.req.IssuerDetailsGetReq;
@@ -379,5 +380,24 @@ public class LoginDetailsController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
+	@PostMapping("/insertuserlogin")
+	@ApiOperation(value="This method is to Insert User Login")
+	public ResponseEntity<CommonRes> insertUserLogin(@RequestBody  InsertUserLoginReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		
+			/////// save
+			LoginCreationRes res = entityService.insertUserLogin(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
 
+	
 }

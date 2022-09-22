@@ -6,6 +6,7 @@ package com.maan.eway.master.controller;
 */
 
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.CityMasterDropDownReq;
 import com.maan.eway.master.req.CityMasterGetAllReq;
 import com.maan.eway.master.req.CityMasterGetReq;
 import com.maan.eway.master.req.CityMasterSaveReq;
@@ -151,10 +152,10 @@ public class CityMasterController {
 	}
 		
 		// City Master Drop Down Type
-		@GetMapping("/dropdown/city")
+		@PostMapping("/dropdown/city")
 		@ApiOperation(value = "This method is get City Master Drop Down")
 
-		public ResponseEntity<CommonRes> getCityMasterDropdown(@RequestBody CityMasterGetReq req) {
+		public ResponseEntity<CommonRes> getCityMasterDropdown(@RequestBody CityMasterDropDownReq req) {
 
 			CommonRes data = new CommonRes();
 

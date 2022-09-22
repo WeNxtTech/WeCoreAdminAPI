@@ -34,7 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-
+import com.maan.eway.master.req.CityMasterDropDownReq;
 import com.maan.eway.master.req.CityMasterGetAllReq;
 import com.maan.eway.master.req.CityMasterGetReq;
 import com.maan.eway.master.req.CityMasterSaveReq;
@@ -403,7 +403,7 @@ public class CityMasterServiceImpl implements CityMasterService {
 
 //**********************************************************DROPDOWN********************************************************************\\
 	@Override
-	public List<Error> validateDropdownGet(CityMasterGetReq req) {
+	public List<Error> validateDropdownGet(CityMasterDropDownReq req) {
 		List<Error> errorList = new ArrayList<Error>();
 
 		try {
@@ -420,7 +420,7 @@ public class CityMasterServiceImpl implements CityMasterService {
 	}
 
 	@Override
-	public List<DropDownRes> getCityMasterDropdown(CityMasterGetReq req) {
+	public List<DropDownRes> getCityMasterDropdown(CityMasterDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 			Date today = new Date();
@@ -451,13 +451,20 @@ public class CityMasterServiceImpl implements CityMasterService {
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("cityId"), ocpm1.get("cityId"));
 			javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			effectiveDate.where(a1, a2);
+			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("countryId"), ocpm1.get("countryId"));
+			javax.persistence.criteria.Predicate a4 = cb.equal(c.get("regionId"), ocpm1.get("regionId"));
+			javax.persistence.criteria.Predicate a5 = cb.equal(c.get("stateId"), ocpm1.get("stateId"));
+
+			effectiveDate.where(a1, a2,a3,a4,a5);
 
 			// Where
 			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("countryId"), req.getCountryId());
+			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("regionId"), req.getRegionId());
+			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("stateId"), req.getStateId());
 
-			query.where(n1, n2).orderBy(orderList);
+			query.where(n1, n2,n3,n4,n5).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CityMaster> result = em.createQuery(query);

@@ -6,6 +6,7 @@
 package com.maan.eway.master.service;
 
 
+import com.maan.eway.master.req.CityMasterDropDownReq;
 import com.maan.eway.master.req.CityMasterGetAllReq;
 import com.maan.eway.master.req.CityMasterGetReq;
 import com.maan.eway.master.req.CityMasterSaveReq;
@@ -22,7 +23,6 @@ import java.util.List;
 */
 public interface CityMasterService  {
 
-	List<DropDownRes> getCityMasterDropdown(CityMasterGetReq req);
 
 	List<Error> validateCityDetails(CityMasterSaveReq req);
 
@@ -34,7 +34,10 @@ public interface CityMasterService  {
 
 	CityMasterRes getByCityId(CityMasterGetReq req);
 
-	List<Error> validateDropdownGet(CityMasterGetReq req);
+
+	List<Error> validateDropdownGet(CityMasterDropDownReq req);
+
+	List<DropDownRes> getCityMasterDropdown(CityMasterDropDownReq req);
 
 	
 	

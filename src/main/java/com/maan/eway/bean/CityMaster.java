@@ -64,16 +64,24 @@ private static final long serialVersionUID = 1L;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="EFFECTIVE_DATE_END", nullable=false)
     private Date       effectiveDateEnd ;
+
+    @Id
+    @Column(name="STATE_ID")
+    private Integer     stateId ;
+    
+    @Id
+    @Column(name="COUNTRY_ID")
+    private Integer     countryId ;
+
+    @Id
+    @Column(name="REGION_ID")
+    private Integer     regionId ;
+    
     
     //--- ENTITY DATA FIELDS 
     @Column(name="CITY_NAME", length=100)
     private String     cityName ;
 
-    @Column(name="STATE_ID")
-    private Integer     stateId ;
-    
-    @Column(name="COUNTRY_ID")
-    private Integer     countryId ;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ENTRY_DATE")

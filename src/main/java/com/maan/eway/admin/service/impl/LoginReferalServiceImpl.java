@@ -32,33 +32,21 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.gson.Gson;
 import com.maan.eway.admin.req.AttachIssuerReferalReq;
 import com.maan.eway.admin.req.AttachReferalReq;
-import com.maan.eway.admin.req.BrokerProductCompaniesRes;
-import com.maan.eway.admin.req.BrokerProductGetReq;
 import com.maan.eway.admin.req.IssuerCompanyReferalGetReq;
 import com.maan.eway.admin.req.IssuerReferalGetReq;
-import com.maan.eway.admin.res.BrokerProductsGetRes;
 import com.maan.eway.admin.res.IssuerReferalCompanyGetRes;
 import com.maan.eway.admin.res.IssuerReferalCompniesRes;
 import com.maan.eway.admin.res.IssuerReferalCriteriaRes;
 import com.maan.eway.admin.res.IssuerReferalGetRes;
 import com.maan.eway.admin.res.LoginCreationRes;
-import com.maan.eway.admin.res.ProductCriteriaRes;
 import com.maan.eway.admin.res.ReferalCriteriaRes;
 import com.maan.eway.admin.service.LoginReferalService;
 import com.maan.eway.bean.BranchMaster;
-import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.LoginMaster;
-import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginReferalMaster;
-import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.ReferalMaster;
-import com.maan.eway.repository.BranchMasterRepository;
-import com.maan.eway.repository.LoginMasterArchRepository;
 import com.maan.eway.repository.LoginMasterRepository;
-import com.maan.eway.repository.LoginProductMasterRepository;
 import com.maan.eway.repository.LoginReferalMasterRepository;
-import com.maan.eway.repository.LoginUserInfoArchRepository;
-import com.maan.eway.repository.LoginUserInfoRepository;
 
 @Service
 public class LoginReferalServiceImpl implements LoginReferalService {

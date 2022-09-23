@@ -40,26 +40,31 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.maan.eway.admin.res.LoginProductCriteriaRes;
+import com.maan.eway.admin.service.LoginProductService;
 import com.maan.eway.auth.dto.BrokerProductCompaniesRes;
 import com.maan.eway.auth.dto.BrokerProductsGetRes;
 import com.maan.eway.auth.dto.ChangePasswordReq;
 import com.maan.eway.auth.dto.ClaimLoginResponse;
 import com.maan.eway.auth.dto.CommonLoginRes;
+import com.maan.eway.auth.dto.LoginBranchCriteriaRes;
 import com.maan.eway.auth.dto.LoginBranchDetailsRes;
-import com.maan.eway.auth.dto.LoginProductCriteriaRes;
 import com.maan.eway.auth.dto.LoginRequest;
 import com.maan.eway.auth.service.AuthendicationService;
 import com.maan.eway.auth.token.EncryDecryService;
 import com.maan.eway.auth.token.JwtTokenUtil;
 import com.maan.eway.auth.token.passwordEnc;
 import com.maan.eway.bean.BranchMaster;
+import com.maan.eway.bean.InsuranceCompanyMaster;
+import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginMasterId;
-import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginUserInfo;
-import com.maan.eway.bean.ProductMaster;
+import com.maan.eway.bean.RegionMaster;
 import com.maan.eway.bean.SessionMaster;
 import com.maan.eway.repository.BranchMasterRepository;
+import com.maan.eway.repository.InsuranceCompanyMasterRepository;
+import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.SessionMasterRepository;
@@ -85,8 +90,14 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 	@Autowired
 	private LoginUserInfoRepository loginUserRepo ;
 	
+	@Autowired
+	private LoginProductService loginProductsService ;
 
+	@Autowired
+	private InsuranceCompanyMasterRepository companyRepo;
 	
+	@Autowired
+	private LoginBranchMasterRepository loginBranchRepo;
 	
 	@PersistenceContext
 	private EntityManager em;
@@ -150,10 +161,55 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			r.setOaCode(login.getOaCode());
 			r.setBankCode(login.getBankCode());
 			
-			// Branch Res
-			List<String> branches = new ArrayList<>(Arrays.asList(login.getAttachedBranches().split(",")));
-			List<LoginBranchDetailsRes> loginBranchDetails = getBranchDetails(branches);
-			r.setLoginBranchDetails(loginBranchDetails);
+			// Branch Res	
+			List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(login.getLoginId());
+		
+			List<String> branchCode =loginBranch.stream().map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
+			List<String> attachedBranchCode = loginBranch.stream().map(LoginBranchMaster ::getAttachedBranch ).collect(Collectors.toList()) ;
+			List<String> totalList = new ArrayList<>();
+			totalList.addAll(branchCode);
+			totalList.addAll(attachedBranchCode);
+			Set<String> removeDuplicateBranch = new HashSet<>(totalList);
+			List<LoginBranchCriteriaRes> loginCriteriaRes = getBranchDetails(removeDuplicateBranch);
+			
+			List<LoginBranchDetailsRes> loginBranchRes = new ArrayList<LoginBranchDetailsRes>();
+			
+			for ( LoginBranchMaster data :  loginBranch  ) {
+				LoginBranchDetailsRes branchRes = new LoginBranchDetailsRes();
+				
+				List<LoginBranchCriteriaRes>  filterBranchCriteria = loginCriteriaRes.stream().filter( o ->  o.getBranchCode().equalsIgnoreCase(data.getBranchCode()) ).collect(Collectors.toList());
+				branchRes.setBranchCode(data.getBranchCode());
+				
+				// Normal Branch
+				if(filterBranchCriteria.size()>0 ) {
+					LoginBranchCriteriaRes getBranch = filterBranchCriteria.get(0);
+					branchRes.setBranchName(getBranch.getBranchName()  );
+					branchRes.setRegionCode(getBranch.getRegionName() );
+					branchRes.setRegionName(getBranch.getRegionName() );
+					branchRes.setInsuranceId(getBranch.getCompanyId() );
+					branchRes.setCompanyName(getBranch.getCompanyName() );
+					branchRes.setCompanyLogo(getBranch.getCompanyLogo() );
+				}
+				
+				// Attached Branch
+				if(! data.getBranchCode().equalsIgnoreCase(data.getAttachedBranch())  ) {
+					List<LoginBranchCriteriaRes>  filterAttachedBranch = loginCriteriaRes.stream().filter( o ->  o.getBranchCode().equalsIgnoreCase(data.getAttachedBranch()) ).collect(Collectors.toList());
+					branchRes.setAttachedBranchCode(data.getAttachedBranch());
+					if(filterAttachedBranch.size()>0 ) {
+						LoginBranchCriteriaRes getAttachedBranch = filterAttachedBranch.get(0);
+						branchRes.setAttachedBranchName(getAttachedBranch.getBranchName()  );
+						branchRes.setAttachedRegionCode(getAttachedBranch.getRegionName() );
+						branchRes.setAttachedRegionName(getAttachedBranch.getRegionName() );
+						branchRes.setAttachedCompanyId(getAttachedBranch.getCompanyId() );
+						branchRes.setAttachedCompanyName(getAttachedBranch.getCompanyName() );
+						branchRes.setAttachedCompanyLogo(getAttachedBranch.getCompanyLogo() );
+					}
+				}
+				loginBranchRes.add(branchRes);
+			}
+			
+			
+			r.setLoginBranchDetails(loginBranchRes);
 			
 			// Products
 			r.setCompanyProducts( getBrokerProducts(login.getLoginId() , login.getAttachedCompanies()));
@@ -185,7 +241,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			
 			List<String> companyIds = new ArrayList<>(Arrays.asList(companies.split(","))) ;
 			
-			List<LoginProductCriteriaRes> loginProducts = getBrokerProductDetails(loginId , companyIds , today ) ;
+			List<LoginProductCriteriaRes> loginProducts = loginProductsService.getBrokerProductDetails(loginId , companyIds , today ) ;
 				
 			// Grouping
 			Map<String ,List<LoginProductCriteriaRes>> groupByCompany = loginProducts.stream().collect(Collectors.groupingBy(LoginProductCriteriaRes :: getCompanyId )) ;
@@ -226,8 +282,8 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 		return companyList;
 	}
 	
-	private List<LoginBranchDetailsRes> getBranchDetails(List<String> branches) {
-		List<LoginBranchDetailsRes> loginBranchDetails = new ArrayList<LoginBranchDetailsRes>();
+	private List<LoginBranchCriteriaRes> getBranchDetails(Set<String> removeDuplicateBranch) {
+		List<LoginBranchCriteriaRes> list = new ArrayList<LoginBranchCriteriaRes>();
 		try {
 			Date today = new Date();
 			Calendar cal = new GregorianCalendar();
@@ -239,54 +295,100 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			
 			// Criteria
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<BranchMaster> query = cb.createQuery(BranchMaster.class);
-			List<BranchMaster> list = new ArrayList<BranchMaster>();
+			CriteriaQuery<LoginBranchCriteriaRes> query = cb.createQuery(LoginBranchCriteriaRes.class);
+			
+
 
 			// Find All
 			Root<BranchMaster> b = query.from(BranchMaster.class);
 
+			// Company Effective Date Max Filter
+			Subquery<Long> company = query.subquery(Long.class);
+			Root<InsuranceCompanyMaster> ins = company.from(InsuranceCompanyMaster.class);
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<InsuranceCompanyMaster> ocpm2 = effectiveDate2.from(InsuranceCompanyMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateStart")));
+			Predicate ceff1 = cb.equal(ocpm2.get("companyId"), ins.get("companyId"));
+			Predicate ceff2 = cb.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"), today);
+			effectiveDate2.where(ceff1,ceff2);
+			
+			// Company Name
+			company.select(ins.get("companyName"));
+			Predicate ins1 = cb.equal(ins.get("companyId"), b.get("companyId"));
+			Predicate ins2 = cb.equal(ins.get("effectiveDateStart"), effectiveDate2);
+			company.where(ins1,ins2);
+						
+			// Company Logo Effective Date Max Filter
+			Subquery<Long> companyLogo = query.subquery(Long.class);
+			Root<InsuranceCompanyMaster> logo = companyLogo.from(InsuranceCompanyMaster.class);
+			Subquery<Long> effectiveDate5 = query.subquery(Long.class);
+			Root<InsuranceCompanyMaster> ocpm5 = effectiveDate5.from(InsuranceCompanyMaster.class);
+			effectiveDate5.select(cb.max(ocpm5.get("effectiveDateStart")));
+			Predicate iceff1 = cb.equal(ocpm5.get("companyId"), logo.get("companyId"));
+			Predicate iceff2 = cb.lessThanOrEqualTo(ocpm5.get("effectiveDateStart"), today);
+			effectiveDate5.where(iceff1,iceff2);
+			
+			// Company Logo
+			companyLogo.select(logo.get("companyLogo"));
+			Predicate in1 = cb.equal(logo.get("companyId"), b.get("companyId"));
+			Predicate in2 = cb.equal(logo.get("effectiveDateStart"), effectiveDate5);
+			companyLogo.where(in1,in2);
+						
+			
+			// Region Effective Date Filter
+			Subquery<Long> region = query.subquery(Long.class);
+			Root<RegionMaster> rm = region.from(RegionMaster.class);
+			Subquery<Long> effectiveDate3 = query.subquery(Long.class);
+			Root<RegionMaster> ocpm3 = effectiveDate3.from(RegionMaster.class);
+			effectiveDate3.select(cb.max(ocpm3.get("effectiveDateStart")));
+			Predicate reff2 = cb.equal(ocpm3.get("regionCode"), rm.get("regionCode"));
+			Predicate reff3 = cb.lessThanOrEqualTo(ocpm3.get("effectiveDateStart"), today);
+			effectiveDate3.where(reff2,reff3);
+			
+			//Region Name
+			region.select(rm.get("regionName"));
+			Predicate rm2 = cb.equal(rm.get("regionCode"), b.get("regionCode"));
+			Predicate rm3 = cb.equal(rm.get("effectiveDateStart"), effectiveDate3);
+			region.where(rm2,rm3);
+			
 			// Select
-			query.select(b);
+			query.multiselect(b.get("branchCode").alias("branchCode") , b.get("regionCode").alias("regionCode") ,
+					b.get("companyId").alias("companyId") , b.get("branchName").alias("branchName") ,
+					company.alias("companyName") , region.alias("regionName") , companyLogo.alias("companyLogo")    );
 
 			// Effective Date Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
 			Root<BranchMaster> ocpm1 = effectiveDate.from(BranchMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			Predicate a1 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
-			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , today);
-			effectiveDate.where(a1,a2);
-
+			Predicate eff1 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+			Predicate eff2 = cb.equal(ocpm1.get("regionCode"), b.get("regionCode"));
+			Predicate eff3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate eff4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(eff1, eff2, eff3, eff4 );
+		
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("branchName")));
+			orderList.add(cb.asc(b.get("branchCode")));
+
 			//In 
 			Expression<String>e0=b.get("branchCode");
 			
 			// Where
 			Predicate n1 = cb.equal(b.get("status"), "Y");
 			Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			Predicate n3 = e0.in(branches) ;
+			Predicate n3 = e0.in(removeDuplicateBranch) ;
 
 			query.where(n1, n2, n3).orderBy(orderList);
 
 			// Get Result
-			TypedQuery<BranchMaster> result = em.createQuery(query);
+			TypedQuery<LoginBranchCriteriaRes> result = em.createQuery(query);
 			list = result.getResultList();
-			
-			for(BranchMaster data :  list) {
-				LoginBranchDetailsRes branchRes = new LoginBranchDetailsRes();
-				branchRes.setInsuranceId(data.getCompanyId());
-				branchRes.setBranchCode(data.getBranchCode());
-				branchRes.setRegionCode(data.getRegionCode());
-				branchRes.setBranchName(data.getBranchName());;
-				loginBranchDetails.add(branchRes);
-			}
 			
 		}catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
 		}
-		return loginBranchDetails;
+		return list;
 		
 	}
 	
@@ -377,75 +479,6 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 
 	}
 
-	public List<LoginProductCriteriaRes> getBrokerProductDetails(String loginId , List<String> companyIds , Date today ) {
-		List<LoginProductCriteriaRes> list = new ArrayList<LoginProductCriteriaRes>(); 
-		try {
-			// Login Product Query	
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<LoginProductCriteriaRes> query = cb.createQuery(LoginProductCriteriaRes.class);
-
-			Root<LoginProductMaster> lm  = query.from(LoginProductMaster.class);
-			
-			// Select Product Name SubQuery for Effective Date Max Filter 
-			Subquery<Long> pmEff = query.subquery(Long.class);
-			Root<ProductMaster> pm = pmEff.from(ProductMaster.class);
-			Subquery<Long> product = query.subquery(Long.class);
-			Root<ProductMaster> p = product.from(ProductMaster.class);
-			
-			pmEff.select( cb.max(pm.get("effectiveDateStart")) );
-			Predicate i1 = cb.equal(p.get("companyId"), pm.get("companyId"));
-			Predicate i2 = cb.equal(p.get("productId"), pm.get("productId"));
-			Predicate i3 = cb.lessThanOrEqualTo(pm.get("effectiveDateStart") , today);
-			pmEff.where(i1,i2,i3);
-			
-			product.select( p.get("productName")) ;
-			Predicate pm1 = cb.equal(p.get("companyId"), lm.get("companyId"));
-			Predicate pm2 = cb.equal(p.get("productId"), lm.get("productId"));
-			Predicate pm3   = cb.equal(p.get("effectiveDateStart"),pmEff);
-			Predicate pm4  = cb.equal(p.get("status"),"Y");
-			product.where(pm1,pm2,pm3,pm4);
-			
-			// Select
-			query.multiselect( lm.get("productId").alias("productId") ,  lm.get("companyId").alias("companyId") , product.alias("productName") ,
-					lm.get("productName").alias("oldProductName") ,  lm.get("startLimit").alias("startLimit") , lm.get("endLimit").alias("endLimit") ,
-					 lm.get("status").alias("status")  ,  lm.get("remarks").alias("remarks")  
-					);
-
-			// Product Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<LoginProductMaster> ocpm1 = effectiveDate.from(LoginProductMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			Predicate a1 = cb.equal(ocpm1.get("loginId"), lm.get("loginId"));
-			Predicate a2 = cb.equal(ocpm1.get("productId"), lm.get("productId"));
-			Predicate a3 = cb.equal(ocpm1.get("companyId"), lm.get("companyId"));
-			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , today);
-			effectiveDate.where(a1,a2,a3,a4); 
-					
-			// Order By
-			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(lm.get("entryDate")));
-			
-			//In 
-			Expression<String>e0=lm.get("companyId");
-			
-			// Where
-			Predicate n1 = cb.equal(lm.get("loginId"), loginId );
-			Predicate n2 = cb.equal(lm.get("effectiveDateStart"), effectiveDate);
-			Predicate n3 = e0.in(companyIds);
-			
-			query.where(n1, n2, n3).orderBy(orderList);
-		
-			// Get Result
-			TypedQuery<LoginProductCriteriaRes> result = em.createQuery(query);
-			list = result.getResultList();
-				
-		} catch(Exception e ) {
-			e.printStackTrace();
-			log.info("Exception is --->" + e.getMessage());
-			return null;
-		}
-		return list  ; 
-	}
 	
 }
 

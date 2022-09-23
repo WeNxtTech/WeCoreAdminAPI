@@ -13,13 +13,10 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -37,27 +34,20 @@ import com.maan.eway.admin.req.AttachCompnayProductRequest;
 import com.maan.eway.admin.req.AttachedProductReq;
 import com.maan.eway.admin.req.BrokerCompanyProductGetReq;
 import com.maan.eway.admin.req.BrokerCompanyProductsGetRes;
-import com.maan.eway.admin.req.BrokerProductCompaniesRes;
 import com.maan.eway.admin.req.BrokerProductGetReq;
-import com.maan.eway.admin.res.BranchCriteriaRes;
-import com.maan.eway.admin.res.BrokerProductsGetRes;
-import com.maan.eway.admin.res.IssuerBranchGetRes;
-import com.maan.eway.admin.res.IssuerCompanyGetRes;
 import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.admin.res.LoginProductCriteriaRes;
 import com.maan.eway.admin.res.ProductCriteriaRes;
 import com.maan.eway.admin.service.LoginProductService;
-import com.maan.eway.bean.BranchMaster;
+import com.maan.eway.auth.dto.BrokerProductCompaniesRes;
+import com.maan.eway.auth.dto.BrokerProductsGetRes;
 import com.maan.eway.bean.InsuranceCompanyMaster;
-import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.ProductMaster;
-import com.maan.eway.bean.RegionMaster;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.LoginProductMasterRepository;
-import com.maan.eway.res.DropDownRes;
 
 @Service
 public class LoginProductServiceImpl  implements LoginProductService {

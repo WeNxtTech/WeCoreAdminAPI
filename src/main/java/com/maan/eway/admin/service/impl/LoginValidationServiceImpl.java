@@ -30,7 +30,9 @@ import com.maan.eway.admin.req.CommonLoginCreationReq;
 import com.maan.eway.admin.req.IssuerCraeationReq;
 import com.maan.eway.admin.req.UserCreationReq;
 import com.maan.eway.admin.service.LoginValidationService;
+import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.repository.LoginMasterRepository;
 
 @Service
 public class LoginValidationServiceImpl implements LoginValidationService  {
@@ -39,6 +41,9 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 	private BasicLoginValidationService basicValidation;
 	
 	private Logger log=LogManager.getLogger(LoginValidationService.class);
+	
+	@Autowired
+	private LoginMasterRepository loginRepo;
 	
 //*************************************** Login Creation Apis Validations**********************************************************//
 	
@@ -387,20 +392,30 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 public List<Error> validateBrokerCompanyBranchReq(AttachBrokerBranchReq req) {
 	List<Error> errors = new ArrayList<Error>();
 	try {
-		//Referal Validation
+		
 		if(StringUtils.isBlank(req.getLoginId()) ) {
 			errors.add(new Error("01", "LoginId", "Plese Enter LoginId" ));
 		}
+		//Login  Data
+		LoginMaster loginData = loginRepo.findByLoginId(req.getLoginId());
+		if (loginData.getBrokerCompanyYn() != null && !loginData.getBrokerCompanyYn().equals("N")) {
+			if (loginData.getBrokerCompanyYn().equals("Y") && loginData.getUserType().equalsIgnoreCase("BROKER")) {
+				if (StringUtils.isBlank(req.getBranchCode())) {
+					errors.add(new Error("03", "BranchCode", "Plese Enter BranchCode"));
+				}
+				if (StringUtils.isBlank(req.getAttachedBranch())) {
+					errors.add(new Error("03", "AttachedBranchCode", "Plese Enter AttachedBranchCode"));
+				}
+			}
+		}
 		
+		if (StringUtils.isBlank(req.getBranchCode())) {
+			errors.add(new Error("03", "BranchCode", "Plese Enter BranchCode"));
+		}
 		if(StringUtils.isBlank(req.getCompanyId()) ) {
 			errors.add(new Error("02", "InsuranceId", "Plese Enter InsuranceId" ));
 		}
-		if(StringUtils.isBlank(req.getBranchCode()) ) {
-			errors.add(new Error("03", "BranchCode", "Plese Enter BranchCode" ));
-		}
-		if(StringUtils.isBlank(req.getAttachedBranch()) ) {
-			errors.add(new Error("03", "AttachedBranchCode", "Plese Enter AttachedBranchCode" ));
-		}
+		
 		if(StringUtils.isBlank(req.getBrokerAttachedCompany()) ) {
 			errors.add(new Error("03", "AttachedComapany", "Plese Enter AttachedComapany" ));
 		}

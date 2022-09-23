@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.admin.req.AttachIssuerReferalReq;
-import com.maan.eway.admin.req.BrokerProductCompaniesRes;
-import com.maan.eway.admin.req.BrokerProductGetReq;
 import com.maan.eway.admin.req.IssuerCompanyReferalGetReq;
 import com.maan.eway.admin.req.IssuerReferalGetReq;
 import com.maan.eway.admin.res.IssuerReferalCompanyGetRes;

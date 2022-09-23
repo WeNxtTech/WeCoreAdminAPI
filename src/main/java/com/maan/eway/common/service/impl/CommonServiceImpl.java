@@ -1,4 +1,4 @@
-package com.maan.eway.common.dropdownservice.impl;
+package com.maan.eway.common.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,15 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.common.dropdownservice.CommonDropDownService;
+import com.maan.eway.common.service.CommonService;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.res.DropDownRes;
 
 @Service
-public class CommonDropDownServiceImpl  implements CommonDropDownService{
+public class CommonServiceImpl  implements CommonService{
 
 
-	private Logger log = LogManager.getLogger(CommonDropDownServiceImpl.class);
+	private Logger log = LogManager.getLogger(CommonServiceImpl.class);
 
 	@Autowired 
 	private ListItemValueRepository repo;

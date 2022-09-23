@@ -1,4 +1,4 @@
-package com.maan.eway.common.dropdowncontroller;
+package com.maan.eway.common.controller;
 
 import java.util.Collections;
 import java.util.List;
@@ -7,16 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.maan.eway.common.dropdownservice.CommonDropDownService;
-import com.maan.eway.master.req.CityMasterSaveReq;
+import com.maan.eway.common.service.CommonService;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
-import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -28,7 +24,7 @@ import io.swagger.annotations.ApiOperation;
 public class CommonDropDownController {
 
 	@Autowired
-	private  CommonDropDownService service;
+	private  CommonService service;
 	
 	
 	@GetMapping("/covernotetype")

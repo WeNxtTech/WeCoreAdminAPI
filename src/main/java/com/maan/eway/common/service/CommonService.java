@@ -1,10 +1,10 @@
-package com.maan.eway.common.dropdownservice;
+package com.maan.eway.common.service;
 
 import java.util.List;
 
 import com.maan.eway.res.DropDownRes;
 
-public interface CommonDropDownService {
+public interface CommonService {
 
 	List<DropDownRes> coverNoteType();
 

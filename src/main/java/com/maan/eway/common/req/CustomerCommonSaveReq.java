@@ -28,17 +28,17 @@ public class CustomerCommonSaveReq {
 	@JsonProperty("PolicyHolderTypeId")
     private String    policyHolderTypeId     ;
 	@JsonProperty("PolicyHolderIdNumber")
-    private String    PolicyHolderIdNumber     ;	
+    private String    policyHolderIdNumber     ;	
 	@JsonProperty("PolicyHolderIdTypeId")
-    private String    PolicyHolderIdTypeId     ;
+    private String    policyHolderIdTypeId     ;
 	@JsonProperty("PolicyHolderMobileNumber")
-    private String    PolicyHolderMobileNumber     ;
+    private String    policyHolderMobileNumber     ;
 	@JsonProperty("PolicyHolderFax")
-    private String    PolicyHolderFax     ;
+    private String    policyHolderFax     ;
 	@JsonProperty("PostalAddress")
-    private String    PostalAddress     ;
+    private String    postalAddress     ;
 	@JsonProperty("EmailAddress")
-    private String    EmailAddress     ;
+    private String    emailAddress     ;
 	
 	@JsonProperty("GenderId")
     private String     genderId  ;

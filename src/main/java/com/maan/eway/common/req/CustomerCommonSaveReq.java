@@ -12,6 +12,9 @@ public class CustomerCommonSaveReq {
 	
 	@JsonProperty("CustomerId")
     private String     customerId   ;
+	@JsonProperty("CreatedBy")
+    private String     createdBy;
+	
 	@JsonProperty("GstNo")
     private String     gstNo        ;	
 	@JsonProperty("NameTitleId")

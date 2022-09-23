@@ -27,6 +27,5 @@ public class EserviceCustomerSaveReq {
 	@JsonProperty("OtherDetails")
     private CustomerOtherDetailsSaveReq otherDetails;
 	
-	
 
 }

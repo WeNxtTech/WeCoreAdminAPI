@@ -3,6 +3,7 @@ package com.maan.eway.admin.res;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.maan.eway.auth.dto.Menu;
 
 import lombok.Data;
 
@@ -11,9 +12,9 @@ public class MenuServiceRes {
 
 
 	@JsonProperty("UserList")
-	private List<UserMenuListRes> userList;
+	private List<Menu> userList;
 	
 	@JsonProperty("AdminList")
-	private List<AdminListRes> adminlist;
+	private List<Menu> adminlist;
 	
 }

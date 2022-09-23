@@ -83,6 +83,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="DISPLAY_YN")
     private String  displayYn ;
 
+    @Column(name="MENU_LOGO")
+    private String  menuLogo ;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 

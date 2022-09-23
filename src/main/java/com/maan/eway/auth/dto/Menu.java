@@ -19,11 +19,11 @@ import lombok.ToString;
 @Builder
 public class Menu {
 	
-	@JsonProperty("url")
-	private String url;
+	@JsonProperty("link")
+	private String link;
 	
-	@JsonProperty("name")
-	private String name;
+	@JsonProperty("title")
+	private String title;
 	
 	
 	@JsonProperty("icon")

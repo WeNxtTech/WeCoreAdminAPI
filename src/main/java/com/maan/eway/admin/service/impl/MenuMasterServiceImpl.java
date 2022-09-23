@@ -30,6 +30,7 @@ import com.maan.eway.admin.res.AdminListRes;
 import com.maan.eway.admin.res.MenuServiceRes;
 import com.maan.eway.admin.res.UserMenuListRes;
 import com.maan.eway.admin.service.MenuMasterService;
+import com.maan.eway.auth.dto.Menu;
 import com.maan.eway.bean.MenuMaster;
 import com.maan.eway.repository.MenuMasterRepository;
 import com.maan.eway.res.CustomerDetailsSearchRes;
@@ -51,6 +52,8 @@ public class MenuMasterServiceImpl implements MenuMasterService{
 		MenuServiceRes response = new MenuServiceRes();
 		ModelMapper mapper = new ModelMapper();
 		try {
+			List<Menu> menus=new ArrayList<Menu>();
+			
 			CriteriaBuilder cb=	em.getCriteriaBuilder();
 			CriteriaQuery<MenuMaster> criteriaQuery = cb.createQuery(MenuMaster.class);
 			// Find All
@@ -66,25 +69,70 @@ public class MenuMasterServiceImpl implements MenuMasterService{
 			Predicate  p2 = cb.equal(m.get("status") , "Y");
 			Predicate p3 = cb.like(m.get("usertype"), "%" + req.getUserType() + "%" );
 			
-			criteriaQuery.where(p1,p2,p3).orderBy(orderList);
-			TypedQuery<MenuMaster> query = em.createQuery(criteriaQuery);
-			List<MenuMaster> otherMenulist = query.getResultList();
-			List<UserMenuListRes> userResList = new ArrayList<UserMenuListRes>();
-			Type listType2 = new TypeToken<List<UserMenuListRes>>(){}.getType();
-			userResList = mapper.map(otherMenulist ,listType2);
 			
-			List<AdminListRes> adminReslist = new ArrayList<AdminListRes>();
-			if(req.getSubUserType().equalsIgnoreCase("high") ) {
+			
+			TypedQuery<MenuMaster> query = em.createQuery(criteriaQuery);
+			List<MenuMaster> adminMenulist = query.getResultList();
+			List<MenuMaster> otherMenulist = query.getResultList();
+			
+			if(req.getSubUserType().equalsIgnoreCase("both")    ) {	
+				criteriaQuery.where(p1,p2,p3).orderBy(orderList);	
+				query = em.createQuery(criteriaQuery);
+				otherMenulist = query.getResultList();
+				
 				p3 =  cb.like(m.get("usertype"), "%" + "admin" + "%" );
 				criteriaQuery.where(p1,p2,p3).orderBy(orderList);
 				query = em.createQuery(criteriaQuery);
-				List<MenuMaster> adminMenulist = query.getResultList();
-				Type listType = new TypeToken<List<AdminListRes>>(){}.getType();
-				adminReslist = mapper.map(adminMenulist ,listType);
+				adminMenulist = query.getResultList();
 				
-			} 
-			response.setAdminlist(adminReslist);
-			response.setUserList(userResList);
+			} else if (req.getSubUserType().equalsIgnoreCase("low")     ) {
+				criteriaQuery.where(p1,p2,p3).orderBy(orderList);
+				query = em.createQuery(criteriaQuery);
+				otherMenulist = query.getResultList();
+				
+			} else if (req.getSubUserType().equalsIgnoreCase("high")     ) {
+				p3 =  cb.like(m.get("usertype"), "%" + "admin" + "%" );
+				criteriaQuery.where(p1,p2,p3).orderBy(orderList);
+				query = em.createQuery(criteriaQuery);
+				adminMenulist = query.getResultList();
+			}
+			
+			
+			List<Menu> userResList = new ArrayList<Menu>();
+			List<Menu> userMenus=new ArrayList<Menu>();
+			List<Menu> adminReslist = new ArrayList<Menu>();
+			List<Menu> adminMenus = new ArrayList<Menu>();
+			
+			// User Menu List 
+			for (MenuMaster menuMaster : otherMenulist) {
+				Menu menu = Menu.builder().title(menuMaster.getMenuName()).link(menuMaster.getMenuUrl()).id(menuMaster.getMenuId().toString()).parent(menuMaster.getParentMenu())
+						.icon(menuMaster.getMenuLogo()).orderby(menuMaster.getDisplayOrder()==null?0:menuMaster.getDisplayOrder().longValue()).build();
+				userMenus.add(menu);
+			}
+			 List<Menu> collect = userMenus.stream().filter(i-> "99999".equals(i.getParent())).collect(Collectors.toList());
+			log.info("collect"+collect);
+			 for (Menu men : collect) {
+				 Menu menu = men;
+				 menu.setChildren(userMenus.stream().filter(i -> (!"99999".equals(i.getParent()) && menu.getId().equals(i.getParent()))).collect(Collectors.toList()));
+				 userResList.add(menu);
+			}
+			 
+			// Admin Menu List 
+			for (MenuMaster menuMaster : adminMenulist) {
+				Menu menu = Menu.builder().title(menuMaster.getMenuName()).link(menuMaster.getMenuUrl()).id(menuMaster.getMenuId().toString()).parent(menuMaster.getParentMenu())
+						.icon(menuMaster.getMenuLogo()).orderby(menuMaster.getDisplayOrder()==null?0:menuMaster.getDisplayOrder().longValue()).build();
+				adminMenus.add(menu);
+			}
+			List<Menu> collect2 = adminMenus.stream().filter(i-> "99999".equals(i.getParent())).collect(Collectors.toList());
+			log.info("collect"+collect2);
+			for (Menu men : collect2) {
+				 Menu menu = men;
+				 menu.setChildren(adminMenus.stream().filter(i -> (!"99999".equals(i.getParent()) && menu.getId().equals(i.getParent()))).collect(Collectors.toList()));
+				 adminReslist.add(menu);
+			}
+			 	
+			 response.setAdminlist(adminReslist);
+			 response.setUserList(userResList);
 		}
 		catch(Exception e) {
 		e.printStackTrace();

@@ -21,7 +21,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @Api(tags = "MENU : Menu List", description = "API's")
-@RequestMapping("/api")
+@RequestMapping("/master")
 public class MenuMasterController {
 
 	@Autowired

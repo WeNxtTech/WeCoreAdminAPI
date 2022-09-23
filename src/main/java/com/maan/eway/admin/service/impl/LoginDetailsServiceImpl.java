@@ -1124,12 +1124,26 @@ this.repository = repo;
 			  if(login.getMenuIds()!=null && login.getMenuIds().indexOf(",")!=-1) {
 				  String[] split = login.getMenuIds().split(",");
 				  List<String> asList = Arrays.asList(split);
-
-			  List<MenuMaster> findBymenuList = getMenuListCriteria(asList , req.getUserType() , req.getSubUserType());
+				  List<MenuMaster> findBymenuList = new ArrayList<>();
+				  
+			// Get Menus 	  
+			if(req.getSubUserType().equalsIgnoreCase("both")  )	  {
+				List<MenuMaster> adminmenuList = getMenuListCriteria(asList , "admin" );
+				findBymenuList.addAll(adminmenuList);
+				List<MenuMaster> usermenuList = getMenuListCriteria(asList , req.getUserType()  );
+				findBymenuList.addAll(usermenuList);
+			} else if(req.getSubUserType().equalsIgnoreCase("high")  ) {
+				List<MenuMaster> adminmenuList = getMenuListCriteria(asList , "admin" );
+				findBymenuList.addAll(adminmenuList);
+			} else if(req.getSubUserType().equalsIgnoreCase("low")  ) {
+				List<MenuMaster> usermenuList = getMenuListCriteria(asList , req.getUserType()  );
+				findBymenuList.addAll(usermenuList);
+			}
+			 
 				List<Menu> menus=new ArrayList<Menu>();
 				for (MenuMaster menuMaster : findBymenuList) {
-					Menu m = Menu.builder().name(menuMaster.getMenuName()).url(menuMaster.getMenuUrl()).id(menuMaster.getMenuId().toString()).parent(menuMaster.getParentMenu())
-							.orderby(menuMaster.getDisplayOrder()==null?0:menuMaster.getDisplayOrder().longValue()).build();
+					Menu m = Menu.builder().title(menuMaster.getMenuName()).link(menuMaster.getMenuUrl()).id(menuMaster.getMenuId().toString()).parent(menuMaster.getParentMenu())
+							.icon(menuMaster.getMenuLogo()).orderby(menuMaster.getDisplayOrder()==null?0:menuMaster.getDisplayOrder().longValue()).build();
 					menus.add(m);
 				}
 				 List<Menu> collect = menus.stream().filter(i-> "99999".equals(i.getParent())).collect(Collectors.toList());
@@ -1149,7 +1163,7 @@ this.repository = repo;
 	} 
 	
 	
-	public List<MenuMaster> getMenuListCriteria( List<String> menuids, String usertype , String subUsertype ){
+	public List<MenuMaster> getMenuListCriteria( List<String> menuids, String usertype  ){
 		List<MenuMaster> menuList = new ArrayList<MenuMaster>();
 		try {
 			// Criteria
@@ -1166,13 +1180,7 @@ this.repository = repo;
 			
 			Predicate p1 = cb.equal(m.get("status"), "Y");
 			Predicate p2 = e0.in(menuids);
-			Predicate p3 = null ;
-			
-			if(subUsertype.equalsIgnoreCase("high") ) {
-				p3 =  cb.like(m.get("usertype"), "%" + "admin" + "%" );
-			} else {
-				p3 =  cb.like(m.get("usertype"), "%" + usertype + "%" );
-			}
+			Predicate p3 =  cb.like(m.get("usertype"), "%" + usertype + "%" );
 			
 			query.select(m ).where(p1,p2,p3).orderBy(orderList) ;
 

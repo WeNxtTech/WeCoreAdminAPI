@@ -197,5 +197,42 @@ public class DropDownController {
 			}
 }
 		
-	
+
+		@GetMapping("/nametitle")
+		@ApiOperation(value = "This method is to Name Title Drop Down")
+		public ResponseEntity<CommonRes> nametitle() {
+			CommonRes data = new CommonRes();
+
+			List<DropDownRes> res = dropDownService.nametitle();
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+}
+
+
+		@GetMapping("/notificationtype")
+		@ApiOperation(value = "This method is to Notification Type Drop Down")
+		public ResponseEntity<CommonRes> notificationtype() {
+			CommonRes data = new CommonRes();
+
+			List<DropDownRes> res = dropDownService.notificationtype();
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+}
+		
 }

@@ -27,4 +27,8 @@ public interface DropDownService {
 
 	List<DropDownRes> policyholdergender();
 
+	List<DropDownRes> nametitle();
+
+	List<DropDownRes> notificationtype();
+
 }

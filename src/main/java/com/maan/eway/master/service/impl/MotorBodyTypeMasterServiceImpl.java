@@ -55,8 +55,43 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 
 	@Override
 	public List<Error> validateMakeMotor(MotorBodySaveReq req) {
-		// TODO Auto-generated method stub
-		return null;
+
+		List<Error> errorList = new ArrayList<Error>();
+
+		try {
+
+			if (StringUtils.isBlank(req.getBodyNameEn())) {
+				errorList.add(new Error("01", "Body Name En", "Please Enter Body Name En "));
+			}
+			else if (req.getBodyNameEn().length()>100) {
+				errorList.add(new Error("01", "Body Name En", "Please Enter Body Name En within 100 Characters "));
+			}
+			// Date Validation
+			Calendar cal = new GregorianCalendar();
+			Date today = new Date();
+			cal.setTime(today);
+			cal.add(Calendar.DAY_OF_MONTH, -1);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 50);
+			today = cal.getTime();
+			if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
+				errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start"));
+
+			} else if (req.getEffectiveDateStart().before(today)) {
+				errorList
+						.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			}
+			// Status Validation
+			 if (req.getStatus().length() > 1) {
+				errorList.add(new Error("03", "Status", "Status 1 Character Only"));
+			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()))) {
+				errorList.add(new Error("03", "Status", "Enter Status Y or N Only"));
+			}
+		} catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+		}
+		return errorList;
 	}
 
 	@Override

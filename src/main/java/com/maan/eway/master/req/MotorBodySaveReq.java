@@ -31,6 +31,8 @@ public class MotorBodySaveReq {
 	private Integer tonnage	;
 	@JsonProperty("Cylinders")
 	private Integer cylinders	;
+	@JsonProperty("Status")
+	private String status;
 	
 }                                      
   

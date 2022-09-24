@@ -32,6 +32,8 @@ public class MotorMakeSaveReq {
 	@JsonProperty("ColorDesc")
 	private String colorDesc;
 		
-	  
+	@JsonProperty("Status")
+	private String status;
+	
 
 }

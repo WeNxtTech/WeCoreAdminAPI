@@ -41,10 +41,10 @@ import com.maan.eway.res.SuccessRes;
 
 @Service
 @Transactional
-public class MotorColorMasterServiceImpl implements  MotorColorMasterService {
+public class MotorColorMasterServiceImpl implements MotorColorMasterService {
 
 	@Autowired
-	private  MotorColorMasterRepository repo;
+	private MotorColorMasterRepository repo;
 
 	@PersistenceContext
 	private EntityManager em;
@@ -55,8 +55,49 @@ public class MotorColorMasterServiceImpl implements  MotorColorMasterService {
 
 	@Override
 	public List<Error> validateColorMotor(MotorColorSaveReq req) {
-		// TODO Auto-generated method stub
-		return null;
+
+		List<Error> errorList = new ArrayList<Error>();
+
+		try {
+
+			if (StringUtils.isBlank(req.getColorCode())) {
+				errorList.add(new Error("01", "Color Code", "Please Enter Color Code "));
+			}
+			else if (req.getColorCode().length()>100) {
+				errorList.add(new Error("01", "Color Code", "Please Enter Color Code within 100 Characters "));
+			}
+			if (StringUtils.isBlank(req.getColorDesc())) {
+				errorList.add(new Error("02", "Color Desc", "Please Enter Color Desc "));
+			}
+			else if (req.getColorDesc().length()>100) {
+				errorList.add(new Error("02", "Color Desc", "Please Enter Color Desc within 100 Characters "));
+			}
+			// Date Validation
+			Calendar cal = new GregorianCalendar();
+			Date today = new Date();
+			cal.setTime(today);
+			cal.add(Calendar.DAY_OF_MONTH, -1);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 50);
+			today = cal.getTime();
+			if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
+				errorList.add(new Error("03", "EffectiveDateStart", "Please Enter Effective Date Start"));
+
+			} else if (req.getEffectiveDateStart().before(today)) {
+				errorList
+						.add(new Error("03", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			}
+			// Status Validation
+			 if (req.getStatus().length() > 1) {
+				errorList.add(new Error("04", "Status", "Status 1 Character Only"));
+			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()))) {
+				errorList.add(new Error("04", "Status", "Enter Status Y or N Only"));
+			}
+		} catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+		}
+		return errorList;
 	}
 
 	@Override
@@ -69,13 +110,19 @@ public class MotorColorMasterServiceImpl implements  MotorColorMasterService {
 
 		try {
 			Calendar cal = new GregorianCalendar();
-			cal.setTime(req.getEffectiveDateStart());cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 59);
+			cal.setTime(req.getEffectiveDateStart());
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 59);
 			Date startDate = cal.getTime();
 			Date today = new Date();
-			cal.setTime(req.getEffectiveDateStart());  cal.add(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
+			cal.setTime(req.getEffectiveDateStart());
+			cal.add(Calendar.DAY_OF_MONTH, -1);
+			cal.set(Calendar.HOUR_OF_DAY, today.getHours());
+			cal.set(Calendar.MINUTE, today.getMinutes());
 			Date oldEndDate = cal.getTime();
 			cal.setTime(req.getEffectiveDateStart());
-			cal.set(Calendar.HOUR_OF_DAY, today.getHours());cal.set(Calendar.MINUTE, today.getMinutes());
+			cal.set(Calendar.HOUR_OF_DAY, today.getHours());
+			cal.set(Calendar.MINUTE, today.getMinutes());
 			Date effDate = cal.getTime();
 			Date endDate = sdformat.parse("12/12/2050");
 
@@ -109,9 +156,8 @@ public class MotorColorMasterServiceImpl implements  MotorColorMasterService {
 				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 				Predicate a1 = cb.equal(ocpm1.get("colorId"), b.get("colorId"));
 				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
-				
-				effectiveDate.where(a1, a2);
 
+				effectiveDate.where(a1, a2);
 
 				// Where
 				Predicate n1 = cb.equal(b.get("status"), "Y");
@@ -119,7 +165,7 @@ public class MotorColorMasterServiceImpl implements  MotorColorMasterService {
 				Predicate n3 = cb.equal(b.get("colorId"), req.getColorId());
 
 				query.where(n1, n2, n3);
-				
+
 				// Get Result
 				TypedQuery<MotorColorMaster> result = em.createQuery(query);
 				list = result.getResultList();
@@ -127,7 +173,7 @@ public class MotorColorMasterServiceImpl implements  MotorColorMasterService {
 				if (list.size() > 0) {
 					repo.delete(list.get(0));
 				}
-			
+
 				res.setResponse("Updated Successfully ");
 				res.setSuccessId(colorId);
 
@@ -160,7 +206,6 @@ public class MotorColorMasterServiceImpl implements  MotorColorMasterService {
 		return res;
 	}
 
-	
 	public Long getMasterTableCount() {
 
 		Long data = 0L;
@@ -199,7 +244,7 @@ public class MotorColorMasterServiceImpl implements  MotorColorMasterService {
 		}
 		return data;
 	}
-	
+
 	@Override
 	public MotorColorGetRes getMotorColor(MotorColorGetReq req) {
 		MotorColorGetRes res = new MotorColorGetRes();
@@ -314,6 +359,7 @@ public class MotorColorMasterServiceImpl implements  MotorColorMasterService {
 		}
 		return resList;
 	}
+
 	@Override
 	public List<MotorColorGetRes> getactiveMotorColor(MotorColorGetAllReq req) {
 		List<MotorColorGetRes> resList = new ArrayList<MotorColorGetRes>();
@@ -375,9 +421,4 @@ public class MotorColorMasterServiceImpl implements  MotorColorMasterService {
 		return resList;
 	}
 
-
 }
-
-	
-
-

@@ -27,6 +27,8 @@ public class MotorColorSaveReq {
 	private Date effectiveDateStart;
 	@JsonProperty("Remarks")
 	private String remarks;
+	@JsonProperty("Status")
+	private String status;
 }                                      
   
    

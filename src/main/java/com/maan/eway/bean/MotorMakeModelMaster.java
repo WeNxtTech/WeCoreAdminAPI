@@ -45,45 +45,65 @@ public class MotorMakeModelMaster implements Serializable {
 	private Integer bodyId;
 	
 	@Id
-	@Column(name = "INSCOMPANYID", length=100,nullable = false)
-	private String insCompanyId;
-	
-	@Id
-	@Temporal(TemporalType.DATE)
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", locale = "en-IN", timezone = "Asia/Calcutta")
-	@Column(name = "EFFECTIVE_DATE", nullable = false, length = 100)
-	private Date effectiveDate;
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "EFFECTIVE_DATE_START", nullable = false)
+	private Date effectiveDateStart;
 
 	@Id
 	@Column(name = "AMEND_ID", nullable = false)
 	private Integer amendId;
 
+	@Id
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "EFFECTIVE_DATE_END", nullable = false)
+	private Date effectiveDateEnd;
+
+	
+	
 	// --- ENTITY DATA FIELDS
 	@Column(name = "VEHICLEMODELCODE")
 	private Integer vehiclemodelcode;
 
-	@Column(name = "STATUS", length = 100)
+	@Column(name = "STATUS", length = 10)
 	private String status;
 
 	@Temporal(TemporalType.DATE)
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", locale = "en-IN", timezone = "Asia/Calcutta")
 	@Column(name = "ENTRY_DATE")
 	private Date entryDate;
 
 	@Column(name = "REMARKS", length = 100)
 	private String remarks;
 	
-	@Column(name = "MAKE_NAME_EN", length = 100)
+	@Column(name = "MAKE_NAME_EN", length = 1000)
 	private String makeNameEn;
 	
-	@Column(name = "MODEL_NAME_EN", length = 100)
+	@Column(name = "MODEL_NAME_EN", length = 1000)
 	private String modelNameEn;
 	
-	@Column(name = "BODY_NAME_EN", length = 100)
+	@Column(name = "BODY_NAME_EN", length = 1000)
 	private String bodyNameEn;
 
+	@Column(name = "VEH_CLASS")
+	private Integer vehClass;
+	
+	@Column(name = "VEH_CLASS_EN", length =1000)
+	private String vehClassEn;
+	
+	
 	@Column(name = "VEH_MANF_COUNTRY")
 	private Integer vehManfCountry;
+	
+	@Column(name = "VEH_MANF_COUNTRY_EN", length=1000)
+	private String vehManfCountryEn;
+	
+
+	@Column(name = "VEH_MANF_REGION")
+	private Integer vehManfRegion;
+	
+	@Column(name = "VEH_MANF_REGION_EN", length=1000)
+	private String vehManfRegionEn;
+	
+	
 	
 	@Column(name = "VEH_CC")
 	private Integer vehCc;
@@ -94,19 +114,82 @@ public class MotorMakeModelMaster implements Serializable {
 	@Column(name = "VEH_FUELTYPE")
 	private Integer vehFueltype;
 	
-	@Column(name = "MAKE_NAME_AR", length = 100)
+	
+	@Column(name = "CORE_MAKE_ID", length = 100)
+	private String coreMakeId;
+	
+	@Column(name = "CORE_MODEL_ID", length = 100)
+	private String coreModelId;
+	
+	@Column(name = "CORE_BODY_ID", length = 100)
+	private String coreBOdyId;
+	
+	@Column(name = "CORE_REF_NO", length = 100)
+	private String coreRefNo;
+	
+	@Column(name = "VEHICLE_TYPE_AR", length = 100)
+	private String vehicleTypeAr;
+	
+	@Column(name = "MAKE_NAME_AR", length = 1000)
 	private String makeNameAr;
 	
-	@Column(name = "MODEL_NAME_AR", length = 100)
+	@Column(name = "MODEL_NAME_AR", length = 1000)
 	private String modelNameAr;
 	
-	@Column(name = "TPLRATE")
+	@Column(name = "OTHR_MAKE_ID_1", length = 1000)
+	private String othrMakeId1;
+	
+	@Column(name = "OTHR_MODEL_ID_1", length = 1000)
+	private String othrModelId1;
+	
+	@Column(name = "OTHR_BODY_ID_1", length = 1000)
+	private String othrBodyId1;
+	
+
+	@Column(name = "OTHR_MAKE_ID_2", length = 1000)
+	private String othrMakeId2;
+	
+	@Column(name = "OTHR_MODEL_ID_2", length = 1000)
+	private String othrModelId2;
+	
+	@Column(name = "OTHR_BODY_ID_2", length = 1000)
+	private String othrBodyId2;
+
+	@Column(name="REF_NO")
+	private Integer refNo;
+	
+
+	@Column(name="BATCH_ID")
+	private Integer batchId;
+
+	@Column(name = "ENTRY_MODE", length = 100)
+	private String entryMode;
+
+	@Column(name = "UPLOADED_BY", length = 100)
+	private String uploadedBy;
+
+	@Column(name="PREMIA_CODE")
+	private Integer premiaCode;
+
+	@Column(name="MODEL_ID_OLD")
+	private Integer modelIdOld;
+
+	@Column(name = "CORE_APPCODE", length = 100)
+	private String coreAppcode;
+
+	@Column(name="TPLRATE")
 	private Integer tplrate;
-	
-	@Column(name = "BASERATE")
+
+	@Column(name="BASERATE")
 	private Integer baserate;
-	
-	@Column(name = "NETRATE")
+
+	@Column(name="NETRATE")
 	private Integer netrate;
-	
+
+	@Column(name = "OBSOLETE_FLAG", length = 100)
+	private String obsoleteFlag;
+
+	@Column(name="ROP_BODYID")
+	private Integer ropBodyid;
+
 }

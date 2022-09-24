@@ -13,8 +13,5 @@ import com.maan.eway.bean.MotorMakeModelMasterId;
 
 public interface MotorMakeModelMasterRepository extends JpaRepository<MotorMakeModelMaster, MotorMakeModelMasterId>,
 		JpaSpecificationExecutor<MotorMakeModelMaster> {
-	List<MotorMakeModelMaster> findByMakeId(Integer makeId);
-
-	List<MotorMakeModelMaster> findByModelIdAndEffectiveDateOrderByAmendIdDesc(Integer modelId, Date effectiveDate);
-
+	
 }

@@ -20,8 +20,10 @@ public class MotorMakeModelMasterId implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Integer makeId;
-	private Date effectiveDate;
-	private Integer amendId;
 	private Integer modelId;
-	private String insCompanyId;
+	private Integer bodyId;
+	private Date effectiveDateStart;
+	private Integer amendId;
+	private Date effectiveDateEnd;
+
 }

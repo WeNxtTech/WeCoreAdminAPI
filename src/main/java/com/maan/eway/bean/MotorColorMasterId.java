@@ -20,7 +20,8 @@ public class MotorColorMasterId implements Serializable {
 	private static final long serialVersionUID = 1L;
 
     private Integer colorId; 
-	private Date effectiveDate;
 	private Integer amendId;
+    private Date effectiveDateStart;
+    private Date effectiveDateEnd;
 
 }

@@ -38,11 +38,16 @@ public class MotorColorMaster implements Serializable  {
     private Integer colorId;  
     
 	@Id
-	@Temporal(TemporalType.DATE)
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", locale = "en-IN", timezone = "Asia/Calcutta")
-    @Column(name="EFFECTIVE_DATE",nullable=false)
-    private Date effectiveDate;
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="EFFECTIVE_DATE_START",nullable=false)
+    private Date effectiveDateStart;
   
+	@Id
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="EFFECTIVE_DATE_END",nullable=false)
+    private Date effectiveDateEnd;
+  
+	
     @Id
     @Column(name= "AMEND_ID", nullable=false)
     private Integer amendId ;
@@ -54,15 +59,11 @@ public class MotorColorMaster implements Serializable  {
     
     @Column(name="COLOR_DESC", length=100)
     private String    colorDesc ;
-    
-    @Column(name="CORE_APP_CODE", length=100)
-    private String    coreAppCode ;
 
     @Column(name="STATUS", length=100)
     private String    status ;
     
     @Temporal(TemporalType.DATE)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", locale = "en-IN", timezone = "Asia/Calcutta")
     @Column(name="ENTRY_DATE")
     private Date      entryDate ;
 

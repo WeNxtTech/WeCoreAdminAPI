@@ -15,6 +15,5 @@ public interface MotorColorMasterRepository
 		extends JpaRepository<MotorColorMaster, MotorColorMasterId>,
 		JpaSpecificationExecutor<MotorColorMaster> {
 
-	List<MotorColorMaster> findByColorIdAndEffectiveDateOrderByAmendIdDesc(Integer colorId, Date effectiveDate);
 
 }

@@ -60,12 +60,14 @@ public class MotorColorMaster implements Serializable  {
     @Column(name="COLOR_DESC", length=100)
     private String    colorDesc ;
 
-    @Column(name="STATUS", length=100)
+    @Column(name="STATUS", length=10)
     private String    status ;
     
     @Temporal(TemporalType.DATE)
     @Column(name="ENTRY_DATE")
     private Date      entryDate ;
 
-
+    @Column(name="REMARKS", length=100)
+    private String    remarks;
+  
 }

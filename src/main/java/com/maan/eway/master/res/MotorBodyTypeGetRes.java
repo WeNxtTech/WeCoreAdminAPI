@@ -1,4 +1,4 @@
-package com.maan.eway.master.req;
+package com.maan.eway.master.res;
 
 import java.util.Date;
 
@@ -12,26 +12,47 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class MotorBodySaveReq {
+@AllArgsConstructor
+public class MotorBodyTypeGetRes {
 
 	@JsonProperty("BodyId")
-	private String bodyId;
+	private Integer bodyId;
+	
 	@JsonProperty("BodyNameEn")
 	private String bodyNameEn;
-	@JsonFormat(pattern="dd/MM/yyyy")
+	
+	@JsonFormat(pattern="dd/MM/YYYY")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
+	
+	@JsonFormat(pattern="dd/MM/YYYY")
+	@JsonProperty("EffectiveDateEnd")
+	private Date effectiveDateEnd;
+
+	
+	@JsonProperty("AmendId")
+	private Integer amendId;
+	
+	@JsonProperty("Status")
+	private String status;
+
 	@JsonProperty("Remarks")
 	private String remarks;
-	@JsonProperty("SeatingCapacity")
-	private Integer seatingCapacity	;
-	@JsonProperty("Tonnage")
-	private Integer tonnage	;
-	@JsonProperty("Cylinders")
-	private Integer cylinders	;
 	
-}                                      
-  
-   
+	@JsonFormat(pattern="dd/MM/YYYY")
+	@JsonProperty("EntryDate")
+	private Date entryDate;
+	
+	@JsonProperty("SeatingCapacity")
+	private Integer seatingCapacity;
+
+	@JsonProperty("Tonnage")
+	private Integer tonnage;
+		  
+
+	@JsonProperty("Cylinders")
+	private Integer cylinders;
+		    
+
+}

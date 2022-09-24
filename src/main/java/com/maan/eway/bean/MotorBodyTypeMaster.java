@@ -37,24 +37,25 @@ public class MotorBodyTypeMaster implements Serializable {
 	private Integer bodyId;
 
 	@Id
-	@Temporal(TemporalType.DATE)
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", locale = "en-IN", timezone = "Asia/Calcutta")
-	@Column(name = "EFFECTIVE_DATE", nullable = false, length = 100)
-	private Date effectiveDate;
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "EFFECTIVE_DATE_START", nullable = false)
+	private Date effectiveDateStart;
 
 	@Id
 	@Column(name = "AMEND_ID", nullable = false)
 	private Integer amendId;
 
 	@Id
-	@Column(name = "INSCOMPANYID",length=100, nullable = false)
-	private String insCompanyId;
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "EFFECTIVE_DATE_END", nullable = false)
+	private Date effectiveDateEnd;
+
 	
 	// --- ENTITY DATA FIELDS
 	@Column(name = "BODY_NAME_EN", length = 100)
 	private String bodyNameEn;
 
-	@Column(name = "STATUS", length = 100)
+	@Column(name = "STATUS", length = 10)
 	private String status;
 
 	@Temporal(TemporalType.DATE)

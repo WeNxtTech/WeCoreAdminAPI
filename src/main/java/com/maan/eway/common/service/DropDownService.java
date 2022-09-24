@@ -7,24 +7,7 @@ import com.maan.eway.res.DropDownRes;
 
 public interface DropDownService {
 
-	List<DropDownRes> getgender();
-
-	List<DropDownRes> getUserType();
-
-	List<DropDownRes> getSubUserType(SubUserTypeReq req);
-
-	List<DropDownRes> getConstMaterial();
-
-	List<DropDownRes> getOutbuildingConst();
-
-	List<DropDownRes> getAboutBuilding();
-
-	List<DropDownRes> getStateExtent();
-
-	List<DropDownRes> getContentName();
-
-	List<DropDownRes> getPropertyName();
-
+	
 	
 	List<DropDownRes> coverNoteType();
 

@@ -151,9 +151,9 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 						// Amend ID
 						if( list.get(0).getEffectiveDateStart().before(startDate)   ) {
 							String startDatewithoutTime = sdformat.format(startDate) ;
-							String newDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart()) ;
+							String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart()) ;
 							
-							if(startDatewithoutTime.equalsIgnoreCase(newDatewithoutTime) ) {
+							if(startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime) ) {
 								amendId = list.get(0).getAmendId() + 1 ;
 							}
 						}

@@ -49,5 +49,10 @@ public class ProductReferalGetRes {
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 	
-	
+	@JsonProperty("AmendId")
+	private String amendId;
+
+	@JsonProperty("TiraCode")
+	private String tiraCode;
+
 }

@@ -15,6 +15,7 @@ import com.google.gson.Gson;
 import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.EserviceAllRisks;
 import com.maan.eway.bean.OfsGridMaster;
+import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CoverMasterGetAllReq;
@@ -68,80 +69,125 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 	private Logger log = LogManager.getLogger(CoverMasterServiceImpl.class);
 
 //************************************************INSERT/UPDATE COVER DETAILS******************************************************\\
-@Override
-public List<Error> validateCoverDetails(CoverMasterSaveReqA req) {
+	@Override
+	public List<Error> validateCoverDetails(CoverMasterSaveReqA req) {
 
-List<Error> errorList = new ArrayList<Error>();
+		List<Error> errorList = new ArrayList<Error>();
 
-try {
+		try {
 
-	if (StringUtils.isBlank(req.getCoverName()) ) {
-		errorList.add(new Error("01", "Cover Name", "Please Select Cover  Name "));
-	}else if (req.getCoverName().length() > 100){
-		errorList.add(new Error("01","Cover Name", "Please Enter Cover  Name within 100 Characters")); 
-	}else if (StringUtils.isBlank(req.getCoverId())) {
-		Long CoverCount = repo.countByCoverNameOrderByEntryDateDesc(req.getCoverName() );
-		if (CoverCount > 0 ) {
-			errorList.add(new Error("01", "Cover Name", "This Cover Name Alrady Exist "));
+			if (StringUtils.isBlank(req.getCoverName())) {
+				errorList.add(new Error("01", "Cover Name", "Please Select Cover  Name "));
+			} else if (req.getCoverName().length() > 100) {
+				errorList.add(new Error("01", "Cover Name", "Please Enter Cover  Name within 100 Characters"));
+			} else if (StringUtils.isBlank(req.getCoverId())) {
+				Long CoverCount = repo.countByCoverNameOrderByEntryDateDesc(req.getCoverName());
+				if (CoverCount > 0) {
+					errorList.add(new Error("01", "Cover Name", "This Cover Name Alrady Exist "));
+				} 
+			}else {
+				List<CoverMaster> coverList = getCoverNameExistDetails(req.getCoverName());
+				if (coverList.size() > 0
+						&& (!req.getCoverId().equalsIgnoreCase(coverList.get(0).getCoverId().toString()))) {
+					errorList.add(new Error("01", "Cover Name", "This Cover Name is Alrady Exist "));
+				}
+
+			}
+			if (StringUtils.isBlank(req.getCoverDesc())) {
+				errorList.add(new Error("02", "Cover Desc", "Please Enter Cover Desc "));
+			} else if (req.getCoverDesc().length() > 100) {
+				errorList.add(new Error("02", "Cover Desc", "Please Enter Cover  Desc within 100 Characters"));
+			}
+			// Date Validation
+			Calendar cal = new GregorianCalendar();
+			Date today = new Date();
+			cal.setTime(today);
+			cal.add(Calendar.DAY_OF_MONTH, -1);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 50);
+			today = cal.getTime();
+			if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
+				errorList.add(new Error("03", "EffectiveDateStart", "Please Enter Effective Date Start"));
+
+			} else if (req.getEffectiveDateStart().before(today)) {
+				errorList
+						.add(new Error("03", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			}
+			if (StringUtils.isBlank(req.getCoreAppCode())) {
+				errorList.add(new Error("04", "Core App Code", "Please Enter Core App Code"));
+			} else if (req.getCoreAppCode().length() > 20) {
+				errorList.add(new Error("04", "Core App Code", "Enter Core App Code  within 20 Characters Only"));
+			}
+			if (req.getRemarks().length() > 100) {
+				errorList.add(new Error("05", "Remarks", "Please Enter Remarks within 100 Characters"));
+			}
+
+			if (req.getToolTip().length() > 100) {
+				errorList.add(new Error("06", "Tooltip", "Please Enter Tool Tip within 100 Characters"));
+			}
+			if (StringUtils.isBlank(req.getCreatedBy())) {
+				errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy "));
+			} else if (req.getCreatedBy().length() > 100) {
+				errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+			}
+			// Status Validation
+			if (StringUtils.isBlank(req.getStatus())) {
+				errorList.add(new Error("08", "Status", "Please Enter Status"));
+			} else if (req.getStatus().length() > 1) {
+				errorList.add(new Error("08", "Status", "Enter Status in 1 Character Only"));
+			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()))) {
+				errorList.add(new Error("08", "Status", "Enter Status Y or N Only"));
+			}
+			if (StringUtils.isBlank(req.getTiraCode())) {
+				errorList.add(new Error("09", "Tira Code", "Please Enter Tira Code"));
+			} else if (req.getTiraCode().length() > 20) {
+				errorList.add(new Error("09", "Tira Code", "Enter Tira Code  within 20 Characters Only"));
+			}
+
+		} catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+			errorList.add(new Error("10", "Common Error", e.getMessage()));
+
 		}
+		return errorList;
 	}
-	if (StringUtils.isBlank(req.getCoverDesc()) ) {
-		errorList.add(new Error("02", "Cover Desc", "Please Enter Cover Desc "));
-	}else if (req.getCoverDesc().length() > 100){
-		errorList.add(new Error("02","Cover Desc", "Please Enter Cover  Desc within 100 Characters")); 
-	}
-	// Date Validation 
-	Calendar cal = new GregorianCalendar();
-	Date today = new Date();
-	cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
-	today = cal.getTime();
-	if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
-		errorList.add(new Error("03", "EffectiveDateStart", "Please Enter Effective Date Start"));
 
-	} else if (req.getEffectiveDateStart().before(today)) {
-		errorList.add(new Error("03", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
-	}
-	if (StringUtils.isBlank(req.getCoreAppCode())) {
-		errorList.add(new Error("04", "Core App Code", "Please Enter Core App Code"));
-	} else if (req.getCoreAppCode().length() > 20) {
-		errorList.add(new Error("04", "Core App Code", "Enter Core App Code  within 20 Characters Only"));
-	}
-	if (req.getRemarks().length()>100) {
-		errorList.add(new Error("05", "Remarks", "Please Enter Remarks within 100 Characters"));
-	}
-	
-	if (req.getToolTip().length()>100) {
-		errorList.add(new Error("06", "Tooltip", "Please Enter Tool Tip within 100 Characters"));
-	}
-	if (StringUtils.isBlank(req.getCreatedBy())) {
-		errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy "));
-	}
-	else if (req.getCreatedBy().length()>100) {
-		errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
-	}
-	//Status Validation
-	if (StringUtils.isBlank(req.getStatus())) {
-		errorList.add(new Error("08", "Status", "Please Enter Status"));
-	} else if (req.getStatus().length() > 1) {
-		errorList.add(new Error("08", "Status", "Enter Status in 1 Character Only"));
-	}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()))) {
-		errorList.add(new Error("08", "Status", "Enter Status Y or N Only"));
-	}
-	if (StringUtils.isBlank(req.getTiraCode())) {
-		errorList.add(new Error("09", "Tira Code", "Please Enter Tira Code"));
-	} else if (req.getTiraCode().length() > 20) {
-		errorList.add(new Error("09", "Tira Code", "Enter Tira Code  within 20 Characters Only"));
-	}
-	
-	
-} catch (Exception e) {
-	log.error(e);
-	e.printStackTrace();
-	errorList.add(new Error("10", "Common Error",e.getMessage()));
+// Cover Name Check Details
+	public List<CoverMaster> getCoverNameExistDetails(String coverName) {
+		List<CoverMaster> list = new ArrayList<CoverMaster>();
+		try {
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CoverMaster> query = cb.createQuery(CoverMaster.class);
 
-}
-return errorList;
-}
+			// Find All
+			Root<CoverMaster> b = query.from(CoverMaster.class);
+
+			// Select
+			query.select(b);
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CoverMaster> ocpm1 = effectiveDate.from(CoverMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
+			effectiveDate.where(a1);
+
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("coverName"), coverName);
+			query.where(n1, n2);
+			// Get Result
+			TypedQuery<CoverMaster> result = em.createQuery(query);
+			list = result.getResultList();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+
+		}
+		return list;
+	}
 
 	@Transactional
 	@Override
@@ -153,6 +199,7 @@ return errorList;
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 
 		try {
+			Integer amendId = 0;
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(req.getEffectiveDateStart());
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -226,6 +273,15 @@ return errorList;
 
 				if (list.size() > 0) {
 					repo.delete(list.get(0));
+					// Amend ID
+					if( list.get(0).getEffectiveDateStart().before(startDate)   ) {
+						String startDatewithoutTime = sdformat.format(startDate) ;
+						String newDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart()) ;
+						
+						if(startDatewithoutTime.equalsIgnoreCase(newDatewithoutTime) ) {
+							amendId = list.get(0).getAmendId() + 1 ;
+						}
+					}
 				}
 				res.setResponse("Updated Successfully ");
 				res.setSuccessId(coverId);
@@ -238,7 +294,7 @@ return errorList;
 			saveData.setEffectiveDateEnd(endDate);
 			saveData.setStatus(req.getStatus());
 			saveData.setEntryDate(new Date());
-			saveData.setAmendId(0);
+			saveData.setAmendId(amendId);
 			saveData.setCreatedBy(req.getCreatedBy());
 			repo.saveAndFlush(saveData);
 
@@ -347,6 +403,8 @@ return errorList;
 				res = mapper.map(data, CoverMasterRes.class);
 				mapper.getConfiguration().setAmbiguityIgnored(true);
 				res.setCoverId(data.getCoverId());
+				res.setCreatedBy(data.getCreatedBy() == null ? "" : data.getCreatedBy());
+				res.setToolTip(data.getToolTip() == null ? "" : data.getToolTip());
 				resList.add(res);
 			}
 
@@ -405,6 +463,9 @@ return errorList;
 			res.setEntryDate(list.get(0).getEntryDate());
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
 			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
+			res.setCreatedBy(list.get(0).getCreatedBy() == null ? "" : list.get(0).getCreatedBy());
+			res.setToolTip(list.get(0).getToolTip() == null ? "" : list.get(0).getToolTip());
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -465,6 +526,8 @@ return errorList;
 				res = mapper.map(data, CoverMasterRes.class);
 				mapper.getConfiguration().setAmbiguityIgnored(true);
 				res.setCoverId(data.getCoverId());
+				res.setCreatedBy(data.getCreatedBy() == null ? "" : data.getCreatedBy());
+				res.setToolTip(data.getToolTip() == null ? "" : data.getToolTip());
 				resList.add(res);
 			}
 

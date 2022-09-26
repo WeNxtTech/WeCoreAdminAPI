@@ -66,10 +66,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="EFFECTIVE_DATE_END", nullable=false)
     private Date       effectiveDateEnd ;
 
-    @Id
-    @Column(name="COMPANY_ID", nullable=false, length=20)
-    private String     companyId ;
-
     //--- ENTITY DATA FIELDS 
     @Column(name="REFERAL_NAME", length=100)
     private String     referalName ;
@@ -79,7 +75,10 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="CORE_APP_CODE", length=20)
     private String     coreAppCode ;
-
+    
+    @Column(name="TIRA_CODE", length=20)
+    private String     tiraCode ;
+    
     @Column(name="AMEND_ID")
     private Integer     amendId ;
 
@@ -93,7 +92,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="STATUS", length=1)
     private String     status ;
 
-
+    @Column(name="CREATED_BY", length=20)
+    private String     createdBy ;
 }
 
 

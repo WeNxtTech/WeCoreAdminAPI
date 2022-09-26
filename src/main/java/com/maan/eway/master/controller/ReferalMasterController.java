@@ -39,7 +39,7 @@ import java.util.List;
 */
 @RestController
 @RequestMapping("/master")
-@Api(tags = "MASTER : Referral Master ", description = "API's")
+@Api(tags = "1.GLOBAL CONFIG : Referral Master ", description = "API's")
 public class ReferalMasterController {
 
 	@Autowired
@@ -150,7 +150,7 @@ public class ReferalMasterController {
 		}
 	}
 		
-		// Referal Master Drop Down Type
+/*		// Referal Master Drop Down Type
 		@GetMapping("/dropdown/referal")
 		@ApiOperation(value = "This method is get Referal Master Drop Down")
 
@@ -172,6 +172,6 @@ public class ReferalMasterController {
 			}
 
 		}
-		
+	*/	
 
 }

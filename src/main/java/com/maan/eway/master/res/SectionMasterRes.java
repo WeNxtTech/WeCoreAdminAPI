@@ -38,25 +38,11 @@ public class SectionMasterRes implements Serializable {
 
   
 	@JsonProperty("SectionId")
-    private Integer    sectionId    ;
-	
-	@JsonProperty("ProductId")
-    private Integer    productId    ;
-	
-	@JsonProperty("InsuranceId")
-    private String     companyId    ;
-	
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDateStart")
-    private Date       effectiveDateStart ;
-	
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDatEend")
-    private Date       effectiveDateEnd ;
+    private String    sectionId    ;
 
 	@JsonProperty("SectionName")
     private String     sectionName  ;
-	
+
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EntryDate")
     private Date       entryDate    ;
@@ -64,10 +50,23 @@ public class SectionMasterRes implements Serializable {
 	@JsonProperty("Status")
     private String     status       ;
 
+	@JsonProperty("Remarks")
+	private String remarks;
+	
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
 
-	@JsonProperty("Remarks")
-	private String remarks;
+	@JsonProperty("TiraCode")
+	private String tiraCode;
+	
+	@JsonProperty("AmendId")
+	private String amendId;
+	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDate")
+    private Date       effectiveDateStart ;
       
 }

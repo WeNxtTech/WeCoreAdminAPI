@@ -19,12 +19,14 @@ import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.ProductSectionMasterGetAllReq;
 import com.maan.eway.master.req.ProductSectionMasterReq;
 import com.maan.eway.master.req.ProductSectionsGetReq;
 import com.maan.eway.master.req.SectionMasterGetAllReq;
 import com.maan.eway.master.req.SectionMasterGetReq;
 import com.maan.eway.master.req.SectionMasterSaveReq;
 import com.maan.eway.master.res.ProductSectionGetRes;
+import com.maan.eway.master.res.ProductSectionMasterRes;
 import com.maan.eway.master.res.SectionMasterRes;
 import com.maan.eway.master.service.ProductSectionMasterService;
 import com.maan.eway.master.service.SectionMasterService;
@@ -272,8 +274,8 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 	}
 	///*********************************************************************GET ALL******************************************************\\
 	@Override
-	public List<SectionMasterRes> getallSectionDetails(SectionMasterGetAllReq req) {
-		List<SectionMasterRes> resList = new ArrayList<SectionMasterRes>();
+	public List<ProductSectionMasterRes> getallSectionDetails(ProductSectionMasterGetAllReq req) {
+		List<ProductSectionMasterRes> resList = new ArrayList<ProductSectionMasterRes>();
 		ModelMapper mapper = new ModelMapper();
 		try {
 			List<ProductSectionMaster> sectionList = new ArrayList<ProductSectionMaster>();
@@ -318,11 +320,11 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			
 			// Map
 			for (ProductSectionMaster data : sectionList) {
-				SectionMasterRes res = new SectionMasterRes();
+				ProductSectionMasterRes res = new ProductSectionMasterRes();
 	
-				res = mapper.map(data, SectionMasterRes.class);
+				res = mapper.map(data, ProductSectionMasterRes.class);
 				mapper.getConfiguration().setAmbiguityIgnored(true);
-				res.setSectionId(data.getSectionId());
+				res.setSectionId(data.getSectionId().toString());
 				resList.add(res);
 			}
 	
@@ -337,8 +339,8 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 	
 	///*********************************************************************GET BY ID******************************************************\\
 	@Override
-	public SectionMasterRes getBySectionId(SectionMasterGetReq req) {
-		SectionMasterRes res = new SectionMasterRes();
+	public ProductSectionMasterRes getBySectionId(ProductSectionsGetReq req) {
+		ProductSectionMasterRes res = new ProductSectionMasterRes();
 		ModelMapper mapper = new ModelMapper();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	
@@ -382,8 +384,8 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			// Get Result
 			TypedQuery<ProductSectionMaster> result = em.createQuery(query);			
 			list =  result.getResultList();  
-			res = mapper.map(list.get(0) , SectionMasterRes.class);
-			res.setSectionId(list.get(0).getSectionId());
+			res = mapper.map(list.get(0) , ProductSectionMasterRes.class);
+			res.setSectionId(list.get(0).getSectionId().toString());
 			res.setEntryDate(list.get(0).getEntryDate());
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
 			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
@@ -397,8 +399,8 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 	
 	//************************************************GET ACTIVE SECTION******************************************\\
 	@Override
-	public List<SectionMasterRes> getActiveSectionDetails(SectionMasterGetAllReq req) {
-		List<SectionMasterRes> resList = new ArrayList<SectionMasterRes>();
+	public List<ProductSectionMasterRes> getActiveSectionDetails(ProductSectionMasterGetAllReq req) {
+		List<ProductSectionMasterRes> resList = new ArrayList<ProductSectionMasterRes>();
 		ModelMapper mapper = new ModelMapper();
 		try {
 			List<ProductSectionMaster> list = new ArrayList<ProductSectionMaster>();
@@ -445,11 +447,11 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 	
 			// Map
 			for (ProductSectionMaster data : list) {
-				SectionMasterRes res = new SectionMasterRes();
+				ProductSectionMasterRes res = new ProductSectionMasterRes();
 	
-				res = mapper.map(data, SectionMasterRes.class);
+				res = mapper.map(data, ProductSectionMasterRes.class);
 				mapper.getConfiguration().setAmbiguityIgnored(true);
-				res.setSectionId(data.getSectionId());
+				res.setSectionId(data.getSectionId().toString());
 				resList.add(res);
 			}
 	
@@ -518,8 +520,8 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 		return resList;
 	}
 	@Override
-	public List<SectionMasterRes> getallNonSelectedSections(SectionMasterGetAllReq req) {
-		List<SectionMasterRes> resList = new ArrayList<SectionMasterRes>();
+	public List<ProductSectionMasterRes> getallNonSelectedSections(ProductSectionMasterGetAllReq req) {
+		List<ProductSectionMasterRes> resList = new ArrayList<ProductSectionMasterRes>();
 		ModelMapper mapper = new ModelMapper();
 		try {
 			Date today = new Date();
@@ -593,11 +595,11 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			
 			// Map
 			for (SectionMaster data : sectionList) {
-				SectionMasterRes res = new SectionMasterRes();
+				ProductSectionMasterRes res = new ProductSectionMasterRes();
 	
-				res = mapper.map(data, SectionMasterRes.class);
+				res = mapper.map(data, ProductSectionMasterRes.class);
 				mapper.getConfiguration().setAmbiguityIgnored(true);
-				res.setSectionId(data.getSectionId());
+				res.setSectionId(data.getSectionId().toString());
 				resList.add(res);
 			}
 	

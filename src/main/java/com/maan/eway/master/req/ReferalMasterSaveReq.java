@@ -16,21 +16,21 @@ public class ReferalMasterSaveReq implements Serializable {
 	@JsonProperty("ReferalId")
 	private String referalId;
 
+	@JsonProperty("ReferalName")
+	private String referalName;	
+
+	@JsonProperty("ReferalDesc")
+	private String referalDesc;
+	
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDate")
 	private Date effectiveDate;
 
-	@JsonProperty("InsuranceId")
-	private String companyId;
-
-	@JsonProperty("ReferalName")
-	private String referalName;
-
-	@JsonProperty("ReferalDesc")
-	private String referalDesc;
-
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
+	
+	@JsonProperty("TiraCode")
+	private String tiraCode;
 
 	@JsonProperty("AmendId")
 	private Integer amendId;
@@ -40,6 +40,9 @@ public class ReferalMasterSaveReq implements Serializable {
 
 	@JsonProperty("Status")
 	private String status;
+	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
 
 
 }

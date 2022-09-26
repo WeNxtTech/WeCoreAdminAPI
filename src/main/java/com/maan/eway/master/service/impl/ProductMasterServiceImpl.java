@@ -435,7 +435,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 	@Override
 	public List<ProductMasterRes> getallProductDetails(ProductMasterGetAllReq req) {
 		List<ProductMasterRes> resList = new ArrayList<ProductMasterRes>();
-		ModelMapper mapper = new ModelMapper();
+		 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
 			List<ProductMaster> list = new ArrayList<ProductMaster>();
 			//Pagination
@@ -477,8 +477,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			for (ProductMaster data : list) {
 				ProductMasterRes res = new ProductMasterRes();
 	
-				res = mapper.map(data, ProductMasterRes.class);
-				mapper.getConfiguration().setAmbiguityIgnored(true);
+				res = dozerMapper.map(data, ProductMasterRes.class);
 				res.setProductId(data.getProductId().toString());
 				resList.add(res);
 			}
@@ -496,7 +495,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 	@Override
 	public ProductMasterRes getByProductCode(ProductMasterGetReq req) {
 		ProductMasterRes res = new ProductMasterRes();
-		ModelMapper mapper = new ModelMapper();
+		 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	
 		try {
@@ -531,7 +530,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			// Get Result
 			TypedQuery<ProductMaster> result = em.createQuery(query);			
 			list =  result.getResultList();  
-			res = mapper.map(list.get(0) , ProductMasterRes.class);
+			res = dozerMapper.map(list.get(0) , ProductMasterRes.class);
 			res.setProductId(list.get(0).getProductId().toString());
 			res.setEntryDate(list.get(0).getEntryDate());
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
@@ -608,7 +607,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 	@Override
 	public List<ProductMasterRes> getActiveProductDetails(ProductMasterGetAllReq req) {
 		List<ProductMasterRes> resList = new ArrayList<ProductMasterRes>();
-		ModelMapper mapper = new ModelMapper();
+		 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
 			List<ProductMaster> list = new ArrayList<ProductMaster>();
 	
@@ -653,8 +652,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			for (ProductMaster data : list) {
 				ProductMasterRes res = new ProductMasterRes();
 	
-				res = mapper.map(data, ProductMasterRes.class);
-				mapper.getConfiguration().setAmbiguityIgnored(true);
+				res = dozerMapper.map(data, ProductMasterRes.class);
 				res.setProductId(data.getProductId().toString());
 				resList.add(res);
 			}
@@ -672,7 +670,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 		@Override
 		public ProductMasterRes getTodayProductCode(ProductMasterGetReq req) {
 			ProductMasterRes res = new ProductMasterRes();
-			ModelMapper mapper = new ModelMapper();
+			 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	
 			try {
@@ -709,7 +707,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 				// Get Result
 				TypedQuery<ProductMaster> result = em.createQuery(query);			
 				list =  result.getResultList();  
-				res = mapper.map(list.get(0) , ProductMasterRes.class);
+				res = dozerMapper.map(list.get(0) , ProductMasterRes.class);
 				res.setProductId(list.get(0).getProductId().toString());
 				res.setEntryDate(list.get(0).getEntryDate());
 				res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());

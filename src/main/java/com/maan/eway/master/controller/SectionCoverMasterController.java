@@ -10,6 +10,9 @@ import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CoverMasterGetAllReq;
 import com.maan.eway.master.req.CoverMasterGetReq;
 import com.maan.eway.master.req.CoverMasterSaveReq;
+import com.maan.eway.master.req.SectionCoverMasterGetAllReq;
+import com.maan.eway.master.req.SectionCoverMasterGetReq;
+import com.maan.eway.master.req.SectionCoverMasterNonSelectedReq;
 import com.maan.eway.master.req.SectionCoverMasterSaveReq;
 import com.maan.eway.master.res.CoverMasterRes;
 import com.maan.eway.master.service.CoverMasterService;
@@ -88,7 +91,7 @@ public class SectionCoverMasterController {
 		
 		@PostMapping("/getallsectioncoverdetails")
 		@ApiOperation("This method is getall Section Cover Details")
-		public ResponseEntity<CommonRes> getallSectionCoverDetails(@RequestBody CoverMasterGetAllReq req)
+		public ResponseEntity<CommonRes> getallSectionCoverDetails(@RequestBody SectionCoverMasterGetAllReq req)
 		{
 			CommonRes data = new CommonRes();
 			reqPrinter.reqPrint(req);
@@ -111,7 +114,7 @@ public class SectionCoverMasterController {
 		
 			@PostMapping("/getactivesectioncover")
 			@ApiOperation("This method is get Section Active Cover Details")
-			public ResponseEntity<CommonRes> getActiveCoverDetails(@RequestBody CoverMasterGetAllReq req)
+			public ResponseEntity<CommonRes> getActiveCoverDetails(@RequestBody SectionCoverMasterGetAllReq req)
 			{
 				CommonRes data = new CommonRes();
 				reqPrinter.reqPrint(req);
@@ -134,7 +137,7 @@ public class SectionCoverMasterController {
 		
 		@PostMapping("/getbysectioncoverid")
 		@ApiOperation("This Method is to get by Section Cover id")
-		public ResponseEntity<CommonRes> getBySectionCoverId(@RequestBody CoverMasterGetReq req)
+		public ResponseEntity<CommonRes> getBySectionCoverId(@RequestBody SectionCoverMasterGetReq req)
 		{
 		CommonRes data = new CommonRes();
 		CoverMasterRes res = sectionCoverService.getBySectionCoverId(req);
@@ -155,7 +158,7 @@ public class SectionCoverMasterController {
 		
 		@PostMapping("/getallnonselectedsectioncovers")
 		@ApiOperation("This method is getall Cover Details")
-		public ResponseEntity<CommonRes> getallNonSelectedCovers(@RequestBody CoverMasterGetAllReq req)
+		public ResponseEntity<CommonRes> getallNonSelectedCovers(@RequestBody SectionCoverMasterNonSelectedReq req)
 		{
 			CommonRes data = new CommonRes();
 			reqPrinter.reqPrint(req);
@@ -177,7 +180,7 @@ public class SectionCoverMasterController {
 		@PostMapping("/dropdown/sectioncover")
 		@ApiOperation(value = "This method is get Section Cover Master Drop Down")
 
-		public ResponseEntity<CommonRes> getSectionCoverMasterDropdown(@RequestBody CoverMasterGetReq req) {
+		public ResponseEntity<CommonRes> getSectionCoverMasterDropdown(@RequestBody SectionCoverMasterGetReq req) {
 
 			CommonRes data = new CommonRes();
 

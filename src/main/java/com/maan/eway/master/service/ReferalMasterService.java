@@ -37,7 +37,7 @@ public interface ReferalMasterService  {
 
 	ReferalMasterRes getByReferalId(ReferalMasterGetReq req);
 
-	List<DropDownRes> getReferalMasterDropdown();
+	//List<DropDownRes> getReferalMasterDropdown();
 
 	
 

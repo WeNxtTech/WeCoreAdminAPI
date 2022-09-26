@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.maan.eway.repository.SectionMasterRepository;
 import com.maan.eway.res.SuccessRes;
 import com.google.gson.Gson;
+import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.error.Error;
@@ -70,18 +72,29 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 		List<Error> errorList = new ArrayList<Error>();
 	
 		try {
-		
-			if (StringUtils.isBlank(req.getSectionName()) ) {
-				errorList.add(new Error("02", "SectionName", "Please Select Section  Name "));
+			
+			if (StringUtils.isBlank(req.getSectionName())) {
+				errorList.add(new Error("01", "SectionName", "Please Select Section  Name "));
 			}else if (req.getSectionName().length() > 100){
-				errorList.add(new Error("02","SectionName", "Please Enter Section  Name within 100 Characters")); 
-			}else if (StringUtils.isBlank(req.getSectionId().toString())) {
-				Long SectionCount = repo.countBySectionNameAndCompanyIdOrderByEntryDateDesc(req.getSectionName(), req.getCompanyId());
-				if (SectionCount > 0 ) {
-					errorList.add(new Error("01", "Section", "This Section Alrady Exist "));
+				errorList.add(new Error("01","SectionName", "Please Enter Section  Name within 100 Characters")); 
+			}else if (StringUtils.isBlank(req.getSectionId())) {
+				List<SectionMaster> sectiontList = getSectionNameExistDetails(req.getSectionName());
+				if (sectiontList.size()>0 ) {
+					errorList.add(new Error("01", "Section", "This Section Name Already Exist "));
 				}
+			}else  {
+				List<SectionMaster> sectiontList =  getSectionNameExistDetails(req.getSectionName() );
+				if (sectiontList.size()>0 &&  (! req.getSectionId().equalsIgnoreCase(sectiontList.get(0).getSectionId().toString())) ) {
+					errorList.add(new Error("01", "Section", "This Section Name Already Exist "));
+				}
+				
 			}
-	
+
+			if (StringUtils.isBlank(req.getCoreAppCode())) {
+				errorList.add(new Error("03", "CoreAppCode", "Please Enter CoreAppCode"));
+			}else if (req.getCoreAppCode().length() > 20) {
+				errorList.add(new Error("03", "CoreAppCode", "Enter CoreAppCode in 20 Character Only"));
+			}
 			
 			// Date Validation 
 			Calendar cal = new GregorianCalendar();
@@ -102,16 +115,61 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()))) {
 				errorList.add(new Error("05", "Status", "Enter Status Y or N Only"));
 			}
-			if (StringUtils.isBlank(req.getCompanyId().toString()) || req.getCompanyId() == null) {
-				errorList.add(new Error("06", "CompanyId", "Please Enter Company Id "));
+			
+			if (StringUtils.isBlank(req.getCreatedBy())) {
+				errorList.add(new Error("06", "CreatedBy", "Please Enter CreatedBy"));
+			}else if (req.getCreatedBy().length() > 20) {
+				errorList.add(new Error("06", "CreatedBy", "Enter CreatedBy in 20 Character Only"));
 			}
 			
+			if (StringUtils.isBlank(req.getTiraCode())) {
+				errorList.add(new Error("07", "TiraCode", "Please Enter TiraCode"));
+			}else if (req.getTiraCode().length() > 20) {
+				errorList.add(new Error("07", "TiraCode", "Enter TiraCode in 20 Character Only"));
+			}
 			
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
+			errorList.add(new Error("01", "CommonError",e.getMessage() ));
 		}
 		return errorList;
+	}
+	
+	//Section Name Exist Details validation
+	public List<SectionMaster> getSectionNameExistDetails(String sectionName) {
+		List<SectionMaster> list = new ArrayList<SectionMaster>();
+		try {
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<SectionMaster> query = cb.createQuery(SectionMaster.class);
+	
+			// Find All
+			Root<SectionMaster> b = query.from(SectionMaster.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<SectionMaster> ocpm1 = effectiveDate.from(SectionMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
+			effectiveDate.where(a1);
+	
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("sectionName"), sectionName );	
+			query.where(n1,n2);
+			// Get Result
+			TypedQuery<SectionMaster> result = em.createQuery(query);
+			list = result.getResultList();		
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+	
+		}
+		return list;
 	}
 	@Transactional
 	@Override
@@ -137,14 +195,17 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			
 			
 			String sectionId="";
+			Integer	amendId=0;
 			
 			if (StringUtils.isBlank(req.getSectionId().toString())) {
 					// Save
 				    //Long totalCount = repo.count();
-					Long totalCount = getMasterTableCount( req.getCompanyId() );
+					Long totalCount = getMasterTableCount();
 					sectionId = Long.valueOf(totalCount + 1).toString();
+					
 					saveData.setSectionId(Integer.valueOf(sectionId));
 					saveData.setSectionName(req.getSectionName());
+				
 					res.setResponse("Saved Successfully ");
 					res.setSuccessId(sectionId);
 	
@@ -169,10 +230,6 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 					Predicate a1 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
 					Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , startDate);
 					effectiveDate.where(a1,a2);
-	
-					// Order By
-				//	List<Order> orderList = new ArrayList<Order>();
-				//	orderList.add(cb.asc(b.get("branchName")));
 					
 					// Where
 					Predicate n1 = cb.equal(b.get("status"), "Y");
@@ -184,9 +241,18 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 					// Get Result
 					TypedQuery<SectionMaster> result = em.createQuery(query);
 					list = result.getResultList();
+				
 					
 					if( list.size() > 0) {
 						repo.delete(list.get(0));
+						if( list.get(0).getEffectiveDateStart().before(startDate)   ) {
+							String startDatewithoutTime = sdformat.format(startDate) ;
+							String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart()) ;
+							
+							if(startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime) ) {
+								amendId = list.get(0).getAmendId() + 1 ;
+							}
+						}
 					} 
 					res.setResponse("Updated Successfully ");
 					res.setSuccessId(sectionId);
@@ -199,6 +265,7 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 				saveData.setEffectiveDateEnd(endDate);
 				saveData.setStatus(req.getStatus());
 				saveData.setEntryDate(new Date());
+				saveData.setAmendId(amendId);
 				repo.saveAndFlush(saveData);
 				
 				if(list.size() > 0 ) {
@@ -218,7 +285,7 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 		return res;
 	}
 	
-	public Long getMasterTableCount( String companyId) {
+	public Long getMasterTableCount( ) {
 	
 		Long data = 0L;
 		try {
@@ -239,13 +306,11 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			Root<SectionMaster> ocpm1 = effectiveDate.from(SectionMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			effectiveDate.where(a1,a2);
+			effectiveDate.where(a1);
 	
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			Predicate n2 = cb.equal(b.get("companyId"), companyId);
 		
-			query.where(n1,n2);
+			query.where(n1);
 			// Get Result
 			TypedQuery<Long> result = em.createQuery(query);
 			list = result.getResultList();
@@ -259,16 +324,19 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 		}
 		return data;
 	}
+	
+	
+	
 	///*********************************************************************GET ALL******************************************************\\
 	@Override
 	public List<SectionMasterRes> getallSectionDetails(SectionMasterGetAllReq req) {
 		List<SectionMasterRes> resList = new ArrayList<SectionMasterRes>();
-		ModelMapper mapper = new ModelMapper();
+		 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
 			List<SectionMaster> sectionList = new ArrayList<SectionMaster>();
 			//Pagination
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 0 : Integer.valueOf(req.getOffset());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 	
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -285,18 +353,16 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			Root<SectionMaster> ocpm1 = effectiveDate.from(SectionMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			effectiveDate.where(a1,a2);
+			effectiveDate.where(a1);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("sectionName")));
+			orderList.add(cb.asc(b.get("sectionId")));
 			
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
 			
-			query.where(n1,n2).orderBy(orderList);
+			query.where(n1).orderBy(orderList);
 	
 			// Get Result
 			TypedQuery<SectionMaster> result = em.createQuery(query);
@@ -308,9 +374,8 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			for (SectionMaster data : sectionList) {
 				SectionMasterRes res = new SectionMasterRes();
 	
-				res = mapper.map(data, SectionMasterRes.class);
-				mapper.getConfiguration().setAmbiguityIgnored(true);
-				res.setSectionId(data.getSectionId());
+				res = dozerMapper.map(data, SectionMasterRes.class);
+				res.setSectionId(data.getSectionId().toString());
 				resList.add(res);
 			}
 	
@@ -323,11 +388,12 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 		return resList;
 	}
 	
+	
 	///*********************************************************************GET BY ID******************************************************\\
 	@Override
 	public SectionMasterRes getBySectionId(SectionMasterGetReq req) {
 		SectionMasterRes res = new SectionMasterRes();
-		ModelMapper mapper = new ModelMapper();
+		 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	
 		try {
@@ -347,8 +413,7 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			Root<SectionMaster> ocpm1 = effectiveDate.from(SectionMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("sectionId"),ocpm1.get("sectionId") );
-			javax.persistence.criteria.Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId") ) ;
-			effectiveDate.where(a1,a2);
+			effectiveDate.where(a1);
 			
 			
 			
@@ -360,19 +425,16 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 		
 			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate);		
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("sectionId"),req.getSectionId()) ;
-			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"),req.getInsuranceId()) ;
-	
-	
-			query.where(n1 ,n2,n3).orderBy(orderList);
+			query.where(n1 ,n2).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<SectionMaster> result = em.createQuery(query);			
 			list =  result.getResultList();  
-			res = mapper.map(list.get(0) , SectionMasterRes.class);
-			res.setSectionId(list.get(0).getSectionId());
+			res = dozerMapper.map(list.get(0) , SectionMasterRes.class);
+			res.setSectionId(list.get(0).getSectionId().toString());
 			res.setEntryDate(list.get(0).getEntryDate());
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
-			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -385,13 +447,13 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 	@Override
 	public List<SectionMasterRes> getActiveSectionDetails(SectionMasterGetAllReq req) {
 		List<SectionMasterRes> resList = new ArrayList<SectionMasterRes>();
-		ModelMapper mapper = new ModelMapper();
+		 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
 			List<SectionMaster> list = new ArrayList<SectionMaster>();
 	
 			//Pagination
 			int limit=StringUtils.isBlank(req.getLimit())?0:Integer.valueOf(req.getLimit());
-			int offset=StringUtils.isBlank(req.getOffset())?10:Integer.valueOf(req.getOffset());
+			int offset=StringUtils.isBlank(req.getOffset())?100:Integer.valueOf(req.getOffset());
 			
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -408,19 +470,17 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			Root<SectionMaster> ocpm1 = effectiveDate.from(SectionMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-			Predicate a2 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
-			effectiveDate.where(a1,a2);
+			effectiveDate.where(a1);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("sectionName")));
+			orderList.add(cb.asc(b.get("sectionId")));
 	
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
-			Predicate n3 = cb.equal(b.get("status"), "Y");
+			Predicate n2 = cb.equal(b.get("status"), "Y");
 	
-			query.where(n1,n2,n3).orderBy(orderList);
+			query.where(n1,n2).orderBy(orderList);
 	
 			// Get Result
 			TypedQuery<SectionMaster> result = em.createQuery(query);
@@ -432,9 +492,8 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			for (SectionMaster data : list) {
 				SectionMasterRes res = new SectionMasterRes();
 	
-				res = mapper.map(data, SectionMasterRes.class);
-				mapper.getConfiguration().setAmbiguityIgnored(true);
-				res.setSectionId(data.getSectionId());
+				res = dozerMapper.map(data, SectionMasterRes.class);
+				res.setSectionId(data.getSectionId().toString());
 				resList.add(res);
 			}
 	
@@ -468,8 +527,7 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			Root<SectionMaster> ocpm1 = effectiveDate.from(SectionMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			effectiveDate.where(a1,a2);
+			effectiveDate.where(a1);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();

@@ -15,17 +15,6 @@ public class ReferalMasterRes  {
 	@JsonProperty("ReferalId")
 	private String referalId;
 
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDateStart")
-	private Date effectiveDateStart;
-
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDateEnd")
-	private Date effectiveDateEnd;
-
-	@JsonProperty("InsuranceId")
-	private String companyId;
-
 	@JsonProperty("ReferalName")
 	private String referalName;
 
@@ -42,12 +31,20 @@ public class ReferalMasterRes  {
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
 
+	@JsonProperty("TiraCode")
+	private String tiraCode;
+	
 	@JsonProperty("AmendId")
-	private Integer amendId;
+	private String amendId;
+	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDate")
+    private Date       effectiveDateStart ;
 
 	@JsonProperty("Remarks")
 	private String remarks;
 
-	@JsonProperty("BranchCode")
-	private String branchCode;
 }

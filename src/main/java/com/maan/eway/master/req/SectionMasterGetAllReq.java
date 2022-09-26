@@ -12,15 +12,9 @@ import lombok.Data;
 public class SectionMasterGetAllReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    
     @JsonProperty("Limit")
     private String limit;
-    
-    @JsonProperty("InsuranceId")
-    private String insuranceId;
-    
-    @JsonProperty("ProductId")
-    private String productId;
     
     @JsonProperty("Offset")
     private String offset;

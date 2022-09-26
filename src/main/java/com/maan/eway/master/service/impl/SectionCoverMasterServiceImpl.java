@@ -45,6 +45,9 @@ import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CoverMasterGetAllReq;
 import com.maan.eway.master.req.CoverMasterGetReq;
 import com.maan.eway.master.req.CoverMasterSaveReq;
+import com.maan.eway.master.req.SectionCoverMasterGetAllReq;
+import com.maan.eway.master.req.SectionCoverMasterGetReq;
+import com.maan.eway.master.req.SectionCoverMasterNonSelectedReq;
 import com.maan.eway.master.req.SectionCoverMasterSaveReq;
 import com.maan.eway.master.res.CoverMasterRes;
 import com.maan.eway.master.service.SectionCoverMasterService;
@@ -365,7 +368,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 	}
 ///*********************************************************************GET ALL******************************************************\\
 	@Override
-	public List<CoverMasterRes> getallSectionCoverDetails(CoverMasterGetAllReq req) {
+	public List<CoverMasterRes> getallSectionCoverDetails(SectionCoverMasterGetAllReq req) {
 		List<CoverMasterRes> resList = new ArrayList<CoverMasterRes>();
 		ModelMapper mapper = new ModelMapper();
 		try {
@@ -475,7 +478,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 
 ///*********************************************************************GET BY ID******************************************************\\
 	@Override
-	public CoverMasterRes getBySectionCoverId(CoverMasterGetReq req) {
+	public CoverMasterRes getBySectionCoverId(SectionCoverMasterGetReq req) {
 		CoverMasterRes res = new CoverMasterRes();
 		ModelMapper mapper = new ModelMapper();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
@@ -534,7 +537,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 
 //************************************************GET ACTIVE COVER******************************************\\
 	@Override
-	public List<CoverMasterRes> getActiveSectionCoverDetails(CoverMasterGetAllReq req) {
+	public List<CoverMasterRes> getActiveSectionCoverDetails(SectionCoverMasterGetAllReq req) {
 		List<CoverMasterRes> resList = new ArrayList<CoverMasterRes>();
 		ModelMapper mapper = new ModelMapper();
 		try {
@@ -643,7 +646,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 	}
 	
 	@Override
-	public List<CoverMasterRes> getallNonSelectedCovers(CoverMasterGetAllReq req) {
+	public List<CoverMasterRes> getallNonSelectedCovers(SectionCoverMasterNonSelectedReq req) {
 		List<CoverMasterRes> resList = new ArrayList<CoverMasterRes>();
 		ModelMapper mapper = new ModelMapper();
 		try {
@@ -739,7 +742,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 
 
 	@Override
-	public List<DropDownRes> getsectionCoverMasterDropdown(CoverMasterGetReq req) {
+	public List<DropDownRes> getsectionCoverMasterDropdown(SectionCoverMasterGetReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 			Date today  = new Date();

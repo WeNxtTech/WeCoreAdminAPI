@@ -9,15 +9,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class ReferalMasterGetAllReq implements Serializable {
+public class ProductSectionMasterGetAllReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @JsonProperty("ProductId")
+    private String productId;
+    
+    @JsonProperty("InsuranceId")
+    private String insuranceId;
+    
     @JsonProperty("Limit")
     private String limit;
     
     @JsonProperty("Offset")
     private String offset;
-
-    
+  
 }

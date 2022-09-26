@@ -30,6 +30,5 @@ import com.maan.eway.bean.ReferalMasterId;
  
 public interface ReferalMasterRepository  extends JpaRepository<ReferalMaster,ReferalMasterId > , JpaSpecificationExecutor<ReferalMaster> {
 
-	Long countByReferalNameOrderByEntryDateDesc(String referalName);
 
 }

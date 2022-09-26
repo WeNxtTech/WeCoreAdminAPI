@@ -56,10 +56,6 @@ private static final long serialVersionUID = 1L;
     private Integer    sectionId ;
 
     @Id
-    @Column(name="COMPANY_ID", nullable=false, length=100)
-    private String     companyId ;
-
-    @Id
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="EFFECTIVE_DATE_START", nullable=false)
     private Date       effectiveDateStart ;
@@ -82,6 +78,12 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="CORE_APP_CODE", length=20)
     private String     coreAppCode ;
+    
+    @Column(name="TIRA_CODE", length=20)
+    private String     tiraCode ;
+    
+    @Column(name="CREATED_BY", length=20)
+    private String     createdBy ;
 
     @Column(name="AMEND_ID")
     private Integer     amendId ;

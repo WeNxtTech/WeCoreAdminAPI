@@ -42,6 +42,7 @@ import com.maan.eway.master.res.ReferalMasterRes;
 import com.maan.eway.master.service.ReferalMasterService;
 import com.maan.eway.auth.token.passwordEnc;
 import com.maan.eway.bean.BranchMaster;
+import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.ReferalMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.ReferalMasterRepository;
@@ -91,11 +92,12 @@ public SuccessRes insertReferal(ReferalMasterSaveReq req) {
 		
 		
 		String referalId="";
+		Integer amendId=0;
 		
 		if (StringUtils.isBlank(req.getReferalId().toString())) {
 				// Save
 			   // Integer totalCount = repo.count();
-				Long totalCount=getMasterTableCount(req.getCompanyId());			
+				Long totalCount=getMasterTableCount();			
 				referalId = Long.valueOf(totalCount + 1).toString();
 				saveData.setReferalId(Integer.valueOf(referalId));
 				saveData.setReferalName(req.getReferalName());
@@ -141,6 +143,15 @@ public SuccessRes insertReferal(ReferalMasterSaveReq req) {
 				
 				if( list.size() > 0) {
 					repo.delete(list.get(0));
+					// Amend Id
+					if( list.get(0).getEffectiveDateStart().before(startDate)   ) {
+						String startDatewithoutTime = sdformat.format(startDate) ;
+						String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart()) ;
+						
+						if(startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime) ) {
+							amendId = list.get(0).getAmendId() + 1 ;
+						}
+					}
 				} 
 				res.setResponse("Updated Successfully ");
 				res.setSuccessId(referalId);
@@ -153,6 +164,7 @@ public SuccessRes insertReferal(ReferalMasterSaveReq req) {
 			saveData.setEffectiveDateEnd(endDate);
 			saveData.setStatus(req.getStatus());
 			saveData.setEntryDate(new Date());
+			saveData.setAmendId(amendId);
 			repo.saveAndFlush(saveData);
 			
 			if(list.size() > 0 ) {
@@ -171,7 +183,47 @@ public SuccessRes insertReferal(ReferalMasterSaveReq req) {
 	}
 	return res;
 }
+//Referral Count
+public Long getMasterTableCount() {
 
+	Long data = 0L;
+	try {
+
+		List<Long> list = new ArrayList<Long>();
+		// Find Latest Record
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> query = cb.createQuery(Long.class);
+
+		// Find All
+		Root<ReferalMaster> b = query.from(ReferalMaster.class);
+
+		// Select
+		query.multiselect(cb.count(b));
+
+		// Effective Date Max Filter
+		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Root<ReferalMaster> ocpm1 = effectiveDate.from(ReferalMaster.class);
+		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
+		
+		effectiveDate.where(a1);
+
+		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+	
+		query.where(n1);
+		// Get Result
+		TypedQuery<Long> result = em.createQuery(query);
+		list = result.getResultList();
+
+		data = list.get(0);
+
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info(e.getMessage());
+
+	}
+	return data;
+}
 
 @Override
 public List<Error> validateReferalDetails(ReferalMasterSaveReq req) {
@@ -180,15 +232,21 @@ public List<Error> validateReferalDetails(ReferalMasterSaveReq req) {
 
 	try {
 	
-		if (StringUtils.isBlank(req.getReferalName()) ) {
-			errorList.add(new Error("02", "ReferalName", "Please Select Referal  Name "));
+		if (StringUtils.isBlank(req.getReferalName())) {
+			errorList.add(new Error("01", "ReferalName", "Please Select Referal  Name "));
 		}else if (req.getReferalName().length() > 100){
-			errorList.add(new Error("02","ReferalName", "Please Enter Referal  Name within 100 Characters")); 
-		}else if (StringUtils.isBlank(req.getReferalId()) || req.getReferalId() == null) {
-			Long ReferalCount = repo.countByReferalNameOrderByEntryDateDesc(req.getReferalName());
-			if (ReferalCount > 0 ) {
-				errorList.add(new Error("01", "Referal", "This Referal Alrady Exist "));
+			errorList.add(new Error("01","ReferalName", "Please Enter Referal  Name within 100 Characters")); 
+		}else if (StringUtils.isBlank(req.getReferalId())) {
+			List<ReferalMaster> referalList = getReferalNameExistDetails(req.getReferalName());
+			if (referalList.size()>0 ) {
+				errorList.add(new Error("01", "Referal", "This Referal Name Alrady Exist "));
 			}
+		}else  {
+			List<ReferalMaster> referalList =  getReferalNameExistDetails(req.getReferalName() );
+			if (referalList.size()>0 &&  (! req.getReferalId().equalsIgnoreCase(referalList.get(0).getReferalId().toString())) ) {
+				errorList.add(new Error("01", "Referal", "This Referal Name Alrady Exist "));
+			}
+			
 		}
 
 		if (StringUtils.isBlank(req.getRemarks()) ) {
@@ -216,76 +274,84 @@ public List<Error> validateReferalDetails(ReferalMasterSaveReq req) {
 		}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()))) {
 			errorList.add(new Error("05", "Status", "Enter Status Y or N Only"));
 		}
-		if (StringUtils.isBlank(req.getCompanyId()) || req.getCompanyId() == null) {
-			errorList.add(new Error("06", "CompanyId", "Please Select Company Id  "));
-		}else if (req.getCompanyId().length() > 20){
-			errorList.add(new Error("06","CompanyId", "Please Enter Company Id within 20 Characters")); 
+		if (StringUtils.isBlank(req.getCoreAppCode())) {
+			errorList.add(new Error("06", "CoreAppCode", "Please Select CoreAppCode   "));
+		}else if (req.getCoreAppCode().length() > 20){
+			errorList.add(new Error("06","CoreAppCode", "Please Enter CoreAppCode within 20 Characters")); 
 		}
 		if (StringUtils.isBlank(req.getReferalDesc())) {
-			errorList.add(new Error("06", "ReferalDesc", "Please Select Referal Description  "));
+			errorList.add(new Error("07", "ReferalDesc", "Please Select Referal Description  "));
 		}else if (req.getReferalDesc().length() > 300){
-			errorList.add(new Error("06","ReferalDesc", "Please Enter Referal Description within 300 Characters")); 
+			errorList.add(new Error("07","ReferalDesc", "Please Enter Referal Description within 300 Characters")); 
 		}
-		
+		if (StringUtils.isBlank(req.getTiraCode())) {
+			errorList.add(new Error("08", "TiraCode", "Please Select TiraCode  "));
+		}else if (req.getTiraCode().length() > 20){
+			errorList.add(new Error("08","TiraCode", "Please Enter TiraCode  within 20 Characters")); 
+		}
+		if (StringUtils.isBlank(req.getCreatedBy())) {
+			errorList.add(new Error("09", "CreatedBy", "Please Select CreatedBy  "));
+		}else if (req.getCreatedBy().length() > 20){
+			errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy  within 20 Characters")); 
+		}
 		
 	} catch (Exception e) {
 		log.error(e);
 		e.printStackTrace();
 	}
 	return errorList;
+	
 }
-public Long getMasterTableCount(String InsuranceId) {
 
-	Long data = 0L;
-	try {
+//Referal Name Exist Details Validation
+public List<ReferalMaster> getReferalNameExistDetails(String referalName) {
+List<ReferalMaster> list = new ArrayList<ReferalMaster>();
+try {
+	// Find Latest Record
+	CriteriaBuilder cb = em.getCriteriaBuilder();
+	CriteriaQuery<ReferalMaster> query = cb.createQuery(ReferalMaster.class);
 
-		List<Long> list = new ArrayList<Long>();
-		// Find Latest Record
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> query = cb.createQuery(Long.class);
+	// Find All
+	Root<ReferalMaster> b = query.from(ReferalMaster.class);
 
-		// Find All
-		Root<ReferalMaster> b = query.from(ReferalMaster.class);
+	// Select
+	query.select(b);
 
-		// Select
-		query.multiselect(cb.count(b));
+	// Effective Date Max Filter
+	Subquery<Long> effectiveDate = query.subquery(Long.class);
+	Root<ReferalMaster> ocpm1 = effectiveDate.from(ReferalMaster.class);
+	effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+	Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
+	effectiveDate.where(a1);
 
-		// Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
-		Root<ReferalMaster> ocpm1 = effectiveDate.from(ReferalMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-		Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
-		Predicate a2 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
-		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
-		
-		effectiveDate.where(a1,a2,a3);
+	Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+	Predicate n2 = cb.equal(b.get("referalName"), referalName );	
+	query.where(n1,n2);
+	// Get Result
+	TypedQuery<ReferalMaster> result = em.createQuery(query);
+	list = result.getResultList();		
 
-		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-		Predicate n2 = cb.equal(b.get("companyId"),InsuranceId);
-		query.where(n1,n2);
-		// Get Result
-		TypedQuery<Long> result = em.createQuery(query);
-		list = result.getResultList();
+} catch (Exception e) {
+	e.printStackTrace();
+	log.info(e.getMessage());
 
-		data = list.get(0);
-
-	} catch (Exception e) {
-		e.printStackTrace();
-		log.info(e.getMessage());
-
-	}
-	return data;
 }
+return list;
+}
+
+
+
+
 ///*********************************************************************GET ALL******************************************************\\
 @Override
 public List<ReferalMasterRes> getallReferalDetails(ReferalMasterGetAllReq req) {
 	List<ReferalMasterRes> resList = new ArrayList<ReferalMasterRes>();
-	ModelMapper mapper = new ModelMapper();
+	 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 	try {
 		List<ReferalMaster> list = new ArrayList<ReferalMaster>();
 		//Pagination
 		int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-		int offset = StringUtils.isBlank(req.getOffset()) ? 0 : Integer.valueOf(req.getOffset());
+		int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 
 		// Find Latest Record
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -302,20 +368,16 @@ public List<ReferalMasterRes> getallReferalDetails(ReferalMasterGetAllReq req) {
 		Root<ReferalMaster> ocpm1 = effectiveDate.from(ReferalMaster.class);
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
-		Predicate a2 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
-		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
 		
-		effectiveDate.where(a1,a2,a3);
+		effectiveDate.where(a1);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(b.get("referalName")));
+		orderList.add(cb.asc(b.get("referalId")));
 		
 		// Where
 		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-		Predicate n2 = cb.equal(b.get("branchCode"),req.getBranchCode());
-		
-		query.where(n1,n2).orderBy(orderList);
+		query.where(n1).orderBy(orderList);
 
 		// Get Result
 		TypedQuery<ReferalMaster> result = em.createQuery(query);
@@ -326,9 +388,7 @@ public List<ReferalMasterRes> getallReferalDetails(ReferalMasterGetAllReq req) {
 		// Map
 		for (ReferalMaster data : list) {
 			ReferalMasterRes res = new ReferalMasterRes();
-
-			res = mapper.map(data, ReferalMasterRes.class);
-			mapper.getConfiguration().setAmbiguityIgnored(true);
+			res = dozerMapper.map(data, ReferalMasterRes.class);
 			res.setReferalId(data.getReferalId().toString());
 			resList.add(res);
 		}
@@ -346,7 +406,7 @@ public List<ReferalMasterRes> getallReferalDetails(ReferalMasterGetAllReq req) {
 @Override
 public ReferalMasterRes getByReferalId(ReferalMasterGetReq req) {
 	ReferalMasterRes res = new ReferalMasterRes();
-	ModelMapper mapper = new ModelMapper();
+	 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
 	try {
@@ -366,12 +426,7 @@ public ReferalMasterRes getByReferalId(ReferalMasterGetReq req) {
 		Root<ReferalMaster> ocpm1 = effectiveDate.from(ReferalMaster.class);
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 		javax.persistence.criteria.Predicate a1 = cb.equal(c.get("referalId"),ocpm1.get("referalId") );
-		javax.persistence.criteria.Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
-		javax.persistence.criteria.Predicate a3 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
-		
-		effectiveDate.where(a1,a2,a3);
-		
-		
+		effectiveDate.where(a1);
 		
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -381,20 +436,15 @@ public ReferalMasterRes getByReferalId(ReferalMasterGetReq req) {
 	
 		javax.persistence.criteria.Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate);		
 		javax.persistence.criteria.Predicate n2 = cb.equal(c.get("referalId"),req.getReferalId()) ;
-	//	javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"),req.getCompanyId());
-		javax.persistence.criteria.Predicate n4 = cb.equal(c.get("branchCode"),req.getBranchCode());
-		
-
-		query.where(n1 ,n2,n4).orderBy(orderList);
+		query.where(n1 ,n2).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<ReferalMaster> result = em.createQuery(query);			
 		list =  result.getResultList();  
-		res = mapper.map(list.get(0) , ReferalMasterRes.class);
+		res = dozerMapper.map(list.get(0) , ReferalMasterRes.class);
 		res.setReferalId(list.get(0).getReferalId().toString());
 		res.setEntryDate(list.get(0).getEntryDate());
 		res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
-		res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
 	} catch (Exception e) {
 		e.printStackTrace();
 		log.info("Exception is ---> " + e.getMessage());
@@ -403,7 +453,7 @@ public ReferalMasterRes getByReferalId(ReferalMasterGetReq req) {
 	return res;
 }
 
-//**********************************************************DROPDOWN********************************************************************\\
+/*//**********************************************************DROPDOWN********************************************************************\\
 @Override
 public List<DropDownRes> getReferalMasterDropdown() {
 	List<DropDownRes> resList = new ArrayList<DropDownRes>();
@@ -463,18 +513,18 @@ public List<DropDownRes> getReferalMasterDropdown() {
 	}
 	return resList;
 }
-
+*/
 //************************************************GET ACTIVE REFERAL******************************************\\
 @Override
 public List<ReferalMasterRes> getActiveReferalDetails(ReferalMasterGetAllReq req) {
 	List<ReferalMasterRes> resList = new ArrayList<ReferalMasterRes>();
-	ModelMapper mapper = new ModelMapper();
+	 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 	try {
 		List<ReferalMaster> list = new ArrayList<ReferalMaster>();
 
 		//Pagination
 		int limit=StringUtils.isBlank(req.getLimit())?0:Integer.valueOf(req.getLimit());
-		int offset=StringUtils.isBlank(req.getOffset())?10:Integer.valueOf(req.getOffset());
+		int offset=StringUtils.isBlank(req.getOffset())?100:Integer.valueOf(req.getOffset());
 		
 		// Find Latest Record
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -491,21 +541,16 @@ public List<ReferalMasterRes> getActiveReferalDetails(ReferalMasterGetAllReq req
 		Root<ReferalMaster> ocpm1 = effectiveDate.from(ReferalMaster.class);
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
-		Predicate a2 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
-		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
-
-		effectiveDate.where(a1,a2,a3);
+		effectiveDate.where(a1);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(b.get("referalName")));
+		orderList.add(cb.asc(b.get("referalId")));
 
 		// Where
 		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 		Predicate n2 = cb.equal(b.get("status"), "Y");
-		Predicate n3 = cb.equal(b.get("branchCode"),req.getBranchCode());
-
-		query.where(n1,n2,n3).orderBy(orderList);
+		query.where(n1,n2).orderBy(orderList);
 
 		// Get Result
 		TypedQuery<ReferalMaster> result = em.createQuery(query);
@@ -517,8 +562,7 @@ public List<ReferalMasterRes> getActiveReferalDetails(ReferalMasterGetAllReq req
 		for (ReferalMaster data : list) {
 			ReferalMasterRes res = new ReferalMasterRes();
 
-			res = mapper.map(data, ReferalMasterRes.class);
-			mapper.getConfiguration().setAmbiguityIgnored(true);
+			res = dozerMapper.map(data, ReferalMasterRes.class);
 			res.setReferalId(data.getReferalId().toString());
 			resList.add(res);
 		}

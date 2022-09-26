@@ -40,7 +40,7 @@ import java.util.List;
 */
 @RestController
 @RequestMapping("/master")
-@Api(tags = "MASTER : Section Master ", description = "API's")
+@Api(tags = "1.GLOBAL CONFIG : Section Master ", description = "API's")
 public class SectionMasterController {
 
 	@Autowired
@@ -68,7 +68,7 @@ public class SectionMasterController {
 
 			} else {
 
-				// Get All
+				// Save
 				SuccessRes res = sectionService.insertSection(req);
 				data.setCommonResponse(res);
 				data.setIsError(false);

@@ -6,12 +6,14 @@
 package com.maan.eway.master.service;
 import com.maan.eway.bean.SessionMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.ProductSectionMasterGetAllReq;
 import com.maan.eway.master.req.ProductSectionMasterReq;
 import com.maan.eway.master.req.ProductSectionsGetReq;
 import com.maan.eway.master.req.SectionMasterGetAllReq;
 import com.maan.eway.master.req.SectionMasterGetReq;
 import com.maan.eway.master.req.SectionMasterSaveReq;
 import com.maan.eway.master.res.ProductSectionGetRes;
+import com.maan.eway.master.res.ProductSectionMasterRes;
 import com.maan.eway.master.res.SectionMasterRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
@@ -24,17 +26,17 @@ public interface ProductSectionMasterService  {
 
 	List<Error> validateSectionDetails(List<ProductSectionMasterReq> reqList );
 
-	SectionMasterRes getBySectionId(SectionMasterGetReq req);
+	ProductSectionMasterRes getBySectionId(ProductSectionsGetReq req);
 
 	SuccessRes insertSection(List<ProductSectionMasterReq> req);
 
-	List<SectionMasterRes> getallSectionDetails(SectionMasterGetAllReq req);
+	List<ProductSectionMasterRes> getallSectionDetails(ProductSectionMasterGetAllReq req);
 
-	List<SectionMasterRes> getActiveSectionDetails(SectionMasterGetAllReq req);
+	List<ProductSectionMasterRes> getActiveSectionDetails(ProductSectionMasterGetAllReq req);
 
 	List<ProductSectionGetRes> getProductSections(ProductSectionsGetReq req);
 
-	List<SectionMasterRes> getallNonSelectedSections(SectionMasterGetAllReq req);
+	List<ProductSectionMasterRes> getallNonSelectedSections(ProductSectionMasterGetAllReq req);
 
 	List<DropDownRes> getProductSectionDropdown(ProductSectionsGetReq req);
 

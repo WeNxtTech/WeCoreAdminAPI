@@ -8,12 +8,14 @@ package com.maan.eway.master.controller;
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CoverMasterGetReq;
+import com.maan.eway.master.req.ProductSectionMasterGetAllReq;
 import com.maan.eway.master.req.ProductSectionMasterReq;
 import com.maan.eway.master.req.ProductSectionsGetReq;
 import com.maan.eway.master.req.SectionMasterGetAllReq;
 import com.maan.eway.master.req.SectionMasterGetReq;
 import com.maan.eway.master.req.SectionMasterSaveReq;
 import com.maan.eway.master.res.ProductSectionGetRes;
+import com.maan.eway.master.res.ProductSectionMasterRes;
 import com.maan.eway.master.res.SectionMasterRes;
 import com.maan.eway.master.service.ProductSectionMasterService;
 import com.maan.eway.master.service.SectionMasterService;
@@ -92,12 +94,12 @@ public class ProductSectionMasterController {
 		
 		@PostMapping("/getallproductsectiondetails")
 		@ApiOperation("This method is getall Section Details")
-		public ResponseEntity<CommonRes> getallSectionDetails(@RequestBody SectionMasterGetAllReq req)
+		public ResponseEntity<CommonRes> getallSectionDetails(@RequestBody ProductSectionMasterGetAllReq req)
 		{
 			CommonRes data = new CommonRes();
 			reqPrinter.reqPrint(req);
 			
-			List<SectionMasterRes> res = sectionService.getallSectionDetails(req);
+			List<ProductSectionMasterRes> res = sectionService.getallSectionDetails(req);
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);
@@ -115,12 +117,12 @@ public class ProductSectionMasterController {
 		
 			@PostMapping("/getactiveproductsection")
 			@ApiOperation("This method is get Active Section Details")
-			public ResponseEntity<CommonRes> getActiveSectionDetails(@RequestBody SectionMasterGetAllReq req)
+			public ResponseEntity<CommonRes> getActiveSectionDetails(@RequestBody ProductSectionMasterGetAllReq req)
 			{
 				CommonRes data = new CommonRes();
 				reqPrinter.reqPrint(req);
 				
-				List<SectionMasterRes> res = sectionService.getActiveSectionDetails(req);
+				List<ProductSectionMasterRes> res = sectionService.getActiveSectionDetails(req);
 				data.setCommonResponse(res);
 				data.setErrorMessage(Collections.emptyList());
 				data.setIsError(false);
@@ -138,10 +140,10 @@ public class ProductSectionMasterController {
 		
 		@PostMapping("/getbyproductsectionid")
 		@ApiOperation("This Method is to get by Section id")
-		public ResponseEntity<CommonRes> getBySectionId(@RequestBody SectionMasterGetReq req)
+		public ResponseEntity<CommonRes> getBySectionId(@RequestBody ProductSectionsGetReq req)
 		{
 		CommonRes data = new CommonRes();
-		SectionMasterRes res = sectionService.getBySectionId(req);
+		ProductSectionMasterRes res = sectionService.getBySectionId(req);
 		data.setCommonResponse(res);
 		data.setErrorMessage(Collections.emptyList());
 		data.setIsError(false);
@@ -175,12 +177,12 @@ public class ProductSectionMasterController {
 
 		@PostMapping("/getallnonselectedsections")
 		@ApiOperation("This method is getall Section Details")
-		public ResponseEntity<CommonRes> getallNonSelectedSections(@RequestBody SectionMasterGetAllReq req)
+		public ResponseEntity<CommonRes> getallNonSelectedSections(@RequestBody ProductSectionMasterGetAllReq req)
 		{
 			CommonRes data = new CommonRes();
 			reqPrinter.reqPrint(req);
 			
-			List<SectionMasterRes> res = sectionService.getallNonSelectedSections(req);
+			List<ProductSectionMasterRes> res = sectionService.getallNonSelectedSections(req);
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);

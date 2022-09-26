@@ -12,43 +12,43 @@ import lombok.Data;
 public class DocumentMasterGetRes implements Serializable {
 
     private static final long serialVersionUID = 1L;
-  
     @JsonProperty("DocumentId")
-	private Integer documentId;
-	
-	@JsonProperty("DocumentDesc")
-	private String documentDesc;
-	
+	private String documentId;
+
+	@JsonProperty("DocumentDescr")
+	private String documentDescr;
+
 	@JsonProperty("DocApplicableId")
-	private Integer docApplicableId;
-	
+	private String docApplicableId;
 
 	@JsonProperty("DocApplicable")
 	private String docApplicable;
-	
-	@JsonProperty("InsuranceId")
-	private String companyId;
-	
+
 	@JsonProperty("MandatoryStatus")
 	private String mandatoryStatus;
-	
+
 	@JsonProperty("Remarks")
 	private String remarks;
 
-	@JsonProperty("DisplayOrder")
-	private Integer displayOrder;
-	
-	@JsonFormat(pattern="dd/MM/yyyy")
-	@JsonProperty("EffectiveDateStart")
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDate")
 	private Date effectiveDateStart;
-	
+
+	@JsonProperty("CoreAppCode")
+	private String coreAppCode;
+
+	@JsonProperty("TiraCode")
+	private String tiraCode;
+
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+
+	@JsonProperty("Status")
+	private String status;
 
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateEnd")
 	private Date effectiveDateEnd;
-	
-	@JsonProperty("CoreAppCode")
-	private String coreAppCode;
 	
 	@JsonProperty("AmendId")
 	private Integer amendId;
@@ -57,9 +57,5 @@ public class DocumentMasterGetRes implements Serializable {
 	@JsonProperty("EntryDate")
     private Date       entryDate    ;
 	
-	@JsonProperty("Status")
-    private String     status       ;
-
-
 	
 }

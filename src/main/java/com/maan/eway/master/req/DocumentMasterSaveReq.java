@@ -12,41 +12,36 @@ public class DocumentMasterSaveReq {
 
 	@JsonProperty("DocumentId")
 	private String documentId;
-	
-	@JsonProperty("DocumentDesc")
-	private String documentDesc;
-	
+
+	@JsonProperty("DocumentDescr")
+	private String documentDescr;
+
 	@JsonProperty("DocApplicableId")
-	private Integer docApplicableId;
-	
+	private String docApplicableId;
 
 	@JsonProperty("DocApplicable")
 	private String docApplicable;
-	
-	@JsonProperty("InsuranceId")
-	private String companyId;
-	
+
 	@JsonProperty("MandatoryStatus")
 	private String mandatoryStatus;
-	
+
 	@JsonProperty("Remarks")
 	private String remarks;
 
-	@JsonProperty("DisplayOrder")
-	private Integer displayOrder;
-	
-	@JsonFormat(pattern="dd/MM/yyyy")
-	@JsonProperty("EffectiveDateStart")
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDate")
 	private Date effectiveDateStart;
-	
 
-	@JsonFormat(pattern="dd/MM/yyyy")
-	@JsonProperty("EffectiveDateEnd")
-	private Date effectiveDateEnd;
-	
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
-	
-	@JsonProperty("AmendId")
-	private Integer amendId;
+
+	@JsonProperty("TiraCode")
+	private String tiraCode;
+
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+
+	@JsonProperty("Status")
+	private String status;
+
 }

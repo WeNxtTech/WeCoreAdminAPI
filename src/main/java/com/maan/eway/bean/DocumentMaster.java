@@ -56,10 +56,6 @@ private static final long serialVersionUID = 1L;
     private Integer    documentId ;
 
     @Id
-    @Column(name="COMPANY_ID", nullable=false, length=20)
-    private String     companyId ;
-
-    @Id
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="EFFECTIVE_DATE_START", nullable=false)
     private Date       effectiveDateStart ;
@@ -70,8 +66,8 @@ private static final long serialVersionUID = 1L;
     private Date       effectiveDateEnd ;
 
     //--- ENTITY DATA FIELDS 
-    @Column(name="DOCUMENT_DESC", length=100)
-    private String     documentDesc ;
+    @Column(name="DOCUMENT_DESCR", length=100)
+    private String     documentDescr ;
 
     @Column(name="DOC_APPLICABLE_ID")
     private Integer    docApplicableId ;
@@ -98,9 +94,11 @@ private static final long serialVersionUID = 1L;
     @Column(name="REMARKS", length=100)
     private String     remarks ;
 
-    @Column(name="DISPLAY_ORDER")
-    private Integer    displayOrder ;
+    @Column(name="TIRA_CODE", length=20)
+    private String    tiraCode ;
 
+    @Column(name="CREATED_BY", length=100)
+    private String    createdBy;
 
 }
 

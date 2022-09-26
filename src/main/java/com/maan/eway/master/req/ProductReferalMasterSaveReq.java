@@ -1,6 +1,5 @@
 package com.maan.eway.master.req;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -9,9 +8,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class ReferalMasterSaveReq implements Serializable {
+public class ProductReferalMasterSaveReq {
 
-    private static final long serialVersionUID = 1L;
 
 	@JsonProperty("ReferalId")
 	private String referalId;
@@ -29,11 +27,11 @@ public class ReferalMasterSaveReq implements Serializable {
 	@JsonProperty("ReferalDesc")
 	private String referalDesc;
 
+	@JsonProperty("ProductId")
+	private String productId;
+	
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
-
-	@JsonProperty("AmendId")
-	private Integer amendId;
 
 	@JsonProperty("Remarks")
 	private String remarks;
@@ -41,5 +39,6 @@ public class ReferalMasterSaveReq implements Serializable {
 	@JsonProperty("Status")
 	private String status;
 
-
+	@JsonProperty("CreatedBy")
+	private String createdBy;
 }

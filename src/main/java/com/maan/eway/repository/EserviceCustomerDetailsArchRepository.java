@@ -15,6 +15,9 @@ package com.maan.eway.repository;
 import java.math.BigDecimal;
 
 import com.maan.eway.bean.EserviceCustomerDetails;
+import com.maan.eway.bean.EserviceCustomerDetailsArch;
+import com.maan.eway.bean.EserviceCustomerDetailsArchId;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import com.maan.eway.bean.EserviceCustomerDetailsId;
@@ -28,8 +31,7 @@ import com.maan.eway.bean.EserviceCustomerDetailsId;
  
  
  
-public interface EserviceCustomerDetailsRepository  extends JpaRepository<EserviceCustomerDetails,EserviceCustomerDetailsId > , JpaSpecificationExecutor<EserviceCustomerDetails> {
+public interface EserviceCustomerDetailsArchRepository  extends JpaRepository<EserviceCustomerDetailsArch,EserviceCustomerDetailsArchId > , JpaSpecificationExecutor<EserviceCustomerDetailsArch> {
 
-	EserviceCustomerDetails findByCustomerId(String custId);
 
 }

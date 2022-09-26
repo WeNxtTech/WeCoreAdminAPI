@@ -1,6 +1,5 @@
-package com.maan.eway.master.req;
+package com.maan.eway.master.res;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -9,17 +8,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class ReferalMasterSaveReq implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class ProductReferalGetRes {
 
 	@JsonProperty("ReferalId")
 	private String referalId;
 
 	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDate")
-	private Date effectiveDate;
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
 
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateEnd")
+	private Date effectiveDateEnd;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EntryDate")
+	private Date entryDate;
+		
 	@JsonProperty("InsuranceId")
 	private String companyId;
 
@@ -29,11 +34,11 @@ public class ReferalMasterSaveReq implements Serializable {
 	@JsonProperty("ReferalDesc")
 	private String referalDesc;
 
+	@JsonProperty("ProductId")
+	private String productId;
+	
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
-
-	@JsonProperty("AmendId")
-	private Integer amendId;
 
 	@JsonProperty("Remarks")
 	private String remarks;
@@ -41,5 +46,8 @@ public class ReferalMasterSaveReq implements Serializable {
 	@JsonProperty("Status")
 	private String status;
 
-
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+	
+	
 }

@@ -26,6 +26,7 @@ import javax.persistence.criteria.Subquery;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dozer.DozerBeanMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -176,12 +177,28 @@ this.repository = repo;
 				errors.add(new Error("02", "Company Address", "Company Address under 200 Characters only allowed"));
 			}
 			
+			if (StringUtils.isBlank(req.getCoreAppCode())) {
+				errors.add(new Error("02", "CoreAppCode", "Please Enter getCoreAppCode"));
+			} else if (req.getCoreAppCode().length() > 20) {
+				errors.add(new Error("02", "CoreAppCode", "getCoreAppCode under 20 Characters only allowed"));
+			}
+			if (StringUtils.isBlank(req.getCompanyLogo())) {
+				errors.add(new Error("02", "CompanyLogo", "Please Enter CompanyLogo Url"));
+			} else if (req.getCompanyLogo().length() > 100) {
+				errors.add(new Error("02", "CompanyLogo", "CompanyLogo Url under 100 Characters only allowed"));
+			}
+			
 			if (StringUtils.isBlank(req.getCompanyEmail())) {
 				errors.add(new Error("03", "Company Email", "Please Enter Company Email"));
 			} else if (req.getCompanyEmail().length() > 200) {
 				errors.add(new Error("03", "Company Email", "Company Email under 200 Characters only allowed"));
 			}
 			
+			if (StringUtils.isBlank(req.getCreatedBy())) {
+				errors.add(new Error("03", "CreatedBy", "Please Enter CreatedBy"));
+			} else if (req.getCreatedBy().length() > 100) {
+				errors.add(new Error("03", "CreatedBy", "CreatedBy under 100 Characters only allowed"));
+			}
 		/*	if (StringUtils.isBlank(req.getCompanyLogo())) {
 				errors.add(new Error("04", "Company Logo", "Please Enter Company Logo"));
 			} else if (req.getCompanyLogo().length() > 200) {
@@ -256,8 +273,9 @@ this.repository = repo;
 		SuccessRes res = new SuccessRes();
 		InsuranceCompanyMaster saveData = new InsuranceCompanyMaster();
 		List<InsuranceCompanyMaster> list = new ArrayList<InsuranceCompanyMaster>();
-
+		DozerBeanMapper mapper = new DozerBeanMapper(); 
 		try {
+			Integer amendId = 0 ;
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
 			Date startDate = cal.getTime() ;
@@ -316,6 +334,7 @@ this.repository = repo;
 
 				if (list.size() > 0) {
 					repository.delete(list.get(0));
+					amendId = list.get(0).getAmendId() + 1 ;
 				}
 				saveData.setCompanyId(req.getInsuranceId());
 				
@@ -323,17 +342,13 @@ this.repository = repo;
 				res.setSuccessId(req.getInsuranceId());
 
 			}
-			saveData.setCompanyName(req.getCompanyName());
-			saveData.setCompanyAddress(req.getCompanyAddress());
-			saveData.setCompanyEmail(req.getCompanyEmail());
-			saveData.setCompanyPhone(req.getCompanyPhone());
-			saveData.setRemarks(req.getRemarks());
-			saveData.setRegards(req.getRegards());
+			mapper.map(req, saveData);
 			saveData.setEffectiveDateStart(effDate);
 			saveData.setEffectiveDateEnd(endDate);
-			saveData.setStatus(req.getStatus());
-			saveData.setBrokerYn(req.getBrokerYn());
 			saveData.setEntryDate(new Date());
+			saveData.setCreatedBy(req.getCreatedBy());
+			saveData.setAmendId(amendId);
+			saveData.setCoreAppCode(req.getCoreAppCode());
 			repository.saveAndFlush(saveData);
 
 			if (list.size() > 0) {
@@ -658,7 +673,9 @@ this.repository = repo;
 			Root<InsuranceCompanyMaster> ocpm1 = effectiveDate.from(InsuranceCompanyMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			effectiveDate.where(a1);
+			Predicate a2 = cb.equal(ocpm1.get("brokerYn"),b.get("brokerYn"));
+			Predicate a3 = cb.equal(ocpm1.get("status"),b.get("status"));
+			effectiveDate.where(a1,a2,a3);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();

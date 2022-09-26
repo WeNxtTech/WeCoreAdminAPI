@@ -43,15 +43,19 @@ import javax.persistence.*;
 @DynamicInsert
 @DynamicUpdate
 @Builder
-@IdClass(EserviceCustomerDetailsId.class)
-@Table(name="eservice_customer_details")
+@IdClass(EserviceCustomerDetailsArchId.class)
+@Table(name="eservice_customer_details_arch")
 
 
-public class EserviceCustomerDetails implements Serializable {
+public class EserviceCustomerDetailsArch implements Serializable {
  
 private static final long serialVersionUID = 1L;
  
     //--- ENTITY PRIMARY KEY 
+	@Id
+	@Column(name="CUST_ARCH_ID", nullable=false, length=20)
+	private String     custArchId ;
+
     @Id
     @Column(name="CUSTOMER_ID", nullable=false, length=20)
     private String     customerId ;
@@ -183,10 +187,7 @@ private static final long serialVersionUID = 1L;
     private String     officerName ;
 
     @Column(name="OFFICER_TITLE", length=100)
-    private Integer officerTitle ;
-    
-    @Column(name="OFFICER_TITLE_DESC", length=100)
-    private String     officerTitleDesc ;
+    private String     officerTitle ;
 
     @Column(name="PRODUCT_CODE", length=50)
     private String     productCode ;

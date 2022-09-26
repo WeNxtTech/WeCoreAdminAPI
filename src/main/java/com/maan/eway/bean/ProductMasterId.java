@@ -32,8 +32,6 @@ public class ProductMasterId implements Serializable {
     //--- ENTITY KEY ATTRIBUTES 
     private Integer    productId ;
     
-    private String     companyId ;
-    
     private Date       effectiveDateStart ;
     
     private Date       effectiveDateEnd ;

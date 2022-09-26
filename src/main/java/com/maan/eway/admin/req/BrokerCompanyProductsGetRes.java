@@ -17,11 +17,11 @@ public class BrokerCompanyProductsGetRes {
 	@JsonProperty("OldProductName")
 	private String oldProductName ;
 	
-	@JsonProperty("StartLimit")
-	private String startLimit ;
+	@JsonProperty("SumInsuredStart")
+	private String sumInsuredStart;
 	
-	@JsonProperty("EndLimit")
-	private String endLimit ;
+	@JsonProperty("SumInsuredEnd")
+	private String sumInsuredEnd;
 	
 	
 }

@@ -41,4 +41,12 @@ public class BranchMasterSaveReq implements Serializable {
 	@JsonProperty("Remarks")
 	private String remarks;
 
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+	
+	@JsonProperty("StateCode")
+    private String    stateCode    ;
+	@JsonProperty("CityCode")
+    private String    cityCode     ;
+
 }

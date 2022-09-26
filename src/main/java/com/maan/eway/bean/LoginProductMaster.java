@@ -87,12 +87,26 @@ private static final long serialVersionUID = 1L;
     @Column(name="REMARKS", length=100)
     private String     remarks;
 
-    @Column(name="START_LIMIT")
-    private Double     startLimit ;
-
-    @Column(name="END_LIMIT")
-    private Double     endLimit ;
-
+    @Column(name="SUM_INSURED_START")
+    private Double    sumInsuredStart ;
+    
+    @Column(name="SUM_INSURED_END")
+    private Double sumInsuredEnd ;
+    
+    @Column(name="COMMISSION_VAT_YN")
+    private String    commissionVatYn ;
+    
+    @Column(name="CHECKER_YN")
+    private String    checkerYn ;
+    
+    @Column(name="MAKER_YN")
+    private String    makerYn ;
+    
+    @Column(name="CUST_CONFIRM_YN")
+    private String    custConfirmYn ;
+    
+    @Column(name="COMMISSION_PERCENT")
+    private Integer commissionPercent ;
  
 }
 

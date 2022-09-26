@@ -24,16 +24,19 @@ public class LoginProductCriteriaRes {
 	@JsonProperty("OldProductName")
 	private String oldProductName ;
 	
-	@JsonProperty("StartLimit")
-	private Double startLimit ;
+	@JsonProperty("SumInsuredStart")
+	private Double sumInsuredStart;
 	
-	@JsonProperty("EndLimit")
-	private Double endLimit ;
+	@JsonProperty("SumInsuredEnd")
+	private Double sumInsuredEnd;
 	
 	@JsonProperty("Status")
 	private String status;
 	
 	@JsonProperty("Remarks")
 	private String remarks ;
+	
+	@JsonProperty("CompanyName")
+	private String companyName ;
 	
 }

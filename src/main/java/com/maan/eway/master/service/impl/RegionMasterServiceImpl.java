@@ -156,7 +156,6 @@ public SuccessRes insertRegion(RegionMasterSaveReq req) {
 			saveData.setStatus(req.getStatus());
 			saveData.setEntryDate(new Date());
 			saveData.setCountryId(req.getCountryId());
-			saveData.setCountryName(req.getCountryName());
 
 			repo.saveAndFlush(saveData);
 			

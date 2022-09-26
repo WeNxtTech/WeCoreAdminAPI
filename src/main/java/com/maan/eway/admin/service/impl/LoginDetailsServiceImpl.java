@@ -1151,7 +1151,13 @@ this.repository = repo;
 				 for (Menu menu : collect) {
 					 Menu m = menu;
 					 m.setChildren(menus.stream().filter(i -> (!"99999".equals(i.getParent()) && menu.getId().equals(i.getParent()))).collect(Collectors.toList()));
-					 menusret.add(m);
+					if(m.getChildren().size()>0) {
+						menusret.add(m);	
+					} else {
+						m.setChildren(null);
+						menusret.add(m);
+					}
+					 
 				}
 			  }					
 			return menusret;

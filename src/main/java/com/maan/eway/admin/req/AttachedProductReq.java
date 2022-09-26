@@ -16,12 +16,6 @@ public class AttachedProductReq {
 	@JsonProperty("ProductName")
 	private String productName ;
 	
-	@JsonProperty("StartLimit")
-	private String startLimit ;
-	
-	@JsonProperty("EndLimit")
-	private String endLimit ;
-	
 	@JsonProperty("Status")
 	private String status ;
 	
@@ -31,6 +25,30 @@ public class AttachedProductReq {
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDate")
 	private Date effectiveDate ;
+	
+	@JsonProperty("SumInsuredStart")
+	private String sumInsuredStart;
+	
+	@JsonProperty("SumInsuredEnd")
+	private String sumInsuredEnd;
+	
+	@JsonProperty("CommissionVatYn")
+	private String commissionVatYn;
+	
+	@JsonProperty("CheckerYn")
+	private String checkerYn;
+	
+	@JsonProperty("MakerYn")
+	private String makerYn;
+	
+	@JsonProperty("CustConfirmYn")
+	private String custConfirmYn;
+	
+	@JsonProperty("PaymentYn")
+	private String paymentYn;
+	
+	@JsonProperty("CommissionPercent")
+	private String commissionPercent;
 	
 	
 	

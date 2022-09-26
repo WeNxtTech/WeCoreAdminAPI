@@ -37,7 +37,5 @@ public class ReferalMasterId implements Serializable {
     private Date       effectiveDateEnd ;
     
     private String     companyId ;
-    private String   branchCode;
-
      
 }

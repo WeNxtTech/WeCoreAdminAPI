@@ -13,13 +13,13 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
+import com.maan.eway.bean.ProductReferalMaster;
+import com.maan.eway.bean.ProductReferalMasterId;
+import com.maan.eway.bean.ReferalMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-
-import com.maan.eway.bean.StateMaster;
-import com.maan.eway.bean.StateMasterId;
+import com.maan.eway.bean.ReferalMasterId;
 /**
  * <h2>ReferalMasterRepository</h2>
  *
@@ -30,13 +30,7 @@ import com.maan.eway.bean.StateMasterId;
  
  
  
-public interface StateMasterRepository  extends JpaRepository<StateMaster,StateMasterId > , JpaSpecificationExecutor<StateMaster> {
-
-	Long countByStateNameOrderByEntryDateDesc(String stateName);
-
-	Long countByStateIdAndCountryIdAndStatusAndEffectiveDateStartLessThanEqual(Integer valueOf, String valueOf2,
-			String string, Date today);
-
+public interface ProductReferalMasterRepository  extends JpaRepository<ProductReferalMaster,ProductReferalMasterId > , JpaSpecificationExecutor<ProductReferalMaster> {
 
 
 }

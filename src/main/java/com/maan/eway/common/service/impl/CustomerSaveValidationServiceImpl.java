@@ -139,9 +139,7 @@ public class CustomerSaveValidationServiceImpl implements CustomerSaveValidation
 			if(StringUtils.isBlank(req.getCoverNoteNumber())) {
 				errors.add(new Error("07","CoverNoteNumber","Please Enter CoverNoteNumber"));
 			}
-			if(StringUtils.isBlank(req.getCoverNoteTypeDesc())) {
-				errors.add(new Error("08","CoverNoteTypeDesc","Please Enter CoverNoteTypeDesc"));
-			}
+			
 			if(StringUtils.isBlank(req.getCoverNoteTypeId())) {
 				errors.add(new Error("08","CoverNoteTypeId","Please Enter CoverNoteTypeId"));
 			}

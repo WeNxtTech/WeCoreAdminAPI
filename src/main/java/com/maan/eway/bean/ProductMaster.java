@@ -93,9 +93,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="STATUS", length=1)
     private String     status ;
 
-    @Column(name="RSACODE", length=10)
-    private String     rsacode ;
-
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ENTRY_DATE")
     private Date       entryDate ;
@@ -122,6 +119,24 @@ private static final long serialVersionUID = 1L;
     @Column(name="PRODUCT_ICON_NAME")
     private String    productIconName ;
 
+    @Column(name="SUM_INSURED_START")
+    private Double    sumInsuredStart ;
+    
+    @Column(name="SUM_INSURED_END")
+    private Double sumInsuredEnd ;
+    
+    @Column(name="COMMISSION_VAT_YN")
+    private String    commissionVatYn ;
+    
+    @Column(name="CHECKER_YN")
+    private String    checkerYn ;
+    
+    @Column(name="MAKER_YN")
+    private String    makerYn ;
+    
+    @Column(name="CUST_CONFIRM_YN")
+    private String    custConfirmYn ;
+      
 }
 
 

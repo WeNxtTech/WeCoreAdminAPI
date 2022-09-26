@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -28,6 +29,7 @@ import javax.persistence.criteria.Subquery;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dozer.DozerBeanMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,10 +40,16 @@ import com.maan.eway.master.req.BranchMasterGetAllReq;
 import com.maan.eway.master.req.BranchMasterGetReq;
 import com.maan.eway.master.req.BranchMasterSaveReq;
 import com.maan.eway.master.req.CompanyBranchReq;
+import com.maan.eway.master.req.RegionMasterGetReq;
 import com.maan.eway.master.res.BranchMasterRes;
+import com.maan.eway.master.res.RegionMasterRes;
 import com.maan.eway.master.service.BranchMasterService;
 import com.maan.eway.auth.dto.LoginBranchDetailsRes;
 import com.maan.eway.bean.BranchMaster;
+import com.maan.eway.bean.CityMaster;
+import com.maan.eway.bean.CountryMaster;
+import com.maan.eway.bean.RegionMaster;
+import com.maan.eway.bean.StateMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.BranchMasterRepository;
 import com.maan.eway.res.DropDownRes;
@@ -75,8 +83,9 @@ public SuccessRes insertBranch(BranchMasterSaveReq req) {
 	SuccessRes res = new SuccessRes();
 	BranchMaster saveData = new BranchMaster();
 	List<BranchMaster> list = new ArrayList<BranchMaster>();
-	
+	DozerBeanMapper mapper = new DozerBeanMapper();
 	try {
+		Integer amendId = 0 ;
 		Calendar cal = new GregorianCalendar();
 		cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
 		Date startDate = cal.getTime() ;
@@ -140,6 +149,7 @@ public SuccessRes insertBranch(BranchMasterSaveReq req) {
 				
 				if( list.size() > 0) {
 					branchRepo.delete(list.get(0));
+					amendId = list.get(0).getAmendId() + 1 ;
 				} 
 				saveData.setBranchCode(req.getBranchCode());
 				saveData.setBranchName(req.getBranchName());
@@ -147,12 +157,22 @@ public SuccessRes insertBranch(BranchMasterSaveReq req) {
 				res.setSuccessId( req.getBranchCode() );
 
 			}
+		
+			mapper.map(req, saveData);
 			saveData.setRegionCode(req.getRegionCode());
 			saveData.setCompanyId(req.getCompanyId());
 			saveData.setEffectiveDateStart(effDate);
 			saveData.setEffectiveDateEnd(endDate);
 			saveData.setStatus(req.getStatus());
+			
+			String countryCode = getCountryCode(req.getRegionCode());
+			List<Tuple> stateCity =   getStateAndCityName(countryCode ,  req.getStateCode() , req.getCityCode() ) ;
+			String stateName      =   stateCity.get(0).get("cityName") == null ? "" :  stateCity.get(0).get("cityName").toString()  ;
+			String cityName       =   stateCity.get(0).get("stateName") == null ? "" :  stateCity.get(0).get("stateName").toString() ;
+			saveData.setStateName(stateName);
+			saveData.setCityName(cityName);
 			saveData.setEntryDate(new Date());
+			saveData.setAmendId(amendId);
 			branchRepo.saveAndFlush(saveData);
 			
 			if(list.size() > 0 ) {
@@ -172,6 +192,145 @@ public SuccessRes insertBranch(BranchMasterSaveReq req) {
 	return res;
 }
 
+public String getCountryCode(String regionCode  ) {
+	String countryId = "" ; 
+	ModelMapper mapper = new ModelMapper();
+	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
+	try {
+		Calendar cal = new GregorianCalendar();
+		Date today = new Date();
+		cal.setTime(today);   cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()); cal.set(Calendar.SECOND, today.getSeconds());
+		today = cal.getTime() ;
+		
+		// Criteria
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<RegionMaster> query = cb.createQuery(RegionMaster.class);
+		List<RegionMaster> list = new ArrayList<RegionMaster>();
+		
+		// Find All
+		Root<RegionMaster>    c = query.from(RegionMaster.class);		
+		
+		// Select
+		query.select(c );
+		
+		// Effective Date Max Filter
+		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Root<RegionMaster> ocpm1 = effectiveDate.from(RegionMaster.class);
+		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		javax.persistence.criteria.Predicate a1 = cb.equal(c.get("regionCode"),ocpm1.get("regionCode") );
+		javax.persistence.criteria.Predicate a2 = cb.equal(c.get("countryId"),ocpm1.get("countryId") );
+		javax.persistence.criteria.Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"),today );
+		effectiveDate.where(a1,a2,a3);
+		
+		// Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.asc(c.get("effectiveDateStart")));
+		
+	    // Where	
+	
+		javax.persistence.criteria.Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate);		
+		javax.persistence.criteria.Predicate n2 = cb.equal(c.get("regionCode"),regionCode ) ;
+		
+		query.where(n1 ,n2).orderBy(orderList);
+		
+		// Get Result
+		TypedQuery<RegionMaster> result = em.createQuery(query);			
+		list =  result.getResultList();  
+		if (list.size()>0  ) {
+			countryId = list.get(0).getCountryId()==null? "" : String.valueOf(list.get(0).getCountryId()) ;
+		}
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is ---> " + e.getMessage());
+		return null;
+	}
+	return countryId;
+}
+
+public List<Tuple> getStateAndCityName(String countryId , String stateId , String cityId  ) {
+	List<Tuple> list = new ArrayList<Tuple>();
+	try {
+		Date today = new Date();
+		// Find Latest Record
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+		// Find All
+		Root<CityMaster> c = query.from(CityMaster.class);
+		
+		// City Effective Date Max Filter
+		Subquery<Long> effectiveDate1 = query.subquery(Long.class);
+		Root<CityMaster> ocpm1 = effectiveDate1.from(CityMaster.class);
+		effectiveDate1.select(cb.max(ocpm1.get("effectiveDateStart")));
+		Predicate c1 = cb.equal(ocpm1.get("cityId"), c.get("cityId"));
+		Predicate c2 = cb.equal(ocpm1.get("stateId"), c.get("stateId"));
+		Predicate c3 = cb.equal(ocpm1.get("countryId"), c.get("countryId"));
+		Predicate c4 = cb.equal(ocpm1.get("status"),c.get("status"));
+		Predicate c5 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+		effectiveDate1.where(c1,c2,c3,c4,c5);
+		
+		Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate1);
+		Predicate n2 = cb.equal(c.get("cityId"), cityId);
+		Predicate n3 = cb.equal(c.get("stateId"), stateId);
+		Predicate n4 = cb.equal(c.get("countryId"), countryId);
+		Predicate n5 = cb.equal(c.get("status"), "Y");
+		
+		// State Effective Date Max Filter
+		Subquery<Long> state = query.subquery(Long.class);
+		Root<StateMaster> s = state.from(StateMaster.class);
+		
+		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+		Root<StateMaster> ocpm2 = effectiveDate2.from(StateMaster.class);
+		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateStart")));
+		Predicate seff1 = cb.equal(ocpm2.get("stateId"), s.get("stateId"));
+		Predicate seff2 = cb.equal(ocpm2.get("countryId"), s.get("countryId"));
+		Predicate seff3 = cb.equal(ocpm2.get("status"),s.get("status"));
+		Predicate seff4 = cb.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"), today);
+		effectiveDate2.where(seff1,seff2,seff3,seff4);
+		
+		// State Name Max Filter
+		state .select(s.get("stateName"));
+		Predicate s1 = cb.equal(s.get("stateId"), c.get("stateId"));
+		Predicate s2 = cb.equal(s.get("countryId"), c.get("countryId"));
+		Predicate s3 = cb.equal(s.get("status"), c.get("status"));
+		Predicate s4 = cb.equal(s.get("effectiveDateStart"), effectiveDate2);
+		state.where(s1,s2,s3,s4);
+		
+		// Country Effective Date Max Filter
+		Subquery<Long> country = query.subquery(Long.class);
+		Root<CountryMaster> cm = country.from(CountryMaster.class);
+		
+		Subquery<Long> effectiveDate3 = query.subquery(Long.class);
+		Root<CountryMaster> ocpm3 = effectiveDate3.from(CountryMaster.class);
+		effectiveDate3.select(cb.max(ocpm3.get("effectiveDateStart")));
+		Predicate ceff2 = cb.equal(ocpm3.get("countryId"), cm.get("countryId"));
+		Predicate ceff3 = cb.equal(ocpm3.get("status"),cm.get("status"));
+		Predicate ceff4 = cb.lessThanOrEqualTo(ocpm3.get("effectiveDateStart"), today);
+		effectiveDate3.where(ceff2,ceff3,ceff4);
+		
+		// Country Name Max Filter
+		country .select(cm.get("countryName"));
+		Predicate cm2 = cb.equal(cm.get("countryId"), c.get("countryId"));
+		Predicate cm3 = cb.equal(cm.get("status"), c.get("status"));
+		Predicate cm4 = cb.equal(cm.get("effectiveDateStart"), effectiveDate3);
+		country.where(cm2,cm3,cm4);
+		
+		// Select
+		query.multiselect( c.get("cityId").alias("cityId") ,c.get("cityName").alias("cityName") , state.alias("stateName") ,country.alias("countryName") );
+		
+		query.where(n1,n2,n3,n4,n5);
+		// Get Result
+		TypedQuery<Tuple> result = em.createQuery(query);
+		list = result.getResultList();
+		
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info(e.getMessage());
+		return null;
+	}
+	return list;
+}
 
 @Override
 public List<Error> validateBranchDetails(BranchMasterSaveReq req) {
@@ -191,10 +350,23 @@ public List<Error> validateBranchDetails(BranchMasterSaveReq req) {
 			}
 		}
 
+		if(StringUtils.isBlank(req.getCityCode())) {
+			errorList.add(new Error("03","CityCode","Please Enter CityCode"));
+		}
+		if(StringUtils.isBlank(req.getStateCode())) {
+			errorList.add(new Error("04","StateCode","Please Enter StateCode"));
+		}
+		
 		if (StringUtils.isBlank(req.getRegionCode())) {
 			errorList.add(new Error("03", "RegionCode", "Please Select Region Code "));
 		}else if (req.getRegionCode().length() > 20){
 			errorList.add(new Error("03","RegionCode", "Please Enter Region Code within 20 Characters")); 
+		}
+		
+		if (StringUtils.isBlank(req.getCreatedBy())) {
+			errorList.add(new Error("03", "CreatedBy", "Please Enter CreatedBy"));
+		} else if (req.getCreatedBy().length() > 100) {
+			errorList.add(new Error("03", "CreatedBy", "CreatedBy under 100 Characters only allowed"));
 		}
 		
 		// Date Validation

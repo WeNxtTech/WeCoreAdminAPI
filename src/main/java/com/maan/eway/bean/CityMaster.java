@@ -71,11 +71,11 @@ private static final long serialVersionUID = 1L;
     
     @Id
     @Column(name="COUNTRY_ID")
-    private Integer     countryId ;
+    private String     countryId ;
 
     @Id
     @Column(name="REGION_ID")
-    private Integer     regionId ;
+    private String     regionId ;
     
     
     //--- ENTITY DATA FIELDS 

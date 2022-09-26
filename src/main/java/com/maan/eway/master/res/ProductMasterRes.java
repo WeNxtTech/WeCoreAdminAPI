@@ -79,4 +79,22 @@ public class ProductMasterRes implements Serializable {
 	
 	@JsonProperty("ProductIconName")
 	private String productIconName;
+	
+	@JsonProperty("SumInsuredStart")
+	private String sumInsuredStart;
+	
+	@JsonProperty("SumInsuredEnd")
+	private String sumInsuredEnd;
+	
+	@JsonProperty("CommissionVatYn")
+	private String commissionVatYn;
+	
+	@JsonProperty("CheckerYn")
+	private String checkerYn;
+	
+	@JsonProperty("MakerYn")
+	private String makerYn;
+	
+	@JsonProperty("CustConfirmYn")
+	private String custConfirmYn;
 }

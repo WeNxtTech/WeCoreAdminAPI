@@ -24,8 +24,6 @@ public class CoverNoteDetailsSaveReq {
     private String     tranCompanyCode ;
 	@JsonProperty("CoverNoteTypeId")
     private String    coverNoteTypeId ;
-	@JsonProperty("CoverNoteTypeDesc")
-    private String     coverNoteTypeDesc ;
 	@JsonProperty("CoverNoteNumber")
     private String     coverNoteNumber ;
 	@JsonProperty("PrevConverNoteReferenceNumber")
@@ -43,33 +41,33 @@ public class CoverNoteDetailsSaveReq {
 	
 	@JsonProperty("CoverNoteDesc")
     private String     coverNoteDesc ;
-	@JsonProperty("Operativeclause")
+	@JsonProperty("OperativeClause")
     private String     operativeClause ;
-	@JsonProperty("Paymentmode")
+	@JsonProperty("PaymentMode")
     private String    paymentMode  ;
 	
-	@JsonProperty("Currenycode")
+	@JsonProperty("CurrenyCode")
     private String     currenyCode  ;
-	@JsonProperty("Exchangerate")
+	@JsonProperty("ExchangeRate")
     private String     exchangeRate ;
-	@JsonProperty("Totalpremiumexcludingtax")
+	@JsonProperty("TotalPremiumExcludingTax")
     private String     totalPremiumExcludingTax ;
-	@JsonProperty("Totalpremiumincludingtax")
+	@JsonProperty("TotalPremiumIncludingTax")
     private String     totalPremiumIncludingTax ;
-	@JsonProperty("Commissionpaid")
+	@JsonProperty("CommissionPaid")
     private String     commissionPaid ;
-	@JsonProperty("Commissionrate")
+	@JsonProperty("CommissionRate")
     private String     commissionRate ;
-	@JsonProperty("Officername")
+	@JsonProperty("OfficerName")
     private String     officerName  ;
-	@JsonProperty("Officertitle")
+	@JsonProperty("OfficerTitle")
     private String     officerTitle ;
-	@JsonProperty("Productcode")
+	@JsonProperty("ProductCode")
     private String     productCode  ;
-	@JsonProperty("Endorsementtype")
+	@JsonProperty("EndorsementType")
     private String    endorsementType ;
-	@JsonProperty("Endorsementreason")
+	@JsonProperty("EndorsementReason")
     private String     endorsementReason ;
-	@JsonProperty("Endoresementpremiumearned")
+	@JsonProperty("EndoresementPremiumEarned")
     private String     endoresementPremiumEarned ;
 }

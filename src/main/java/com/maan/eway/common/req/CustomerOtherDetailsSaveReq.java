@@ -16,7 +16,7 @@ public class CustomerOtherDetailsSaveReq {
 	@JsonProperty("Email3")
     private String     email3       ;
 	@JsonProperty("PreferredSystemNotificationId")
-    private Integer    preferredSystemNotificationId ;
+    private String    preferredSystemNotificationId ;
 	
 
 }

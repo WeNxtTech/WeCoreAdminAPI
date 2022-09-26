@@ -145,7 +145,7 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 			}
 
 			dozerMapper.map(req, saveData);
-			saveData.setCountryId(Integer.valueOf(countryId));
+			saveData.setCountryId(countryId);
 			saveData.setCountryName(req.getCountryName());
 			saveData.setEffectiveDateStart(effDate);
 			saveData.setEffectiveDateEnd(endDate);

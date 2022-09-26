@@ -36,7 +36,7 @@ public interface CountryMasterRepository  extends JpaRepository<CountryMaster,Co
 
 	Long countByCountryNameOrderByEntryDateDesc(String countryName);
 
-	Long countByCountryIdAndStatusAndEffectiveDateStartLessThanEqual(Integer valueOf, String string, Date today);
+	Long countByCountryIdAndStatusAndEffectiveDateStartLessThanEqual(String valueOf, String string, Date today);
 
 
 

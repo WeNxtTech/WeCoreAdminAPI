@@ -3,6 +3,8 @@ package com.maan.eway.master.res;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.Column;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -17,7 +19,7 @@ public class BranchMasterRes implements Serializable {
 	private String branchCode;
 	
 	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDateStart")
+	@JsonProperty("EffectiveDate")
 	private Date effectiveDateStart;
 	
 	@JsonFormat(pattern = "dd/MM/yyyy")
@@ -43,10 +45,23 @@ public class BranchMasterRes implements Serializable {
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
 
-	@JsonProperty("AmendId")
-	private Integer amendId;
-
 	@JsonProperty("Remarks")
 	private String remarks;
+	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+
+	@Column(name="StateCode", length=50)
+    private String stateCode ;
+
+    @Column(name="StateName", length=50)
+    private String     stateName ;
+
+    @Column(name="CityCode" ,nullable=false )
+    private String cityCode ;
+
+    @Column(name="CityName", length=50)
+    private String     cityName ;
+	
 
 }

@@ -169,6 +169,8 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			List<String> totalList = new ArrayList<>();
 			totalList.addAll(branchCode);
 			totalList.addAll(attachedBranchCode);
+			List<String> companies =loginBranch.stream().map(LoginBranchMaster ::getCompanyId ).collect(Collectors.toList()) ;
+			Set<String> removeDuplicateCompany = new HashSet<>(companies);
 			Set<String> removeDuplicateBranch = new HashSet<>(totalList);
 			List<LoginBranchCriteriaRes> loginCriteriaRes = getBranchDetails(removeDuplicateBranch);
 			
@@ -184,7 +186,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 				if(filterBranchCriteria.size()>0 ) {
 					LoginBranchCriteriaRes getBranch = filterBranchCriteria.get(0);
 					branchRes.setBranchName(getBranch.getBranchName()  );
-					branchRes.setRegionCode(getBranch.getRegionName() );
+					branchRes.setRegionCode(getBranch.getRegionCode() );
 					branchRes.setRegionName(getBranch.getRegionName() );
 					branchRes.setInsuranceId(getBranch.getCompanyId() );
 					branchRes.setCompanyName(getBranch.getCompanyName() );
@@ -198,7 +200,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 					if(filterAttachedBranch.size()>0 ) {
 						LoginBranchCriteriaRes getAttachedBranch = filterAttachedBranch.get(0);
 						branchRes.setAttachedBranchName(getAttachedBranch.getBranchName()  );
-						branchRes.setAttachedRegionCode(getAttachedBranch.getRegionName() );
+						branchRes.setAttachedRegionCode(getAttachedBranch.getRegionCode() );
 						branchRes.setAttachedRegionName(getAttachedBranch.getRegionName() );
 						branchRes.setAttachedCompanyId(getAttachedBranch.getCompanyId() );
 						branchRes.setAttachedCompanyName(getAttachedBranch.getCompanyName() );
@@ -211,8 +213,9 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			
 			r.setLoginBranchDetails(loginBranchRes);
 			
+			List<String> companyIds = new ArrayList<>( removeDuplicateCompany) ;
 			// Products
-			r.setCompanyProducts( getBrokerProducts(login.getLoginId() , login.getAttachedCompanies()));
+			r.setCompanyProducts( getBrokerProducts(login.getLoginId() , companyIds));
 			
 			// Menu Ids
 		  if(login.getMenuIds()!=null && login.getMenuIds().indexOf(",")!=-1) {
@@ -231,15 +234,13 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 	
 	
 
-	public List<BrokerProductCompaniesRes> getBrokerProducts(String loginId , String companies  ) {
+	public List<BrokerProductCompaniesRes> getBrokerProducts(String loginId , List<String> companyIds  ) {
 		List<BrokerProductCompaniesRes> companyList = new ArrayList<BrokerProductCompaniesRes>();
 		try {
 			Calendar cal = new GregorianCalendar();
 			Date today = new Date();
 			cal.setTime(today); cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
 			today = cal.getTime() ;
-			
-			List<String> companyIds = new ArrayList<>(Arrays.asList(companies.split(","))) ;
 			
 			List<LoginProductCriteriaRes> loginProducts = loginProductsService.getBrokerProductDetails(loginId , companyIds , today ) ;
 				
@@ -258,8 +259,8 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 						String pattern = "#####0";
 						DecimalFormat df = new DecimalFormat(pattern);
 						productRes.setOldProductName(data.getOldProductName() );
-						productRes.setStartLimit(data.getStartLimit()==null?"" : df.format(data.getStartLimit()) );
-						productRes.setEndLimit(data.getEndLimit()==null?"" :df.format(data.getEndLimit()) );
+						productRes.setSumInsuredStart(data.getSumInsuredStart()==null?"" : df.format(data.getSumInsuredStart()) );
+						productRes.setSumInsuredEnd(data.getSumInsuredEnd()==null?"" :df.format(data.getSumInsuredEnd()) );
 						productRes.setStatus(data.getStatus());
 						productRes.setRemarks(data.getRemarks());
 
@@ -271,6 +272,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 				
 				// Response 
 				companyRes.setInsuranceId(filterProduct.get(0).getCompanyId() );
+				companyRes.setCompanyName(filterProduct.get(0).getCompanyName() );
 				companyRes.setAttachedProducts(attachedProducts);
 				companyList.add(companyRes);
 			}
@@ -347,7 +349,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			
 			//Region Name
 			region.select(rm.get("regionName"));
-			Predicate rm2 = cb.equal(rm.get("regionCode"), b.get("regionCode"));
+			Predicate rm2 = cb.equal(rm.get("regionCode"),  b.get("regionCode") );
 			Predicate rm3 = cb.equal(rm.get("effectiveDateStart"), effectiveDate3);
 			region.where(rm2,rm3);
 			

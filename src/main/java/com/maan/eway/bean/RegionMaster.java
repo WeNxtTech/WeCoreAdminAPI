@@ -68,17 +68,11 @@ private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name="COUNTRY_ID", nullable=false)
-    private Integer    countryId;
+    private String    countryId;
 
     @Id
     @Column(name="REGION_SHORT_CODE", length=20)
     private String     regionShortCode ;
-
-    @Column(name="REGION_NAME", length=100)
-    private String     regionName ;
-
-    @Column(name="COUNTRY_NAME", length=100)
-    private String     countryName ;
 
     
     @Column(name="STATUS", length=1)
@@ -96,6 +90,11 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="REMARKS", length=100)
     private String     remarks ;
+    
+    @Column(name="REGION_NAME", length=100)
+    private String     regionName ;
+
+   
 
 }
 

@@ -198,8 +198,8 @@ public class LoginProductServiceImpl  implements LoginProductService {
 							String pattern = "#####0";
 							DecimalFormat df = new DecimalFormat(pattern);
 							productRes.setOldProductName(filterLoginProduct.get(0).getOldProductName() );
-							productRes.setStartLimit(filterLoginProduct.get(0).getStartLimit()==null?"" : df.format(filterLoginProduct.get(0).getStartLimit()) );
-							productRes.setEndLimit(filterLoginProduct.get(0).getEndLimit()==null?"" :df.format(filterLoginProduct.get(0).getEndLimit()) );
+							productRes.setSumInsuredStart(filterLoginProduct.get(0).getSumInsuredStart()==null?"" : df.format(filterLoginProduct.get(0).getSumInsuredStart()) );
+							productRes.setSumInsuredEnd(filterLoginProduct.get(0).getSumInsuredEnd()==null?"" :df.format(filterLoginProduct.get(0).getSumInsuredEnd()) );
 							productRes.setStatus(filterLoginProduct.get(0).getStatus());
 							productRes.setRemarks(filterLoginProduct.get(0).getRemarks());	;
 						}
@@ -299,6 +299,23 @@ public class LoginProductServiceImpl  implements LoginProductService {
 
 			Root<LoginProductMaster> lm  = query.from(LoginProductMaster.class);
 			
+			// Company Effective Date Max Filter
+			Subquery<Long> company = query.subquery(Long.class);
+			Root<InsuranceCompanyMaster> ins = company.from(InsuranceCompanyMaster.class);
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<InsuranceCompanyMaster> ocpm2 = effectiveDate2.from(InsuranceCompanyMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateStart")));
+			Predicate ceff1 = cb.equal(ocpm2.get("companyId"), ins.get("companyId"));
+			Predicate ceff2 = cb.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"), today);
+			effectiveDate2.where(ceff1,ceff2);
+			
+			// Company Name
+			company.select(ins.get("companyName"));
+			Predicate ins1 = cb.equal(ins.get("companyId"), lm.get("companyId"));
+			Predicate ins2 = cb.equal(ins.get("effectiveDateStart"), effectiveDate2);
+			company.where(ins1,ins2);
+			
+			
 			// Select Product Name SubQuery for Effective Date Max Filter 
 			Subquery<Long> pmEff = query.subquery(Long.class);
 			Root<ProductMaster> pm = pmEff.from(ProductMaster.class);
@@ -320,8 +337,8 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			
 			// Select
 			query.multiselect( lm.get("productId").alias("productId") ,  lm.get("companyId").alias("companyId") , product.alias("productName") ,
-					lm.get("productName").alias("oldProductName") ,  lm.get("startLimit").alias("startLimit") , lm.get("endLimit").alias("endLimit") ,
-					 lm.get("status").alias("status")  ,  lm.get("remarks").alias("remarks")  
+					lm.get("productName").alias("oldProductName") ,  lm.get("sumInsuredStart").alias("sumInsuredStart") , lm.get("sumInsuredEnd").alias("sumInsuredEnd") ,
+					 lm.get("status").alias("status")  ,  lm.get("remarks").alias("remarks")   , company.alias("companyName")
 					);
 
 			// Product Effective Date Max Filter
@@ -385,8 +402,8 @@ public class LoginProductServiceImpl  implements LoginProductService {
 				productRes.setProductId(data.getProductId()==null?"" :data.getProductId().toString() );
 				productRes.setProductName(data.getProductName());
 				productRes.setOldProductName(data.getOldProductName());
-				productRes.setStartLimit(data.getStartLimit()==null?"" : df.format(data.getStartLimit()) );
-				productRes.setEndLimit(data.getEndLimit()==null?"" :df.format(data.getEndLimit()) );
+				productRes.setSumInsuredStart(data.getSumInsuredStart()==null?"" : df.format(data.getSumInsuredStart()) );
+				productRes.setSumInsuredEnd(data.getSumInsuredEnd()==null?"" :df.format(data.getSumInsuredEnd()) );
 				productList.add(productRes);
 			
 			}

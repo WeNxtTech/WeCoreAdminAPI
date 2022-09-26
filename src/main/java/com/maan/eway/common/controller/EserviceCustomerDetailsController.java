@@ -26,12 +26,15 @@ import com.maan.eway.error.Error;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.service.PrintReqService;
 
+import io.swagger.annotations.Api;
+
 
 /**
 * <h2>EserviceCustomerDetailsController</h2>
 */
 @RestController
 @RequestMapping("/api")
+@Api(tags = "ESERVICE CUSTOMER DETAILS", description = "API's")
 public class EserviceCustomerDetailsController {
 
 	@Autowired

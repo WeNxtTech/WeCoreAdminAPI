@@ -5,20 +5,48 @@
 */
 package com.maan.eway.common.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.Gson;
+import com.maan.eway.bean.CityMaster;
+import com.maan.eway.bean.CountryMaster;
 import com.maan.eway.bean.EserviceCustomerDetails;
+import com.maan.eway.bean.EserviceCustomerDetailsArch;
+import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.LoginMaster;
+import com.maan.eway.bean.LoginMasterArch;
+import com.maan.eway.bean.StateMaster;
 import com.maan.eway.common.req.EserviceCustomerSaveReq;
 import com.maan.eway.common.res.CustomerDetailsSaveRes;
 import com.maan.eway.common.service.EserviceCustomerDetailsService;
+import com.maan.eway.repository.EserviceCustomerDetailsArchRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
+import com.maan.eway.repository.ListItemValueRepository;
 /**
 * <h2>EserviceCustomerDetailsServiceimpl</h2>
 */
@@ -29,15 +57,205 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 @Autowired
 private EserviceCustomerDetailsRepository repository;
 
+@Autowired
+private EserviceCustomerDetailsArchRepository custArchRepo;
+
+@Autowired
+private ListItemValueRepository listRepo;
+
+@PersistenceContext
+private EntityManager em;
+
 
 private Logger log=LogManager.getLogger(EserviceCustomerDetailsServiceImpl.class);
 
+Gson json = new Gson();
 
 	@Override
+	@Transactional
 	public CustomerDetailsSaveRes saveCustomerDetails(EserviceCustomerSaveReq req) {
-		// TODO Auto-generated method stub
-		return null;
+		CustomerDetailsSaveRes res = new CustomerDetailsSaveRes();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper(); 
+		SimpleDateFormat idf = new SimpleDateFormat("yyMMddhhssmmss"); 
+		try {
+			String custId  , createdBy = "" , status = "Y" , succesMsg;
+			Date entryDate = null;
+			
+			EserviceCustomerDetails saveCust = new EserviceCustomerDetails();
+			// Save
+			if (StringUtils.isBlank(req.getCustomerCommonDetails().getCustomerId())) {
+				Long idCount =  repository.count();
+				Random rnd = new Random();
+				int number = rnd.nextInt(100);
+				String randomNo = String.format("%02d", number);
+				custId = "C/" + idCount + "/" + randomNo;
+				succesMsg = "Saved Successfully" ;
+				
+				
+			// Update	
+			} else {
+				// Find Data
+				custId = req.getCustomerCommonDetails().getCustomerId() ;
+				EserviceCustomerDetails findData = repository.findByCustomerId(custId);
+				saveCust  = findData ;
+				entryDate = findData.getEntryDate();
+				createdBy = findData.getCreatedBy() ;
+				status    = findData.getStatus();
+				succesMsg = "Updated Successfully" ;
+				
+				// Save in Arch tables
+				String archId = "AI-" + idf.format(new Date());
+				EserviceCustomerDetailsArch  custArch = dozerMapper.map(findData, EserviceCustomerDetailsArch.class )  ;
+				custArch.setCustArchId(archId);
+				custArchRepo.saveAndFlush(custArch);
+			}
+			
+			// Request Mapping
+			dozerMapper.map(req.getCustomerCommonDetails(), saveCust);
+			dozerMapper.map(req.getCoverNoteDetails(), saveCust);
+			dozerMapper.map(req.getRiskDetails(), saveCust);
+			dozerMapper.map(req.getCoverAddonDetails(), saveCust);
+			dozerMapper.map(req.getSubjectDetails(), saveCust);
+			dozerMapper.map(req.getOtherDetails(), saveCust);
+			
+			// DropDown Desc
+			List<ListItemValue>  findDropDowns = listRepo.findByStatusOrderByItemIdAsc("Y");
+			String gender         =   findDropDowns.stream().filter( o -> o.getItemType().equalsIgnoreCase("POLICY_HOLDER_GENDER") &&  o.getItemCode().equalsIgnoreCase( req.getCustomerCommonDetails().getGenderId()) ).collect(Collectors.toList()).get(0).getItemValue();
+			String nameTitle      =   findDropDowns.stream().filter( o -> o.getItemType().equalsIgnoreCase("NAME_TITLE") &&  o.getItemCode().equalsIgnoreCase(req.getCustomerCommonDetails().getNameTitleId()) ).collect(Collectors.toList()).get(0).getItemValue();   
+			String polHolType     =   findDropDowns.stream().filter( o -> o.getItemType().equalsIgnoreCase("POLICY_HOLDER_TYPE") &&  o.getItemCode().equalsIgnoreCase(req.getCustomerCommonDetails().getNameTitleId()) ).collect(Collectors.toList()).get(0).getItemValue();   
+			String PolHolIdType   =   findDropDowns.stream().filter( o -> o.getItemType().equalsIgnoreCase("POLICY_HOLDER_ID_TYPE") &&  o.getItemCode().equalsIgnoreCase(req.getCustomerCommonDetails().getNameTitleId()) ).collect(Collectors.toList()).get(0).getItemValue();   
+			List<Tuple> stateCity =   getStateAndCityName( req.getCustomerCommonDetails().getCountryCode() , req.getCustomerCommonDetails().getStateCode() , req.getCustomerCommonDetails().getCityCode() ) ;
+			String stateName      =   stateCity.get(0).get("cityName") == null ? "" :  stateCity.get(0).get("cityName").toString()  ;
+			String cityName       =   stateCity.get(0).get("stateName") == null ? "" :  stateCity.get(0).get("stateName").toString() ;
+			String coverNoteType  =   findDropDowns.stream().filter( o -> o.getItemType().equalsIgnoreCase("COVER_NOTE_TYPE") &&  o.getItemCode().equalsIgnoreCase( req.getCoverNoteDetails().getCoverNoteTypeId()) ).collect(Collectors.toList()).get(0).getItemValue();
+			String paymentMode    =   findDropDowns.stream().filter( o -> o.getItemType().equalsIgnoreCase("PAYMENT_MODE") &&  o.getItemCode().equalsIgnoreCase( req.getCoverNoteDetails().getPaymentMode()) ).collect(Collectors.toList()).get(0).getItemValue(); 
+			String endorsementType=   findDropDowns.stream().filter( o -> o.getItemType().equalsIgnoreCase("ENDROSEMENT_TYPE") &&  o.getItemCode().equalsIgnoreCase( req.getCoverNoteDetails().getEndorsementType()) ).collect(Collectors.toList()).get(0).getItemValue();
+			String discountType   =   findDropDowns.stream().filter( o -> o.getItemType().equalsIgnoreCase("DISCOUNT_TYPE_OFFERED") &&  o.getItemCode().equalsIgnoreCase( req.getRiskDetails().getDiscountType()) ).collect(Collectors.toList()).get(0).getItemValue();
+			String isTaxExempted  =  findDropDowns.stream().filter( o -> o.getItemType().equalsIgnoreCase("IS_TAX_EXEMPTED") &&  o.getItemCode().equalsIgnoreCase( req.getRiskDetails().getIsTaxExemptedId()) ).collect(Collectors.toList()).get(0).getItemValue();
+			String taxExcemptionType= findDropDowns.stream().filter( o -> o.getItemType().equalsIgnoreCase("TAX_EXEMPTION_TYPE") &&  o.getItemCode().equalsIgnoreCase( req.getRiskDetails().getTaxExcemptionTypeId()) ).collect(Collectors.toList()).get(0).getItemValue();
+			String notification   = findDropDowns.stream().filter( o -> o.getItemType().equalsIgnoreCase("NOTIFICATION_TYPE") &&  o.getItemCode().equalsIgnoreCase( req.getOtherDetails().getPreferredSystemNotificationId()) ).collect(Collectors.toList()).get(0).getItemValue();
+			String officerTitle = findDropDowns.stream().filter( o -> o.getItemType().equalsIgnoreCase("NAME_TITLE") &&  o.getItemCode().equalsIgnoreCase( req.getCoverNoteDetails().getOfficerTitle()) ).collect(Collectors.toList()).get(0).getItemValue();
+			
+			saveCust.setCustomerId(custId);
+			saveCust.setEntryDate(entryDate);
+			saveCust.setCreatedBy(createdBy);
+			saveCust.setStatus(status);
+			saveCust.setUpdatedBy(req.getCustomerCommonDetails().getCreatedBy());
+			saveCust.setUpdatedDate(new Date());
+			saveCust.setGendeDesc(gender);
+			saveCust.setNameTitleDesc(nameTitle);
+			saveCust.setPolicyHolderTypeDesc(polHolType);
+			saveCust.setPolicyHolderIdTypeDesc(PolHolIdType);
+			saveCust.setStateName(stateName);
+			saveCust.setCityName(cityName);
+			saveCust.setCoverNoteTypeDesc(coverNoteType);
+			saveCust.setPaymentModeDesc(paymentMode);
+			saveCust.setEndorsementTypeDesc(endorsementType);
+			saveCust.setDiscountTypeDesc(discountType);
+			saveCust.setIsTaxExemptedTypeDesc(isTaxExempted);
+			saveCust.setTaxExcemptionTypeDesc(taxExcemptionType);
+			saveCust.setPreferredSystemNotification(notification);
+			saveCust.setOfficerTitleDesc(officerTitle);
+			
+			repository.saveAndFlush(saveCust);
+			log.info( "Saved Customer Details is ---> " +  json.toJson(saveCust) );
+			
+			// Response 
+			res.setResponse(succesMsg);
+			res.setCustomerId(custId);
+			res.setRequestId(saveCust.getRequestId());
+			
+ 		} catch (Exception e ) {
+ 			e.printStackTrace();
+ 			log.info( "Exception is ---> " + e.getMessage() );
+ 			return null;
+ 		}
+		return res;
 	}
 
+	
+	public List<Tuple> getStateAndCityName(String countryId , String stateId , String cityId  ) {
+		List<Tuple> list = new ArrayList<Tuple>();
+		try {
+			Date today = new Date();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+			// Find All
+			Root<CityMaster> c = query.from(CityMaster.class);
+			
+			// City Effective Date Max Filter
+			Subquery<Long> effectiveDate1 = query.subquery(Long.class);
+			Root<CityMaster> ocpm1 = effectiveDate1.from(CityMaster.class);
+			effectiveDate1.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate c1 = cb.equal(ocpm1.get("cityId"), c.get("cityId"));
+			Predicate c2 = cb.equal(ocpm1.get("stateId"), c.get("stateId"));
+			Predicate c3 = cb.equal(ocpm1.get("countryId"), c.get("countryId"));
+			Predicate c4 = cb.equal(ocpm1.get("status"),c.get("status"));
+			Predicate c5 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate1.where(c1,c2,c3,c4,c5);
+			
+			Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate1);
+			Predicate n2 = cb.equal(c.get("cityId"), cityId);
+			Predicate n3 = cb.equal(c.get("stateId"), stateId);
+			Predicate n4 = cb.equal(c.get("countryId"), countryId);
+			Predicate n5 = cb.equal(c.get("status"), "Y");
+			
+			// State Effective Date Max Filter
+			Subquery<Long> state = query.subquery(Long.class);
+			Root<StateMaster> s = state.from(StateMaster.class);
+			
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<StateMaster> ocpm2 = effectiveDate2.from(StateMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateStart")));
+			Predicate seff1 = cb.equal(ocpm2.get("stateId"), s.get("stateId"));
+			Predicate seff2 = cb.equal(ocpm2.get("countryId"), s.get("countryId"));
+			Predicate seff3 = cb.equal(ocpm2.get("status"),s.get("status"));
+			Predicate seff4 = cb.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"), today);
+			effectiveDate2.where(seff1,seff2,seff3,seff4);
+			
+			// State Name Max Filter
+			state .select(s.get("stateName"));
+			Predicate s1 = cb.equal(s.get("stateId"), c.get("stateId"));
+			Predicate s2 = cb.equal(s.get("countryId"), c.get("countryId"));
+			Predicate s3 = cb.equal(s.get("status"), c.get("status"));
+			Predicate s4 = cb.equal(s.get("effectiveDateStart"), effectiveDate2);
+			state.where(s1,s2,s3,s4);
+			
+			// Country Effective Date Max Filter
+			Subquery<Long> country = query.subquery(Long.class);
+			Root<CountryMaster> cm = country.from(CountryMaster.class);
+			
+			Subquery<Long> effectiveDate3 = query.subquery(Long.class);
+			Root<CountryMaster> ocpm3 = effectiveDate3.from(CountryMaster.class);
+			effectiveDate3.select(cb.max(ocpm3.get("effectiveDateStart")));
+			Predicate ceff2 = cb.equal(ocpm3.get("countryId"), cm.get("countryId"));
+			Predicate ceff3 = cb.equal(ocpm3.get("status"),cm.get("status"));
+			Predicate ceff4 = cb.lessThanOrEqualTo(ocpm3.get("effectiveDateStart"), today);
+			effectiveDate3.where(ceff2,ceff3,ceff4);
+			
+			// Country Name Max Filter
+			country .select(cm.get("countryName"));
+			Predicate cm2 = cb.equal(cm.get("countryId"), c.get("countryId"));
+			Predicate cm3 = cb.equal(cm.get("status"), c.get("status"));
+			Predicate cm4 = cb.equal(cm.get("effectiveDateStart"), effectiveDate3);
+			country.where(cm2,cm3,cm4);
+			
+			// Select
+			query.multiselect( c.get("cityId").alias("cityId") ,c.get("cityName").alias("cityName") , state.alias("stateName") ,country.alias("countryName") );
+			
+			query.where(n1,n2,n3,n4,n5);
+			// Get Result
+			TypedQuery<Tuple> result = em.createQuery(query);
+			list = result.getResultList();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+		}
+		return list;
+	}
 
 }

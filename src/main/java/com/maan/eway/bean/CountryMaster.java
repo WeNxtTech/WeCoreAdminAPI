@@ -53,7 +53,7 @@ private static final long serialVersionUID = 1L;
     //--- ENTITY PRIMARY KEY 
     @Id
     @Column(name="COUNTRY_ID", nullable=false)
-    private Integer     countryId ;
+    private String     countryId ;
 
     @Id
     @Temporal(TemporalType.TIMESTAMP)

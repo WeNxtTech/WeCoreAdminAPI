@@ -16,22 +16,12 @@ public class ProductMasterSaveReq implements Serializable {
 	@JsonProperty("ProductId")
 	private String productId;
 
-	@JsonProperty("InsuranceId")
-	private String companyId;
-
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDate")
 	private Date effectiveDate;
 
 	@JsonProperty("ProductName")
 	private String productName;
-
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("InceptionDate")
-	private Date inceptionDate;
-
-	@JsonProperty("DisplayOrder")
-	private Integer displayOrder;
 
 	@JsonProperty("PaymentYn")
 	private String paymentYn;
@@ -45,26 +35,34 @@ public class ProductMasterSaveReq implements Serializable {
 	@JsonProperty("Status")
 	private String status;
 
-	@JsonProperty("Rsacode")
-	private String rsacode;
-
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("ExpiryDate")
-	private Date expiryDate;
-
 	@JsonProperty("ProductCategory")
 	private String productCategory;
 
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
 
-	@JsonProperty("AmendId")
-	private Integer amendId;
-
 	@JsonProperty("Remarks")
 	private String remarks;
 	
 	@JsonProperty("ProductIconId")
 	private String productIconId;
-
+	
+	@JsonProperty("SumInsuredStart")
+	private String sumInsuredStart;
+	
+	@JsonProperty("SumInsuredEnd")
+	private String sumInsuredEnd;
+	
+	@JsonProperty("CommissionVatYn")
+	private String commissionVatYn;
+	
+	@JsonProperty("CheckerYn")
+	private String checkerYn;
+	
+	@JsonProperty("MakerYn")
+	private String makerYn;
+	
+	@JsonProperty("CustConfirmYn")
+	private String custConfirmYn;
+	
 }

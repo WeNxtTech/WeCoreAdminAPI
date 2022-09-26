@@ -39,7 +39,7 @@ public class RegionMasterSaveReq implements Serializable {
 	private String remarks;
 	
 	@JsonProperty("CountryId")
-	private Integer countryId;
+	private String countryId;
 
 	@JsonProperty("CountryName")
 	private String countryName;

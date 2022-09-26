@@ -66,12 +66,12 @@ public class InsuranceCompanyMasterSaveReq {
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
 
-	@JsonProperty("AmendId")
-	private Integer amendId;
 
 	@JsonProperty("Remarks")
 	private String remarks;
 	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
 	
   
 }

@@ -34,7 +34,7 @@ import com.maan.eway.service.ValidationService;
 @Service
 public class ValidationServiceImpl implements ValidationService {
 
-	private Logger log=LogManager.getLogger(CustomerDetailsServiceImpl.class);
+	private Logger log=LogManager.getLogger(ValidationServiceImpl.class);
 	
 	@Autowired
 	private CustomerDetailsRepository custRepo ;

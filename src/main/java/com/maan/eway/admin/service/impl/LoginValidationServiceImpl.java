@@ -279,21 +279,68 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 					} else if(product.getStatus().equalsIgnoreCase("Y") ) {
 						status = true ;
 					}
-					if(StringUtils.isBlank(product.getStartLimit())) {
-						errors.add(new Error("02", "Start Limit", "Plese Enter Start Limit in  Product Row No : " +  productRow ));
-					} else if (! product.getStartLimit().matches("[0-9]+") ) {
-						errors.add(new Error("02", "Start Limit", "Plese Enter Valid Number Start Limit in  Product Row No : " +  productRow ));
+					if(StringUtils.isBlank(product.getSumInsuredStart())) {
+						errors.add(new Error("02", "Sum Insured Start", "Plese Enter Sum Insured Start in  Product Row No : " +  productRow ));
+					} else if (! product.getSumInsuredStart().matches("[0-9.]+") ) {
+						errors.add(new Error("02", "Sum Insured Start", "Plese Enter Valid Number Sum Insured Start in  Product Row No : " +  productRow ));
 					}
-					if(StringUtils.isBlank(product.getEndLimit())) {
-						errors.add(new Error("02", "End Limit", "Plese Enter End Limit in  Product Row No : " +  productRow ));
-					} else if (! product.getEndLimit().matches("[0-9]+") ) {
-						errors.add(new Error("02", "End Limit", "Plese Enter Valid Number End Limit in  Product Row No : " +  productRow ));
-					} else if (StringUtils.isNotBlank(product.getStartLimit()) && StringUtils.isBlank(product.getEndLimit())  ) {
-						if (Long.valueOf(product.getStartLimit()) > Long.valueOf(product.getStartLimit()) ) {
-							errors.add(new Error("02", "End Limit", "Start Limit Greater Than End Limit in  Product Row No : " +  productRow ));
+					if(StringUtils.isBlank(product.getSumInsuredEnd())) {
+						errors.add(new Error("02", "Sum Insured End", "Plese Enter Sum Insured End in  Product Row No : " +  productRow ));
+					} else if (! product.getSumInsuredEnd().matches("[0-9.]+") ) {
+						errors.add(new Error("02", "Sum Insured End", "Plese Enter Valid Number Sum Insured End in  Product Row No : " +  productRow ));
+					} else if (StringUtils.isNotBlank(product.getSumInsuredStart()) && StringUtils.isBlank(product.getSumInsuredEnd())  ) {
+						if (Long.valueOf(product.getSumInsuredStart()) > Long.valueOf(product.getSumInsuredEnd()) ) {
+							errors.add(new Error("02", "Sum Insured End", "Sum Insured Start Greater Than Sum Insured End in  Product Row No : " +  productRow ));
 						}
 					}
 					
+					if (StringUtils.isBlank(product.getPaymentYn())) {
+						errors.add(new Error("05", "Payment", "Please Select Payment"));
+					} else if (product.getPaymentYn().length() > 1) {
+						errors.add(new Error("05", "Payment", "Enter Payment 1 Character Only"));
+					}else if(!("Y".equals(product.getPaymentYn())||"N".equals(product.getPaymentYn()))) {
+						errors.add(new Error("05", "Payment", "Enter Payment Y or N Only"));
+					}
+					
+					if (StringUtils.isBlank(product.getCommissionVatYn())) {
+						errors.add(new Error("05", "CommissionVat", "Please Select CommissionVat"));
+					} else if (product.getCommissionVatYn().length() > 1) {
+						errors.add(new Error("05", "CommissionVat", "Enter CommissionVat 1 Character Only"));
+					}else if(!("Y".equals(product.getCommissionVatYn())||"N".equals(product.getCommissionVatYn()))) {
+						errors.add(new Error("05", "CommissionVat", "Enter CommissionVat Y or N Only"));
+					}
+					
+					if (StringUtils.isBlank(product.getCheckerYn())) {
+						errors.add(new Error("05", "Checker", "Please Select Checker"));
+					} else if (product.getCheckerYn().length() > 1) {
+						errors.add(new Error("05", "Checker", "Enter Checker 1 Character Only"));
+					}else if(!("Y".equals(product.getCheckerYn())||"N".equals(product.getCheckerYn()))) {
+						errors.add(new Error("05", "Checker", "Enter Checker Y or N Only"));
+					}
+					
+					if (StringUtils.isBlank(product.getMakerYn())) {
+						errors.add(new Error("05", "Maker", "Please Select Maker"));
+					} else if (product.getMakerYn().length() > 1) {
+						errors.add(new Error("05", "Maker", "Enter Maker 1 Character Only"));
+					}else if(!("Y".equals(product.getMakerYn())||"N".equals(product.getMakerYn()))) {
+						errors.add(new Error("05", "Maker", "Enter Maker Y or N Only"));
+					}
+					
+					if (StringUtils.isBlank(product.getCustConfirmYn())) {
+						errors.add(new Error("05", "CustomerConfirmation", "Please Select CustomerConfirmation"));
+					} else if (product.getCustConfirmYn().length() > 1) {
+						errors.add(new Error("05", "CustomerConfirmation", "Enter CustomerConfirmation 1 Character Only"));
+					}else if(!("Y".equals(product.getCustConfirmYn())||"N".equals(product.getCustConfirmYn()))) {
+						errors.add(new Error("05", "CustomerConfirmation", "Enter CustomerConfirmation Y or N Only"));
+					}
+					
+					if(StringUtils.isBlank(product.getCommissionPercent())) {
+						errors.add(new Error("02", "Commission Percent", "Plese Enter Commission Percent in  Product Row No : " +  productRow ));
+					} else if (! product.getCommissionPercent().matches("[0-9]+") ) {
+						errors.add(new Error("02", "Commission Percent", "Plese Enter Valid Number Commission Percent in  Product Row No : " +  productRow ));
+					} else if (product.getCommissionPercent().length()>2 ) {
+						errors.add(new Error("02", "Commission Percent", "Plese Enter Valid Number Commission Percent in  Product Row No : " +  productRow ));
+					}
 				}	
 				
 				if( status == false   ) {

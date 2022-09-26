@@ -150,14 +150,10 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 						repo.delete(list.get(0));
 						// Amend ID
 						if( list.get(0).getEffectiveDateStart().before(startDate)   ) {
-							Integer startDatewithoutTime = startDate.getDate();
-							Integer endDatewithoutTime = list.get(0).getEffectiveDateStart().getDate();
-							Integer startMonth = startDate.getMonth();
-							Integer endDateMonth = list.get(0).getEffectiveDateStart().getMonth();
-							Integer startDay = startDate.getDay();
-							Integer endDateDay = list.get(0).getEffectiveDateStart().getDay();
+							String startDatewithoutTime = sdformat.format(startDate) ;
+							String newDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart()) ;
 							
-							if(startDatewithoutTime == endDatewithoutTime && startMonth == endDateMonth  && startDay == endDateDay  ) {
+							if(startDatewithoutTime.equalsIgnoreCase(newDatewithoutTime) ) {
 								amendId = list.get(0).getAmendId() + 1 ;
 							}
 						}
@@ -214,12 +210,12 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			}else if (StringUtils.isBlank(req.getProductId())) {
 				List<ProductMaster> ProductList = getProductNameExistDetails(req.getProductName());
 				if (ProductList.size()>0 ) {
-					errorList.add(new Error("01", "Product", "This Product Alrady Exist "));
+					errorList.add(new Error("01", "Product", "This Product Name Alrady Exist "));
 				}
 			}else  {
 				List<ProductMaster> ProductList =  getProductNameExistDetails(req.getProductName() );
 				if (ProductList.size()>0 &&  (! req.getProductId().equalsIgnoreCase(ProductList.get(0).getProductId().toString())) ) {
-					errorList.add(new Error("01", "Product", "This Product Alrady Exist "));
+					errorList.add(new Error("01", "Product", "This Product Name Alrady Exist "));
 				}
 				
 			}

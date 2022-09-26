@@ -111,10 +111,10 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 				Date today = new Date();
 				cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
 				today = cal.getTime();
-				if (req.getEffectiveDate() == null || StringUtils.isBlank(req.getEffectiveDate().toString())) {
+				if (req.getEffectiveDatestart() == null || StringUtils.isBlank(req.getEffectiveDatestart().toString())) {
 					errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start in  Row No : " + row));
 		
-				} else if (req.getEffectiveDate().before(today)) {
+				} else if (req.getEffectiveDatestart().before(today)) {
 					errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date in  Row No : " + row));
 				}
 				//Status Validation
@@ -128,9 +128,19 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 				if (StringUtils.isBlank(req.getCompanyId().toString()) || req.getCompanyId() == null) {
 					errorList.add(new Error("06", "CompanyId", "Please Enter Company Id in  Row No : " + row));
 				}
+				if (StringUtils.isBlank(req.getCoreAppCode())) {
+					errorList.add(new Error("07", "CoreAppCode", "Please Enter CoreAppCode in  Row No : " + row));
+				} else if (req.getStatus().length() > 20) {
+					errorList.add(new Error("07", "CoreAppCode", "Enter CoreAppCode 20 Character Only in  Row No : " + row));
+				}
+				if (StringUtils.isBlank(req.getTiraCode())) {
+					errorList.add(new Error("08", "TiraCode", "Please Enter TiraCode in  Row No : " + row));
+				} else if (req.getTiraCode().length() > 20) {
+					errorList.add(new Error("08", "Tira Code", "Enter Tira Code 20 Character Only in  Row No : " + row));
+				}
+				
+			
 			}
-			
-			
 			
 			
 		} catch (Exception e) {
@@ -155,13 +165,13 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 			
 			for (ProductReferalMasterSaveReq req : reqList ) {
 				Calendar cal = new GregorianCalendar();
-				cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
+				cal.setTime(req.getEffectiveDatestart());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
 				Date startDate = cal.getTime() ;
 				Date today = new Date();
-				cal.setTime(req.getEffectiveDate());  cal.add(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
+				cal.setTime(req.getEffectiveDatestart());  cal.add(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
 				cal.set(Calendar.SECOND, today.getSeconds());
 				Date oldEndDate = cal.getTime() ;
-				cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
+				cal.setTime(req.getEffectiveDatestart());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
 				cal.set(Calendar.SECOND, today.getSeconds());
 				Date effDate = cal.getTime();
 				Date endDate = sdformat.parse("12/12/2050");

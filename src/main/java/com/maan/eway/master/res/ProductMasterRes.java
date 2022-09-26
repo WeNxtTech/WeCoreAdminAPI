@@ -48,7 +48,7 @@ public class ProductMasterRes implements Serializable {
 	private String coreAppCode;
 
 	@JsonProperty("AmendId")
-	private Integer amendId;
+	private String amendId;
 
 	@JsonProperty("Remarks")
 	private String remarks;

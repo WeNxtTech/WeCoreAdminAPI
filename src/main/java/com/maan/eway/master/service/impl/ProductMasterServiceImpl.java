@@ -83,6 +83,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 		 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		
 		try {
+			Integer amendId = 0 ;
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
 			Date startDate = cal.getTime() ;
@@ -147,6 +148,19 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 					
 					if( list.size() > 0) {
 						repo.delete(list.get(0));
+						// Amend ID
+						if( list.get(0).getEffectiveDateStart().before(startDate)   ) {
+							Integer startDatewithoutTime = startDate.getDate();
+							Integer endDatewithoutTime = list.get(0).getEffectiveDateStart().getDate();
+							Integer startMonth = startDate.getMonth();
+							Integer endDateMonth = list.get(0).getEffectiveDateStart().getMonth();
+							Integer startDay = startDate.getDay();
+							Integer endDateDay = list.get(0).getEffectiveDateStart().getDay();
+							
+							if(startDatewithoutTime == endDatewithoutTime && startMonth == endDateMonth  && startDay == endDateDay  ) {
+								amendId = list.get(0).getAmendId() + 1 ;
+							}
+						}
 					} 
 					res.setResponse("Updated Successfully ");
 					res.setSuccessId(productId);
@@ -159,6 +173,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 				saveData.setEffectiveDateEnd(endDate);
 				saveData.setStatus(req.getStatus());
 				saveData.setEntryDate(new Date());
+				saveData.setAmendId(amendId);
 				
 				ListItemValue icon = listRepo.findByItemTypeAndItemCodeAndStatus("PRODUCT_ICONS" , req.getProductIconId() ,"Y");
 				saveData.setProductIconId(Integer.valueOf(icon.getItemCode()));
@@ -170,6 +185,8 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 					ProductMaster lastRecord = list.get(0) ;
 					lastRecord.setEffectiveDateEnd(oldEndDate);
 					repo.saveAndFlush(lastRecord);
+					
+					
 				}
 				
 				log.info("Saved Details is ---> " + json.toJson(saveData));
@@ -191,16 +208,21 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 		try {
 		
 			if (StringUtils.isBlank(req.getProductName())) {
-				errorList.add(new Error("02", "ProductName", "Please Select Product  Name "));
+				errorList.add(new Error("01", "ProductName", "Please Select Product  Name "));
 			}else if (req.getProductName().length() > 100){
-				errorList.add(new Error("02","ProductName", "Please Enter Product  Name within 100 Characters")); 
-			}else if (StringUtils.isBlank(req.getProductId().toString())) {
-				Long ProductCount = repo.countByProductNameOrderByEntryDateDesc(req.getProductName());
-				if (ProductCount > 0 ) {
+				errorList.add(new Error("01","ProductName", "Please Enter Product  Name within 100 Characters")); 
+			}else if (StringUtils.isBlank(req.getProductId())) {
+				List<ProductMaster> ProductList = getProductNameExistDetails(req.getProductName());
+				if (ProductList.size()>0 ) {
 					errorList.add(new Error("01", "Product", "This Product Alrady Exist "));
 				}
+			}else  {
+				List<ProductMaster> ProductList =  getProductNameExistDetails(req.getProductName() );
+				if (ProductList.size()>0 &&  (! req.getProductId().equalsIgnoreCase(ProductList.get(0).getProductId().toString())) ) {
+					errorList.add(new Error("01", "Product", "This Product Alrady Exist "));
+				}
+				
 			}
-	
 	
 			if (StringUtils.isBlank(req.getProductIconId()) ) {
 				errorList.add(new Error("02", "ProductIconId", "Please Select Product Icon"));
@@ -213,8 +235,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 				}
 			}
 			
-			if (StringUtils.isBlank(req.getRemarks()) || req.getRemarks() == null) {
-	
+			if (StringUtils.isBlank(req.getRemarks()) ) {
 				errorList.add(new Error("03", "Remark", "Please Select Remark "));
 			}else if (req.getRemarks().length() > 100){
 				errorList.add(new Error("03","Remark", "Please Enter Remark within 100 Characters")); 
@@ -225,11 +246,11 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			Date today = new Date();
 			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
 			today = cal.getTime();
-			if (req.getEffectiveDate() == null || StringUtils.isBlank(req.getEffectiveDate().toString())) {
-				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start"));
+			if (req.getEffectiveDate() == null ) {
+				errorList.add(new Error("04", "EffectiveDate", "Please Enter Effective Date "));
 	
 			} else if (req.getEffectiveDate().before(today)) {
-				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+				errorList.add(new Error("04", "EffectiveDate", "Please Enter Effective Date as Future Date"));
 			}
 			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
@@ -241,17 +262,17 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			}
 			
 			if (StringUtils.isBlank(req.getPaymentYn())) {
-				errorList.add(new Error("05", "Payment", "Please Select Payment"));
+				errorList.add(new Error("06", "Payment", "Please Select Payment Type"));
 			} else if (req.getPaymentYn().length() > 1) {
-				errorList.add(new Error("05", "Payment", "Enter Payment 1 Character Only"));
+				errorList.add(new Error("06", "Payment", "Enter Payment Type 1 Character Only"));
 			}else if(!("Y".equals(req.getPaymentYn())||"N".equals(req.getPaymentYn()))) {
-				errorList.add(new Error("05", "Payment", "Enter Payment Y or N Only"));
+				errorList.add(new Error("06", "Payment", "Enter Payment Type Y or N Only"));
 			}
 			
 			if (StringUtils.isBlank(req.getCommissionVatYn())) {
-				errorList.add(new Error("05", "CommissionVat", "Please Select CommissionVat"));
+				errorList.add(new Error("05", "CommissionVat", "Please Select CommissionVat Type"));
 			} else if (req.getCommissionVatYn().length() > 1) {
-				errorList.add(new Error("05", "CommissionVat", "Enter CommissionVat 1 Character Only"));
+				errorList.add(new Error("05", "CommissionVat", "Enter CommissionVat Type 1 Character Only"));
 			}else if(!("Y".equals(req.getCommissionVatYn())||"N".equals(req.getCommissionVatYn()))) {
 				errorList.add(new Error("05", "CommissionVat", "Enter CommissionVat Y or N Only"));
 			}
@@ -295,25 +316,50 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 				}
 			}
 			
-		
-			if (req.getProductCategory().length() > 25) {
+			if (StringUtils.isBlank(req.getProductCategory())) {
+				errorList.add(new Error("08", "ProductCategory", "Please Select Product  Category "));
+			}else if (req.getProductCategory().length() > 25) {
 				errorList.add(new Error("08", "ProductCategory", "Please Enter Product Category within 25 Characters"));
 			}
 			
-			if (req.getPaymentRedirUrl().length() > 500) {
-				errorList.add(new Error("10", "PaymentRedirUrl", "Please Enter getPaymentRedirUrl within 500 Characters"));
+			if (StringUtils.isBlank(req.getPaymentRedirUrl())) {
+				errorList.add(new Error("08", "PaymentRedirUrl", "Please Select PaymentRedirUrl  Category "));
+			}else if (req.getPaymentRedirUrl().length() > 500) {
+				errorList.add(new Error("10", "PaymentRedirUrl", "Please Enter PaymentRedirUrl within 500 Characters"));
 			}
-			if (req.getAppLoginUrl().length() > 100) {
+			
+			if (StringUtils.isBlank(req.getAppLoginUrl())) {
+				errorList.add(new Error("08", "AppLoginUrl", "Please Select AppLoginUrl "));
+			}else if (req.getAppLoginUrl().length() > 100) {
 				errorList.add(new Error("11", "AppLoginUrl", "Please Enter AppLoginUrl within 100 Characters"));
 			}
 			
+			if (StringUtils.isBlank(req.getCreatedBy())) {
+				errorList.add(new Error("08", "CreatedBy", "Please Enter CreatedBy"));
+			}else if (req.getCreatedBy().length() > 50) {
+				errorList.add(new Error("11", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+			}
+			
+			if (StringUtils.isBlank(req.getCoreAppCode())) {
+				errorList.add(new Error("08", "CoreAppCode", "Please Enter CoreAppCode"));
+			}else if (req.getCoreAppCode().length() > 20) {
+				errorList.add(new Error("11", "CoreAppCode", "Please Enter CoreAppCode within 20 Characters"));
+			}
+			
+			if (StringUtils.isBlank(req.getTiraCode())) {
+				errorList.add(new Error("08", "TiraCode", "Please Enter TiraCode"));
+			}else if (req.getTiraCode().length() > 20) {
+				errorList.add(new Error("11", "TiraCode", "Please Enter TiraCode within 20 Characters"));
+			}
 			
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
+			errorList.add(new Error("12", "Common Error", e.getMessage()));
 		}
 		return errorList;
 	}
+	
 	public Long getProductMasterTableCount() {
 	
 		Long data = 0L;
@@ -335,8 +381,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			Root<ProductMaster> ocpm1 = effectiveDate.from(ProductMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			effectiveDate.where(a1,a2);
+			effectiveDate.where(a1);
 	
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			query.where(n1);
@@ -353,6 +398,43 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 		}
 		return data;
 	}
+	
+	
+	public List<ProductMaster> getProductNameExistDetails(String productName) {
+		List<ProductMaster> list = new ArrayList<ProductMaster>();
+		try {
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ProductMaster> query = cb.createQuery(ProductMaster.class);
+	
+			// Find All
+			Root<ProductMaster> b = query.from(ProductMaster.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<ProductMaster> ocpm1 = effectiveDate.from(ProductMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			effectiveDate.where(a1);
+	
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("productName"), productName );	
+			query.where(n1,n2);
+			// Get Result
+			TypedQuery<ProductMaster> result = em.createQuery(query);
+			list = result.getResultList();		
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+	
+		}
+		return list;
+	}
+	
 	///*********************************************************************GET ALL******************************************************\\
 	@Override
 	public List<ProductMasterRes> getallProductDetails(ProductMasterGetAllReq req) {
@@ -379,8 +461,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			Root<ProductMaster> ocpm1 = effectiveDate.from(ProductMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			effectiveDate.where(a1,a2);
+			effectiveDate.where(a1);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -388,9 +469,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			Predicate n2 = cb.equal(b.get("companyId"),req.getCompanyId()) ;
-	
-			query.where(n1,n2).orderBy(orderList);
+			query.where(n1).orderBy(orderList);
 	
 			// Get Result
 			TypedQuery<ProductMaster> result = em.createQuery(query);
@@ -441,10 +520,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			Root<ProductMaster> ocpm1 = effectiveDate.from(ProductMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("productId"),ocpm1.get("productId") );
-			javax.persistence.criteria.Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
-			effectiveDate.where(a1,a2);
-			
-			
+			effectiveDate.where(a1);
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -454,9 +530,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 		
 			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate);		
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("productId"),req.getProductId()) ;
-			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"),req.getInsuranceId());
-	
-			query.where(n1 ,n2,n3).orderBy(orderList);
+			query.where(n1 ,n2).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<ProductMaster> result = em.createQuery(query);			
@@ -465,7 +539,6 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			res.setProductId(list.get(0).getProductId().toString());
 			res.setEntryDate(list.get(0).getEntryDate());
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
-			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -476,7 +549,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 	
 	//**********************************************************DROPDOWN********************************************************************\\
 	@Override
-	public List<DropDownRes> getProductMasterDropdown(ProductDropDownReq req) {
+	public List<DropDownRes> getProductMasterDropdown() {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 			Date today  = new Date();
@@ -508,15 +581,13 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("productId"),ocpm1.get("productId") );
 			javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
-			effectiveDate.where(a1,a2,a3);
+			effectiveDate.where(a1,a2);
 			
 		    // Where	
 			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
-			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"),req.getInsuranceId());
 			
-			query.where(n1,n2,n3).orderBy(orderList);
+			query.where(n1,n2).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<ProductMaster> result = em.createQuery(query);			
@@ -564,8 +635,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			Root<ProductMaster> ocpm1 = effectiveDate.from(ProductMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			effectiveDate.where(a1,a2);
+			effectiveDate.where(a1);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -573,10 +643,9 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 	
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
 			Predicate n3 = cb.equal(b.get("status"), "Y");
 	
-			query.where(n1,n2,n3).orderBy(orderList);
+			query.where(n1,n3).orderBy(orderList);
 	
 			// Get Result
 			TypedQuery<ProductMaster> result = em.createQuery(query);
@@ -633,16 +702,13 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 				Root<ProductMaster> ocpm1 = effectiveDate.from(ProductMaster.class);
 				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 				javax.persistence.criteria.Predicate a1 = cb.equal(c.get("productId"),ocpm1.get("productId") );
-				javax.persistence.criteria.Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
 				javax.persistence.criteria.Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);		
-				effectiveDate.where(a1,a2,a3);
+				effectiveDate.where(a1,a3);
 				
 				
 				javax.persistence.criteria.Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate);		
 				javax.persistence.criteria.Predicate n2 = cb.equal(c.get("productId"),req.getProductId()) ;
-				javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"),req.getInsuranceId());
-	
-				query.where(n1 ,n2,n3);
+				query.where(n1 ,n2);
 				
 				// Get Result
 				TypedQuery<ProductMaster> result = em.createQuery(query);			
@@ -651,7 +717,6 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 				res.setProductId(list.get(0).getProductId().toString());
 				res.setEntryDate(list.get(0).getEntryDate());
 				res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
-				res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
 			} catch (Exception e) {
 				e.printStackTrace();
 				log.info("Exception is ---> " + e.getMessage());

@@ -13,9 +13,6 @@ public class ProductMasterGetAllReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
     
-    @JsonProperty("InsuranceId")
-    private String companyId;
-
     @JsonProperty("Limit")
     private String limit;
     

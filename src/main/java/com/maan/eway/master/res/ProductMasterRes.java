@@ -18,26 +18,12 @@ public class ProductMasterRes implements Serializable {
 	@JsonProperty("ProductId")
 	private String productId;
 
-	@JsonProperty("InsuranceId")
-	private String companyId;
-
 	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDateStart")
+	@JsonProperty("EffectiveDate")
 	private Date effectiveDateStart;
-
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDateEnd")
-	private Date effectiveDateEnd;
 
 	@JsonProperty("ProductName")
 	private String productName;
-
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("InceptionDate")
-	private Date inceptionDate;
-
-	@JsonProperty("DisplayOrder")
-	private String displayOrder;
 
 	@JsonProperty("PaymentYn")
 	private String paymentYn;
@@ -51,16 +37,9 @@ public class ProductMasterRes implements Serializable {
 	@JsonProperty("Status")
 	private String status;
 
-	@JsonProperty("Rsacode")
-	private String rsacode;
-
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EntryDate")
 	private Date entryDate;
-
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("ExpiryDate")
-	private Date expiryDate;
 
 	@JsonProperty("ProductCategory")
 	private String productCategory;
@@ -97,4 +76,10 @@ public class ProductMasterRes implements Serializable {
 	
 	@JsonProperty("CustConfirmYn")
 	private String custConfirmYn;
+	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+	
+	@JsonProperty("TiraCode")
+	private String tiraCode;
 }

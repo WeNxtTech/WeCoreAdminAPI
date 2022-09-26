@@ -40,6 +40,9 @@ public class ProductMasterSaveReq implements Serializable {
 
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
+	
+	@JsonProperty("TiraCode")
+	private String tiraCode;
 
 	@JsonProperty("Remarks")
 	private String remarks;
@@ -64,5 +67,8 @@ public class ProductMasterSaveReq implements Serializable {
 	
 	@JsonProperty("CustConfirmYn")
 	private String custConfirmYn;
+	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
 	
 }

@@ -31,7 +31,7 @@ public interface ProductMasterService  {
 
 	ProductMasterRes getByProductCode(ProductMasterGetReq req);
 
-	List<DropDownRes> getProductMasterDropdown(ProductDropDownReq req);
+	List<DropDownRes> getProductMasterDropdown();
 
 	ProductMasterRes getTodayProductCode(ProductMasterGetReq req);
 

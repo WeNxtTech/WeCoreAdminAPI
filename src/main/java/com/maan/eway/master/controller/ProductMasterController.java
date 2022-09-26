@@ -172,15 +172,15 @@ public class ProductMasterController {
 	}
 		
 		// Product Master Drop Down Type
-		@PostMapping("/dropdown/product")
+/*		@PostMapping("/dropdown/product")
 		@ApiOperation(value = "This method is get Product Master Drop Down")
 
-		public ResponseEntity<CommonRes> getProductMasterDropdown(@RequestBody ProductDropDownReq req  ) {
+		public ResponseEntity<CommonRes> getProductMasterDropdown() {
 
 			CommonRes data = new CommonRes();
 
 			// Save
-			List<DropDownRes> res = productService.getProductMasterDropdown(req );
+			List<DropDownRes> res = productService.getProductMasterDropdown();
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());
@@ -192,7 +192,7 @@ public class ProductMasterController {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
 
-		}
+		} */
 		
 
 		

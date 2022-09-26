@@ -16,14 +16,6 @@ public class CoverMasterGetAllReq implements Serializable {
     
     @JsonProperty("Offset")
     private String offset;
-    
-    @JsonProperty("InsuranceId")
-    private String insuranceId;
-    
-    @JsonProperty("ProductId")
-    private String productId;
-
-    @JsonProperty("SectionId")
-    private String sectionId;
+  
 
 }

@@ -18,16 +18,6 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-
-
-/**
- * Domain class for entity "CoverMaster"
- *
- * @author Telosys Tools Generator
- *
- */
- 
- 
 @Getter
 @Setter
 @NoArgsConstructor
@@ -46,12 +36,9 @@ public class CoverMasterSaveReq implements Serializable {
 	@JsonProperty("SectionId")
 	private String sectionId;
 	
-	@JsonProperty("InsuranceId")
-	private String companyId;
-	
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDate")
-	private Date effectiveDate;
+	private Date effectiveDateStart;
 
 	@JsonProperty("CoverName")
 	private String coverName;
@@ -65,11 +52,12 @@ public class CoverMasterSaveReq implements Serializable {
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
 
-	@JsonProperty("AmendId")
-	private String amendId;
-
 	@JsonProperty("Remarks")
 	private String remarks; 
+	
+	@JsonProperty("CreatedBy")
+	private String createdBy; 
+	
 	
 	//Rating Cover 
 

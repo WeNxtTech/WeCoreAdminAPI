@@ -10,6 +10,7 @@ import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CoverMasterGetAllReq;
 import com.maan.eway.master.req.CoverMasterGetReq;
 import com.maan.eway.master.req.CoverMasterSaveReq;
+import com.maan.eway.master.req.CoverMasterSaveReqA;
 import com.maan.eway.master.res.CoverMasterRes;
 import com.maan.eway.master.service.CoverMasterService;
 import com.maan.eway.res.CommonRes;
@@ -49,7 +50,7 @@ public class CoverMasterController {
 	// save
 		@PostMapping("/insertcover")
 		@ApiOperation(value = "This method is Insert Cover Details")
-		public ResponseEntity<CommonRes> insertCover(@RequestBody CoverMasterSaveReq req) {
+		public ResponseEntity<CommonRes> insertCover(@RequestBody CoverMasterSaveReqA req) {
 
 			reqPrinter.reqPrint(req);
 			CommonRes data = new CommonRes();

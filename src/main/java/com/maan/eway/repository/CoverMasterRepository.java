@@ -31,7 +31,8 @@ import com.maan.eway.bean.CoverMasterId;
  
 public interface CoverMasterRepository  extends JpaRepository<CoverMaster,CoverMasterId > , JpaSpecificationExecutor<CoverMaster> {
 
-	Long countByCoverNameAndCompanyIdOrderByEntryDateDesc(String coverName, String companyId);
+
+	Long countByCoverNameOrderByEntryDateDesc(String coverName);
 
 
 

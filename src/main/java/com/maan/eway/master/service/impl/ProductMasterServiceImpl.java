@@ -771,7 +771,6 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 					
 				} else if( req.getStatus().equalsIgnoreCase("Y") ) {
 					javax.persistence.criteria.Predicate n2 = cb.greaterThanOrEqualTo(c.get("effectiveDateStart"), today);
-					update.set("effectiveDateEnd", dbf.parse("2050-12-12") );
 					update.where(n1,n2);
 				}  
 				// perform update

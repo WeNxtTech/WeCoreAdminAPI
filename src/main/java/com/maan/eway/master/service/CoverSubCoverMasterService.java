@@ -8,11 +8,14 @@ package com.maan.eway.master.service;
 import java.util.List;
 
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.CoverSubCoverMasterGetAllReq;
+import com.maan.eway.master.req.CoverSubCoverMasterGetReq;
 import com.maan.eway.master.req.CoverSubCoverMasterSaveReq;
 import com.maan.eway.master.req.SubCoverGetAllReq;
 import com.maan.eway.master.req.SubCoverMasterGetAllReq;
 import com.maan.eway.master.req.SubCoverMasterGetReq;
 import com.maan.eway.master.res.CoverMasterRes;
+import com.maan.eway.master.res.CoverSubCoverGetRes;
 import com.maan.eway.master.res.SubCoverMasterGetAllRes;
 import com.maan.eway.master.res.SubCoverMasterGetRes;
 import com.maan.eway.master.res.SubCoverMasterRes;
@@ -26,13 +29,13 @@ public interface CoverSubCoverMasterService  {
 
 	SuccessRes insertSubCover(List<CoverSubCoverMasterSaveReq> req);
 
-	SubCoverMasterGetRes getByCoverSubCoverId(SubCoverMasterGetReq req);
+	CoverSubCoverGetRes getByCoverSubCoverId(CoverSubCoverMasterGetReq req);
 
-	List<SubCoverMasterRes> getallCoverSubCoverDetails(SubCoverMasterGetAllReq req);
+	List<CoverSubCoverGetRes> getallCoverSubCoverDetails(CoverSubCoverMasterGetAllReq req);
 
-	List<SubCoverMasterGetAllRes> getallNonSelectedSubCover(SubCoverGetAllReq req);
+	List<SubCoverMasterGetRes> getallNonSelectedSubCover(CoverSubCoverMasterGetAllReq req);
 
-	List<SubCoverMasterRes> getActiveCoverSubCoverDetails(SubCoverMasterGetAllReq req);
+	List<CoverSubCoverGetRes> getActiveCoverSubCoverDetails(CoverSubCoverMasterGetAllReq req);
 
 
 }

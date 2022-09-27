@@ -89,6 +89,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="SUB_COVER_DESC",length=100)
     private String subCoverDesc;
+    
+    @Column(name="COVER_NAME",length=100)
+    private String coverName;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ENTRY_DATE")

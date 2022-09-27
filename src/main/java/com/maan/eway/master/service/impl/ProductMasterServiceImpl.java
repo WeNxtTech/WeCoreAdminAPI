@@ -764,14 +764,9 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 				
 				 // Where	
 				javax.persistence.criteria.Predicate n1 = cb.equal(c.get("productId"), req.getProductId());
-				if( req.getStatus().equalsIgnoreCase("N") ) {
-					javax.persistence.criteria.Predicate n2 = cb.greaterThanOrEqualTo(c.get("effectiveDateStart"), today);
-					update.where(n1,n2);
-					
-				} else if( req.getStatus().equalsIgnoreCase("Y") ) {
-					javax.persistence.criteria.Predicate n2 = cb.greaterThanOrEqualTo(c.get("effectiveDateStart"), today);
-					update.where(n1,n2);
-				}  
+				javax.persistence.criteria.Predicate n2 = cb.greaterThanOrEqualTo(c.get("effectiveDateStart"), today);
+				update.where(n1,n2);
+				
 				// perform update
 				em.createQuery(update).executeUpdate();
 				res.setResponse("Status Changed");

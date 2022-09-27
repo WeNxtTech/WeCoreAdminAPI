@@ -6,6 +6,7 @@
 package com.maan.eway.master.service;
 import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.CoverChangeStatusReq;
 import com.maan.eway.master.req.CoverMasterGetAllReq;
 import com.maan.eway.master.req.CoverMasterGetReq;
 import com.maan.eway.master.req.CoverMasterSaveReq;
@@ -28,6 +29,8 @@ public interface CoverMasterService  {
 	List<CoverMasterRes> getActiveCoverDetails(CoverMasterGetAllReq req);
 
 	CoverMasterRes getByCoverId(CoverMasterGetReq req);
+
+	SuccessRes changeStatusOfProduct(CoverChangeStatusReq req);
 
 
 }

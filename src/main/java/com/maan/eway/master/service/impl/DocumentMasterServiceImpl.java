@@ -17,6 +17,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
@@ -46,6 +47,7 @@ import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.bean.SubCoverMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.DocumentChangeStatusReq;
 import com.maan.eway.master.req.DocumentMasterGetAllReq;
 import com.maan.eway.master.req.DocumentMasterGetReq;
 import com.maan.eway.master.req.DocumentMasterSaveReq;
@@ -115,8 +117,8 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 			cal.set(Calendar.MINUTE, today.getMinutes());
 			cal.set(Calendar.SECOND, today.getSeconds());
 			Date effDate = cal.getTime();
-			Date endDate = sdf.parse("12/12/2050");
-
+			Date endDate = req.getEffectiveDateEnd();
+			
 			String documentId = "";
 			Date entryDate = null;
 			List<DocumentMaster> find = new ArrayList<DocumentMaster>();
@@ -468,20 +470,22 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 			if (req.getRemarks().length() > 100) {
 				errorList.add(new Error("05", "Remarks", "Please Enter Remarks within 100 Characters"));
 			}
-			// Date Validation
+			// Date Validation 
 			Calendar cal = new GregorianCalendar();
 			Date today = new Date();
-			cal.setTime(today);
-			cal.add(Calendar.DAY_OF_MONTH, -1);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 50);
+			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
 			today = cal.getTime();
-			if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
-				errorList.add(new Error("06", "Effective Date", "Please Enter Effective Date"));
-
+			if (req.getEffectiveDateStart() == null ) {
+				errorList.add(new Error("10", "EffectiveDateStart", "Please Enter Effective Date Start "));
+	
 			} else if (req.getEffectiveDateStart().before(today)) {
-				errorList.add(new Error("06", "Effective Date", "Please Enter Effective Date as Future Date"));
-			}
+				errorList.add(new Error("10", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			} else if (req.getEffectiveDateEnd() == null ) {
+				errorList.add(new Error("11", "EffectiveDateEnd", "Please Enter Effective Date End "));
+	
+			} else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart()) || req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
+				errorList.add(new Error("11", "EffectiveDateStart", "Please Enter Effective Date End  is After Effective Date Start"));
+			} 
 			if (StringUtils.isBlank(req.getCoreAppCode())) {
 				errorList.add(new Error("07", "Core App Code", "Please Enter Core App Code"));
 			} else if (req.getCoreAppCode().length() > 20) {
@@ -561,5 +565,91 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 		return resList;
 
 	}
+
+	@Override
+	public SuccessRes changeStatusOfDocument(DocumentChangeStatusReq req) {
+		SuccessRes res = new SuccessRes();
+		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			
+			DocumentMaster updateRecord  = new DocumentMaster();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			
+			List<DocumentMaster> list = new ArrayList<DocumentMaster>();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<DocumentMaster> query = cb.createQuery(DocumentMaster.class);
+	
+			// Find All
+			Root<DocumentMaster> b = query.from(DocumentMaster.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<DocumentMaster> ocpm1 = effectiveDate.from(DocumentMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("documentId"), b.get("documentId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2);
+	
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("effectiveDateStart")));
+	
+			// Where
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("coverId"), req.getCoverId() );
+	
+			query.where(n1,n2).orderBy(orderList);
+	
+			// Get Result
+			TypedQuery<DocumentMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			updateRecord = list.get(0) ;
+				
+			if (req.getStatus().equalsIgnoreCase("N") )	{
+					// Delete Old Records
+					cal.setTime(today);
+					cal.set(Calendar.HOUR_OF_DAY, 23);
+					cal.set(Calendar.MINUTE, 30);
+					today   = cal.getTime();
+					
+					// create update
+					CriteriaDelete<DocumentMaster> delete = cb.createCriteriaDelete(DocumentMaster.class);
+					Root<DocumentMaster> pm = delete.from(DocumentMaster.class);
+					
+					 // Where	
+					javax.persistence.criteria.Predicate n3 = cb.equal(pm.get("coverId"), req.getCoverId());
+					javax.persistence.criteria.Predicate n4 = cb.greaterThanOrEqualTo(pm.get("effectiveDateStart"), today);
+					delete.where(n3,n4);	
+					em.createQuery(delete).executeUpdate();
+					// Insert Updated Record
+					updateRecord.setStatus(req.getStatus());
+					repo.save(updateRecord);
+				
+			} else if (req.getStatus().equalsIgnoreCase("Y") ) {
+				// Insert Updated Record
+				updateRecord.setStatus(req.getStatus());
+				repo.save(updateRecord);
+			}
+			// perform update
+			
+			res.setResponse("Status Changed");
+			res.setSuccessId(req.getCoverId());
+		} catch(Exception e ) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+
+
 
 }

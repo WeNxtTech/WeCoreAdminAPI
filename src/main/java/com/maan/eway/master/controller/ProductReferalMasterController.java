@@ -7,6 +7,7 @@ package com.maan.eway.master.controller;
 
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.CompanyChangeStatusReq;
 import com.maan.eway.master.req.CoverMasterGetReq;
 import com.maan.eway.master.req.ProductReferalChangeStatusReq;
 import com.maan.eway.master.req.ProductReferalGetAllReq;
@@ -233,5 +234,7 @@ public class ProductReferalMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
+	
+	
 	
 }

@@ -15,8 +15,11 @@ public class ProductReferalMasterSaveReq {
 	private String referalId;
 
 	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDate")
+	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDatestart;
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateEnd")
+	private Date effectiveDateEnd;
 
 	@JsonProperty("InsuranceId")
 	private String companyId;

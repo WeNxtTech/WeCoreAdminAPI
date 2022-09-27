@@ -20,46 +20,55 @@ import lombok.NoArgsConstructor;
 public class SectionCoverCriteriaRes {
 
 	  //--- ENTITY PRIMARY KEY 
-		@JsonProperty("COVER_ID")
-		private Integer    coverId ;
+		@JsonProperty("CoverId")
+		private Integer coverId ;
 
-	    @JsonProperty("SECTION_ID")
-	    private Integer    sectionId ;
+	    @JsonProperty("SectionId")
+	    private Integer sectionId ;
 	 
-	    @JsonProperty("PRODUCT_ID")
-	    private Integer    productId ;
+	    @JsonProperty("ProductId")
+	    private Integer   productId ;
 
-	    @JsonProperty("COMPANY_ID")
+	    @JsonProperty("InsuranceId")
 	    private String     companyId ;
 
-	    @JsonFormat(pattern = "dd/MM/yyyy")
-	    @JsonProperty("EFFECTIVE_DATE_START")
+	    @JsonProperty("EffectiveDateStart")
 	    private Date       effectiveDateStart ;
 
-	    @JsonFormat(pattern = "dd/MM/yyyy")
-	    @JsonProperty("EFFECTIVE_DATE_END")
+	    @JsonProperty("EffectiveDateEnd")
 	    private Date       effectiveDateEnd ;
 
-	    //--- ENTITY DATA FIELDS 
-	    @JsonProperty("COVER_NAME")
+	    @JsonProperty("CoverName")
 	    private String     coverName ;
 
-	    @JsonFormat(pattern = "dd/MM/yyyy")
-	    @JsonProperty("ENTRY_DATE")
+	    @JsonProperty("EntryDate")
 	    private Date       entryDate ;
 
-	    @JsonProperty("STATUS")
+	    
+	    @JsonProperty("Status")
 	    private String     status ;
-
-	    @JsonProperty("CORE_APP_CODE")
+	    
+	    @JsonProperty("CoreAppCode")
 	    private String     coreAppCode ;
 
-	    @JsonProperty("AMEND_ID")
-	    private Integer     amendId ;
+	    @JsonProperty("AmendId")
+	    private Integer amendId ;
 
-	    @JsonProperty("REMARKS")
+	    @JsonProperty("Remarks")
 	    private String     remarks ;
 	    
-	    @JsonProperty("SECTION_NAME")
-	    private String     sectionName ; 
+	    
+	  
+	    @JsonProperty("CoverDesc")
+	    private String     coverDesc ;
+
+	  @JsonProperty("ToolTip")
+	    private String   toolTip;
+	    
+	    @JsonProperty("TiraCode")
+	    private String   tiraCode;
+
+	    @JsonProperty("CreatedBy")
+	    private String  createdBy;
+
 }

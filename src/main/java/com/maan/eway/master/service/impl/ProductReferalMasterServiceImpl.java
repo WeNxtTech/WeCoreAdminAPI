@@ -15,6 +15,7 @@ import com.maan.eway.repository.SectionMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.google.gson.Gson;
+import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ProductReferalMaster;
 import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.ReferalMaster;
@@ -51,6 +52,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
@@ -109,17 +111,22 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 				if (StringUtils.isBlank(req.getProductId()) ) {
 					errorList.add(new Error("03", "ProductId", "Please Enter Product Id in  Row No : " + row));
 				}
-				// Date Validation 
+				// Date Validation
 				Calendar cal = new GregorianCalendar();
 				Date today = new Date();
 				cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
 				today = cal.getTime();
-				if (req.getEffectiveDatestart() == null || StringUtils.isBlank(req.getEffectiveDatestart().toString())) {
-					errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start in  Row No : " + row));
-		
+				if (req.getEffectiveDatestart() == null ) {
+					errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
+
 				} else if (req.getEffectiveDatestart().before(today)) {
-					errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date in  Row No : " + row));
-				}
+					errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+				} else if (req.getEffectiveDateEnd() == null ) {
+					errorList.add(new Error("04", "EffectiveDateEnd", "Please Enter Effective Date End "));
+
+				} else if (req.getEffectiveDateEnd().before(req.getEffectiveDatestart()) || req.getEffectiveDateEnd().equals(req.getEffectiveDatestart())) {
+					errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date End  is After Effective Date Start"));
+				} 
 				//Status Validation
 				if (StringUtils.isBlank(req.getStatus())) {
 					errorList.add(new Error("05", "Status", "Please Enter Status in  Row No : " + row));
@@ -177,7 +184,7 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 				cal.setTime(req.getEffectiveDatestart());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
 				cal.set(Calendar.SECOND, today.getSeconds());
 				Date effDate = cal.getTime();
-				Date endDate = sdformat.parse("12/12/2050");
+				Date endDate = req.getEffectiveDateEnd();
 				String referalId="";
 				
 				// Update
@@ -365,7 +372,7 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 			Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
 			Predicate a2 = cb.equal(b.get("productId"), ocpm1.get("productId"));
 			Predicate a3 = cb.equal(b.get("companyId"), ocpm1.get("companyId"));
-			Predicate a4 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
+			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
 			effectiveDate.where(a1,a2,a3,a4);
 	
 			// Order By
@@ -640,6 +647,9 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 			cal.set(Calendar.HOUR_OF_DAY, 23);
 			cal.set(Calendar.MINUTE, 1);
 			today   = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
 			
 			// Criteria
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -665,7 +675,16 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 			Predicate a3 = cb.equal(c.get("productId"), ocpm1.get("productId") );
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1,a2,a3,a4);
-			
+			// Effective Date End
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<ProductReferalMaster> ocpm2 = effectiveDate2.from(ProductReferalMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a5 = cb.equal(c.get("referalId"),ocpm2.get("referalId") );
+			Predicate a6 = cb.equal(c.get("companyId"), ocpm2.get("companyId") );
+			Predicate a7 = cb.equal(c.get("productId"), ocpm2.get("productId") );
+			Predicate a8 = cb.greaterThanOrEqualTo(c.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a5,a6,a7,a8);
+		
 		    // Where	
 			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
@@ -697,27 +716,82 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 	public SuccessRes changestatusofProductReferal(ProductReferalChangeStatusReq req) {
 		SuccessRes res = new SuccessRes();
 		try {
-			CriteriaBuilder cb= em.getCriteriaBuilder();
-			// Create Update
-			CriteriaUpdate<ProductReferalMaster> update = cb.createCriteriaUpdate(ProductReferalMaster.class);
-			Root<ProductReferalMaster> c = update.from(ProductReferalMaster.class);
-			// set update and where clause
-			update.set("status",req.getStatus());
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			
+			ProductReferalMaster updateRecord  = new ProductReferalMaster();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			
+			List<ProductReferalMaster> list = new ArrayList<ProductReferalMaster>();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ProductReferalMaster> query = cb.createQuery(ProductReferalMaster.class);
+	
+			// Find All
+			Root<ProductReferalMaster> b = query.from(ProductReferalMaster.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<ProductReferalMaster> ocpm1 = effectiveDate.from(ProductReferalMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2);
+	
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("effectiveDateStart")));
+	
 			// Where
-			Predicate n1 = cb.equal(c.get("referalId"),req.getProductId());
-			Predicate n2 = cb.equal(c.get("companyId"),req.getCompanyId());
-			update.where(n1,n2);
-			//perform update
-			em.createQuery(update).executeUpdate();
-			res.setResponse("Status Changed");
-			res.setSuccessId(req.getProductId());
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("referalId"), req.getReferalId() );
+	
+			query.where(n1,n2).orderBy(orderList);
+	
+			// Get Result
+			TypedQuery<ProductReferalMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			updateRecord = list.get(0) ;
+				
+			if (req.getStatus().equalsIgnoreCase("N") )	{
+					// Delete Old Records
+					cal.setTime(today);
+					cal.set(Calendar.HOUR_OF_DAY, 23);
+					cal.set(Calendar.MINUTE, 30);
+					today   = cal.getTime();
+					
+					// create update
+					CriteriaDelete<ProductReferalMaster> delete = cb.createCriteriaDelete(ProductReferalMaster.class);
+					Root<ProductReferalMaster> pm = delete.from(ProductReferalMaster.class);
+					
+					 // Where	
+					javax.persistence.criteria.Predicate n3 = cb.equal(pm.get("referalId"), req.getReferalId());
+					javax.persistence.criteria.Predicate n4 = cb.greaterThanOrEqualTo(pm.get("effectiveDateStart"), today);
+					delete.where(n3,n4);	
+					em.createQuery(delete).executeUpdate();
+					// Insert Updated Record
+					updateRecord.setStatus(req.getStatus());
+					repo.save(updateRecord);
+				
+			} else if (req.getStatus().equalsIgnoreCase("Y") ) {
+				// Insert Updated Record
+				updateRecord.setStatus(req.getStatus());
+				repo.save(updateRecord);
 			}
-		catch(Exception e) {
+			
+			res.setResponse("Status Changed");
+			res.setSuccessId(req.getReferalId());
+		} catch(Exception e ) {
 			e.printStackTrace();
-			log.info("Exception is --->"+e.getMessage());
+			log.info("Exception is ---> " + e.getMessage());
 			return null;
 		}
 		return res;
 	}
-	
 }

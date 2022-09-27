@@ -37,7 +37,7 @@ public class CoverMasterSaveReqA implements Serializable {
 	private String sectionId;
 	
 	@JsonFormat(pattern="dd/MM/yyyy")
-	@JsonProperty("EffectiveDate")
+	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
 
 	@JsonProperty("CoverName")
@@ -64,4 +64,9 @@ public class CoverMasterSaveReqA implements Serializable {
 	@JsonProperty("TiraCode")
 	private String tiraCode;
 
+	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("EffectiveDateEnd")
+	private Date effectiveDateEnd;
+
+	
 }

@@ -7,10 +7,12 @@ package com.maan.eway.master.controller;
 
 import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.CoverChangeStatusReq;
 import com.maan.eway.master.req.CoverMasterGetAllReq;
 import com.maan.eway.master.req.CoverMasterGetReq;
 import com.maan.eway.master.req.CoverMasterSaveReq;
 import com.maan.eway.master.req.CoverMasterSaveReqA;
+import com.maan.eway.master.req.ProductChangeStatusReq;
 import com.maan.eway.master.res.CoverMasterRes;
 import com.maan.eway.master.service.CoverMasterService;
 import com.maan.eway.res.CommonRes;
@@ -149,7 +151,25 @@ public class CoverMasterController {
 		}
 	}
 
+		@PostMapping("/covers/changestatus")
+		@ApiOperation(value = "This method is get Change Status of Covers")
+		public ResponseEntity<CommonRes> changeStatusOfCover(@RequestBody CoverChangeStatusReq req) {
 
+			CommonRes data = new CommonRes();
+			// Change Status
+			SuccessRes res = coverService.changeStatusOfProduct(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+
+		}
 
 
 }

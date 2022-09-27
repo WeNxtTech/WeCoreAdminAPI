@@ -15,4 +15,7 @@ public class ProductReferalChangeStatusReq {
 	 
 	 @JsonProperty("Status")
 	 private String status;
+	 @JsonProperty("ReferalId")
+	 private String referalId;
+	
 }

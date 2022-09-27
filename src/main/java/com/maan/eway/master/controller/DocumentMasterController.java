@@ -7,6 +7,8 @@ package com.maan.eway.master.controller;
 
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.CoverChangeStatusReq;
+import com.maan.eway.master.req.DocumentChangeStatusReq;
 import com.maan.eway.master.req.DocumentMasterGetAllReq;
 import com.maan.eway.master.req.DocumentMasterGetReq;
 import com.maan.eway.master.req.DocumentMasterSaveReq;
@@ -183,4 +185,26 @@ public class DocumentMasterController {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}			
 		}
+		
+		@PostMapping("/document/changestatus")
+		@ApiOperation(value = "This method is  Change Status of Documents")
+		public ResponseEntity<CommonRes> changeStatusOfDocument(@RequestBody DocumentChangeStatusReq req) {
+
+			CommonRes data = new CommonRes();
+			// Change Status
+			SuccessRes res = documentservice.changeStatusOfDocument(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+
+		}
+
+
 }

@@ -384,7 +384,7 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("coverId")));
+			orderList.add(cb.asc(b.get("coverName")));
 
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
@@ -446,7 +446,7 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(c.get("effectiveDateStart")));
+			orderList.add(cb.asc(c.get("coverName")));
 
 			// Where
 
@@ -505,7 +505,7 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("coverId")));
+			orderList.add(cb.asc(b.get("coverName")));
 
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);

@@ -16,6 +16,7 @@ import com.maan.eway.master.req.SectionMasterGetReq;
 import com.maan.eway.master.req.SectionMasterSaveReq;
 import com.maan.eway.master.res.ProductReferalGetRes;
 import com.maan.eway.master.res.ProductSectionGetRes;
+import com.maan.eway.master.res.ReferalMasterRes;
 import com.maan.eway.master.res.SectionMasterRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
@@ -38,7 +39,7 @@ public interface ProductReferalMasterService  {
 
 	List<ProductReferalGetRes> getProductReferals(ProductReferalGetReq req);
 
-	List<ProductReferalGetRes> getallNonSelectedReferals(ProductReferalGetAllReq req);
+	List<ReferalMasterRes> getallNonSelectedReferals(ProductReferalGetAllReq req);
 
 	List<DropDownRes> getProductReferalDropdown(ProductReferalGetReq req);
 

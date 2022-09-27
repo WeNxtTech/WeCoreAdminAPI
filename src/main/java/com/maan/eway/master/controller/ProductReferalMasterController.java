@@ -18,6 +18,7 @@ import com.maan.eway.master.req.SectionMasterGetReq;
 import com.maan.eway.master.req.SectionMasterSaveReq;
 import com.maan.eway.master.res.ProductReferalGetRes;
 import com.maan.eway.master.res.ProductSectionGetRes;
+import com.maan.eway.master.res.ReferalMasterRes;
 import com.maan.eway.master.res.SectionMasterRes;
 import com.maan.eway.master.service.ProductReferalMasterService;
 import com.maan.eway.master.service.ProductSectionMasterService;
@@ -185,7 +186,7 @@ public class ProductReferalMasterController {
 			CommonRes data = new CommonRes();
 			reqPrinter.reqPrint(req);
 			
-			List<ProductReferalGetRes> res = entityService.getallNonSelectedReferals(req);
+			List<ReferalMasterRes> res = entityService.getallNonSelectedReferals(req);
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);

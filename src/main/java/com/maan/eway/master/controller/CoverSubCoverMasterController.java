@@ -17,11 +17,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.CoverSubCoverMasterGetAllReq;
+import com.maan.eway.master.req.CoverSubCoverMasterGetReq;
 import com.maan.eway.master.req.CoverSubCoverMasterSaveReq;
 import com.maan.eway.master.req.SubCoverGetAllReq;
 import com.maan.eway.master.req.SubCoverMasterGetAllReq;
 import com.maan.eway.master.req.SubCoverMasterGetReq;
 import com.maan.eway.master.res.CoverMasterRes;
+import com.maan.eway.master.res.CoverSubCoverGetRes;
 import com.maan.eway.master.res.SubCoverMasterGetAllRes;
 import com.maan.eway.master.res.SubCoverMasterGetRes;
 import com.maan.eway.master.res.SubCoverMasterRes;
@@ -86,12 +89,12 @@ public class CoverSubCoverMasterController {
 		
 		@PostMapping("/getallcoversubcoverdetails")
 		@ApiOperation("This method is getall Section Cover Details")
-		public ResponseEntity<CommonRes> getallCoverSubCoverDetails(@RequestBody SubCoverMasterGetAllReq req)
+		public ResponseEntity<CommonRes> getallCoverSubCoverDetails(@RequestBody CoverSubCoverMasterGetAllReq req)
 		{
 			CommonRes data = new CommonRes();
 			reqPrinter.reqPrint(req);
 			
-			List<SubCoverMasterRes> res = service.getallCoverSubCoverDetails(req);
+			List<CoverSubCoverGetRes> res = service.getallCoverSubCoverDetails(req);
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);
@@ -108,12 +111,12 @@ public class CoverSubCoverMasterController {
 		
 		@PostMapping("/getactivecoversubcoverdetails")
 		@ApiOperation("This method is getall Section Cover Details")
-		public ResponseEntity<CommonRes> getActiveCoverSubCoverDetails(@RequestBody SubCoverMasterGetAllReq req)
+		public ResponseEntity<CommonRes> getActiveCoverSubCoverDetails(@RequestBody CoverSubCoverMasterGetAllReq req)
 		{
 			CommonRes data = new CommonRes();
 			reqPrinter.reqPrint(req);
 			
-			List<SubCoverMasterRes> res = service.getActiveCoverSubCoverDetails(req);
+			List<CoverSubCoverGetRes> res = service.getActiveCoverSubCoverDetails(req);
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);
@@ -131,10 +134,10 @@ public class CoverSubCoverMasterController {
 		
 		@PostMapping("/getbycoversubcover")
 		@ApiOperation("This Method is to get by Sub Cover Id")
-		public ResponseEntity<CommonRes> getBySubCoverId(@RequestBody SubCoverMasterGetReq req)
+		public ResponseEntity<CommonRes> getBySubCoverId(@RequestBody CoverSubCoverMasterGetReq req)
 		{
 		CommonRes data = new CommonRes();
-		SubCoverMasterGetRes res = service.getByCoverSubCoverId(req);
+		CoverSubCoverGetRes res = service.getByCoverSubCoverId(req);
 		data.setCommonResponse(res);
 		data.setErrorMessage(Collections.emptyList());
 		data.setIsError(false);
@@ -150,11 +153,11 @@ public class CoverSubCoverMasterController {
 		
 		@PostMapping("/getallnonselectedcoversubcover")
 		@ApiOperation("This method is getall SubCover")
-		public ResponseEntity<CommonRes> getallNonSelectedSubCover(@RequestBody SubCoverGetAllReq req)
+		public ResponseEntity<CommonRes> getallNonSelectedSubCover(@RequestBody CoverSubCoverMasterGetAllReq req)
 		{
 			CommonRes data = new CommonRes();
 			
-			List<SubCoverMasterGetAllRes> res =service.getallNonSelectedSubCover(req);
+			List<SubCoverMasterGetRes> res =service.getallNonSelectedSubCover(req);
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);

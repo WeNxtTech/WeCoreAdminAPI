@@ -32,6 +32,9 @@ public class CoverSubCoverMasterSaveReq {
 
 	@JsonProperty("SubCoverName")
 	private String subCoverName;
+	
+	@JsonProperty("CoverName")
+	private String CoverName;
 
 	@JsonProperty("SubCoverDesc")
 	private String subCoverDesc;
@@ -42,9 +45,12 @@ public class CoverSubCoverMasterSaveReq {
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
 
-	@JsonProperty("AmendId")
-	private String amendId;
-
 	@JsonProperty("Remarks")
 	private String remarks;
+	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+	
+	@JsonProperty("TiraCode")
+	private String tiraCode;
 }

@@ -32,6 +32,7 @@ import com.maan.eway.master.req.SectionMasterGetReq;
 import com.maan.eway.master.req.SectionMasterSaveReq;
 import com.maan.eway.master.res.ProductReferalGetRes;
 import com.maan.eway.master.res.ProductSectionGetRes;
+import com.maan.eway.master.res.ReferalMasterRes;
 import com.maan.eway.master.res.SectionMasterRes;
 import com.maan.eway.master.service.ProductReferalMasterService;
 import com.maan.eway.master.service.ProductSectionMasterService;
@@ -504,8 +505,8 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 	
 	///*********************************************************************GET Non Selected Referal Details******************************************************\\
 	@Override
-	public List<ProductReferalGetRes> getallNonSelectedReferals(ProductReferalGetAllReq req) {
-		List<ProductReferalGetRes> resList = new ArrayList<ProductReferalGetRes>();
+	public List<ReferalMasterRes> getallNonSelectedReferals(ProductReferalGetAllReq req) {
+		List<ReferalMasterRes> resList = new ArrayList<ReferalMasterRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
 			Date today = new Date();
@@ -534,42 +535,40 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 			Root<ReferalMaster> ocpm1 = effectiveDate.from(ReferalMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
-			Predicate a2 = cb.equal(b.get("companyId"), ocpm1.get("companyId"));
-			Predicate a3 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"),today);
-			effectiveDate.where(a1,a2,a3);
+			Predicate a2 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"),today);
+			effectiveDate.where(a1,a2);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("referalId")));
 			
 			// Product Section Effective Date Max Filter
-			Subquery<Long> section = query.subquery(Long.class);
-			Root<ProductReferalMaster> ps = section.from(ProductReferalMaster.class);
+			Subquery<Long> referal = query.subquery(Long.class);
+			Root<ProductReferalMaster> ps = referal.from(ProductReferalMaster.class);
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 			Root<ProductReferalMaster> ocpm2 = effectiveDate2.from(ProductReferalMaster.class);
 			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateStart")));
 			Predicate eff1 = cb.equal(ocpm2.get("referalId"), ps.get("referalId"));
 			Predicate eff2 = cb.equal(ocpm2.get("productId"), ps.get("productId"));
-			Predicate eff3 = cb.equal(ocpm2.get("companyId"), ps.get("companyId"));
-			Predicate eff4 = cb.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"),today);
-			effectiveDate2.where(eff1,eff2,eff3,eff4);
+			Predicate eff3 = cb.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"),today);
+			effectiveDate2.where(eff1,eff2,eff3);
 			
 			// Product Section Filter
-			section.select(ps.get("referalId"));
+			referal.select(ps.get("referalId"));
 			Predicate ps1 = cb.equal(ps.get("referalId"), b.get("referalId"));
 			Predicate ps2 = cb.equal(ps.get("productId"), req.getProductId());
 			Predicate ps3 = cb.equal(ps.get("companyId"), req.getInsuranceId());
 			Predicate ps4 = cb.equal(ps.get("effectiveDateStart"),effectiveDate2);
-			section.where(ps1,ps2,ps3,ps4);
+			Predicate ps5 = cb.equal(ps.get("status"),"Y");
+			referal.where(ps1,ps2,ps3,ps4,ps5);
 			
 			// Where
 			Expression<String>e0= b.get("referalId");
 			
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
-			Predicate n3 = cb.equal(b.get("status"), "Y");
-			Predicate n4 = e0.in(section).not();
-			query.where(n1,n2,n3,n4).orderBy(orderList);
+			Predicate n2 = cb.equal(b.get("status"), "Y");
+			Predicate n3 = e0.in(referal).not();
+			query.where(n1,n2,n3).orderBy(orderList);
 	
 			// Get Result
 			TypedQuery<ReferalMaster> result = em.createQuery(query);
@@ -579,9 +578,9 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 			
 			// Map
 			for (ReferalMaster data : referalList) {
-				ProductReferalGetRes res = new ProductReferalGetRes();
+				ReferalMasterRes res = new ReferalMasterRes();
 	
-				res = mapper.map(data, ProductReferalGetRes.class);
+				res = mapper.map(data, ReferalMasterRes.class);
 				res.setReferalId(String.valueOf(data.getReferalId()));
 				resList.add(res);
 			}

@@ -287,7 +287,7 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("referalId")));
+			orderList.add(cb.asc(b.get("referalName")));
 			
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
@@ -352,7 +352,7 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("referalId")));
+			orderList.add(cb.asc(b.get("referalName")));
 			
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
@@ -472,7 +472,7 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("referalId")));
+			orderList.add(cb.asc(b.get("referalName")));
 	
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
@@ -540,7 +540,7 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("referalId")));
+			orderList.add(cb.asc(b.get("referalName")));
 			
 			// Product Section Effective Date Max Filter
 			Subquery<Long> referal = query.subquery(Long.class);

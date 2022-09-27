@@ -64,5 +64,11 @@ public class CoverSubCoverCriteriaRes {
     
    	@JsonProperty("COVER_NAME")
     private String   coverName;
+   	
+  	@JsonProperty("CREATED_BY")
+    private String   createdBy;
+  	
+  	@JsonProperty("TIRA_CODE")
+    private String   tiraCode;
 
 }

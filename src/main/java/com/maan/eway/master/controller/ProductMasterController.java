@@ -6,6 +6,8 @@ package com.maan.eway.master.controller;
 */
 
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.CompanyProductChangeStatusReq;
+import com.maan.eway.master.req.ProductChangeStatusReq;
 import com.maan.eway.master.req.ProductDropDownReq;
 import com.maan.eway.master.req.ProductMasterGetAllReq;
 import com.maan.eway.master.req.ProductMasterGetReq;
@@ -149,6 +151,27 @@ public class ProductMasterController {
 		} else {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
+	}
+		
+	@PostMapping("/products/changestatus")
+	@ApiOperation(value = "This method is get Company Product Master Drop Down")
+
+	public ResponseEntity<CommonRes> changeStatusOfProduct(@RequestBody ProductChangeStatusReq req) {
+
+		CommonRes data = new CommonRes();
+		// Change Status
+		SuccessRes res = productService.changeStatusOfProduct(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
 	}
 		
 		

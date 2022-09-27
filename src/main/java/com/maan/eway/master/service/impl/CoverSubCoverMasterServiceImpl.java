@@ -81,8 +81,17 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			for(CoverSubCoverMasterSaveReq req: reqList) {
 			row = row + 1 ;	
 			if (StringUtils.isBlank(req.getSubCoverId()) ) {
-				errorList.add(new Error("02", "SubCoverName", "Please Select Sub Cover  Name   in Row No :" + row));
+				errorList.add(new Error("02", "SubCoverId", "Please Select Sub Cover  Id in Row No :" + row));
 			}
+			
+			if (StringUtils.isBlank(req.getCoverId()) ) {
+				errorList.add(new Error("03", "CoverId", "Please Select CoverId in Row No :" + row));
+			}
+			
+			if (StringUtils.isBlank(req.getProductId()) ) {
+				errorList.add(new Error("04", "ProductId", "Please Select ProductId in Row No :" + row));
+			}
+			
 			
 			if (StringUtils.isBlank(req.getSubCoverName()) ) {
 				errorList.add(new Error("02", "SubCoverName", "Please Select Sub Cover  Name   in Row No :" + row));
@@ -210,7 +219,6 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 				// orderList.add(cb.asc(b.get("branchName")));
 
 				// Where
-				Predicate n1 = cb.equal(b.get("status"), "Y");
 				Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 				Predicate n3 = cb.equal(b.get("subCoverId"), req.getSubCoverId());
 				Predicate n4 = cb.equal(b.get("coverId"), req.getCoverId());
@@ -218,7 +226,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 				Predicate n6 = cb.equal(b.get("productId"), req.getProductId());
 				Predicate n7 = cb.equal(b.get("companyId"), req.getCompanyId());
 
-				query.where(n1, n2, n3,n4,n5,n6,n7);
+				query.where( n2, n3,n4,n5,n6,n7);
 
 				// Get Result
 				TypedQuery<CoverSubCoverMaster> result = em.createQuery(query);
@@ -240,8 +248,6 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 				res.setSuccessId(subCoverId);
 
 				dozerMapper.map(req, saveData);
-				saveData.setCoverId(Integer.valueOf(subCoverId));
-				saveData.setSubCoverName(req.getSubCoverName());
 				saveData.setEffectiveDateStart(effDate);
 				saveData.setEffectiveDateEnd(endDate);
 				saveData.setStatus(req.getStatus());
@@ -281,7 +287,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			List<CoverSubCoverCriteriaRes> subCoverList = new ArrayList<CoverSubCoverCriteriaRes>();
 			// Pagination
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 0 : Integer.valueOf(req.getOffset());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -362,8 +368,8 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			query.multiselect(b.get("subCoverId").alias("subCoverId") , b.get("coverId").alias("coverId") , b.get("sectionId").alias("sectionId") , b.get("productId").alias("productId") ,
 					b.get("companyId").alias("companyId") , b.get("effectiveDateStart").alias("effectiveDateStart") ,b.get("effectiveDateEnd").alias("effectiveDateEnd") , 
 					b.get("subCoverName").alias("subCoverName") , b.get("subCoverDesc").alias("subCoverDesc") , b.get("entryDate").alias("entryDate") , b.get("status").alias("status") ,
-					b.get("coreAppCode").alias("coreAppCode") , b.get("amendId").alias("amendId") , b.get("remarks").alias("remarks") ,
-					section.alias("sectionName") , cover.alias("coverName") );
+					b.get("coreAppCode").alias("coreAppCode") , b.get("amendId").alias("amendId") , b.get("remarks").alias("remarks") ,  
+					section.alias("sectionName") , b.get("coverName").alias("coverName") ,b.get("createdBy").alias("createdBy") , b.get("tiraCode").alias("tiraCode"));
 			
 				
 			// Order By
@@ -377,7 +383,20 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			Predicate n1 = e0.in(subCover);	
 			Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
 			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
-			query.where(n1, n2, n3).orderBy(orderList);
+			
+			if(StringUtils.isNotBlank(req.getSectionId()) && StringUtils.isNotBlank(req.getCoverId())  ) {
+				Predicate n4 = cb.equal(b.get("sectionId"), req.getSectionId());
+				Predicate n5 = cb.equal(b.get("coverId"), req.getCoverId());
+				query.where(n1, n2, n3,n4,n5).orderBy(orderList);
+				
+			} else if (StringUtils.isNotBlank(req.getSectionId()) ) {
+				Predicate n4 = cb.equal(b.get("sectionId"), req.getSectionId());
+				query.where(n1, n2, n3,n4).orderBy(orderList);
+			} else {
+				query.where(n1, n2, n3).orderBy(orderList);
+			}
+			
+			
 
 			// Get Result
 			TypedQuery<CoverSubCoverCriteriaRes> result = em.createQuery(query);
@@ -438,7 +457,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("subCoverId"), req.getSubCoverId());	
 			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"), req.getCompanyId());
-			query.where(n1, n2).orderBy(orderList);
+			query.where(n1, n2,n3).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CoverSubCoverMaster> result = em.createQuery(query);
@@ -558,7 +577,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			List<CoverSubCoverMaster> coverList = new ArrayList<CoverSubCoverMaster>();
 			// Pagination
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 0 : Integer.valueOf(req.getOffset());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -589,7 +608,18 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
 			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
 			Predicate n4 = cb.equal(b.get("status"), "Y");
-			query.where(n1, n2, n3,n4).orderBy(orderList);
+			
+			if(StringUtils.isNotBlank(req.getSectionId()) && StringUtils.isNotBlank(req.getCoverId())  ) {
+				Predicate n5 = cb.equal(b.get("sectionId"), req.getSectionId());
+				Predicate n6 = cb.equal(b.get("coverId"), req.getCoverId());
+				query.where(n1, n2, n3,n4,n5,n6).orderBy(orderList);
+				
+			} else if (StringUtils.isNotBlank(req.getSectionId()) ) {
+				Predicate n5 = cb.equal(b.get("sectionId"), req.getSectionId());
+				query.where(n1, n2, n3,n4,n5).orderBy(orderList);
+			} else {
+				query.where(n1, n2, n3,n4).orderBy(orderList);
+			}
 
 			// Get Result
 			TypedQuery<CoverSubCoverMaster> result = em.createQuery(query);

@@ -7,18 +7,17 @@ package com.maan.eway.master.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -28,22 +27,21 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.maan.eway.master.req.ProductDropDownReq;
+import com.maan.eway.bean.CompanyProductMaster;
+import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.ProductMaster;
+import com.maan.eway.error.Error;
+import com.maan.eway.master.req.ProductChangeStatusReq;
 import com.maan.eway.master.req.ProductMasterGetAllReq;
 import com.maan.eway.master.req.ProductMasterGetReq;
 import com.maan.eway.master.req.ProductMasterSaveReq;
 import com.maan.eway.master.res.ProductMasterRes;
 import com.maan.eway.master.service.ProductMasterService;
-import com.maan.eway.bean.BranchMaster;
-import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.bean.ProductMaster;
-import com.maan.eway.error.Error;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.ProductMasterRepository;
 import com.maan.eway.res.DropDownRes;
@@ -436,6 +434,13 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 
 		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			
 			List<ProductMaster> list = new ArrayList<ProductMaster>();
 			//Pagination
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
@@ -456,7 +461,8 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			Root<ProductMaster> ocpm1 = effectiveDate.from(ProductMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-			effectiveDate.where(a1);
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -499,6 +505,13 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	
 		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			
 			// Criteria
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<ProductMaster> query = cb.createQuery(ProductMaster.class);
@@ -515,7 +528,8 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			Root<ProductMaster> ocpm1 = effectiveDate.from(ProductMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("productId"),ocpm1.get("productId") );
-			effectiveDate.where(a1);
+			javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(c.get("effectiveDateStart"),today );
+			effectiveDate.where(a1,a2);
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -610,6 +624,13 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 
 		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			
 			List<ProductMaster> list = new ArrayList<ProductMaster>();
 	
 			//Pagination
@@ -631,7 +652,8 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			Root<ProductMaster> ocpm1 = effectiveDate.from(ProductMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-			effectiveDate.where(a1);
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -720,6 +742,50 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			}
 			return res;
 		}
+
+
+		@Override
+		public SuccessRes changeStatusOfProduct(ProductChangeStatusReq req) {
+			SuccessRes res = new SuccessRes();
+			SimpleDateFormat dbf = new SimpleDateFormat("yyyy-MM-dd"); 
+			try {
+				Date today  = new Date();
+				Calendar cal = new GregorianCalendar(); 
+				cal.setTime(today);
+				cal.set(Calendar.HOUR_OF_DAY, 0);
+				cal.set(Calendar.MINUTE, 30);
+				today   = cal.getTime();
+				
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				// create update
+				CriteriaUpdate<ProductMaster> update = cb.createCriteriaUpdate(ProductMaster.class);
+				Root<ProductMaster> c = update.from(ProductMaster.class);
+				// set update and where clause
+				update.set("status", req.getStatus());
+				
+				 // Where	
+				javax.persistence.criteria.Predicate n1 = cb.equal(c.get("productId"), req.getProductId());
+				if( req.getStatus().equalsIgnoreCase("N") ) {
+					javax.persistence.criteria.Predicate n2 = cb.greaterThanOrEqualTo(c.get("effectiveDateStart"), today);
+					update.where(n1,n2);
+					
+				} else if( req.getStatus().equalsIgnoreCase("Y") ) {
+					javax.persistence.criteria.Predicate n2 = cb.greaterThanOrEqualTo(c.get("effectiveDateStart"), today);
+					update.set("effectiveDateEnd", dbf.parse("2050-12-12") );
+					update.where(n1,n2);
+				}  
+				// perform update
+				em.createQuery(update).executeUpdate();
+				res.setResponse("Status Changed");
+				res.setSuccessId(req.getProductId());
+			} catch(Exception e ) {
+				e.printStackTrace();
+				log.info("Exception is ---> " + e.getMessage());
+				return null;
+			}
+			return res;
+		}
+
 	
 		
 	}

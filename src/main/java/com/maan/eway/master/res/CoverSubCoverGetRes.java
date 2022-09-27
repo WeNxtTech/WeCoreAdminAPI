@@ -23,7 +23,7 @@ public class CoverSubCoverGetRes {
 	    private String productId;
 		
 		@JsonProperty("InsuranceId")
-	    private String insuranceId;
+	    private String companyId;
 	    
 	    @JsonProperty("SubCoverName")
 	    private String subCoverName;
@@ -59,4 +59,7 @@ public class CoverSubCoverGetRes {
 	
 		@JsonProperty("Remarks")
 		private String remarks;
+		
+	    @JsonProperty("SectionName")
+	    private String   sectionName;
 }

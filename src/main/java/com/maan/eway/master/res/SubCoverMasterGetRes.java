@@ -14,10 +14,7 @@ public class SubCoverMasterGetRes implements Serializable {
     private static final long serialVersionUID = 1L;
   
     @JsonProperty("SubCoverId")
-    private Integer subCoverId;
-    
-    @JsonProperty("InsuranceId")
-    private String companyId;
+    private String subCoverId;
     
     @JsonProperty("SubCoverName")
     private String subCoverName;
@@ -27,12 +24,8 @@ public class SubCoverMasterGetRes implements Serializable {
     private String subCoverDesc;
     
 	@JsonFormat(pattern = "dd/MM/yyyy")
-    @JsonProperty("EffectiveDateStart")
+    @JsonProperty("EffectiveDate")
     private Date effectiveDateStart;
-    
-	@JsonFormat(pattern = "dd/MM/yyyy")
-    @JsonProperty("EffectiveDateEnd")
-    private Date effectiveDateEnd;
     
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EntryDate")
@@ -43,9 +36,15 @@ public class SubCoverMasterGetRes implements Serializable {
 
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
-
+	  
+	@JsonProperty("TiraCode")
+	private String tiraCode;
+	    
+    @JsonProperty("CreatedBy")
+    private String createdBy;
+    
 	@JsonProperty("AmendId")
-	private Integer amendId;
+	private String amendId;
 
 	@JsonProperty("Remarks")
 	private String remarks;

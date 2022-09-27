@@ -17,9 +17,6 @@ public class SubCoverMasterSaveReq implements Serializable {
     @JsonProperty("SubCoverId")
     private String subCoverId;
     
-    @JsonProperty("InsuranceId")
-    private String companyId;
-    
     @JsonProperty("SubCoverName")
     private String subCoverName;
     
@@ -33,6 +30,12 @@ public class SubCoverMasterSaveReq implements Serializable {
     
     @JsonProperty("CoreAppCode")
     private String coreAppCode;
+    
+    @JsonProperty("TiraCode")
+    private String tiraCode;
+    
+    @JsonProperty("CreatedBy")
+    private String createdBy;
     
     @JsonProperty("Status")
     private String status;

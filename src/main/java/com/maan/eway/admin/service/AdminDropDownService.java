@@ -24,5 +24,8 @@ public interface AdminDropDownService {
 	List<DropDownRes> getContentName();
 
 	List<DropDownRes> getPropertyName();
+	
+	List<DropDownRes> getProductIcons();
+
 
 }

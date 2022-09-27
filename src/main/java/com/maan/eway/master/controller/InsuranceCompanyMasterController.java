@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.master.req.BankMasterGetAllReq;
 import com.maan.eway.master.req.BankMasterGetReq;
+import com.maan.eway.master.req.CompanyDropDownReq;
 import com.maan.eway.master.req.InsuranceCompanyMasterGetAllReq;
 import com.maan.eway.master.req.InsuranceCompanyMasterGetReq;
 import com.maan.eway.master.req.InsuranceCompanyMasterSaveReq;
@@ -160,15 +161,15 @@ public class InsuranceCompanyMasterController {
 	}
 		
 		// Insurance Company Master Drop Down Type
-		@GetMapping("/dropdown/company")
+		@PostMapping("/dropdown/company")
 		@ApiOperation(value = "This method is get Company Master Drop Down")
 
-		public ResponseEntity<CommonRes> getInscompanyMasterDropdown() {
+		public ResponseEntity<CommonRes> getInscompanyMasterDropdown( @RequestBody CompanyDropDownReq req ) {
 
 			CommonRes data = new CommonRes();
 
 			// Save
-			List<DropDownRes> res = insService.getInscompanyMasterDropdown();
+			List<DropDownRes> res = insService.getInscompanyMasterDropdown(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());
@@ -185,7 +186,7 @@ public class InsuranceCompanyMasterController {
 //********************************************* BROKER COMPANY ******************************************\\		
 	//  Get All Broker Company 
 		
-			@PostMapping("/getallbrokercompanydetails")
+		/*	@PostMapping("/getallbrokercompanydetails")
 			@ApiOperation("This method is getall Broker Company Details")
 			public ResponseEntity<CommonRes> getallbrokerCompanyDetails(@RequestBody InsuranceCompanyMasterGetAllReq req)
 			{
@@ -204,7 +205,7 @@ public class InsuranceCompanyMasterController {
 				else {
 					return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
 				}
-			}
+			} */
 
 	/*		// Get By Broker Company Id
 			

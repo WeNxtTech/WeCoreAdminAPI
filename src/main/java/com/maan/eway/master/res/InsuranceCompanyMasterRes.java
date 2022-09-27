@@ -19,11 +19,7 @@ public class InsuranceCompanyMasterRes implements Serializable {
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDate")
     private Date       effectiveDateStart ;
-	
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDateEnd")
-    private Date       effectiveDateEnd ;
-	
+
 	@JsonProperty("CompanyName")
     private String     companyName ;
 	
@@ -60,5 +56,11 @@ public class InsuranceCompanyMasterRes implements Serializable {
 	
 	@JsonProperty("CreatedBy")
 	private String createdBy;
+	
+	@JsonProperty("TiraCode")
+	private String tiraCode;
+	
+	@JsonProperty("AmendId")
+	private String amendId;
 	
 }

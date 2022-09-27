@@ -12,13 +12,7 @@ import lombok.Data;
 public class SubCoverMasterGetAllReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    @JsonProperty("InsuranceId")
-    private String insuranceId;
-    
-    @JsonProperty("ProductId")
-    private String productId;
-    
+ 
     @JsonProperty("Limit")
     private String limit;
     

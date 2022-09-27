@@ -9,11 +9,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class SubCoverMasterGetReq implements Serializable {
+public class CompanyProductMasterGetReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-	@JsonProperty("SubCoverId")
-    private String subCoverId; 
-	    
+	@JsonProperty("ProductId")
+    private String     productId     ;
+	@JsonProperty("InsuranceId")
+    private String     companyId     ;
+    
 }

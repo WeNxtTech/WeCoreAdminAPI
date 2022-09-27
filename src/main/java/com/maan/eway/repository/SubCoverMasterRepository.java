@@ -39,13 +39,6 @@ import org.springframework.data.domain.Pageable;
  
 public interface SubCoverMasterRepository  extends JpaRepository<SubCoverMaster,SubCoverMasterId > , JpaSpecificationExecutor<SubCoverMaster> {
 
-	Long countBySubCoverNameAndCompanyIdOrderByEntryDateDesc(String subCoverName, String companyId);
-
-	SubCoverMaster findBySubCoverIdAndCompanyId(Integer subCoverId, String companyId);
-
-	List<SubCoverMaster> OrderByEntryDateDesc();
-
-	SubCoverMaster findBySubCoverIdAndCompanyId(String subCoverId, String companyId);
 
 	
 }

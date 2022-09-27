@@ -12,6 +12,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -33,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.master.req.CompanyDropDownReq;
 import com.maan.eway.master.req.InsuranceCompanyMasterGetAllReq;
 import com.maan.eway.master.req.InsuranceCompanyMasterGetReq;
 import com.maan.eway.master.req.InsuranceCompanyMasterSaveReq;
@@ -41,7 +44,7 @@ import com.maan.eway.master.res.InsuranceCompanyMasterRes;
 import com.maan.eway.master.service.InsuranceCompanyMasterService;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
-
+import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 import com.maan.eway.res.DropDownRes;
@@ -165,12 +168,6 @@ this.repository = repo;
 
 		try {
 
-			if (StringUtils.isBlank(req.getInsuranceId())) {	
-				Long companyCount = repository.countByCompanyNameOrderByEntryDateDesc(req.getCompanyName());
-				if (companyCount > 0) {
-					errors.add(new Error("01", "CompanyId", "This Company Alrady Exist "));
-				}
-			}
 			if (StringUtils.isBlank(req.getCompanyAddress())) {
 				errors.add(new Error("02", "Company Address", "Please Enter Company Address"));
 			} else if (req.getCompanyAddress().length() > 200) {
@@ -192,6 +189,8 @@ this.repository = repo;
 				errors.add(new Error("03", "Company Email", "Please Enter Company Email"));
 			} else if (req.getCompanyEmail().length() > 200) {
 				errors.add(new Error("03", "Company Email", "Company Email under 200 Characters only allowed"));
+			} else if (isNotValidMail(req.getCompanyEmail()) ) {
+				errors.add(new Error("03", "Company Email", "Company Email under 200 Characters only allowed"));
 			}
 			
 			if (StringUtils.isBlank(req.getCreatedBy())) {
@@ -199,11 +198,11 @@ this.repository = repo;
 			} else if (req.getCreatedBy().length() > 100) {
 				errors.add(new Error("03", "CreatedBy", "CreatedBy under 100 Characters only allowed"));
 			}
-		/*	if (StringUtils.isBlank(req.getCompanyLogo())) {
+			if (StringUtils.isBlank(req.getCompanyLogo())) {
 				errors.add(new Error("04", "Company Logo", "Please Enter Company Logo"));
 			} else if (req.getCompanyLogo().length() > 200) {
 				errors.add(new Error("04", "Company Logo", "Company Logo under 200 Characters only allowed"));
-			}*/
+			}
 		// Date Validation
 		Calendar cal = new GregorianCalendar();
 		Date today = new Date();
@@ -213,15 +212,26 @@ this.repository = repo;
 		cal.set(Calendar.MINUTE, 50);
 		today = cal.getTime();
 		if (req.getEffectiveDate() == null || StringUtils.isBlank(req.getEffectiveDate().toString())) {
-			errors.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start"));
+			errors.add(new Error("04", "EffectiveDate", "Please Enter Effective Date "));
 
 		} else if (req.getEffectiveDate().before(today)) {
-			errors.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			errors.add(new Error("04", "EffectiveDate", "Please Enter Effective Date Start as Future Date"));
 		}
 		if (StringUtils.isBlank(req.getCompanyName())) {
 			errors.add(new Error("05", "Company Name", "Please Enter Company Name"));
 		} else if (req.getCompanyName().length() > 200) {
 			errors.add(new Error("05", "Company Name", "Company Name under 200 Characters only allowed"));
+		}else if (StringUtils.isBlank(req.getInsuranceId())) {
+			List<InsuranceCompanyMaster> CompanyList = getCompanyNameExistDetails(req.getCompanyName());
+			if (CompanyList.size()>0 ) {
+				errors.add(new Error("01", "Company Name", "This Company Name Already Exist "));
+			}
+		}else  {
+			List<InsuranceCompanyMaster> CompanyList =  getCompanyNameExistDetails(req.getCompanyName() );
+			if (CompanyList.size()>0 &&  (! req.getInsuranceId().equalsIgnoreCase(CompanyList.get(0).getCompanyId().toString())) ) {
+				errors.add(new Error("01", "Company Name", "This Company Name Already Exist "));
+			}
+			
 		}
 
 		if (StringUtils.isBlank(req.getCompanyPhone())) {
@@ -257,7 +267,12 @@ this.repository = repo;
 		} else if (!("Y".equals(req.getBrokerYn()) || "N".equals(req.getBrokerYn()))) {
 			errors.add(new Error("10", "BrokerYn", "Insurance Company Valid BrokerYn Y  or N"));
 		}
-			
+				
+		if (StringUtils.isBlank(req.getTiraCode())) {
+			errors.add(new Error("08", "TiraCode", "Please Enter TiraCode"));
+		}else if (req.getTiraCode().length() > 20) {
+			errors.add(new Error("11", "TiraCode", "Please Enter TiraCode within 20 Characters"));
+		}
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
@@ -265,7 +280,60 @@ this.repository = repo;
 		}
 		return errors;
 	}
+	
+	public boolean isNotValidMail(String mail) {
+		String regex = "^[a-zA-Z0-9_+&*-]+(?:\\." + "[a-zA-Z0-9_+&*-]+)*@" + "(?:[a-zA-Z0-9-]+\\.)+[a-z"
+				+ "A-Z]{2,7}$";
+		Pattern pattern = Pattern.compile(regex);
+		Matcher m = pattern.matcher(mail);
+		try {
+			if (m.matches()) {
+				return false;
+			}
 
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			e.printStackTrace();
+			return true;
+		}
+		return true;
+	}
+
+	public List<InsuranceCompanyMaster> getCompanyNameExistDetails(String companyName) {
+		List<InsuranceCompanyMaster> list = new ArrayList<InsuranceCompanyMaster>();
+		try {
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<InsuranceCompanyMaster> query = cb.createQuery(InsuranceCompanyMaster.class);
+	
+			// Find All
+			Root<InsuranceCompanyMaster> b = query.from(InsuranceCompanyMaster.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<InsuranceCompanyMaster> ocpm1 = effectiveDate.from(InsuranceCompanyMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			effectiveDate.where(a1);
+	
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("companyName"), companyName );	
+			query.where(n1,n2);
+			// Get Result
+			TypedQuery<InsuranceCompanyMaster> result = em.createQuery(query);
+			list = result.getResultList();		
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+	
+		}
+		return list;
+	}
+	
 	@Transactional
 	@Override
 	public SuccessRes saveCompanyDetails(InsuranceCompanyMasterSaveReq req) {
@@ -334,7 +402,15 @@ this.repository = repo;
 
 				if (list.size() > 0) {
 					repository.delete(list.get(0));
-					amendId = list.get(0).getAmendId() + 1 ;
+					// Amend ID
+					if( list.get(0).getEffectiveDateStart().before(startDate)   ) {
+						String startDatewithoutTime = sdformat.format(startDate) ;
+						String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart()) ;
+						
+						if(startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime) ) {
+							amendId = list.get(0).getAmendId() + 1 ;
+						}
+					}
 				}
 				saveData.setCompanyId(req.getInsuranceId());
 				
@@ -346,9 +422,7 @@ this.repository = repo;
 			saveData.setEffectiveDateStart(effDate);
 			saveData.setEffectiveDateEnd(endDate);
 			saveData.setEntryDate(new Date());
-			saveData.setCreatedBy(req.getCreatedBy());
 			saveData.setAmendId(amendId);
-			saveData.setCoreAppCode(req.getCoreAppCode());
 			repository.saveAndFlush(saveData);
 
 			if (list.size() > 0) {
@@ -411,12 +485,12 @@ this.repository = repo;
 	@Override
 	public List<InsuranceCompanyMasterRes> getallInsCompanyDetails(InsuranceCompanyMasterGetAllReq req) {
 		List<InsuranceCompanyMasterRes> resList = new ArrayList<InsuranceCompanyMasterRes>();
-		ModelMapper mapper = new ModelMapper();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
 			List<InsuranceCompanyMaster> companyList = new ArrayList<InsuranceCompanyMaster>();
 			//Pagination
 			int limit=StringUtils.isBlank(req.getLimit())?0:Integer.valueOf(req.getLimit());
-			int offset=StringUtils.isBlank(req.getOffset())?0:Integer.valueOf(req.getOffset());
+			int offset=StringUtils.isBlank(req.getOffset())?100:Integer.valueOf(req.getOffset());
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<InsuranceCompanyMaster> query = cb.createQuery(InsuranceCompanyMaster.class);
@@ -436,25 +510,37 @@ this.repository = repo;
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("entryDate")));
+			orderList.add(cb.asc(b.get("companyName")));
 			
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			if(StringUtils.isNotBlank(req.getBrokerCompanyYn()) ) {
+				Predicate n2 = cb.equal(b.get("brokerYn"), req.getBrokerCompanyYn());
+				query.where(n1,n2).orderBy(orderList);
 
-			query.where(n1).orderBy(orderList);
+				// Get Result
+				TypedQuery<InsuranceCompanyMaster> result = em.createQuery(query);
+				result.setFirstResult(limit * offset);
+				result.setMaxResults(offset);
+				companyList = result.getResultList();
+				
+			} else {
+				query.where(n1).orderBy(orderList);
 
-			// Get Result
-			TypedQuery<InsuranceCompanyMaster> result = em.createQuery(query);
-			result.setFirstResult(limit * offset);
-			result.setMaxResults(offset);
-			companyList = result.getResultList();
+				// Get Result
+				TypedQuery<InsuranceCompanyMaster> result = em.createQuery(query);
+				result.setFirstResult(limit * offset);
+				result.setMaxResults(offset);
+				companyList = result.getResultList();
+			}
+			
+			
 			
 			// Map
 			for (InsuranceCompanyMaster data : companyList) {
 				InsuranceCompanyMasterRes res = new InsuranceCompanyMasterRes();
 
-				res = mapper.map(data, InsuranceCompanyMasterRes.class);
-				mapper.getConfiguration().setAmbiguityIgnored(true);
+				res = dozerMapper.map(data, InsuranceCompanyMasterRes.class);
 				resList.add(res);
 			}
 
@@ -470,13 +556,13 @@ this.repository = repo;
 	@Override
 	public List<InsuranceCompanyMasterRes> getActiveInsCompanyDetails(InsuranceCompanyMasterGetAllReq req) {
 		List<InsuranceCompanyMasterRes> resList = new ArrayList<InsuranceCompanyMasterRes>();
-		ModelMapper mapper = new ModelMapper();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
 			List<InsuranceCompanyMaster> insList = new ArrayList<InsuranceCompanyMaster>();	
 
 			//Pagination
 			int limit=StringUtils.isBlank(req.getLimit())?0:Integer.valueOf(req.getLimit());
-			int offset=StringUtils.isBlank(req.getOffset())?0:Integer.valueOf(req.getOffset());
+			int offset=StringUtils.isBlank(req.getOffset())?100:Integer.valueOf(req.getOffset());
 			
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -503,20 +589,31 @@ this.repository = repo;
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("status"), "Y");
 
-			query.where(n1,n2).orderBy(orderList);
+			if(StringUtils.isNotBlank(req.getBrokerCompanyYn()) ) {
+				Predicate n3 = cb.equal(b.get("brokerYn"), req.getBrokerCompanyYn());
+				query.where(n1,n2,n3).orderBy(orderList);
 
-			// Get Result
-			TypedQuery<InsuranceCompanyMaster> result = em.createQuery(query);
-			result.setFirstResult(limit * offset);
-			result.setMaxResults(offset);
-			insList = result.getResultList();
+				// Get Result
+				TypedQuery<InsuranceCompanyMaster> result = em.createQuery(query);
+				result.setFirstResult(limit * offset);
+				result.setMaxResults(offset);
+				insList = result.getResultList();
+				
+			} else {
+				query.where(n1,n2).orderBy(orderList);
+
+				// Get Result
+				TypedQuery<InsuranceCompanyMaster> result = em.createQuery(query);
+				result.setFirstResult(limit * offset);
+				result.setMaxResults(offset);
+				insList = result.getResultList();
+			}
 
 			// Map
 			for (InsuranceCompanyMaster data : insList) {
 				InsuranceCompanyMasterRes res = new InsuranceCompanyMasterRes();
 
-				res = mapper.map(data, InsuranceCompanyMasterRes.class);
-				mapper.getConfiguration().setAmbiguityIgnored(true);
+				res = dozerMapper.map(data, InsuranceCompanyMasterRes.class);
 				resList.add(res);
 			}
 
@@ -534,7 +631,7 @@ this.repository = repo;
 	@Override
 	public InsuranceCompanyMasterRes getByCompanyId(InsuranceCompanyMasterGetReq req) {
 		InsuranceCompanyMasterRes res = new InsuranceCompanyMasterRes();
-		ModelMapper mapper = new ModelMapper();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
 		try {
@@ -573,10 +670,9 @@ this.repository = repo;
 			// Get Result
 			TypedQuery<InsuranceCompanyMaster> result = em.createQuery(query);			
 			list =  result.getResultList();  
-			res = mapper.map(list.get(0) , InsuranceCompanyMasterRes.class);
+			res = dozerMapper.map(list.get(0) , InsuranceCompanyMasterRes.class);
 			res.setEntryDate(list.get(0).getEntryDate());
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
-			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -587,7 +683,7 @@ this.repository = repo;
 	//********************************************* DROPDOWN INS COMPANY********************************\\
 
 	@Override
-	public List<DropDownRes> getInscompanyMasterDropdown() {
+	public List<DropDownRes> getInscompanyMasterDropdown(CompanyDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 			Date today  = new Date();
@@ -623,14 +719,23 @@ this.repository = repo;
 			
 		    // Where	
 			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
-			javax.persistence.criteria.Predicate n2 = cb.notEqual(c.get("brokerYn"), "Y");
-			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			
-			query.where(n1,n2,n3).orderBy(orderList);
-			
-			// Get Result
-			TypedQuery<InsuranceCompanyMaster> result = em.createQuery(query);			
-			list =  result.getResultList();  
+			if(StringUtils.isNotBlank(req.getBrokerCompanyYn()) ) {
+				Predicate n3 = cb.equal(c.get("brokerYn"), req.getBrokerCompanyYn());
+				query.where(n1,n2,n3).orderBy(orderList);
+
+				// Get Result
+				TypedQuery<InsuranceCompanyMaster> result = em.createQuery(query);
+				list = result.getResultList();
+				
+			} else {
+				query.where(n1,n2).orderBy(orderList);
+
+				// Get Result
+				TypedQuery<InsuranceCompanyMaster> result = em.createQuery(query);
+				list = result.getResultList();
+			}
 			
 			for(InsuranceCompanyMaster data : list ) {
 				// Response
@@ -652,7 +757,7 @@ this.repository = repo;
 	@Override
 	public List<BrokerCompanyRes> getallbrokerCompanyDetails(InsuranceCompanyMasterGetAllReq req) {
 		List<BrokerCompanyRes> resList = new ArrayList<BrokerCompanyRes>();
-		ModelMapper mapper = new ModelMapper();
+		 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
 			List<InsuranceCompanyMaster> companyList = new ArrayList<InsuranceCompanyMaster>();
 			//Pagination
@@ -679,7 +784,7 @@ this.repository = repo;
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(b.get("entryDate")));
+			orderList.add(cb.desc(b.get("companyName")));
 			
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
@@ -698,8 +803,7 @@ this.repository = repo;
 			for (InsuranceCompanyMaster data : companyList) {
 				BrokerCompanyRes res = new BrokerCompanyRes();
 
-				res = mapper.map(data, BrokerCompanyRes.class);
-				mapper.getConfiguration().setAmbiguityIgnored(true);
+				res = dozerMapper.map(data, BrokerCompanyRes.class);
 				resList.add(res);
 			}
 

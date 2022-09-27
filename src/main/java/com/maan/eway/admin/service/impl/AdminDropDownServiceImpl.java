@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import com.maan.eway.admin.service.AdminDropDownService;
 import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.common.service.DropDownService;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.req.SubUserTypeReq;
 import com.maan.eway.res.DropDownRes;
@@ -210,5 +209,24 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 			return resList;
 		}
 	
+		@Override
+		public List<DropDownRes> getProductIcons() {
+			List<DropDownRes> resList = new ArrayList<DropDownRes>();
+			try {
+				List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("PRODUCT_ICONS", "Y");
 	
+				for (ListItemValue data : getList) {
+					DropDownRes res = new DropDownRes();
+					res.setCode(data.getItemCode());
+					res.setCodeDesc(data.getItemValue());
+					resList.add(res);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Exception is ---> " + e.getMessage());
+				return null;
+			}
+			return resList;
+		}
+
 }

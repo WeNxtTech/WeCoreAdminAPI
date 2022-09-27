@@ -40,7 +40,7 @@ import java.util.List;
 */
 @RestController
 @RequestMapping("/master")
-@Api(tags = "MASTER : Product Master ", description = "API's")
+@Api(tags = "1. GLOBAL CONFIG : Product Master ", description = "API's")
 public class ProductMasterController {
 
 	@Autowired
@@ -50,50 +50,73 @@ public class ProductMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
-		@PostMapping("/insertproduct")
-		@ApiOperation(value = "This method is Insert Product Details")
-		public ResponseEntity<CommonRes> insertProduct(@RequestBody ProductMasterSaveReq req) {
+	@PostMapping("/insertproduct")
+	@ApiOperation(value = "This method is Insert Product Details")
+	public ResponseEntity<CommonRes> insertProduct(@RequestBody ProductMasterSaveReq req) {
 
-			reqPrinter.reqPrint(req);
-			CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
 
-			List<Error> validation = productService.validateProductDetails(req);
-			// validation
-			if (validation != null && validation.size() != 0) {
-				data.setCommonResponse(null);
-				data.setIsError(true);
-				data.setErrorMessage(validation);
-				data.setMessage("Failed");
-				return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+		List<Error> validation = productService.validateProductDetails(req);
+		// validation
+		if (validation != null && validation.size() != 0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
 
+		} else {
+
+			// Get All
+			SuccessRes res = productService.insertProduct(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 			} else {
-
-				// Get All
-				SuccessRes res = productService.insertProduct(req);
-				data.setCommonResponse(res);
-				data.setIsError(false);
-				data.setErrorMessage(Collections.emptyList());
-				data.setMessage("Success");
-
-				if (res != null) {
-					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-				}
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
-
 		}
+
+	}
+	
+	//  Get All Product Master
+	
+	@PostMapping("/getallproductdetails")
+	@ApiOperation("This method is getall Product Details")
+	public ResponseEntity<CommonRes> getallProductDetails(@RequestBody ProductMasterGetAllReq req)
+	{
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
 		
-		//  Get All Product Master
+		List<ProductMasterRes> res = productService.getallProductDetails(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
 		
-		@PostMapping("/getallproductdetails")
-		@ApiOperation("This method is getall Product Details")
-		public ResponseEntity<CommonRes> getallProductDetails(@RequestBody ProductMasterGetAllReq req)
+		if(res!= null) {
+			return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
+		}
+		else {
+			return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	//  Get Active Product Master
+	
+		@PostMapping("/getactiveproduct")
+		@ApiOperation("This method is get Active Product Details")
+		public ResponseEntity<CommonRes> getActiveProductDetails(@RequestBody ProductMasterGetAllReq req)
 		{
 			CommonRes data = new CommonRes();
 			reqPrinter.reqPrint(req);
 			
-			List<ProductMasterRes> res = productService.getallProductDetails(req);
+			List<ProductMasterRes> res = productService.getActiveProductDetails(req);
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);
@@ -106,29 +129,6 @@ public class ProductMasterController {
 				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
 			}
 		}
-		
-	//  Get Active Product Master
-		
-			@PostMapping("/getactiveproduct")
-			@ApiOperation("This method is get Active Product Details")
-			public ResponseEntity<CommonRes> getActiveProductDetails(@RequestBody ProductMasterGetAllReq req)
-			{
-				CommonRes data = new CommonRes();
-				reqPrinter.reqPrint(req);
-				
-				List<ProductMasterRes> res = productService.getActiveProductDetails(req);
-				data.setCommonResponse(res);
-				data.setErrorMessage(Collections.emptyList());
-				data.setIsError(false);
-				data.setMessage("Success");
-				
-				if(res!= null) {
-					return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
-				}
-				else {
-					return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
-				}
-			}
 		
 		// Get By Product Id
 		
@@ -152,7 +152,7 @@ public class ProductMasterController {
 	}
 		
 		
-		@PostMapping("/getproductdetails")
+/*		@PostMapping("/getproductdetails")
 		@ApiOperation("This Method is to get by Product id")
 		public ResponseEntity<CommonRes> getTodayProductCode(@RequestBody ProductMasterGetReq req)
 		{
@@ -169,10 +169,10 @@ public class ProductMasterController {
 		} else {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
-	}
+	} 
 		
 		// Product Master Drop Down Type
-/*		@PostMapping("/dropdown/product")
+  		@PostMapping("/dropdown/product")
 		@ApiOperation(value = "This method is get Product Master Drop Down")
 
 		public ResponseEntity<CommonRes> getProductMasterDropdown() {
@@ -196,24 +196,6 @@ public class ProductMasterController {
 		
 
 		
-		@GetMapping("/dropdown/producticons")
-		@ApiOperation(value = "This method is to UserType  Drop Down")
-		public ResponseEntity<CommonRes> getUserType() {
-			CommonRes data = new CommonRes();
-
-			// Save
-			List<DropDownRes> res = productService.getProductIcons();
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
-
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
-
-		}
+	
 		
 }

@@ -80,7 +80,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 		SuccessRes res = new SuccessRes();
 		ProductMaster saveData = new ProductMaster();
 		List<ProductMaster> list = new ArrayList<ProductMaster>();
-		 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		
 		try {
 			Integer amendId = 0 ;
@@ -198,9 +198,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 	
 	@Override
 	public List<Error> validateProductDetails(ProductMasterSaveReq req) {
-	
 		List<Error> errorList = new ArrayList<Error>();
-	
 		try {
 		
 			if (StringUtils.isBlank(req.getProductName())) {
@@ -210,12 +208,12 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			}else if (StringUtils.isBlank(req.getProductId())) {
 				List<ProductMaster> ProductList = getProductNameExistDetails(req.getProductName());
 				if (ProductList.size()>0 ) {
-					errorList.add(new Error("01", "Product", "This Product Name Alrady Exist "));
+					errorList.add(new Error("01", "Product", "This Product Name Already Exist "));
 				}
 			}else  {
 				List<ProductMaster> ProductList =  getProductNameExistDetails(req.getProductName() );
 				if (ProductList.size()>0 &&  (! req.getProductId().equalsIgnoreCase(ProductList.get(0).getProductId().toString())) ) {
-					errorList.add(new Error("01", "Product", "This Product Name Alrady Exist "));
+					errorList.add(new Error("01", "Product", "This Product Name Already Exist "));
 				}
 				
 			}
@@ -298,17 +296,17 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			}
 			
 			if(StringUtils.isBlank(req.getSumInsuredStart())) {
-				errorList.add(new Error("02", "Sum Insured Start", "Plese Enter Sum Insured Start in  Product Row No : " ));
+				errorList.add(new Error("02", "Sum Insured Start", "Plese Enter Sum Insured Start  " ));
 			} else if (! req.getSumInsuredStart().matches("[0-9.]+") ) {
-				errorList.add(new Error("02", "Sum Insured Start", "Plese Enter Valid Number Sum Insured Start in  Product Row No : "  ));
+				errorList.add(new Error("02", "Sum Insured Start", "Plese Enter Valid Number Sum Insured Start "  ));
 			}
 			if(StringUtils.isBlank(req.getSumInsuredEnd())) {
-				errorList.add(new Error("02", "Sum Insured End", "Plese Enter Sum Insured End in  Product Row No : " ));
+				errorList.add(new Error("02", "Sum Insured End", "Plese Enter Sum Insured End " ));
 			} else if (! req.getSumInsuredEnd().matches("[0-9.]+") ) {
-				errorList.add(new Error("02", "Sum Insured End", "Plese Enter Valid Number Sum Insured End in  Product Row No : "  ));
+				errorList.add(new Error("02", "Sum Insured End", "Plese Enter Valid Number Sum Insured End  "  ));
 			} else if (StringUtils.isNotBlank(req.getSumInsuredStart()) && StringUtils.isBlank(req.getSumInsuredEnd())  ) {
 				if (Long.valueOf(req.getSumInsuredStart()) > Long.valueOf(req.getSumInsuredEnd()) ) {
-					errorList.add(new Error("02", "Sum Insured End", "Sum Insured Start Greater Than Sum Insured End in  Product Row No : " ));
+					errorList.add(new Error("02", "Sum Insured End", "Sum Insured Start Greater Than Sum Insured End " ));
 				}
 			}
 			
@@ -435,12 +433,13 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 	@Override
 	public List<ProductMasterRes> getallProductDetails(ProductMasterGetAllReq req) {
 		List<ProductMasterRes> resList = new ArrayList<ProductMasterRes>();
-		 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+
 		try {
 			List<ProductMaster> list = new ArrayList<ProductMaster>();
 			//Pagination
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 0 : Integer.valueOf(req.getOffset());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 	
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -461,7 +460,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("productId")));
+			orderList.add(cb.asc(b.get("productName")));
 			
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
@@ -495,7 +494,8 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 	@Override
 	public ProductMasterRes getByProductCode(ProductMasterGetReq req) {
 		ProductMasterRes res = new ProductMasterRes();
-		 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	
 		try {
@@ -607,7 +607,8 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 	@Override
 	public List<ProductMasterRes> getActiveProductDetails(ProductMasterGetAllReq req) {
 		List<ProductMasterRes> resList = new ArrayList<ProductMasterRes>();
-		 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+
 		try {
 			List<ProductMaster> list = new ArrayList<ProductMaster>();
 	
@@ -634,7 +635,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("productId")));
+			orderList.add(cb.asc(b.get("productName")));
 	
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
@@ -670,7 +671,8 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 		@Override
 		public ProductMasterRes getTodayProductCode(ProductMasterGetReq req) {
 			ProductMasterRes res = new ProductMasterRes();
-			 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+			DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+
 			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	
 			try {
@@ -719,23 +721,5 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			return res;
 		}
 	
-		@Override
-		public List<DropDownRes> getProductIcons() {
-			List<DropDownRes> resList = new ArrayList<DropDownRes>();
-			try {
-				List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("PRODUCT_ICONS", "Y");
-	
-				for (ListItemValue data : getList) {
-					DropDownRes res = new DropDownRes();
-					res.setCode(data.getItemCode());
-					res.setCodeDesc(data.getItemValue());
-					resList.add(res);
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.info("Exception is ---> " + e.getMessage());
-				return null;
-			}
-			return resList;
-		}
+		
 	}

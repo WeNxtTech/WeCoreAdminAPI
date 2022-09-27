@@ -47,7 +47,7 @@ import java.util.List;
 */
 @RestController
 @RequestMapping("/master")
-@Api(tags = "MASTER : SubCover Master ", description = "API's")
+@Api(tags = "1. GLOBAL CONFIG : SubCover Master ", description = "API's")
 public class SubCoverMasterController {
 
 	@Autowired

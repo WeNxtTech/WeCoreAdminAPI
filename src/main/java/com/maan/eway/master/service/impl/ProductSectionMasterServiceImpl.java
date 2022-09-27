@@ -131,6 +131,7 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 		}
 		return errorList;
 	}
+	
 	@Transactional
 	@Override
 	public SuccessRes insertSection(List<ProductSectionMasterReq> reqList) {
@@ -221,7 +222,7 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			}
 			
 				
-	} catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
 			return null;
@@ -229,49 +230,7 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 		return res;
 	}
 	
-	public Long getMasterTableCount(String productId , String companyId) {
-	
-		Long data = 0L;
-		try {
-	
-			List<Long> list = new ArrayList<Long>();
-			// Find Latest Record
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<Long> query = cb.createQuery(Long.class);
-	
-			// Find All
-			Root<ProductSectionMaster> b = query.from(ProductSectionMaster.class);
-	
-			// Select
-			query.multiselect(cb.count(b));
-	
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<ProductSectionMaster> ocpm1 = effectiveDate.from(ProductSectionMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			Predicate a1 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-//			Predicate a2 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-			Predicate a3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			effectiveDate.where(a1,a3);
-	
-			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			Predicate n2 = cb.equal(b.get("productId"), productId);
-			Predicate n3 = cb.equal(b.get("companyId"), companyId);
-		
-			query.where(n1,n2,n3);
-			// Get Result
-			TypedQuery<Long> result = em.createQuery(query);
-			list = result.getResultList();
-	
-			data = list.get(0);
-	
-		} catch (Exception e) {
-			e.printStackTrace();
-			log.info(e.getMessage());
-	
-		}
-		return data;
-	}
+
 	///*********************************************************************GET ALL******************************************************\\
 	@Override
 	public List<ProductSectionMasterRes> getallSectionDetails(ProductSectionMasterGetAllReq req) {

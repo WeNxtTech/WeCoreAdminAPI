@@ -65,6 +65,9 @@ public class InsuranceCompanyMasterSaveReq {
 
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
+	
+	@JsonProperty("TiraCode")
+	private String tiraCode;
 
 
 	@JsonProperty("Remarks")

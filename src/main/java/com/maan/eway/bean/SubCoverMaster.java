@@ -59,9 +59,16 @@ private static final long serialVersionUID = 1L;
     private Integer    subCoverId;
 
     @Id
-    @Column(name="COMPANY_ID", nullable=false, length=100)
-    private String     companyId;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EFFECTIVE_DATE_START", nullable=false)
+    private Date       effectiveDateStart ;
 
+    @Id
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EFFECTIVE_DATE_END", nullable=false)
+    private Date       effectiveDateEnd ;
+
+    
     @Column(name="SUB_COVER_NAME",length=100)
     private String subCoverName;
 
@@ -69,14 +76,7 @@ private static final long serialVersionUID = 1L;
     private String subCoverDesc;
     
     
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EFFECTIVE_DATE_START", nullable=false)
-    private Date       effectiveDateStart ;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EFFECTIVE_DATE_END", nullable=false)
-    private Date       effectiveDateEnd ;
-
+   
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ENTRY_DATE")
     private Date       entryDate ;
@@ -86,6 +86,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="CORE_APP_CODE", length=20)
     private String     coreAppCode ;
+    
+    @Column(name="TIRA_CODE", length=20)
+    private String     tiraCode ;
 
     @Column(name="AMEND_ID")
     private Integer     amendId ;
@@ -93,7 +96,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="REMARKS", length=100)
     private String     remarks ;
 
-
+    @Column(name="CREATED_BY", length=100)
+    private String  createdBy;
 }
 
 

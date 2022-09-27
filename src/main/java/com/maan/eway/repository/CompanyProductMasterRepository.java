@@ -12,12 +12,11 @@
 
 package com.maan.eway.repository;
 
-import java.math.BigDecimal;
-
-import com.maan.eway.bean.ProductMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import com.maan.eway.bean.ProductMasterId;
+
+import com.maan.eway.bean.CompanyProductMaster;
+import com.maan.eway.bean.CompanyProductMasterId;
 /**
  * <h2>ProductMasterRepository</h2>
  *
@@ -28,7 +27,7 @@ import com.maan.eway.bean.ProductMasterId;
  
  
  
-public interface ProductMasterRepository  extends JpaRepository<ProductMaster,ProductMasterId > , JpaSpecificationExecutor<ProductMaster> {
+public interface CompanyProductMasterRepository  extends JpaRepository<CompanyProductMaster,CompanyProductMasterId > , JpaSpecificationExecutor<CompanyProductMaster> {
 
 
 }

@@ -263,6 +263,14 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 		List<ProductReferalGetRes> resList = new ArrayList<ProductReferalGetRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			
+			
 			List<ProductReferalMaster> referalList = new ArrayList<ProductReferalMaster>();
 			//Pagination
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
@@ -285,7 +293,8 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 			Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
 			Predicate a2 = cb.equal(b.get("productId"), ocpm1.get("productId"));
 			Predicate a3 = cb.equal(b.get("companyId"), ocpm1.get("companyId"));
-			effectiveDate.where(a1,a2,a3);
+			Predicate a4 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
+			effectiveDate.where(a1,a2,a3,a4);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -328,7 +337,13 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
 			List<ProductReferalMaster> list = new ArrayList<ProductReferalMaster>();
-	
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			
 			//Pagination
 			int limit=StringUtils.isBlank(req.getLimit())?0:Integer.valueOf(req.getLimit());
 			int offset=StringUtils.isBlank(req.getOffset())?10:Integer.valueOf(req.getOffset());
@@ -350,7 +365,8 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 			Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
 			Predicate a2 = cb.equal(b.get("productId"), ocpm1.get("productId"));
 			Predicate a3 = cb.equal(b.get("companyId"), ocpm1.get("companyId"));
-			effectiveDate.where(a1,a2,a3);
+			Predicate a4 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
+			effectiveDate.where(a1,a2,a3,a4);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -395,6 +411,13 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	
 		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			
 			// Criteria
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<ProductReferalMaster> query = cb.createQuery(ProductReferalMaster.class);
@@ -413,7 +436,8 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("referalId"),ocpm1.get("referalId") );
 			javax.persistence.criteria.Predicate a2 = cb.equal(c.get("productId"),ocpm1.get("productId") ) ;
 			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("companyId"),ocpm1.get("companyId") ) ;
-			effectiveDate.where(a1,a2,a3);
+			javax.persistence.criteria.Predicate a4 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
+			effectiveDate.where(a1,a2,a3,a4);
 			
 			
 			
@@ -453,6 +477,13 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 		List<ProductReferalGetRes> resList = new ArrayList<ProductReferalGetRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			
 			List<ProductReferalMaster> list = new ArrayList<ProductReferalMaster>();
 	
 			// Find Latest Record
@@ -470,7 +501,8 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 			Root<ProductReferalMaster> ocpm1 = effectiveDate.from(ProductReferalMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
-			effectiveDate.where(a1);
+			Predicate a2 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
+			effectiveDate.where(a1,a2);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -537,7 +569,7 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 			Root<ReferalMaster> ocpm1 = effectiveDate.from(ReferalMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
-			Predicate a2 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"),today);
+			Predicate a2 = cb.greaterThanOrEqualTo(b.get("effectiveDateStart"),today);
 			effectiveDate.where(a1,a2);
 	
 			// Order By
@@ -631,7 +663,7 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 			Predicate a1 = cb.equal(c.get("referalId"),ocpm1.get("referalId") );
 			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId") );
 			Predicate a3 = cb.equal(c.get("productId"), ocpm1.get("productId") );
-			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a4 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1,a2,a3,a4);
 			
 		    // Where	

@@ -10,6 +10,7 @@ import com.maan.eway.master.req.BankMasterGetReq;
 import com.maan.eway.master.req.BankMasterSaveReq;
 import com.maan.eway.master.req.CoverMasterGetAllReq;
 import com.maan.eway.master.req.CustomerSaveReq;
+import com.maan.eway.master.req.SubCoverChangeStatusReq;
 import com.maan.eway.master.req.SubCoverMasterGetAllReq;
 import com.maan.eway.master.req.SubCoverMasterGetReq;
 import com.maan.eway.master.req.SubCoverMasterSaveReq;
@@ -36,5 +37,7 @@ public interface SubCoverMasterService  {
 	SubCoverMasterGetRes getBySubCoverId(SubCoverMasterGetReq req);
 
 	List<SubCoverMasterGetAllRes> getActiveSubCover(SubCoverMasterGetAllReq req);
+
+	SuccessRes changeStatusOfSubCover(SubCoverChangeStatusReq req);
 
 }

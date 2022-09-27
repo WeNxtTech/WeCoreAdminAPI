@@ -7,10 +7,12 @@ package com.maan.eway.master.controller;
 
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.ProductChangeStatusReq;
 import com.maan.eway.master.req.ProductSectionsGetReq;
 import com.maan.eway.master.req.SectionMasterGetAllReq;
 import com.maan.eway.master.req.SectionMasterGetReq;
 import com.maan.eway.master.req.SectionMasterSaveReq;
+import com.maan.eway.master.req.SubCoverChangeStatusReq;
 import com.maan.eway.master.req.SubCoverMasterGetAllReq;
 import com.maan.eway.master.req.SubCoverMasterGetReq;
 import com.maan.eway.master.req.SubCoverMasterSaveReq;
@@ -151,5 +153,25 @@ public class SubCoverMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
+		
+		@PostMapping("/subcover/changestatus")
+		@ApiOperation(value = "This method is get SubCover Master Drop Down")
+		public ResponseEntity<CommonRes> changeStatusOfSubCover(@RequestBody SubCoverChangeStatusReq req) {
+
+			CommonRes data = new CommonRes();
+			// Change Status
+			SuccessRes res = service.changeStatusOfSubCover(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+
+		}
 		
 }

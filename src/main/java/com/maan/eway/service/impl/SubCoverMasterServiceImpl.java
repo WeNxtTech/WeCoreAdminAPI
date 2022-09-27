@@ -17,6 +17,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -32,10 +33,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.SubCoverMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.SubCoverChangeStatusReq;
 import com.maan.eway.master.req.SubCoverMasterGetAllReq;
 import com.maan.eway.master.req.SubCoverMasterGetReq;
 import com.maan.eway.master.req.SubCoverMasterSaveReq;
@@ -328,6 +331,13 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 	List<SubCoverMasterGetAllRes> resList = new ArrayList<SubCoverMasterGetAllRes>();
 	DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 	try {
+		Date today  = new Date();
+		Calendar cal = new GregorianCalendar(); 
+		cal.setTime(today);
+		cal.set(Calendar.HOUR_OF_DAY, 23);
+		cal.set(Calendar.MINUTE, 1);
+		today   = cal.getTime();
+		
 		List<SubCoverMaster> coverList = new ArrayList<SubCoverMaster>();
 		//Pagination
 		int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
@@ -348,7 +358,8 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 		Root<SubCoverMaster> ocpm1 = effectiveDate.from(SubCoverMaster.class);
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(ocpm1.get("subCoverId"), b.get("subCoverId"));
-		effectiveDate.where(a1);
+		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
+		effectiveDate.where(a1,a2);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -387,9 +398,15 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 	public SubCoverMasterGetRes getBySubCoverId(SubCoverMasterGetReq req) {
 		SubCoverMasterGetRes res = new SubCoverMasterGetRes();
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-
+		
 	try {
+		Date today  = new Date();
+		Calendar cal = new GregorianCalendar(); 
+		cal.setTime(today);
+		cal.set(Calendar.HOUR_OF_DAY, 23);
+		cal.set(Calendar.MINUTE, 1);
+		today   = cal.getTime();
+		
 		// Criteria
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SubCoverMaster> query = cb.createQuery(SubCoverMaster.class);
@@ -406,7 +423,8 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 		Root<SubCoverMaster> ocpm1 = effectiveDate.from(SubCoverMaster.class);
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 		javax.persistence.criteria.Predicate a1 = cb.equal(c.get("subCoverId"),ocpm1.get("subCoverId") );
-		effectiveDate.where(a1);
+		javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(c.get("effectiveDateStart"),today);
+		effectiveDate.where(a1,a2);
 	
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -440,8 +458,14 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 		List<SubCoverMasterGetAllRes> resList = new ArrayList<SubCoverMasterGetAllRes>();
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			
 			List<SubCoverMaster> list = new ArrayList<SubCoverMaster>();
-	
 			//Pagination
 			int limit=StringUtils.isBlank(req.getLimit())?0:Integer.valueOf(req.getLimit());
 			int offset=StringUtils.isBlank(req.getOffset())?100:Integer.valueOf(req.getOffset());
@@ -461,7 +485,8 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 			Root<SubCoverMaster> ocpm1 = effectiveDate.from(SubCoverMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("subCoverId"), b.get("subCoverId"));
-			effectiveDate.where(a1);
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -495,6 +520,41 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 	
 		}
 		return resList;
+	}
+	
+	@Override
+	public SuccessRes changeStatusOfSubCover(SubCoverChangeStatusReq req) {
+		SuccessRes res = new SuccessRes();
+		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 30);
+			today   = cal.getTime();
+			
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			// create update
+			CriteriaUpdate<SubCoverMaster> update = cb.createCriteriaUpdate(SubCoverMaster.class);
+			Root<SubCoverMaster> c = update.from(SubCoverMaster.class);
+			// set update and where clause
+			update.set("status", req.getStatus());
+			
+			 // Where	
+			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("subCoverId"), req.getSubCoverId());
+			javax.persistence.criteria.Predicate n2 = cb.greaterThanOrEqualTo(c.get("effectiveDateStart"), today);
+			update.where(n1,n2);
+			
+			// perform update
+			em.createQuery(update).executeUpdate();
+			res.setResponse("Status Changed");
+			res.setSuccessId(req.getSubCoverId());
+		} catch(Exception e ) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return res;
 	}
 	
 

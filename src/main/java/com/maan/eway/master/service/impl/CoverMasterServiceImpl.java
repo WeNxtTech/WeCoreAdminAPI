@@ -360,6 +360,12 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 		List<CoverMasterRes> resList = new ArrayList<CoverMasterRes>();
 		ModelMapper mapper = new ModelMapper();
 		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
 			List<CoverMaster> coverList = new ArrayList<CoverMaster>();
 			// Pagination
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
@@ -380,7 +386,9 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			Root<CoverMaster> ocpm1 = effectiveDate.from(CoverMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
-			effectiveDate.where(a1);
+			Predicate a2 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
+			
+			effectiveDate.where(a1,a2);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -425,6 +433,13 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
 		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			
 			// Criteria
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<CoverMaster> query = cb.createQuery(CoverMaster.class);
@@ -441,8 +456,8 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			Root<CoverMaster> ocpm1 = effectiveDate.from(CoverMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("coverId"), ocpm1.get("coverId"));
-
-			effectiveDate.where(a1);
+			javax.persistence.criteria.Predicate a2 = cb.greaterThanOrEqualTo(c.get("effectiveDateStart"),today);
+			effectiveDate.where(a1,a2);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -481,7 +496,12 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 		ModelMapper mapper = new ModelMapper();
 		try {
 			List<CoverMaster> list = new ArrayList<CoverMaster>();
-
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
 			// Pagination
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
 			int offset = StringUtils.isBlank(req.getOffset()) ? 10 : Integer.valueOf(req.getOffset());
@@ -501,7 +521,8 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			Root<CoverMaster> ocpm1 = effectiveDate.from(CoverMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
-			effectiveDate.where(a1);
+			Predicate a2 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
+			effectiveDate.where(a1,a2);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();

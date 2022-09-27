@@ -241,7 +241,12 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		try {
 			// Criteria
-
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<DocumentMaster> query = cb.createQuery(DocumentMaster.class);
 			List<DocumentMaster> list = new ArrayList<DocumentMaster>();
@@ -256,7 +261,8 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 			Root<DocumentMaster> ocpm1 = effectiveDate.from(DocumentMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("documentId"), ocpm1.get("documentId"));
-			effectiveDate.where(a1);
+			javax.persistence.criteria.Predicate a2 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
+			effectiveDate.where(a1,a2);
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(c.get("effectiveDateStart")));
@@ -289,6 +295,13 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 		List<DocumentMasterGetRes> resList = new ArrayList<DocumentMasterGetRes>();
 		ModelMapper mapper = new ModelMapper();
 		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			
 			List<DocumentMaster> documentlist = new ArrayList<DocumentMaster>();
 			// Pagination
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
@@ -307,7 +320,8 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 			Root<DocumentMaster> ocpm1 = effectiveDate.from(DocumentMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("documentId"), b.get("documentId"));
-			effectiveDate.where(a1);
+			Predicate a2 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
+			effectiveDate.where(a1,a2);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -350,7 +364,13 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 		ModelMapper mapper = new ModelMapper();
 		try {
 			List<DocumentMaster> list = new ArrayList<DocumentMaster>();
-
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			
 			// Pagination
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
 			int offset = StringUtils.isBlank(req.getOffset()) ? 10 : Integer.valueOf(req.getOffset());
@@ -367,6 +387,7 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 			Root<DocumentMaster> ocpm1 = effectiveDate.from(DocumentMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("documentId"), b.get("documentId"));
+			Predicate a2 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
 			effectiveDate.where(a1);
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();

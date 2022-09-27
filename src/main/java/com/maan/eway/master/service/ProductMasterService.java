@@ -34,8 +34,6 @@ public interface ProductMasterService  {
 
 	List<DropDownRes> getProductMasterDropdown();
 
-	ProductMasterRes getTodayProductCode(ProductMasterGetReq req);
-
 	SuccessRes changeStatusOfProduct(ProductChangeStatusReq req);
 
 

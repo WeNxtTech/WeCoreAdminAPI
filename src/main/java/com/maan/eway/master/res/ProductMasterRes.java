@@ -19,8 +19,12 @@ public class ProductMasterRes implements Serializable {
 	private String productId;
 
 	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDate")
+	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateEnd")
+	private Date effectiveDateEnd;
 
 	@JsonProperty("ProductName")
 	private String productName;

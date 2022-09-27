@@ -747,7 +747,6 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 		@Override
 		public SuccessRes changeStatusOfProduct(ProductChangeStatusReq req) {
 			SuccessRes res = new SuccessRes();
-			SimpleDateFormat dbf = new SimpleDateFormat("yyyy-MM-dd"); 
 			try {
 				Date today  = new Date();
 				Calendar cal = new GregorianCalendar(); 

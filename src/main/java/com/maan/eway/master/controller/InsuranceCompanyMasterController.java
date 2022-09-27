@@ -19,10 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.master.req.BankMasterGetAllReq;
 import com.maan.eway.master.req.BankMasterGetReq;
+import com.maan.eway.master.req.CompanyChangeStatusReq;
 import com.maan.eway.master.req.CompanyDropDownReq;
 import com.maan.eway.master.req.InsuranceCompanyMasterGetAllReq;
 import com.maan.eway.master.req.InsuranceCompanyMasterGetReq;
 import com.maan.eway.master.req.InsuranceCompanyMasterSaveReq;
+import com.maan.eway.master.req.SubCoverChangeStatusReq;
 import com.maan.eway.master.res.BankMasterRes;
 import com.maan.eway.master.res.BrokerCompanyRes;
 import com.maan.eway.master.res.InsuranceCompanyMasterRes;
@@ -183,71 +185,23 @@ public class InsuranceCompanyMasterController {
 
 		}
 		
-//********************************************* BROKER COMPANY ******************************************\\		
-	//  Get All Broker Company 
-		
-		/*	@PostMapping("/getallbrokercompanydetails")
-			@ApiOperation("This method is getall Broker Company Details")
-			public ResponseEntity<CommonRes> getallbrokerCompanyDetails(@RequestBody InsuranceCompanyMasterGetAllReq req)
-			{
-				CommonRes data = new CommonRes();
-				reqPrinter.reqPrint(req);
-				
-				List<BrokerCompanyRes> res = insService.getallbrokerCompanyDetails(req);
-				data.setCommonResponse(res);
-				data.setErrorMessage(Collections.emptyList());
-				data.setIsError(false);
-				data.setMessage("Success");
-				
-				if(res!= null) {
-					return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
-				}
-				else {
-					return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
-				}
-			} */
+		@PostMapping("/company/changestatus")
+		@ApiOperation(value = "This method is get Company Change Status")
+		public ResponseEntity<CommonRes> changeStatusOfCompany(@RequestBody CompanyChangeStatusReq req) {
 
-	/*		// Get By Broker Company Id
-			
-			@PostMapping("/getbybrokercompanyid")
-			@ApiOperation("This Method is to get byBroker Company id")
-			public ResponseEntity<CommonRes> getByBrokerCompanyId(@RequestBody InsuranceCompanyMasterGetReq req)
-			{
 			CommonRes data = new CommonRes();
-			InsuranceCompanyMasterRes res = insService.getByBrokerCompanyId(req);
+			// Change Status
+			SuccessRes res = insService.changeStatusOfCompany(req);
 			data.setCommonResponse(res);
-			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
 			data.setMessage("Success");
 
 			if (res != null) {
 				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-
 			} else {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
+
 		}
-		
-		// Broker Company Drop Down Type
-		@GetMapping("/dropdown/brokercompany")
-		@ApiOperation(value = "This method is get Broker Company  Drop Down")
-
-		public ResponseEntity<CommonRes> getBrokercompanyDropdown() {
-
-			CommonRes data = new CommonRes();
-
-			// Save
-			List<DropDownRes> res = insService.getBrokercompanyDropdown();
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
-
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
-
-		}*/
 }

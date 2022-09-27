@@ -6,10 +6,12 @@
 package com.maan.eway.master.service;
 import java.util.List;
 
+import com.maan.eway.master.req.CompanyChangeStatusReq;
 import com.maan.eway.master.req.CompanyDropDownReq;
 import com.maan.eway.master.req.InsuranceCompanyMasterGetAllReq;
 import com.maan.eway.master.req.InsuranceCompanyMasterGetReq;
 import com.maan.eway.master.req.InsuranceCompanyMasterSaveReq;
+import com.maan.eway.master.req.SubCoverChangeStatusReq;
 import com.maan.eway.master.res.BrokerCompanyRes;
 import com.maan.eway.master.res.InsuranceCompanyMasterRes;
 import com.maan.eway.bean.InsuranceCompanyMaster;
@@ -33,7 +35,6 @@ List<InsuranceCompanyMasterRes> getallInsCompanyDetails(InsuranceCompanyMasterGe
 List<InsuranceCompanyMasterRes> getActiveInsCompanyDetails(InsuranceCompanyMasterGetAllReq req);
 InsuranceCompanyMasterRes getByCompanyId(InsuranceCompanyMasterGetReq req);
 List<DropDownRes> getInscompanyMasterDropdown(CompanyDropDownReq req);
-List<BrokerCompanyRes> getallbrokerCompanyDetails(InsuranceCompanyMasterGetAllReq req);
-
+SuccessRes changeStatusOfCompany(CompanyChangeStatusReq req);
 
 }

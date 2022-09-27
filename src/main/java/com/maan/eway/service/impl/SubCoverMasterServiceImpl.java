@@ -16,6 +16,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Order;
@@ -96,12 +97,18 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 		Date today = new Date();
 		cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
 		today = cal.getTime();
-		if (req.getEffectiveDate() == null || StringUtils.isBlank(req.getEffectiveDate().toString())) {
-			errorList.add(new Error("04", "EffectiveDate", "Please Enter Effective Date "));
+		if (req.getEffectiveDateStart() == null ) {
+			errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
 
-		} else if (req.getEffectiveDate().before(today)) {
-			errorList.add(new Error("04", "EffectiveDate", "Please Enter Effective Date  as Future Date"));
-		}
+		} else if (req.getEffectiveDateStart().before(today)) {
+			errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+		} else if (req.getEffectiveDateEnd() == null ) {
+			errorList.add(new Error("04", "EffectiveDateEnd", "Please Enter Effective Date End "));
+
+		} else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart()) || req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
+			errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date End  is After Effective Date Start"));
+		} 
+		
 		//Status Validation
 		if (StringUtils.isBlank(req.getStatus())) {
 			errorList.add(new Error("05", "Status", "Please Enter Status"));
@@ -147,16 +154,18 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 	try {
 		Integer amendId = 0 ;
 		Calendar cal = new GregorianCalendar();
-		cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
+		cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
 		Date startDate = cal.getTime() ;
 		Date today = new Date();
-		cal.setTime(req.getEffectiveDate());  cal.add(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
+		cal.setTime(req.getEffectiveDateStart());  cal.add(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
 		cal.set(Calendar.SECOND, today.getSeconds());
 		Date oldEndDate = cal.getTime() ;
-		cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
+		cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
 		cal.set(Calendar.SECOND, today.getSeconds());
 		Date effDate = cal.getTime();
-		Date endDate = sdformat.parse("12/12/2050");
+		Date endDate = req.getEffectiveDateEnd();
+		cal.setTime(req.getEffectiveDateEnd());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 50) ;
+		endDate = cal.getTime() ;
 		
 		
 		String subCoverId="";
@@ -407,43 +416,43 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 		cal.set(Calendar.MINUTE, 1);
 		today   = cal.getTime();
 		
-		// Criteria
+		List<SubCoverMaster> list = new ArrayList<SubCoverMaster>();
+		// Find Latest Record
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SubCoverMaster> query = cb.createQuery(SubCoverMaster.class);
-		List<SubCoverMaster> list = new ArrayList<SubCoverMaster>();
-		
+
 		// Find All
-		Root<SubCoverMaster>    c = query.from(SubCoverMaster.class);		
-		
+		Root<SubCoverMaster> b = query.from(SubCoverMaster.class);
+
 		// Select
-		query.select(c );
-		
+		query.select(b);
+
 		// Effective Date Max Filter
 		Subquery<Long> effectiveDate = query.subquery(Long.class);
 		Root<SubCoverMaster> ocpm1 = effectiveDate.from(SubCoverMaster.class);
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-		javax.persistence.criteria.Predicate a1 = cb.equal(c.get("subCoverId"),ocpm1.get("subCoverId") );
-		javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(c.get("effectiveDateStart"),today);
+		Predicate a1 = cb.equal(ocpm1.get("subCoverId"), b.get("subCoverId"));
+		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 		effectiveDate.where(a1,a2);
-	
+
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(c.get("subCoverName")));
-		
-	    // Where	
+		orderList.add(cb.desc(b.get("effectiveDateStart")));
 
-		javax.persistence.criteria.Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate);		
-		javax.persistence.criteria.Predicate n2 = cb.equal(c.get("subCoverId"),req.getSubCoverId()) ;
-		
-		query.where(n1 ,n2).orderBy(orderList);
-		
+		// Where
+		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+		Predicate n2 = cb.equal(b.get("subCoverId"), req.getSubCoverId() );
+
+		query.where(n1,n2).orderBy(orderList);
+
 		// Get Result
-		TypedQuery<SubCoverMaster> result = em.createQuery(query);			
-		list =  result.getResultList();  
+		TypedQuery<SubCoverMaster> result = em.createQuery(query);
+		list = result.getResultList();
 		res = dozerMapper.map(list.get(0) , SubCoverMasterGetRes.class);
 		res.setSubCoverId(String.valueOf(list.get(0).getSubCoverId()));
 		res.setEntryDate(list.get(0).getEntryDate());
 		res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
+		
 	} catch (Exception e) {
 		e.printStackTrace();
 		log.info("Exception is ---> " + e.getMessage());
@@ -528,25 +537,73 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 		try {
 			Date today  = new Date();
 			Calendar cal = new GregorianCalendar(); 
+			
+			SubCoverMaster updateRecord  = new SubCoverMaster();
 			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 0);
-			cal.set(Calendar.MINUTE, 30);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
 			today   = cal.getTime();
 			
+			List<SubCoverMaster> list = new ArrayList<SubCoverMaster>();
+			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			// create update
-			CriteriaUpdate<SubCoverMaster> update = cb.createCriteriaUpdate(SubCoverMaster.class);
-			Root<SubCoverMaster> c = update.from(SubCoverMaster.class);
-			// set update and where clause
-			update.set("status", req.getStatus());
+			CriteriaQuery<SubCoverMaster> query = cb.createQuery(SubCoverMaster.class);
+	
+			// Find All
+			Root<SubCoverMaster> b = query.from(SubCoverMaster.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<SubCoverMaster> ocpm1 = effectiveDate.from(SubCoverMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("subCoverId"), b.get("subCoverId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2);
+	
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("effectiveDateStart")));
+	
+			// Where
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("subCoverId"), req.getSubCoverId() );
+	
+			query.where(n1,n2).orderBy(orderList);
+	
+			// Get Result
+			TypedQuery<SubCoverMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			updateRecord = list.get(0) ;
+				
+			if (req.getStatus().equalsIgnoreCase("N") )	{
+					// Delete Old Records
+					cal.setTime(today);
+					cal.set(Calendar.HOUR_OF_DAY, 23);
+					cal.set(Calendar.MINUTE, 30);
+					today   = cal.getTime();
+					
+					// create update
+					CriteriaDelete<SubCoverMaster> delete = cb.createCriteriaDelete(SubCoverMaster.class);
+					Root<SubCoverMaster> pm = delete.from(SubCoverMaster.class);
+					
+					 // Where	
+					javax.persistence.criteria.Predicate n3 = cb.equal(pm.get("subCoverId"), req.getSubCoverId());
+					javax.persistence.criteria.Predicate n4 = cb.greaterThanOrEqualTo(pm.get("effectiveDateStart"), today);
+					delete.where(n3,n4);	
+					em.createQuery(delete).executeUpdate();
+					// Insert Updated Record
+					updateRecord.setStatus(req.getStatus());
+					repo.save(updateRecord);
+				
+			} else if (req.getStatus().equalsIgnoreCase("Y") ) {
+				// Insert Updated Record
+				updateRecord.setStatus(req.getStatus());
+				repo.save(updateRecord);
+			}
 			
-			 // Where	
-			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("subCoverId"), req.getSubCoverId());
-			javax.persistence.criteria.Predicate n2 = cb.greaterThanOrEqualTo(c.get("effectiveDateStart"), today);
-			update.where(n1,n2);
-			
-			// perform update
-			em.createQuery(update).executeUpdate();
 			res.setResponse("Status Changed");
 			res.setSuccessId(req.getSubCoverId());
 		} catch(Exception e ) {

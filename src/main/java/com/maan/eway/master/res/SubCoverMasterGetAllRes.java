@@ -24,9 +24,14 @@ public class SubCoverMasterGetAllRes implements Serializable {
     @JsonProperty("SubCoverDesc")
     private String subCoverDesc;
 
-    @JsonFormat(pattern = "dd/MM/yyyy")
-    @JsonProperty("EffectiveDate")
-    private Date effectiveDateStart;
+
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateEnd")
+	private Date effectiveDateEnd;
    
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EntryDate")

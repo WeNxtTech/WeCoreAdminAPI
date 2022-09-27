@@ -155,7 +155,7 @@ public class SubCoverMasterController {
 	}
 		
 		@PostMapping("/subcover/changestatus")
-		@ApiOperation(value = "This method is get SubCover Master Drop Down")
+		@ApiOperation(value = "This method is get SubCover Change Status")
 		public ResponseEntity<CommonRes> changeStatusOfSubCover(@RequestBody SubCoverChangeStatusReq req) {
 
 			CommonRes data = new CommonRes();

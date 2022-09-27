@@ -22,6 +22,7 @@ import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.ProductReferalChangeStatusReq;
 import com.maan.eway.master.req.ProductReferalGetAllReq;
 import com.maan.eway.master.req.ProductReferalGetReq;
 import com.maan.eway.master.req.ProductReferalMasterSaveReq;
@@ -51,6 +52,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
@@ -657,6 +659,33 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 			return null;
 		}
 		return resList;
+	}
+
+	@Override
+	public SuccessRes changestatusofProductReferal(ProductReferalChangeStatusReq req) {
+		SuccessRes res = new SuccessRes();
+		try {
+			CriteriaBuilder cb= em.getCriteriaBuilder();
+			// Create Update
+			CriteriaUpdate<ProductReferalMaster> update = cb.createCriteriaUpdate(ProductReferalMaster.class);
+			Root<ProductReferalMaster> c = update.from(ProductReferalMaster.class);
+			// set update and where clause
+			update.set("status",req.getStatus());
+			// Where
+			Predicate n1 = cb.equal(c.get("referalId"),req.getProductId());
+			Predicate n2 = cb.equal(c.get("companyId"),req.getCompanyId());
+			update.where(n1,n2);
+			//perform update
+			em.createQuery(update).executeUpdate();
+			res.setResponse("Status Changed");
+			res.setSuccessId(req.getProductId());
+			}
+		catch(Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->"+e.getMessage());
+			return null;
+		}
+		return res;
 	}
 	
 }

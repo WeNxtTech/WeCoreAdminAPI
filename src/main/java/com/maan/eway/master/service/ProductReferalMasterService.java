@@ -6,6 +6,7 @@
 package com.maan.eway.master.service;
 import com.maan.eway.bean.SessionMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.ProductReferalChangeStatusReq;
 import com.maan.eway.master.req.ProductReferalGetAllReq;
 import com.maan.eway.master.req.ProductReferalGetReq;
 import com.maan.eway.master.req.ProductReferalMasterSaveReq;
@@ -42,6 +43,8 @@ public interface ProductReferalMasterService  {
 	List<ReferalMasterRes> getallNonSelectedReferals(ProductReferalGetAllReq req);
 
 	List<DropDownRes> getProductReferalDropdown(ProductReferalGetReq req);
+
+	SuccessRes changestatusofProductReferal(ProductReferalChangeStatusReq req);
 
 	
 

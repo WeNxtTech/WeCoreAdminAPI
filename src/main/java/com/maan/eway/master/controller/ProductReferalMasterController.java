@@ -8,6 +8,7 @@ package com.maan.eway.master.controller;
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CoverMasterGetReq;
+import com.maan.eway.master.req.ProductReferalChangeStatusReq;
 import com.maan.eway.master.req.ProductReferalGetAllReq;
 import com.maan.eway.master.req.ProductReferalGetReq;
 import com.maan.eway.master.req.ProductReferalMasterSaveReq;
@@ -44,108 +45,102 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Collections;
 import java.util.List;
 
-
 /**
-* <h2>SectionMasterController</h2>
-*/
+ * <h2>SectionMasterController</h2>
+ */
 @RestController
 @RequestMapping("/master")
 @Api(tags = "COMPANY CONFIG : Section Master ", description = "API's")
 public class ProductReferalMasterController {
 
 	@Autowired
-	private  ProductReferalMasterService entityService;
+	private ProductReferalMasterService entityService;
 
 	@Autowired
-	private  PrintReqService reqPrinter;
-	
+	private PrintReqService reqPrinter;
+
 	// save
-		@PostMapping("/insertproductreferal")
-		@ApiOperation(value = "This method is Insert Referal Details")
-		public ResponseEntity<CommonRes> saveProductReferal(@RequestBody List<ProductReferalMasterSaveReq> req) {
+	@PostMapping("/insertproductreferal")
+	@ApiOperation(value = "This method is Insert Referal Details")
+	public ResponseEntity<CommonRes> saveProductReferal(@RequestBody List<ProductReferalMasterSaveReq> req) {
 
-			reqPrinter.reqPrint(req);
-			CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
 
-			List<Error> validation = entityService.validateProductReferalSave(req);
-			// validation
-			if (validation != null && validation.size() != 0) {
-				data.setCommonResponse(null);
-				data.setIsError(true);
-				data.setErrorMessage(validation);
-				data.setMessage("Failed");
-				return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+		List<Error> validation = entityService.validateProductReferalSave(req);
+		// validation
+		if (validation != null && validation.size() != 0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
 
-			} else {
+		} else {
 
-				// Get All
-				SuccessRes res = entityService.saveProductReferal(req);
-				data.setCommonResponse(res);
-				data.setIsError(false);
-				data.setErrorMessage(Collections.emptyList());
-				data.setMessage("Success");
-
-				if (res != null) {
-					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-				}
-			}
-
-		}
-		
-		//  Get All Section Master
-		
-		@PostMapping("/getallproductreferaldetails")
-		@ApiOperation("This method is getall Referal Details")
-		public ResponseEntity<CommonRes> getallSectionDetails(@RequestBody ProductReferalGetAllReq req)
-		{
-			CommonRes data = new CommonRes();
-			reqPrinter.reqPrint(req);
-			
-			List<ProductReferalGetRes> res = entityService.getallProductReferal(req);
+			// Get All
+			SuccessRes res = entityService.saveProductReferal(req);
 			data.setCommonResponse(res);
-			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
 			data.setMessage("Success");
-			
-			if(res!= null) {
-				return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
-			}
-			else {
-				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
 		}
-		
-	//  Get Active Section Master
-		
-			@PostMapping("/getactiveproductreferal")
-			@ApiOperation("This method is get Active Referal Details")
-			public ResponseEntity<CommonRes> getActiveReferalDetails(@RequestBody ProductReferalGetAllReq req)
-			{
-				CommonRes data = new CommonRes();
-				reqPrinter.reqPrint(req);
-				
-				List<ProductReferalGetRes> res = entityService.getActiveReferalDetails(req);
-				data.setCommonResponse(res);
-				data.setErrorMessage(Collections.emptyList());
-				data.setIsError(false);
-				data.setMessage("Success");
-				
-				if(res!= null) {
-					return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
-				}
-				else {
-					return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
-				}
-			}
-		
-		// Get By Section Id
-		
-		@PostMapping("/getbyproductreferalid")
-		@ApiOperation("This Method is to get by Referal id")
-		public ResponseEntity<CommonRes> getByReferalId(@RequestBody ProductReferalGetReq req)
-		{
+
+	}
+
+	// Get All Section Master
+
+	@PostMapping("/getallproductreferaldetails")
+	@ApiOperation("This method is getall Referal Details")
+	public ResponseEntity<CommonRes> getallSectionDetails(@RequestBody ProductReferalGetAllReq req) {
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+
+		List<ProductReferalGetRes> res = entityService.getallProductReferal(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	// Get Active Section Master
+
+	@PostMapping("/getactiveproductreferal")
+	@ApiOperation("This method is get Active Referal Details")
+	public ResponseEntity<CommonRes> getActiveReferalDetails(@RequestBody ProductReferalGetAllReq req) {
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+
+		List<ProductReferalGetRes> res = entityService.getActiveReferalDetails(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	// Get By Section Id
+
+	@PostMapping("/getbyproductreferalid")
+	@ApiOperation("This Method is to get by Referal id")
+	public ResponseEntity<CommonRes> getByReferalId(@RequestBody ProductReferalGetReq req) {
 		CommonRes data = new CommonRes();
 		ProductReferalGetRes res = entityService.getByReferalId(req);
 		data.setCommonResponse(res);
@@ -160,66 +155,83 @@ public class ProductReferalMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-		
-		@PostMapping("/getproductreferal")
-		@ApiOperation("This Method is to get by Product  Sections")
-		public ResponseEntity<CommonRes> getProductReferals(@RequestBody ProductReferalGetReq req) {
-			CommonRes data = new CommonRes();
-			List<ProductReferalGetRes> res = entityService.getProductReferals(req);
-			data.setCommonResponse(res);
-			data.setErrorMessage(Collections.emptyList());
-			data.setIsError(false);
-			data.setMessage("Success");
+
+	@PostMapping("/getproductreferal")
+	@ApiOperation("This Method is to get by Product  Sections")
+	public ResponseEntity<CommonRes> getProductReferals(@RequestBody ProductReferalGetReq req) {
+		CommonRes data = new CommonRes();
+		List<ProductReferalGetRes> res = entityService.getProductReferals(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@PostMapping("/getallnonselectedreferals")
+	@ApiOperation("This method is getall Section Details")
+	public ResponseEntity<CommonRes> getallNonSelectedReferals(@RequestBody ProductReferalGetAllReq req) {
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+
+		List<ReferalMasterRes> res = entityService.getallNonSelectedReferals(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@PostMapping("/dropdown/productreferals")
+	@ApiOperation(value = "This method is get Product Section Cover Master Drop Down")
+
+	public ResponseEntity<CommonRes> getReferalCoverMasterDropdown(@RequestBody ProductReferalGetReq req) {
+
+		CommonRes data = new CommonRes();
+
+		// Save
+		List<DropDownRes> res = entityService.getProductReferalDropdown(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
+
 	
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+	@PostMapping("productreferal/changestatus")
+	@ApiOperation(value="This method is to get product referal Master")
+	public ResponseEntity<CommonRes> changestatusofProductReferal(@RequestBody ProductReferalChangeStatusReq req){
+		CommonRes data = new CommonRes();
+		// Change Status
+		SuccessRes res = entityService.changestatusofProductReferal(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if(res!=null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		}
+		else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 	
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
-		}
-
-		@PostMapping("/getallnonselectedreferals")
-		@ApiOperation("This method is getall Section Details")
-		public ResponseEntity<CommonRes> getallNonSelectedReferals(@RequestBody ProductReferalGetAllReq req)
-		{
-			CommonRes data = new CommonRes();
-			reqPrinter.reqPrint(req);
-			
-			List<ReferalMasterRes> res = entityService.getallNonSelectedReferals(req);
-			data.setCommonResponse(res);
-			data.setErrorMessage(Collections.emptyList());
-			data.setIsError(false);
-			data.setMessage("Success");
-			
-			if(res!= null) {
-				return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
-			}
-			else {
-				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
-			}
-		}
-
-		@PostMapping("/dropdown/productreferals")
-		@ApiOperation(value = "This method is get Product Section Cover Master Drop Down")
-
-		public ResponseEntity<CommonRes> getReferalCoverMasterDropdown(@RequestBody ProductReferalGetReq req) {
-
-			CommonRes data = new CommonRes();
-
-			// Save
-			List<DropDownRes> res = entityService.getProductReferalDropdown(req);
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
-
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
-
-		}
-
 }

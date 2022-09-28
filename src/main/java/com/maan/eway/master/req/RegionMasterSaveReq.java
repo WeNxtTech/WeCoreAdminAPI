@@ -17,8 +17,18 @@ public class RegionMasterSaveReq implements Serializable {
 	private String regionCode;
 
 	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDate")
-	private Date effectiveDate;
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateEnd")
+	private Date effectiveDateEnd;
+	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+	
+	@JsonProperty("TiraCode")
+	private String tiraCode;
 
 	@JsonProperty("RegionShortCode")
 	private String regionShortCode;
@@ -32,16 +42,12 @@ public class RegionMasterSaveReq implements Serializable {
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
 
-	@JsonProperty("AmendId")
-	private Integer amendId;
-
 	@JsonProperty("Remarks")
 	private String remarks;
 	
 	@JsonProperty("CountryId")
 	private String countryId;
-
-	@JsonProperty("CountryName")
-	private String countryName;
+	
+	
 	
 }

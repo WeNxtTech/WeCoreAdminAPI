@@ -14,6 +14,6 @@ public class RegionMasterDropDownReq implements Serializable {
     private static final long serialVersionUID = 1L;
 
 	@JsonProperty("CountryId")
-    private Integer countryId    ;
+    private String countryId    ;
     
 }

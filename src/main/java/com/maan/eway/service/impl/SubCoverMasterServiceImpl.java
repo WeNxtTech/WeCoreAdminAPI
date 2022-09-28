@@ -136,6 +136,13 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 			errorList.add(new Error("11", "TiraCode", "Please Enter TiraCode within 20 Characters"));
 		}
 		
+		if (StringUtils.isBlank(req.getRemarks())) {
+			errorList.add(new Error("08", "Remarks", "Please Enter Remarks"));
+		}else if (req.getRemarks().length() > 100) {
+			errorList.add(new Error("11", "Remarks", "Please Enter Remarks within 100 Characters"));
+		}
+
+		
 	} catch (Exception e) {
 		log.error(e);
 		e.printStackTrace();

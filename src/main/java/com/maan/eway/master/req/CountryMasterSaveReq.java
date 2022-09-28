@@ -18,10 +18,17 @@ public class CountryMasterSaveReq implements Serializable {
 
 	@JsonProperty("CountryName")
 	private String countryName;
+	
+	@JsonProperty("CountryShortCode")
+	private String countryShortCode;
 
 	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDate")
-	private Date effectiveDate;
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateEnd")
+	private Date effectiveDateEnd;
 
 	@JsonProperty("MobileCode")
 	private String mobileCode;
@@ -32,9 +39,13 @@ public class CountryMasterSaveReq implements Serializable {
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
 
-	@JsonProperty("AmendId")
-	private Integer amendId;
-
 	@JsonProperty("Remarks")
 	private String remarks;
+	
+	@JsonProperty("TiraCode")
+	private String tiraCode;
+	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+
 }

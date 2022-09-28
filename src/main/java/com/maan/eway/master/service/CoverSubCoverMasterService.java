@@ -8,6 +8,7 @@ package com.maan.eway.master.service;
 import java.util.List;
 
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.CoverSubCoverChangeStatusReq;
 import com.maan.eway.master.req.CoverSubCoverMasterGetAllReq;
 import com.maan.eway.master.req.CoverSubCoverMasterGetReq;
 import com.maan.eway.master.req.CoverSubCoverMasterSaveReq;
@@ -36,6 +37,8 @@ public interface CoverSubCoverMasterService  {
 	List<SubCoverMasterGetRes> getallNonSelectedSubCover(CoverSubCoverMasterGetAllReq req);
 
 	List<CoverSubCoverGetRes> getActiveCoverSubCoverDetails(CoverSubCoverMasterGetAllReq req);
+
+	SuccessRes changeStatusOfCoverSubCover(CoverSubCoverChangeStatusReq req);
 
 
 }

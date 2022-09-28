@@ -14,6 +14,8 @@ package com.maan.eway.repository;
 
 import java.math.BigDecimal;
 
+import com.maan.eway.bean.CompanyRegionMaster;
+import com.maan.eway.bean.CompanyRegionMasterId;
 import com.maan.eway.bean.RegionMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -28,7 +30,7 @@ import com.maan.eway.bean.RegionMasterId;
  
  
  
-public interface RegionMasterRepository  extends JpaRepository<RegionMaster,RegionMasterId > , JpaSpecificationExecutor<RegionMaster> {
+public interface CompanyRegionMasterRepository  extends JpaRepository<CompanyRegionMaster,CompanyRegionMasterId > , JpaSpecificationExecutor<CompanyRegionMaster> {
 
 
 

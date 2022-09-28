@@ -34,9 +34,13 @@ public class CoverSubCoverGetRes {
 	    @JsonProperty("CoverName")
 	    private String coverName;
 	    
+	    @JsonFormat(pattern = "dd/MM/yyyy")
+		@JsonProperty("EffectiveDateStart")
+		private Date effectiveDateStart;
+		
 		@JsonFormat(pattern = "dd/MM/yyyy")
-	    @JsonProperty("EffectiveDate")
-	    private Date effectiveDateStart;
+		@JsonProperty("EffectiveDateEnd")
+		private Date effectiveDateEnd;
 	    
 		@JsonFormat(pattern = "dd/MM/yyyy")
 		@JsonProperty("EntryDate")

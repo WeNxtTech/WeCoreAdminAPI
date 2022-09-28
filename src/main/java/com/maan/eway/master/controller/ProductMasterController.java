@@ -154,7 +154,7 @@ public class ProductMasterController {
 	}
 		
 	@PostMapping("/products/changestatus")
-	@ApiOperation(value = "This method is get Company Product Master Drop Down")
+	@ApiOperation(value = "This method is get Product Change Status ")
 	public ResponseEntity<CommonRes> changeStatusOfProduct(@RequestBody ProductChangeStatusReq req) {
 
 		CommonRes data = new CommonRes();

@@ -311,7 +311,7 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("SectionName")));
+			orderList.add(cb.asc(b.get("sectionName")));
 			
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
@@ -559,6 +559,10 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			cal.set(Calendar.HOUR_OF_DAY, 23);
 			cal.set(Calendar.MINUTE, 1);
 			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			
 			List<SectionMaster> sectionList = new ArrayList<SectionMaster>();
 			//Pagination
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
@@ -597,6 +601,15 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			Predicate eff3 = cb.equal(ocpm2.get("companyId"), ps.get("companyId"));
 			Predicate eff4 = cb.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"),today);
 			effectiveDate2.where(eff1,eff2,eff3,eff4);
+			// Effective Date End
+			Subquery<Long> effectiveDate5 = query.subquery(Long.class);
+			Root<ProductMaster> ocpm5 = effectiveDate5.from(ProductMaster.class);
+			effectiveDate5.select(cb.max(ocpm5.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(b.get("productId"), ocpm5.get("productId"));
+			Predicate a5 = cb.greaterThanOrEqualTo(ocpm5.get("effectiveDateEnd"), todayEnd);
+			effectiveDate5.where(a4, a5);
+			
+			
 			
 			// Product Section Filter
 			section.select(ps.get("sectionId"));
@@ -613,7 +626,8 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("status"), "Y");
 			Predicate n3 = e0.in(section).not();
-			query.where(n1,n2,n3).orderBy(orderList);
+			Predicate n4 = cb.equal(b.get("effectiveDateEnd"), effectiveDate5);
+			query.where(n1,n2,n3,n4).orderBy(orderList);
 	
 			// Get Result
 			TypedQuery<SectionMaster> result = em.createQuery(query);

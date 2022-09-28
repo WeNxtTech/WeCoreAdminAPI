@@ -323,17 +323,15 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			Root<ProductMaster> p = product.from(ProductMaster.class);
 			
 			pmEff.select( cb.max(pm.get("effectiveDateStart")) );
-			Predicate i1 = cb.equal(p.get("companyId"), pm.get("companyId"));
 			Predicate i2 = cb.equal(p.get("productId"), pm.get("productId"));
 			Predicate i3 = cb.lessThanOrEqualTo(pm.get("effectiveDateStart") , today);
-			pmEff.where(i1,i2,i3);
+			pmEff.where(i2,i3);
 			
 			product.select( p.get("productName")) ;
-			Predicate pm1 = cb.equal(p.get("companyId"), lm.get("companyId"));
 			Predicate pm2 = cb.equal(p.get("productId"), lm.get("productId"));
 			Predicate pm3   = cb.equal(p.get("effectiveDateStart"),pmEff);
 			Predicate pm4  = cb.equal(p.get("status"),"Y");
-			product.where(pm1,pm2,pm3,pm4);
+			product.where(pm2,pm3,pm4);
 			
 			// Select
 			query.multiselect( lm.get("productId").alias("productId") ,  lm.get("companyId").alias("companyId") , product.alias("productName") ,

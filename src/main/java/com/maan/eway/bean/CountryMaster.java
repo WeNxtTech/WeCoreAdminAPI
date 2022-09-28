@@ -56,6 +56,10 @@ private static final long serialVersionUID = 1L;
     private String     countryId ;
 
     @Id
+    @Column(name="COUNTRY_SHORT_CODE", nullable=false)
+    private String     countryShortCode ;
+    
+    @Id
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="EFFECTIVE_DATE_START", nullable=false)
     private Date       effectiveDateStart ;
@@ -88,6 +92,12 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="REMARKS", length=100)
     private String     remarks ;
+    
+    @Column(name="CREATED_BY", length=100)
+    private String     createdBy ;
+    
+    @Column(name="TIRA_CODE", length=20)
+    private String     tiraCode;
 }
 
 

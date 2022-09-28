@@ -8,6 +8,7 @@ package com.maan.eway.master.service;
 import com.maan.eway.master.req.BankMasterGetAllReq;
 import com.maan.eway.master.req.BankMasterGetReq;
 import com.maan.eway.master.req.BankMasterSaveReq;
+import com.maan.eway.master.req.CountryChangeStatusReq;
 import com.maan.eway.master.req.CountryMasterGetAllReq;
 import com.maan.eway.master.req.CountryMasterGetReq;
 import com.maan.eway.master.req.CountryMasterSaveReq;
@@ -42,6 +43,8 @@ public interface CountryMasterService  {
 	CountryMasterRes getByCountryId(CountryMasterGetReq req);
 
 	List<DropDownRes> getCountryMasterDropdown();
+
+	SuccessRes changeStatusOfCountry(CountryChangeStatusReq req);
 
 	
 	

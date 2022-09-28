@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.CompanyChangeStatusReq;
+import com.maan.eway.master.req.CoverSubCoverChangeStatusReq;
 import com.maan.eway.master.req.CoverSubCoverMasterGetAllReq;
 import com.maan.eway.master.req.CoverSubCoverMasterGetReq;
 import com.maan.eway.master.req.CoverSubCoverMasterSaveReq;
@@ -171,4 +173,23 @@ public class CoverSubCoverMasterController {
 			}
 		}
 		
+		@PostMapping("/coversubcover/changestatus")
+		@ApiOperation(value = "This method is get Company Change Status")
+		public ResponseEntity<CommonRes> changeStatusOfCoverSubCover(@RequestBody CoverSubCoverChangeStatusReq req) {
+
+			CommonRes data = new CommonRes();
+			// Change Status
+			SuccessRes res = service.changeStatusOfCoverSubCover(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+
+		} 
 }

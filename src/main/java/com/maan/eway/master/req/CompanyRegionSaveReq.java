@@ -1,6 +1,5 @@
-package com.maan.eway.master.res;
+package com.maan.eway.master.req;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -9,13 +8,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class RegionMasterRes implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class CompanyRegionSaveReq {
 
 	@JsonProperty("RegionCode")
 	private String regionCode;
-
 
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
@@ -30,7 +26,7 @@ public class RegionMasterRes implements Serializable {
 	
 	@JsonProperty("TiraCode")
 	private String tiraCode;
-	
+
 	@JsonProperty("RegionShortCode")
 	private String regionShortCode;
 
@@ -40,20 +36,15 @@ public class RegionMasterRes implements Serializable {
 	@JsonProperty("Status")
 	private String status;
 
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EntryDate")
-	private Date entryDate;
-
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
-
-	@JsonProperty("AmendId")
-	private String amendId;
 
 	@JsonProperty("Remarks")
 	private String remarks;
 	
 	@JsonProperty("CountryId")
 	private String countryId;
-
+	
+	@JsonProperty("InsuranceId")
+	private String companyId;
 }

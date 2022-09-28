@@ -16,11 +16,14 @@ public class CountryMasterRes implements Serializable {
 
 	@JsonProperty("CountryId")
 	private String countryId;
+	
+	@JsonProperty("CountryShortCode")
+	private String countryShortCode;
 
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
-
+	
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateEnd")
 	private Date effectiveDateEnd;
@@ -40,6 +43,12 @@ public class CountryMasterRes implements Serializable {
 
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
+	
+	@JsonProperty("TiraCode")
+	private String tiraCode;
+	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
 
 	@JsonProperty("AmendId")
 	private Integer amendId;

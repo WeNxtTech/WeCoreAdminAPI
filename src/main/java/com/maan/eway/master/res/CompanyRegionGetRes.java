@@ -1,6 +1,5 @@
 package com.maan.eway.master.res;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -9,9 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class RegionMasterRes implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class CompanyRegionGetRes {
 
 	@JsonProperty("RegionCode")
 	private String regionCode;
@@ -55,5 +52,4 @@ public class RegionMasterRes implements Serializable {
 	
 	@JsonProperty("CountryId")
 	private String countryId;
-
 }

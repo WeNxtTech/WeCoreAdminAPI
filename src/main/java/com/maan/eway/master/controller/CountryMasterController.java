@@ -6,9 +6,11 @@ package com.maan.eway.master.controller;
 */
 
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.CountryChangeStatusReq;
 import com.maan.eway.master.req.CountryMasterGetAllReq;
 import com.maan.eway.master.req.CountryMasterGetReq;
 import com.maan.eway.master.req.CountryMasterSaveReq;
+import com.maan.eway.master.req.ProductChangeStatusReq;
 import com.maan.eway.master.res.CountryMasterRes;
 import com.maan.eway.master.service.CountryMasterService;
 import com.maan.eway.bean.CountryMaster;
@@ -174,4 +176,23 @@ public class CountryMasterController {
 		}
 		
 
+		@PostMapping("/country/changestatus")
+		@ApiOperation(value = "This method is get Country Change Status")
+		public ResponseEntity<CommonRes> changeStatusOfCountry(@RequestBody CountryChangeStatusReq req) {
+
+			CommonRes data = new CommonRes();
+			// Change Status
+			SuccessRes res = countryService.changeStatusOfCountry(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+
+		}
 }

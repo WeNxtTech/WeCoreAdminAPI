@@ -34,10 +34,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  
 public interface CountryMasterRepository  extends JpaRepository<CountryMaster,CountryMasterId > , JpaSpecificationExecutor<CountryMaster> {
 
-	Long countByCountryNameOrderByEntryDateDesc(String countryName);
-
-	Long countByCountryIdAndStatusAndEffectiveDateStartLessThanEqual(String valueOf, String string, Date today);
-
 
 
 }

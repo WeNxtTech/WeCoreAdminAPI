@@ -27,8 +27,12 @@ public class CoverSubCoverMasterSaveReq {
 	private String companyId;
 
 	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDate")
-	private Date effectiveDate;
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateEnd")
+	private Date effectiveDateEnd;
 
 	@JsonProperty("SubCoverName")
 	private String subCoverName;

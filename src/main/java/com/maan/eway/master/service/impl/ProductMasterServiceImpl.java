@@ -208,12 +208,12 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			}else if (StringUtils.isBlank(req.getProductId())) {
 				List<ProductMaster> ProductList = getProductNameExistDetails(req.getProductName());
 				if (ProductList.size()>0 ) {
-					errorList.add(new Error("01", "Product", "This Product Name Already Exist "));
+					errorList.add(new Error("01", "ProductName", "This Product Name Already Exist "));
 				}
 			}else  {
 				List<ProductMaster> ProductList =  getProductNameExistDetails(req.getProductName() );
 				if (ProductList.size()>0 &&  (! req.getProductId().equalsIgnoreCase(ProductList.get(0).getProductId().toString())) ) {
-					errorList.add(new Error("01", "Product", "This Product Name Already Exist "));
+					errorList.add(new Error("01", "ProductName", "This Product Name Already Exist "));
 				}
 				
 			}
@@ -264,8 +264,12 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 				errorList.add(new Error("06", "Payment", "Please Select Payment Type"));
 			} else if (req.getPaymentYn().length() > 1) {
 				errorList.add(new Error("06", "Payment", "Enter Payment Type 1 Character Only"));
-			}else if(!("Y".equals(req.getPaymentYn())||"N".equals(req.getPaymentYn()))) {
+			}else if(!("Y".equalsIgnoreCase(req.getPaymentYn())||"N".equalsIgnoreCase(req.getPaymentYn()))) {
 				errorList.add(new Error("06", "Payment", "Enter Payment Type Y or N Only"));
+			} if ( "Y".equalsIgnoreCase(req.getPaymentYn()) && StringUtils.isBlank(req.getPaymentRedirUrl())) {
+				errorList.add(new Error("08", "PaymentRedirUrl", "Please Select PaymentRedirUrl  Category "));
+			}else if ( "Y".equalsIgnoreCase(req.getPaymentYn()) &&  req.getPaymentRedirUrl().length() > 500) {
+				errorList.add(new Error("10", "PaymentRedirUrl", "Please Enter PaymentRedirUrl within 500 Characters"));
 			}
 			
 			if (StringUtils.isBlank(req.getCommissionVatYn())) {
@@ -321,11 +325,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 				errorList.add(new Error("08", "ProductCategory", "Please Enter Product Category within 25 Characters"));
 			}
 			
-			if (StringUtils.isBlank(req.getPaymentRedirUrl())) {
-				errorList.add(new Error("08", "PaymentRedirUrl", "Please Select PaymentRedirUrl  Category "));
-			}else if (req.getPaymentRedirUrl().length() > 500) {
-				errorList.add(new Error("10", "PaymentRedirUrl", "Please Enter PaymentRedirUrl within 500 Characters"));
-			}
+			
 			
 			if (StringUtils.isBlank(req.getAppLoginUrl())) {
 				errorList.add(new Error("08", "AppLoginUrl", "Please Select AppLoginUrl "));
@@ -574,6 +574,9 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
 			cal.set(Calendar.MINUTE, 1);
 			today   = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd   = cal.getTime();
 			
 			// Criteria
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -599,11 +602,20 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1,a2);
 			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<ProductMaster> ocpm2 = effectiveDate2.from(ProductMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("productId"),ocpm2.get("productId") );
+			javax.persistence.criteria.Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a3,a4);
+			
 		    // Where	
 			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 			
-			query.where(n1,n2).orderBy(orderList);
+			query.where(n1,n2,n3).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<ProductMaster> result = em.createQuery(query);			

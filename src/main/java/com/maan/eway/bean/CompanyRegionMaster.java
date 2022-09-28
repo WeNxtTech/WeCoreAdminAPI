@@ -43,11 +43,11 @@ import javax.persistence.*;
 @DynamicInsert
 @DynamicUpdate
 @Builder
-@IdClass(RegionMasterId.class)
-@Table(name="region_master")
+@IdClass(CompanyRegionMasterId.class)
+@Table(name="company_region_master")
 
 
-public class RegionMaster implements Serializable {
+public class CompanyRegionMaster implements Serializable {
  
 private static final long serialVersionUID = 1L;
  
@@ -55,6 +55,10 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="REGION_CODE", nullable=false, length=20)
     private String     regionCode ;
+    
+    @Id
+    @Column(name="COMPANY_ID", nullable=false, length=20)
+    private String     companyId;
 
     @Id
     @Temporal(TemporalType.TIMESTAMP)

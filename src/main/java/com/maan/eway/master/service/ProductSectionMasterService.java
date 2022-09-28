@@ -6,6 +6,7 @@
 package com.maan.eway.master.service;
 import com.maan.eway.bean.SessionMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.ProductSectionChangeStatusReq;
 import com.maan.eway.master.req.ProductSectionMasterGetAllReq;
 import com.maan.eway.master.req.ProductSectionMasterReq;
 import com.maan.eway.master.req.ProductSectionsGetReq;
@@ -39,6 +40,8 @@ public interface ProductSectionMasterService  {
 	List<ProductSectionMasterRes> getallNonSelectedSections(ProductSectionMasterGetAllReq req);
 
 	List<DropDownRes> getProductSectionDropdown(ProductSectionsGetReq req);
+
+	SuccessRes changeStatusOfProductSection(ProductSectionChangeStatusReq req);
 
 
 }

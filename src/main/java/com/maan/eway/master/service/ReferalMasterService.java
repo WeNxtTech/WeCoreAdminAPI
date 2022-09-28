@@ -8,6 +8,7 @@ package com.maan.eway.master.service;
 import com.maan.eway.master.req.BankMasterGetAllReq;
 import com.maan.eway.master.req.BankMasterGetReq;
 import com.maan.eway.master.req.BankMasterSaveReq;
+import com.maan.eway.master.req.ReferalMasterChangeStatusReq;
 import com.maan.eway.master.req.ReferalMasterGetAllReq;
 import com.maan.eway.master.req.ReferalMasterGetReq;
 import com.maan.eway.master.req.ReferalMasterSaveReq;
@@ -36,6 +37,8 @@ public interface ReferalMasterService  {
 	List<ReferalMasterRes> getActiveReferalDetails(ReferalMasterGetAllReq req);
 
 	ReferalMasterRes getByReferalId(ReferalMasterGetReq req);
+
+	SuccessRes changeStatusOfReferal(ReferalMasterChangeStatusReq req);
 
 	//List<DropDownRes> getReferalMasterDropdown();
 

@@ -104,7 +104,12 @@ private static final long serialVersionUID = 1L;
    
     @Column(name="REGION_NAME", length=100)
     private String     regionName ;
-   
+    
+    @Column(name="TIRA_CODE", length=20)
+    private String     tiraCode ;
+
+    @Column(name="CREATED_BY", length=20)
+    private String   createdBy ;
 }
 
 

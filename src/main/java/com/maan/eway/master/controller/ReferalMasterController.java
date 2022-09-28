@@ -6,6 +6,8 @@ package com.maan.eway.master.controller;
 */
 
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.ProductSectionChangeStatusReq;
+import com.maan.eway.master.req.ReferalMasterChangeStatusReq;
 import com.maan.eway.master.req.ReferalMasterGetAllReq;
 import com.maan.eway.master.req.ReferalMasterGetReq;
 import com.maan.eway.master.req.ReferalMasterSaveReq;
@@ -149,6 +151,27 @@ public class ReferalMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
+		
+		@PostMapping("/referal/changestatus")
+		@ApiOperation(value = "This method is get Referal Master Status Change")
+
+		public ResponseEntity<CommonRes> changeStatusOfReferal(@RequestBody ReferalMasterChangeStatusReq req) {
+
+			CommonRes data = new CommonRes();
+			// Change Status
+			SuccessRes res = referalService.changeStatusOfReferal(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+
+		}
 		
 /*		// Referal Master Drop Down Type
 		@GetMapping("/dropdown/referal")

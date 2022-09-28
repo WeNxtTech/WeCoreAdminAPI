@@ -11,12 +11,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.maan.eway.repository.SectionMasterRepository;
 import com.maan.eway.res.SuccessRes;
 import com.google.gson.Gson;
+import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.ProductSectionsGetReq;
+import com.maan.eway.master.req.SectionMasterChangeStatusReq;
 import com.maan.eway.master.req.SectionMasterGetAllReq;
 import com.maan.eway.master.req.SectionMasterGetReq;
 import com.maan.eway.master.req.SectionMasterSaveReq;
@@ -36,6 +38,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
@@ -78,13 +81,13 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			}else if (req.getSectionName().length() > 100){
 				errorList.add(new Error("01","SectionName", "Please Enter Section  Name within 100 Characters")); 
 			}else if (StringUtils.isBlank(req.getSectionId())) {
-				List<SectionMaster> sectiontList = getSectionNameExistDetails(req.getSectionName());
-				if (sectiontList.size()>0 ) {
+				List<SectionMaster> sectionList = getSectionNameExistDetails(req.getSectionName());
+				if (sectionList.size()>0 ) {
 					errorList.add(new Error("01", "Section", "This Section Name Already Exist "));
 				}
 			}else  {
-				List<SectionMaster> sectiontList =  getSectionNameExistDetails(req.getSectionName() );
-				if (sectiontList.size()>0 &&  (! req.getSectionId().equalsIgnoreCase(sectiontList.get(0).getSectionId().toString())) ) {
+				List<SectionMaster> sectionList =  getSectionNameExistDetails(req.getSectionName() );
+				if (sectionList.size()>0 &&  (! req.getSectionId().equalsIgnoreCase(sectionList.get(0).getSectionId().toString())) ) {
 					errorList.add(new Error("01", "Section", "This Section Name Already Exist "));
 				}
 				
@@ -101,12 +104,20 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			Date today = new Date();
 			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
 			today = cal.getTime();
-			if (req.getEffectiveDate() == null || StringUtils.isBlank(req.getEffectiveDate().toString())) {
-				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start"));
+			if (req.getEffectiveDateStart() == null ) {
+				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
 	
-			} else if (req.getEffectiveDate().before(today)) {
+			} else if (req.getEffectiveDateStart().before(today)) {
 				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
-			}
+			} else if (req.getEffectiveDateEnd() == null ) {
+				errorList.add(new Error("04", "EffectiveDateEnd", "Please Enter Effective Date End "));
+	
+			} else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart()) || req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
+				errorList.add(new Error("04", "EffectiveDateEnd", "Please Enter Effective Date End  is After Effective Date End"));
+			} 
+			
+			
+			
 			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
 				errorList.add(new Error("05", "Status", "Please Enter Status"));
@@ -126,6 +137,12 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 				errorList.add(new Error("07", "TiraCode", "Please Enter TiraCode"));
 			}else if (req.getTiraCode().length() > 20) {
 				errorList.add(new Error("07", "TiraCode", "Enter TiraCode in 20 Character Only"));
+			}
+			
+			if (StringUtils.isBlank(req.getRemarks())) {
+				errorList.add(new Error("08", "Remarks", "Please Enter Remarks"));
+			}else if (req.getTiraCode().length() > 100) {
+				errorList.add(new Error("08", "Remarks", "Please Enter Remarks within 100 Characters"));
 			}
 			
 		} catch (Exception e) {
@@ -182,16 +199,18 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 		
 		try {
 			Calendar cal = new GregorianCalendar();
-			cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
+			cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
 			Date startDate = cal.getTime() ;
 			Date today = new Date();
-			cal.setTime(req.getEffectiveDate());  cal.add(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
+			cal.setTime(req.getEffectiveDateStart());  cal.add(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
 			cal.set(Calendar.SECOND, today.getSeconds());
 			Date oldEndDate = cal.getTime() ;
-			cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
+			cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
 			cal.set(Calendar.SECOND, today.getSeconds());
 			Date effDate = cal.getTime();
-			Date endDate = sdformat.parse("12/12/2050");
+			Date endDate = req.getEffectiveDateEnd();
+			cal.setTime(req.getEffectiveDateEnd());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 50) ;
+			endDate = cal.getTime() ;
 			
 			
 			String sectionId="";
@@ -333,6 +352,16 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 		List<SectionMasterRes> resList = new ArrayList<SectionMasterRes>();
 		 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 30);
+			today   = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			
 			List<SectionMaster> sectionList = new ArrayList<SectionMaster>();
 			//Pagination
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
@@ -353,16 +382,28 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			Root<SectionMaster> ocpm1 = effectiveDate.from(SectionMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-			effectiveDate.where(a1);
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2);
+			
+			
+			// Effective Date End
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<InsuranceCompanyMaster> ocpm2 = effectiveDate2.from(InsuranceCompanyMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			javax.persistence.criteria.Predicate a3 = cb.equal(b.get("sectionId"), ocpm2.get("sectionId"));
+			javax.persistence.criteria.Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a3, a4);
+
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("sectionId")));
+			orderList.add(cb.asc(b.get("sectionName")));
 			
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
 			
-			query.where(n1).orderBy(orderList);
+			query.where(n1,n2).orderBy(orderList);
 	
 			// Get Result
 			TypedQuery<SectionMaster> result = em.createQuery(query);
@@ -397,6 +438,13 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	
 		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 30);
+			today   = cal.getTime();
+			
 			// Criteria
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<SectionMaster> query = cb.createQuery(SectionMaster.class);
@@ -413,7 +461,8 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			Root<SectionMaster> ocpm1 = effectiveDate.from(SectionMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("sectionId"),ocpm1.get("sectionId") );
-			effectiveDate.where(a1);
+			javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(c.get("effectiveDateStart"),today );
+			effectiveDate.where(a1,a2);
 			
 			
 			
@@ -449,6 +498,13 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 		List<SectionMasterRes> resList = new ArrayList<SectionMasterRes>();
 		 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 30);
+			today   = cal.getTime();
+			
 			List<SectionMaster> list = new ArrayList<SectionMaster>();
 	
 			//Pagination
@@ -470,11 +526,12 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			Root<SectionMaster> ocpm1 = effectiveDate.from(SectionMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-			effectiveDate.where(a1);
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
+			effectiveDate.where(a1,a2);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("sectionId")));
+			orderList.add(cb.asc(b.get("sectionName")));
 	
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
@@ -510,6 +567,14 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 	public List<ProductSectionGetRes> getProductSections(ProductSectionsGetReq req) {
 		List<ProductSectionGetRes> resList = new ArrayList<ProductSectionGetRes>();
 		try {
+			
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 30);
+			today   = cal.getTime();
+			
 			List<SectionMaster> list = new ArrayList<SectionMaster>();
 	
 			// Find Latest Record
@@ -527,11 +592,12 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			Root<SectionMaster> ocpm1 = effectiveDate.from(SectionMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-			effectiveDate.where(a1);
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("sectionId"), today);
+			effectiveDate.where(a1,a2);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("sectionId")));
+			orderList.add(cb.asc(b.get("sectionName")));
 	
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
@@ -561,6 +627,90 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 	
 		}
 		return resList;
+	}
+
+	@Override
+	public SuccessRes changeStatusOfSection(SectionMasterChangeStatusReq req) {
+		SuccessRes res = new SuccessRes();
+		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			
+			SectionMaster updateRecord  = new SectionMaster();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			
+			List<SectionMaster> list = new ArrayList<SectionMaster>();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<SectionMaster> query = cb.createQuery(SectionMaster.class);
+	
+			// Find All
+			Root<SectionMaster> b = query.from(SectionMaster.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<SectionMaster> ocpm1 = effectiveDate.from(SectionMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2);
+	
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("effectiveDateStart")));
+	
+			// Where
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("sectionId"), req.getSectionId() );
+	
+			query.where(n1,n2).orderBy(orderList);
+	
+			// Get Result
+			TypedQuery<SectionMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			updateRecord = list.get(0) ;
+				
+			if (req.getStatus().equalsIgnoreCase("N") )	{
+					// Delete Old Records
+					cal.setTime(today);
+					cal.set(Calendar.HOUR_OF_DAY, 23);
+					cal.set(Calendar.MINUTE, 30);
+					today   = cal.getTime();
+					
+					// create update
+					CriteriaDelete<SectionMaster> delete = cb.createCriteriaDelete(SectionMaster.class);
+					Root<SectionMaster> pm = delete.from(SectionMaster.class);
+					
+					 // Where	
+					javax.persistence.criteria.Predicate n3 = cb.equal(pm.get("sectionId"), req.getSectionId());
+					javax.persistence.criteria.Predicate n4 = cb.greaterThanOrEqualTo(pm.get("effectiveDateStart"), today);
+					delete.where(n3,n4);	
+					em.createQuery(delete).executeUpdate();
+					// Insert Updated Record
+					updateRecord.setStatus(req.getStatus());
+					repo.save(updateRecord);
+				
+			} else if (req.getStatus().equalsIgnoreCase("Y") ) {
+				// Insert Updated Record
+				updateRecord.setStatus(req.getStatus());
+				repo.save(updateRecord);
+			}
+			// perform update
+			
+			res.setResponse("Status Changed");
+			res.setSuccessId(req.getSectionId());
+		} catch(Exception e ) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return res;
 	}
 	
 }

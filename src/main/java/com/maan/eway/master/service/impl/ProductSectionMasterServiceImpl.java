@@ -14,11 +14,15 @@ import com.maan.eway.repository.SectionMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.google.gson.Gson;
+import com.maan.eway.bean.CompanyProductMaster;
+import com.maan.eway.bean.InsuranceCompanyMaster;
+import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.ProductSectionChangeStatusReq;
 import com.maan.eway.master.req.ProductSectionMasterGetAllReq;
 import com.maan.eway.master.req.ProductSectionMasterReq;
 import com.maan.eway.master.req.ProductSectionsGetReq;
@@ -43,7 +47,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
@@ -103,12 +109,17 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 				Date today = new Date();
 				cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
 				today = cal.getTime();
-				if (req.getEffectiveDate() == null || StringUtils.isBlank(req.getEffectiveDate().toString())) {
-					errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start in  Row No : " + row));
+				if (req.getEffectiveDateStart() == null ) {
+					errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
 		
-				} else if (req.getEffectiveDate().before(today)) {
-					errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date in  Row No : " + row));
-				}
+				} else if (req.getEffectiveDateStart().before(today)) {
+					errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+				} else if (req.getEffectiveDateEnd() == null ) {
+					errorList.add(new Error("04", "EffectiveDateEnd", "Please Enter Effective Date End "));
+		
+				} else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart()) || req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
+					errorList.add(new Error("04", "EffectiveDateEnd", "Please Enter Effective Date End  is After Effective Date End"));
+				} 
 				//Status Validation
 				if (StringUtils.isBlank(req.getStatus())) {
 					errorList.add(new Error("05", "Status", "Please Enter Status in  Row No : " + row));
@@ -120,14 +131,35 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 				if (StringUtils.isBlank(req.getCompanyId().toString()) || req.getCompanyId() == null) {
 					errorList.add(new Error("06", "CompanyId", "Please Enter Company Id in  Row No : " + row));
 				}
+				if (StringUtils.isBlank(req.getCreatedBy())) {
+					errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy"));
+				}else if (req.getCreatedBy().length() > 50) {
+					errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+				}
+				
+				if (StringUtils.isBlank(req.getCoreAppCode())) {
+					errorList.add(new Error("08", "CoreAppCode", "Please Enter CoreAppCode"));
+				}else if (req.getCoreAppCode().length() > 20) {
+					errorList.add(new Error("08", "CoreAppCode", "Please Enter CoreAppCode within 20 Characters"));
+				}
+				
+				if (StringUtils.isBlank(req.getTiraCode())) {
+					errorList.add(new Error("09", "TiraCode", "Please Enter TiraCode"));
+				}else if (req.getTiraCode().length() > 20) {
+					errorList.add(new Error("09", "TiraCode", "Please Enter TiraCode within 20 Characters"));
+				}
+				if (StringUtils.isBlank(req.getRemarks())) {
+					errorList.add(new Error("10", "Remarks", "Please Enter Remarks"));
+				}else if (req.getTiraCode().length() > 100) {
+					errorList.add(new Error("10", "Remarks", "Please Enter Remarks within 100 Characters"));
+				}
+				
 			}
-			
-			
-			
-			
+	
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
+			errorList.add(new Error("10", "CommonError", e.getMessage()));
 		}
 		return errorList;
 	}
@@ -144,19 +176,22 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 		try {
 			for (ProductSectionMasterReq req : reqList ) {
 				Calendar cal = new GregorianCalendar();
-				cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
+				cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
 				Date startDate = cal.getTime() ;
 				Date today = new Date();
-				cal.setTime(req.getEffectiveDate());  cal.add(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
+				cal.setTime(req.getEffectiveDateStart());  cal.add(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
 				cal.set(Calendar.SECOND, today.getSeconds());
 				Date oldEndDate = cal.getTime() ;
-				cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
+				cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
 				cal.set(Calendar.SECOND, today.getSeconds());
 				Date effDate = cal.getTime();
-				Date endDate = sdformat.parse("12/12/2050");
+				Date endDate = req.getEffectiveDateEnd();
+				cal.setTime(req.getEffectiveDateEnd());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 50) ;
+				endDate = cal.getTime() ;
 				
 				
 				String sectionId="";
+				Integer amendId=0;
 				
 				
 				// Update
@@ -197,6 +232,15 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 				
 				if( list.size() > 0) {
 					repo.delete(list.get(0));
+					// Amend Id
+					if( list.get(0).getEffectiveDateStart().before(startDate)   ) {
+						String startDatewithoutTime = sdformat.format(startDate) ;
+						String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart()) ;
+						
+						if(startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime) ) {
+							amendId = list.get(0).getAmendId() + 1 ;
+						}
+					}
 				} 
 				res.setResponse("Updated Successfully ");
 				res.setSuccessId(sectionId);
@@ -209,6 +253,7 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 				saveData.setEffectiveDateEnd(endDate);
 				saveData.setStatus(req.getStatus());
 				saveData.setEntryDate(new Date());
+				saveData.setAmendId(amendId);
 				repo.saveAndFlush(saveData);
 				
 				if(list.size() > 0 ) {
@@ -235,8 +280,15 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 	@Override
 	public List<ProductSectionMasterRes> getallSectionDetails(ProductSectionMasterGetAllReq req) {
 		List<ProductSectionMasterRes> resList = new ArrayList<ProductSectionMasterRes>();
-		ModelMapper mapper = new ModelMapper();
+		 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			
 			List<ProductSectionMaster> sectionList = new ArrayList<ProductSectionMaster>();
 			//Pagination
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
@@ -259,7 +311,8 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			Predicate a1 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
 			Predicate a2 = cb.equal(b.get("productId"), ocpm1.get("productId"));
 			Predicate a3 = cb.equal(b.get("companyId"), ocpm1.get("companyId"));
-			effectiveDate.where(a1,a2,a3);
+			Predicate a4 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2,a3,a4);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -281,8 +334,7 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			for (ProductSectionMaster data : sectionList) {
 				ProductSectionMasterRes res = new ProductSectionMasterRes();
 	
-				res = mapper.map(data, ProductSectionMasterRes.class);
-				mapper.getConfiguration().setAmbiguityIgnored(true);
+				res = dozerMapper.map(data, ProductSectionMasterRes.class);
 				res.setSectionId(data.getSectionId().toString());
 				resList.add(res);
 			}
@@ -300,10 +352,16 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 	@Override
 	public ProductSectionMasterRes getBySectionId(ProductSectionsGetReq req) {
 		ProductSectionMasterRes res = new ProductSectionMasterRes();
-		ModelMapper mapper = new ModelMapper();
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 	
 		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			
 			// Criteria
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<ProductSectionMaster> query = cb.createQuery(ProductSectionMaster.class);
@@ -322,7 +380,8 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("sectionId"),ocpm1.get("sectionId") );
 			javax.persistence.criteria.Predicate a2 = cb.equal(c.get("productId"),ocpm1.get("productId") ) ;
 			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("companyId"),ocpm1.get("companyId") ) ;
-			effectiveDate.where(a1,a2,a3);
+			javax.persistence.criteria.Predicate a4 = cb.lessThanOrEqualTo(c.get("effectiveDateStart"),today ) ;
+			effectiveDate.where(a1,a2,a3,a4);
 			
 			
 			
@@ -343,11 +402,11 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			// Get Result
 			TypedQuery<ProductSectionMaster> result = em.createQuery(query);			
 			list =  result.getResultList();  
-			res = mapper.map(list.get(0) , ProductSectionMasterRes.class);
+			res = dozerMapper.map(list.get(0) , ProductSectionMasterRes.class);
 			res.setSectionId(list.get(0).getSectionId().toString());
 			res.setEntryDate(list.get(0).getEntryDate());
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
-			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
+		
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -360,13 +419,20 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 	@Override
 	public List<ProductSectionMasterRes> getActiveSectionDetails(ProductSectionMasterGetAllReq req) {
 		List<ProductSectionMasterRes> resList = new ArrayList<ProductSectionMasterRes>();
-		ModelMapper mapper = new ModelMapper();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			
 			List<ProductSectionMaster> list = new ArrayList<ProductSectionMaster>();
 	
 			//Pagination
 			int limit=StringUtils.isBlank(req.getLimit())?0:Integer.valueOf(req.getLimit());
-			int offset=StringUtils.isBlank(req.getOffset())?10:Integer.valueOf(req.getOffset());
+			int offset=StringUtils.isBlank(req.getOffset())?100:Integer.valueOf(req.getOffset());
 			
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -385,7 +451,8 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			Predicate a1 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
 			Predicate a2 = cb.equal(b.get("productId"), ocpm1.get("productId"));
 			Predicate a3 = cb.equal(b.get("companyId"), ocpm1.get("companyId"));
-			effectiveDate.where(a1,a2,a3);
+			Predicate a4 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2,a3,a4);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -408,8 +475,7 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			for (ProductSectionMaster data : list) {
 				ProductSectionMasterRes res = new ProductSectionMasterRes();
 	
-				res = mapper.map(data, ProductSectionMasterRes.class);
-				mapper.getConfiguration().setAmbiguityIgnored(true);
+				res = dozerMapper.map(data, ProductSectionMasterRes.class);
 				res.setSectionId(data.getSectionId().toString());
 				resList.add(res);
 			}
@@ -427,6 +493,13 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 	public List<ProductSectionGetRes> getProductSections(ProductSectionsGetReq req) {
 		List<ProductSectionGetRes> resList = new ArrayList<ProductSectionGetRes>();
 		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			
 			List<ProductSectionMaster> list = new ArrayList<ProductSectionMaster>();
 	
 			// Find Latest Record
@@ -444,7 +517,8 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			Root<ProductSectionMaster> ocpm1 = effectiveDate.from(ProductSectionMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-			effectiveDate.where(a1);
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -478,10 +552,11 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 		}
 		return resList;
 	}
+	//************************************************NON SELECTED LIST******************************************************\\
 	@Override
 	public List<ProductSectionMasterRes> getallNonSelectedSections(ProductSectionMasterGetAllReq req) {
 		List<ProductSectionMasterRes> resList = new ArrayList<ProductSectionMasterRes>();
-		ModelMapper mapper = new ModelMapper();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
 			Date today = new Date();
 			Calendar cal = new GregorianCalendar();
@@ -509,13 +584,12 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			Root<SectionMaster> ocpm1 = effectiveDate.from(SectionMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-			Predicate a2 = cb.equal(b.get("companyId"), ocpm1.get("companyId"));
-			Predicate a3 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"),today);
-			effectiveDate.where(a1,a2,a3);
+			Predicate a2 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"),today);
+			effectiveDate.where(a1,a2);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("sectionId")));
+			orderList.add(cb.asc(b.get("sectionName")));
 			
 			// Product Section Effective Date Max Filter
 			Subquery<Long> section = query.subquery(Long.class);
@@ -535,16 +609,16 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			Predicate ps2 = cb.equal(ps.get("productId"), req.getProductId());
 			Predicate ps3 = cb.equal(ps.get("companyId"), req.getInsuranceId());
 			Predicate ps4 = cb.equal(ps.get("effectiveDateStart"),effectiveDate2);
-			section.where(ps1,ps2,ps3,ps4);
+			Predicate ps5 = cb.equal(ps.get("status"),"Y");
+			section.where(ps1,ps2,ps3,ps4,ps5);
 			
 			// Where
 			Expression<String>e0= b.get("sectionId");
 			
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
-			Predicate n3 = cb.equal(b.get("status"), "Y");
-			Predicate n4 = e0.in(section).not();
-			query.where(n1,n2,n3,n4).orderBy(orderList);
+			Predicate n2 = cb.equal(b.get("status"), "Y");
+			Predicate n3 = e0.in(section).not();
+			query.where(n1,n2,n3).orderBy(orderList);
 	
 			// Get Result
 			TypedQuery<SectionMaster> result = em.createQuery(query);
@@ -556,8 +630,7 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			for (SectionMaster data : sectionList) {
 				ProductSectionMasterRes res = new ProductSectionMasterRes();
 	
-				res = mapper.map(data, ProductSectionMasterRes.class);
-				mapper.getConfiguration().setAmbiguityIgnored(true);
+				res = dozerMapper.map(data, ProductSectionMasterRes.class);
 				res.setSectionId(data.getSectionId().toString());
 				resList.add(res);
 			}
@@ -570,6 +643,7 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 		}
 		return resList;
 	}
+	//************************************************DROPDOWN******************************************************\\
 	@Override
 	public List<DropDownRes> getProductSectionDropdown(ProductSectionsGetReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
@@ -580,6 +654,9 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			cal.set(Calendar.HOUR_OF_DAY, 23);
 			cal.set(Calendar.MINUTE, 1);
 			today   = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
 			
 			// Criteria
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -607,13 +684,22 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1,a2,a3,a4);
 			
+			// Effective Date End
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<InsuranceCompanyMaster> ocpm2 = effectiveDate2.from(InsuranceCompanyMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			javax.persistence.criteria.Predicate a5 = cb.equal(c.get("SectionId"), ocpm2.get("SectionId"));
+			javax.persistence.criteria.Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a5, a6);
+
 		    // Where	
 			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
-			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"), req.getInsuranceId());
-			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("productId"), req.getProductId());
+			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("companyId"), req.getInsuranceId());
+			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("productId"), req.getProductId());
 			
-			query.where(n1,n2,n3,n4).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<ProductSectionMaster> result = em.createQuery(query);			
@@ -633,5 +719,91 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 		}
 		return resList;
 	}
+	//************************************************STATUS CHANGE******************************************************\\
+	@Override
+	public SuccessRes changeStatusOfProductSection(ProductSectionChangeStatusReq req) {
+		SuccessRes res = new SuccessRes();
+		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			
+			ProductSectionMaster updateRecord  = new ProductSectionMaster();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			
+			List<ProductSectionMaster> list = new ArrayList<ProductSectionMaster>();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ProductSectionMaster> query = cb.createQuery(ProductSectionMaster.class);
+	
+			// Find All
+			Root<ProductSectionMaster> b = query.from(ProductSectionMaster.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<ProductSectionMaster> ocpm1 = effectiveDate.from(ProductSectionMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2);
+	
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("effectiveDateStart")));
+	
+			// Where
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("sectionId"), req.getSectionId() );
+			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId() );
+			
+			query.where(n1,n2,n3).orderBy(orderList);
+	
+			// Get Result
+			TypedQuery<ProductSectionMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			updateRecord = list.get(0) ;
+				
+			if (req.getStatus().equalsIgnoreCase("N") )	{
+					// Delete Old Records
+					cal.setTime(today);
+					cal.set(Calendar.HOUR_OF_DAY, 23);
+					cal.set(Calendar.MINUTE, 30);
+					today   = cal.getTime();
+					
+					// create update
+					CriteriaDelete<ProductSectionMaster> delete = cb.createCriteriaDelete(ProductSectionMaster.class);
+					Root<ProductSectionMaster> pm = delete.from(ProductSectionMaster.class);
+					
+					 // Where	
+					javax.persistence.criteria.Predicate n4 = cb.equal(pm.get("sectionId"), req.getSectionId());
+					javax.persistence.criteria.Predicate n5 = cb.greaterThanOrEqualTo(pm.get("effectiveDateStart"), today);
+					javax.persistence.criteria.Predicate n6 = cb.equal(pm.get("companyId"), req.getCompanyId());
+					delete.where(n4,n5,n6);	
+					em.createQuery(delete).executeUpdate();
+					// Insert Updated Record
+					updateRecord.setStatus(req.getStatus());
+					repo.save(updateRecord);
+				
+			} else if (req.getStatus().equalsIgnoreCase("Y") ) {
+				// Insert Updated Record
+				updateRecord.setStatus(req.getStatus());
+				repo.save(updateRecord);
+			}
+			// perform update
+			
+			res.setResponse("Status Changed");
+			res.setSuccessId(req.getSectionId());
+		} catch(Exception e ) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return res;
+}
 	
 }

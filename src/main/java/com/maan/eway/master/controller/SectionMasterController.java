@@ -8,6 +8,8 @@ package com.maan.eway.master.controller;
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.ProductSectionsGetReq;
+import com.maan.eway.master.req.ReferalMasterChangeStatusReq;
+import com.maan.eway.master.req.SectionMasterChangeStatusReq;
 import com.maan.eway.master.req.SectionMasterGetAllReq;
 import com.maan.eway.master.req.SectionMasterGetReq;
 import com.maan.eway.master.req.SectionMasterSaveReq;
@@ -169,6 +171,26 @@ public class SectionMasterController {
 			}
 		}
 
+		//Change Status
+		@PostMapping("/section/changestatus")
+		@ApiOperation(value = "This method is get Section Master Status Change")
 
+		public ResponseEntity<CommonRes> changeStatusOfSection(@RequestBody SectionMasterChangeStatusReq req) {
+
+			CommonRes data = new CommonRes();
+			// Change Status
+			SuccessRes res = sectionService.changeStatusOfSection(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+
+		}
 
 }

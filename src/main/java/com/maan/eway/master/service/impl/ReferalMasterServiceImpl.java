@@ -18,6 +18,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
@@ -34,7 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-
+import com.maan.eway.master.req.ReferalMasterChangeStatusReq;
 import com.maan.eway.master.req.ReferalMasterGetAllReq;
 import com.maan.eway.master.req.ReferalMasterGetReq;
 import com.maan.eway.master.req.ReferalMasterSaveReq;
@@ -81,14 +82,18 @@ public SuccessRes insertReferal(ReferalMasterSaveReq req) {
 	
 	try {
 		Calendar cal = new GregorianCalendar();
-		cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
+		cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
 		Date startDate = cal.getTime() ;
 		Date today = new Date();
-		cal.setTime(req.getEffectiveDate());  cal.add(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
+		cal.setTime(req.getEffectiveDateStart());  cal.add(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
+		cal.set(Calendar.SECOND, today.getSeconds());
 		Date oldEndDate = cal.getTime() ;
-		cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
+		cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
+		cal.set(Calendar.SECOND, today.getSeconds());
 		Date effDate = cal.getTime();
-		Date endDate = sdformat.parse("12/12/2050");
+		Date endDate = req.getEffectiveDateEnd();
+		cal.setTime(req.getEffectiveDateEnd());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 50) ;
+		endDate = cal.getTime() ;
 		
 		
 		String referalId="";
@@ -260,12 +265,17 @@ public List<Error> validateReferalDetails(ReferalMasterSaveReq req) {
 		Date today = new Date();
 		cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
 		today = cal.getTime();
-		if (req.getEffectiveDate() == null || StringUtils.isBlank(req.getEffectiveDate().toString())) {
-			errorList.add(new Error("04", "EffectiveDate", "Please Enter Effective Date "));
+		if (req.getEffectiveDateStart() == null ) {
+			errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
 
-		} else if (req.getEffectiveDate().before(today)) {
-			errorList.add(new Error("04", "EffectiveDate", "Please Enter Effective Date  as Future Date"));
-		}
+		} else if (req.getEffectiveDateStart().before(today)) {
+			errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+		} else if (req.getEffectiveDateEnd() == null ) {
+			errorList.add(new Error("04", "EffectiveDateEnd", "Please Enter Effective Date End "));
+
+		} else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart()) || req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
+			errorList.add(new Error("04", "EffectiveDateEnd", "Please Enter Effective Date End  is After Effective Date End"));
+		} 
 		//Status Validation
 		if (StringUtils.isBlank(req.getStatus())) {
 			errorList.add(new Error("05", "Status", "Please Enter Status"));
@@ -293,6 +303,11 @@ public List<Error> validateReferalDetails(ReferalMasterSaveReq req) {
 			errorList.add(new Error("09", "CreatedBy", "Please Select CreatedBy  "));
 		}else if (req.getCreatedBy().length() > 20){
 			errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy  within 20 Characters")); 
+		}
+		if (StringUtils.isBlank(req.getRemarks())) {
+			errorList.add(new Error("10", "Remarks", "Please Enter Remarks"));
+		}else if (req.getTiraCode().length() > 100) {
+			errorList.add(new Error("10", "Remarks", "Please Enter Remarks within 100 Characters"));
 		}
 		
 	} catch (Exception e) {
@@ -348,6 +363,13 @@ public List<ReferalMasterRes> getallReferalDetails(ReferalMasterGetAllReq req) {
 	List<ReferalMasterRes> resList = new ArrayList<ReferalMasterRes>();
 	 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 	try {
+		Date today  = new Date();
+		Calendar cal = new GregorianCalendar(); 
+		cal.setTime(today);
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 30);
+		today   = cal.getTime();
+		
 		List<ReferalMaster> list = new ArrayList<ReferalMaster>();
 		//Pagination
 		int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
@@ -368,12 +390,12 @@ public List<ReferalMasterRes> getallReferalDetails(ReferalMasterGetAllReq req) {
 		Root<ReferalMaster> ocpm1 = effectiveDate.from(ReferalMaster.class);
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
-		
-		effectiveDate.where(a1);
+		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+		effectiveDate.where(a1,a2);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(b.get("referalId")));
+		orderList.add(cb.asc(b.get("referalName")));
 		
 		// Where
 		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
@@ -410,6 +432,13 @@ public ReferalMasterRes getByReferalId(ReferalMasterGetReq req) {
 	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
 	try {
+		Date today  = new Date();
+		Calendar cal = new GregorianCalendar(); 
+		cal.setTime(today);
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 30);
+		today   = cal.getTime();
+		
 		// Criteria
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ReferalMaster> query = cb.createQuery(ReferalMaster.class);
@@ -426,7 +455,8 @@ public ReferalMasterRes getByReferalId(ReferalMasterGetReq req) {
 		Root<ReferalMaster> ocpm1 = effectiveDate.from(ReferalMaster.class);
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 		javax.persistence.criteria.Predicate a1 = cb.equal(c.get("referalId"),ocpm1.get("referalId") );
-		effectiveDate.where(a1);
+		javax.persistence.criteria.Predicate a2 = cb.equal(c.get("effectiveDateStart"),today );
+		effectiveDate.where(a1,a2);
 		
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -520,6 +550,14 @@ public List<ReferalMasterRes> getActiveReferalDetails(ReferalMasterGetAllReq req
 	List<ReferalMasterRes> resList = new ArrayList<ReferalMasterRes>();
 	 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 	try {
+		
+		Date today  = new Date();
+		Calendar cal = new GregorianCalendar(); 
+		cal.setTime(today);
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 30);
+		today   = cal.getTime();
+		
 		List<ReferalMaster> list = new ArrayList<ReferalMaster>();
 
 		//Pagination
@@ -541,11 +579,12 @@ public List<ReferalMasterRes> getActiveReferalDetails(ReferalMasterGetAllReq req
 		Root<ReferalMaster> ocpm1 = effectiveDate.from(ReferalMaster.class);
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
+		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
 		effectiveDate.where(a1);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(b.get("referalId")));
+		orderList.add(cb.asc(b.get("referalName")));
 
 		// Where
 		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
@@ -574,6 +613,89 @@ public List<ReferalMasterRes> getActiveReferalDetails(ReferalMasterGetAllReq req
 
 	}
 	return resList;
+}
+@Override
+public SuccessRes changeStatusOfReferal(ReferalMasterChangeStatusReq req) {
+	SuccessRes res = new SuccessRes();
+	try {
+		Date today  = new Date();
+		Calendar cal = new GregorianCalendar(); 
+		
+		ReferalMaster updateRecord  = new ReferalMaster();
+		cal.setTime(today);
+		cal.set(Calendar.HOUR_OF_DAY, 23);
+		cal.set(Calendar.MINUTE, 1);
+		today   = cal.getTime();
+		
+		List<ReferalMaster> list = new ArrayList<ReferalMaster>();
+		// Find Latest Record
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ReferalMaster> query = cb.createQuery(ReferalMaster.class);
+
+		// Find All
+		Root<ReferalMaster> b = query.from(ReferalMaster.class);
+
+		// Select
+		query.select(b);
+
+		// Effective Date Max Filter
+		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Root<ReferalMaster> ocpm1 = effectiveDate.from(ReferalMaster.class);
+		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
+		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+		effectiveDate.where(a1,a2);
+
+		// Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.desc(b.get("effectiveDateStart")));
+
+		// Where
+		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+		Predicate n2 = cb.equal(b.get("referalId"), req.getReferalId() );
+
+		query.where(n1,n2).orderBy(orderList);
+
+		// Get Result
+		TypedQuery<ReferalMaster> result = em.createQuery(query);
+		list = result.getResultList();
+		updateRecord = list.get(0) ;
+			
+		if (req.getStatus().equalsIgnoreCase("N") )	{
+			// Delete Old Records
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 30);
+			today = cal.getTime();
+
+			// create update
+			CriteriaDelete<ReferalMaster> delete = cb.createCriteriaDelete(ReferalMaster.class);
+			Root<ReferalMaster> pm = delete.from(ReferalMaster.class);
+
+			// Where
+			javax.persistence.criteria.Predicate n3 = cb.equal(pm.get("referalId"), req.getReferalId());
+			javax.persistence.criteria.Predicate n4 = cb.greaterThanOrEqualTo(pm.get("effectiveDateStart"), today);
+			delete.where(n3, n4);
+			em.createQuery(delete).executeUpdate();
+			// Insert Updated Record
+			updateRecord.setStatus(req.getStatus());
+			repo.save(updateRecord);
+			
+		} else if (req.getStatus().equalsIgnoreCase("Y") ) {
+			// Insert Updated Record
+			updateRecord.setStatus(req.getStatus());
+			repo.save(updateRecord);
+		}
+		// perform update
+		
+		res.setResponse("Status Changed");
+		res.setSuccessId(req.getReferalId());
+	} catch(Exception e ) {
+		e.printStackTrace();
+		log.info("Exception is ---> " + e.getMessage());
+		return null;
+	}
+	return res;
 }
 
 }

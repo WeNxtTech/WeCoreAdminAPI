@@ -66,7 +66,10 @@ public class SectionMasterRes implements Serializable {
 	private String createdBy;
 	
 	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDate")
-    private Date       effectiveDateStart ;
-      
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateEnd")
+	private Date effectiveDateEnd;
 }

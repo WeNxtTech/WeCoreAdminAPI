@@ -7,6 +7,7 @@ package com.maan.eway.master.service;
 import com.maan.eway.bean.SessionMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.ProductSectionsGetReq;
+import com.maan.eway.master.req.SectionMasterChangeStatusReq;
 import com.maan.eway.master.req.SectionMasterGetAllReq;
 import com.maan.eway.master.req.SectionMasterGetReq;
 import com.maan.eway.master.req.SectionMasterSaveReq;
@@ -31,6 +32,8 @@ public interface SectionMasterService  {
 	List<SectionMasterRes> getActiveSectionDetails(SectionMasterGetAllReq req);
 
 	List<ProductSectionGetRes> getProductSections(ProductSectionsGetReq req);
+
+	SuccessRes changeStatusOfSection(SectionMasterChangeStatusReq req);
 
 
 }

@@ -20,8 +20,12 @@ public class ProductSectionMasterReq {
 	private String companyId;
 
 	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDate")
-	private Date effectiveDate;
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateEnd")
+	private Date effectiveDateEnd;
 
 	@JsonProperty("SectionName")
 	private String sectionName;
@@ -32,9 +36,12 @@ public class ProductSectionMasterReq {
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
 
-	@JsonProperty("AmendId")
-	private String amendId;
-
 	@JsonProperty("Remarks")
 	private String remarks;
+	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+	
+	@JsonProperty("TiraCode")
+	private String tiraCode;
 }

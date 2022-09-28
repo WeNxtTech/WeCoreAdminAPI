@@ -7,16 +7,13 @@ import lombok.Data;
 @Data
 public class ProductSectionsGetReq {
 
-
 	@JsonProperty("InsuranceId")
-	private String insuranceId ;
-	
+	private String insuranceId;
 
 	@JsonProperty("SectionId")
-	private String sectionId ;
-	
+	private String sectionId;
 
 	@JsonProperty("ProductId")
-	private String productId ;
+	private String productId;
 
 }

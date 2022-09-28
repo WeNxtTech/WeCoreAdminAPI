@@ -45,11 +45,11 @@ public class ProductSectionMasterRes implements Serializable {
 	
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
-    private Date       effectiveDateStart ;
-
+	private Date effectiveDateStart;
+	
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateEnd")
-    private Date       effectiveDateEnd ;
+	private Date effectiveDateEnd;
 	
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
@@ -63,5 +63,14 @@ public class ProductSectionMasterRes implements Serializable {
 
 	@JsonProperty("Remarks")
 	private String remarks;
+	
+	@JsonProperty("AmendId")
+	private String amendId;
+	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+	
+	@JsonProperty("TiraCode")
+	private String tiraCode;
       
 }

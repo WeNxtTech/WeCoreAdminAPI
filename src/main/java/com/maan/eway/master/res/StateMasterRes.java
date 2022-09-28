@@ -40,6 +40,11 @@ public class StateMasterRes implements Serializable {
 
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
+	
+	@JsonProperty("CreatedBy")
+	
+	@JsonProperty("TiraCode")
+	private String tiraCode;
 
 	@JsonProperty("AmendId")
 	private Integer amendId;

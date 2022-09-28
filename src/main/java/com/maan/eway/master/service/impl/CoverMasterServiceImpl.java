@@ -61,6 +61,7 @@ import org.modelmapper.ModelMapper;
 public class CoverMasterServiceImpl implements CoverMasterService {
 
 	@Autowired
+	
 	private CoverMasterRepository repo;
 
 	@PersistenceContext

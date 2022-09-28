@@ -216,10 +216,10 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 					}
 				}
 				
-				if (StringUtils.isBlank(req.getProductCategory())) {
-					errorList.add(new Error("08", "ProductCategory", "Please Select Product  Category  in Row No :" + row));
-				}else if (req.getProductCategory().length() > 25) {
-					errorList.add(new Error("08", "ProductCategory", "Please Enter Product Category within 25 Characters  in Row No :" + row));
+				if (StringUtils.isBlank(req.getProductDesc())) {
+					errorList.add(new Error("08", "ProductDesc", "Please Select Product  Desc in Row No :" + row));
+				}else if (req.getProductDesc().length() > 500) {
+					errorList.add(new Error("08", "ProductDesc", "Please Enter Product Desc within 500 Characters  in Row No :" + row));
 				}
 				
 				if (StringUtils.isBlank(req.getPaymentRedirUrl())) {

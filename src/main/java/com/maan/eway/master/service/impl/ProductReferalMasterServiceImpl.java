@@ -27,6 +27,7 @@ import com.maan.eway.master.req.ProductReferalChangeStatusReq;
 import com.maan.eway.master.req.ProductReferalGetAllReq;
 import com.maan.eway.master.req.ProductReferalGetReq;
 import com.maan.eway.master.req.ProductReferalMasterSaveReq;
+import com.maan.eway.master.req.ProductReferalsGetReq;
 import com.maan.eway.master.req.ProductSectionMasterReq;
 import com.maan.eway.master.req.ProductSectionsGetReq;
 import com.maan.eway.master.req.SectionMasterGetAllReq;
@@ -281,7 +282,7 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 			List<ProductReferalMaster> referalList = new ArrayList<ProductReferalMaster>();
 			//Pagination
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 0 : Integer.valueOf(req.getOffset());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 10 : Integer.valueOf(req.getOffset());
 	
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -443,7 +444,7 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("referalId"),ocpm1.get("referalId") );
 			javax.persistence.criteria.Predicate a2 = cb.equal(c.get("productId"),ocpm1.get("productId") ) ;
 			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("companyId"),ocpm1.get("companyId") ) ;
-			javax.persistence.criteria.Predicate a4 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
+			javax.persistence.criteria.Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
 			effectiveDate.where(a1,a2,a3,a4);
 			
 			
@@ -457,7 +458,7 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate);		
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("referalId"),req.getReferalId()) ;
 			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("productId"),req.getProductId()) ;
-			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("companyId"),req.getInsuranceId()) ;
+			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("companyId"),req.getCompanyId()) ;
 	
 	
 			query.where(n1 ,n2,n3,n4).orderBy(orderList);
@@ -480,7 +481,7 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 	
 	///*********************************************************************GET Product Referal Details******************************************************\\
 	@Override
-	public List<ProductReferalGetRes> getProductReferals(ProductReferalGetReq req) {
+	public List<ProductReferalGetRes> getProductReferals(ProductReferalsGetReq req) {
 		List<ProductReferalGetRes> resList = new ArrayList<ProductReferalGetRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
@@ -507,9 +508,11 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
 			Root<ProductReferalMaster> ocpm1 = effectiveDate.from(ProductReferalMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
-			Predicate a2 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
-			effectiveDate.where(a1,a2);
+			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
+			Predicate a3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+
+			effectiveDate.where(a1,a2,a3);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -518,8 +521,10 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("status"), "Y");
+			Predicate n3 = cb.equal(b.get("productId"),req.getProductId()) ;
+			Predicate n4 = cb.equal(b.get("companyId"),req.getCompanyId()) ;
 	
-			query.where(n1,n2).orderBy(orderList);
+			query.where(n1,n2,n3,n4).orderBy(orderList);
 	
 			// Get Result
 			TypedQuery<ProductReferalMaster> result = em.createQuery(query);
@@ -673,7 +678,7 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 			Predicate a1 = cb.equal(c.get("referalId"),ocpm1.get("referalId") );
 			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId") );
 			Predicate a3 = cb.equal(c.get("productId"), ocpm1.get("productId") );
-			Predicate a4 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1,a2,a3,a4);
 			// Effective Date End
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
@@ -688,7 +693,7 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 		    // Where	
 			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
-			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"), req.getInsuranceId());
+			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"), req.getCompanyId());
 			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("productId"), req.getProductId());
 			
 			query.where(n1,n2,n3,n4).orderBy(orderList);

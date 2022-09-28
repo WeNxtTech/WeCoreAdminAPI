@@ -5,10 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class ProductReferalGetReq {
+public class ProductReferalsGetReq {
 
-	@JsonProperty("ReferalId")
-    private String referalId     ;
 	
 	@JsonProperty("ProductId")
     private String     productId     ;

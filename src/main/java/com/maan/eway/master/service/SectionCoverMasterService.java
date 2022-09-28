@@ -9,6 +9,7 @@ import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CoverMasterGetAllReq;
 import com.maan.eway.master.req.CoverMasterGetReq;
 import com.maan.eway.master.req.CoverMasterSaveReq;
+import com.maan.eway.master.req.SectionCoverChangeStatusReq;
 import com.maan.eway.master.req.SectionCoverMasterGetAllReq;
 import com.maan.eway.master.req.SectionCoverMasterGetReq;
 import com.maan.eway.master.req.SectionCoverMasterNonSelectedReq;
@@ -37,6 +38,8 @@ public interface SectionCoverMasterService  {
 
 
 	List<CoverMasterRes> getallNonSelectedCovers(SectionCoverMasterNonSelectedReq req);
+
+	SuccessRes changestatusofSectionCover(SectionCoverChangeStatusReq req);
 
 
 }

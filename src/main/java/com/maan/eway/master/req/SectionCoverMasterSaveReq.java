@@ -23,12 +23,20 @@ public class SectionCoverMasterSaveReq {
 	@JsonProperty("InsuranceId")
 	private String companyId;
 
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDate")
-	private Date effectiveDate;
-
 	@JsonProperty("CoverName")
 	private String coverName;
+	
+	@JsonProperty("CoverDesc")
+	private String coverDesc;
+	
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
+
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateEnd")
+	private Date effectiveDateEnd;
 
 	@JsonProperty("Status")
 	private String status;
@@ -65,6 +73,12 @@ public class SectionCoverMasterSaveReq {
 	
 	@JsonProperty("CalcStatus")
 	private String calcStatus;
+	
+	@JsonProperty("TiraCode")
+	private String tiraCode;
+	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
 	
 	
 }

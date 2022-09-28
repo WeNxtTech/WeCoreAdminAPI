@@ -13,6 +13,7 @@ import com.maan.eway.master.req.ProductReferalChangeStatusReq;
 import com.maan.eway.master.req.ProductReferalGetAllReq;
 import com.maan.eway.master.req.ProductReferalGetReq;
 import com.maan.eway.master.req.ProductReferalMasterSaveReq;
+import com.maan.eway.master.req.ProductReferalsGetReq;
 import com.maan.eway.master.req.ProductSectionMasterReq;
 import com.maan.eway.master.req.ProductSectionsGetReq;
 import com.maan.eway.master.req.SectionMasterGetAllReq;
@@ -159,7 +160,7 @@ public class ProductReferalMasterController {
 
 	@PostMapping("/getproductreferal")
 	@ApiOperation("This Method is to get by Product  Sections")
-	public ResponseEntity<CommonRes> getProductReferals(@RequestBody ProductReferalGetReq req) {
+	public ResponseEntity<CommonRes> getProductReferals(@RequestBody ProductReferalsGetReq req) {
 		CommonRes data = new CommonRes();
 		List<ProductReferalGetRes> res = entityService.getProductReferals(req);
 		data.setCommonResponse(res);

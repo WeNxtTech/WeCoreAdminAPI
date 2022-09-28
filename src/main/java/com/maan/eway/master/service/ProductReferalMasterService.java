@@ -10,6 +10,7 @@ import com.maan.eway.master.req.ProductReferalChangeStatusReq;
 import com.maan.eway.master.req.ProductReferalGetAllReq;
 import com.maan.eway.master.req.ProductReferalGetReq;
 import com.maan.eway.master.req.ProductReferalMasterSaveReq;
+import com.maan.eway.master.req.ProductReferalsGetReq;
 import com.maan.eway.master.req.ProductSectionMasterReq;
 import com.maan.eway.master.req.ProductSectionsGetReq;
 import com.maan.eway.master.req.SectionMasterGetAllReq;
@@ -38,7 +39,7 @@ public interface ProductReferalMasterService  {
 
 	ProductReferalGetRes getByReferalId(ProductReferalGetReq req);
 
-	List<ProductReferalGetRes> getProductReferals(ProductReferalGetReq req);
+	List<ProductReferalGetRes> getProductReferals(ProductReferalsGetReq req);
 
 	List<ReferalMasterRes> getallNonSelectedReferals(ProductReferalGetAllReq req);
 

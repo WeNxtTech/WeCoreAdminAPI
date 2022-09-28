@@ -11,7 +11,7 @@ public class SectionCoverMasterNonSelectedReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @JsonProperty("InsuranceId")
-    private String insuranceId;
+    private String companyId;
     
     @JsonProperty("ProductId")
     private String productId;

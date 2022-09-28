@@ -24,15 +24,6 @@ import java.util.List;
 import java.util.Date;
 import javax.persistence.*;
 
-
-
-
-/**
-* Domain class for entity "SectionMaster"
-*
-* @author Telosys Tools Generator
-*
-*/
 @Getter
 @Setter
 @NoArgsConstructor
@@ -81,6 +72,10 @@ private static final long serialVersionUID = 1L;
     @Column(name="COVER_NAME", length=100)
     private String     coverName ;
 
+    @Column(name="COVER_DESC", length=100)
+    private String     coverDesc;
+
+    
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ENTRY_DATE")
     private Date       entryDate ;
@@ -99,6 +94,12 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="TOOL_TIP", length=100)
     private String     toolTip ;
+
+    @Column(name="TIRA_CODE", length=20)
+    private String     tiraCode ;
+
+    @Column(name="CREATED_BY", length=100)
+    private String     createdBy;
 
 }
 

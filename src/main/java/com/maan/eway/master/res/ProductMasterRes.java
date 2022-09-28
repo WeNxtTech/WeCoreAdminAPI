@@ -45,8 +45,8 @@ public class ProductMasterRes implements Serializable {
 	@JsonProperty("EntryDate")
 	private Date entryDate;
 
-	@JsonProperty("ProductCategory")
-	private String productCategory;
+	@JsonProperty("ProductDesc")
+	private String productDesc;
 
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;

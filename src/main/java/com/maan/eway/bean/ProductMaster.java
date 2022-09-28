@@ -97,8 +97,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="EXPIRY_DATE")
     private Date       expiryDate ;
 
-    @Column(name="PRODUCT_CATEGORY", length=25)
-    private String     productCategory ;
+    @Column(name="PRODUCT_DESC", length=500)
+    private String     productDesc ;
 
     @Column(name="CORE_APP_CODE", length=20)
     private String     coreAppCode ;

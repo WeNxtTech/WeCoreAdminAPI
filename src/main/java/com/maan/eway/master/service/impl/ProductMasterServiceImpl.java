@@ -319,10 +319,10 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 				}
 			}
 			
-			if (StringUtils.isBlank(req.getProductCategory())) {
-				errorList.add(new Error("08", "ProductCategory", "Please Select Product  Category "));
-			}else if (req.getProductCategory().length() > 25) {
-				errorList.add(new Error("08", "ProductCategory", "Please Enter Product Category within 25 Characters"));
+			if (StringUtils.isBlank(req.getProductDesc())) {
+				errorList.add(new Error("08", "ProductDesc", "Please Select Product  Desc "));
+			}else if (req.getProductDesc().length() > 500) {
+				errorList.add(new Error("08", "ProductDesc", "Please Enter Product Descwithin 500 Characters"));
 			}
 			
 			

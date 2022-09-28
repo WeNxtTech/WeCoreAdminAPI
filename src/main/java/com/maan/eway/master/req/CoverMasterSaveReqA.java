@@ -67,6 +67,31 @@ public class CoverMasterSaveReqA implements Serializable {
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateEnd")
 	private Date effectiveDateEnd;
+	
+	@JsonProperty("Excess")
+	private String excess;
+	
+	@JsonProperty("CalcYn")
+	private String calcYn;
+
+	@JsonProperty("CoverageType")
+	private String coverageType;
+	
+	@JsonProperty("UploadOption")
+	private String uploadOption;
+	
+	@JsonProperty("CoverageLimit")
+	private String coverageLimit;
+	
+	@JsonProperty("CalcType")
+	private String calcType;
+	
+	@JsonProperty("CalcStatus")
+	private String calcStatus;
+	
+	@JsonProperty("OfsGridReq")
+	private List<CoverOfsGridSaveReq> ofsGridReq;
+	
 
 	
 }

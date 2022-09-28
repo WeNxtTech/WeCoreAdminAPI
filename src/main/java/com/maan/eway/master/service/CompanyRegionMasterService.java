@@ -6,8 +6,11 @@
 package com.maan.eway.master.service;
 import com.maan.eway.bean.SessionMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.CompanyRegionChangeStatusReq;
+import com.maan.eway.master.req.CompanyRegionDropDownReq;
 import com.maan.eway.master.req.CompanyRegionGetAllReq;
 import com.maan.eway.master.req.CompanyRegionGetReq;
+import com.maan.eway.master.req.CompanyRegionNonSelectedReq;
 import com.maan.eway.master.req.CompanyRegionSaveReq;
 import com.maan.eway.master.req.ProductSectionMasterGetAllReq;
 import com.maan.eway.master.req.ProductSectionMasterReq;
@@ -39,9 +42,11 @@ public interface CompanyRegionMasterService  {
 
 	CompanyRegionGetRes getByCompanyRegionId(CompanyRegionGetReq req);
 
-	List<RegionMasterRes> getallNonSelectedCompanyRegion(ProductSectionMasterGetAllReq req);
+	List<RegionMasterRes> getallNonSelectedCompanyRegion(CompanyRegionNonSelectedReq req);
 
-	List<DropDownRes> getCompanyRegionDropdown(CompanyRegionGetReq req);
+	List<DropDownRes> getCompanyRegionDropdown(CompanyRegionDropDownReq req);
+
+	SuccessRes changeStatusofCompanyRegion(CompanyRegionChangeStatusReq req);
 
 
 }

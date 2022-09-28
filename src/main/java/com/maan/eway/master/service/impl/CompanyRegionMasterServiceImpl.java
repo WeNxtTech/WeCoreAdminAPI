@@ -5,42 +5,9 @@
 */
 package com.maan.eway.master.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.maan.eway.repository.ProductSectionMasterRepository;
-import com.maan.eway.repository.SectionMasterRepository;
-import com.maan.eway.res.DropDownRes;
-import com.maan.eway.res.SuccessRes;
-import com.google.gson.Gson;
-import com.maan.eway.bean.ProductSectionMaster;
-import com.maan.eway.bean.SectionCoverMaster;
-import com.maan.eway.bean.SectionMaster;
-import com.maan.eway.bean.SectionMaster;
-import com.maan.eway.error.Error;
-import com.maan.eway.master.req.CompanyRegionGetAllReq;
-import com.maan.eway.master.req.CompanyRegionGetReq;
-import com.maan.eway.master.req.CompanyRegionSaveReq;
-import com.maan.eway.master.req.ProductSectionMasterGetAllReq;
-import com.maan.eway.master.req.ProductSectionMasterReq;
-import com.maan.eway.master.req.ProductSectionsGetReq;
-import com.maan.eway.master.req.SectionMasterGetAllReq;
-import com.maan.eway.master.req.SectionMasterGetReq;
-import com.maan.eway.master.req.SectionMasterSaveReq;
-import com.maan.eway.master.res.CompanyRegionGetRes;
-import com.maan.eway.master.res.ProductSectionGetRes;
-import com.maan.eway.master.res.ProductSectionMasterRes;
-import com.maan.eway.master.res.RegionMasterRes;
-import com.maan.eway.master.res.SectionMasterRes;
-import com.maan.eway.master.service.CompanyRegionMasterService;
-import com.maan.eway.master.service.ProductSectionMasterService;
-import com.maan.eway.master.service.SectionMasterService;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -49,6 +16,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
@@ -60,7 +28,26 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
-import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.google.gson.Gson;
+import com.maan.eway.bean.CompanyRegionMaster;
+import com.maan.eway.bean.RegionMaster;
+import com.maan.eway.error.Error;
+import com.maan.eway.master.req.CompanyRegionChangeStatusReq;
+import com.maan.eway.master.req.CompanyRegionDropDownReq;
+import com.maan.eway.master.req.CompanyRegionGetAllReq;
+import com.maan.eway.master.req.CompanyRegionGetReq;
+import com.maan.eway.master.req.CompanyRegionNonSelectedReq;
+import com.maan.eway.master.req.CompanyRegionSaveReq;
+import com.maan.eway.master.res.CompanyRegionGetRes;
+import com.maan.eway.master.res.RegionMasterRes;
+import com.maan.eway.master.service.CompanyRegionMasterService;
+import com.maan.eway.repository.CompanyRegionMasterRepository;
+import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.SuccessRes;
 
 /**
 * <h2>SectionMasterServiceimpl</h2>
@@ -70,7 +57,7 @@ import org.modelmapper.ModelMapper;
 public class CompanyRegionMasterServiceImpl implements CompanyRegionMasterService {
 
 	@Autowired
-	private ProductSectionMasterRepository repo;
+	private CompanyRegionMasterRepository repo;
 
 	@PersistenceContext
 	private EntityManager em;
@@ -78,50 +65,660 @@ public class CompanyRegionMasterServiceImpl implements CompanyRegionMasterServic
 	Gson json = new Gson();
 
 	private Logger log = LogManager.getLogger(CompanyRegionMasterServiceImpl.class);
-
-
 	
 
 	@Override
 	public List<Error> validateCompanyRegion(List<CompanyRegionSaveReq> reqList) {
+		List<Error> errorList = new ArrayList<Error>();
+		try {
 		
-		return null;
+			Long row = 0L ;
+			for (CompanyRegionSaveReq req : reqList) {
+				row = row + 1 ;
+				if (StringUtils.isBlank(req.getRegionName())) {
+					errorList.add(new Error("02", "RegionName", "Please Select Region Name in  Row No : " + row));
+				}else if (req.getRegionName().length() > 100){
+					errorList.add(new Error("02","RegionName", "Please Enter Region  Name within 100 Characters in  Row No : " + row)); 
+				}
+		
+				if (StringUtils.isBlank(req.getRegionCode())) {
+					errorList.add(new Error("02", "RegionCode", "Please Select Region Code in  Row No : " + row));
+				}else if (req.getRegionCode().length() > 20){
+					errorList.add(new Error("02","RegionCode", "Please Enter Region Code within 100 Characters in  Row No : " + row)); 
+				}
+				
+				if (StringUtils.isBlank(req.getRegionShortCode())) {
+					errorList.add(new Error("02", "RegionShortCode", "Please Select Region Short Code in  Row No : " + row));
+				}else if (req.getRegionShortCode().length() > 100){
+					errorList.add(new Error("02","RegionShortCode", "Please Enter Region Short Code within 100 Characters in  Row No : " + row)); 
+				}
+				
+				if (StringUtils.isBlank(req.getCompanyId())) {
+					errorList.add(new Error("02", "InsuranceId", "Please Select InsuranceId in  Row No : " + row));
+				}
+				
+				// Date Validation 
+				Calendar cal = new GregorianCalendar();
+				Date today = new Date();
+				cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
+				today = cal.getTime();
+				if (req.getEffectiveDateStart() == null ) {
+					errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
+		
+				} else if (req.getEffectiveDateStart().before(today)) {
+					errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+				} else if (req.getEffectiveDateEnd() == null ) {
+					errorList.add(new Error("04", "EffectiveDateEnd", "Please Enter Effective Date End "));
+		
+				} else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart()) || req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
+					errorList.add(new Error("04", "EffectiveDateEnd", "Please Enter Effective Date End  is After Effective Date End"));
+				} 
+				//Status Validation
+				if (StringUtils.isBlank(req.getStatus())) {
+					errorList.add(new Error("05", "Status", "Please Enter Status in  Row No : " + row));
+				} else if (req.getStatus().length() > 1) {
+					errorList.add(new Error("05", "Status", "Enter Status 1 Character Only in  Row No : " + row));
+				}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()))) {
+					errorList.add(new Error("05", "Status", "Enter Status Y or N Only in  Row No : " + row));
+				}
+				if (StringUtils.isBlank(req.getCompanyId())) {
+					errorList.add(new Error("06", "CompanyId", "Please Enter Company Id in  Row No : " + row));
+				}
+				if (StringUtils.isBlank(req.getCreatedBy())) {
+					errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy"));
+				}else if (req.getCreatedBy().length() > 50) {
+					errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+				}
+				
+				if (StringUtils.isBlank(req.getCoreAppCode())) {
+					errorList.add(new Error("08", "CoreAppCode", "Please Enter CoreAppCode"));
+				}else if (req.getCoreAppCode().length() > 20) {
+					errorList.add(new Error("08", "CoreAppCode", "Please Enter CoreAppCode within 20 Characters"));
+				}
+				
+				if (StringUtils.isBlank(req.getTiraCode())) {
+					errorList.add(new Error("09", "TiraCode", "Please Enter TiraCode"));
+				}else if (req.getTiraCode().length() > 20) {
+					errorList.add(new Error("09", "TiraCode", "Please Enter TiraCode within 20 Characters"));
+				}
+				if (StringUtils.isBlank(req.getRemarks())) {
+					errorList.add(new Error("10", "Remarks", "Please Enter Remarks"));
+				}else if (req.getRemarks().length() > 100) {
+					errorList.add(new Error("10", "Remarks", "Please Enter Remarks within 100 Characters"));
+				}
+				
+			}
+	
+		} catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+			errorList.add(new Error("10", "CommonError", e.getMessage()));
+		}
+		return errorList;
 	}
 
+	@Transactional
 	@Override
-	public SuccessRes insertCompanyRegion(List<CompanyRegionSaveReq> req) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public SuccessRes insertCompanyRegion(List<CompanyRegionSaveReq> reqList) {
+		 SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/YYYY");
+			SuccessRes res = new SuccessRes();
+			CompanyRegionMaster saveData = new CompanyRegionMaster();
+			List<CompanyRegionMaster> list = new ArrayList<CompanyRegionMaster>();
+			 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+			
+			try {
+				for (CompanyRegionSaveReq req : reqList ) {
+					Calendar cal = new GregorianCalendar();
+					cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
+					Date startDate = cal.getTime() ;
+					Date today = new Date();
+					cal.setTime(req.getEffectiveDateStart());  cal.add(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
+					cal.set(Calendar.SECOND, today.getSeconds());
+					Date oldEndDate = cal.getTime() ;
+					cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
+					cal.set(Calendar.SECOND, today.getSeconds());
+					Date effDate = cal.getTime();
+					Date endDate = req.getEffectiveDateEnd();
+					cal.setTime(req.getEffectiveDateEnd());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 50) ;
+					endDate = cal.getTime() ;
+					
+					
+					String regionId="";
+					Integer amendId=0;
+					
+					
+					// Update
+					// Get Less than Equal Today Record 
+					// Criteria
+					regionId=req.getRegionCode();
+					CriteriaBuilder cb = em.getCriteriaBuilder();
+					CriteriaQuery<CompanyRegionMaster> query = cb.createQuery(CompanyRegionMaster.class);
+
+					// Find All
+					Root<CompanyRegionMaster> b = query.from(CompanyRegionMaster.class);
+
+					// Select
+					query.select(b);
+
+					// Effective Date Max Filter
+					Subquery<Long> effectiveDate = query.subquery(Long.class);
+					Root<CompanyRegionMaster> ocpm1 = effectiveDate.from(CompanyRegionMaster.class);
+					effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+					Predicate a1 = cb.equal(ocpm1.get("regionCode"), b.get("regionCode"));
+					Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , startDate);
+					Predicate a3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+					effectiveDate.where(a1,a2,a3);
+
+					// Order By
+				//	List<Order> orderList = new ArrayList<Order>();
+				//	orderList.add(cb.asc(b.get("branchName")));
+					
+					// Where
+					Predicate n1 = cb.equal(b.get("status"), "Y");
+					Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+					Predicate n3 =  cb.equal(b.get("regionCode"), req.getRegionCode() );
+					Predicate n4 =  cb.equal(b.get("companyId"), req.getCompanyId() );
+					query.where(n1, n2, n3,n4);//.orderBy(orderList);
+
+					// Get Result
+					TypedQuery<CompanyRegionMaster> result = em.createQuery(query);
+					list = result.getResultList();
+					
+					if( list.size() > 0) {
+						repo.delete(list.get(0));
+						// Amend Id
+						if( list.get(0).getEffectiveDateStart().before(startDate)   ) {
+							String startDatewithoutTime = sdformat.format(startDate) ;
+							String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart()) ;
+							
+							if(startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime) ) {
+								amendId = list.get(0).getAmendId() + 1 ;
+							}
+						}
+					} 
+					res.setResponse("Updated Successfully ");
+					res.setSuccessId(regionId);
+						
+					
+				    dozerMapper.map(req, saveData );
+					saveData.setEffectiveDateStart(effDate);
+					saveData.setEffectiveDateEnd(endDate);
+					saveData.setStatus(req.getStatus());
+					saveData.setEntryDate(new Date());
+					saveData.setAmendId(amendId);
+					repo.saveAndFlush(saveData);
+					
+					if(list.size() > 0 ) {
+						// Update Old Record
+						CompanyRegionMaster lastRecord = list.get(0) ;
+						lastRecord.setEffectiveDateEnd(oldEndDate);
+						repo.saveAndFlush(lastRecord);
+					}
+					
+					log.info("Saved Details is ---> " + json.toJson(saveData));
+				}
+				
+					
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Exception is --->" + e.getMessage());
+				return null;
+			}
+			return res;
+		}
 
 	@Override
 	public List<CompanyRegionGetRes> getallCompanyRegion(CompanyRegionGetAllReq req) {
-		// TODO Auto-generated method stub
-		return null;
+		List<CompanyRegionGetRes> resList = new ArrayList<CompanyRegionGetRes>();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			
+			List<CompanyRegionMaster> regionList = new ArrayList<CompanyRegionMaster>();
+			//Pagination
+			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+	
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CompanyRegionMaster> query = cb.createQuery(CompanyRegionMaster.class);
+	
+			// Find All
+			Root<CompanyRegionMaster> b = query.from(CompanyRegionMaster.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CompanyRegionMaster> ocpm1 = effectiveDate.from(CompanyRegionMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a2 = cb.equal(b.get("regionCode"), ocpm1.get("regionCode"));
+			Predicate a4 = cb.equal(b.get("companyId"), ocpm1.get("companyId"));
+			Predicate a5 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"), today);
+			effectiveDate.where(a2,a4,a5);
+	
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("regionName")));
+			
+			// Where
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
+			query.where(n1,n2).orderBy(orderList);
+	
+			// Get Result
+			TypedQuery<CompanyRegionMaster> result = em.createQuery(query);
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			regionList = result.getResultList();
+			
+			// Map
+			for (CompanyRegionMaster data : regionList) {
+				CompanyRegionGetRes res = new CompanyRegionGetRes();
+	
+				res = dozerMapper.map(data, CompanyRegionGetRes.class);
+				resList.add(res);
+			}
+	
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+	
+		}
+		return resList;
 	}
 
 	@Override
 	public List<CompanyRegionGetRes> getActiveCompanyRegion(CompanyRegionGetAllReq req) {
-		// TODO Auto-generated method stub
-		return null;
+		List<CompanyRegionGetRes> resList = new ArrayList<CompanyRegionGetRes>();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			
+			List<CompanyRegionMaster> regionList = new ArrayList<CompanyRegionMaster>();
+			//Pagination
+			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+	
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CompanyRegionMaster> query = cb.createQuery(CompanyRegionMaster.class);
+	
+			// Find All
+			Root<CompanyRegionMaster> b = query.from(CompanyRegionMaster.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CompanyRegionMaster> ocpm1 = effectiveDate.from(CompanyRegionMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a2 = cb.equal(b.get("regionCode"), ocpm1.get("regionCode"));
+			Predicate a3 = cb.equal(b.get("companyId"), ocpm1.get("companyId"));
+			Predicate a4 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"), today);
+			effectiveDate.where(a2,a3,a4);
+	
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("regionName")));
+			
+			// Where
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
+			Predicate n3 = cb.equal(b.get("status"), "Y");
+			query.where(n1,n2,n3).orderBy(orderList);
+	
+			// Get Result
+			TypedQuery<CompanyRegionMaster> result = em.createQuery(query);
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			regionList = result.getResultList();
+			
+			// Map
+			for (CompanyRegionMaster data : regionList) {
+				CompanyRegionGetRes res = new CompanyRegionGetRes();
+	
+				res = dozerMapper.map(data, CompanyRegionGetRes.class);
+				resList.add(res);
+			}
+	
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+	
+		}
+		return resList;
 	}
 
 	@Override
 	public CompanyRegionGetRes getByCompanyRegionId(CompanyRegionGetReq req) {
-		// TODO Auto-generated method stub
-		return null;
+		CompanyRegionGetRes res = new CompanyRegionGetRes();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			
+			List<CompanyRegionMaster> regionList = new ArrayList<CompanyRegionMaster>();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CompanyRegionMaster> query = cb.createQuery(CompanyRegionMaster.class);
+	
+			// Find All
+			Root<CompanyRegionMaster> b = query.from(CompanyRegionMaster.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CompanyRegionMaster> ocpm1 = effectiveDate.from(CompanyRegionMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a2 = cb.equal(b.get("regionCode"), ocpm1.get("regionCode"));
+			Predicate a3 = cb.equal(b.get("companyId"), ocpm1.get("companyId"));
+			Predicate a4 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"), today);
+			effectiveDate.where(a2,a3,a4);
+	
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("regionName")));
+			
+			// Where
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
+			Predicate n3 = cb.equal(b.get("status"), "Y");
+			query.where(n1,n2,n3).orderBy(orderList);
+	
+			// Get Result
+			TypedQuery<CompanyRegionMaster> result = em.createQuery(query);
+			regionList = result.getResultList();
+			res = dozerMapper.map(regionList.get(0) , CompanyRegionGetRes.class);
+		
+	
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+	
+		}
+		return res;
 	}
 
 	@Override
-	public List<RegionMasterRes> getallNonSelectedCompanyRegion(ProductSectionMasterGetAllReq req) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<RegionMasterRes> getallNonSelectedCompanyRegion(CompanyRegionNonSelectedReq req) {
+		List<RegionMasterRes> resList = new ArrayList<RegionMasterRes>();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			List<RegionMaster> regionList = new ArrayList<RegionMaster>();
+			//Pagination
+			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+	
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<RegionMaster> query = cb.createQuery(RegionMaster.class);
+	
+			// Find All
+			Root<RegionMaster> b = query.from(RegionMaster.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<RegionMaster> ocpm1 = effectiveDate.from(RegionMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("regionCode"), b.get("regionCode"));
+			Predicate a2 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
+			Predicate a3 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"),today);
+			effectiveDate.where(a1,a2,a3);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate5 = query.subquery(Long.class);
+			Root<RegionMaster> ocpm5 = effectiveDate5.from(RegionMaster.class);
+			effectiveDate5.select(cb.max(ocpm5.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(ocpm5.get("regionCode"), b.get("regionCode"));
+			Predicate a5 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"),today);
+			Predicate a6 = cb.equal(ocpm5.get("countryId"), b.get("countryId"));
+			effectiveDate5.where(a4,a5,a6);
+			
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("regionName")));
+			
+			// Product Section Effective Date Max Filter
+			Subquery<Long> region = query.subquery(Long.class);
+			Root<CompanyRegionMaster> ps = region.from(CompanyRegionMaster.class);
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<CompanyRegionMaster> ocpm2 = effectiveDate2.from(CompanyRegionMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateStart")));
+			Predicate eff1 = cb.equal(ocpm2.get("regionCode"), ps.get("regionCode"));
+			Predicate eff3 = cb.equal(ocpm2.get("companyId"), ps.get("companyId"));
+			Predicate eff4 = cb.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"),today);
+			effectiveDate2.where(eff1,eff3,eff4);
+			
+			// Re Filter
+			region.select(ps.get("regionCode"));
+			Predicate ps1 = cb.equal(ps.get("regionCode"), b.get("regionCode"));
+			Predicate ps3 = cb.equal(ps.get("companyId"), req.getCompanyId());
+			Predicate ps4 = cb.equal(ps.get("effectiveDateStart"),effectiveDate2);
+			Predicate ps5 = cb.equal(ps.get("status"),"Y");
+			region.where(ps1,ps3,ps4,ps5);
+			
+			// Where
+			Expression<String>e0= b.get("regionCode");
+			
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("status"), "Y");
+			Predicate n3 = e0.in(region).not();
+			Predicate n4 = cb.equal(b.get("effectiveDateEnd"), effectiveDate5);
+			Predicate n5 = cb.equal(b.get("countryId"), req.getCountryId());
+			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+	
+			// Get Result
+			TypedQuery<RegionMaster> result = em.createQuery(query);
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			regionList = result.getResultList();
+			
+			// Map
+			for (RegionMaster data : regionList) {
+				RegionMasterRes res = new RegionMasterRes();
+	
+				res = dozerMapper.map(data, RegionMasterRes.class);
+				resList.add(res);
+			}
+	
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+	
+		}
+		return resList;
 	}
 
 	@Override
-	public List<DropDownRes> getCompanyRegionDropdown(CompanyRegionGetReq req) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<DropDownRes> getCompanyRegionDropdown(CompanyRegionDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CompanyRegionMaster> query = cb.createQuery(CompanyRegionMaster.class);
+			List<CompanyRegionMaster> list = new ArrayList<CompanyRegionMaster>();
+			
+			// Find All
+			Root<CompanyRegionMaster>    c = query.from(CompanyRegionMaster.class);		
+			
+			// Select
+			query.select(c );
+			
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("regionName")));
+			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CompanyRegionMaster> ocpm1 = effectiveDate.from(CompanyRegionMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("regionCode"),ocpm1.get("regionCode") );
+			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId") );
+			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2,a4);
+			
+			// Effective Date End
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<CompanyRegionMaster> ocpm2 = effectiveDate2.from(CompanyRegionMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			javax.persistence.criteria.Predicate a5 = cb.equal(c.get("regionCode"), ocpm2.get("regionCode"));
+			javax.persistence.criteria.Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			javax.persistence.criteria.Predicate a7 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			effectiveDate2.where(a5, a6,a7);
+
+		    // Where	
+			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
+			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("companyId"), req.getCompanyId());
+		
+			query.where(n1,n2,n3,n4).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<CompanyRegionMaster> result = em.createQuery(query);			
+			list =  result.getResultList();  
+			
+			for(CompanyRegionMaster data : list ) {
+				// Response
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getRegionCode());
+				res.setCodeDesc(data.getRegionName());
+				resList.add(res);
+			}		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
 	}
+	@Override
+	public SuccessRes changeStatusofCompanyRegion(CompanyRegionChangeStatusReq req) {
+		SuccessRes res = new SuccessRes();
+		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			
+			CompanyRegionMaster updateRecord  = new CompanyRegionMaster();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			
+			List<CompanyRegionMaster> list = new ArrayList<CompanyRegionMaster>();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CompanyRegionMaster> query = cb.createQuery(CompanyRegionMaster.class);
+	
+			// Find All
+			Root<CompanyRegionMaster> b = query.from(CompanyRegionMaster.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CompanyRegionMaster> ocpm1 = effectiveDate.from(CompanyRegionMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("regionCode"), b.get("regionCode"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			effectiveDate.where(a1,a2,a3);
+	
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("effectiveDateStart")));
+	
+			// Where
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("regionCode"), req.getRegionCode() );
+			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId() );
+			
+			query.where(n1,n2,n3).orderBy(orderList);
+	
+			// Get Result
+			TypedQuery<CompanyRegionMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			updateRecord = list.get(0) ;
+				
+			if (req.getStatus().equalsIgnoreCase("N") )	{
+					// Delete Old Records
+					cal.setTime(today);
+					cal.set(Calendar.HOUR_OF_DAY, 23);
+					cal.set(Calendar.MINUTE, 30);
+					today   = cal.getTime();
+					
+					// create update
+					CriteriaDelete<CompanyRegionMaster> delete = cb.createCriteriaDelete(CompanyRegionMaster.class);
+					Root<CompanyRegionMaster> pm = delete.from(CompanyRegionMaster.class);
+					
+					 // Where	
+					javax.persistence.criteria.Predicate n4 = cb.equal(pm.get("regionCode"), req.getRegionCode());
+					javax.persistence.criteria.Predicate n5 = cb.greaterThanOrEqualTo(pm.get("effectiveDateStart"), today);
+					javax.persistence.criteria.Predicate n6 = cb.equal(pm.get("companyId"), req.getCompanyId());
+					delete.where(n4,n5,n6);	
+					em.createQuery(delete).executeUpdate();
+					// Insert Updated Record
+					updateRecord.setStatus(req.getStatus());
+					repo.save(updateRecord);
+				
+			} else if (req.getStatus().equalsIgnoreCase("Y") ) {
+				// Insert Updated Record
+				updateRecord.setStatus(req.getStatus());
+				repo.save(updateRecord);
+			}
+			// perform update
+			
+			res.setResponse("Status Changed");
+			res.setSuccessId(req.getRegionCode());
+		} catch(Exception e ) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return res;
+}
 	
 }

@@ -388,7 +388,7 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			
 			// Effective Date End
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
-			Root<InsuranceCompanyMaster> ocpm2 = effectiveDate2.from(InsuranceCompanyMaster.class);
+			Root<SectionMaster> ocpm2 = effectiveDate2.from(SectionMaster.class);
 			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
 			javax.persistence.criteria.Predicate a3 = cb.equal(b.get("sectionId"), ocpm2.get("sectionId"));
 			javax.persistence.criteria.Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);

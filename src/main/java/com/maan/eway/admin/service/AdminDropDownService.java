@@ -27,5 +27,9 @@ public interface AdminDropDownService {
 	
 	List<DropDownRes> getProductIcons();
 
+	List<DropDownRes> getCalcTypes();
+
+	List<DropDownRes> getCoverageTypes();
+
 
 }

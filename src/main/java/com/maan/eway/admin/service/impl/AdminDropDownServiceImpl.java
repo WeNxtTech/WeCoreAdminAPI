@@ -229,4 +229,44 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 			return resList;
 		}
 
+		@Override
+		public List<DropDownRes> getCalcTypes() {
+			List<DropDownRes> resList = new ArrayList<DropDownRes>();
+			try {
+				List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("CALCULATION_TYPE", "Y");
+
+				for (ListItemValue data : getList) {
+					DropDownRes res = new DropDownRes();
+					res.setCode(data.getItemCode());
+					res.setCodeDesc(data.getItemValue());
+					resList.add(res);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Exception is ---> " + e.getMessage());
+				return null;
+			}
+			return resList;
+		}
+
+		@Override
+		public List<DropDownRes> getCoverageTypes() {
+			List<DropDownRes> resList = new ArrayList<DropDownRes>();
+			try {
+				List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVERAGE_TYPE", "Y");
+
+				for (ListItemValue data : getList) {
+					DropDownRes res = new DropDownRes();
+					res.setCode(data.getItemCode());
+					res.setCodeDesc(data.getItemValue());
+					resList.add(res);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Exception is ---> " + e.getMessage());
+				return null;
+			}
+			return resList;
+		}
+
 }

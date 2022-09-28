@@ -7,13 +7,17 @@ package com.maan.eway.master.controller;
 
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.CompanyRegionChangeStatusReq;
+import com.maan.eway.master.req.CompanyRegionDropDownReq;
 import com.maan.eway.master.req.CompanyRegionGetAllReq;
 import com.maan.eway.master.req.CompanyRegionGetReq;
+import com.maan.eway.master.req.CompanyRegionNonSelectedReq;
 import com.maan.eway.master.req.CompanyRegionSaveReq;
 import com.maan.eway.master.req.CoverMasterGetReq;
 import com.maan.eway.master.req.ProductSectionMasterGetAllReq;
 import com.maan.eway.master.req.ProductSectionMasterReq;
 import com.maan.eway.master.req.ProductSectionsGetReq;
+import com.maan.eway.master.req.SectionCoverChangeStatusReq;
 import com.maan.eway.master.req.SectionMasterGetAllReq;
 import com.maan.eway.master.req.SectionMasterGetReq;
 import com.maan.eway.master.req.SectionMasterSaveReq;
@@ -166,7 +170,7 @@ public class CompanyRegionMasterController {
 		
 		@PostMapping("/getallnonselectedcompanyregion")
 		@ApiOperation("This method is getall Section Details")
-		public ResponseEntity<CommonRes> getallNonSelectedSections(@RequestBody ProductSectionMasterGetAllReq req)
+		public ResponseEntity<CommonRes> getallNonSelectedSections(@RequestBody CompanyRegionNonSelectedReq req)
 		{
 			CommonRes data = new CommonRes();
 			reqPrinter.reqPrint(req);
@@ -188,7 +192,7 @@ public class CompanyRegionMasterController {
 		@PostMapping("/dropdown/companyregion")
 		@ApiOperation(value = "This method is get Comapny Region Drop Down")
 
-		public ResponseEntity<CommonRes> getSectionCoverMasterDropdown(@RequestBody CompanyRegionGetReq req) {
+		public ResponseEntity<CommonRes> getSectionCoverMasterDropdown(@RequestBody CompanyRegionDropDownReq req) {
 
 			CommonRes data = new CommonRes();
 
@@ -207,4 +211,21 @@ public class CompanyRegionMasterController {
 
 		}
 
+		@PostMapping("companyregion/changestatus")
+		@ApiOperation(value="This method is to Change Company Region Status")
+		public ResponseEntity<CommonRes> changeStatusofCompanyRegion(@RequestBody CompanyRegionChangeStatusReq req){
+			CommonRes data = new CommonRes();
+			// Change Status
+			SuccessRes res = entityService.changeStatusofCompanyRegion(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			if(res!=null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			}
+			else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
 }

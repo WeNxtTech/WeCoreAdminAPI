@@ -8,7 +8,7 @@ import lombok.Data;
 public class CompanyRegionGetAllReq {
 
 	    @JsonProperty("InsuranceId")
-	    private String insuranceId;
+	    private String companyId;
 	    
 	    @JsonProperty("Limit")
 	    private String limit;

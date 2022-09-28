@@ -94,11 +94,6 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 					errorList.add(new Error("02", "SectionName", "Please Select Section  Name in  Row No : " + row));
 				}else if (req.getSectionName().length() > 100){
 					errorList.add(new Error("02","SectionName", "Please Enter Section  Name within 100 Characters in  Row No : " + row)); 
-				}else if (StringUtils.isBlank(req.getSectionId().toString())) {
-					Long SectionCount = repo.countBySectionNameAndCompanyIdAndProductIdOrderByEntryDateDesc(req.getSectionName(), req.getCompanyId(),Integer.valueOf(req.getProductId()));
-					if (SectionCount > 0 ) {
-						errorList.add(new Error("01", "Section", "This Section Alrady Exist in  Row No : " + row));
-					}
 				}
 		
 				if (StringUtils.isBlank(req.getProductId().toString()) || req.getProductId() == null) {
@@ -132,26 +127,26 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 					errorList.add(new Error("06", "CompanyId", "Please Enter Company Id in  Row No : " + row));
 				}
 				if (StringUtils.isBlank(req.getCreatedBy())) {
-					errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy"));
+					errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy" + row));
 				}else if (req.getCreatedBy().length() > 50) {
-					errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+					errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy within 100 Characters" + row));
 				}
 				
 				if (StringUtils.isBlank(req.getCoreAppCode())) {
-					errorList.add(new Error("08", "CoreAppCode", "Please Enter CoreAppCode"));
+					errorList.add(new Error("08", "CoreAppCode", "Please Enter CoreAppCode" + row));
 				}else if (req.getCoreAppCode().length() > 20) {
-					errorList.add(new Error("08", "CoreAppCode", "Please Enter CoreAppCode within 20 Characters"));
+					errorList.add(new Error("08", "CoreAppCode", "Please Enter CoreAppCode within 20 Characters" + row));
 				}
 				
 				if (StringUtils.isBlank(req.getTiraCode())) {
-					errorList.add(new Error("09", "TiraCode", "Please Enter TiraCode"));
+					errorList.add(new Error("09", "TiraCode", "Please Enter TiraCode" + row));
 				}else if (req.getTiraCode().length() > 20) {
-					errorList.add(new Error("09", "TiraCode", "Please Enter TiraCode within 20 Characters"));
+					errorList.add(new Error("09", "TiraCode", "Please Enter TiraCode within 20 Characters" + row));
 				}
 				if (StringUtils.isBlank(req.getRemarks())) {
-					errorList.add(new Error("10", "Remarks", "Please Enter Remarks"));
-				}else if (req.getTiraCode().length() > 100) {
-					errorList.add(new Error("10", "Remarks", "Please Enter Remarks within 100 Characters"));
+					errorList.add(new Error("10", "Remarks", "Please Enter Remarks" + row));
+				}else if (req.getRemarks().length() > 100) {
+					errorList.add(new Error("10", "Remarks", "Please Enter Remarks within 100 Characters" + row));
 				}
 				
 			}

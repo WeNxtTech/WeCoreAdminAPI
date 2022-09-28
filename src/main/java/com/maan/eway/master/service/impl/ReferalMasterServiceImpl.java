@@ -306,7 +306,7 @@ public List<Error> validateReferalDetails(ReferalMasterSaveReq req) {
 		}
 		if (StringUtils.isBlank(req.getRemarks())) {
 			errorList.add(new Error("10", "Remarks", "Please Enter Remarks"));
-		}else if (req.getTiraCode().length() > 100) {
+		}else if (req.getRemarks().length() > 100) {
 			errorList.add(new Error("10", "Remarks", "Please Enter Remarks within 100 Characters"));
 		}
 		

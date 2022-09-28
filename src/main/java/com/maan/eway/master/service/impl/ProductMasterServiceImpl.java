@@ -264,8 +264,12 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 				errorList.add(new Error("06", "Payment", "Please Select Payment Type"));
 			} else if (req.getPaymentYn().length() > 1) {
 				errorList.add(new Error("06", "Payment", "Enter Payment Type 1 Character Only"));
-			}else if(!("Y".equals(req.getPaymentYn())||"N".equals(req.getPaymentYn()))) {
+			}else if(!("Y".equalsIgnoreCase(req.getPaymentYn())||"N".equalsIgnoreCase(req.getPaymentYn()))) {
 				errorList.add(new Error("06", "Payment", "Enter Payment Type Y or N Only"));
+			} if ( "Y".equalsIgnoreCase(req.getPaymentYn()) && StringUtils.isBlank(req.getPaymentRedirUrl())) {
+				errorList.add(new Error("08", "PaymentRedirUrl", "Please Select PaymentRedirUrl  Category "));
+			}else if ( "Y".equalsIgnoreCase(req.getPaymentYn()) &&  req.getPaymentRedirUrl().length() > 500) {
+				errorList.add(new Error("10", "PaymentRedirUrl", "Please Enter PaymentRedirUrl within 500 Characters"));
 			}
 			
 			if (StringUtils.isBlank(req.getCommissionVatYn())) {
@@ -321,11 +325,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 				errorList.add(new Error("08", "ProductCategory", "Please Enter Product Category within 25 Characters"));
 			}
 			
-			if (StringUtils.isBlank(req.getPaymentRedirUrl())) {
-				errorList.add(new Error("08", "PaymentRedirUrl", "Please Select PaymentRedirUrl  Category "));
-			}else if (req.getPaymentRedirUrl().length() > 500) {
-				errorList.add(new Error("10", "PaymentRedirUrl", "Please Enter PaymentRedirUrl within 500 Characters"));
-			}
+			
 			
 			if (StringUtils.isBlank(req.getAppLoginUrl())) {
 				errorList.add(new Error("08", "AppLoginUrl", "Please Select AppLoginUrl "));

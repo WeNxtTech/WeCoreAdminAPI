@@ -287,7 +287,7 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			List<ProductSectionMaster> sectionList = new ArrayList<ProductSectionMaster>();
 			//Pagination
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 0 : Integer.valueOf(req.getOffset());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 	
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -311,7 +311,7 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("sectionId")));
+			orderList.add(cb.asc(b.get("SectionName")));
 			
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
@@ -451,7 +451,7 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("sectionId")));
+			orderList.add(cb.asc(b.get("SectionName")));
 			
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
@@ -517,7 +517,7 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("sectionId")));
+			orderList.add(cb.asc(b.get("SectionName")));
 	
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);

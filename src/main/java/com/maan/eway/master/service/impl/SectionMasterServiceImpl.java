@@ -355,11 +355,9 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			Date today  = new Date();
 			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 0);
-			cal.set(Calendar.MINUTE, 30);
+			cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 30);
 			today   = cal.getTime();
-			cal.set(Calendar.HOUR_OF_DAY, 1);
-			cal.set(Calendar.MINUTE, 1);
+			cal.set(Calendar.HOUR_OF_DAY, 1);cal.set(Calendar.MINUTE, 1);
 			Date todayEnd = cal.getTime();
 			
 			List<SectionMaster> sectionList = new ArrayList<SectionMaster>();
@@ -440,9 +438,7 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 		try {
 			Date today  = new Date();
 			Calendar cal = new GregorianCalendar(); 
-			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 0);
-			cal.set(Calendar.MINUTE, 30);
+			cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 30);
 			today   = cal.getTime();
 			
 			// Criteria
@@ -500,9 +496,7 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 		try {
 			Date today  = new Date();
 			Calendar cal = new GregorianCalendar(); 
-			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 0);
-			cal.set(Calendar.MINUTE, 30);
+			cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 30);
 			today   = cal.getTime();
 			
 			List<SectionMaster> list = new ArrayList<SectionMaster>();
@@ -570,9 +564,7 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			
 			Date today  = new Date();
 			Calendar cal = new GregorianCalendar(); 
-			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 0);
-			cal.set(Calendar.MINUTE, 30);
+			cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 30);
 			today   = cal.getTime();
 			
 			List<SectionMaster> list = new ArrayList<SectionMaster>();
@@ -637,9 +629,7 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			Calendar cal = new GregorianCalendar(); 
 			
 			SectionMaster updateRecord  = new SectionMaster();
-			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 1);
+			cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 1);
 			today   = cal.getTime();
 			
 			List<SectionMaster> list = new ArrayList<SectionMaster>();
@@ -678,9 +668,7 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 				
 			if (req.getStatus().equalsIgnoreCase("N") )	{
 					// Delete Old Records
-					cal.setTime(today);
-					cal.set(Calendar.HOUR_OF_DAY, 23);
-					cal.set(Calendar.MINUTE, 30);
+					cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 30);
 					today   = cal.getTime();
 					
 					// create update

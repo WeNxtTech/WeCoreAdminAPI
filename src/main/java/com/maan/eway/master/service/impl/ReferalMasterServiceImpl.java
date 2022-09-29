@@ -365,9 +365,7 @@ public List<ReferalMasterRes> getallReferalDetails(ReferalMasterGetAllReq req) {
 	try {
 		Date today  = new Date();
 		Calendar cal = new GregorianCalendar(); 
-		cal.setTime(today);
-		cal.set(Calendar.HOUR_OF_DAY, 0);
-		cal.set(Calendar.MINUTE, 30);
+		cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 30);
 		today   = cal.getTime();
 		
 		List<ReferalMaster> list = new ArrayList<ReferalMaster>();
@@ -434,9 +432,7 @@ public ReferalMasterRes getByReferalId(ReferalMasterGetReq req) {
 	try {
 		Date today  = new Date();
 		Calendar cal = new GregorianCalendar(); 
-		cal.setTime(today);
-		cal.set(Calendar.HOUR_OF_DAY, 0);
-		cal.set(Calendar.MINUTE, 30);
+		cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 30);
 		today   = cal.getTime();
 		
 		// Criteria
@@ -553,9 +549,7 @@ public List<ReferalMasterRes> getActiveReferalDetails(ReferalMasterGetAllReq req
 		
 		Date today  = new Date();
 		Calendar cal = new GregorianCalendar(); 
-		cal.setTime(today);
-		cal.set(Calendar.HOUR_OF_DAY, 0);
-		cal.set(Calendar.MINUTE, 30);
+		cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 30);
 		today   = cal.getTime();
 		
 		List<ReferalMaster> list = new ArrayList<ReferalMaster>();
@@ -622,9 +616,7 @@ public SuccessRes changeStatusOfReferal(ReferalMasterChangeStatusReq req) {
 		Calendar cal = new GregorianCalendar(); 
 		
 		ReferalMaster updateRecord  = new ReferalMaster();
-		cal.setTime(today);
-		cal.set(Calendar.HOUR_OF_DAY, 23);
-		cal.set(Calendar.MINUTE, 1);
+		cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 1);
 		today   = cal.getTime();
 		
 		List<ReferalMaster> list = new ArrayList<ReferalMaster>();

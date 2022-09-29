@@ -252,7 +252,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date End  is After Effective Date Start"));
 			} 
 			//Status Validation
-			if (StringUtils.isBlank(req.getStatus())) {
+		/*	if (StringUtils.isBlank(req.getStatus())) {
 				errorList.add(new Error("05", "Status", "Please Enter Status"));
 			} else if (req.getStatus().length() > 1) {
 				errorList.add(new Error("05", "Status", "Enter Status 1 Character Only"));
@@ -317,7 +317,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 				if (Long.valueOf(req.getSumInsuredStart()) > Long.valueOf(req.getSumInsuredEnd()) ) {
 					errorList.add(new Error("02", "Sum Insured End", "Sum Insured Start Greater Than Sum Insured End " ));
 				}
-			}
+			} */
 			
 			if (StringUtils.isBlank(req.getProductDesc())) {
 				errorList.add(new Error("08", "ProductDesc", "Please Select Product  Desc "));
@@ -327,17 +327,17 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			
 			
 			
-			if (StringUtils.isBlank(req.getAppLoginUrl())) {
+		/*	if (StringUtils.isBlank(req.getAppLoginUrl())) {
 				errorList.add(new Error("08", "AppLoginUrl", "Please Select AppLoginUrl "));
 			}else if (req.getAppLoginUrl().length() > 100) {
 				errorList.add(new Error("11", "AppLoginUrl", "Please Enter AppLoginUrl within 100 Characters"));
-			}
+			} */
 			
 			if (StringUtils.isBlank(req.getCreatedBy())) {
 				errorList.add(new Error("08", "CreatedBy", "Please Enter CreatedBy"));
 			}else if (req.getCreatedBy().length() > 50) {
 				errorList.add(new Error("11", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
-			}
+			} 
 			
 			if (StringUtils.isBlank(req.getCoreAppCode())) {
 				errorList.add(new Error("08", "CoreAppCode", "Please Enter CoreAppCode"));

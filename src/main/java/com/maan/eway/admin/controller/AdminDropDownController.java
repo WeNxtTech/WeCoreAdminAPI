@@ -17,6 +17,7 @@ import com.maan.eway.common.service.DropDownService;
 import com.maan.eway.req.SubUserTypeReq;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.SubUserTypeDropDownRes;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -79,7 +80,7 @@ public class AdminDropDownController {
 		CommonRes data = new CommonRes();
 
 		// Save
-		List<DropDownRes> res = dropDownService.getSubUserType(req);
+		List<SubUserTypeDropDownRes> res = dropDownService.getSubUserType(req);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());

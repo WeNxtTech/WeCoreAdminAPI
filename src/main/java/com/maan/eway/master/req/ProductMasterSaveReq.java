@@ -27,15 +27,6 @@ public class ProductMasterSaveReq implements Serializable {
 	@JsonProperty("ProductName")
 	private String productName;
 
-	@JsonProperty("PaymentYn")
-	private String paymentYn;
-
-	@JsonProperty("PaymentRedirUrl")
-	private String paymentRedirUrl;
-
-	@JsonProperty("AppLoginUrl")
-	private String appLoginUrl;
-
 	@JsonProperty("Status")
 	private String status;
 
@@ -53,24 +44,6 @@ public class ProductMasterSaveReq implements Serializable {
 	
 	@JsonProperty("ProductIconId")
 	private String productIconId;
-	
-	@JsonProperty("SumInsuredStart")
-	private String sumInsuredStart;
-	
-	@JsonProperty("SumInsuredEnd")
-	private String sumInsuredEnd;
-	
-	@JsonProperty("CommissionVatYn")
-	private String commissionVatYn;
-	
-	@JsonProperty("CheckerYn")
-	private String checkerYn;
-	
-	@JsonProperty("MakerYn")
-	private String makerYn;
-	
-	@JsonProperty("CustConfirmYn")
-	private String custConfirmYn;
 	
 	@JsonProperty("CreatedBy")
 	private String createdBy;

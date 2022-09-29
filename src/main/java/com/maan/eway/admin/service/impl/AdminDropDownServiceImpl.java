@@ -13,6 +13,7 @@ import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.req.SubUserTypeReq;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.SubUserTypeDropDownRes;
 
 @Service
 public class AdminDropDownServiceImpl  implements AdminDropDownService{
@@ -69,15 +70,16 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 		}
 
 		@Override
-		public List<DropDownRes> getSubUserType(SubUserTypeReq req) {
-			List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		public List<SubUserTypeDropDownRes> getSubUserType(SubUserTypeReq req) {
+			List<SubUserTypeDropDownRes> resList = new ArrayList<SubUserTypeDropDownRes>();
 			try {
 				List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc(req.getUserType(), "Y");
 
 				for (ListItemValue data : getList) {
-					DropDownRes res = new DropDownRes();
+					SubUserTypeDropDownRes res = new SubUserTypeDropDownRes();
 					res.setCode(data.getItemCode());
 					res.setCodeDesc(data.getItemValue());
+					res.setDisplayName(data.getParam1());
 					resList.add(res);
 				}
 			} catch (Exception e) {

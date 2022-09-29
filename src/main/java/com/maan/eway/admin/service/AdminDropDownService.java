@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.maan.eway.req.SubUserTypeReq;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.SubUserTypeDropDownRes;
 
 public interface AdminDropDownService {
 
@@ -11,7 +12,7 @@ public interface AdminDropDownService {
 
 	List<DropDownRes> getUserType();
 
-	List<DropDownRes> getSubUserType(SubUserTypeReq req);
+	List<SubUserTypeDropDownRes> getSubUserType(SubUserTypeReq req);
 
 	List<DropDownRes> getConstMaterial();
 

@@ -6,6 +6,7 @@
 package com.maan.eway.master.service;
 
 
+import com.maan.eway.master.req.CityChangeStatusReq;
 import com.maan.eway.master.req.CityMasterDropDownReq;
 import com.maan.eway.master.req.CityMasterGetAllReq;
 import com.maan.eway.master.req.CityMasterGetReq;
@@ -38,6 +39,8 @@ public interface CityMasterService  {
 	List<Error> validateDropdownGet(CityMasterDropDownReq req);
 
 	List<DropDownRes> getCityMasterDropdown(CityMasterDropDownReq req);
+
+	SuccessRes changeStatusOfCity(CityChangeStatusReq req);
 
 	
 	

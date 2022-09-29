@@ -66,16 +66,16 @@ private static final long serialVersionUID = 1L;
     private Date       effectiveDateEnd ;
 
     @Id
-    @Column(name="STATE_ID")
+    @Column(name="STATE_ID",nullable=false)
     private Integer     stateId ;
     
     @Id
-    @Column(name="COUNTRY_ID")
-    private String     countryId ;
-
+    @Column(name="REGION_ID",nullable=false)
+    private Integer     regionId ;
+    
     @Id
-    @Column(name="REGION_ID")
-    private String     regionId ;
+    @Column(name="COUNTRY_ID",nullable=false)
+    private Integer     countryId ;
     
     
     //--- ENTITY DATA FIELDS 
@@ -91,14 +91,19 @@ private static final long serialVersionUID = 1L;
     private String     status ;
     
     
-    @Column(name="CORE_APP_CODE", length=20)
+    @Column(name="CORE_APP_CODE", length=20,nullable=false)
     private String     coreAppCode ;
 
-    @Column(name="AMEND_ID")
+    @Column(name="AMEND_ID",nullable=false)
     private Integer     amendId ;
 
     @Column(name="REMARKS", length=100)
     private String     remarks ;
+
+    @Column(name="TIRA_CODE", length=20,nullable=false)
+    private String     tiraCode ;
+    @Column(name="CREATED_BY", length=100,nullable=false)
+    private String     createdBy;
 
 }
 

@@ -37,7 +37,7 @@ public class CityMasterId implements Serializable {
 	private Date effectiveDateEnd;
     
     private Integer     stateId ;
-    private String     countryId ;
-    private String     regionId ;
+    private Integer     countryId ;
+    private Integer     regionId ;
 
 }

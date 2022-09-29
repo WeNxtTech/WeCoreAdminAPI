@@ -23,6 +23,11 @@ public class CityMasterSaveReq implements Serializable {
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
 
+
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateEnd")
+	private Date effectiveDateEnd;
+
 	@JsonProperty("StateId")
 	private String stateId;
 
@@ -39,9 +44,13 @@ public class CityMasterSaveReq implements Serializable {
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
 
-	@JsonProperty("AmendId")
-	private Integer amendId;
-
 	@JsonProperty("Remarks")
 	private String remarks;
+
+	@JsonProperty("TiraCode")
+	private String tiraCode;
+
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+
 }

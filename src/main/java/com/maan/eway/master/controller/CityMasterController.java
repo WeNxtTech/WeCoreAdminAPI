@@ -6,10 +6,12 @@ package com.maan.eway.master.controller;
 */
 
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.CityChangeStatusReq;
 import com.maan.eway.master.req.CityMasterDropDownReq;
 import com.maan.eway.master.req.CityMasterGetAllReq;
 import com.maan.eway.master.req.CityMasterGetReq;
 import com.maan.eway.master.req.CityMasterSaveReq;
+import com.maan.eway.master.req.CountryChangeStatusReq;
 import com.maan.eway.master.res.CityMasterRes;
 import com.maan.eway.master.service.CityMasterService;
 import com.maan.eway.bean.CityMaster;
@@ -185,5 +187,23 @@ public class CityMasterController {
 
 			}
 		}
+		@PostMapping("/city/changestatus")
+		@ApiOperation(value = "This method is get City Change Status")
+		public ResponseEntity<CommonRes> changeStatusOfCity(@RequestBody CityChangeStatusReq req) {
 
+			CommonRes data = new CommonRes();
+			// Change Status
+			SuccessRes res = cityService.changeStatusOfCity(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+
+		}
 }

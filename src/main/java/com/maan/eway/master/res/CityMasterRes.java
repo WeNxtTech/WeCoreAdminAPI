@@ -45,9 +45,15 @@ public class CityMasterRes implements Serializable {
 	private String coreAppCode;
 
 	@JsonProperty("AmendId")
-	private Integer amendId;
+	private String amendId;
 
 	@JsonProperty("Remarks")
 	private String remarks;
+
+	@JsonProperty("TiraCode")
+	private String tiraCode;
+
+	@JsonProperty("CreatedBy")
+	private String createdBy;
 
 }

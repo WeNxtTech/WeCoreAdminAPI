@@ -12,15 +12,11 @@ import lombok.Data;
 public class StateMasterGetReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-	@JsonProperty("StateId")
-    private Integer   stateId     ;
 	
-
 	@JsonProperty("CountryId")
-    private Integer    countryId     ;
-    
-	@JsonProperty("RegionCode")
-    private Integer regionCode     ;
+    private String    countryId     ;
+	@JsonProperty("StateId")
+    private String    stateId     ;
+
     
 }

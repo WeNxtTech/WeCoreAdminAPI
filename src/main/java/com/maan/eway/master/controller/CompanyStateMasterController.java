@@ -6,13 +6,23 @@ package com.maan.eway.master.controller;
 */
 
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.CompanyRegionNonSelectedReq;
+import com.maan.eway.master.req.CompanyStateMasterChangeStatusReq;
+import com.maan.eway.master.req.CompanyStateMasterDropDownReq;
+import com.maan.eway.master.req.CompanyStateMasterGetAllReq;
+import com.maan.eway.master.req.CompanyStateMasterGetReq;
+import com.maan.eway.master.req.CompanyStateMasterSaveReq;
+import com.maan.eway.master.req.CompanyStateNonSelectedReq;
 import com.maan.eway.master.req.SectionMasterChangeStatusReq;
 import com.maan.eway.master.req.StateMasterChangeStatusReq;
 import com.maan.eway.master.req.StateMasterDropDownReq;
 import com.maan.eway.master.req.StateMasterGetAllReq;
 import com.maan.eway.master.req.StateMasterGetReq;
 import com.maan.eway.master.req.StateMasterSaveReq;
+import com.maan.eway.master.res.CompanyStateMasterRes;
+import com.maan.eway.master.res.RegionMasterRes;
 import com.maan.eway.master.res.StateMasterRes;
+import com.maan.eway.master.service.CompanyStateMasterService;
 import com.maan.eway.master.service.StateMasterService;
 import com.maan.eway.bean.StateMaster;
 import com.maan.eway.res.CommonRes;
@@ -42,24 +52,24 @@ import java.util.List;
 */
 @RestController
 @RequestMapping("/master")
-@Api(tags = "MASTER : State Master ", description = "API's")
-public class StateMasterController {
+@Api(tags = "1.COMPANY CONFIG : Company State Master ", description = "API's")
+public class CompanyStateMasterController {
 
 	@Autowired
-	private  StateMasterService stateService;
+	private  CompanyStateMasterService service;
 	
 	@Autowired
 	private  PrintReqService reqPrinter;
 	
 	// save
-		@PostMapping("/insertstate")
-		@ApiOperation(value = "This method is Insert State Details")
-		public ResponseEntity<CommonRes> insertState(@RequestBody StateMasterSaveReq req) {
+		@PostMapping("/insertcompanystate")
+		@ApiOperation(value = "This method is Insert Company State Details")
+		public ResponseEntity<CommonRes> insertCompanyState(@RequestBody List<CompanyStateMasterSaveReq> req) {
 
 			reqPrinter.reqPrint(req);
 			CommonRes data = new CommonRes();
 
-			List<Error> validation = stateService.validateStateDetails(req);
+			List<Error> validation = service.validateCompanyStateDetails(req);
 			// validation
 			if (validation != null && validation.size() != 0) {
 				data.setCommonResponse(null);
@@ -70,8 +80,8 @@ public class StateMasterController {
 
 			} else {
 
-				
-				SuccessRes res = stateService.insertState(req);
+				// Save
+				SuccessRes res = service.insertCompanyState(req);
 				data.setCommonResponse(res);
 				data.setIsError(false);
 				data.setErrorMessage(Collections.emptyList());
@@ -86,16 +96,16 @@ public class StateMasterController {
 
 		}
 		
-		//  Get All State Master
+		//  Get All
 		
-		@PostMapping("/getallstatedetails")
-		@ApiOperation("This method is getall State Details")
-		public ResponseEntity<CommonRes> getallStateDetails(@RequestBody StateMasterGetAllReq req)
+		@PostMapping("/getallcompanystatedetails")
+		@ApiOperation("This method is getall Company State Details")
+		public ResponseEntity<CommonRes> getallCompanyStateDetails(@RequestBody CompanyStateMasterGetAllReq req)
 		{
 			CommonRes data = new CommonRes();
 			reqPrinter.reqPrint(req);
 			
-			List<StateMasterRes> res = stateService.getallStateDetails(req);
+			List<CompanyStateMasterRes> res = service.getallCompanyStateDetails(req);
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);
@@ -109,16 +119,16 @@ public class StateMasterController {
 			}
 		}
 		
-	//  Get Active Referral Master
+	//  Get Active  
 		
-			@PostMapping("/getactivestate")
-			@ApiOperation("This method is get Active State Details")
-			public ResponseEntity<CommonRes> getActiveStateDetails(@RequestBody StateMasterGetAllReq req)
+			@PostMapping("/getactivecompanystate")
+			@ApiOperation("This method is get Active Company State Details")
+			public ResponseEntity<CommonRes> getActiveCompanyStateDetails(@RequestBody CompanyStateMasterGetAllReq req)
 			{
 				CommonRes data = new CommonRes();
 				reqPrinter.reqPrint(req);
 				
-				List<StateMasterRes> res = stateService.getActiveStateDetails(req);
+				List<CompanyStateMasterRes> res = service.getActiveCompanyStateDetails(req);
 				data.setCommonResponse(res);
 				data.setErrorMessage(Collections.emptyList());
 				data.setIsError(false);
@@ -132,14 +142,14 @@ public class StateMasterController {
 				}
 			}
 		
-		// Get By State Id
+		// Get By Id
 		
-		@PostMapping("/getbystateid")
-		@ApiOperation("This Method is to get by State id")
-		public ResponseEntity<CommonRes> getByStateId(@RequestBody StateMasterGetReq req)
+		@PostMapping("/getbycompanystateid")
+		@ApiOperation("This Method is to get  Company State id")
+		public ResponseEntity<CommonRes> getByCompanyStateId(@RequestBody CompanyStateMasterGetReq req)
 		{
 		CommonRes data = new CommonRes();
-		StateMasterRes res = stateService.getByStateId(req);
+		CompanyStateMasterRes res = service.getByCompanyStateId(req);
 		data.setCommonResponse(res);
 		data.setErrorMessage(Collections.emptyList());
 		data.setIsError(false);
@@ -153,16 +163,16 @@ public class StateMasterController {
 		}
 	}
 		
-		// State Master Drop Down Type
-		@PostMapping("/dropdown/state")
-		@ApiOperation(value = "This method is get State Master Drop Down")
+		//  Drop Down
+		@PostMapping("/dropdown/companystate")
+		@ApiOperation(value = "This method is get Company State Master Drop Down")
 
-		public ResponseEntity<CommonRes> getStateMasterDropdown(@RequestBody StateMasterDropDownReq req) {
+		public ResponseEntity<CommonRes> getCompanyStateMasterDropdown(@RequestBody CompanyStateMasterDropDownReq req) {
 
 			CommonRes data = new CommonRes();
 
 			// Save
-			List<DropDownRes> res = stateService.getStateMasterDropdown(req);
+			List<DropDownRes> res = service.getCompanyStateMasterDropdown(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());
@@ -175,15 +185,36 @@ public class StateMasterController {
 			}
 
 		}
+		//Non Selected
+		@PostMapping("/getallnonselectedcompanystate")
+		@ApiOperation("This method is getall Company State Details")
+		public ResponseEntity<CommonRes> getallNonSelectedCompanyState(@RequestBody CompanyStateNonSelectedReq req)
+		{
+			CommonRes data = new CommonRes();
+			reqPrinter.reqPrint(req);
+			
+			List<CompanyStateMasterRes> res = service.getallNonSelectedCompanyState(req);
+			data.setCommonResponse(res);
+			data.setErrorMessage(Collections.emptyList());
+			data.setIsError(false);
+			data.setMessage("Success");
+			
+			if(res!= null) {
+				return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
+			}
+			else {
+				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+			}
+		}
 		//Change Status
-		@PostMapping("/state/changestatus")
-		@ApiOperation(value = "This method is get State Master Status Change")
+		@PostMapping("/companystate/changestatus")
+		@ApiOperation(value = "This method is get Company State Master Status Change")
 
-		public ResponseEntity<CommonRes> changeStatusOfStateMaster(@RequestBody StateMasterChangeStatusReq req) {
+		public ResponseEntity<CommonRes> changeStatusOfCompanyStateMaster(@RequestBody CompanyStateMasterChangeStatusReq req) {
 
 			CommonRes data = new CommonRes();
 			// Change Status
-			SuccessRes res = stateService.changeStatusOfStateMaster(req);
+			SuccessRes res = service.changeStatusOfCompanyStateMaster(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());

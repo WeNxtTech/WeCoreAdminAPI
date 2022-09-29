@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class StateMasterGetAllReq implements Serializable {
+public class StateMasterGetAllReq2 implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -18,9 +18,12 @@ public class StateMasterGetAllReq implements Serializable {
     
     @JsonProperty("Offset")
     private String offset;
+   
 
     @JsonProperty("CountryId")
-    private String countryId;
+    private Integer countryId;
     
 
+    @JsonProperty("RegionCode")
+    private Integer regionCode;
 }

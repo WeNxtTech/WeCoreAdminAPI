@@ -42,11 +42,11 @@ import javax.persistence.*;
 @DynamicInsert
 @DynamicUpdate
 @Builder
-@IdClass(StateMasterId.class)
-@Table(name="state_master")
+@IdClass(CompanyStateMasterId.class)
+@Table(name="company_state_master")
 
 
-public class StateMaster implements Serializable {
+public class CompanyStateMaster implements Serializable {
  
 private static final long serialVersionUID = 1L;
  
@@ -59,6 +59,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="STATE_SHORT_CODE", nullable=false, length=20)
     private String stateShortCode;
 
+    @Id
+    @Column(name="COMPANY_ID", nullable=false, length=20)
+    private String     companyId;
     
     @Id
     @Temporal(TemporalType.TIMESTAMP)

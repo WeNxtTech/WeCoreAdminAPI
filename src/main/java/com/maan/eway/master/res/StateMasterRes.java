@@ -17,12 +17,18 @@ public class StateMasterRes implements Serializable {
 	@JsonProperty("StateId")
 	private String stateId;
 
+	@JsonProperty("StateShortCode")
+	private String stateShortCode;
+	
 	@JsonProperty("StateName")
 	private String stateName;
 	
-	@JsonProperty("countryId")
+	@JsonProperty("CountryId")
 	private String countryId;
 	
+	@JsonProperty("RegionCode")
+	private String regionCode;
+
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
@@ -48,7 +54,7 @@ public class StateMasterRes implements Serializable {
 	private String tiraCode;
 
 	@JsonProperty("AmendId")
-	private Integer amendId;
+	private String amendId;
 
 	@JsonProperty("Remarks")
 	private String remarks;

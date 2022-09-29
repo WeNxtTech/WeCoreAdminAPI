@@ -555,12 +555,8 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 		try {
 			Date today = new Date();
 			Calendar cal = new GregorianCalendar();
-			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 1);
-			today = cal.getTime();
-			cal.set(Calendar.HOUR_OF_DAY, 1);
-			cal.set(Calendar.MINUTE, 1);
+			cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();cal.set(Calendar.HOUR_OF_DAY, 1);cal.set(Calendar.MINUTE, 1);
 			Date todayEnd = cal.getTime();
 			
 			List<SectionMaster> sectionList = new ArrayList<SectionMaster>();
@@ -659,12 +655,9 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 		try {
 			Date today  = new Date();
 			Calendar cal = new GregorianCalendar(); 
-			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 1);
+			cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 1);
 			today   = cal.getTime();
-			cal.set(Calendar.HOUR_OF_DAY, 1);
-			cal.set(Calendar.MINUTE, 1);
+			cal.set(Calendar.HOUR_OF_DAY, 1);cal.set(Calendar.MINUTE, 1);
 			Date todayEnd = cal.getTime();
 			
 			// Criteria

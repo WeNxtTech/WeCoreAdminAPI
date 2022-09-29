@@ -9,12 +9,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class StateMasterDropDownReq implements Serializable {
+public class CompanyStateMasterDropDownReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-	@JsonProperty("CountryId")
-    private String    countryId     ;
+    
+	@JsonProperty("InsuranceId")
+    private String companyId;
 
     
 }

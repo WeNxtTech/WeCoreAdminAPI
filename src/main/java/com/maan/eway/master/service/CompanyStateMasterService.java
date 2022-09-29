@@ -8,6 +8,12 @@ package com.maan.eway.master.service;
 import com.maan.eway.master.req.BankMasterGetAllReq;
 import com.maan.eway.master.req.BankMasterGetReq;
 import com.maan.eway.master.req.BankMasterSaveReq;
+import com.maan.eway.master.req.CompanyStateMasterChangeStatusReq;
+import com.maan.eway.master.req.CompanyStateMasterDropDownReq;
+import com.maan.eway.master.req.CompanyStateMasterGetAllReq;
+import com.maan.eway.master.req.CompanyStateMasterGetReq;
+import com.maan.eway.master.req.CompanyStateMasterSaveReq;
+import com.maan.eway.master.req.CompanyStateNonSelectedReq;
 import com.maan.eway.master.req.ReferalMasterGetAllReq;
 import com.maan.eway.master.req.ReferalMasterGetReq;
 import com.maan.eway.master.req.ReferalMasterSaveReq;
@@ -20,6 +26,7 @@ import com.maan.eway.master.req.StateMasterGetAllReq;
 import com.maan.eway.master.req.StateMasterGetReq;
 import com.maan.eway.master.req.StateMasterSaveReq;
 import com.maan.eway.master.res.BankMasterRes;
+import com.maan.eway.master.res.CompanyStateMasterRes;
 import com.maan.eway.master.res.ReferalMasterRes;
 import com.maan.eway.master.res.RegionMasterRes;
 import com.maan.eway.master.res.StateMasterRes;
@@ -31,25 +38,22 @@ import java.util.List;
 /**
 * <h2>BankMasterServiceimpl</h2>
 */
-public interface StateMasterService  {
+public interface CompanyStateMasterService  {
 
+	List<Error> validateCompanyStateDetails(List<CompanyStateMasterSaveReq> req);
 
+	SuccessRes insertCompanyState(List<CompanyStateMasterSaveReq> req);
 
-	List<Error> validateStateDetails(StateMasterSaveReq req);
+	List<CompanyStateMasterRes> getallCompanyStateDetails(CompanyStateMasterGetAllReq req);
 
-	SuccessRes insertState(StateMasterSaveReq req);
+	List<CompanyStateMasterRes> getActiveCompanyStateDetails(CompanyStateMasterGetAllReq req);
 
-	List<StateMasterRes> getallStateDetails(StateMasterGetAllReq req);
+	CompanyStateMasterRes getByCompanyStateId(CompanyStateMasterGetReq req);
 
-	List<StateMasterRes> getActiveStateDetails(StateMasterGetAllReq req);
+	List<DropDownRes> getCompanyStateMasterDropdown(CompanyStateMasterDropDownReq req);
 
-	StateMasterRes getByStateId(StateMasterGetReq req);
+	SuccessRes changeStatusOfCompanyStateMaster(CompanyStateMasterChangeStatusReq req);
 
-	List<DropDownRes> getStateMasterDropdown(StateMasterDropDownReq req);
-
-	SuccessRes changeStatusOfStateMaster(StateMasterChangeStatusReq req);
-
-	
-	
+	List<CompanyStateMasterRes> getallNonSelectedCompanyState(CompanyStateNonSelectedReq req);
 
 }

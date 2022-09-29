@@ -11,6 +11,7 @@ import com.maan.eway.error.Error;
 import com.maan.eway.master.req.DocumentMasterGetAllReq;
 import com.maan.eway.master.req.DocumentMasterGetReq;
 import com.maan.eway.master.req.DocumentMasterSaveReq;
+import com.maan.eway.master.req.ProductDocumentChangeStatusReq;
 import com.maan.eway.master.req.ProductDocumentMasterGetAllReq;
 import com.maan.eway.master.req.ProductDocumentMasterGetReq;
 import com.maan.eway.master.req.ProductDocumentMasterSaveReq;
@@ -32,6 +33,8 @@ public interface ProductDocumentMasterService  {
 	List<ProductDocumentMasterGetRes> getallNonSelectedProductDocument(ProductDocumentMasterGetAllReq req);
 
 	List<Error> validateDocument(List<ProductDocumentMasterSaveReq> reqList);
+
+	SuccessRes changeStatusOfDocument(ProductDocumentChangeStatusReq req);
 
 
 

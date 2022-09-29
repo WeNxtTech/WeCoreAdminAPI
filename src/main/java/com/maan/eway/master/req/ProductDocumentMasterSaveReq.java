@@ -17,7 +17,7 @@ public class ProductDocumentMasterSaveReq {
 	private String documentDesc;
 	
 	@JsonProperty("DocApplicableId")
-	private Integer docApplicableId;
+	private String docApplicableId;
 	
 
 	@JsonProperty("DocApplicable")
@@ -27,10 +27,10 @@ public class ProductDocumentMasterSaveReq {
 	private String companyId;
 	
 	@JsonProperty("ProductId")
-	private Integer productId;
+	private String productId;
 	
 	@JsonProperty("SectionId")
-	private Integer sectionId;
+	private String sectionId;
 	
 	
 	@JsonProperty("MandatoryStatus")
@@ -39,9 +39,6 @@ public class ProductDocumentMasterSaveReq {
 	@JsonProperty("Remarks")
 	private String remarks;
 
-	@JsonProperty("DisplayOrder")
-	private Integer displayOrder;
-	
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
@@ -55,8 +52,15 @@ public class ProductDocumentMasterSaveReq {
 	private String coreAppCode;
 	
 	@JsonProperty("AmendId")
-	private Integer amendId;
+	private String amendId;
 	
 	@JsonProperty("Status")
 	private String status;
+
+	@JsonProperty("TiraCode")
+	private String tiraCode;
+	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+
 }

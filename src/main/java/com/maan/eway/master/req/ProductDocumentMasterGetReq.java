@@ -11,15 +11,15 @@ import lombok.Data;
 public class ProductDocumentMasterGetReq {
 
 	@JsonProperty("DocumentId")
-	private Integer documentId;
+	private String documentId;
 
 	@JsonProperty("InsuranceId")
 	private String companyId;
 	
 	@JsonProperty("ProductId")
-	private Integer productId;
+	private String productId;
 	
 
 	@JsonProperty("SectionId")
-	private Integer sectionId;
+	private String sectionId;
 }

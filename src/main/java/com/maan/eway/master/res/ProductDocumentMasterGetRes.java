@@ -14,13 +14,13 @@ public class ProductDocumentMasterGetRes implements Serializable {
     private static final long serialVersionUID = 1L;
   
     @JsonProperty("DocumentId")
-	private Integer documentId;
+	private String documentId;
 	
 	@JsonProperty("DocumentDesc")
 	private String documentDesc;
 	
 	@JsonProperty("DocApplicableId")
-	private Integer docApplicableId;
+	private String docApplicableId;
 	
 
 	@JsonProperty("DocApplicable")
@@ -30,11 +30,11 @@ public class ProductDocumentMasterGetRes implements Serializable {
 	private String companyId;
 	
 	@JsonProperty("ProductId")
-	private Integer productId;
+	private String productId;
 	
 
 	@JsonProperty("SectionId")
-	private Integer sectionId;
+	private String sectionId;
 	
 	@JsonProperty("MandatoryStatus")
 	private String mandatoryStatus;
@@ -42,8 +42,6 @@ public class ProductDocumentMasterGetRes implements Serializable {
 	@JsonProperty("Remarks")
 	private String remarks;
 
-	@JsonProperty("DisplayOrder")
-	private Integer displayOrder;
 	
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
@@ -58,7 +56,7 @@ public class ProductDocumentMasterGetRes implements Serializable {
 	private String coreAppCode;
 	
 	@JsonProperty("AmendId")
-	private Integer amendId;
+	private String amendId;
     
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EntryDate")
@@ -67,6 +65,11 @@ public class ProductDocumentMasterGetRes implements Serializable {
 	@JsonProperty("Status")
     private String     status       ;
 
+	@JsonProperty("TiraCode")
+    private String   tiraCode       ;
+
+	@JsonProperty("CreatedBy")
+    private String   createdBy       ;
 
 	
 }

@@ -8,9 +8,11 @@ package com.maan.eway.master.controller;
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CoverMasterGetAllReq;
+import com.maan.eway.master.req.DocumentChangeStatusReq;
 import com.maan.eway.master.req.DocumentMasterGetAllReq;
 import com.maan.eway.master.req.DocumentMasterGetReq;
 import com.maan.eway.master.req.DocumentMasterSaveReq;
+import com.maan.eway.master.req.ProductDocumentChangeStatusReq;
 import com.maan.eway.master.req.ProductDocumentMasterGetAllReq;
 import com.maan.eway.master.req.ProductDocumentMasterGetReq;
 import com.maan.eway.master.req.ProductDocumentMasterSaveReq;
@@ -189,6 +191,25 @@ public class ProductDocumentMasterController {
 			}
 		}
 
-		
+		@PostMapping("/productdocument/changestatus")
+		@ApiOperation(value = "This method is  Change Status of Documents")
+		public ResponseEntity<CommonRes> changeStatusOfDocument(@RequestBody ProductDocumentChangeStatusReq req) {
+
+			CommonRes data = new CommonRes();
+			// Change Status
+			SuccessRes res = documentservice.changeStatusOfDocument(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+
+		}
+
 		
 }

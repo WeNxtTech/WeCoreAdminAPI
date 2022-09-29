@@ -98,7 +98,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="STATUS", length=1)
     private String     status ;
 
-    @Column(name="CORE_APP_CODE", length=20)
+    @Column(name="CORE_APP_CODE", length=20,nullable=false)
     private String     coreAppCode ;
 
     @Column(name="AMEND_ID")
@@ -107,10 +107,14 @@ private static final long serialVersionUID = 1L;
     @Column(name="REMARKS", length=100)
     private String     remarks ;
 
-    @Column(name="DISPLAY_ORDER")
-    private Integer    displayOrder ;
+    @Column(name="TIRA_CODE", length=20,nullable=false)
+    private String    tiraCode;
+
+    @Column(name="CREATED_BY", length=100,nullable=false)
+    private String    createdBy;
 
 
+    
 }
 
 

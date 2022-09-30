@@ -16,9 +16,13 @@ import com.maan.eway.master.req.CompanyCityMasterDropDownReq;
 import com.maan.eway.master.req.CompanyCityMasterGetAllReq;
 import com.maan.eway.master.req.CompanyCityMasterGetReq;
 import com.maan.eway.master.req.CompanyCityMasterSaveReq;
+import com.maan.eway.master.req.CompanyCityNonSelectedReq;
+import com.maan.eway.master.req.CompanyStateMasterChangeStatusReq;
+import com.maan.eway.master.req.CompanyStateNonSelectedReq;
 import com.maan.eway.master.req.CountryChangeStatusReq;
 import com.maan.eway.master.res.CityMasterRes;
 import com.maan.eway.master.res.CompanyCityMasterRes;
+import com.maan.eway.master.res.CompanyStateMasterRes;
 import com.maan.eway.master.service.CityMasterService;
 import com.maan.eway.master.service.CompanyCityMasterService;
 import com.maan.eway.bean.CityMaster;
@@ -213,4 +217,26 @@ public class CompanyCityMasterController {
 			}
 
 		}
+		
+		//Non Selected
+				@PostMapping("/getallnonselectedcompanycity")
+				@ApiOperation("This method is getall Company City Details")
+				public ResponseEntity<CommonRes> getallNonSelectedCompanyCity(@RequestBody CompanyCityNonSelectedReq req)
+				{
+					CommonRes data = new CommonRes();
+					reqPrinter.reqPrint(req);
+					
+					List<CompanyCityMasterRes> res = cityService.getallNonSelectedCompanyState(req);
+					data.setCommonResponse(res);
+					data.setErrorMessage(Collections.emptyList());
+					data.setIsError(false);
+					data.setMessage("Success");
+					
+					if(res!= null) {
+						return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
+					}
+					else {
+						return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+					}
+				}
 }

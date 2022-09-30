@@ -791,9 +791,9 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 			effectiveDate5.select(cb.max(ocpm5.get("effectiveDateEnd")));
 			Predicate a6 = cb.equal(ocpm5.get("regionId"), b.get("regionId"));
 			Predicate a7 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"),today);
-			Predicate a8 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
-			Predicate a9 = cb.equal(ocpm1.get("stateId"), b.get("stateId"));
-			Predicate a10 = cb.equal(ocpm1.get("cityId"), b.get("cityId"));
+			Predicate a8 = cb.equal(ocpm5.get("countryId"), b.get("countryId"));
+			Predicate a9 = cb.equal(ocpm5.get("stateId"), b.get("stateId"));
+			Predicate a10 = cb.equal(ocpm5.get("cityId"), b.get("cityId"));
 
 			effectiveDate5.where(a6,a7,a8,a9,a10);
 			

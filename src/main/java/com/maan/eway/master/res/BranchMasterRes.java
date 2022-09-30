@@ -76,6 +76,8 @@ public class BranchMasterRes implements Serializable {
     private String   mobileNumber;
 	@JsonProperty("BranchType")
     private String    branchType  ;
+	@JsonProperty("AmendId")
+    private String    amendId;
 	
 	
 

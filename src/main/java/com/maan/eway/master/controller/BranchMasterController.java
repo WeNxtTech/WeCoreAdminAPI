@@ -9,9 +9,11 @@ package com.maan.eway.master.controller;
 
 
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.BranchChangeStatusReq;
 import com.maan.eway.master.req.BranchMasterGetAllReq;
 import com.maan.eway.master.req.BranchMasterGetReq;
 import com.maan.eway.master.req.BranchMasterSaveReq;
+import com.maan.eway.master.req.CityChangeStatusReq;
 import com.maan.eway.master.req.CompanyBranchGetReq;
 import com.maan.eway.master.req.CompanyBranchReq;
 import com.maan.eway.master.res.BranchMasterRes;
@@ -209,6 +211,28 @@ public class BranchMasterController {
 
 			// Save
 			List<DropDownRes> res = branchService.getBranchMasterDropdown();
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+
+		}
+		
+		
+		
+		@PostMapping("/branch/changestatus")
+		@ApiOperation(value = "This method is Branch Change Status")
+		public ResponseEntity<CommonRes> changeStatusOfBranch(@RequestBody BranchChangeStatusReq req) {
+
+			CommonRes data = new CommonRes();
+			// Change Status
+			SuccessRes res = branchService.changeStatusOfBranch(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());

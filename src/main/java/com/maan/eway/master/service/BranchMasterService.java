@@ -8,6 +8,7 @@ package com.maan.eway.master.service;
 import com.maan.eway.master.req.BankMasterGetAllReq;
 import com.maan.eway.master.req.BankMasterGetReq;
 import com.maan.eway.master.req.BankMasterSaveReq;
+import com.maan.eway.master.req.BranchChangeStatusReq;
 import com.maan.eway.master.req.BranchMasterGetAllReq;
 import com.maan.eway.master.req.BranchMasterGetReq;
 import com.maan.eway.master.req.BranchMasterSaveReq;
@@ -37,6 +38,8 @@ public interface BranchMasterService  {
 	List<Error> validateBranchDetails(BranchMasterSaveReq req);
 
 	List<DropDownRes> getCompanyBranchMasterDropdown(CompanyBranchReq req);
+
+	SuccessRes changeStatusOfBranch(BranchChangeStatusReq req);
 
 
 

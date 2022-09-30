@@ -21,6 +21,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
@@ -38,6 +39,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.master.req.BranchChangeStatusReq;
 import com.maan.eway.master.req.BranchMasterGetAllReq;
 import com.maan.eway.master.req.BranchMasterGetReq;
 import com.maan.eway.master.req.BranchMasterSaveReq;
@@ -516,7 +518,7 @@ public List<BranchMasterRes> getallBranchDetails(BranchMasterGetAllReq req) {
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(b.get("entryDate")));
+		orderList.add(cb.asc(b.get("branchName")));
 		
 		// Where
 		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
@@ -849,6 +851,93 @@ public List<DropDownRes> getCompanyBranchMasterDropdown(CompanyBranchReq req) {
 		return null;
 	}
 	return resList;
+}
+
+@Override
+public SuccessRes changeStatusOfBranch(BranchChangeStatusReq req) {
+	SuccessRes res = new SuccessRes();
+	try {
+		Date today  = new Date();
+		Calendar cal = new GregorianCalendar(); 
+		
+		BranchMaster updateRecord  = new BranchMaster();
+		cal.setTime(today);
+		cal.set(Calendar.HOUR_OF_DAY, 23);
+		cal.set(Calendar.MINUTE, 1);
+		today   = cal.getTime();
+		
+		List<BranchMaster> list = new ArrayList<BranchMaster>();
+		// Find Latest Record
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<BranchMaster> query = cb.createQuery(BranchMaster.class);
+
+		// Find All
+		Root<BranchMaster> b = query.from(BranchMaster.class);
+
+		// Select
+		query.select(b);
+
+		// Effective Date Max Filter
+		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Root<BranchMaster> ocpm1 = effectiveDate.from(BranchMaster.class);
+		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		Predicate a1 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+		effectiveDate.where(a1,a2);
+
+		// Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.desc(b.get("effectiveDateStart")));
+
+		// Where
+		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+		Predicate n2 = cb.equal(b.get("branchCode"), req.getBranchCode() );
+		Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
+		
+		query.where(n1,n2,n3).orderBy(orderList);
+
+		// Get Result
+		TypedQuery<BranchMaster> result = em.createQuery(query);
+		list = result.getResultList();
+		updateRecord = list.get(0) ;
+			
+		if (req.getStatus().equalsIgnoreCase("N") )	{
+				// Delete Old Records
+				cal.setTime(today);
+				cal.set(Calendar.HOUR_OF_DAY, 23);
+				cal.set(Calendar.MINUTE, 30);
+				today   = cal.getTime();
+				
+				// create update
+				CriteriaDelete<BranchMaster> delete = cb.createCriteriaDelete(BranchMaster.class);
+				Root<BranchMaster> pm = delete.from(BranchMaster.class);
+				
+				 // Where	
+				javax.persistence.criteria.Predicate n4 = cb.equal(pm.get("branchCode"), req.getBranchCode());
+				javax.persistence.criteria.Predicate n5 = cb.greaterThanOrEqualTo(pm.get("effectiveDateStart"), today);
+				javax.persistence.criteria.Predicate n6 = cb.equal(pm.get("companyId"), req.getCompanyId());
+				
+				delete.where(n4,n5,n6);	
+				em.createQuery(delete).executeUpdate();
+				// Insert Updated Record
+				updateRecord.setStatus(req.getStatus());
+				branchRepo.save(updateRecord);
+			
+		} else if (req.getStatus().equalsIgnoreCase("Y") ) {
+			// Insert Updated Record
+			updateRecord.setStatus(req.getStatus());
+			branchRepo.save(updateRecord);
+		}
+		// perform update
+		
+		res.setResponse("Status Changed");
+		res.setSuccessId(req.getBranchCode());
+	} catch(Exception e ) {
+		e.printStackTrace();
+		log.info("Exception is ---> " + e.getMessage());
+		return null;
+	}
+	return res;
 }
 
 }

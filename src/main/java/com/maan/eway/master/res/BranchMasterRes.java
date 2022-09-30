@@ -51,17 +51,32 @@ public class BranchMasterRes implements Serializable {
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 
-	@Column(name="StateCode", length=50)
+	@JsonProperty("StateCode")
     private String stateCode ;
 
-    @Column(name="StateName", length=50)
+    @JsonProperty("StateName")
     private String     stateName ;
 
-    @Column(name="CityCode" ,nullable=false )
+    @JsonProperty("CityCode"  )
     private String cityCode ;
 
-    @Column(name="CityName", length=50)
+    @JsonProperty("CityName")
     private String     cityName ;
+	
+    @JsonProperty("TiraCode"  )
+    private String tiraCode ;
+    
+    @JsonProperty("Address1")
+    private String    address1     ;
+	@JsonProperty("Address2")
+    private String    address2     ;
+	@JsonProperty("Email")
+    private String    email    ;
+	@JsonProperty("MobileNumber")
+    private String   mobileNumber;
+	@JsonProperty("BranchType")
+    private String    branchType  ;
+	
 	
 
 }

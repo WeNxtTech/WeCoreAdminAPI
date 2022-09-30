@@ -156,7 +156,7 @@ public class BranchMasterController {
 	}
 		
 		// Branch Master Drop Down Type
-		@GetMapping("/dropdown/branchmaster")
+		@PostMapping("/dropdown/branchmaster")
 		@ApiOperation(value = "This method is get Branch Master Drop Down")
 
 		public ResponseEntity<CommonRes> getCompanyBranchMasterDropdown(@RequestBody CompanyBranchReq req ) {
@@ -200,7 +200,7 @@ public class BranchMasterController {
 
 		}
 		
-		@GetMapping("/getinduvidualcompanybranches")
+		@PostMapping("/getinduvidualcompanybranches")
 		@ApiOperation(value = "This method is get Branch Master Drop Down")
 
 		public ResponseEntity<CommonRes> getBranchMasterDropdown(@RequestBody CompanyBranchGetReq req ) {

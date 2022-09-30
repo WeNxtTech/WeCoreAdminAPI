@@ -8,5 +8,5 @@ import lombok.Data;
 public class CompanyBranchGetReq {
 
 	@JsonProperty("InsuranceId")
-	private String insuranceId ;
+	private String companyId ;
 }

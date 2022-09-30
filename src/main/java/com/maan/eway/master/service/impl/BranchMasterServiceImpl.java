@@ -12,6 +12,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -47,6 +49,9 @@ import com.maan.eway.master.service.BranchMasterService;
 import com.maan.eway.auth.dto.LoginBranchDetailsRes;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.CityMaster;
+import com.maan.eway.bean.CompanyCityMaster;
+import com.maan.eway.bean.CompanyRegionMaster;
+import com.maan.eway.bean.CompanyStateMaster;
 import com.maan.eway.bean.CountryMaster;
 import com.maan.eway.bean.RegionMaster;
 import com.maan.eway.bean.StateMaster;
@@ -87,14 +92,14 @@ public SuccessRes insertBranch(BranchMasterSaveReq req) {
 	try {
 		Integer amendId = 0 ;
 		Calendar cal = new GregorianCalendar();
-		cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
+		cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
 		Date startDate = cal.getTime() ;
 		Date today = new Date();
-		cal.setTime(req.getEffectiveDate());  cal.add(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
+		cal.setTime(req.getEffectiveDateStart());  cal.add(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
 		Date oldEndDate = cal.getTime() ;
-		cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
+		cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
 		Date effDate = cal.getTime();
-		Date endDate = sdformat.parse("12/12/2050");
+		Date endDate = req.getEffectiveDateEnd();
 		String branchCode="";
 		
 		if (StringUtils.isBlank(req.getBranchCode())) {
@@ -205,18 +210,18 @@ public String getCountryCode(String regionCode  ) {
 		
 		// Criteria
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<RegionMaster> query = cb.createQuery(RegionMaster.class);
-		List<RegionMaster> list = new ArrayList<RegionMaster>();
+		CriteriaQuery<CompanyRegionMaster> query = cb.createQuery(CompanyRegionMaster.class);
+		List<CompanyRegionMaster> list = new ArrayList<CompanyRegionMaster>();
 		
 		// Find All
-		Root<RegionMaster>    c = query.from(RegionMaster.class);		
+		Root<CompanyRegionMaster>    c = query.from(CompanyRegionMaster.class);		
 		
 		// Select
 		query.select(c );
 		
 		// Effective Date Max Filter
 		Subquery<Long> effectiveDate = query.subquery(Long.class);
-		Root<RegionMaster> ocpm1 = effectiveDate.from(RegionMaster.class);
+		Root<CompanyRegionMaster> ocpm1 = effectiveDate.from(CompanyRegionMaster.class);
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 		javax.persistence.criteria.Predicate a1 = cb.equal(c.get("regionCode"),ocpm1.get("regionCode") );
 		javax.persistence.criteria.Predicate a2 = cb.equal(c.get("countryId"),ocpm1.get("countryId") );
@@ -235,7 +240,7 @@ public String getCountryCode(String regionCode  ) {
 		query.where(n1 ,n2).orderBy(orderList);
 		
 		// Get Result
-		TypedQuery<RegionMaster> result = em.createQuery(query);			
+		TypedQuery<CompanyRegionMaster> result = em.createQuery(query);			
 		list =  result.getResultList();  
 		if (list.size()>0  ) {
 			countryId = list.get(0).getCountryId()==null? "" : String.valueOf(list.get(0).getCountryId()) ;
@@ -257,11 +262,11 @@ public List<Tuple> getStateAndCityName(String countryId , String stateId , Strin
 		CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
 
 		// Find All
-		Root<CityMaster> c = query.from(CityMaster.class);
+		Root<CompanyCityMaster> c = query.from(CompanyCityMaster.class);
 		
 		// City Effective Date Max Filter
 		Subquery<Long> effectiveDate1 = query.subquery(Long.class);
-		Root<CityMaster> ocpm1 = effectiveDate1.from(CityMaster.class);
+		Root<CompanyCityMaster> ocpm1 = effectiveDate1.from(CompanyCityMaster.class);
 		effectiveDate1.select(cb.max(ocpm1.get("effectiveDateStart")));
 		Predicate c1 = cb.equal(ocpm1.get("cityId"), c.get("cityId"));
 		Predicate c2 = cb.equal(ocpm1.get("stateId"), c.get("stateId"));
@@ -278,10 +283,10 @@ public List<Tuple> getStateAndCityName(String countryId , String stateId , Strin
 		
 		// State Effective Date Max Filter
 		Subquery<Long> state = query.subquery(Long.class);
-		Root<StateMaster> s = state.from(StateMaster.class);
+		Root<CompanyStateMaster> s = state.from(CompanyStateMaster.class);
 		
 		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
-		Root<StateMaster> ocpm2 = effectiveDate2.from(StateMaster.class);
+		Root<CompanyStateMaster> ocpm2 = effectiveDate2.from(CompanyStateMaster.class);
 		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateStart")));
 		Predicate seff1 = cb.equal(ocpm2.get("stateId"), s.get("stateId"));
 		Predicate seff2 = cb.equal(ocpm2.get("countryId"), s.get("countryId"));
@@ -351,10 +356,10 @@ public List<Error> validateBranchDetails(BranchMasterSaveReq req) {
 		}
 
 		if(StringUtils.isBlank(req.getCityCode())) {
-			errorList.add(new Error("03","CityCode","Please Enter CityCode"));
+			errorList.add(new Error("03","CityCode","Please Select CityCode"));
 		}
 		if(StringUtils.isBlank(req.getStateCode())) {
-			errorList.add(new Error("04","StateCode","Please Enter StateCode"));
+			errorList.add(new Error("04","StateCode","Please Select StateCode"));
 		}
 		
 		if (StringUtils.isBlank(req.getRegionCode())) {
@@ -369,16 +374,23 @@ public List<Error> validateBranchDetails(BranchMasterSaveReq req) {
 			errorList.add(new Error("03", "CreatedBy", "CreatedBy under 100 Characters only allowed"));
 		}
 		
-		// Date Validation
+		// Date Validation 
 		Calendar cal = new GregorianCalendar();
 		Date today = new Date();
 		cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
 		today = cal.getTime();
-		if (req.getEffectiveDate() == null || StringUtils.isBlank(req.getEffectiveDate().toString())) {
-			errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start"));
-		} else if (req.getEffectiveDate().before(today)) {
+		if (req.getEffectiveDateStart() == null ) {
+			errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
+
+		} else if (req.getEffectiveDateStart().before(today)) {
 			errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
-		}
+		} else if (req.getEffectiveDateEnd() == null ) {
+			errorList.add(new Error("04", "EffectiveDateEnd", "Please Enter Effective Date End "));
+
+		} else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart()) || req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
+			errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date End  is After Effective Date Start"));
+		} 
+
 		if (StringUtils.isBlank(req.getStatus())) {
 			errorList.add(new Error("05", "Status", "Please Enter Status"));
 		} else if (req.getStatus().length() > 1) {
@@ -391,8 +403,44 @@ public List<Error> validateBranchDetails(BranchMasterSaveReq req) {
 		}else if (req.getCompanyId().length() > 20){
 			errorList.add(new Error("06","CompanyId", "Please Enter Company Id within 20 Characters")); 
 		}
-	
+		if (req.getCoreAppCode().length() > 20){
+			errorList.add(new Error("07","Core App Code", "Please Enter CoreAppCode within 20 Characters")); 
+		}
+		if (req.getTiraCode().length() > 20){
+			errorList.add(new Error("08","Tira Code", "Please Enter Tira Code within 20 Characters")); 
+		}
+		if (req.getAddress1().length() > 100){
+			errorList.add(new Error("09","Address1", "Please Enter Address1 within 100 Characters")); 
+		}
+		if (req.getAddress1().length() > 100){
+			errorList.add(new Error("10","Address2", "Please Enter Tira Code within 20 Characters")); 
+		}
+		
+		String regex = "^[a-zA-Z0-9_+&*-]+(?:\\." + "[a-zA-Z0-9_+&*-]+)*@" + "(?:[a-zA-Z0-9-]+\\.)+[a-z" + "A-Z]{2,7}$";
+		Pattern pattern = Pattern.compile(regex);
+		if(StringUtils.isBlank(req.getEmail()))
+			errorList.add(new Error("11" ,"Email", "please Enter Email"));
+		else if(StringUtils.isNotBlank(req.getEmail())) {
+		Matcher matcher3 = pattern.matcher(req.getEmail());
+		if (!matcher3.matches())
+			errorList.add(new Error("11" ,"Email", "please Enter Valid Email"));
+		}
+		
 
+		String regex1 = "(0-9)+";
+		
+		if (StringUtils.isBlank(req.getMobileNumber())) {
+			errorList.add(new Error("12", "Mobile Number", "Please Enter Mobile Number"));
+		}
+		else if (!req.getMobileNumber().matches("([0-9]{10})")) {
+			errorList.add(new Error("12", "Mobile Number","Mobile Number format should be Only Numbers"));
+		}
+		if (StringUtils.isBlank(req.getBranchType())) {
+			errorList.add(new Error("13", "Branch Type", "Please Enter Branch Type"));
+		}
+		else if (req.getBranchType().length()>10) {
+			errorList.add(new Error("13", "Branch Type", "Please Enter Branch Type within 10 Characters"));
+		}
 	} catch (Exception e) {
 		log.error(e);
 		e.printStackTrace();
@@ -780,7 +828,7 @@ public List<DropDownRes> getCompanyBranchMasterDropdown(CompanyBranchReq req) {
 	    // Where	
 		javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
 		javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
-		javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"),req.getInsuranceId() );
+		javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"),req.getCompanyId() );
 		
 		query.where(n1,n2,n3).orderBy(orderList);
 		

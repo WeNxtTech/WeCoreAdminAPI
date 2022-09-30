@@ -42,11 +42,11 @@ import javax.persistence.*;
 @DynamicInsert
 @DynamicUpdate
 @Builder
-@IdClass(CityMasterId.class)
-@Table(name="city_master")
+@IdClass(CompanyCityMasterId.class)
+@Table(name="company_city_master")
 
 
-public class CityMaster implements Serializable {
+public class CompanyCityMaster implements Serializable {
  
 private static final long serialVersionUID = 1L;
  
@@ -75,8 +75,11 @@ private static final long serialVersionUID = 1L;
     
     @Id
     @Column(name="COUNTRY_ID",length=20,nullable=false)
-    private String countryId ;
+    private String   countryId ;
     
+    @Id
+    @Column(name="COMPANY_ID",length=20,nullable=false)
+    private String   companyId ;
     
     //--- ENTITY DATA FIELDS 
     @Column(name="CITY_NAME", length=100)

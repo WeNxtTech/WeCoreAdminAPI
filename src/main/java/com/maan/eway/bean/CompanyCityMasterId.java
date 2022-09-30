@@ -25,7 +25,7 @@ import java.util.Date;
 @AllArgsConstructor
 @ToString
 @Builder
-public class CityMasterId implements Serializable {
+public class CompanyCityMasterId implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -39,5 +39,5 @@ public class CityMasterId implements Serializable {
     private String     stateId ;
     private String     countryId ;
     private String     regionId ;
-
+    private String companyId;
 }

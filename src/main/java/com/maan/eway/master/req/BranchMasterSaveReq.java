@@ -17,9 +17,14 @@ public class BranchMasterSaveReq implements Serializable {
 	private String branchCode;
 	
 	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDate")
-	private Date effectiveDate;
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
 
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateEnd")
+	private Date effectiveDateEnd;
+
+	
 	@JsonProperty("BranchName")
 	private String branchName;
 	
@@ -35,9 +40,6 @@ public class BranchMasterSaveReq implements Serializable {
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
 
-	@JsonProperty("AmendId")
-	private Integer amendId;
-
 	@JsonProperty("Remarks")
 	private String remarks;
 
@@ -48,5 +50,23 @@ public class BranchMasterSaveReq implements Serializable {
     private String    stateCode    ;
 	@JsonProperty("CityCode")
     private String    cityCode     ;
+	@JsonProperty("TiraCode")
+    private String    tiraCode     ;
+	@JsonProperty("Address1")
+    private String    address1     ;
+	@JsonProperty("Address2")
+    private String    address2     ;
+	@JsonProperty("Email")
+    private String    email    ;
+	@JsonProperty("MobileNumber")
+    private String   mobileNumber;
+	@JsonProperty("BranchType")
+    private String    branchType  ;
+	
+	@JsonProperty("CountryId")
+    private String    countryId ;
+	
+	
+	
 
 }

@@ -108,6 +108,25 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="COUNTRY_ID" ,nullable=false )
     private String    countryId ;
+
+    @Column(name="TIRA_CODE" ,nullable=false,length=20 )
+    private String  tiraCode;
+
+    @Column(name="ADDRESS1" ,nullable=false,length=100 )
+    private String  address1;
+
+    @Column(name="ADDRESS2" ,nullable=false,length=100 )
+    private String  address2;
+
+    @Column(name="EMAIL" ,nullable=false,length=100 )
+    private String  email;
+
+    @Column(name="MOBILE_NUMBER" ,nullable=false,length=10 )
+    private String  mobileNumber;
+
+    @Column(name="BRANCH_TYPE" ,nullable=false,length=10 )
+    private String  branchType;
+
 }
 
 

@@ -51,6 +51,11 @@ public class MailMaster implements Serializable {
 private static final long serialVersionUID = 1L;
  
     //--- ENTITY PRIMARY KEY 
+	@Id
+	@Column(name="S_NO", nullable=false)
+	private Integer sNo ;
+
+
     @Id
     @Column(name="COMPANY_ID", nullable=false, length=20)
     private String     companyId ;
@@ -88,8 +93,8 @@ private static final long serialVersionUID = 1L;
     private Double     smtpPort ;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="ENTRYDATE")
-    private Date       entrydate ;
+    @Column(name="ENTRY_DATE")
+    private Date       entryDate ;
     
     @Column(name="CORE_APP_CODE", length=20)
     private String     coreAppCode ;
@@ -97,11 +102,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="AMEND_ID")
     private Integer     amendId ;
 
+    @Column(name="TIRA_CODE", length=20)
+    private String     tiraCode ;
    
-    //--- ENTITY LINKS ( RELATIONSHIP )
-
-
-
+    @Column(name="CREATED_BY", length=100)
+    private String    createdBy;
+   
 }
 
 

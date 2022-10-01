@@ -36,5 +36,5 @@ public class MailMasterId implements Serializable {
     
     private Date       effectiveDateEnd ;
     
-     
+	private Integer sNo ;
 }

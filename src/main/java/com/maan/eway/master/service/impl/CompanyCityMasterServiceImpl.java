@@ -768,7 +768,7 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 			cal.set(Calendar.HOUR_OF_DAY, 23);
 			cal.set(Calendar.MINUTE, 1);
 			today = cal.getTime();
-			List<CityMaster> regionList = new ArrayList<CityMaster>();
+			List<CityMaster> cityList = new ArrayList<CityMaster>();
 			// Pagination
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
 			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
@@ -811,9 +811,9 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("cityName")));
 
-			// Product Section Effective Date Max Filter
-			Subquery<Long> region = query.subquery(Long.class);
-			Root<CompanyCityMaster> ps = region.from(CompanyCityMaster.class);
+			// Company City Effective Date Max Filter
+			Subquery<Long> city = query.subquery(Long.class);
+			Root<CompanyCityMaster> ps = city.from(CompanyCityMaster.class);
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 			Root<CompanyCityMaster> ocpm2 = effectiveDate2.from(CompanyCityMaster.class);
 			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateStart")));
@@ -826,20 +826,20 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 			effectiveDate2.where(eff1, eff3, eff4, eff5, eff6);
 
 			// Re Filter
-			region.select(ps.get("cityId"));
+			city.select(ps.get("cityId"));
 			Predicate ps1 = cb.equal(ps.get("regionId"), req.getRegionId());
 			Predicate ps2 = cb.equal(ps.get("companyId"), req.getCompanyId());
 			Predicate ps3 = cb.equal(ps.get("stateId"), req.getStateId());
 			Predicate ps4 = cb.equal(ps.get("effectiveDateStart"), effectiveDate2);
 			Predicate ps5 = cb.equal(ps.get("status"), "Y");
-			region.where(ps1, ps2, ps3, ps4, ps5);
+			city.where(ps1, ps2, ps3, ps4, ps5);
 
 			// Where
 			Expression<String> e0 = b.get("cityId");
 
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("status"), "Y");
-			Predicate n3 = e0.in(region).not();
+			Predicate n3 = e0.in(city).not();
 			Predicate n4 = cb.equal(b.get("effectiveDateEnd"), effectiveDate5);
 			Predicate n5 = cb.equal(b.get("countryId"), req.getCountryId());
 			Predicate n6 = cb.equal(b.get("regionId"), req.getRegionId());
@@ -851,10 +851,10 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 			TypedQuery<CityMaster> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
-			regionList = result.getResultList();
+			cityList = result.getResultList();
 
 			// Map
-			for (CityMaster data : regionList) {
+			for (CityMaster data : cityList) {
 				CompanyCityMasterRes res = new CompanyCityMasterRes();
 
 				res = dozerMapper.map(data, CompanyCityMasterRes.class);

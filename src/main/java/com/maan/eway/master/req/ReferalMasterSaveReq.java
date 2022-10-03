@@ -48,5 +48,7 @@ public class ReferalMasterSaveReq implements Serializable {
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 
-
+	@JsonProperty("MotorYn")
+	private String motorYn;
+	
 }

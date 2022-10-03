@@ -29,6 +29,10 @@ public class ProductMasterRes implements Serializable {
 	@JsonProperty("ProductName")
 	private String productName;
 
+	@JsonProperty("MotorYn")
+	private String motorYn;
+
+	
 	@JsonProperty("PaymentYn")
 	private String paymentYn;
 

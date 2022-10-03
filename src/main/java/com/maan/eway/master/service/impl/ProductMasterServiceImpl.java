@@ -350,6 +350,11 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			}else if (req.getTiraCode().length() > 20) {
 				errorList.add(new Error("11", "TiraCode", "Please Enter TiraCode within 20 Characters"));
 			}
+			if (StringUtils.isBlank(req.getMotorYn())) {
+				errorList.add(new Error("12", "Motor YN", "Please Select Motor YN "));
+			}else if (req.getMotorYn().length() >1) {
+				errorList.add(new Error("12", "Motor YN", "Please Enter Motor YN within 1 Character"));
+			}
 			
 		} catch (Exception e) {
 			log.error(e);

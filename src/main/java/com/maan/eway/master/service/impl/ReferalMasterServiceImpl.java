@@ -309,6 +309,11 @@ public List<Error> validateReferalDetails(ReferalMasterSaveReq req) {
 		}else if (req.getRemarks().length() > 100) {
 			errorList.add(new Error("10", "Remarks", "Please Enter Remarks within 100 Characters"));
 		}
+		if (StringUtils.isBlank(req.getMotorYn())) {
+			errorList.add(new Error("11", "MotorYn", "Please Enter MotorYn"));
+		}else if (req.getMotorYn().length() > 1) {
+			errorList.add(new Error("11", "MotorYn", "Please Enter MotorYn within 1 Character"));
+		}
 		
 	} catch (Exception e) {
 		log.error(e);

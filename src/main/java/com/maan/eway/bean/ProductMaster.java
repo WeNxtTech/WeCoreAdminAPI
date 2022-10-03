@@ -77,6 +77,10 @@ private static final long serialVersionUID = 1L;
     @Column(name="STATUS", length=1)
     private String     status ;
 
+    @Column(name="MOTOR_YN", length=1)
+    private String   motorYn;
+
+    
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ENTRY_DATE")
     private Date       entryDate ;

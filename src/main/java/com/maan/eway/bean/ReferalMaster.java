@@ -94,6 +94,10 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="CREATED_BY", length=20)
     private String     createdBy ;
+    
+    @Column(name="MOTOR_YN", length=1)
+    private String    motorYn;
+
 }
 
 

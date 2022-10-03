@@ -44,18 +44,18 @@ import javax.persistence.*;
 @DynamicInsert
 @DynamicUpdate
 @Builder
-@IdClass(FactorTypeMasterId.class)
-@Table(name="factor_type_master")
+@IdClass(RatingFieldMasterId.class)
+@Table(name="RATING_FIELD_MASTER")
 
 
-public class FactorTypeMaster implements Serializable {
+public class RatingFieldMaster implements Serializable {
  
 private static final long serialVersionUID = 1L;
  
     //--- ENTITY PRIMARY KEY 
     @Id
-    @Column(name="FACTOR_ID", nullable=false)
-    private Integer   factorId;
+    @Column(name="RATING_ID", nullable=false)
+    private Integer   ratingId;
 
     @Id
     @Temporal(TemporalType.TIMESTAMP)
@@ -72,11 +72,11 @@ private static final long serialVersionUID = 1L;
     private Integer    productId;
 
     //--- ENTITY DATA FIELDS 
-    @Column(name="FACTOR_NAME", length=100,nullable=false)
-    private String    factorName;
+    @Column(name="RATING_FIELD", length=100,nullable=false)
+    private String    ratingField;
 
-    @Column(name="FACTOR_DESC", length=100,nullable=false)
-    private String    factorDesc;
+    @Column(name="RATING_DESC", length=100,nullable=false)
+    private String    ratingDesc;
     
     @Column(name="INPUT_TABLE", length=100,nullable=false)
     private String    inputTable;

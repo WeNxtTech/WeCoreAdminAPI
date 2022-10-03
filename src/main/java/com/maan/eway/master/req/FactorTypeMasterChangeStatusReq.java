@@ -17,8 +17,8 @@ public class FactorTypeMasterChangeStatusReq implements Serializable {
     @JsonProperty("ProductId")
     private String productId;
     
-    @JsonProperty("FactorId")
-    private String factorId;
+    @JsonProperty("RatingId")
+    private String ratingId;
    
     @JsonProperty("Status")
     private String status;

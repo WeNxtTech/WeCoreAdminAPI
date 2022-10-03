@@ -25,12 +25,12 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 @Builder
-public class FactorTypeMasterId implements Serializable {
+public class RatingFieldMasterId implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     //--- ENTITY KEY ATTRIBUTES 
-    private Integer   factorId;
+    private Integer  ratingId;
 
     private Date       effectiveDateStart ;
     private Date       effectiveDateEnd ;

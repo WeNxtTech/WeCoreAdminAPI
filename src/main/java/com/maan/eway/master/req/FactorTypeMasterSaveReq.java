@@ -13,14 +13,14 @@ public class FactorTypeMasterSaveReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-	@JsonProperty("FactorId")
-	private String factorId;
+	@JsonProperty("RatingId")
+	private String ratingId;
 
-	@JsonProperty("FactorName")
-	private String factorName;
+	@JsonProperty("RatingField")
+	private String ratingField;
 
-	@JsonProperty("FactorDesc")
-	private String factorDesc;
+	@JsonProperty("RatingDesc")
+	private String ratingDesc;
 
 	@JsonProperty("InputTable")
 	private String inputTable;

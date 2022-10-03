@@ -27,47 +27,34 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.maan.eway.bean.BankMaster;
-import com.maan.eway.bean.CityMaster;
-import com.maan.eway.bean.FactorTypeMaster;
-import com.maan.eway.bean.StateMaster;
+import com.maan.eway.bean.RatingFieldMaster;
 import com.maan.eway.error.Error;
-import com.maan.eway.master.req.BankMasterGetAllReq;
-import com.maan.eway.master.req.BankMasterGetReq;
-import com.maan.eway.master.req.BankMasterSaveReq;
 import com.maan.eway.master.req.FactorTypeMasterChangeStatusReq;
 import com.maan.eway.master.req.FactorTypeMasterGetAllReq;
 import com.maan.eway.master.req.FactorTypeMasterGetReq;
 import com.maan.eway.master.req.FactorTypeMasterSaveReq;
-import com.maan.eway.master.res.BankMasterRes;
-import com.maan.eway.master.res.CityMasterRes;
 import com.maan.eway.master.res.FactorTypeMasterGetRes;
-import com.maan.eway.master.service.BankMasterService;
-import com.maan.eway.master.service.FactorTypeMasterService;
-import com.maan.eway.repository.BankMasterRepository;
-import com.maan.eway.repository.FactorTypeMasterRepository;
-import com.maan.eway.res.DropDownRes;
+import com.maan.eway.master.service.RatingFieldMasterService;
+import com.maan.eway.repository.RatingFieldMasterRepository;
 import com.maan.eway.res.SuccessRes;
-import com.maan.eway.service.impl.BasicValidationService;
 
 /**
  * <h2>BankMasterServiceimpl</h2>
  */
 @Service
 @Transactional
-public class FactorTypeMasterServiceImpl implements FactorTypeMasterService {
+public class FactorTypeMasterServiceImpl implements RatingFieldMasterService {
 
 	@PersistenceContext
 	private EntityManager em;
 
 	@Autowired
-	private FactorTypeMasterRepository factorRepo;
+	private RatingFieldMasterRepository factorRepo;
 
 	Gson json = new Gson();
 
@@ -110,24 +97,24 @@ public class FactorTypeMasterServiceImpl implements FactorTypeMasterService {
 				errorList.add(new Error("03", "Status", "Enter Status Y or N Only"));
 			}
 			
-			if (StringUtils.isBlank(req.getFactorName())) {
-				errorList.add(new Error("04", "Factor Name", "Please Select Factor Name "));
-			}else if (req.getFactorName().length() > 100){
-				errorList.add(new Error("04","Factor Name", "Please Enter Factor Name within 100 Characters")); 
-			}else if (StringUtils.isBlank(req.getFactorName())) {
-				List<FactorTypeMaster> factorList = getFactorNameExistDetails(req.getFactorName(),req.getProductId());
+			if (StringUtils.isBlank(req.getRatingField())) {
+				errorList.add(new Error("04", "RatingField", "Please Select RatingField "));
+			}else if (req.getRatingField().length() > 100){
+				errorList.add(new Error("04","RatingField", "Please Enter RatingField within 100 Characters")); 
+			}else if (StringUtils.isBlank(req.getRatingField())) {
+				List<RatingFieldMaster> factorList = getFactorNameExistDetails(req.getRatingField(),req.getProductId());
 				if (factorList.size()>0 ) {
-					errorList.add(new Error("04", "Factor Name", "This Factor Name Already Exist "));
+					errorList.add(new Error("04", "RatingField", "This RatingField Already Exist "));
 				}
 			}else  {
-				List<FactorTypeMaster> factorList =  getFactorNameExistDetails(req.getFactorName(),req.getProductId() );
-				if (factorList.size()>0 &&  (! req.getFactorId().equalsIgnoreCase(factorList.get(0).getFactorId().toString())) ) {
-					errorList.add(new Error("04", "Factor Name", "This Factor Name Already Exist "));
+				List<RatingFieldMaster> factorList =  getFactorNameExistDetails(req.getRatingField(),req.getProductId() );
+				if (factorList.size()>0 &&  (! req.getRatingId().equalsIgnoreCase(factorList.get(0).getRatingId().toString())) ) {
+					errorList.add(new Error("04", "RatingField", "This RatingField Already Exist "));
 				}
 				
 			}
-			if (req.getFactorName().length() > 100) {
-				errorList.add(new Error("05", "Factor Desc", "Please Enter Factor Desc within 100 Characters"));
+			if (req.getRatingDesc().length() > 100) {
+				errorList.add(new Error("05", "Rating Desc", "Please Enter Rating Desc within 100 Characters"));
 			}
 			if (StringUtils.isBlank(req.getInputTable())) {
 				errorList.add(new Error("06", "Input Table", "Please Enter Input Table"));
@@ -136,7 +123,7 @@ public class FactorTypeMasterServiceImpl implements FactorTypeMasterService {
 			}
 			if (StringUtils.isBlank(req.getInputColumn())) {
 				errorList.add(new Error("07", "Input Column", "Please Enter Input Column"));
-			} else if (req.getFactorName().length() > 100) {
+			} else if (req.getInputColumn().length() > 100) {
 				errorList.add(new Error("07", "Input Column", "Please Enter Input Column within 100 Characters"));
 			}
 			if (StringUtils.isBlank(req.getCreatedBy())) {
@@ -165,8 +152,8 @@ public class FactorTypeMasterServiceImpl implements FactorTypeMasterService {
 	public SuccessRes insertfactortype(FactorTypeMasterSaveReq req) {
 		SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/yyyy");
 		SuccessRes res = new SuccessRes();
-		FactorTypeMaster saveData = new FactorTypeMaster();
-		List<FactorTypeMaster> list = new ArrayList<FactorTypeMaster>();
+		RatingFieldMaster saveData = new RatingFieldMaster();
+		List<RatingFieldMaster> list = new ArrayList<RatingFieldMaster>();
 		DozerBeanMapper dozermapper = new DozerBeanMapper();
 		try {
 			Integer amendId = 0;
@@ -189,7 +176,7 @@ public class FactorTypeMasterServiceImpl implements FactorTypeMasterService {
 
 			String factorId = "";
 
-			if (StringUtils.isBlank(req.getFactorId())) {
+			if (StringUtils.isBlank(req.getRatingId())) {
 				// Save
 				Long totalCount = getMasterTableCount(req.getProductId());
 				factorId = Long.valueOf(totalCount + 1).toString();
@@ -197,18 +184,18 @@ public class FactorTypeMasterServiceImpl implements FactorTypeMasterService {
 				res.setSuccessId(factorId);
 			} else {
 				// Update
-				factorId = req.getFactorId();
+				factorId = req.getRatingId();
 				CriteriaBuilder cb = em.getCriteriaBuilder();
-				CriteriaQuery<FactorTypeMaster> query = cb.createQuery(FactorTypeMaster.class);
+				CriteriaQuery<RatingFieldMaster> query = cb.createQuery(RatingFieldMaster.class);
 				// Find all
-				Root<FactorTypeMaster> b = query.from(FactorTypeMaster.class);
+				Root<RatingFieldMaster> b = query.from(RatingFieldMaster.class);
 				// Select
 				query.select(b);
 				// Effective Date Max Filter
 				Subquery<Long> effectiveDate = query.subquery(Long.class);
-				Root<FactorTypeMaster> ocpm1 = effectiveDate.from(FactorTypeMaster.class);
+				Root<RatingFieldMaster> ocpm1 = effectiveDate.from(RatingFieldMaster.class);
 				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-				Predicate a1 = cb.equal(ocpm1.get("factorId"), b.get("factorId"));
+				Predicate a1 = cb.equal(ocpm1.get("ratingId"), b.get("ratingId"));
 				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
 				Predicate a3 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 				effectiveDate.where(a1, a2, a3);
@@ -216,12 +203,12 @@ public class FactorTypeMasterServiceImpl implements FactorTypeMasterService {
 				// Where
 				Predicate n1 = cb.equal(b.get("status"), "Y");
 				Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-				Predicate n3 = cb.equal(b.get("factorId"), req.getFactorId());
+				Predicate n3 = cb.equal(b.get("ratingId"), req.getRatingId());
 				Predicate n4 = cb.equal(b.get("productId"), req.getProductId());
 
 				query.where(n1, n2, n3, n4);
 				// Get Result
-				TypedQuery<FactorTypeMaster> result = em.createQuery(query);
+				TypedQuery<RatingFieldMaster> result = em.createQuery(query);
 				list = result.getResultList();
 				if (list.size() > 0) {
 					factorRepo.delete(list.get(0));
@@ -238,7 +225,7 @@ public class FactorTypeMasterServiceImpl implements FactorTypeMasterService {
 				res.setSuccessId(factorId);
 			}
 			dozermapper.map(req, saveData);
-			saveData.setFactorId(Integer.valueOf(factorId));
+			saveData.setRatingId(Integer.valueOf(factorId));
 			saveData.setEffectiveDateStart(effDate);
 			saveData.setEffectiveDateEnd(endDate);
 			saveData.setEntryDate(new Date());
@@ -247,7 +234,7 @@ public class FactorTypeMasterServiceImpl implements FactorTypeMasterService {
 
 			if (list.size() > 0) {
 				// Update Old Record
-				FactorTypeMaster lastRecord = list.get(0);
+				RatingFieldMaster lastRecord = list.get(0);
 				lastRecord.setEffectiveDateEnd(oldEndDate);
 				factorRepo.saveAndFlush(lastRecord);
 			}
@@ -269,14 +256,14 @@ public class FactorTypeMasterServiceImpl implements FactorTypeMasterService {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<Long> query = cb.createQuery(Long.class);
 			// Find All
-			Root<FactorTypeMaster> b = query.from(FactorTypeMaster.class);
+			Root<RatingFieldMaster> b = query.from(RatingFieldMaster.class);
 			// Select
 			query.multiselect(cb.count(b));
 			// Effective Date Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<FactorTypeMaster> ocpm1 = effectiveDate.from(FactorTypeMaster.class);
+			Root<RatingFieldMaster> ocpm1 = effectiveDate.from(RatingFieldMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			Predicate a1 = cb.equal(ocpm1.get("factorId"), b.get("factorId"));
+			Predicate a1 = cb.equal(ocpm1.get("ratingId"), b.get("ratingId"));
 			Predicate a2 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 
 			effectiveDate.where(a1, a2);
@@ -297,33 +284,33 @@ public class FactorTypeMasterServiceImpl implements FactorTypeMasterService {
 	}
 
 	// Factor Name Exist Details validation
-		public List<FactorTypeMaster> getFactorNameExistDetails(String factorName, String productId) {
-			List<FactorTypeMaster> list = new ArrayList<FactorTypeMaster>();
+		public List<RatingFieldMaster> getFactorNameExistDetails(String factorName, String productId) {
+			List<RatingFieldMaster> list = new ArrayList<RatingFieldMaster>();
 			try {
 				// Find Latest Record
 				CriteriaBuilder cb = em.getCriteriaBuilder();
-				CriteriaQuery<FactorTypeMaster> query = cb.createQuery(FactorTypeMaster.class);
+				CriteriaQuery<RatingFieldMaster> query = cb.createQuery(RatingFieldMaster.class);
 
 				// Find All
-				Root<FactorTypeMaster> b = query.from(FactorTypeMaster.class);
+				Root<RatingFieldMaster> b = query.from(RatingFieldMaster.class);
 
 				// Select
 				query.select(b);
 
 				// Effective Date Max Filter
 				Subquery<Long> effectiveDate = query.subquery(Long.class);
-				Root<FactorTypeMaster> ocpm1 = effectiveDate.from(FactorTypeMaster.class);
+				Root<RatingFieldMaster> ocpm1 = effectiveDate.from(RatingFieldMaster.class);
 				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 				Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-				Predicate a2 = cb.equal(ocpm1.get("factorId"),b.get("factorId"));
+				Predicate a2 = cb.equal(ocpm1.get("ratingId"),b.get("ratingId"));
 				effectiveDate.where(a1,a2);
 
 				Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-				Predicate n2 = cb.equal(b.get("factorName"), factorName);
+				Predicate n2 = cb.equal(b.get("ratingField"), factorName);
 				Predicate n3 = cb.equal(b.get("productId"),productId);
 				query.where(n1, n2,n3);
 				// Get Result
-				TypedQuery<FactorTypeMaster> result = em.createQuery(query);
+				TypedQuery<RatingFieldMaster> result = em.createQuery(query);
 				list = result.getResultList();
 
 			} catch (Exception e) {
@@ -346,44 +333,44 @@ public class FactorTypeMasterServiceImpl implements FactorTypeMasterService {
 			cal.set(Calendar.HOUR_OF_DAY, 23);
 			cal.set(Calendar.MINUTE, 1);
 			today = cal.getTime();
-			List<FactorTypeMaster> list = new ArrayList<FactorTypeMaster>();
+			List<RatingFieldMaster> list = new ArrayList<RatingFieldMaster>();
 			// Pagination
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
 			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<FactorTypeMaster> query = cb.createQuery(FactorTypeMaster.class);
+			CriteriaQuery<RatingFieldMaster> query = cb.createQuery(RatingFieldMaster.class);
 			// Find all
-			Root<FactorTypeMaster> b = query.from(FactorTypeMaster.class);
+			Root<RatingFieldMaster> b = query.from(RatingFieldMaster.class);
 			// Select
 			query.select(b);
 			// Effective Date Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<FactorTypeMaster> ocpm1 = effectiveDate.from(FactorTypeMaster.class);
+			Root<RatingFieldMaster> ocpm1 = effectiveDate.from(RatingFieldMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1, a2);
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("factorName")));
+			orderList.add(cb.asc(b.get("ratingField")));
 			// Where
 			// Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
 
 			query.where(n2).orderBy(orderList);
 			// Get Result
-			TypedQuery<FactorTypeMaster> result = em.createQuery(query);
+			TypedQuery<RatingFieldMaster> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			list = result.getResultList();
 
 			// Map
-			for (FactorTypeMaster data : list) {
+			for (RatingFieldMaster data : list) {
 				FactorTypeMasterGetRes res = new FactorTypeMasterGetRes();
 
 				res = mapper.map(data, FactorTypeMasterGetRes.class);
-				res.setFactorId(data.getFactorId().toString());
+				res.setRatingId(data.getRatingId().toString());
 				resList.add(res);
 			}
 
@@ -407,27 +394,27 @@ public class FactorTypeMasterServiceImpl implements FactorTypeMasterService {
 			cal.set(Calendar.HOUR_OF_DAY, 23);
 			cal.set(Calendar.MINUTE, 1);
 			today = cal.getTime();
-			List<FactorTypeMaster> list = new ArrayList<FactorTypeMaster>();
+			List<RatingFieldMaster> list = new ArrayList<RatingFieldMaster>();
 			// Pagination
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
 			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<FactorTypeMaster> query = cb.createQuery(FactorTypeMaster.class);
+			CriteriaQuery<RatingFieldMaster> query = cb.createQuery(RatingFieldMaster.class);
 			// Find all
-			Root<FactorTypeMaster> b = query.from(FactorTypeMaster.class);
+			Root<RatingFieldMaster> b = query.from(RatingFieldMaster.class);
 			// Select
 			query.select(b);
 			// Effective Date Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<FactorTypeMaster> ocpm1 = effectiveDate.from(FactorTypeMaster.class);
+			Root<RatingFieldMaster> ocpm1 = effectiveDate.from(RatingFieldMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1, a2);
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("factorName")));
+			orderList.add(cb.asc(b.get("ratingField")));
 			// Where
 			// Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
@@ -435,17 +422,17 @@ public class FactorTypeMasterServiceImpl implements FactorTypeMasterService {
 
 			query.where(n2, n3).orderBy(orderList);
 			// Get Result
-			TypedQuery<FactorTypeMaster> result = em.createQuery(query);
+			TypedQuery<RatingFieldMaster> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			list = result.getResultList();
 
 			// Map
-			for (FactorTypeMaster data : list) {
+			for (RatingFieldMaster data : list) {
 				FactorTypeMasterGetRes res = new FactorTypeMasterGetRes();
 
 				res = mapper.map(data, FactorTypeMasterGetRes.class);
-				res.setFactorId(data.getFactorId().toString());
+				res.setRatingId(data.getRatingId().toString());
 				resList.add(res);
 			}
 
@@ -469,19 +456,19 @@ public class FactorTypeMasterServiceImpl implements FactorTypeMasterService {
 			cal.set(Calendar.HOUR_OF_DAY, 23);
 			cal.set(Calendar.MINUTE, 1);
 			today = cal.getTime();
-			List<FactorTypeMaster> list = new ArrayList<FactorTypeMaster>();
+			List<RatingFieldMaster> list = new ArrayList<RatingFieldMaster>();
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<FactorTypeMaster> query = cb.createQuery(FactorTypeMaster.class);
+			CriteriaQuery<RatingFieldMaster> query = cb.createQuery(RatingFieldMaster.class);
 			// Find all
-			Root<FactorTypeMaster> b = query.from(FactorTypeMaster.class);
+			Root<RatingFieldMaster> b = query.from(RatingFieldMaster.class);
 			// Select
 			query.select(b);
 						// Effective Date Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<FactorTypeMaster> ocpm1 = effectiveDate.from(FactorTypeMaster.class);
+			Root<RatingFieldMaster> ocpm1 = effectiveDate.from(RatingFieldMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-			Predicate a2 = cb.equal(ocpm1.get("factorId"), b.get("factorId"));			
+			Predicate a2 = cb.equal(ocpm1.get("ratingId"), b.get("ratingId"));			
 			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1, a2,a3);
 			// Order By
@@ -490,13 +477,13 @@ public class FactorTypeMasterServiceImpl implements FactorTypeMasterService {
 			// Where
 			javax.persistence.criteria.Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			javax.persistence.criteria.Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
-			Predicate n3 = cb.equal(b.get("factorId"), req.getFactorId());		
+			Predicate n3 = cb.equal(b.get("ratingId"), req.getRatingId());		
 			query.where(n1, n2).orderBy(orderList);
 			// Get Result
-			TypedQuery<FactorTypeMaster> result = em.createQuery(query);
+			TypedQuery<RatingFieldMaster> result = em.createQuery(query);
 			list = result.getResultList();
 			res = mapper.map(list.get(0), FactorTypeMasterGetRes.class);
-			res.setFactorId(list.get(0).getFactorId().toString());
+			res.setRatingId(list.get(0).getRatingId().toString());
 			res.setEntryDate(list.get(0).getEntryDate());
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
 			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
@@ -517,30 +504,30 @@ public class FactorTypeMasterServiceImpl implements FactorTypeMasterService {
 			Date today = new Date();
 			Calendar cal = new GregorianCalendar();
 
-			FactorTypeMaster updateRecord = new FactorTypeMaster();
+			RatingFieldMaster updateRecord = new RatingFieldMaster();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
 			cal.set(Calendar.MINUTE, 1);
 			today = cal.getTime();
 
-			List<FactorTypeMaster> list = new ArrayList<FactorTypeMaster>();
+			List<RatingFieldMaster> list = new ArrayList<RatingFieldMaster>();
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<FactorTypeMaster> query = cb.createQuery(FactorTypeMaster.class);
+			CriteriaQuery<RatingFieldMaster> query = cb.createQuery(RatingFieldMaster.class);
 
 			// Find All
-			Root<FactorTypeMaster> b = query.from(FactorTypeMaster.class);
+			Root<RatingFieldMaster> b = query.from(RatingFieldMaster.class);
 
 			// Select
 			query.select(b);
 
 			// Effective Date Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<FactorTypeMaster> ocpm1 = effectiveDate.from(FactorTypeMaster.class);
+			Root<RatingFieldMaster> ocpm1 = effectiveDate.from(RatingFieldMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			Predicate a3 = cb.equal(ocpm1.get("factorId"), b.get("factorId"));
+			Predicate a3 = cb.equal(ocpm1.get("ratingId"), b.get("ratingId"));
 			effectiveDate.where(a1, a2,a3);
 
 			// Order By
@@ -549,13 +536,13 @@ public class FactorTypeMasterServiceImpl implements FactorTypeMasterService {
 
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			Predicate n2 = cb.equal(b.get("factorId"), req.getFactorId());
+			Predicate n2 = cb.equal(b.get("ratingId"), req.getRatingId());
 			Predicate n3 = cb.equal(b.get("productId"),req.getProductId());
 
 			query.where(n1, n2,n3).orderBy(orderList);
 
 			// Get Result
-			TypedQuery<FactorTypeMaster> result = em.createQuery(query);
+			TypedQuery<RatingFieldMaster> result = em.createQuery(query);
 			list = result.getResultList();
 			updateRecord = list.get(0);
 
@@ -567,11 +554,11 @@ public class FactorTypeMasterServiceImpl implements FactorTypeMasterService {
 				today = cal.getTime();
 
 				// create update
-				CriteriaDelete<FactorTypeMaster> delete = cb.createCriteriaDelete(FactorTypeMaster.class);
-				Root<FactorTypeMaster> pm = delete.from(FactorTypeMaster.class);
+				CriteriaDelete<RatingFieldMaster> delete = cb.createCriteriaDelete(RatingFieldMaster.class);
+				Root<RatingFieldMaster> pm = delete.from(RatingFieldMaster.class);
 
 				// Where
-				javax.persistence.criteria.Predicate n4 = cb.equal(pm.get("factorId"), req.getFactorId());
+				javax.persistence.criteria.Predicate n4 = cb.equal(pm.get("ratingId"), req.getRatingId());
 				javax.persistence.criteria.Predicate n5 = cb.greaterThanOrEqualTo(pm.get("effectiveDateStart"), today);
 				javax.persistence.criteria.Predicate n6 = cb.equal(pm.get("productId"),req.getProductId());
 				delete.where(n4,n5,n6);
@@ -588,7 +575,7 @@ public class FactorTypeMasterServiceImpl implements FactorTypeMasterService {
 			// perform update
 
 			res.setResponse("Status Changed");
-			res.setSuccessId(req.getFactorId());
+			res.setSuccessId(req.getRatingId());
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());

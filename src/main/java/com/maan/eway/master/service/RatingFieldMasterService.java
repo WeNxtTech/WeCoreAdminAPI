@@ -23,7 +23,7 @@ import java.util.List;
 /**
 * <h2>BankMasterServiceimpl</h2>
 */
-public interface FactorTypeMasterService  {
+public interface RatingFieldMasterService  {
 
 	List<Error> validateFactorType(FactorTypeMasterSaveReq req);
 

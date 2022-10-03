@@ -21,6 +21,6 @@ import com.maan.eway.bean.DocumentMasterId;
 
 public interface DocumentMasterRepository  extends JpaRepository<DocumentMaster,DocumentMasterId > , JpaSpecificationExecutor<DocumentMaster> {
 
-	Long countByDocumentDescrOrderByEntryDateDesc(String documentDescr);
+
 
 }

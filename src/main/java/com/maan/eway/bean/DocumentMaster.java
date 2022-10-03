@@ -66,9 +66,12 @@ private static final long serialVersionUID = 1L;
     private Date       effectiveDateEnd ;
 
     //--- ENTITY DATA FIELDS 
-    @Column(name="DOCUMENT_DESCR", length=100)
-    private String     documentDescr ;
+    @Column(name="DOCUMENT_NAME", length=100)
+    private String     documentName ;
 
+    @Column(name="DOCUMENT_DESC", length=100)
+    private String     documentDesc ;
+    
     @Column(name="DOC_APPLICABLE_ID")
     private Integer    docApplicableId ;
 

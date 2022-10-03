@@ -8,20 +8,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class ProductDocumentMasterSaveReq {
+public class CoverDocumentMasterSaveReq {
 
 	@JsonProperty("DocumentId")
 	private String documentId;
+	
+	@JsonProperty("DocumentName")
+	private String documentName;
 	
 	@JsonProperty("DocumentDesc")
 	private String documentDesc;
 	
 	@JsonProperty("DocApplicableId")
 	private String docApplicableId;
-	
-
-	@JsonProperty("DocApplicable")
-	private String docApplicable;
 	
 	@JsonProperty("InsuranceId")
 	private String companyId;
@@ -32,6 +31,8 @@ public class ProductDocumentMasterSaveReq {
 	@JsonProperty("SectionId")
 	private String sectionId;
 	
+	@JsonProperty("CoverId")
+	private String coverId;
 	
 	@JsonProperty("MandatoryStatus")
 	private String mandatoryStatus;

@@ -15,5 +15,8 @@ public class SubCoverMasterGetReq implements Serializable {
 
 	@JsonProperty("SubCoverId")
     private String subCoverId; 
+	
+	@JsonProperty("CoverId")
+    private String coverId; 
 	    
 }

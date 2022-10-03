@@ -2,6 +2,7 @@ package com.maan.eway.master.req;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -13,6 +14,9 @@ public class SubCoverMasterSaveReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    
+    @JsonProperty("CoverId")
+    private String coverId;
     
     @JsonProperty("SubCoverId")
     private String subCoverId;
@@ -46,4 +50,35 @@ public class SubCoverMasterSaveReq implements Serializable {
 
     @JsonProperty("Remarks")
     private String remarks;
+    
+    // Rating Master Insert 
+ 	@JsonProperty("CoverageType")
+ 	private String coverageType;
+ 	
+ 	@JsonProperty("CoverageLimit")
+ 	private String coverageLimit;
+ 	
+ 	@JsonProperty("Excess")
+ 	private String excess;
+ 	
+ 	@JsonProperty("CalcType")
+ 	private String calcType;
+ 	
+ 	@JsonProperty("BaseRate")
+ 	private String baseRate;
+ 	
+ 	@JsonProperty("SumInsuredStart")
+ 	private String sumInsuredStart;
+ 	
+ 	@JsonProperty("SumInsuredEnd")
+ 	private String sumInsuredEnd;
+ 	
+ 	@JsonProperty("MinimumPremium")
+ 	private String minimumPremium;
+ 	
+ 	@JsonProperty("FactorTypeId")
+ 	private String factorTypeId;
+ 	
+ 	@JsonProperty("GridDetails")
+ 	private List<OfsGridSaveReq> gridDetails;
 }

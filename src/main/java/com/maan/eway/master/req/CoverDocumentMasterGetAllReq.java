@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class ProductDocumentMasterGetAllReq {
+public class CoverDocumentMasterGetAllReq {
 
 	@JsonProperty("Limit")
 	private String limit;
@@ -21,10 +21,13 @@ public class ProductDocumentMasterGetAllReq {
 	
 
 	@JsonProperty("ProductId")
-	private Integer productId;
+	private String productId;
 	
 
 	@JsonProperty("SectionId")
-	private Integer sectionId;
+	private String sectionId;
+	
+	@JsonProperty("CoverId")
+	private String coverId;
 	
 }

@@ -7,8 +7,8 @@ import lombok.Data;
 @Data
 public class DocumentChangeStatusReq {
 
-	 @JsonProperty("CoverId")
-	 private String coverId;
+	 @JsonProperty("DocumentId")
+	 private String documentId;
 	 
 	 @JsonProperty("Status")
 	 private String status;

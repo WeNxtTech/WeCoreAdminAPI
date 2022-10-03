@@ -235,7 +235,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 		public List<DropDownRes> getCalcTypes() {
 			List<DropDownRes> resList = new ArrayList<DropDownRes>();
 			try {
-				List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("CALCULATION_TYPE", "Y");
+				List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemIdAsc("CALCULATION_TYPE", "Y");
 
 				for (ListItemValue data : getList) {
 					DropDownRes res = new DropDownRes();

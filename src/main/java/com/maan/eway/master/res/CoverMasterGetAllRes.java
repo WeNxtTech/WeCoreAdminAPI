@@ -1,4 +1,4 @@
-package com.maan.eway.master.req;
+package com.maan.eway.master.res;
 
 import java.util.Date;
 
@@ -8,19 +8,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class SectionCoverMasterSaveReq {
+public class CoverMasterGetAllRes {
 
 	@JsonProperty("CoverId")
 	private String coverId;
-	
-	@JsonProperty("ProductId")
-	private String productId;
-	
-	@JsonProperty("SectionId")
-	private String sectionId;
-	
-	@JsonProperty("InsuranceId")
-	private String companyId;
 	
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
@@ -47,17 +38,43 @@ public class SectionCoverMasterSaveReq {
 	@JsonProperty("ToolTip")
 	private String toolTip;  
 
-
 	@JsonProperty("TiraCode")
 	private String tiraCode;
 
-	@JsonProperty("SubCoverYn")
-	private String subCoverYn;
-	
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateEnd")
 	private Date effectiveDateEnd;
 	
+	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("EntryDate")
+	private Date entryDate;
 	
+	// Rating Master Insert 
+	@JsonProperty("CoverageType")
+	private String coverageType;
 	
+	@JsonProperty("CoverageLimit")
+	private String coverageLimit;
+	
+	@JsonProperty("Excess")
+	private String excess;
+	
+	@JsonProperty("SubCoverYn")
+	private String subCoverYn;
+	
+	@JsonProperty("CalcType")
+	private String calcType;
+	
+	@JsonProperty("BaseRate")
+	private String baseRate;
+	
+	@JsonProperty("SumInsuredEnd")
+	private String sumInsuredEnd;
+	
+	@JsonProperty("MinimumPremium")
+	private String minimumPremium;
+	
+	@JsonProperty("FactorTypeId")
+	private String factorTypeId; 
+
 }

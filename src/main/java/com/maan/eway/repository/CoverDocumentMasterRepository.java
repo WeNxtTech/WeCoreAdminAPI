@@ -12,16 +12,13 @@
 
 package com.maan.eway.repository;
 
-import java.math.BigDecimal;
-
-import com.maan.eway.bean.DocumentMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import com.maan.eway.bean.DocumentMasterId;
-import com.maan.eway.bean.ProductDocumentMaster;
-import com.maan.eway.bean.ProductDocumentMasterId;
+
+import com.maan.eway.bean.CoverDocumentMaster;
+import com.maan.eway.bean.CoverDocumentMasterId;
 
  
-public interface ProductDocumentMasterRepository  extends JpaRepository<ProductDocumentMaster,ProductDocumentMasterId > , JpaSpecificationExecutor<ProductDocumentMaster> {
+public interface CoverDocumentMasterRepository  extends JpaRepository<CoverDocumentMaster,CoverDocumentMasterId > , JpaSpecificationExecutor<CoverDocumentMaster> {
 
 }

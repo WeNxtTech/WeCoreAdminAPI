@@ -37,9 +37,6 @@ public class CoverSubCoverMasterSaveReq {
 	@JsonProperty("SubCoverName")
 	private String subCoverName;
 	
-	@JsonProperty("CoverName")
-	private String CoverName;
-
 	@JsonProperty("SubCoverDesc")
 	private String subCoverDesc;
 	

@@ -64,6 +64,4 @@ public class CoverSubCoverGetRes {
 		@JsonProperty("Remarks")
 		private String remarks;
 		
-	    @JsonProperty("SectionName")
-	    private String   sectionName;
 }

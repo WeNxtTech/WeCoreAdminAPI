@@ -181,8 +181,6 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 					ProductMaster lastRecord = list.get(0) ;
 					lastRecord.setEffectiveDateEnd(oldEndDate);
 					repo.saveAndFlush(lastRecord);
-					
-					
 				}
 				
 				log.info("Saved Details is ---> " + json.toJson(saveData));
@@ -252,7 +250,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date End  is After Effective Date Start"));
 			} 
 			//Status Validation
-		/*	if (StringUtils.isBlank(req.getStatus())) {
+			if (StringUtils.isBlank(req.getStatus())) {
 				errorList.add(new Error("05", "Status", "Please Enter Status"));
 			} else if (req.getStatus().length() > 1) {
 				errorList.add(new Error("05", "Status", "Enter Status 1 Character Only"));
@@ -260,7 +258,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 				errorList.add(new Error("05", "Status", "Enter Status Y or N Only"));
 			}
 			
-			if (StringUtils.isBlank(req.getPaymentYn())) {
+		/*	if (StringUtils.isBlank(req.getPaymentYn())) {
 				errorList.add(new Error("06", "Payment", "Please Select Payment Type"));
 			} else if (req.getPaymentYn().length() > 1) {
 				errorList.add(new Error("06", "Payment", "Enter Payment Type 1 Character Only"));
@@ -513,9 +511,6 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 	public ProductMasterRes getByProductCode(ProductMasterGetReq req) {
 		ProductMasterRes res = new ProductMasterRes();
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
-
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-	
 		try {
 			Date today  = new Date();
 			Calendar cal = new GregorianCalendar(); 

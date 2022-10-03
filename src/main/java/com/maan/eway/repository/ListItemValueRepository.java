@@ -38,4 +38,6 @@ public interface ListItemValueRepository  extends JpaRepository<ListItemValue,Do
 
 	List<ListItemValue> findByItemTypeAndStatus(String string, String string2);
 
+	List<ListItemValue> findByItemTypeAndStatusOrderByItemIdAsc(String string, String string2);
+
 }

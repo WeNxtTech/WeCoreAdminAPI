@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class ProductDocumentMasterGetRes implements Serializable {
+public class CoverDocumentMasterGetRes implements Serializable {
 
     private static final long serialVersionUID = 1L;
   

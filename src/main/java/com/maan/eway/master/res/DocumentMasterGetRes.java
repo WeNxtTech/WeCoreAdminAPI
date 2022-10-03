@@ -15,8 +15,11 @@ public class DocumentMasterGetRes implements Serializable {
     @JsonProperty("DocumentId")
 	private String documentId;
 
-	@JsonProperty("DocumentDescr")
-	private String documentDescr;
+    @JsonProperty("DocumentName")
+	private String documentName;
+
+	@JsonProperty("DocumentDesc")
+	private String documentDesc;
 
 	@JsonProperty("DocApplicableId")
 	private String docApplicableId;
@@ -31,7 +34,7 @@ public class DocumentMasterGetRes implements Serializable {
 	private String remarks;
 
 	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDate")
+	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
 
 	@JsonProperty("CoreAppCode")

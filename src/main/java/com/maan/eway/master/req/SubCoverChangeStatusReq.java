@@ -7,6 +7,9 @@ import lombok.Data;
 @Data
 public class SubCoverChangeStatusReq {
 
+	 @JsonProperty("CoverId")
+	 private String coverId;
+	
 	 @JsonProperty("SubCoverId")
 	 private String subCoverId;
 	 

@@ -72,8 +72,8 @@ public class MenuMasterServiceImpl implements MenuMasterService{
 			
 			
 			TypedQuery<MenuMaster> query = em.createQuery(criteriaQuery);
-			List<MenuMaster> adminMenulist = query.getResultList();
-			List<MenuMaster> otherMenulist = query.getResultList();
+			List<MenuMaster> adminMenulist = new ArrayList<MenuMaster>();
+			List<MenuMaster> otherMenulist = new ArrayList<MenuMaster>();
 			
 			if(req.getSubUserType().equalsIgnoreCase("both")    ) {	
 				criteriaQuery.where(p1,p2,p3).orderBy(orderList);	

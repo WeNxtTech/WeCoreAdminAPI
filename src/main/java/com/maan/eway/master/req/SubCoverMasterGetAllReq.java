@@ -18,6 +18,9 @@ public class SubCoverMasterGetAllReq implements Serializable {
     
     @JsonProperty("Offset")
     private String offset;
+    
+    @JsonProperty("CoverId")
+    private String coverId;
    
 
 }

@@ -1,6 +1,7 @@
 package com.maan.eway.master.req;
 
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,8 +9,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class SectionCoverMasterSaveReq {
-
+public class SectionCoverUpdateReq {
+	
 	@JsonProperty("CoverId")
 	private String coverId;
 	
@@ -47,7 +48,6 @@ public class SectionCoverMasterSaveReq {
 	@JsonProperty("ToolTip")
 	private String toolTip;  
 
-
 	@JsonProperty("TiraCode")
 	private String tiraCode;
 
@@ -59,5 +59,35 @@ public class SectionCoverMasterSaveReq {
 	private Date effectiveDateEnd;
 	
 	
+	// Rating Master Insert 
+	@JsonProperty("CoverageType")
+	private String coverageType;
 	
+	@JsonProperty("CoverageLimit")
+	private String coverageLimit;
+	
+	@JsonProperty("Excess")
+	private String excess;
+	
+	@JsonProperty("CalcType")
+	private String calcType;
+	
+	@JsonProperty("BaseRate")
+	private String baseRate;
+	
+	@JsonProperty("SumInsuredStart")
+	private String sumInsuredStart;
+	
+	@JsonProperty("SumInsuredEnd")
+	private String sumInsuredEnd;
+	
+	@JsonProperty("MinimumPremium")
+	private String minimumPremium;
+	
+	@JsonProperty("FactorTypeId")
+	private String factorTypeId;
+	
+	@JsonProperty("GridDetails")
+	private List<OfsGridSaveReq> gridDetails;
+
 }

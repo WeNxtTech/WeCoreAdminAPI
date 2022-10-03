@@ -55,7 +55,7 @@ import java.util.List;
 */
 @RestController
 @RequestMapping("/master")
-@Api(tags = "MASTER : Document Master ", description = "API's")
+@Api(tags = "1. GLOBAL CONFIG : Document Master ", description = "API's")
 public class DocumentMasterController {
 
 	@Autowired

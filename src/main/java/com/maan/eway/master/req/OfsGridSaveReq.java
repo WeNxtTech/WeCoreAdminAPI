@@ -16,17 +16,17 @@ public class OfsGridSaveReq implements Serializable {
 	@JsonProperty("CalcType")
 	private String calcType;
 	
-	@JsonProperty("MaxSuminsured")
-	private String maxSuminsured;
-	
-	@JsonProperty("MinSuminsured")
-	private String minSuminsured;
-	
 	@JsonProperty("BaseRate")
 	private String baseRate;
 	
-	@JsonProperty("MinPremium")
-	private String minPremium;
+	@JsonProperty("SumInsuredStart")
+	private String sumInsuredStart;
+	
+	@JsonProperty("SumInsuredEnd")
+	private String sumInsuredEnd;
+	
+	@JsonProperty("MinimumPremium")
+	private String minimumPremium;
 
 
 	

@@ -23,7 +23,11 @@ import com.maan.eway.master.req.SectionCoverMasterGetAllReq;
 import com.maan.eway.master.req.SectionCoverMasterGetReq;
 import com.maan.eway.master.req.SectionCoverMasterNonSelectedReq;
 import com.maan.eway.master.req.SectionCoverMasterSaveReq;
+import com.maan.eway.master.req.SectionCoverUpdateReq;
+import com.maan.eway.master.res.CoverMasterGetAllRes;
 import com.maan.eway.master.res.CoverMasterRes;
+import com.maan.eway.master.res.SectionCoverMasterGetAllRes;
+import com.maan.eway.master.res.SectionCoverMasterRes;
 import com.maan.eway.master.service.SectionCoverMasterService;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
@@ -82,6 +86,41 @@ public class SectionCoverMasterController {
 
 		}
 		
+		
+		@PostMapping("/updatesectioncover")
+		@ApiOperation(value = "This method is Update Section  Cover Details")
+		public ResponseEntity<CommonRes> updateSectionCover(@RequestBody SectionCoverUpdateReq req) {
+
+			reqPrinter.reqPrint(req);
+			CommonRes data = new CommonRes();
+
+			List<Error> validation = sectionCoverService.validateUpdatingSectionCove(req);
+			// validation
+			if (validation != null && validation.size() != 0) {
+				data.setCommonResponse(null);
+				data.setIsError(true);
+				data.setErrorMessage(validation);
+				data.setMessage("Failed");
+				return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+			} else {
+
+				// Save
+				SuccessRes res = sectionCoverService.updateectionCover(req);
+				data.setCommonResponse(res);
+				data.setIsError(false);
+				data.setErrorMessage(Collections.emptyList());
+				data.setMessage("Success");
+
+				if (res != null) {
+					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				} else {
+					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				}
+			}
+
+		}
+		
 		//  Get All Cover Master
 		
 		@PostMapping("/getallsectioncoverdetails")
@@ -91,7 +130,7 @@ public class SectionCoverMasterController {
 			CommonRes data = new CommonRes();
 			reqPrinter.reqPrint(req);
 			
-			List<CoverMasterRes> res = sectionCoverService.getallSectionCoverDetails(req);
+			List<SectionCoverMasterGetAllRes> res = sectionCoverService.getallSectionCoverDetails(req);
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);
@@ -114,7 +153,7 @@ public class SectionCoverMasterController {
 				CommonRes data = new CommonRes();
 				reqPrinter.reqPrint(req);
 				
-				List<CoverMasterRes> res = sectionCoverService.getActiveSectionCoverDetails(req);
+				List<SectionCoverMasterGetAllRes> res = sectionCoverService.getActiveSectionCoverDetails(req);
 				data.setCommonResponse(res);
 				data.setErrorMessage(Collections.emptyList());
 				data.setIsError(false);
@@ -135,7 +174,7 @@ public class SectionCoverMasterController {
 		public ResponseEntity<CommonRes> getBySectionCoverId(@RequestBody SectionCoverMasterGetReq req)
 		{
 		CommonRes data = new CommonRes();
-		CoverMasterRes res = sectionCoverService.getBySectionCoverId(req);
+		SectionCoverMasterRes res = sectionCoverService.getBySectionCoverId(req);
 		data.setCommonResponse(res);
 		data.setErrorMessage(Collections.emptyList());
 		data.setIsError(false);
@@ -158,7 +197,7 @@ public class SectionCoverMasterController {
 			CommonRes data = new CommonRes();
 			reqPrinter.reqPrint(req);
 			
-			List<CoverMasterRes> res = sectionCoverService.getallNonSelectedCovers(req);
+			List<CoverMasterGetAllRes> res = sectionCoverService.getallNonSelectedCovers(req);
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);
@@ -195,7 +234,7 @@ public class SectionCoverMasterController {
 		}
 
 		
-		@PostMapping("sectioncover/changestatus")
+		@PostMapping("/sectioncover/changestatus")
 		@ApiOperation(value="This method is to get product referal Master")
 		public ResponseEntity<CommonRes> changestatusofSectionCover(@RequestBody SectionCoverChangeStatusReq req){
 			CommonRes data = new CommonRes();

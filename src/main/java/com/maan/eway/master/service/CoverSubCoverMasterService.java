@@ -15,6 +15,7 @@ import com.maan.eway.master.req.CoverSubCoverMasterSaveReq;
 import com.maan.eway.master.req.SubCoverGetAllReq;
 import com.maan.eway.master.req.SubCoverMasterGetAllReq;
 import com.maan.eway.master.req.SubCoverMasterGetReq;
+import com.maan.eway.master.req.SubCoverUpdatedReq;
 import com.maan.eway.master.res.CoverMasterRes;
 import com.maan.eway.master.res.CoverSubCoverGetRes;
 import com.maan.eway.master.res.SubCoverMasterGetAllRes;
@@ -39,6 +40,10 @@ public interface CoverSubCoverMasterService  {
 	List<CoverSubCoverGetRes> getActiveCoverSubCoverDetails(CoverSubCoverMasterGetAllReq req);
 
 	SuccessRes changeStatusOfCoverSubCover(CoverSubCoverChangeStatusReq req);
+
+	List<Error> validateUpdatingSubCover(SubCoverUpdatedReq req);
+
+	SuccessRes updateSubCover(SubCoverUpdatedReq req);
 
 
 }

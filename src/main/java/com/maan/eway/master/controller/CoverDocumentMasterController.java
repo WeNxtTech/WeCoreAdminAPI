@@ -5,55 +5,31 @@
 */
 package com.maan.eway.master.controller;
 
-import com.maan.eway.bean.SectionMaster;
-import com.maan.eway.error.Error;
-import com.maan.eway.master.req.CoverMasterGetAllReq;
-import com.maan.eway.master.req.DocumentChangeStatusReq;
-import com.maan.eway.master.req.DocumentMasterGetAllReq;
-import com.maan.eway.master.req.DocumentMasterGetReq;
-import com.maan.eway.master.req.DocumentMasterSaveReq;
-import com.maan.eway.master.req.ProductDocumentChangeStatusReq;
-import com.maan.eway.master.req.ProductDocumentMasterGetAllReq;
-import com.maan.eway.master.req.ProductDocumentMasterGetReq;
-import com.maan.eway.master.req.ProductDocumentMasterSaveReq;
-import com.maan.eway.master.req.ProductSectionsGetReq;
-import com.maan.eway.master.req.SectionMasterGetAllReq;
-import com.maan.eway.master.req.SectionMasterGetReq;
-import com.maan.eway.master.req.SectionMasterSaveReq;
-import com.maan.eway.master.req.SubCoverMasterGetReq;
-import com.maan.eway.master.req.SubCoverMasterSaveReq;
-import com.maan.eway.master.res.CoverMasterRes;
-import com.maan.eway.master.res.DocumentMasterGetRes;
-import com.maan.eway.master.res.ProductDocumentMasterGetRes;
-import com.maan.eway.master.res.ProductSectionGetRes;
-import com.maan.eway.master.res.SectionMasterRes;
-import com.maan.eway.master.res.SubCoverMasterGetAllRes;
-import com.maan.eway.master.res.SubCoverMasterGetRes;
-import com.maan.eway.master.service.DocumentMasterService;
-import com.maan.eway.master.service.ProductDocumentMasterService;
-import com.maan.eway.master.service.SectionMasterService;
-import com.maan.eway.master.service.SubCoverMasterService;
-import com.maan.eway.res.CommonRes;
-import com.maan.eway.res.SuccessRes;
-import com.maan.eway.service.PrintReqService;
-import com.maan.eway.service.impl.BasicValidationService;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import java.util.Collections;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import com.maan.eway.error.Error;
+import com.maan.eway.master.req.CoverDocumentChangeStatusReq;
+import com.maan.eway.master.req.CoverDocumentMasterGetAllReq;
+import com.maan.eway.master.req.CoverDocumentMasterGetReq;
+import com.maan.eway.master.req.CoverDocumentMasterSaveReq;
+import com.maan.eway.master.res.CoverDocumentMasterGetRes;
+import com.maan.eway.master.res.DocumentMasterGetRes;
+import com.maan.eway.master.service.CoverDocumentMasterService;
+import com.maan.eway.res.CommonRes;
+import com.maan.eway.res.SuccessRes;
+import com.maan.eway.service.PrintReqService;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 
 /**
@@ -61,21 +37,20 @@ import java.util.List;
 */
 @RestController
 @RequestMapping("/master")
-@Api(tags = "MASTER : Document Master ", description = "API's")
-public class ProductDocumentMasterController {
+@Api(tags = "2. COMPANY CONFIG : Cover Document Master ", description = "API's")
+public class CoverDocumentMasterController {
 
 	@Autowired
-	private  ProductDocumentMasterService documentservice;
+	private  CoverDocumentMasterService documentservice;
 
 	@Autowired
 	private  PrintReqService reqPrinter;
 	
 	
 	// save
-		@PostMapping("/insertproductdocument")
-		@ApiOperation(value = "This method is Insert Product Document Master")
-		public ResponseEntity<CommonRes> insertDocument(@RequestBody List<ProductDocumentMasterSaveReq> reqList) {
-
+		@PostMapping("/insertcoverdocument")
+		@ApiOperation(value = "This method is Insert Cover Document Master")
+		public ResponseEntity<CommonRes> insertDocument(@RequestBody List<CoverDocumentMasterSaveReq> reqList) {
 			reqPrinter.reqPrint(reqList);
 			CommonRes data = new CommonRes();
 			List<Error> validation = documentservice.validateDocument(reqList);
@@ -88,7 +63,6 @@ public class ProductDocumentMasterController {
 				return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
 
 			} else {
-
 				// Get All
 				SuccessRes res = documentservice.insertDocument(reqList);
 				data.setCommonResponse(res);
@@ -105,15 +79,14 @@ public class ProductDocumentMasterController {
 
 		}
 		
-		//  Get All Section Master
-		
-		@PostMapping("/getallproductdocuments")
+		//  Get All Section Master	
+		@PostMapping("/getallcoverdocuments")
 		@ApiOperation("This method is getall Product Documents")
-		public ResponseEntity<CommonRes> getallDocuments(@RequestBody ProductDocumentMasterGetAllReq req)
+		public ResponseEntity<CommonRes> getallDocuments(@RequestBody CoverDocumentMasterGetAllReq req)
 		{
 			CommonRes data = new CommonRes();
 			
-			List<ProductDocumentMasterGetRes> res =documentservice.getallDocuments(req);
+			List<CoverDocumentMasterGetRes> res =documentservice.getallDocuments(req);
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);
@@ -126,14 +99,14 @@ public class ProductDocumentMasterController {
 				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
 			}
 		}
-		// Get By Document Id
 		
-		@PostMapping("/getbyproductdocument")
+		// Get By Document Id
+		@PostMapping("/getbycoverdocument")
 		@ApiOperation("This Method is to get by Product Document Id")
-		public ResponseEntity<CommonRes> getByDocumentId(@RequestBody ProductDocumentMasterGetReq req)
+		public ResponseEntity<CommonRes> getByDocumentId(@RequestBody CoverDocumentMasterGetReq req)
 		{
 		CommonRes data = new CommonRes();
-		ProductDocumentMasterGetRes res = documentservice.getByDocumentId(req);
+		CoverDocumentMasterGetRes res = documentservice.getByDocumentId(req);
 		data.setCommonResponse(res);
 		data.setErrorMessage(Collections.emptyList());
 		data.setIsError(false);
@@ -148,14 +121,13 @@ public class ProductDocumentMasterController {
 	}
 
 		
-		// Get By Active Status
-		
-		@PostMapping("/getactiveproductdocument")
+		// Get By Active Status	
+		@PostMapping("/getactivecoverdocument")
 		@ApiOperation("This Method is to Get Active Product Documents")
-		public ResponseEntity<CommonRes> getActiveDocument(@RequestBody ProductDocumentMasterGetAllReq req)
+		public ResponseEntity<CommonRes> getActiveDocument(@RequestBody CoverDocumentMasterGetAllReq req)
 		{
 			CommonRes data = new CommonRes();
-			List<ProductDocumentMasterGetRes> res = documentservice.getActiveDocument(req);
+			List<CoverDocumentMasterGetRes> res = documentservice.getActiveDocument(req);
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);
@@ -170,14 +142,14 @@ public class ProductDocumentMasterController {
 		}
 
 		
-		@PostMapping("/getallnonselectedproductdocuments")
-		@ApiOperation("This method is getall Product Document Details")
-		public ResponseEntity<CommonRes> getallNonSelectedProductDocument(@RequestBody ProductDocumentMasterGetAllReq req)
+		@PostMapping("/getallnonselectedcoverdocuments")
+		@ApiOperation("This method is getall Cover Document Details")
+		public ResponseEntity<CommonRes> getallNonSelectedProductDocument(@RequestBody CoverDocumentMasterGetAllReq req)
 		{
 			CommonRes data = new CommonRes();
 			reqPrinter.reqPrint(req);
 			
-			List<ProductDocumentMasterGetRes> res = documentservice.getallNonSelectedProductDocument(req);
+			List<DocumentMasterGetRes> res = documentservice.getallNonSelectedCoverDocument(req);
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);
@@ -191,9 +163,9 @@ public class ProductDocumentMasterController {
 			}
 		}
 
-		@PostMapping("/productdocument/changestatus")
+		@PostMapping("/coverdocument/changestatus")
 		@ApiOperation(value = "This method is  Change Status of Documents")
-		public ResponseEntity<CommonRes> changeStatusOfDocument(@RequestBody ProductDocumentChangeStatusReq req) {
+		public ResponseEntity<CommonRes> changeStatusOfDocument(@RequestBody CoverDocumentChangeStatusReq req) {
 
 			CommonRes data = new CommonRes();
 			// Change Status

@@ -70,5 +70,8 @@ public class SectionCoverCriteriaRes {
 
 	    @JsonProperty("CreatedBy")
 	    private String  createdBy;
+	    
+	    @JsonProperty("SectionName")
+	    private String  sectionName;
 
 }

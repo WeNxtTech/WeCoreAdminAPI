@@ -5,35 +5,34 @@
 */
 package com.maan.eway.master.controller;
 
-import com.maan.eway.bean.CoverMaster;
-import com.maan.eway.error.Error;
-import com.maan.eway.master.req.CoverChangeStatusReq;
-import com.maan.eway.master.req.CoverMasterGetAllReq;
-import com.maan.eway.master.req.CoverMasterGetReq;
-import com.maan.eway.master.req.CoverMasterSaveReq;
-import com.maan.eway.master.req.CoverMasterSaveReqA;
-import com.maan.eway.master.req.ProductChangeStatusReq;
-import com.maan.eway.master.res.CoverMasterRes;
-import com.maan.eway.master.service.CoverMasterService;
-import com.maan.eway.res.CommonRes;
-import com.maan.eway.res.SuccessRes;
-import com.maan.eway.service.PrintReqService;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import java.util.Collections;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
-import java.util.List;
+import com.maan.eway.error.Error;
+import com.maan.eway.master.req.CoverChangeStatusReq;
+import com.maan.eway.master.req.CoverMasterGetAllReq;
+import com.maan.eway.master.req.CoverMasterGetReq;
+import com.maan.eway.master.req.CoverMasterSaveReq;
+import com.maan.eway.master.req.SectionCoverMasterGetReq;
+import com.maan.eway.master.res.CoverMasterGetAllRes;
+import com.maan.eway.master.res.CoverMasterRes;
+import com.maan.eway.master.service.CoverMasterService;
+import com.maan.eway.res.CommonRes;
+import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.SuccessRes;
+import com.maan.eway.service.PrintReqService;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 
 /**
@@ -41,7 +40,7 @@ import java.util.List;
 */
 @RestController
 @RequestMapping("/master")
-@Api(tags = "MASTER : Cover Master ", description = "API's")
+@Api(tags = "1. GLOBAL CONFIG : Cover Master ", description = "API's")
 public class CoverMasterController {
 
 	@Autowired
@@ -52,7 +51,7 @@ public class CoverMasterController {
 	// save
 		@PostMapping("/insertcover")
 		@ApiOperation(value = "This method is Insert Cover Details")
-		public ResponseEntity<CommonRes> insertCover(@RequestBody CoverMasterSaveReqA req) {
+		public ResponseEntity<CommonRes> insertCover(@RequestBody CoverMasterSaveReq req) {
 
 			reqPrinter.reqPrint(req);
 			CommonRes data = new CommonRes();
@@ -93,7 +92,7 @@ public class CoverMasterController {
 			CommonRes data = new CommonRes();
 			reqPrinter.reqPrint(req);
 			
-			List<CoverMasterRes> res = coverService.getallCoverDetails(req);
+			List<CoverMasterGetAllRes> res = coverService.getallCoverDetails(req);
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);
@@ -116,7 +115,7 @@ public class CoverMasterController {
 				CommonRes data = new CommonRes();
 				reqPrinter.reqPrint(req);
 				
-				List<CoverMasterRes> res = coverService.getActiveCoverDetails(req);
+				List<CoverMasterGetAllRes> res = coverService.getActiveCoverDetails(req);
 				data.setCommonResponse(res);
 				data.setErrorMessage(Collections.emptyList());
 				data.setIsError(false);
@@ -158,6 +157,28 @@ public class CoverMasterController {
 			CommonRes data = new CommonRes();
 			// Change Status
 			SuccessRes res = coverService.changeStatusOfProduct(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+
+		}
+		
+		@GetMapping("/dropdown/cover")
+		@ApiOperation(value = "This method is get Section Cover Master Drop Down")
+
+		public ResponseEntity<CommonRes> getCoverMasterDropdown() {
+
+			CommonRes data = new CommonRes();
+
+			// Save
+			List<DropDownRes> res = coverService.getCoverMasterDropdown();
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());

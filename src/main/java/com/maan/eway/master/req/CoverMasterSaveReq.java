@@ -27,17 +27,13 @@ public class CoverMasterSaveReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    // Cover Request
+    
 	@JsonProperty("CoverId")
 	private String coverId;
 	
-	@JsonProperty("ProductId")
-	private String productId;
-	
-	@JsonProperty("SectionId")
-	private String sectionId;
-	
 	@JsonFormat(pattern="dd/MM/yyyy")
-	@JsonProperty("EffectiveDate")
+	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
 
 	@JsonProperty("CoverName")
@@ -58,38 +54,50 @@ public class CoverMasterSaveReq implements Serializable {
 	@JsonProperty("CreatedBy")
 	private String createdBy; 
 	
-	
-	//Rating Cover 
+	@JsonProperty("ToolTip")
+	private String toolTip;  
 
-	@JsonProperty("RatingId")
-	 private String    ratingId ;
-	
-	@JsonProperty("Excess")
-	private String excess;
-	
-	@JsonProperty("CalcYn")
-	private String calcYn;
+	@JsonProperty("TiraCode")
+	private String tiraCode;
 
+	@JsonProperty("SubCoverYn")
+	private String subCoverYn;
+	
+	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("EffectiveDateEnd")
+	private Date effectiveDateEnd;
+	
+	
+	// Rating Master Insert 
 	@JsonProperty("CoverageType")
 	private String coverageType;
-	
-	@JsonProperty("UploadOption")
-	private String uploadOption;
 	
 	@JsonProperty("CoverageLimit")
 	private String coverageLimit;
 	
+	@JsonProperty("Excess")
+	private String excess;
+	
 	@JsonProperty("CalcType")
 	private String calcType;
 	
-	@JsonProperty("CalcStatus")
-	private String calcStatus;
+	@JsonProperty("BaseRate")
+	private String baseRate;
 	
-	//Ofs Grid
-	@JsonProperty("OfsGridList")
-	private List <OfsGridSaveReq> ofsGridList;
+	@JsonProperty("SumInsuredStart")
+	private String sumInsuredStart;
+	
+	@JsonProperty("SumInsuredEnd")
+	private String sumInsuredEnd;
+	
+	@JsonProperty("MinimumPremium")
+	private String minimumPremium;
+	
+	@JsonProperty("FactorTypeId")
+	private String factorTypeId;
+	
+	@JsonProperty("GridDetails")
+	private List<OfsGridSaveReq> gridDetails;
 
-	@JsonProperty("ToolTip")
-	private String toolTip;  
-
+	
 }

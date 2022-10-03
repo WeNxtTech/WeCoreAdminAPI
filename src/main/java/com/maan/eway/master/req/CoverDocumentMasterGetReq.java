@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class ProductDocumentMasterGetReq {
+public class CoverDocumentMasterGetReq {
 
 	@JsonProperty("DocumentId")
 	private String documentId;
@@ -22,4 +22,7 @@ public class ProductDocumentMasterGetReq {
 
 	@JsonProperty("SectionId")
 	private String sectionId;
+	
+	@JsonProperty("CoverId")
+	private String coverId;
 }

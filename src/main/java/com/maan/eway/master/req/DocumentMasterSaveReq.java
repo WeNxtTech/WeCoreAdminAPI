@@ -13,14 +13,14 @@ public class DocumentMasterSaveReq {
 	@JsonProperty("DocumentId")
 	private String documentId;
 
-	@JsonProperty("DocumentDescr")
-	private String documentDescr;
+	@JsonProperty("DocumentName")
+	private String documentName;
+	
+	@JsonProperty("DocumentDesc")
+	private String documentDesc;
 
 	@JsonProperty("DocApplicableId")
 	private String docApplicableId;
-
-	@JsonProperty("DocApplicable")
-	private String docApplicable;
 
 	@JsonProperty("MandatoryStatus")
 	private String mandatoryStatus;

@@ -13,11 +13,14 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.maan.eway.bean.CoverMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import com.maan.eway.bean.CoverMasterId;
+import com.maan.eway.bean.SectionCoverOfsGridMaster;
+import com.maan.eway.bean.SectionCoverOfsGridMasterId;
 /**
  * <h2>CoverMasterRepository</h2>
  *
@@ -28,6 +31,8 @@ import com.maan.eway.bean.CoverMasterId;
  
  
  
-public interface CoverMasterRepository  extends JpaRepository<CoverMaster,CoverMasterId > , JpaSpecificationExecutor<CoverMaster> {
+public interface SectionCoverOfsGridMasterRepository  extends JpaRepository<SectionCoverOfsGridMaster,SectionCoverOfsGridMasterId > , JpaSpecificationExecutor<SectionCoverOfsGridMaster> {
+
+	List<SectionCoverOfsGridMaster> findByCompanyIdAndProductIdAndSectionIdAndCoverIdAndSubCoverIdOrderByCoveragesSubIdAsc(String companyId, Integer valueOf, Integer valueOf2, Integer coverId, Integer subCoverId);
 
 }

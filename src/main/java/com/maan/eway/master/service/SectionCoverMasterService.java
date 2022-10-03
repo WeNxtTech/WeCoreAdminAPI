@@ -14,7 +14,11 @@ import com.maan.eway.master.req.SectionCoverMasterGetAllReq;
 import com.maan.eway.master.req.SectionCoverMasterGetReq;
 import com.maan.eway.master.req.SectionCoverMasterNonSelectedReq;
 import com.maan.eway.master.req.SectionCoverMasterSaveReq;
+import com.maan.eway.master.req.SectionCoverUpdateReq;
+import com.maan.eway.master.res.CoverMasterGetAllRes;
 import com.maan.eway.master.res.CoverMasterRes;
+import com.maan.eway.master.res.SectionCoverMasterGetAllRes;
+import com.maan.eway.master.res.SectionCoverMasterRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 
@@ -28,18 +32,22 @@ public interface SectionCoverMasterService  {
 
 	SuccessRes insertSectionCover(List<SectionCoverMasterSaveReq> req);
 
-	List<CoverMasterRes> getallSectionCoverDetails(SectionCoverMasterGetAllReq req);
+	List<SectionCoverMasterGetAllRes> getallSectionCoverDetails(SectionCoverMasterGetAllReq req);
 
-	List<CoverMasterRes> getActiveSectionCoverDetails(SectionCoverMasterGetAllReq req);
+	List<SectionCoverMasterGetAllRes> getActiveSectionCoverDetails(SectionCoverMasterGetAllReq req);
 
-	CoverMasterRes getBySectionCoverId(SectionCoverMasterGetReq req);
+	SectionCoverMasterRes getBySectionCoverId(SectionCoverMasterGetReq req);
 
 	List<DropDownRes> getsectionCoverMasterDropdown(SectionCoverMasterGetReq req);
 
 
-	List<CoverMasterRes> getallNonSelectedCovers(SectionCoverMasterNonSelectedReq req);
+	List<CoverMasterGetAllRes> getallNonSelectedCovers(SectionCoverMasterNonSelectedReq req);
 
 	SuccessRes changestatusofSectionCover(SectionCoverChangeStatusReq req);
+
+	List<Error> validateUpdatingSectionCove(SectionCoverUpdateReq req);
+
+	SuccessRes updateectionCover(SectionCoverUpdateReq req);
 
 
 }

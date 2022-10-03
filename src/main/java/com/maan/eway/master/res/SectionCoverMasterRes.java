@@ -1,6 +1,5 @@
 package com.maan.eway.master.res;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -11,24 +10,34 @@ import com.maan.eway.master.req.OfsGridGetRes;
 import lombok.Data;
 
 @Data
-public class SubCoverMasterGetRes implements Serializable {
+public class SectionCoverMasterRes {
 
-    private static final long serialVersionUID = 1L;
-  
-    @JsonProperty("CoverId")
-    private String coverId;
-    
-    @JsonProperty("SubCoverId")
-    private String subCoverId;
-    
-    @JsonProperty("SubCoverName")
-    private String subCoverName;
-    
+	@JsonProperty("CoverId")
+	private String coverId;
+	
+	@JsonProperty("SectionId")
+	private String sectionId;
+	
+	@JsonProperty("ProductId")
+	private String productId;
+	
+	@JsonProperty("InsuranceId")
+	private String companyId;
 
-    @JsonProperty("SubCoverDesc")
-    private String subCoverDesc;
-    
-    @JsonProperty("Status")
+	@JsonProperty("SectionName")
+	private String sectionName;
+	
+	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
+
+	@JsonProperty("CoverName")
+	private String coverName;
+	
+	@JsonProperty("CoverDesc")
+	private String coverDesc;
+	
+	@JsonProperty("Status")
 	private String status;
 
 	@JsonProperty("CoreAppCode")
@@ -45,10 +54,6 @@ public class SubCoverMasterGetRes implements Serializable {
 
 	@JsonProperty("TiraCode")
 	private String tiraCode;
-	
-	@JsonFormat(pattern="dd/MM/yyyy")
-	@JsonProperty("EffectiveDateStart")
-	private Date effectiveDateStart;
 
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateEnd")
@@ -91,6 +96,4 @@ public class SubCoverMasterGetRes implements Serializable {
 	
 	@JsonProperty("GridDetails")
 	private List<OfsGridGetRes> gridDetails;
-
-	
 }

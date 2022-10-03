@@ -11,13 +11,14 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.util.Date;
-
-
+import java.util.List;
 import java.util.Date;
 import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.maan.eway.master.req.OfsGridGetRes;
+import com.maan.eway.master.req.OfsGridSaveReq;
 
 
 
@@ -39,47 +40,76 @@ public class CoverMasterRes implements Serializable {
     private static final long serialVersionUID = 1L;
 
 	@JsonProperty("CoverId")
-	private Integer coverId;
+	private String coverId;
 	
+	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
+
 	@JsonProperty("CoverName")
 	private String coverName;
 	
 	@JsonProperty("CoverDesc")
 	private String coverDesc;
 	
-	@JsonFormat(pattern="dd/MM/yyyy")
-	@JsonProperty("EntryDate")
-	private Date entryDate;
-
 	@JsonProperty("Status")
 	private String status;
-	
-	@JsonFormat(pattern="dd/MM/yyyy")
-	@JsonProperty("EffectiveDateStart")
-	private Date effectiveDateStart;
-	
-	@JsonFormat(pattern="dd/MM/yyyy")
-	@JsonProperty("EffectiveDateEnd")
-	private Date effectiveDateEnd;
-	
+
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
 
-	@JsonProperty("AmendId")
-	private String amendId;
-
 	@JsonProperty("Remarks")
-	private String remarks;
+	private String remarks; 
+	
+	@JsonProperty("CreatedBy")
+	private String createdBy; 
 	
 	@JsonProperty("ToolTip")
 	private String toolTip;  
 
-	@JsonProperty("CreatedBy")
-	private String createdBy;
-	
 	@JsonProperty("TiraCode")
-	private String tiraCode;  
+	private String tiraCode;
 
+	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("EffectiveDateEnd")
+	private Date effectiveDateEnd;
+	
+	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("EntryDate")
+	private Date entryDate;
+	
+	// Rating Master Insert 
+	@JsonProperty("CoverageType")
+	private String coverageType;
+	
+	@JsonProperty("CoverageLimit")
+	private String coverageLimit;
+	
+	@JsonProperty("Excess")
+	private String excess;
+	
+	@JsonProperty("CalcType")
+	private String calcType;
+	
+	@JsonProperty("BaseRate")
+	private String baseRate;
+	
+	@JsonProperty("SumInsuredEnd")
+	private String sumInsuredEnd;
+	
+	@JsonProperty("MinimumPremium")
+	private String minimumPremium;
+	
+	@JsonProperty("FactorTypeId")
+	private String factorTypeId; 
 
+	@JsonProperty("SubCoverYn")
+	private String subCoverYn;
+	
+	@JsonProperty("AmendId")
+	private String amendId;
+	
+	@JsonProperty("GridDetails")
+	private List<OfsGridGetRes> gridDetails;
 
 }

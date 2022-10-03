@@ -22,9 +22,11 @@ import com.maan.eway.master.req.CoverSubCoverChangeStatusReq;
 import com.maan.eway.master.req.CoverSubCoverMasterGetAllReq;
 import com.maan.eway.master.req.CoverSubCoverMasterGetReq;
 import com.maan.eway.master.req.CoverSubCoverMasterSaveReq;
+import com.maan.eway.master.req.SectionCoverUpdateReq;
 import com.maan.eway.master.req.SubCoverGetAllReq;
 import com.maan.eway.master.req.SubCoverMasterGetAllReq;
 import com.maan.eway.master.req.SubCoverMasterGetReq;
+import com.maan.eway.master.req.SubCoverUpdatedReq;
 import com.maan.eway.master.res.CoverMasterRes;
 import com.maan.eway.master.res.CoverSubCoverGetRes;
 import com.maan.eway.master.res.SubCoverMasterGetAllRes;
@@ -191,5 +193,39 @@ public class CoverSubCoverMasterController {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
 
-		} 
+		}
+		
+		@PostMapping("/updatecoversubcover")
+		@ApiOperation(value = "This method is Update Section  Cover Details")
+		public ResponseEntity<CommonRes> updateSectionCover(@RequestBody SubCoverUpdatedReq req) {
+
+			reqPrinter.reqPrint(req);
+			CommonRes data = new CommonRes();
+
+			List<Error> validation = service.validateUpdatingSubCover(req);
+			// validation
+			if (validation != null && validation.size() != 0) {
+				data.setCommonResponse(null);
+				data.setIsError(true);
+				data.setErrorMessage(validation);
+				data.setMessage("Failed");
+				return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+			} else {
+
+				// Save
+				SuccessRes res = service.updateSubCover(req);
+				data.setCommonResponse(res);
+				data.setIsError(false);
+				data.setErrorMessage(Collections.emptyList());
+				data.setMessage("Success");
+
+				if (res != null) {
+					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				} else {
+					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				}
+			}
+
+		}
 }

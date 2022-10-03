@@ -66,7 +66,7 @@ public class BrokerPersonalDetailsGetRes {
     private String    approvedPreparedBy ;
     
     @JsonProperty("CoreAppBrokerCode")
-    private String    CoreAppBrokerCode ;
+    private String    coreAppBrokerCode ;
     
     @JsonProperty("AcExecutiveId")
     private String    acExecutiveId ;

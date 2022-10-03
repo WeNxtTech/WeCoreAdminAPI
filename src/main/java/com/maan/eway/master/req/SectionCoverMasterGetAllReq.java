@@ -15,7 +15,9 @@ public class SectionCoverMasterGetAllReq implements Serializable {
     
     @JsonProperty("ProductId")
     private String productId;
-  
+    
+    @JsonProperty("SectionId")
+    private String sectionId;
 
     @JsonProperty("Limit")
     private String limit;

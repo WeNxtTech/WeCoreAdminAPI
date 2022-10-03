@@ -37,7 +37,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.InsuranceCompanyMaster;
-import com.maan.eway.bean.SubCoverMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CompanyChangeStatusReq;
 import com.maan.eway.master.req.CompanyDropDownReq;

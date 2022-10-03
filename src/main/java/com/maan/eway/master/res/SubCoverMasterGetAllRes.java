@@ -14,8 +14,11 @@ public class SubCoverMasterGetAllRes implements Serializable {
     private static final long serialVersionUID = 1L;
   
 
+    @JsonProperty("CoverId")
+    private String coverId;
+    
     @JsonProperty("SubCoverId")
-    private Integer subCoverId;
+    private String subCoverId;
   
     @JsonProperty("SubCoverName")
     private String subCoverName;

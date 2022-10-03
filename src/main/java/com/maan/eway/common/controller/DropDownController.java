@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.service.DropDownService;
+import com.maan.eway.master.req.CityDropDownReq;
+import com.maan.eway.master.req.RegionDropDownReq;
+import com.maan.eway.master.req.StateDropDownReq;
 import com.maan.eway.req.SubUserTypeReq;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
@@ -27,10 +30,8 @@ import io.swagger.annotations.ApiOperation;
 public class DropDownController {
 
 	@Autowired
-	private  DropDownService dropDownService;
-	
+	private DropDownService dropDownService;
 
-	
 	@GetMapping("/covernotetype")
 	@ApiOperation(value = "This method is to Cover Note Drop Down")
 	public ResponseEntity<CommonRes> coverNoteType() {
@@ -48,9 +49,8 @@ public class DropDownController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 
-}
+	}
 
-	
 	@GetMapping("/paymentmode")
 	@ApiOperation(value = "This method is to Payment Mode Drop Down")
 	public ResponseEntity<CommonRes> paymentmode() {
@@ -69,170 +69,251 @@ public class DropDownController {
 		}
 	}
 
-		@GetMapping("/endorsementtype")
-		@ApiOperation(value = "This method is to Endorsement Type Drop Down")
-		public ResponseEntity<CommonRes> endorsementtype() {
-			CommonRes data = new CommonRes();
+	@GetMapping("/endorsementtype")
+	@ApiOperation(value = "This method is to Endorsement Type Drop Down")
+	public ResponseEntity<CommonRes> endorsementtype() {
+		CommonRes data = new CommonRes();
 
-			List<DropDownRes> res = dropDownService.endorsementtype();
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
+		List<DropDownRes> res = dropDownService.endorsementtype();
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
 
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
-}
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 
-		
-		@GetMapping("/discounttypeoffered")
-		@ApiOperation(value = "This method is to Discount Type Offered Drop Down")
-		public ResponseEntity<CommonRes> discounttypeoffered() {
-			CommonRes data = new CommonRes();
+	@GetMapping("/discounttypeoffered")
+	@ApiOperation(value = "This method is to Discount Type Offered Drop Down")
+	public ResponseEntity<CommonRes> discounttypeoffered() {
+		CommonRes data = new CommonRes();
 
-			List<DropDownRes> res = dropDownService.discounttypeoffered();
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
+		List<DropDownRes> res = dropDownService.discounttypeoffered();
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
 
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
-}
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 
-		@GetMapping("/istaxexcempted")
-		@ApiOperation(value = "This method is to Tax Excepmted Drop Down")
-		public ResponseEntity<CommonRes> taxexcempted() {
-			CommonRes data = new CommonRes();
+	@GetMapping("/istaxexcempted")
+	@ApiOperation(value = "This method is to Tax Excepmted Drop Down")
+	public ResponseEntity<CommonRes> taxexcempted() {
+		CommonRes data = new CommonRes();
 
-			List<DropDownRes> res = dropDownService.taxexcempted();
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
+		List<DropDownRes> res = dropDownService.taxexcempted();
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
 
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
-}
-		
-		@GetMapping("/taxexcemptiontype")
-		@ApiOperation(value = "This method is to Tax Excepmtion Type Drop Down")
-		public ResponseEntity<CommonRes> taxexcemptiontype() {
-			CommonRes data = new CommonRes();
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 
-			List<DropDownRes> res = dropDownService.taxexcemptiontype();
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
+	@GetMapping("/taxexcemptiontype")
+	@ApiOperation(value = "This method is to Tax Excepmtion Type Drop Down")
+	public ResponseEntity<CommonRes> taxexcemptiontype() {
+		CommonRes data = new CommonRes();
 
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
-}
-		
-		
-		@GetMapping("/policyholdertype")
-		@ApiOperation(value = "This method is to Policy Holder Type Drop Down")
-		public ResponseEntity<CommonRes> policyholdertype() {
-			CommonRes data = new CommonRes();
+		List<DropDownRes> res = dropDownService.taxexcemptiontype();
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
 
-			List<DropDownRes> res = dropDownService.policyholdertype();
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
-}
-		
-		@GetMapping("/policyholderidtype")
-		@ApiOperation(value = "This method is to Policy Holder ID Type Drop Down")
-		public ResponseEntity<CommonRes> policyholderidtype() {
-			CommonRes data = new CommonRes();
+	@GetMapping("/policyholdertype")
+	@ApiOperation(value = "This method is to Policy Holder Type Drop Down")
+	public ResponseEntity<CommonRes> policyholdertype() {
+		CommonRes data = new CommonRes();
 
-			List<DropDownRes> res = dropDownService.policyholderidtype();
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
+		List<DropDownRes> res = dropDownService.policyholdertype();
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
 
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
-}
-		
-		@GetMapping("/policyholdergender")
-		@ApiOperation(value = "This method is to Policy Holder Gender Drop Down")
-		public ResponseEntity<CommonRes> policyholdergender() {
-			CommonRes data = new CommonRes();
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 
-			List<DropDownRes> res = dropDownService.policyholdergender();
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
+	@GetMapping("/policyholderidtype")
+	@ApiOperation(value = "This method is to Policy Holder ID Type Drop Down")
+	public ResponseEntity<CommonRes> policyholderidtype() {
+		CommonRes data = new CommonRes();
 
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
-}
-		
+		List<DropDownRes> res = dropDownService.policyholderidtype();
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
 
-		@GetMapping("/nametitle")
-		@ApiOperation(value = "This method is to Name Title Drop Down")
-		public ResponseEntity<CommonRes> nametitle() {
-			CommonRes data = new CommonRes();
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 
-			List<DropDownRes> res = dropDownService.nametitle();
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
+	@GetMapping("/policyholdergender")
+	@ApiOperation(value = "This method is to Policy Holder Gender Drop Down")
+	public ResponseEntity<CommonRes> policyholdergender() {
+		CommonRes data = new CommonRes();
 
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
-}
+		List<DropDownRes> res = dropDownService.policyholdergender();
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
 
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 
-		@GetMapping("/notificationtype")
-		@ApiOperation(value = "This method is to Notification Type Drop Down")
-		public ResponseEntity<CommonRes> notificationtype() {
-			CommonRes data = new CommonRes();
+	@GetMapping("/nametitle")
+	@ApiOperation(value = "This method is to Name Title Drop Down")
+	public ResponseEntity<CommonRes> nametitle() {
+		CommonRes data = new CommonRes();
 
-			List<DropDownRes> res = dropDownService.notificationtype();
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
+		List<DropDownRes> res = dropDownService.nametitle();
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
 
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
-}
-		
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@GetMapping("/notificationtype")
+	@ApiOperation(value = "This method is to Notification Type Drop Down")
+	public ResponseEntity<CommonRes> notificationtype() {
+		CommonRes data = new CommonRes();
+
+		List<DropDownRes> res = dropDownService.notificationtype();
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@GetMapping("/getallcountries")
+	@ApiOperation(value = "This method is get all Countries Drop Down")
+
+	public ResponseEntity<CommonRes> getAllCountries() {
+
+		CommonRes data = new CommonRes();
+
+		// Save
+		List<DropDownRes> res = dropDownService.getCountryDropdown();
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
+
+	@PostMapping("/getallregion")
+	@ApiOperation(value = "This method is get all Region Drop Down")
+
+	public ResponseEntity<CommonRes> getRegionDropdown(@RequestBody RegionDropDownReq req) {
+
+		CommonRes data = new CommonRes();
+
+		// Save
+		List<DropDownRes> res = dropDownService.getRegionDropdown(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@PostMapping("/getallstate")
+	@ApiOperation(value = "This method is get all State Drop Down")
+
+	public ResponseEntity<CommonRes> getStateDropdown(@RequestBody StateDropDownReq req) {
+
+		CommonRes data = new CommonRes();
+
+		// Save
+		List<DropDownRes> res = dropDownService.getStateDropdown(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	
+	@PostMapping("/getallcity")
+	@ApiOperation(value = "This method is get all City Drop Down")
+
+	public ResponseEntity<CommonRes> getCityDropdown(@RequestBody CityDropDownReq req) {
+
+		CommonRes data = new CommonRes();
+
+		// Save
+		List<DropDownRes> res = dropDownService.getCityDropdown(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 }

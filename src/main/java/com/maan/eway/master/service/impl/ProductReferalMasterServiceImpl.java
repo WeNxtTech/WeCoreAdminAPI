@@ -16,6 +16,7 @@ import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.google.gson.Gson;
 import com.maan.eway.bean.InsuranceCompanyMaster;
+import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.ProductReferalMaster;
 import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.ReferalMaster;
@@ -561,6 +562,46 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 			cal.set(Calendar.HOUR_OF_DAY, 23);
 			cal.set(Calendar.MINUTE, 1);
 			today = cal.getTime();
+			
+			List<ProductMaster> list = new ArrayList<ProductMaster>();
+			// Find Latest Record
+			CriteriaBuilder cb2 = em.getCriteriaBuilder();
+			CriteriaQuery<ProductMaster> query2 = cb2.createQuery(ProductMaster.class);
+	
+			// Find All
+			Root<ProductMaster> b2 = query2.from(ProductMaster.class);
+	
+			// Select
+			query2.select(b2);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate3 = query2.subquery(Long.class);
+			Root<ProductMaster> ocpm3 = effectiveDate3.from(ProductMaster.class);
+			effectiveDate3.select(cb2.max(ocpm3.get("effectiveDateStart")));
+			Predicate a11 = cb2.equal(ocpm3.get("productId"), b2.get("productId"));
+			Predicate a12 = cb2.lessThanOrEqualTo(ocpm3.get("effectiveDateStart"), today);
+			effectiveDate3.where(a11,a12);
+	
+			// Order By
+			List<Order> orderList2 = new ArrayList<Order>();
+			orderList2.add(cb2.desc(b2.get("effectiveDateStart")));
+	
+			// Where
+			Predicate n11 = cb2.equal(b2.get("effectiveDateStart"), effectiveDate3);
+			Predicate n12 = cb2.equal(b2.get("productId"), req.getProductId() );
+			Predicate n13 = cb2.equal(b2.get("status"),"Y");
+
+			query2.where(n11,n12,n13).orderBy(orderList2);
+	
+			// Get Result
+			TypedQuery<ProductMaster> result2 = em.createQuery(query2);
+			list = result2.getResultList();
+
+			if(list.get(0).getMotorYn().equalsIgnoreCase("Y") ||list.get(0).getMotorYn().equalsIgnoreCase("N") ) 
+			{
+			
+			
+			
 			List<ReferalMaster> referalList = new ArrayList<ReferalMaster>();
 			//Pagination
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
@@ -630,7 +671,7 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 				res.setReferalId(String.valueOf(data.getReferalId()));
 				resList.add(res);
 			}
-	
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info(e.getMessage());

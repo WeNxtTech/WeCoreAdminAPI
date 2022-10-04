@@ -460,15 +460,10 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 			} else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart()) || req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
 				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date End  is After Effective Date Start"));
 			} 
-			if (StringUtils.isBlank(req.getCoreAppCode())) {
-				errorList.add(new Error("07", "Core App Code", "Please Enter Core App Code"));
-			} else if (req.getCoreAppCode().length() > 20) {
-				errorList.add(new Error("07", "Core App Code", "Enter Core App Code  within 20 Characters Only"));
-			}
-			if (StringUtils.isBlank(req.getTiraCode())) {
-				errorList.add(new Error("08", "Tira Code", "Please Enter Tira Code"));
-			} else if (req.getTiraCode().length() > 20) {
-				errorList.add(new Error("08", "Tira Code", "Enter Tira Code  within 20 Characters Only"));
+			if (StringUtils.isBlank(req.getRegulatoryCode())) {
+				errorList.add(new Error("07", "RegulatoryCode", "Please Enter RegulatoryCode"));
+			} else if (req.getRegulatoryCode().length() > 20) {
+				errorList.add(new Error("07", "RegulatoryCode", "Enter RegulatoryCode  within 20 Characters Only"));
 			}
 			if (StringUtils.isBlank(req.getCreatedBy())) {
 				errorList.add(new Error("09", "CreatedBy", "Please Enter CreatedBy "));

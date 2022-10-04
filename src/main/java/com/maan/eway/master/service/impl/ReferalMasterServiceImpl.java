@@ -284,21 +284,17 @@ public List<Error> validateReferalDetails(ReferalMasterSaveReq req) {
 		}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()))) {
 			errorList.add(new Error("05", "Status", "Enter Status Y or N Only"));
 		}
-		if (StringUtils.isBlank(req.getCoreAppCode())) {
-			errorList.add(new Error("06", "CoreAppCode", "Please Select CoreAppCode   "));
-		}else if (req.getCoreAppCode().length() > 20){
-			errorList.add(new Error("06","CoreAppCode", "Please Enter CoreAppCode within 20 Characters")); 
+		if (StringUtils.isBlank(req.getRegulatoryCode())) {
+			errorList.add(new Error("06", "RegulatoryCode", "Please Select RegulatoryCode "));
+		}else if (req.getRegulatoryCode().length() > 20){
+			errorList.add(new Error("06","RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters")); 
 		}
 		if (StringUtils.isBlank(req.getReferalDesc())) {
 			errorList.add(new Error("07", "ReferalDesc", "Please Select Referal Description  "));
 		}else if (req.getReferalDesc().length() > 300){
 			errorList.add(new Error("07","ReferalDesc", "Please Enter Referal Description within 300 Characters")); 
 		}
-		if (StringUtils.isBlank(req.getTiraCode())) {
-			errorList.add(new Error("08", "TiraCode", "Please Select TiraCode  "));
-		}else if (req.getTiraCode().length() > 20){
-			errorList.add(new Error("08","TiraCode", "Please Enter TiraCode  within 20 Characters")); 
-		}
+		
 		if (StringUtils.isBlank(req.getCreatedBy())) {
 			errorList.add(new Error("09", "CreatedBy", "Please Select CreatedBy  "));
 		}else if (req.getCreatedBy().length() > 20){

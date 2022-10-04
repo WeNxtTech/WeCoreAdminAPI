@@ -28,12 +28,9 @@ public class ReferalMasterRes  {
 	@JsonProperty("Status")
 	private String status;
 
-	@JsonProperty("CoreAppCode")
-	private String coreAppCode;
+	@JsonProperty("RegulatoryCode")
+	private String regulatoryCode;
 
-	@JsonProperty("TiraCode")
-	private String tiraCode;
-	
 	@JsonProperty("AmendId")
 	private String amendId;
 	

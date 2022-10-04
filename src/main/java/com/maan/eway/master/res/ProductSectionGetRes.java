@@ -13,6 +13,6 @@ public class ProductSectionGetRes {
 	@JsonProperty("SectionName")
     private String    sectionName ;
 	
-	@JsonProperty("CoreAppCode")
-    private String    coreAppCode;
+	@JsonProperty("RegulatoryCode")
+    private String    regulatoryCode;
 }

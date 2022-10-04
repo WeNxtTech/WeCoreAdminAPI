@@ -93,10 +93,10 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 				
 			}
 
-			if (StringUtils.isBlank(req.getCoreAppCode())) {
-				errorList.add(new Error("03", "CoreAppCode", "Please Enter CoreAppCode"));
-			}else if (req.getCoreAppCode().length() > 20) {
-				errorList.add(new Error("03", "CoreAppCode", "Enter CoreAppCode in 20 Character Only"));
+			if (StringUtils.isBlank(req.getRegulatoryCode())) {
+				errorList.add(new Error("03", "RegulatoryCode", "Please Enter RegulatoryCode"));
+			}else if (req.getRegulatoryCode().length() > 20) {
+				errorList.add(new Error("03", "RegulatoryCode", "Please Enter RegulatoryCode in 20 Character Only"));
 			}
 			
 			// Date Validation 
@@ -133,15 +133,9 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 				errorList.add(new Error("06", "CreatedBy", "Enter CreatedBy in 20 Character Only"));
 			}
 			
-			if (StringUtils.isBlank(req.getTiraCode())) {
-				errorList.add(new Error("07", "TiraCode", "Please Enter TiraCode"));
-			}else if (req.getTiraCode().length() > 20) {
-				errorList.add(new Error("07", "TiraCode", "Enter TiraCode in 20 Character Only"));
-			}
-			
 			if (StringUtils.isBlank(req.getRemarks())) {
 				errorList.add(new Error("08", "Remarks", "Please Enter Remarks"));
-			}else if (req.getTiraCode().length() > 100) {
+			}else if (req.getRemarks().length() > 100) {
 				errorList.add(new Error("08", "Remarks", "Please Enter Remarks within 100 Characters"));
 			}
 			
@@ -608,7 +602,7 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 	
 				res.setSectionId(data.getSectionId().toString() );
 				res.setSectionName(data.getSectionName());
-				res.setCoreAppCode(data.getCoreAppCode());
+				res.setRegulatoryCode(data.getRegulatoryCode());
 				resList.add(res);
 			}
 	

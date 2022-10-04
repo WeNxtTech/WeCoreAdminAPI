@@ -53,11 +53,8 @@ public class SectionMasterRes implements Serializable {
 	@JsonProperty("Remarks")
 	private String remarks;
 	
-	@JsonProperty("CoreAppCode")
-	private String coreAppCode;
-
-	@JsonProperty("TiraCode")
-	private String tiraCode;
+	@JsonProperty("RegulatoryCode")
+	private String regulatoryCode;
 	
 	@JsonProperty("AmendId")
 	private String amendId;

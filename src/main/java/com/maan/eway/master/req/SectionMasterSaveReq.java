@@ -50,11 +50,8 @@ public class SectionMasterSaveReq implements Serializable {
 	@JsonProperty("EffectiveDateEnd")
 	private Date effectiveDateEnd;
 
-	@JsonProperty("CoreAppCode")
-	private String coreAppCode;
-	
-	@JsonProperty("TiraCode")
-	private String tiraCode;
+	@JsonProperty("RegulatoryCode")
+	private String regulatoryCode;
 	
     @JsonProperty("CreatedBy")
     private String    createdBy    ;

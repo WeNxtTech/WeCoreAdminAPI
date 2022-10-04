@@ -49,8 +49,8 @@ public class SmsMasterGetRes {
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
 	
-	@JsonProperty("TiraCode")
-	private String tiraCode;
+	@JsonProperty("RegulatoryCode")
+	private String regulatoryCode;
 	
 	@JsonProperty("CreatedBy")
 	private String createdBy;

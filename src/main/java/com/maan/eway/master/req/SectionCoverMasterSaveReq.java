@@ -48,8 +48,8 @@ public class SectionCoverMasterSaveReq {
 	private String toolTip;  
 
 
-	@JsonProperty("TiraCode")
-	private String tiraCode;
+	@JsonProperty("RegulatoryCode")
+	private String regulatoryCode;
 
 	@JsonProperty("SubCoverYn")
 	private String subCoverYn;

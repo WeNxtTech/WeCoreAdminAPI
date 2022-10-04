@@ -76,8 +76,8 @@ public class SmsMaster  implements Serializable{
 	@Column(name="CORE_APP_CODE",length=20)
 	private String coreAppCode;
 	
-	@Column(name="TIRA_CODE",length=20)
-	private String tiraCode;
+	@Column(name="REGULATORY_CODE",length=20,nullable=false)
+	private String regulatoryCode;
 	
 	@Column(name="AmendId")
 	private Integer amendId;

@@ -158,10 +158,10 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				} else if(req.getToolTip().length()>100) {
 					errorList.add(new Error("10", "Tool Tip", "Please Enter Tool Tip within 100 Characters in Row No : " + row  ));
 				}
-				if (StringUtils.isBlank(req.getTiraCode())) {
-					errorList.add(new Error("07", "Tira Code", "Please Enter Tira Code in Row No : " + row  ));
-				} else if(req.getTiraCode().length()>20) {
-					errorList.add(new Error("11", "Tira Code", "Please Enter Tira Code within 20 Characters in Row No : " + row  ));
+				if (StringUtils.isBlank(req.getRegulatoryCode())) {
+					errorList.add(new Error("11", "RegulatoryCode", "Please Enter RegulatoryCode in Row No : " + row  ));
+				} else if(req.getRegulatoryCode().length()>20) {
+					errorList.add(new Error("11", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters in Row No : " + row  ));
 				}
 				
 			}
@@ -943,10 +943,10 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()))) {
 				errorList.add(new Error("08", "Status", "Enter Status Y or N Only"));
 			}
-			if (StringUtils.isBlank(req.getTiraCode())) {
-				errorList.add(new Error("09", "Tira Code", "Please Enter Tira Code"));
-			} else if (req.getTiraCode().length() > 20) {
-				errorList.add(new Error("09", "Tira Code", "Enter Tira Code  within 20 Characters Only"));
+			if (StringUtils.isBlank(req.getRegulatoryCode())) {
+				errorList.add(new Error("09", "Regulatory Code", "Please Enter RegulatoryCode"));
+			} else if (req.getRegulatoryCode().length() > 20) {
+				errorList.add(new Error("09", "RegulatoryCode", "Enter RegulatoryCode  within 20 Characters Only"));
 			}
 			
 			if (StringUtils.isBlank(req.getRemarks())) {
@@ -1200,7 +1200,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 						saveCover.setCompanyId(req.getCompanyId());
 						saveCover.setCoverDesc(req.getCoverDesc());
 						saveCover.setCreatedBy(req.getCreatedBy());
-						saveCover.setTiraCode(req.getTiraCode());;
+						saveCover.setRegulatoryCode(req.getRegulatoryCode());
 						saveCover.setEffectiveDateStart(effDate);
 						saveCover.setEffectiveDateEnd(endDate);
 						saveCover.setEntryDate(new Date());
@@ -1229,7 +1229,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 					saveCover.setCoreAppCode(req.getCoreAppCode());
 					saveCover.setCoverDesc(req.getCoverDesc());
 					saveCover.setCreatedBy(req.getCreatedBy());
-					saveCover.setTiraCode(req.getTiraCode());
+					saveCover.setRegulatoryCode(req.getRegulatoryCode());
 					saveCover.setEffectiveDateStart(effDate);
 					saveCover.setEffectiveDateEnd(endDate);
 					saveCover.setEntryDate(new Date());

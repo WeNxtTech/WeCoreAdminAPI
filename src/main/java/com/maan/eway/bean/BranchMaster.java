@@ -109,8 +109,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="COUNTRY_ID" ,nullable=false )
     private String    countryId ;
 
-    @Column(name="TIRA_CODE" ,nullable=false,length=20 )
-    private String  tiraCode;
+    @Column(name="REGULATORY_CODE" ,nullable=false,length=20 )
+    private String  regulatoryCode;
 
     @Column(name="ADDRESS1" ,nullable=false,length=100 )
     private String  address1;

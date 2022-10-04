@@ -408,14 +408,14 @@ public List<Error> validateBranchDetails(BranchMasterSaveReq req) {
 		if (req.getCoreAppCode().length() > 20){
 			errorList.add(new Error("07","Core App Code", "Please Enter CoreAppCode within 20 Characters")); 
 		}
-		if (req.getTiraCode().length() > 20){
-			errorList.add(new Error("08","Tira Code", "Please Enter Tira Code within 20 Characters")); 
+		if (req.getRegulatoryCode().length() > 20){
+			errorList.add(new Error("08","Regulatory Code", "Please Enter Regulatory Code within 20 Characters")); 
 		}
 		if (req.getAddress1().length() > 100){
 			errorList.add(new Error("09","Address1", "Please Enter Address1 within 100 Characters")); 
 		}
-		if (req.getAddress1().length() > 100){
-			errorList.add(new Error("10","Address2", "Please Enter Tira Code within 20 Characters")); 
+		if (req.getAddress2().length() > 100){
+			errorList.add(new Error("10","Address2", "Please Enter Address2 within 20 Characters")); 
 		}
 		
 		String regex = "^[a-zA-Z0-9_+&*-]+(?:\\." + "[a-zA-Z0-9_+&*-]+)*@" + "(?:[a-zA-Z0-9-]+\\.)+[a-z" + "A-Z]{2,7}$";

@@ -102,8 +102,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="AMEND_ID")
     private Integer     amendId ;
 
-    @Column(name="TIRA_CODE", length=20)
-    private String     tiraCode ;
+    @Column(name="REGULATORY_CODE", length=20,nullable=false)
+    private String    regulatoryCode;
    
     @Column(name="CREATED_BY", length=100)
     private String    createdBy;

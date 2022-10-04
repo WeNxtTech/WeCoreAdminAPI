@@ -52,8 +52,8 @@ public class SectionCoverMasterRes {
 	@JsonProperty("ToolTip")
 	private String toolTip;  
 
-	@JsonProperty("TiraCode")
-	private String tiraCode;
+	@JsonProperty("RegulatoryCode")
+	private String regulatoryCode;
 
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateEnd")

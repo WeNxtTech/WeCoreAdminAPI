@@ -45,8 +45,8 @@ public class CompanyCityMasterSaveReq implements Serializable {
 	@JsonProperty("Remarks")
 	private String remarks;
 
-	@JsonProperty("TiraCode")
-	private String tiraCode;
+	@JsonProperty("RegulatoryCode")
+	private String regulatoryCode;
 
 	@JsonProperty("CreatedBy")
 	private String createdBy;

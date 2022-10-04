@@ -63,8 +63,8 @@ public class BranchMasterRes implements Serializable {
     @JsonProperty("CityName")
     private String     cityName ;
 	
-    @JsonProperty("TiraCode"  )
-    private String tiraCode ;
+    @JsonProperty("RegulatoryCode"  )
+    private String regulatoryCode ;
     
     @JsonProperty("Address1")
     private String    address1     ;

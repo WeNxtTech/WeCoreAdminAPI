@@ -48,8 +48,8 @@ public class SectionCoverUpdateReq {
 	@JsonProperty("ToolTip")
 	private String toolTip;  
 
-	@JsonProperty("TiraCode")
-	private String tiraCode;
+	@JsonProperty("RegulatoryCode")
+	private String regulatoryCode;
 
 	@JsonProperty("SubCoverYn")
 	private String subCoverYn;

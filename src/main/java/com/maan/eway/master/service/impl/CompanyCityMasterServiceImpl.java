@@ -155,10 +155,10 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 				errorList.add(new Error("08", "CoreAppCode", "Please Enter CoreAppCode within 20 Characters"));
 			}
 
-			if (StringUtils.isBlank(req.getTiraCode())) {
-				errorList.add(new Error("09", "TiraCode", "Please Enter TiraCode"));
-			} else if (req.getTiraCode().length() > 20) {
-				errorList.add(new Error("09", "TiraCode", "Please Enter TiraCode within 20 Characters"));
+			if (StringUtils.isBlank(req.getRegulatoryCode())) {
+				errorList.add(new Error("09", "RegulatoryCode", "Please Enter RegulatoryCode"));
+			} else if (req.getRegulatoryCode().length() > 20) {
+				errorList.add(new Error("09", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters"));
 			}
 
 			if (StringUtils.isBlank(req.getRemarks())) {

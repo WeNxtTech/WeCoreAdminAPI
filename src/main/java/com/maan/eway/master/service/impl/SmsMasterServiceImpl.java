@@ -143,10 +143,10 @@ public class SmsMasterServiceImpl implements SmsMasterService{
 			} else if (req.getCoreAppCode().length() > 20) {
 				errorList.add(new Error("12", "Core App Code", "Please Enter CreatedBy within 20 Characters"));
 			}
-			if (StringUtils.isBlank(req.getTiraCode())) {
-				errorList.add(new Error("13", "Tira Code", "Please Enter Tira Code"));
-			} else if (req.getTiraCode().length() > 20) {
-				errorList.add(new Error("13", "Tira Code", "Please Enter Tira Code within 20 Characters"));
+			if (StringUtils.isBlank(req.getRegulatoryCode())) {
+				errorList.add(new Error("13", "Regulatory Code", "Please Enter Regulatory Code"));
+			} else if (req.getRegulatoryCode().length() > 20) {
+				errorList.add(new Error("13", "Regulatory Code", "Please Enter Regulatory Code within 20 Characters"));
 			}
 		} catch (Exception e) {
 			log.error(e);

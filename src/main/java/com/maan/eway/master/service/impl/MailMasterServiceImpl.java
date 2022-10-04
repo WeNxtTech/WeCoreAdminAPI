@@ -218,10 +218,10 @@ public class MailMasterServiceImpl implements MailMasterService {
 			} else if (req.getCoreAppCode().length() > 20) {
 				errorList.add(new Error("12", "Core App Code", "Please Enter CreatedBy within 20 Characters"));
 			}
-			if (StringUtils.isBlank(req.getTiraCode())) {
-				errorList.add(new Error("13", "Tira Code", "Please Enter Tira Code"));
-			} else if (req.getTiraCode().length() > 20) {
-				errorList.add(new Error("13", "Tira Code", "Please Enter Tira Code within 20 Characters"));
+			if (StringUtils.isBlank(req.getRegulatoryCode())) {
+				errorList.add(new Error("13", "RegulatoryCode", "Please Enter RegulatoryCode"));
+			} else if (req.getRegulatoryCode().length() > 20) {
+				errorList.add(new Error("13", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters"));
 			}
 		} catch (Exception e) {
 			log.error(e);

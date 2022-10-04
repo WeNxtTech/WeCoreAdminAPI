@@ -147,8 +147,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="MIN_SUMINSURED")
     private Double     minSuminsured ;
 
-    @Column(name="TIRA_CODE", length=20)
-    private String     tiraCode ;
+    @Column(name="REGULATORY_CODE", length=20,nullable=false)
+    private String   regulatoryCode;
 
     @Column(name="CREATED_BY", length=100)
     private String     createdBy ;

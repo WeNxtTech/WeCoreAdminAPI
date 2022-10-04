@@ -309,7 +309,7 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 				if( StringUtils.isBlank(subcoverId)  ) {
 						
 					Long totalCount = getSubCoverMasterTableCount( req.getCoverId());
-					subcoverId = String.valueOf(totalCount + 101);
+					subcoverId = String.valueOf(totalCount + 100);
 				} 
 				query.where(n1, n2, n3);
 				// Get Result

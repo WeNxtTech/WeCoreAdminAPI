@@ -725,7 +725,7 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 
 			// Ofs Details
 			List<OfsGridGetRes> gridDetails =  new ArrayList<OfsGridGetRes>();
-			if( res.getCalcType().equalsIgnoreCase("G") ) {
+			if(StringUtils.isNotBlank(res.getCalcType()) &&  res.getCalcType().equalsIgnoreCase("G") ) {
 				List<CoverOfsGridMaster> ofsGrids   = ofsRepo.findByCoverIdAndSubCoverIdOrderByCoveragesSubIdAsc(list.get(0).getCoverId() , list.get(0).getSubCoverId() );
 				
 				for( CoverOfsGridMaster data : ofsGrids ) {

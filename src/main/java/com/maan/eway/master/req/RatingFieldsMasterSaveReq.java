@@ -1,14 +1,17 @@
-package com.maan.eway.master.res;
+package com.maan.eway.master.req;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
-@Data
 
-public class FactorTypeMasterGetRes {
+@Data
+public class RatingFieldsMasterSaveReq implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
 	@JsonProperty("RatingId")
 	private String ratingId;
@@ -44,12 +47,5 @@ public class FactorTypeMasterGetRes {
 	
 	@JsonProperty("CreatedBy")
 	private String createdBy;
-
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EntryDate")
-	private Date entryDate;
-
-	@JsonProperty("AmendId")
-	private String amendId;
 
 }

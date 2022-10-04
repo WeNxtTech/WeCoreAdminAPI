@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.annotation.JacksonStdImpl;
 import lombok.Data;
 
 @Data
-public class FactorTypeMasterChangeStatusReq implements Serializable {
+public class RatingFieldsMasterGetReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -20,7 +20,5 @@ public class FactorTypeMasterChangeStatusReq implements Serializable {
     @JsonProperty("RatingId")
     private String ratingId;
    
-    @JsonProperty("Status")
-    private String status;
     
 }

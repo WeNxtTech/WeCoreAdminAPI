@@ -240,7 +240,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 					
 					repo.saveAndFlush(secCover);
 					
-					if( secCover.getCalcType().equalsIgnoreCase("G")  ) {
+					if(StringUtils.isNotBlank(secCover.getCalcType()) &&  secCover.getCalcType().equalsIgnoreCase("G")  ) {
 						
 						// find old records
 						List<SectionCoverOfsGridMaster> secOfsDatas =  secOfsRepo.findByCompanyIdAndProductIdAndSectionIdAndCoverIdAndSubCoverIdOrderByCoveragesSubIdAsc(req.getCompanyId() , Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId()) ,   secCover.getCoverId() , secCover.getSubCoverId()  );	

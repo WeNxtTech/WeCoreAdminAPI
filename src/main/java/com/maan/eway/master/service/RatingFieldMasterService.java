@@ -5,37 +5,34 @@
 */
 package com.maan.eway.master.service;
 
-import com.maan.eway.master.req.BankMasterGetAllReq;
-import com.maan.eway.master.req.BankMasterGetReq;
-import com.maan.eway.master.req.BankMasterSaveReq;
-import com.maan.eway.master.req.CustomerSaveReq;
-import com.maan.eway.master.req.FactorTypeMasterChangeStatusReq;
-import com.maan.eway.master.req.FactorTypeMasterGetAllReq;
-import com.maan.eway.master.req.FactorTypeMasterGetReq;
-import com.maan.eway.master.req.FactorTypeMasterSaveReq;
-import com.maan.eway.master.res.BankMasterRes;
-import com.maan.eway.master.res.FactorTypeMasterGetRes;
+import java.util.List;
+
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.RatingFieldMasterGetAllReq;
+import com.maan.eway.master.req.RatingFieldsMasterChangeStatusReq;
+import com.maan.eway.master.req.RatingFieldsMasterGetReq;
+import com.maan.eway.master.req.RatingFieldsMasterSaveReq;
+import com.maan.eway.master.res.RatingFieldsMasterGetRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
-
-import java.util.List;
 /**
 * <h2>BankMasterServiceimpl</h2>
 */
 public interface RatingFieldMasterService  {
 
-	List<Error> validateFactorType(FactorTypeMasterSaveReq req);
+	List<Error> validateFactorType(RatingFieldsMasterSaveReq req);
 
-	SuccessRes insertfactortype(FactorTypeMasterSaveReq req);
+	SuccessRes insertfactortype(RatingFieldsMasterSaveReq req);
 
-	List<FactorTypeMasterGetRes> getallFactorType(FactorTypeMasterGetAllReq req);
+	List<RatingFieldsMasterGetRes> getallFactorType(RatingFieldMasterGetAllReq req);
 
-	List<FactorTypeMasterGetRes> getActiveFactorType(FactorTypeMasterGetAllReq req);
+	List<RatingFieldsMasterGetRes> getActiveFactorType(RatingFieldMasterGetAllReq req);
 
-	FactorTypeMasterGetRes getByFactorId(FactorTypeMasterGetReq req);
+	RatingFieldsMasterGetRes getByFactorId(RatingFieldsMasterGetReq req);
 
-	SuccessRes changeStatusOfFactorType(FactorTypeMasterChangeStatusReq req);
+	SuccessRes changeStatusOfFactorType(RatingFieldsMasterChangeStatusReq req);
+
+	List<DropDownRes> getRatingFieldsDropdown();
 
 
 

@@ -11,6 +11,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -32,15 +34,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.RatingFieldMaster;
 import com.maan.eway.error.Error;
-import com.maan.eway.master.req.FactorTypeMasterChangeStatusReq;
-import com.maan.eway.master.req.FactorTypeMasterGetAllReq;
-import com.maan.eway.master.req.FactorTypeMasterGetReq;
-import com.maan.eway.master.req.FactorTypeMasterSaveReq;
-import com.maan.eway.master.res.FactorTypeMasterGetRes;
+import com.maan.eway.master.req.RatingFieldMasterGetAllReq;
+import com.maan.eway.master.req.RatingFieldsMasterChangeStatusReq;
+import com.maan.eway.master.req.RatingFieldsMasterGetReq;
+import com.maan.eway.master.req.RatingFieldsMasterSaveReq;
+import com.maan.eway.master.res.RatingFieldsMasterGetRes;
 import com.maan.eway.master.service.RatingFieldMasterService;
 import com.maan.eway.repository.RatingFieldMasterRepository;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 
 /**
@@ -48,7 +52,7 @@ import com.maan.eway.res.SuccessRes;
  */
 @Service
 @Transactional
-public class FactorTypeMasterServiceImpl implements RatingFieldMasterService {
+public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 
 	@PersistenceContext
 	private EntityManager em;
@@ -58,10 +62,10 @@ public class FactorTypeMasterServiceImpl implements RatingFieldMasterService {
 
 	Gson json = new Gson();
 
-	private Logger log = LogManager.getLogger(FactorTypeMasterServiceImpl.class);
+	private Logger log = LogManager.getLogger(RatingFieldMasterServiceImpl.class);
 
 	@Override
-	public List<Error> validateFactorType(FactorTypeMasterSaveReq req) {
+	public List<Error> validateFactorType(RatingFieldsMasterSaveReq req) {
 		List<Error> errorList = new ArrayList<Error>();
 
 		try {
@@ -149,7 +153,7 @@ public class FactorTypeMasterServiceImpl implements RatingFieldMasterService {
 	}
 
 	@Override
-	public SuccessRes insertfactortype(FactorTypeMasterSaveReq req) {
+	public SuccessRes insertfactortype(RatingFieldsMasterSaveReq req) {
 		SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/yyyy");
 		SuccessRes res = new SuccessRes();
 		RatingFieldMaster saveData = new RatingFieldMaster();
@@ -323,8 +327,8 @@ public class FactorTypeMasterServiceImpl implements RatingFieldMasterService {
 
 	
 	@Override
-	public List<FactorTypeMasterGetRes> getallFactorType(FactorTypeMasterGetAllReq req) {
-		List<FactorTypeMasterGetRes> resList = new ArrayList<FactorTypeMasterGetRes>();
+	public List<RatingFieldsMasterGetRes> getallFactorType(RatingFieldMasterGetAllReq req) {
+		List<RatingFieldsMasterGetRes> resList = new ArrayList<RatingFieldsMasterGetRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
 			Date today = new Date();
@@ -355,10 +359,10 @@ public class FactorTypeMasterServiceImpl implements RatingFieldMasterService {
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("ratingField")));
 			// Where
-			// Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			 Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
 
-			query.where(n2).orderBy(orderList);
+			query.where(n1,n2).orderBy(orderList);
 			// Get Result
 			TypedQuery<RatingFieldMaster> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
@@ -367,9 +371,9 @@ public class FactorTypeMasterServiceImpl implements RatingFieldMasterService {
 
 			// Map
 			for (RatingFieldMaster data : list) {
-				FactorTypeMasterGetRes res = new FactorTypeMasterGetRes();
+				RatingFieldsMasterGetRes res = new RatingFieldsMasterGetRes();
 
-				res = mapper.map(data, FactorTypeMasterGetRes.class);
+				res = mapper.map(data, RatingFieldsMasterGetRes.class);
 				res.setRatingId(data.getRatingId().toString());
 				resList.add(res);
 			}
@@ -384,8 +388,8 @@ public class FactorTypeMasterServiceImpl implements RatingFieldMasterService {
 	}
 
 	@Override
-	public List<FactorTypeMasterGetRes> getActiveFactorType(FactorTypeMasterGetAllReq req) {
-		List<FactorTypeMasterGetRes> resList = new ArrayList<FactorTypeMasterGetRes>();
+	public List<RatingFieldsMasterGetRes> getActiveFactorType(RatingFieldMasterGetAllReq req) {
+		List<RatingFieldsMasterGetRes> resList = new ArrayList<RatingFieldsMasterGetRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
 			Date today = new Date();
@@ -416,11 +420,11 @@ public class FactorTypeMasterServiceImpl implements RatingFieldMasterService {
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("ratingField")));
 			// Where
-			// Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			 Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
 			Predicate n3 = cb.equal(b.get("status"), "Y");
 
-			query.where(n2, n3).orderBy(orderList);
+			query.where(n1,n2, n3).orderBy(orderList);
 			// Get Result
 			TypedQuery<RatingFieldMaster> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
@@ -429,9 +433,9 @@ public class FactorTypeMasterServiceImpl implements RatingFieldMasterService {
 
 			// Map
 			for (RatingFieldMaster data : list) {
-				FactorTypeMasterGetRes res = new FactorTypeMasterGetRes();
+				RatingFieldsMasterGetRes res = new RatingFieldsMasterGetRes();
 
-				res = mapper.map(data, FactorTypeMasterGetRes.class);
+				res = mapper.map(data, RatingFieldsMasterGetRes.class);
 				res.setRatingId(data.getRatingId().toString());
 				resList.add(res);
 			}
@@ -446,8 +450,8 @@ public class FactorTypeMasterServiceImpl implements RatingFieldMasterService {
 	}
 
 	@Override
-	public FactorTypeMasterGetRes getByFactorId(FactorTypeMasterGetReq req) {
-		FactorTypeMasterGetRes res = new FactorTypeMasterGetRes();
+	public RatingFieldsMasterGetRes getByFactorId(RatingFieldsMasterGetReq req) {
+		RatingFieldsMasterGetRes res = new RatingFieldsMasterGetRes();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
 			Date today = new Date();
@@ -478,11 +482,11 @@ public class FactorTypeMasterServiceImpl implements RatingFieldMasterService {
 			javax.persistence.criteria.Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			javax.persistence.criteria.Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
 			Predicate n3 = cb.equal(b.get("ratingId"), req.getRatingId());		
-			query.where(n1, n2).orderBy(orderList);
+			query.where(n1, n2,n3).orderBy(orderList);
 			// Get Result
 			TypedQuery<RatingFieldMaster> result = em.createQuery(query);
 			list = result.getResultList();
-			res = mapper.map(list.get(0), FactorTypeMasterGetRes.class);
+			res = mapper.map(list.get(0), RatingFieldsMasterGetRes.class);
 			res.setRatingId(list.get(0).getRatingId().toString());
 			res.setEntryDate(list.get(0).getEntryDate());
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
@@ -498,7 +502,7 @@ public class FactorTypeMasterServiceImpl implements RatingFieldMasterService {
 	
 
 	@Override
-	public SuccessRes changeStatusOfFactorType(FactorTypeMasterChangeStatusReq req) {
+	public SuccessRes changeStatusOfFactorType(RatingFieldsMasterChangeStatusReq req) {
 		SuccessRes res = new SuccessRes();
 		try {
 			Date today = new Date();
@@ -582,6 +586,77 @@ public class FactorTypeMasterServiceImpl implements RatingFieldMasterService {
 			return null;
 		}
 		return res;
+	}
+
+	
+	
+	@Override
+	public List<DropDownRes> getRatingFieldsDropdown() {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<RatingFieldMaster> query = cb.createQuery(RatingFieldMaster.class);
+			List<RatingFieldMaster> list = new ArrayList<RatingFieldMaster>();
+
+			// Find All
+			Root<RatingFieldMaster> c = query.from(RatingFieldMaster.class);
+
+			// Select
+			query.select(c);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("ratingField")));
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<RatingFieldMaster> ocpm1 = effectiveDate.from(RatingFieldMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			javax.persistence.criteria.Predicate a4 = cb.equal(c.get("ratingId"), ocpm1.get("ratingId"));
+			javax.persistence.criteria.Predicate a5 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where( a4, a5);
+			// Effective Date End
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<RatingFieldMaster> ocpm2 = effectiveDate2.from(RatingFieldMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a6 = cb.equal(c.get("ratingId"),ocpm2.get("ratingId") );
+			Predicate a9 = cb.greaterThanOrEqualTo(c.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a6,a9);
+					
+			// Where
+			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
+			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("subCoverYn"), "Y");
+			query.where(n1, n2,n3,n4).orderBy(orderList);
+
+			// Get Result
+			TypedQuery<RatingFieldMaster> result = em.createQuery(query);
+			list = result.getResultList();
+		// Map
+			for (RatingFieldMaster  data : list) {
+				// Response
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getRatingId().toString());
+				res.setCodeDesc(data.getRatingField());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
 	}
 
 

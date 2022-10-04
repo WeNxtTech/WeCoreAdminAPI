@@ -16,7 +16,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
@@ -27,39 +26,19 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.maan.eway.bean.BankMaster;
-import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.MailMaster;
-import com.maan.eway.bean.StateMaster;
 import com.maan.eway.error.Error;
-import com.maan.eway.master.req.BankMasterGetAllReq;
-import com.maan.eway.master.req.BankMasterGetReq;
-import com.maan.eway.master.req.BankMasterSaveReq;
-import com.maan.eway.master.req.FactorTypeMasterChangeStatusReq;
-import com.maan.eway.master.req.FactorTypeMasterGetAllReq;
-import com.maan.eway.master.req.FactorTypeMasterGetReq;
-import com.maan.eway.master.req.FactorTypeMasterSaveReq;
-import com.maan.eway.master.req.MailMasterChangeStatusReq;
-import com.maan.eway.master.req.MailMasterGetAllReq;
 import com.maan.eway.master.req.MailMasterGetReq;
 import com.maan.eway.master.req.MailMasterSaveReq;
-import com.maan.eway.master.res.BankMasterRes;
-import com.maan.eway.master.res.CityMasterRes;
-import com.maan.eway.master.res.FactorTypeMasterGetRes;
 import com.maan.eway.master.res.MailMasterGetRes;
-import com.maan.eway.master.service.BankMasterService;
 import com.maan.eway.master.service.MailMasterService;
-import com.maan.eway.repository.BankMasterRepository;
 import com.maan.eway.repository.MailMasterRepository;
-import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
-import com.maan.eway.service.impl.BasicValidationService;
 
 /**
  * <h2>BankMasterServiceimpl</h2>

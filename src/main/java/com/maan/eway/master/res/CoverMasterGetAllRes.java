@@ -26,8 +26,8 @@ public class CoverMasterGetAllRes {
 	@JsonProperty("Status")
 	private String status;
 
-	@JsonProperty("CoreAppCode")
-	private String coreAppCode;
+	@JsonProperty("RegulatoryCode")
+	private String regulatoryCode;
 
 	@JsonProperty("Remarks")
 	private String remarks; 
@@ -37,9 +37,6 @@ public class CoverMasterGetAllRes {
 	
 	@JsonProperty("ToolTip")
 	private String toolTip;  
-
-	@JsonProperty("TiraCode")
-	private String tiraCode;
 
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateEnd")

@@ -128,10 +128,10 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 				errorList.add(new Error("10", "EffectiveDateStart", "Please Enter Effective Date End  is After Effective Date Start"));
 			} 
 			
-			if (StringUtils.isBlank(req.getCoreAppCode())) {
-				errorList.add(new Error("04", "Core App Code", "Please Enter Core App Code"));
-			} else if (req.getCoreAppCode().length() > 20) {
-				errorList.add(new Error("04", "Core App Code", "Enter Core App Code  within 20 Characters Only"));
+			if (StringUtils.isBlank(req.getRegulatoryCode())) {
+				errorList.add(new Error("04", "Regulatory Code", "Please Enter Regulatory Code"));
+			} else if (req.getRegulatoryCode().length() > 20) {
+				errorList.add(new Error("04", "Regulatory Code", "Enter Regulatory Code  within 20 Characters Only"));
 			}
 		
 			if (StringUtils.isBlank(req.getCreatedBy())) {
@@ -156,11 +156,6 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 				errorList.add(new Error("08", "SubCoverYn", "Enter SubCoverYn Y or N Only"));
 			}
 			
-			if (StringUtils.isBlank(req.getTiraCode())) {
-				errorList.add(new Error("09", "Tira Code", "Please Enter Tira Code"));
-			} else if (req.getTiraCode().length() > 20) {
-				errorList.add(new Error("09", "Tira Code", "Enter Tira Code  within 20 Characters Only"));
-			}
 			
 			if (StringUtils.isBlank(req.getRemarks())) {
 				errorList.add(new Error("09", "Remarks", "Please Enter Remarks"));
@@ -401,10 +396,9 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 						subcoverId = coverId ;
 						saveCover.setSubCoverId(Integer.valueOf(subcoverId));						
 						saveCover.setCoverName(req.getCoverName());
-						saveCover.setCoreAppCode(req.getCoreAppCode());
+						saveCover.setRegulatoryCode(req.getRegulatoryCode());
 						saveCover.setCoverDesc(req.getCoverDesc());
 						saveCover.setCreatedBy(req.getCreatedBy());
-						saveCover.setTiraCode(req.getTiraCode());;
 						saveCover.setEffectiveDateStart(effDate);
 						saveCover.setEffectiveDateEnd(endDate);
 						saveCover.setEntryDate(new Date());
@@ -427,10 +421,9 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 					saveCover.setCoverId(Integer.valueOf(coverId)) ;
 					saveCover.setSubCoverId(Integer.valueOf(subcoverId)) ;
 					saveCover.setCoverName(req.getCoverName());
-					saveCover.setCoreAppCode(req.getCoreAppCode());
+					saveCover.setRegulatoryCode(req.getRegulatoryCode());
 					saveCover.setCoverDesc(req.getCoverDesc());
 					saveCover.setCreatedBy(req.getCreatedBy());
-					saveCover.setTiraCode(req.getTiraCode());
 					saveCover.setEffectiveDateStart(effDate);
 					saveCover.setEffectiveDateEnd(endDate);
 					saveCover.setEntryDate(new Date());

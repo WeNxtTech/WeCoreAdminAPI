@@ -136,6 +136,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="CREATED_BY", length=100)
     private String     createdBy ;
+    
+    @Column(name="TOOL_TIP", length=100)
+    private String     toolTip ;
 
     @Column(name="MAX_SUMINSURED")
     private Double     maxSuminsured ;

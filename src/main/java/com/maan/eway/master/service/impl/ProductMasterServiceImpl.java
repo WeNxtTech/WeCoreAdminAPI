@@ -14,6 +14,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
@@ -33,15 +34,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.admin.req.CommonLoginCreationReq;
 import com.maan.eway.bean.CompanyProductMaster;
+import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.GlobalCommonValidationReq;
 import com.maan.eway.master.req.ProductChangeStatusReq;
 import com.maan.eway.master.req.ProductMasterGetAllReq;
 import com.maan.eway.master.req.ProductMasterGetReq;
 import com.maan.eway.master.req.ProductMasterSaveReq;
 import com.maan.eway.master.res.ProductMasterRes;
+import com.maan.eway.master.service.MasterCommonValidationService;
 import com.maan.eway.master.service.ProductMasterService;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.ProductMasterRepository;
@@ -62,7 +67,7 @@ private EntityManager em;
 private ProductMasterRepository repo;
 
 @Autowired
-private BasicValidationService basicvalidateService;
+private MasterCommonValidationService commonValidationService;
 
 @Autowired
 private ListItemValueRepository listRepo ;
@@ -197,8 +202,19 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 	@Override
 	public List<Error> validateProductDetails(ProductMasterSaveReq req) {
 		List<Error> errorList = new ArrayList<Error>();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper(); 
 		try {
 		
+			// Common Errors
+			GlobalCommonValidationReq commonReq = new GlobalCommonValidationReq();
+			dozerMapper.map(req, commonReq);
+			List<Error>  commonErrors = commonValidationService.validateGlobalMaster(commonReq) ;
+			if(commonErrors.size()>0  ) {
+				errorList.addAll(commonErrors);
+			}
+						
+						
+			// Other Errors		
 			if (StringUtils.isBlank(req.getProductName())) {
 				errorList.add(new Error("01", "ProductName", "Please Select Product  Name "));
 			}else if (req.getProductName().length() > 100){
@@ -227,121 +243,12 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 				}
 			}
 			
-			if (StringUtils.isBlank(req.getRemarks()) ) {
-				errorList.add(new Error("03", "Remark", "Please Select Remark "));
-			}else if (req.getRemarks().length() > 100){
-				errorList.add(new Error("03","Remark", "Please Enter Remark within 100 Characters")); 
-			}
-			
-			// Date Validation 
-			Calendar cal = new GregorianCalendar();
-			Date today = new Date();
-			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
-			today = cal.getTime();
-			if (req.getEffectiveDateStart() == null ) {
-				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
-	
-			} else if (req.getEffectiveDateStart().before(today)) {
-				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
-			} else if (req.getEffectiveDateEnd() == null ) {
-				errorList.add(new Error("04", "EffectiveDateEnd", "Please Enter Effective Date End "));
-	
-			} else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart()) || req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
-				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date End  is After Effective Date Start"));
-			} 
-			//Status Validation
-			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("05", "Status", "Please Enter Status"));
-			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("05", "Status", "Enter Status 1 Character Only"));
-			}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()))) {
-				errorList.add(new Error("05", "Status", "Enter Status Y or N Only"));
-			}
-			
-		/*	if (StringUtils.isBlank(req.getPaymentYn())) {
-				errorList.add(new Error("06", "Payment", "Please Select Payment Type"));
-			} else if (req.getPaymentYn().length() > 1) {
-				errorList.add(new Error("06", "Payment", "Enter Payment Type 1 Character Only"));
-			}else if(!("Y".equalsIgnoreCase(req.getPaymentYn())||"N".equalsIgnoreCase(req.getPaymentYn()))) {
-				errorList.add(new Error("06", "Payment", "Enter Payment Type Y or N Only"));
-			} if ( "Y".equalsIgnoreCase(req.getPaymentYn()) && StringUtils.isBlank(req.getPaymentRedirUrl())) {
-				errorList.add(new Error("08", "PaymentRedirUrl", "Please Select PaymentRedirUrl  Category "));
-			}else if ( "Y".equalsIgnoreCase(req.getPaymentYn()) &&  req.getPaymentRedirUrl().length() > 500) {
-				errorList.add(new Error("10", "PaymentRedirUrl", "Please Enter PaymentRedirUrl within 500 Characters"));
-			}
-			
-			if (StringUtils.isBlank(req.getCommissionVatYn())) {
-				errorList.add(new Error("05", "CommissionVat", "Please Select CommissionVat Type"));
-			} else if (req.getCommissionVatYn().length() > 1) {
-				errorList.add(new Error("05", "CommissionVat", "Enter CommissionVat Type 1 Character Only"));
-			}else if(!("Y".equals(req.getCommissionVatYn())||"N".equals(req.getCommissionVatYn()))) {
-				errorList.add(new Error("05", "CommissionVat", "Enter CommissionVat Y or N Only"));
-			}
-			
-			if (StringUtils.isBlank(req.getCheckerYn())) {
-				errorList.add(new Error("05", "Checker", "Please Select Checker"));
-			} else if (req.getCheckerYn().length() > 1) {
-				errorList.add(new Error("05", "Checker", "Enter Checker 1 Character Only"));
-			}else if(!("Y".equals(req.getCheckerYn())||"N".equals(req.getCheckerYn()))) {
-				errorList.add(new Error("05", "Checker", "Enter Checker Y or N Only"));
-			}
-			
-			if (StringUtils.isBlank(req.getMakerYn())) {
-				errorList.add(new Error("05", "Maker", "Please Select Maker"));
-			} else if (req.getMakerYn().length() > 1) {
-				errorList.add(new Error("05", "Maker", "Enter Maker 1 Character Only"));
-			}else if(!("Y".equals(req.getMakerYn())||"N".equals(req.getMakerYn()))) {
-				errorList.add(new Error("05", "Maker", "Enter Maker Y or N Only"));
-			}
-			
-			if (StringUtils.isBlank(req.getCustConfirmYn())) {
-				errorList.add(new Error("05", "CustomerConfirmation", "Please Select CustomerConfirmation"));
-			} else if (req.getCustConfirmYn().length() > 1) {
-				errorList.add(new Error("05", "CustomerConfirmation", "Enter CustomerConfirmation 1 Character Only"));
-			}else if(!("Y".equals(req.getCustConfirmYn())||"N".equals(req.getCustConfirmYn()))) {
-				errorList.add(new Error("05", "CustomerConfirmation", "Enter CustomerConfirmation Y or N Only"));
-			}
-			
-			if(StringUtils.isBlank(req.getSumInsuredStart())) {
-				errorList.add(new Error("02", "Sum Insured Start", "Plese Enter Sum Insured Start  " ));
-			} else if (! req.getSumInsuredStart().matches("[0-9.]+") ) {
-				errorList.add(new Error("02", "Sum Insured Start", "Plese Enter Valid Number Sum Insured Start "  ));
-			}
-			if(StringUtils.isBlank(req.getSumInsuredEnd())) {
-				errorList.add(new Error("02", "Sum Insured End", "Plese Enter Sum Insured End " ));
-			} else if (! req.getSumInsuredEnd().matches("[0-9.]+") ) {
-				errorList.add(new Error("02", "Sum Insured End", "Plese Enter Valid Number Sum Insured End  "  ));
-			} else if (StringUtils.isNotBlank(req.getSumInsuredStart()) && StringUtils.isBlank(req.getSumInsuredEnd())  ) {
-				if (Long.valueOf(req.getSumInsuredStart()) > Long.valueOf(req.getSumInsuredEnd()) ) {
-					errorList.add(new Error("02", "Sum Insured End", "Sum Insured Start Greater Than Sum Insured End " ));
-				}
-			} */
-			
 			if (StringUtils.isBlank(req.getProductDesc())) {
 				errorList.add(new Error("08", "ProductDesc", "Please Select Product  Desc "));
 			}else if (req.getProductDesc().length() > 500) {
 				errorList.add(new Error("08", "ProductDesc", "Please Enter Product Descwithin 500 Characters"));
 			}
 			
-			
-			
-		/*	if (StringUtils.isBlank(req.getAppLoginUrl())) {
-				errorList.add(new Error("08", "AppLoginUrl", "Please Select AppLoginUrl "));
-			}else if (req.getAppLoginUrl().length() > 100) {
-				errorList.add(new Error("11", "AppLoginUrl", "Please Enter AppLoginUrl within 100 Characters"));
-			} */
-			
-			if (StringUtils.isBlank(req.getCreatedBy())) {
-				errorList.add(new Error("08", "CreatedBy", "Please Enter CreatedBy"));
-			}else if (req.getCreatedBy().length() > 50) {
-				errorList.add(new Error("11", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
-			} 
-			
-			if (StringUtils.isBlank(req.getRegulatoryCode())) {
-				errorList.add(new Error("13", "Regulatory Code", "Please Enter Regulatory Code"));
-			}else if (req.getRegulatoryCode().length() > 20) {
-				errorList.add(new Error("13", "Regulatory Code", "Please Enter Regulatory Code within 20 Characters"));
-			}
 			if (StringUtils.isBlank(req.getMotorYn())) {
 				errorList.add(new Error("12", "Motor YN", "Please Select Motor YN "));
 			}else if (req.getMotorYn().length() >1) {
@@ -361,31 +268,51 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 		Long data = 0L;
 		try {
 	
-			List<Long> list = new ArrayList<Long>();
+			List<Tuple> list = new ArrayList<Tuple>();
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<Long> query = cb.createQuery(Long.class);
+			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
 	
 			// Find All
 			Root<ProductMaster> b = query.from(ProductMaster.class);
 	
 			// Select
-			query.multiselect(cb.count(b));
-	
+			query.multiselect(b.get("productId").alias("productId") );
+			
+			Subquery<Long> product = query.subquery(Long.class);
+			Root<ProductMaster> ocpm2 = product.from(ProductMaster.class);
+		
 			// Effective Date Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
 			Root<ProductMaster> ocpm1 = effectiveDate.from(ProductMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart"))).distinct(true);
+			Predicate a1 = cb.equal(ocpm1.get("productId"), ocpm2.get("productId"));
 			effectiveDate.where(a1);
-	
-			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			query.where(n1);
+									
+			
+			// Cover ID Date Max Filter
+			product.select(ocpm2.get("productId")).distinct(true);
+			Predicate a2 = cb.equal(ocpm2.get("productId"), b.get("productId"));
+			Predicate a3 = cb.equal(ocpm2.get("effectiveDateStart"), effectiveDate );
+			product.where(a2, a3);
+			
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("productId")));
+			
+			Predicate n1 = cb.equal(b.get("productId"), product);
+			query.where(n1).orderBy(orderList);
+			
 			// Get Result
-			TypedQuery<Long> result = em.createQuery(query);
+			TypedQuery<Tuple> result = em.createQuery(query);
 			list = result.getResultList();
 	
-			data = list.get(0);
+			if( list.size() > 0 ) {
+				data = list.get(0).get("productId") == null ? 0L  : Long.valueOf(list.get(0).get("productId").toString() ) ;
+			} else {
+				 data = 0L ;
+			}
+			
 	
 		} catch (Exception e) {
 			e.printStackTrace();

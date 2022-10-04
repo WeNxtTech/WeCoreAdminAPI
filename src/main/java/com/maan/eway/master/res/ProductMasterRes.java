@@ -53,9 +53,9 @@ public class ProductMasterRes implements Serializable {
 	@JsonProperty("ProductDesc")
 	private String productDesc;
 
-	@JsonProperty("CoreAppCode")
-	private String coreAppCode;
-
+	@JsonProperty("RegulatoryCode")
+	private String regulatoryCode;
+	
 	@JsonProperty("AmendId")
 	private String amendId;
 
@@ -71,6 +71,4 @@ public class ProductMasterRes implements Serializable {
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 	
-	@JsonProperty("TiraCode")
-	private String tiraCode;
 }

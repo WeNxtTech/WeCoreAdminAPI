@@ -76,12 +76,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="STATUS", length=1)
     private String     status ;
 
-    @Column(name="CORE_APP_CODE", length=20)
-    private String     coreAppCode ;
-    
-    @Column(name="TIRA_CODE", length=20)
-    private String     tiraCode ;
-    
+    @Column(name="REGULATORY_CODE", length=20,nullable=false)
+    private String    regulatoryCode ;
+ 
     @Column(name="CREATED_BY", length=20)
     private String     createdBy ;
 

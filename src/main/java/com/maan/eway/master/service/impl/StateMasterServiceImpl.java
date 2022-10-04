@@ -254,17 +254,12 @@ public class StateMasterServiceImpl implements StateMasterService {
 				errorList.add(new Error("06", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
 			}
 			
-			if (StringUtils.isBlank(req.getCoreAppCode())) {
-				errorList.add(new Error("07", "CoreAppCode", "Please Enter CoreAppCode"));
-			}else if (req.getCoreAppCode().length() > 20) {
-				errorList.add(new Error("07", "CoreAppCode", "Please Enter CoreAppCode within 20 Characters"));
+			if (StringUtils.isBlank(req.getRegulatoryCode())) {
+				errorList.add(new Error("07", "RegulatoryCode", "Please Enter RegulatoryCode"));
+			}else if (req.getRegulatoryCode().length() > 20) {
+				errorList.add(new Error("07", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters"));
 			}
 			
-			if (StringUtils.isBlank(req.getTiraCode())) {
-				errorList.add(new Error("08", "TiraCode", "Please Enter TiraCode"));
-			}else if (req.getTiraCode().length() > 20) {
-				errorList.add(new Error("08", "TiraCode", "Please Enter TiraCode within 20 Characters"));
-			}
 			if (StringUtils.isBlank(req.getRemarks())) {
 				errorList.add(new Error("09", "Remarks", "Please Enter Remarks"));
 			}else if (req.getRemarks().length() > 100) {

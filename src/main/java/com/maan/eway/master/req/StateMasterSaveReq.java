@@ -35,15 +35,12 @@ public class StateMasterSaveReq implements Serializable {
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
-
-	@JsonProperty("CoreAppCode")
-	private String coreAppCode;
 	
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 	
-	@JsonProperty("TiraCode")
-	private String tiraCode;
+	@JsonProperty("RegulatoryCode")
+	private String regulatoryCode;
 
 	@JsonProperty("Status")
 	private String status;

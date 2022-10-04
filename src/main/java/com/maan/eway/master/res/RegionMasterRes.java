@@ -28,8 +28,8 @@ public class RegionMasterRes implements Serializable {
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 	
-	@JsonProperty("TiraCode")
-	private String tiraCode;
+	@JsonProperty("RegulatoryCode")
+	private String regulatoryCode;
 	
 	@JsonProperty("RegionShortCode")
 	private String regionShortCode;
@@ -43,9 +43,6 @@ public class RegionMasterRes implements Serializable {
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EntryDate")
 	private Date entryDate;
-
-	@JsonProperty("CoreAppCode")
-	private String coreAppCode;
 
 	@JsonProperty("AmendId")
 	private String amendId;

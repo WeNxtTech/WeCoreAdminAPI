@@ -270,10 +270,10 @@ this.repository = repo;
 			errors.add(new Error("10", "BrokerYn", "Insurance Company Valid BrokerYn Y  or N"));
 		}
 				
-		if (StringUtils.isBlank(req.getTiraCode())) {
-			errors.add(new Error("08", "TiraCode", "Please Enter TiraCode"));
-		}else if (req.getTiraCode().length() > 20) {
-			errors.add(new Error("11", "TiraCode", "Please Enter TiraCode within 20 Characters"));
+		if (StringUtils.isBlank(req.getRegulatoryCode())) {
+			errors.add(new Error("11", "RegulatoryCode", "Please Enter RegulatoryCode"));
+		}else if (req.getRegulatoryCode().length() > 20) {
+			errors.add(new Error("11", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters"));
 		}
 		} catch (Exception e) {
 			e.printStackTrace();

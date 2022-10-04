@@ -44,10 +44,10 @@ public class InsuranceCompanyMasterRes implements Serializable {
 	
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EntryDate")
-    private Date       entryDate    ;
+    private Date       entryDate;
 	
 	@JsonProperty("Status")
-    private String     status       ;
+    private String     status;
 
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
@@ -61,8 +61,8 @@ public class InsuranceCompanyMasterRes implements Serializable {
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 	
-	@JsonProperty("TiraCode")
-	private String tiraCode;
+	@JsonProperty("RegulatoryCode")
+	private String regulatoryCode;
 	
 	@JsonProperty("AmendId")
 	private String amendId;

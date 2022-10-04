@@ -45,8 +45,8 @@ public class ProductReferalMasterSaveReq {
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 
-	@JsonProperty("TiraCode")
-	private String tiraCode;
+	@JsonProperty("RegulatoryCode")
+	private String regulatoryCode;
 
 
 }

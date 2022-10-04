@@ -145,10 +145,10 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 				} else if (req.getStatus().length() > 20) {
 					errorList.add(new Error("07", "CoreAppCode", "Enter CoreAppCode 20 Character Only in  Row No : " + row));
 				}
-				if (StringUtils.isBlank(req.getTiraCode())) {
-					errorList.add(new Error("08", "TiraCode", "Please Enter TiraCode in  Row No : " + row));
-				} else if (req.getTiraCode().length() > 20) {
-					errorList.add(new Error("08", "Tira Code", "Enter Tira Code 20 Character Only in  Row No : " + row));
+				if (StringUtils.isBlank(req.getRegulatoryCode())) {
+					errorList.add(new Error("08", "RegulatoryCode", "Please Enter RegulatoryCode in  Row No : " + row));
+				} else if (req.getRegulatoryCode().length() > 20) {
+					errorList.add(new Error("08", "RegulatoryCode", "Enter RegulatoryCode 20 Character Only in  Row No : " + row));
 				}
 				
 			

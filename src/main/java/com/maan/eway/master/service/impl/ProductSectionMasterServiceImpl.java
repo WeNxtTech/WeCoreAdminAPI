@@ -138,10 +138,10 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 					errorList.add(new Error("08", "CoreAppCode", "Please Enter CoreAppCode within 20 Characters" + row));
 				}
 				
-				if (StringUtils.isBlank(req.getTiraCode())) {
-					errorList.add(new Error("09", "TiraCode", "Please Enter TiraCode" + row));
-				}else if (req.getTiraCode().length() > 20) {
-					errorList.add(new Error("09", "TiraCode", "Please Enter TiraCode within 20 Characters" + row));
+				if (StringUtils.isBlank(req.getRegulatoryCode())) {
+					errorList.add(new Error("09", "RegulatoryCode", "Please Enter RegulatoryCode" + row));
+				}else if (req.getRegulatoryCode().length() > 20) {
+					errorList.add(new Error("09", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters" + row));
 				}
 				if (StringUtils.isBlank(req.getRemarks())) {
 					errorList.add(new Error("10", "Remarks", "Please Enter Remarks" + row));
@@ -535,7 +535,7 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 	
 				res.setSectionId(data.getSectionId().toString() );
 				res.setSectionName(data.getSectionName());
-				res.setCoreAppCode(data.getCoreAppCode());
+				res.setRegulatoryCode(data.getRegulatoryCode());
 				resList.add(res);
 			}
 	

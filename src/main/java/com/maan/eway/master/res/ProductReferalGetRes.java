@@ -52,7 +52,7 @@ public class ProductReferalGetRes {
 	@JsonProperty("AmendId")
 	private String amendId;
 
-	@JsonProperty("TiraCode")
-	private String tiraCode;
+	@JsonProperty("RegulatoryCode")
+	private String regulatoryCode;
 
 }

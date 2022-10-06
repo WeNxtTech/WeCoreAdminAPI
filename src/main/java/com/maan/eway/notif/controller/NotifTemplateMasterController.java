@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.bean.NotifTemplateMaster;
-import com.maan.eway.service.NotifTemplateMasterService;
+import com.maan.eway.notif.service.NotifTemplateMasterService;
 
 
 /**

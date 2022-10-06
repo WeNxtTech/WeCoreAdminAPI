@@ -108,6 +108,19 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="REGULATORY_CODE", length=20)
     private String regulatoryCode;
+    
+    @Column(name="COMPANY_WEBSITE", length=100)
+    private String companyWebsite;
+    
+    @Column(name="FOOTER_IMAGE", length=100)
+    private String footerImage;
+
+    @Column(name="FOOTER_DESCRIPTION", length=100)
+    private String footerDescription;
+    
+    @Column(name="SIGNATURE",length=100)
+    private String signature;
+
 }
 
 

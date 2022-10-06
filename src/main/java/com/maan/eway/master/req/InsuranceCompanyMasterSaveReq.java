@@ -6,20 +6,11 @@
 package com.maan.eway.master.req;
 
 import java.util.Date;
-import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.maan.eway.bean.BranchMaster;
-import com.maan.eway.bean.DocumentMaster;
-import com.maan.eway.bean.MailMaster;
-import com.maan.eway.bean.ProductMaster;
-import com.maan.eway.bean.RegionMaster;
-import com.maan.eway.bean.SmsConfigMaster;
 
 import lombok.Data;
-
-
 
 /**
  * Domain class for entity "InsuranceCompanyMaster"
@@ -27,23 +18,21 @@ import lombok.Data;
  * @author Telosys Tools Generator
  *
  */
- 
- 
+
 @Data
 public class InsuranceCompanyMasterSaveReq {
 
 	@JsonProperty("InsuranceId")
 	private String insuranceId;
-	
+
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
-	
+
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateEnd")
 	private Date effectiveDateEnd;
 
-	
 	@JsonProperty("CompanyName")
 	private String companyName;
 
@@ -64,22 +53,32 @@ public class InsuranceCompanyMasterSaveReq {
 
 	@JsonProperty("BrokerYn")
 	private String brokerYn;
-	
+
 	@JsonProperty("Status")
 	private String status;
 
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
-	
+
 	@JsonProperty("RegulatoryCode")
 	private String regulatoryCode;
 
-
 	@JsonProperty("Remarks")
 	private String remarks;
-	
+
 	@JsonProperty("CreatedBy")
 	private String createdBy;
-	
-  
+
+	@JsonProperty("CompanyWebsite")
+	private String companyWebsite;
+
+	@JsonProperty("FooterImage")
+	private String footerImage;
+
+	@JsonProperty("FooterDescription")
+	private String footerDescription;
+
+	@JsonProperty("Signature")
+	private String signature;
+
 }

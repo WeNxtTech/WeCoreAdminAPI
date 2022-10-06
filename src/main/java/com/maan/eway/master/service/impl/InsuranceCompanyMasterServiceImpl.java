@@ -288,6 +288,33 @@ this.repository = repo;
 		}else if (req.getRegulatoryCode().length() > 20) {
 			errors.add(new Error("11", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters"));
 		}
+		boolean result = isValidURL(req.getCompanyWebsite());
+		if (StringUtils.isBlank(req.getCompanyWebsite())) {
+			errors.add(new Error("12", "CompanyWebsite", "Please Enter CompanyWebsite"));
+		}else if (req.getCompanyWebsite().length() > 100) {
+			errors.add(new Error("12", "CompanyWebsite", "Please Enter CompanyWebsite within 100 Characters"));
+		}
+		else if(result == false) {
+			errors.add(new Error("12", "Company Websiter", "Please Enter Valid Company Website"));
+		}
+		if(StringUtils.isBlank(req.getFooterImage())){
+			errors.add(new Error("13", "Footer Image", "Please Enter Footer Image"));
+		}
+		else if(req.getFooterImage().length()>100) {
+			errors.add(new Error("13", "Footer Image", "Please Enter Footer Image within 100 Characters"));
+		}
+		if(StringUtils.isBlank(req.getFooterDescription())) {
+			errors.add(new Error("14", "Footer Description","Please Enter Footer Description"));
+		}
+		else if(req.getFooterDescription().length()>100) {
+			errors.add(new Error("14", "Footer Description","Please Enter Footer Description within 100 Characters"));
+		}
+		if(StringUtils.isBlank(req.getSignature())) {
+			errors.add(new Error("15", "Signature","Please Enter Signature"));
+		}
+		else if(req.getSignature().length()>100) {
+			errors.add(new Error("15", "Signature","Please Enter Signature within 100 Characters"));
+		}
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
@@ -315,6 +342,16 @@ this.repository = repo;
 		return true;
 	}
 
+	
+	// URL Validation Checking Method
+		public static boolean isValidURL(String url) {
+			String regex = "((http|https)://)(www.)?" + "[a-zA-Z0-9@:%._\\+~#?&//=]" + "{2,256}\\.[a-z]"
+					+ "{2,6}\\b([-a-zA-Z0-9@:%" + "._\\+~#?&//=]*)";
+			Pattern p = Pattern.compile(regex);
+			Matcher m = p.matcher(url);
+			return m.matches();
+		}
+	
 	public List<InsuranceCompanyMaster> getCompanyNameExistDetails(String companyName) {
 		List<InsuranceCompanyMaster> list = new ArrayList<InsuranceCompanyMaster>();
 		try {

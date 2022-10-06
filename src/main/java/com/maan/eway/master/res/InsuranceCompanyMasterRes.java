@@ -67,4 +67,18 @@ public class InsuranceCompanyMasterRes implements Serializable {
 	@JsonProperty("AmendId")
 	private String amendId;
 	
+	@JsonProperty("CompanyWebsite")
+	private String companyWebsite;
+	
+
+	@JsonProperty("FooterImage")
+	private String footerImage;
+
+
+	@JsonProperty("FooterDescription")
+	private String footerDescription;
+	
+
+	@JsonProperty("Signature")
+	private String signature;
 }

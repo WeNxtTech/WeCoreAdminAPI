@@ -1,60 +1,64 @@
-package com.maan.eway.master.req;
+package com.maan.eway.notif.req;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
-public class MailMasterSaveReq implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class SmsInsertReq {
 
 	@JsonProperty("SNo")
-	private String SNo;
-
+	private String sNo;
+	
 	@JsonProperty("CompanyId")
 	private String companyId;
-
-	@JsonProperty("SmtpHost")
-	private String smtpHost;
-
-	@JsonProperty("SmtpUser")
-	private String smtpUser;
-
-	@JsonProperty("SmtpPwd")
-	private String smtpPwd;
-	
-	@JsonProperty("Address")
-	private String address;
 	
 	@JsonProperty("Status")
 	private String status;
 	
+	@JsonProperty("SenderId")
+	private String senderId;
+	
 	@JsonProperty("Remarks")
 	private String remarks;
 	
-	@JsonProperty("SmtpPort")
-	private String smtpPort;	
+	@JsonProperty("SmsUserPass")
+	private String smsUserPass;
 	
-	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("SmsUserName")
+	private String smsUserName;
+	
+	@JsonProperty("SmsPartyUrl")
+	private String smsPartyUrl;	
+	
+	@JsonProperty("SecureYn")
+	private String secureYn;
+	
+	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
 
-	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateEnd")
 	private Date effectiveDateEnd;
-	
+
+
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
 	
 	@JsonProperty("RegulatoryCode")
 	private String regulatoryCode;
-		
+	
 	@JsonProperty("CreatedBy")
 	private String createdBy;
-
 }

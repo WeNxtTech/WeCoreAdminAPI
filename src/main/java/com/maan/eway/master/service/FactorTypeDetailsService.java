@@ -5,6 +5,14 @@
 */
 package com.maan.eway.master.service;
 import com.maan.eway.bean.FactorTypeDetails;
+import com.maan.eway.error.Error;
+import com.maan.eway.master.req.FactorTypeDetailsSaveReq;
+import com.maan.eway.master.req.FactorTypeGetAllReq;
+import com.maan.eway.master.req.FactorTypeGetReq;
+import com.maan.eway.master.req.FactorUpdateStatusReq;
+import com.maan.eway.master.res.FactorTypeDetailsGetRes;
+import com.maan.eway.master.res.FactorTypeGetAllRes;
+import com.maan.eway.res.SuccessRes;
 
 import java.util.List;
 /**
@@ -12,11 +20,17 @@ import java.util.List;
 */
 public interface FactorTypeDetailsService  {
 
-FactorTypeDetails create(FactorTypeDetails d);
-FactorTypeDetails update(FactorTypeDetails d);
-//FactorTypeDetails getOne(long id) ;
- List<FactorTypeDetails> getAll();
-long getTotal();
-//boolean delete(long id);
+
+List<Error> validateFactorTypeDetails(FactorTypeDetailsSaveReq req);
+
+SuccessRes insertFactorTypeDetails(FactorTypeDetailsSaveReq req);
+
+List<FactorTypeGetAllRes> getallFactorTypes(FactorTypeGetAllReq req);
+
+List<FactorTypeGetAllRes> getActiveFactocTypes(FactorTypeGetAllReq req);
+
+FactorTypeDetailsGetRes getByFactorTypeId(FactorTypeGetReq req);
+
+SuccessRes changeStatusOfFactorType(FactorUpdateStatusReq req);
 
 }

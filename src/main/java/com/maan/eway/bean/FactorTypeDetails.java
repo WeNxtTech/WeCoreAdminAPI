@@ -57,8 +57,8 @@ private static final long serialVersionUID = 1L;
     private Integer    factorTypeId ;
 
     @Id
-    @Column(name="FACTOR_ID", nullable=false)
-    private Integer    factorId ;
+    @Column(name="RATING_FIELD_ID", nullable=false)
+    private Integer    ratingFieldId ;
 
     @Id
     @Column(name="PRODUCT_ID", nullable=false)
@@ -79,6 +79,9 @@ private static final long serialVersionUID = 1L;
     private Date       effectiveDateEnd ;
 
     //--- ENTITY DATA FIELDS 
+    @Column(name="FACTOR_TYPE_NAME", length=100)
+    private String     factorTypeName ;
+    
     @Column(name="FACTOR_TYPE_DESC", length=100)
     private String     factorTypeDesc ;
 
@@ -99,6 +102,16 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="CREATED_BY", length=100)
     private String     createdBy ;
+    
+    @Column(name="COLUMNS_ID" )
+    private Integer     columnsId ;
+    
+    @Column(name="STATUS" )
+    private String     status ;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="ENTRY_DATE", length=100)
+    private Date entryDate ;
 
 
     //--- ENTITY LINKS ( RELATIONSHIP )

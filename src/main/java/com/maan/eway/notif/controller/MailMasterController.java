@@ -1,4 +1,4 @@
-package com.maan.eway.master.controller;
+package com.maan.eway.notif.controller;
 /*
 *  Copyright (c) 2019. All right reserved
 * Created on 2022-08-24 ( Date ISO 2022-08-24 - Time 12:58:26 )
@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.error.Error;
-import com.maan.eway.master.req.MailMasterGetReq;
-import com.maan.eway.master.req.MailMasterSaveReq;
-import com.maan.eway.master.res.MailMasterGetRes;
-import com.maan.eway.master.service.MailMasterService;
+import com.maan.eway.notif.req.MailMasterGetReq;
+import com.maan.eway.notif.req.MailMasterSaveReq;
+import com.maan.eway.notif.res.MailMasterGetRes;
+import com.maan.eway.notif.service.MailMasterService;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -37,8 +37,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags = "MASTER : Mail Master ", description = "API's")
 public class MailMasterController {
 
-	@Autowired
-	private  MailMasterService mailService;
+	@Autowired	private  MailMasterService mailService;
 	
 	@Autowired
 	private  PrintReqService reqPrinter;

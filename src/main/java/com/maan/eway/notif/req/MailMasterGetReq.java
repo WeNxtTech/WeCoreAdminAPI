@@ -1,4 +1,4 @@
-package com.maan.eway.master.req;
+package com.maan.eway.notif.req;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -10,14 +10,15 @@ import com.fasterxml.jackson.databind.annotation.JacksonStdImpl;
 import lombok.Data;
 
 @Data
-public class MailMasterGetAllReq implements Serializable {
+public class MailMasterGetReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @JsonProperty("Limit")
-    private String limit;
+    @JsonProperty("Sno")
+    private String sNo;
     
-    @JsonProperty("Offset")
-    private String offset;
+    @JsonProperty("InsuranceId")
+    private String companyId;
+   
     
 }

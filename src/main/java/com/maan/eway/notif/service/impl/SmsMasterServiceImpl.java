@@ -1,4 +1,4 @@
-package com.maan.eway.master.service.impl;
+package com.maan.eway.notif.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,13 +26,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.maan.eway.bean.MailMaster;
 import com.maan.eway.bean.SmsMaster;
 import com.maan.eway.error.Error;
-import com.maan.eway.master.req.SmsGetReq;
-import com.maan.eway.master.req.SmsInsertReq;
-import com.maan.eway.master.res.SmsMasterGetRes;
-import com.maan.eway.master.service.SmsMasterService;
+import com.maan.eway.notif.req.SmsGetReq;
+import com.maan.eway.notif.req.SmsInsertReq;
+import com.maan.eway.notif.res.SmsMasterGetRes;
+import com.maan.eway.notif.service.SmsMasterService;
 import com.maan.eway.repository.SmsMasterRepository;
 import com.maan.eway.res.SuccessRes;
 

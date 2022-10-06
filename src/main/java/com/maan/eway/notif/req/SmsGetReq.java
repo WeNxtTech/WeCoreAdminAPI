@@ -1,4 +1,4 @@
-package com.maan.eway.master.req;
+package com.maan.eway.notif.req;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

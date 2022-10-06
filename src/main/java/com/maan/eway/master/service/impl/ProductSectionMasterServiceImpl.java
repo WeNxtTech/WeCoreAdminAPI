@@ -535,7 +535,10 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 	
 				res.setSectionId(data.getSectionId().toString() );
 				res.setSectionName(data.getSectionName());
+<<<<<<< Updated upstream
 				res.setRegulatoryCode(data.getRegulatoryCode());
+=======
+>>>>>>> Stashed changes
 				resList.add(res);
 			}
 	

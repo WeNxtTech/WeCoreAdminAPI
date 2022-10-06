@@ -1,4 +1,4 @@
-package com.maan.eway.master.res;
+package com.maan.eway.notif.res;
 
 import java.util.Date;
 

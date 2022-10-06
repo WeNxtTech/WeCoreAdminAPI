@@ -5,18 +5,57 @@
 */
 package com.maan.eway.master.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.gson.Gson;
+import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.FactorTypeDetails;
+import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.ProductMaster;
+import com.maan.eway.error.Error;
+import com.maan.eway.master.req.FactorTypeDetailsSaveReq;
+import com.maan.eway.master.req.FactorTypeGetAllReq;
+import com.maan.eway.master.req.FactorTypeGetReq;
+import com.maan.eway.master.req.FactorUpdateStatusReq;
+import com.maan.eway.master.req.GlobalCommonValidationReq;
+import com.maan.eway.master.req.RatingFieldDetails;
+import com.maan.eway.master.res.FactorTypeDetailsGetRes;
+import com.maan.eway.master.res.FactorTypeGetAllRes;
+import com.maan.eway.master.res.ProductMasterRes;
 import com.maan.eway.master.service.FactorTypeDetailsService;
+import com.maan.eway.master.service.MasterCommonValidationService;
 import com.maan.eway.repository.FactorTypeDetailsRepository;
+import com.maan.eway.repository.ListItemValueRepository;
+import com.maan.eway.res.SuccessRes;
 /**
 * <h2>FactorTypeDetailsServiceimpl</h2>
 */
@@ -27,101 +66,773 @@ public class FactorTypeDetailsServiceImpl implements FactorTypeDetailsService {
 @Autowired
 private FactorTypeDetailsRepository repository;
 
+@Autowired
+private MasterCommonValidationService commonValidationService;
+
+@Autowired
+private ListItemValueRepository listRepo ;
+
+@PersistenceContext
+private EntityManager em;
+
+Gson json = new Gson();
 
 private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
-/*
-public FactorTypeDetailsServiceImpl(FactorTypeDetailsRepository repo) {
-this.repository = repo;
-}
-
-  */
- @Override
-    public FactorTypeDetails create(FactorTypeDetails d) {
-
-       FactorTypeDetails entity;
-
-        try {
-            entity = repository.save(d);
-
-        } catch (Exception ex) {
-			log.error(ex);
-            return null;
-        }
-        return entity;
-    }
-
-    
-    @Override
-    public FactorTypeDetails update(FactorTypeDetails d) {
-        FactorTypeDetails c;
-
-        try {
-            c = repository.saveAndFlush(d);
-
-        } catch (Exception ex) {
-			log.error(ex);
-            return null;
-        }
-        return c;
-    }
-
-/*
-    @Override
-    public FactorTypeDetails getOne(long id) {
-        FactorTypeDetails t;
-
-        try {
-            t = repository.findById(id).orElse(null);
-
-        } catch (Exception ex) {
-			log.error(ex);
-            return null;
-        }
-        return t;
-    }
-
-*/
-    @Override
-    public List<FactorTypeDetails> getAll() {
-        List<FactorTypeDetails> lst;
-
-        try {
-            lst = repository.findAll();
-
-        } catch (Exception ex) {
-			log.error(ex);
-            return Collections.emptyList();
-        }
-        return lst;
-    }
 
 
-    @Override
-    public long getTotal() {
-        long total;
+	@Override
+	public List<Error> validateFactorTypeDetails(FactorTypeDetailsSaveReq req) {
+		List<Error> errorList = new ArrayList<Error>();
+		try {
+			
+			if (StringUtils.isBlank(req.getRemarks()) ) {
+				errorList.add(new Error("03", "Remark", "Please Select Remark "));
+			}else if (req.getRemarks().length() > 100){
+				errorList.add(new Error("03","Remark", "Please Enter Remark within 100 Characters")); 
+			}
+			
+			// Date Validation 
+			Calendar cal = new GregorianCalendar();
+			Date today = new Date();
+			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
+			today = cal.getTime();
+			if (req.getEffectiveDateStart() == null ) {
+				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
+	
+			} else if (req.getEffectiveDateStart().before(today)) {
+				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			} else if (req.getEffectiveDateEnd() == null ) {
+				errorList.add(new Error("04", "EffectiveDateEnd", "Please Enter Effective Date End "));
+	
+			} else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart()) || req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
+				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date End  is After Effective Date Start"));
+			} 
+			//Status Validation
+			if (StringUtils.isBlank(req.getStatus())) {
+				errorList.add(new Error("05", "Status", "Please Enter Status"));
+			} else if (req.getStatus().length() > 1) {
+				errorList.add(new Error("05", "Status", "Enter Status 1 Character Only"));
+			}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()))) {
+				errorList.add(new Error("05", "Status", "Enter Status Y or N Only"));
+			}
+		
+			
+			if (StringUtils.isBlank(req.getCreatedBy())) {
+				errorList.add(new Error("06", "CreatedBy", "Please Enter CreatedBy"));
+			}else if (req.getCreatedBy().length() > 50) {
+				errorList.add(new Error("06", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+			} 
+						
+			// Other Errors	
+			if (StringUtils.isBlank(req.getCompanyId())) {
+				errorList.add(new Error("01", "Insurance Id", "Please Enter InsuranceId"));
+				
+			}else if (StringUtils.isBlank(req.getProductId())) {
+				errorList.add(new Error("02", "ProductId", "Please Enter ProductId"));
+				
+			} else if (StringUtils.isBlank(req.getFactorTypeName())) {
+				errorList.add(new Error("01", "FactorTypeName", "Please Select FactorTypeName "));
+				
+			} else if (req.getFactorTypeName().length() > 100){
+				errorList.add(new Error("01","FactorTypeName", "Please Enter FactorTypeName within 100 Characters"));
+				
+			}else if (StringUtils.isBlank(req.getFactorTypeId()) && StringUtils.isNotBlank(req.getProductId()) && StringUtils.isNotBlank(req.getCompanyId()) ) {
+				
+				List<FactorTypeDetails> FactorTypeList = getFactorTypeNameExistDetails(req.getFactorTypeName() , req.getCompanyId() , req.getProductId() );
+				if (FactorTypeList.size()>0 ) {
+					errorList.add(new Error("01", "FactorTypeName", "This FactorTypeName Already Exist "));
+				}
+				
+			}else  {
+				List<FactorTypeDetails> FactorTypeList =  getFactorTypeNameExistDetails(req.getFactorTypeName() , req.getCompanyId() , req.getProductId() );
+				if (FactorTypeList.size()>0 &&  (! req.getFactorTypeId().equalsIgnoreCase(FactorTypeList.get(0).getFactorTypeId().toString())) ) {
+					errorList.add(new Error("01", "FactorTypeName", "This FactorTypeName Already Exist "));
+				}
+			}
+			
+			if(  req.getRatingFieldDetails()==null || req.getRatingFieldDetails().size() <= 0 ) {
+				errorList.add(new Error("01", "RatingFieldDetails", "Please Enter Alteast One Rating Field Details"));
+			} else {
+				Long row = 0L ;
+				for( RatingFieldDetails data : req.getRatingFieldDetails() ) {
+					row = row + 1 ;
+					if ( StringUtils.isBlank(data.getColumnsId())   ){
+						errorList.add(new Error("01","Column Id", "Please Enter Column Id in Row No : " + row ));
+					}
+					
+					if (StringUtils.isBlank(data.getRangeYn())) {
+						errorList.add(new Error("02", "RangeYn", "Please Enter RangeYn  in Row No : " + row ));
+					} else if (data.getRangeYn().length() > 1) {
+						errorList.add(new Error("02", "RangeYn", "Enter RangeYn 1 Character Only in Row No : " + row ));
+					}else if(!("Y".equals(data.getRangeYn())||"N".equals(data.getRangeYn()))) {
+						errorList.add(new Error("02", "RangeYn", "Enter RangeYn Y or N Only in Row No : " + row ));
+					}
+					
+					if ( StringUtils.isBlank(data.getRatingFieldId())) {
+						errorList.add(new Error("03","RatingFieldId", "Please Enter RatingFieldId in Row No : " + row ));
+					}
+					
+				}
+			}
+		
+		} catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+			errorList.add(new Error("12", "Common Error", e.getMessage()));
+		}
+		return errorList;
+	}
+	
+	public List<FactorTypeDetails> getFactorTypeNameExistDetails(String facTypeName , String companyId , String productId) {
+		List<FactorTypeDetails> list = new ArrayList<FactorTypeDetails>();
+		try {
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<FactorTypeDetails> query = cb.createQuery(FactorTypeDetails.class);
+	
+			// Find All
+			Root<FactorTypeDetails> b = query.from(FactorTypeDetails.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<FactorTypeDetails> ocpm1 = effectiveDate.from(FactorTypeDetails.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("factorTypeName"), b.get("factorTypeName"));
+			effectiveDate.where(a1,a2,a3);
+	
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("productId"), productId );	
+			Predicate n3 = cb.equal(b.get("companyId"), companyId );	
+			Predicate n4 = cb.equal(b.get("factorTypeName"), facTypeName );	
+			query.where(n1,n2,n3,n4);
+			
+			// Get Result
+			TypedQuery<FactorTypeDetails> result = em.createQuery(query);
+			list = result.getResultList();		
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null ;
+		}
+		return list;
+	}
+	
+	@Override
+	public SuccessRes insertFactorTypeDetails(FactorTypeDetailsSaveReq req) {
+		SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/YYYY");
+		SuccessRes res = new SuccessRes();
+		List<FactorTypeDetails> list = new ArrayList<FactorTypeDetails>();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+		
+		try {
+			List<ListItemValue> range = listRepo.findByItemTypeAndStatus("RANGE" , "Y");
+			List<ListItemValue> discrete = listRepo.findByItemTypeAndStatus("DISCRETE" , "Y");
+			Integer amendId = 0 ;
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
+			Date startDate = cal.getTime() ;
+			Date today = new Date();
+			cal.setTime(req.getEffectiveDateStart());  cal.add(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
+			cal.set(Calendar.SECOND, today.getSeconds());
+			Date oldEndDate = cal.getTime() ;
+			cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
+			cal.set(Calendar.SECOND, today.getSeconds());
+			Date effDate = cal.getTime();
+			Date endDate = req.getEffectiveDateEnd();
+			cal.setTime(req.getEffectiveDateEnd());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 50) ;
+			endDate = cal.getTime() ;
+			
+			String factorTypeId ="";
+			
+			if (StringUtils.isBlank(req.getFactorTypeId())) {
+					// Save
+				    //Long totalCount = repo.count();
+					Long totalCount =getFactorTypeMasterTableCount( req.getCompanyId() , req.getProductId() );
+				if ( totalCount == 0 ) {
+					factorTypeId =  Long.valueOf( 1001 ).toString();
+				} else {
+					factorTypeId = Long.valueOf(totalCount + 1 ).toString();
+				}
+					
+					
+			} else {
+					// Update
+					// Get Less than Equal Today Record 
+					// Criteria
+					factorTypeId =req.getFactorTypeId();
+					
+					CriteriaBuilder cb = em.getCriteriaBuilder();
+					CriteriaQuery<FactorTypeDetails> query = cb.createQuery(FactorTypeDetails.class);
 
-        try {
-            total = repository.count();
-        } catch (Exception ex) {
-            log.error(ex);
-			return 0;
-        }
-        return total;
-    }
+					// Find All
+					Root<FactorTypeDetails> b = query.from(FactorTypeDetails.class);
 
-/*
-    @Override
-    public boolean delete(long id) {
-        try {
-            repository.deleteById(id);
-            return true;
+					// Select
+					query.select(b);
 
-        } catch (Exception ex) {
-			log.error(ex);
-            return false;
-        }
-    }
+					// Effective Date Max Filter
+					Subquery<Long> effectiveDate = query.subquery(Long.class);
+					Root<FactorTypeDetails> ocpm1 = effectiveDate.from(FactorTypeDetails.class);
+					effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+					Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+					Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+					Predicate a3 = cb.equal(ocpm1.get("factorTypeId"), b.get("factorTypeId"));
+					Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , startDate);
+					effectiveDate.where(a1,a2,a3,a4);
+			
+					Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+					Predicate n2 = cb.equal(b.get("productId"), req.getProductId() );	
+					Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId() );		
+					Predicate n4 = cb.equal(b.get("factorTypeId"), req.getFactorTypeId());
+				
+					// Order By
+					List<Order> orderList = new ArrayList<Order>();
+					orderList.add(cb.desc(b.get("effectiveDateStart")));
+					
+					query.where(n1, n2, n3,n4).orderBy(orderList);
 
- */
+					// Get Result
+					TypedQuery<FactorTypeDetails> result = em.createQuery(query);
+					list = result.getResultList();
+					
+					// Deactive LatestRecord 
+					CriteriaBuilder cb2 = em.getCriteriaBuilder();
+					CriteriaQuery<FactorTypeDetails> query2 = cb2.createQuery(FactorTypeDetails.class);
+
+					// Find All
+					Root<FactorTypeDetails> b2 = query2.from(FactorTypeDetails.class);
+
+					// Select
+					query2.select(b2);
+
+					
+					Predicate n5 = cb2.equal(b2.get("effectiveDateStart"), list.get(0).getEffectiveDateStart() );
+					Predicate n6 = cb2.equal(b2.get("productId"), req.getProductId() );	
+					Predicate n7 = cb2.equal(b2.get("companyId"), req.getCompanyId() );	
+					Predicate n8 = cb2.equal(b2.get("factorTypeId"), req.getFactorTypeId() );	
+					
+					// Order By
+					List<Order> orderList2 = new ArrayList<Order>();
+					orderList2.add(cb2.asc(b2.get("factorTypeId")));
+					query2.where(n5,n6,n7,n8).orderBy(orderList2);
+					
+					// Get Result
+					TypedQuery<FactorTypeDetails> result2 = em.createQuery(query);
+					list = result2.getResultList();
+			}
+			
+			if( list.size() > 0) {
+				// Amend ID
+				if( list.get(0).getEffectiveDateStart().before(startDate)   ) {
+					String startDatewithoutTime = sdformat.format(startDate) ;
+					String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart()) ;
+					
+					if(startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime) ) {
+						amendId = list.get(0).getAmendId() + 1 ;
+					}
+				}
+				
+				for (FactorTypeDetails fac : list ) {
+					// Delete Old Records
+					repository.delete(fac);
+				}
+					
+			} 
+			
+			for ( RatingFieldDetails data :  req.getRatingFieldDetails() ) {
+				// Save New Records
+				FactorTypeDetails saveData = new FactorTypeDetails();
+				saveData = dozerMapper.map(req, FactorTypeDetails.class );
+				saveData.setFactorTypeId(Integer.valueOf(factorTypeId));
+				saveData.setRatingFieldId(Integer.valueOf(data.getRatingFieldId()));
+				saveData.setEffectiveDateStart(effDate);
+				saveData.setEffectiveDateEnd(endDate);
+				saveData.setEntryDate(new Date());
+				saveData.setAmendId(amendId);
+				saveData.setRangeYn(data.getRangeYn());
+				saveData.setColumnsId(Integer.valueOf(data.getColumnsId()));
+				if( data.getRangeYn().equalsIgnoreCase("Y") ) {
+					saveData.setRangeFromColumn(range.stream().filter( o -> o.getItemCode().equalsIgnoreCase(data.getColumnsId()) ).collect(Collectors.toList()).get(0).getParam1() );
+					saveData.setRangeToColumn(range.stream().filter( o -> o.getItemCode().equalsIgnoreCase(data.getColumnsId()) ).collect(Collectors.toList()).get(0).getParam2() );
+				} else if(data.getRangeYn().equalsIgnoreCase("N") ) {
+					saveData.setDiscreteColumn(discrete.stream().filter( o -> o.getItemCode().equalsIgnoreCase(data.getColumnsId()) ).collect(Collectors.toList()).get(0).getParam1() );
+				}
+				
+				repository.saveAndFlush(saveData);
+				log.info("Saved Details is ---> " + json.toJson(saveData));
+			}
+			res.setResponse("Factor Types Added Successfully ");
+			res.setSuccessId(factorTypeId );
+
+			if(list.size() > 0 ) {
+				// Update Old Record
+				for (FactorTypeDetails data :  list) {
+					SimpleDateFormat sdf = new  SimpleDateFormat("dd/MM/yyyy");
+					FactorTypeDetails updateRecord = data ;
+					updateRecord.setEffectiveDateEnd(oldEndDate);
+					String date1  = sdf.format(req.getEffectiveDateStart());
+					String date2  = sdf.format(list.get(0).getEffectiveDateStart());
+					if(date1.equalsIgnoreCase(date2) ) {
+					updateRecord.setStatus("N");
+					}
+					repository.saveAndFlush(updateRecord);
+				}
+			}			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+	
+	
+	public Long getFactorTypeMasterTableCount( String companyId , String productId ) {
+		
+		Long data = 0L;
+		try {
+	
+			List<Tuple> list = new ArrayList<Tuple>();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+	
+			// Find All
+			Root<FactorTypeDetails> b = query.from(FactorTypeDetails.class);
+	
+			// Select
+			query.multiselect(b.get("factorTypeId").alias("factorTypeId") );
+			
+			Subquery<Long> facorType = query.subquery(Long.class);
+			Root<FactorTypeDetails> ocpm2 = facorType.from(FactorTypeDetails.class);
+		
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<FactorTypeDetails> ocpm1 = effectiveDate.from(FactorTypeDetails.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart"))).distinct(true);
+			Predicate a1 = cb.equal(ocpm1.get("productId"), ocpm2.get("productId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), ocpm2.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("factorTypeId"), ocpm2.get("factorTypeId"));
+			effectiveDate.where(a1,a2,a3);
+									
+			
+			// Cover ID Date Max Filter
+			facorType.select(ocpm2.get("factorTypeId")).distinct(true);
+			Predicate a4 = cb.equal(ocpm2.get("productId"), b.get("productId"));
+			Predicate a5 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
+			Predicate a6 = cb.equal(ocpm2.get("factorTypeId"), b.get("factorTypeId"));
+			Predicate a7 = cb.equal(ocpm2.get("effectiveDateStart"), effectiveDate );
+			facorType.where(a4,a5,a6,a7);
+			
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("factorTypeId")));
+			
+			Predicate n1 = cb.equal(b.get("productId"), productId);
+			Predicate n2 = cb.equal(b.get("companyId"), companyId);
+			Predicate n3 = cb.equal(b.get("factorTypeId"), facorType);
+			query.where(n1,n2 , n3).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<Tuple> result = em.createQuery(query);
+			list = result.getResultList();
+	
+			if( list.size() > 0 ) {
+				data = list.get(0).get("factorTypeId") == null ? 0L  : Long.valueOf(list.get(0).get("factorTypeId").toString() ) ;
+			} else {
+				 data = 0L ;
+			}
+			
+	
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+	
+		}
+		return data;
+	}
+	
+	@Override
+	public List<FactorTypeGetAllRes> getallFactorTypes(FactorTypeGetAllReq req) {
+		List<FactorTypeGetAllRes> resList = new ArrayList<FactorTypeGetAllRes>();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+
+		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			
+			List<FactorTypeDetails> list = new ArrayList<FactorTypeDetails>();
+			//Pagination
+			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+	
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<FactorTypeDetails> query = cb.createQuery(FactorTypeDetails.class);
+	
+			// Find All
+			Root<FactorTypeDetails> b = query.from(FactorTypeDetails.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<FactorTypeDetails> ocpm1 = effectiveDate.from(FactorTypeDetails.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("factorTypeId"), b.get("factorTypeId"));
+			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2,a3,a4);
+	
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("effectiveDateStart")));
+			
+			// Where
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
+			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
+			
+			query.where(n1,n2,n3).orderBy(orderList);
+	
+			// Get Result
+			TypedQuery<FactorTypeDetails> result = em.createQuery(query);
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			list = result.getResultList();
+			Map<Integer, List<FactorTypeDetails>>  groupByFactorTypeId = list.stream() .collect(Collectors.groupingBy(w ->   w.getFactorTypeId())) ;
+			
+			// Map
+			for (Integer  data : groupByFactorTypeId.keySet()) {
+				List<FactorTypeDetails>  factorTypeDatas = groupByFactorTypeId.get(data);
+				factorTypeDatas.sort(Comparator.comparing(FactorTypeDetails :: getEffectiveDateStart ).reversed());
+				FactorTypeGetAllRes res = new FactorTypeGetAllRes();
+	
+				res = dozerMapper.map(factorTypeDatas.get(0), FactorTypeGetAllRes.class);
+				resList.add(res);
+			}
+	
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+	
+		}
+		return resList;
+	}
+	
+	
+	@Override
+	public List<FactorTypeGetAllRes> getActiveFactocTypes(FactorTypeGetAllReq req) {
+		List<FactorTypeGetAllRes> resList = new ArrayList<FactorTypeGetAllRes>();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+
+		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			
+			List<FactorTypeDetails> list = new ArrayList<FactorTypeDetails>();
+			//Pagination
+			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+	
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<FactorTypeDetails> query = cb.createQuery(FactorTypeDetails.class);
+	
+			// Find All
+			Root<FactorTypeDetails> b = query.from(FactorTypeDetails.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<FactorTypeDetails> ocpm1 = effectiveDate.from(FactorTypeDetails.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("factorTypeId"), b.get("factorTypeId"));
+			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2,a3,a4);
+	
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("effectiveDateStart")));
+			
+			// Where
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
+			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
+			Predicate n4 = cb.equal(b.get("status"), "Y");
+			query.where(n1,n2,n3,n4).orderBy(orderList);
+	
+			// Get Result
+			TypedQuery<FactorTypeDetails> result = em.createQuery(query);
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			list = result.getResultList();
+			
+			Map<Integer, List<FactorTypeDetails>>  groupByFactorTypeId = list.stream() .collect(Collectors.groupingBy(w ->   w.getFactorTypeId())) ;
+			
+			// Map
+			for (Integer  data : groupByFactorTypeId.keySet()) {
+				List<FactorTypeDetails>  factorTypeDatas = groupByFactorTypeId.get(data);
+				factorTypeDatas.sort(Comparator.comparing(FactorTypeDetails :: getEffectiveDateStart ).reversed());
+				FactorTypeGetAllRes res = new FactorTypeGetAllRes();
+	
+				res = dozerMapper.map(factorTypeDatas.get(0), FactorTypeGetAllRes.class);
+				resList.add(res);
+			}
+	
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+	
+		}
+		return resList;
+	}
+	
+	
+	@Override
+	public FactorTypeDetailsGetRes getByFactorTypeId(FactorTypeGetReq req) {
+		FactorTypeDetailsGetRes res = new FactorTypeDetailsGetRes();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+
+		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			
+			List<FactorTypeDetails> list = new ArrayList<FactorTypeDetails>();
+			
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<FactorTypeDetails> query = cb.createQuery(FactorTypeDetails.class);
+	
+			// Find All
+			Root<FactorTypeDetails> b = query.from(FactorTypeDetails.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<FactorTypeDetails> ocpm1 = effectiveDate.from(FactorTypeDetails.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("factorTypeId"), b.get("factorTypeId"));
+			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2,a3,a4);
+	
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("effectiveDateStart")));
+			
+			// Where
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
+			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
+			Predicate n4 = cb.equal(b.get("factorTypeId"), req.getFactorTypeId());
+			query.where(n1,n2,n3,n4).orderBy(orderList);
+	
+			// Get Result
+			TypedQuery<FactorTypeDetails> result = em.createQuery(query);
+			list = result.getResultList();
+			
+			// Get latest record
+			CriteriaBuilder cb2 = em.getCriteriaBuilder();
+			CriteriaQuery<FactorTypeDetails> query2 = cb.createQuery(FactorTypeDetails.class);
+
+			// Find All
+			Root<FactorTypeDetails> b2 = query2.from(FactorTypeDetails.class);
+
+			// Select
+			query2.select(b2);
+
+			
+			Predicate n5 = cb2.equal(b2.get("effectiveDateStart"), list.get(0).getEffectiveDateStart() );
+			Predicate n6 = cb2.equal(b2.get("productId"), req.getProductId() );	
+			Predicate n7 = cb2.equal(b2.get("companyId"), req.getCompanyId() );		
+			Predicate n8 = cb2.equal(b2.get("factorTypeId"),req.getFactorTypeId());
+			
+			// Order By
+			List<Order> orderList2 = new ArrayList<Order>();
+			orderList2.add(cb2.asc(b2.get("factorTypeId")));
+			query2.where(n5,n6,n7,n8).orderBy(orderList2);
+			
+			// Get Result
+			TypedQuery<FactorTypeDetails> result2 = em.createQuery(query);
+			list = result2.getResultList();
+			
+			// Map
+			res = dozerMapper.map(list.get(0) , FactorTypeDetailsGetRes.class );
+			
+			List<RatingFieldDetails>     ratingFieldList = new ArrayList<RatingFieldDetails>()  ;  
+			
+			for (FactorTypeDetails  data : list ) {
+				RatingFieldDetails rating = new RatingFieldDetails();
+				rating.setColumnsId(data.getColumnsId()==null?"" : String.valueOf(data.getColumnsId()));
+				rating.setRangeYn(data.getRangeYn());
+				rating.setRatingFieldId(data.getRatingFieldId()==null?"" : String.valueOf(data.getRatingFieldId()));
+				
+				ratingFieldList.add(rating);
+			}
+			res.setRatingFieldDetails(ratingFieldList);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+	
+		}
+		return res;
+	}
+	
+	
+	@Override
+	public SuccessRes changeStatusOfFactorType(FactorUpdateStatusReq req) {
+		SuccessRes res = new SuccessRes();
+		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			
+			FactorTypeDetails updateRecord  = new FactorTypeDetails();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			
+			List<FactorTypeDetails> list = new ArrayList<FactorTypeDetails>();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<FactorTypeDetails> query = cb.createQuery(FactorTypeDetails.class);
+	
+			// Find All
+			Root<FactorTypeDetails> b = query.from(FactorTypeDetails.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<FactorTypeDetails> ocpm1 = effectiveDate.from(FactorTypeDetails.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("factorTypeId"), b.get("factorTypeId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a3 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a4 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			effectiveDate.where(a1,a2,a3,a4);
+	
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("effectiveDateStart")));
+	
+			// Where
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("factorTypeId"), req.getFactorTypeId() );
+			Predicate n3 = cb.equal(b.get("productId"), req.getProductId());
+			Predicate n4 = cb.equal(b.get("companyId"),req.getCompanyId());
+			query.where(n1,n2,n3,n4).orderBy(orderList);
+	
+			// Get Result
+			TypedQuery<FactorTypeDetails> result = em.createQuery(query);
+			list = result.getResultList();
+			
+			// Get latest record
+			CriteriaBuilder cb2 = em.getCriteriaBuilder();
+			CriteriaQuery<FactorTypeDetails> query2 = cb2.createQuery(FactorTypeDetails.class);
+
+			// Find All
+			Root<FactorTypeDetails> b2 = query2.from(FactorTypeDetails.class);
+
+			// Select
+			query2.select(b2);
+		
+			Predicate n5 = cb2.equal(b2.get("effectiveDateStart"), list.get(0).getEffectiveDateStart() );
+			Predicate n6 = cb2.equal(b2.get("productId"), req.getProductId() );	
+			Predicate n7 = cb2.equal(b2.get("companyId"), req.getCompanyId() );		
+			Predicate n8 = cb2.equal(b2.get("factorTypeId"),req.getFactorTypeId());
+			
+			// Order By
+			List<Order> orderList2 = new ArrayList<Order>();
+			orderList2.add(cb2.asc(b2.get("factorTypeId")));
+			query2.where(n5,n6,n7,n8).orderBy(orderList2);
+			
+			// Get Result
+			TypedQuery<FactorTypeDetails> result2 = em.createQuery(query);
+			list = result2.getResultList();
+			
+				
+			if (req.getStatus().equalsIgnoreCase("N") )	{
+					// Delete Old Records
+					cal.setTime(today);
+					cal.set(Calendar.HOUR_OF_DAY, 23);
+					cal.set(Calendar.MINUTE, 1);
+					today   = cal.getTime();
+					
+					// create update
+					CriteriaDelete<FactorTypeDetails> delete = cb.createCriteriaDelete(FactorTypeDetails.class);
+					Root<FactorTypeDetails> pm = delete.from(FactorTypeDetails.class);
+				
+					// Where	
+					Predicate n9 = cb2.equal(pm.get("factorTypeId"), req.getFactorTypeId());
+					Predicate n10 = cb2.greaterThanOrEqualTo(pm.get("effectiveDateStart"), today);
+					Predicate n11 = cb2.equal(pm.get("productId"), req.getProductId() );	
+					Predicate n12 = cb2.equal(pm.get("companyId"), req.getCompanyId() );		
+					
+					delete.where(n9,n10,n11,n12);	
+					em.createQuery(delete).executeUpdate();
+					// Insert Updated Record
+					for (FactorTypeDetails data : list ) {
+						updateRecord = data ; 
+						updateRecord.setStatus(req.getStatus());
+						repository.saveAndFlush(updateRecord);	
+					}
+					
+				
+			} else if (req.getStatus().equalsIgnoreCase("Y") ) {
+				// Insert Updated Record
+				for (FactorTypeDetails data : list ) {
+					updateRecord = data ; 
+					updateRecord.setStatus(req.getStatus());
+					repository.saveAndFlush(updateRecord);	
+				}
+				
+			}
+			// perform update
+			
+			res.setResponse("Status Changed");
+			res.setSuccessId(req.getFactorTypeId());
+		} catch(Exception e ) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+
+
 
 }

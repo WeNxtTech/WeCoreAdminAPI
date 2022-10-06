@@ -5,6 +5,7 @@
 */
 package com.maan.eway.master.controller;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,56 +18,159 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.bean.FactorTypeDetails;
+import com.maan.eway.error.Error;
+import com.maan.eway.master.req.FactorTypeDetailsSaveReq;
+import com.maan.eway.master.req.FactorTypeGetAllReq;
+import com.maan.eway.master.req.FactorTypeGetReq;
+import com.maan.eway.master.req.FactorUpdateStatusReq;
+import com.maan.eway.master.req.ProductChangeStatusReq;
+import com.maan.eway.master.req.ProductMasterGetAllReq;
+import com.maan.eway.master.req.ProductMasterGetReq;
+import com.maan.eway.master.req.ProductMasterSaveReq;
+import com.maan.eway.master.res.FactorTypeDetailsGetRes;
+import com.maan.eway.master.res.FactorTypeGetAllRes;
+import com.maan.eway.master.res.ProductMasterRes;
 import com.maan.eway.master.service.FactorTypeDetailsService;
+import com.maan.eway.res.CommonRes;
+import com.maan.eway.res.SuccessRes;
+import com.maan.eway.service.PrintReqService;
+
+import io.swagger.annotations.ApiOperation;
 
 
 /**
 * <h2>FactorTypeDetailsController</h2>
 */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/master")
 public class FactorTypeDetailsController {
 
 	@Autowired
 	private  FactorTypeDetailsService entityService;
 
-/*
-	private static final String ENTITY_TITLE = "FactorTypeDetails";
+	@Autowired
+	private  PrintReqService reqPrinter;
+	
+	// save
+	@PostMapping("/insertfactortypes")
+	@ApiOperation(value = "This method is Insert Factor Type Details")
+	public ResponseEntity<CommonRes> insertProduct(@RequestBody FactorTypeDetailsSaveReq req) {
 
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
 
- 	public FactorTypeDetailsController (FactorTypeDetailsService entityService) {
-		this.entityService = entityService;
+		List<Error> validation = entityService.validateFactorTypeDetails(req);
+		// validation
+		if (validation != null && validation.size() != 0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+		} else {
+
+			// Get All
+			SuccessRes res = entityService.insertFactorTypeDetails(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+
 	}
-*/
+	
+	//  Get All Product Master
+	
+	@PostMapping("/getallfactortypes")
+	@ApiOperation("This method is getall Factor Type Details")
+	public ResponseEntity<CommonRes> getallFactorTypeDetails(@RequestBody FactorTypeGetAllReq req)
+	{
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		
+		List<FactorTypeGetAllRes> res = entityService.getallFactorTypes(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		
+		if(res!= null) {
+			return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
+		}
+		else {
+			return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	//  Get Active Product Master
+	
+		@PostMapping("/getactivefactortypes")
+		@ApiOperation("This method is get Active Factor Type Details")
+		public ResponseEntity<CommonRes> getActiveProductDetails(@RequestBody FactorTypeGetAllReq req)
+		{
+			CommonRes data = new CommonRes();
+			reqPrinter.reqPrint(req);
+			
+			List<FactorTypeGetAllRes> res = entityService.getActiveFactocTypes(req);
+			data.setCommonResponse(res);
+			data.setErrorMessage(Collections.emptyList());
+			data.setIsError(false);
+			data.setMessage("Success");
+			
+			if(res!= null) {
+				return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
+			}
+			else {
+				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+			}
+		}
+		
+		// Get By Product Id
+		
+		@PostMapping("/getbyfactortypeid")
+		@ApiOperation("This Method is to get by Product id")
+		public ResponseEntity<CommonRes> getByFactorTypeId(@RequestBody FactorTypeGetReq req)
+		{
+		CommonRes data = new CommonRes();
+		FactorTypeDetailsGetRes res = entityService.getByFactorTypeId(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
 
-	@PostMapping(value = "/factortypedetails")
-	public ResponseEntity<FactorTypeDetails> createFactorTypeDetails(@RequestBody  FactorTypeDetails model) {
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 
-   		 FactorTypeDetails data = entityService.create(model);
-    		if (data != null) {
-    			return new ResponseEntity<>(data,HttpStatus.CREATED);
-  			  } else {
-    			return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
-   			 }
-    }
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+		
+	@PostMapping("/factortype/changestatus")
+	@ApiOperation(value = "This method is get Product Change Status ")
+	public ResponseEntity<CommonRes> changeStatusOfFactorType(@RequestBody FactorUpdateStatusReq req) {
 
-    @GetMapping(value = "/factortypedetails")
-    public ResponseEntity<List<FactorTypeDetails>> getAllFactorTypeDetails() {
-        List<FactorTypeDetails> lst = entityService.getAll();
+		CommonRes data = new CommonRes();
+		// Change Status
+		SuccessRes res = entityService.changeStatusOfFactorType(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
 
-        return new ResponseEntity<>(lst,HttpStatus.OK);
-    }
-/*
-        @GetMapping(value = "/factortypedetails/{id}")
-    public ResponseEntity<FactorTypeDetails> getOneFactorTypeDetails(@PathVariable("id") long id) {
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
 
-            FactorTypeDetails e = entityService.getOne(id);
-            if (e == null) {
-            	return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
-            }
-            return new ResponseEntity<>(e, HttpStatus.OK);
-    }
-
-*/
+	}
 
 }

@@ -66,6 +66,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="PARAM_1", length=300)
     private String     param1 ;
+    
+    @Column(name="PARAM_2", length=300)
+    private String     param2 ;
 
     @Temporal(TemporalType.DATE)
     @Column(name="ENTRY_DATE")

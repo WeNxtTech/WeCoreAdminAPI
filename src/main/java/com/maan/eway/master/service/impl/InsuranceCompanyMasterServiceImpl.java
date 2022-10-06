@@ -177,7 +177,20 @@ this.repository = repo;
 				errors.add(new Error("02", "CoreAppCode", "Please Enter getCoreAppCode"));
 			} else if (req.getCoreAppCode().length() > 20) {
 				errors.add(new Error("02", "CoreAppCode", "getCoreAppCode under 20 Characters only allowed"));
+			}else if (StringUtils.isBlank(req.getInsuranceId())) {
+				List<InsuranceCompanyMaster> CompanyList = getCoreAppCodeExistDetails(req.getCoreAppCode());
+				if (CompanyList.size()>0 ) {
+					errors.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
+				}
+			}else  {
+				List<InsuranceCompanyMaster> CompanyList =  getCoreAppCodeExistDetails(req.getCoreAppCode() );
+				if (CompanyList.size()>0 &&  (! req.getInsuranceId().equalsIgnoreCase(CompanyList.get(0).getCompanyId().toString())) ) {
+					errors.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
+				}
+				
 			}
+			
+			
 			if (StringUtils.isBlank(req.getCompanyLogo())) {
 				errors.add(new Error("02", "CompanyLogo", "Please Enter CompanyLogo Url"));
 			} else if (req.getCompanyLogo().length() > 100) {
@@ -283,6 +296,7 @@ this.repository = repo;
 		return errors;
 	}
 	
+
 	public boolean isNotValidMail(String mail) {
 		String regex = "^[a-zA-Z0-9_+&*-]+(?:\\." + "[a-zA-Z0-9_+&*-]+)*@" + "(?:[a-zA-Z0-9-]+\\.)+[a-z"
 				+ "A-Z]{2,7}$";
@@ -335,7 +349,40 @@ this.repository = repo;
 		}
 		return list;
 	}
+	private List<InsuranceCompanyMaster> getCoreAppCodeExistDetails(String coreAppCode) {
+		List<InsuranceCompanyMaster> list = new ArrayList<InsuranceCompanyMaster>();
+		try {
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<InsuranceCompanyMaster> query = cb.createQuery(InsuranceCompanyMaster.class);
 	
+			// Find All
+			Root<InsuranceCompanyMaster> b = query.from(InsuranceCompanyMaster.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<InsuranceCompanyMaster> ocpm1 = effectiveDate.from(InsuranceCompanyMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			effectiveDate.where(a1);
+	
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("coreAppCode"), coreAppCode );	
+			query.where(n1,n2);
+			// Get Result
+			TypedQuery<InsuranceCompanyMaster> result = em.createQuery(query);
+			list = result.getResultList();		
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+	
+		}
+		return list;
+	}
 	@Transactional
 	@Override
 	public SuccessRes saveCompanyDetails(InsuranceCompanyMasterSaveReq req) {

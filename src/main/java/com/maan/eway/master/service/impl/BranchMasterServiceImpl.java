@@ -408,6 +408,18 @@ public List<Error> validateBranchDetails(BranchMasterSaveReq req) {
 		if (req.getCoreAppCode().length() > 20){
 			errorList.add(new Error("07","Core App Code", "Please Enter CoreAppCode within 20 Characters")); 
 		}
+		else if (StringUtils.isBlank(req.getCoreAppCode())) {
+			List<BranchMaster> coreAppCode = getCoreAppCodeExistDetails(req.getCompanyId() , null);
+			if (coreAppCode.size()>0 ) {
+				errorList.add(new Error("07", "CoreAppCode", "This core App Code  Already Exist "));
+			}
+		}else  {
+			List<BranchMaster> coreAppCode =  getCoreAppCodeExistDetails(req.getCompanyId(),req.getBranchCode() );
+			if (coreAppCode.size()>0 &&  (! req.getBranchCode().equalsIgnoreCase(coreAppCode.get(0).getBranchCode().toString())) ) {
+				errorList.add(new Error("08", "Core App Code", "This core App Code Already Exist "));
+			}
+		}
+		
 		if (req.getRegulatoryCode().length() > 20){
 			errorList.add(new Error("08","Regulatory Code", "Please Enter Regulatory Code within 20 Characters")); 
 		}
@@ -449,6 +461,51 @@ public List<Error> validateBranchDetails(BranchMasterSaveReq req) {
 	}
 	return errorList;
 }
+
+
+public List<BranchMaster> getCoreAppCodeExistDetails(String companyId, String branchCode ) {
+	List<BranchMaster> list = new ArrayList<BranchMaster>();
+	try {
+		// Find Latest Record
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<BranchMaster> query = cb.createQuery(BranchMaster.class);
+
+		// Find All
+		Root<BranchMaster> b = query.from(BranchMaster.class);
+
+		// Select
+		query.select(b);
+
+		// Effective Date Max Filter
+		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Root<BranchMaster> ocpm1 = effectiveDate.from(BranchMaster.class);
+		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+		
+		effectiveDate.where(a1);
+
+		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+		Predicate n2 = cb.equal(b.get("companyId"),companyId);	
+		if( StringUtils.isBlank(branchCode)) {
+			query.where(n1,n2);	
+		} else {
+			Predicate n3 = cb.equal(b.get("branchCode"),branchCode);
+			query.where(n1,n2,n3);
+		}
+		
+		// Get Result
+		TypedQuery<BranchMaster> result = em.createQuery(query);
+		list = result.getResultList();		
+	
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info(e.getMessage());
+
+	}
+	return list;
+}
+
+
 public Long getMasterTableCount() {
 
 	Long data = 0L;

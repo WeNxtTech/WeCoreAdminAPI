@@ -34,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.CompanyRegionMaster;
+import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.RegionMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CompanyRegionChangeStatusReq;
@@ -135,12 +136,24 @@ public class CompanyRegionMasterServiceImpl implements CompanyRegionMasterServic
 				}else if (req.getCoreAppCode().length() > 20) {
 					errorList.add(new Error("08", "CoreAppCode", "Please Enter CoreAppCode within 20 Characters"));
 				}
-				
+				else if (StringUtils.isBlank(req.getCoreAppCode())) {
+					List<CompanyRegionMaster> coreAppCode = getCoreAppCodeExistDetails(req.getCompanyId() , req.getCountryId() , null);
+					if (coreAppCode.size()>0 ) {
+						errorList.add(new Error("08", "CoreAppCode", "This core App Code  Already Exist "));
+					}
+				}else  {
+					List<CompanyRegionMaster> coreAppCode =  getCoreAppCodeExistDetails(req.getCompanyId(),req.getCountryId() , req.getRegionCode() );
+					if (coreAppCode.size()>0 &&  (! req.getRegionCode().equalsIgnoreCase(coreAppCode.get(0).getRegionCode().toString())) ) {
+						errorList.add(new Error("08", "Core App Code", "This core App Code Already Exist "));
+					}
+				}
 				if (StringUtils.isBlank(req.getRegulatoryCode())) {
 					errorList.add(new Error("09", "RegulatoryCode", "Please Enter RegulatoryCode"));
 				}else if (req.getRegulatoryCode().length() > 20) {
 					errorList.add(new Error("09", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters"));
 				}
+				
+				
 				if (StringUtils.isBlank(req.getRemarks())) {
 					errorList.add(new Error("10", "Remarks", "Please Enter Remarks"));
 				}else if (req.getRemarks().length() > 100) {
@@ -157,6 +170,50 @@ public class CompanyRegionMasterServiceImpl implements CompanyRegionMasterServic
 		return errorList;
 	}
 
+	public List<CompanyRegionMaster> getCoreAppCodeExistDetails(String companyId , String countryId , String regionCode ) {
+		List<CompanyRegionMaster> list = new ArrayList<CompanyRegionMaster>();
+		try {
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CompanyRegionMaster> query = cb.createQuery(CompanyRegionMaster.class);
+	
+			// Find All
+			Root<CompanyRegionMaster> b = query.from(CompanyRegionMaster.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CompanyRegionMaster> ocpm1 = effectiveDate.from(CompanyRegionMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a2 = cb.equal(ocpm1.get("countryId"),b.get("countryId"));
+			
+			effectiveDate.where(a1,a2);
+	
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("companyId"),companyId);	
+			Predicate n3 = cb.equal(b.get("countryId"), countryId );
+			if( StringUtils.isBlank(regionCode)) {
+				query.where(n1,n2,n3);	
+			} else {
+				Predicate n4 = cb.equal(b.get("regionCode"),regionCode);
+				query.where(n1,n2,n3,n4);
+			}
+			
+			// Get Result
+			TypedQuery<CompanyRegionMaster> result = em.createQuery(query);
+			list = result.getResultList();		
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+	
+		}
+		return list;
+	}
+	
 	@Transactional
 	@Override
 	public SuccessRes insertCompanyRegion(List<CompanyRegionSaveReq> reqList) {

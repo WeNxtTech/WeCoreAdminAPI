@@ -17,6 +17,7 @@ import com.google.gson.Gson;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ProductMaster;
+import com.maan.eway.bean.ProductReferalMaster;
 import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.bean.SectionMaster;
@@ -137,7 +138,17 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 				}else if (req.getCoreAppCode().length() > 20) {
 					errorList.add(new Error("08", "CoreAppCode", "Please Enter CoreAppCode within 20 Characters" + row));
 				}
-				
+				else if (StringUtils.isBlank(req.getSectionId())) {
+					List<ProductSectionMaster> coreAppCode = getCoreAppCodeExistDetails(req.getCompanyId() , req.getProductId() , null);
+					if (coreAppCode.size()>0 ) {
+						errorList.add(new Error("08", "CoreAppCode", "This core App Code  Already Exist "));
+					}
+				}else  {
+					List<ProductSectionMaster> coreAppCode =  getCoreAppCodeExistDetails(req.getCompanyId(),req.getProductId() , req.getSectionId() );
+					if (coreAppCode.size()>0 &&  (! req.getSectionId().equalsIgnoreCase(coreAppCode.get(0).getSectionId().toString())) ) {
+						errorList.add(new Error("08", "Core App Code", "This core App Code Already Exist "));
+					}
+				}
 				if (StringUtils.isBlank(req.getRegulatoryCode())) {
 					errorList.add(new Error("09", "RegulatoryCode", "Please Enter RegulatoryCode" + row));
 				}else if (req.getRegulatoryCode().length() > 20) {
@@ -157,6 +168,52 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			errorList.add(new Error("10", "CommonError", e.getMessage()));
 		}
 		return errorList;
+	}
+	
+	
+	public List<ProductSectionMaster> getCoreAppCodeExistDetails(String companyId , String productId , String sectionId ) {
+		List<ProductSectionMaster> list = new ArrayList<ProductSectionMaster>();
+		try {
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ProductSectionMaster> query = cb.createQuery(ProductSectionMaster.class);
+	
+			// Find All
+			Root<ProductSectionMaster> b = query.from(ProductSectionMaster.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<ProductSectionMaster> ocpm1 = effectiveDate.from(ProductSectionMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a2 = cb.equal(ocpm1.get("productId"),b.get("productId"));
+			Predicate a3 = cb.equal(ocpm1.get("sectionId"),b.get("sectionId"));
+
+			effectiveDate.where(a1,a2,a3);
+	
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("companyId"),companyId);	
+			Predicate n3 = cb.equal(b.get("productId"), productId );
+			if( StringUtils.isBlank(sectionId)) {
+				query.where(n1,n2,n3);	
+			} else {
+				Predicate n4 = cb.equal(b.get("sectionId"),sectionId );
+				query.where(n1,n2,n3,n4);
+			}
+			
+			// Get Result
+			TypedQuery<ProductSectionMaster> result = em.createQuery(query);
+			list = result.getResultList();		
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+	
+		}
+		return list;
 	}
 	
 	@Transactional

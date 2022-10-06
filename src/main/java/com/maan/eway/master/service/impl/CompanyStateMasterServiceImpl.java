@@ -264,7 +264,17 @@ public class CompanyStateMasterServiceImpl implements CompanyStateMasterService 
 				} else if (req.getCoreAppCode().length() > 20) {
 					errorList.add(new Error("07", "CoreAppCode", "Please Enter CoreAppCode within 20 Characters"+row));
 				}
-
+				else if (StringUtils.isBlank(req.getCoreAppCode())) {
+					List<CompanyStateMaster> coreAppCode = getCoreAppCodeExistDetails(req.getCompanyId() , req.getCountryId() ,req.getRegionCode(),null);
+					if (coreAppCode.size()>0 ) {
+						errorList.add(new Error("08", "CoreAppCode", "This core App Code  Already Exist "));
+					}
+				}else  {
+					List<CompanyStateMaster> coreAppCode =  getCoreAppCodeExistDetails(req.getCompanyId(),req.getCountryId() , req.getRegionCode(),req.getStateId());
+					if (coreAppCode.size()>0 &&  (! req.getStateId().equalsIgnoreCase(coreAppCode.get(0).getStateId().toString())) ) {
+						errorList.add(new Error("08", "Core App Code", "This core App Code Already Exist "));
+					}
+				}
 				if (StringUtils.isBlank(req.getRegulatoryCode())) {
 					errorList.add(new Error("08", "RegulatoryCode", "Please Enter RegulatoryCode"+row));
 				} else if (req.getRegulatoryCode().length() > 20) {
@@ -294,7 +304,50 @@ public class CompanyStateMasterServiceImpl implements CompanyStateMasterService 
 		return errorList;
 	}
 
+	public List<CompanyStateMaster> getCoreAppCodeExistDetails(String companyId , String countryId , String regionCode, String stateId ) {
+		List<CompanyStateMaster> list = new ArrayList<CompanyStateMaster>();
+		try {
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CompanyStateMaster> query = cb.createQuery(CompanyStateMaster.class);
 	
+			// Find All
+			Root<CompanyStateMaster> b = query.from(CompanyStateMaster.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CompanyStateMaster> ocpm1 = effectiveDate.from(CompanyStateMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a2 = cb.equal(ocpm1.get("countryId"),b.get("countryId"));
+			Predicate a3 = cb.equal(ocpm1.get("regionCode"), b.get("regionCode"));
+			effectiveDate.where(a1,a2,a3);
+	
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("companyId"),companyId);	
+			Predicate n3 = cb.equal(b.get("countryId"), countryId );
+			Predicate n4 = cb.equal(b.get("regionCode"),regionCode);
+			if( StringUtils.isBlank(stateId)) {
+				query.where(n1,n2,n3,n4);	
+			} else {
+				Predicate n5 = cb.equal(b.get("stateId"),stateId);
+				query.where(n1,n2,n3,n4,n5);
+			}
+			
+			// Get Result
+			TypedQuery<CompanyStateMaster> result = em.createQuery(query);
+			list = result.getResultList();		
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+	
+		}
+		return list;
+	}
 	
 ///*********************************************************************GET ALL******************************************************\\
 	@Override

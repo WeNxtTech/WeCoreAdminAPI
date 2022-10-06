@@ -36,6 +36,7 @@ import com.google.gson.Gson;
 import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.CoverOfsGridMaster;
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.OfsGridGetRes;
@@ -128,6 +129,8 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 		} else if (req.getCoreAppCode().length() > 20) {
 			errorList.add(new Error("04", "Core App Code", "Enter Core App Code  within 20 Characters Only"));
 		}
+		
+		
 		if (req.getRemarks().length() > 100) {
 			errorList.add(new Error("05", "Remarks", "Please Enter Remarks within 100 Characters"));
 		}

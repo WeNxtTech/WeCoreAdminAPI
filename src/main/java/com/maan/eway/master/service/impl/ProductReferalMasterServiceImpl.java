@@ -15,6 +15,7 @@ import com.maan.eway.repository.SectionMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.google.gson.Gson;
+import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.ProductReferalMaster;
@@ -145,6 +146,17 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 				} else if (req.getStatus().length() > 20) {
 					errorList.add(new Error("07", "CoreAppCode", "Enter CoreAppCode 20 Character Only in  Row No : " + row));
 				}
+				else if (StringUtils.isBlank(req.getReferalId())) {
+					List<ProductReferalMaster> coreAppCode = getCoreAppCodeExistDetails(req.getCompanyId() , req.getProductId() , null);
+					if (coreAppCode.size()>0 ) {
+						errorList.add(new Error("07", "CoreAppCode", "This core App Code  Name Already Exist "));
+					}
+				}else  {
+					List<ProductReferalMaster> coreAppCode =  getCoreAppCodeExistDetails(req.getCompanyId(),req.getProductId() , req.getReferalId() );
+					if (coreAppCode.size()>0 &&  (! req.getReferalId().equalsIgnoreCase(coreAppCode.get(0).getReferalId().toString())) ) {
+						errorList.add(new Error("07", "Core App Code", "This core App Code Already Exist "));
+					}
+				}
 				if (StringUtils.isBlank(req.getRegulatoryCode())) {
 					errorList.add(new Error("08", "RegulatoryCode", "Please Enter RegulatoryCode in  Row No : " + row));
 				} else if (req.getRegulatoryCode().length() > 20) {
@@ -160,6 +172,52 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 			e.printStackTrace();
 		}
 		return errorList;
+	}
+	
+	
+	public List<ProductReferalMaster> getCoreAppCodeExistDetails(String companyId , String productId , String referalId ) {
+		List<ProductReferalMaster> list = new ArrayList<ProductReferalMaster>();
+		try {
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ProductReferalMaster> query = cb.createQuery(ProductReferalMaster.class);
+	
+			// Find All
+			Root<ProductReferalMaster> b = query.from(ProductReferalMaster.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<ProductReferalMaster> ocpm1 = effectiveDate.from(ProductReferalMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a2 = cb.equal(ocpm1.get("productId"),b.get("productId"));
+			Predicate a3 = cb.equal(ocpm1.get("referalId"),b.get("referalId"));
+
+			effectiveDate.where(a1,a2,a3);
+	
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("companyId"),companyId);	
+			Predicate n3 = cb.equal(b.get("productId"), productId );
+			if( StringUtils.isBlank(referalId)) {
+				query.where(n1,n2,n3);	
+			} else {
+				Predicate n4 = cb.equal(b.get("referalId"), referalId );
+				query.where(n1,n2,n3,n4);
+			}
+			
+			// Get Result
+			TypedQuery<ProductReferalMaster> result = em.createQuery(query);
+			list = result.getResultList();		
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+	
+		}
+		return list;
 	}
 	
 	//************************************************Insert/Update Product Referal DETAILS******************************************************\\

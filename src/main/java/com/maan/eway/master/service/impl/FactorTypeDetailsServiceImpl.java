@@ -112,8 +112,8 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 				errorList.add(new Error("05", "Status", "Please Enter Status"));
 			} else if (req.getStatus().length() > 1) {
 				errorList.add(new Error("05", "Status", "Enter Status 1 Character Only"));
-			}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()))) {
-				errorList.add(new Error("05", "Status", "Enter Status Y or N Only"));
+			}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()) || "P".equals(req.getStatus()))) {
+				errorList.add(new Error("05", "Status", "Enter Status Y or N or P Only"));
 			}
 		
 			
@@ -172,9 +172,18 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 						errorList.add(new Error("03","RatingFieldId", "Please Enter RatingFieldId in Row No : " + row ));
 					}
 					
+					//Status Validation
+					if(StringUtils.isNotBlank(req.getStatus()) && !(req.getStatus().equalsIgnoreCase("P")) ) {
+						if (StringUtils.isBlank(data.getStatus())) {
+							errorList.add(new Error("05", "Status", "Please Enter Status In Row No : " + row ));
+						} else if (req.getStatus().length() > 1) {
+							errorList.add(new Error("05", "Status", "Enter Status 1 Character Only In Row No : " + row ));
+						}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()))) {
+							errorList.add(new Error("05", "Status", "Enter Status Y or N Only In Row No : " + row ));
+						}
+					}	
 				}
 			}
-		
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
@@ -300,31 +309,6 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 					// Get Result
 					TypedQuery<FactorTypeDetails> result = em.createQuery(query);
 					list = result.getResultList();
-					
-					// Deactive LatestRecord 
-					CriteriaBuilder cb2 = em.getCriteriaBuilder();
-					CriteriaQuery<FactorTypeDetails> query2 = cb2.createQuery(FactorTypeDetails.class);
-
-					// Find All
-					Root<FactorTypeDetails> b2 = query2.from(FactorTypeDetails.class);
-
-					// Select
-					query2.select(b2);
-
-					
-					Predicate n5 = cb2.equal(b2.get("effectiveDateStart"), list.get(0).getEffectiveDateStart() );
-					Predicate n6 = cb2.equal(b2.get("productId"), req.getProductId() );	
-					Predicate n7 = cb2.equal(b2.get("companyId"), req.getCompanyId() );	
-					Predicate n8 = cb2.equal(b2.get("factorTypeId"), req.getFactorTypeId() );	
-					
-					// Order By
-					List<Order> orderList2 = new ArrayList<Order>();
-					orderList2.add(cb2.asc(b2.get("factorTypeId")));
-					query2.where(n5,n6,n7,n8).orderBy(orderList2);
-					
-					// Get Result
-					TypedQuery<FactorTypeDetails> result2 = em.createQuery(query);
-					list = result2.getResultList();
 			}
 			
 			if( list.size() > 0) {
@@ -357,6 +341,7 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 				saveData.setAmendId(amendId);
 				saveData.setRangeYn(data.getRangeYn());
 				saveData.setColumnsId(Integer.valueOf(data.getColumnsId()));
+				saveData.setStatus(StringUtils.isBlank(data.getStatus()) ? req.getStatus()  : data.getStatus());
 				if( data.getRangeYn().equalsIgnoreCase("Y") ) {
 					saveData.setRangeFromColumn(range.stream().filter( o -> o.getItemCode().equalsIgnoreCase(data.getColumnsId()) ).collect(Collectors.toList()).get(0).getParam1() );
 					saveData.setRangeToColumn(range.stream().filter( o -> o.getItemCode().equalsIgnoreCase(data.getColumnsId()) ).collect(Collectors.toList()).get(0).getParam2() );
@@ -373,15 +358,9 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 			if(list.size() > 0 ) {
 				// Update Old Record
 				for (FactorTypeDetails data :  list) {
-					SimpleDateFormat sdf = new  SimpleDateFormat("dd/MM/yyyy");
-					FactorTypeDetails updateRecord = data ;
-					updateRecord.setEffectiveDateEnd(oldEndDate);
-					String date1  = sdf.format(req.getEffectiveDateStart());
-					String date2  = sdf.format(list.get(0).getEffectiveDateStart());
-					if(date1.equalsIgnoreCase(date2) ) {
-					updateRecord.setStatus("N");
-					}
-					repository.saveAndFlush(updateRecord);
+					 FactorTypeDetails updateRecord = data ;
+					 updateRecord.setEffectiveDateEnd(oldEndDate);
+					 repository.saveAndFlush(updateRecord);
 				}
 			}			
 		} catch (Exception e) {
@@ -516,13 +495,20 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 			
 			// Map
 			for (Integer  data : groupByFactorTypeId.keySet()) {
-				List<FactorTypeDetails>  factorTypeDatas = groupByFactorTypeId.get(data);
-				factorTypeDatas.sort(Comparator.comparing(FactorTypeDetails :: getEffectiveDateStart ).reversed());
 				FactorTypeGetAllRes res = new FactorTypeGetAllRes();
-	
-				res = dozerMapper.map(factorTypeDatas.get(0), FactorTypeGetAllRes.class);
+				
+				List<FactorTypeDetails>  factorTypeDatas = groupByFactorTypeId.get(data);
+				List<FactorTypeDetails> filterActiveData = factorTypeDatas.stream().filter( o -> o.getStatus().equalsIgnoreCase("Y") ).collect(Collectors.toList());
+				
+				if(filterActiveData.size() > 0 ) {
+					res = dozerMapper.map(filterActiveData.get(0), FactorTypeGetAllRes.class);
+					
+				} else {
+					res = dozerMapper.map(factorTypeDatas.get(0), FactorTypeGetAllRes.class);
+					
+				}
 				resList.add(res);
-			}
+		}
 	
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -644,11 +630,12 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("factorTypeId"), b.get("factorTypeId"));
 			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			effectiveDate.where(a1,a2,a3,a4);
+			Predicate a5 = cb.equal(ocpm1.get("ratingFieldId"), b.get("ratingFieldId"));
+			effectiveDate.where(a1,a2,a3,a4,a5);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(b.get("effectiveDateStart")));
+			orderList.add(cb.asc(b.get("ratingFieldId")));
 			
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
@@ -660,35 +647,9 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 			// Get Result
 			TypedQuery<FactorTypeDetails> result = em.createQuery(query);
 			list = result.getResultList();
-			
-			// Get latest record
-			CriteriaBuilder cb2 = em.getCriteriaBuilder();
-			CriteriaQuery<FactorTypeDetails> query2 = cb.createQuery(FactorTypeDetails.class);
-
-			// Find All
-			Root<FactorTypeDetails> b2 = query2.from(FactorTypeDetails.class);
-
-			// Select
-			query2.select(b2);
-
-			
-			Predicate n5 = cb2.equal(b2.get("effectiveDateStart"), list.get(0).getEffectiveDateStart() );
-			Predicate n6 = cb2.equal(b2.get("productId"), req.getProductId() );	
-			Predicate n7 = cb2.equal(b2.get("companyId"), req.getCompanyId() );		
-			Predicate n8 = cb2.equal(b2.get("factorTypeId"),req.getFactorTypeId());
-			
-			// Order By
-			List<Order> orderList2 = new ArrayList<Order>();
-			orderList2.add(cb2.asc(b2.get("factorTypeId")));
-			query2.where(n5,n6,n7,n8).orderBy(orderList2);
-			
-			// Get Result
-			TypedQuery<FactorTypeDetails> result2 = em.createQuery(query);
-			list = result2.getResultList();
-			
+	
 			// Map
 			res = dozerMapper.map(list.get(0) , FactorTypeDetailsGetRes.class );
-			
 			List<RatingFieldDetails>     ratingFieldList = new ArrayList<RatingFieldDetails>()  ;  
 			
 			for (FactorTypeDetails  data : list ) {
@@ -696,7 +657,7 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 				rating.setColumnsId(data.getColumnsId()==null?"" : String.valueOf(data.getColumnsId()));
 				rating.setRangeYn(data.getRangeYn());
 				rating.setRatingFieldId(data.getRatingFieldId()==null?"" : String.valueOf(data.getRatingFieldId()));
-				
+				rating.setStatus(data.getStatus());
 				ratingFieldList.add(rating);
 			}
 			res.setRatingFieldDetails(ratingFieldList);

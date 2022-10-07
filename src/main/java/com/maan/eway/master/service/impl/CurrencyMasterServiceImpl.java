@@ -197,7 +197,7 @@ public List<Error> validateCurrencyDetails(CurrencyMasterSaveReq req) {
 			errorList.add(new Error("05", "Status", "Please Enter Status"));
 		} else if (req.getStatus().length() > 1) {
 			errorList.add(new Error("05", "Status", "Enter Status in 1 Character Only"));
-		}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()))) {
+		}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus())||"P".equals(req.getStatus()))) {
 			errorList.add(new Error("05", "Status", "Enter Status in Y or N Only"));
 		}
 

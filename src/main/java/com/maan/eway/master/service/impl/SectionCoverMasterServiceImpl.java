@@ -128,8 +128,8 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 					errorList.add(new Error("05", "Status", "Please Enter Status in Row No : " + row));
 				} else if (req.getStatus().length() > 1) {
 					errorList.add(new Error("05", "Status", "Enter Status in 1 Character Only in Row No : " + row ));
-				} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()))) {
-					errorList.add(new Error("05", "Status", "Enter Status Y or N Only"));
+				} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus())||"P".equals(req.getStatus()))) {
+					errorList.add(new Error("05", "Status", "Enter Status Y or N or P Only"));
 				}
 				if (StringUtils.isBlank(req.getCompanyId())) {
 					errorList.add(new Error("06", "CompanyId", "Please Enter Company Id in Row No : " + row  ));
@@ -940,8 +940,8 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				errorList.add(new Error("08", "Status", "Please Enter Status"));
 			} else if (req.getStatus().length() > 1) {
 				errorList.add(new Error("08", "Status", "Enter Status in 1 Character Only"));
-			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()))) {
-				errorList.add(new Error("08", "Status", "Enter Status Y or N Only"));
+			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus())||"P".equals(req.getStatus()))) {
+				errorList.add(new Error("08", "Status", "Enter Status Y or N or P Only"));
 			}
 			if (StringUtils.isBlank(req.getRegulatoryCode())) {
 				errorList.add(new Error("09", "Regulatory Code", "Please Enter RegulatoryCode"));

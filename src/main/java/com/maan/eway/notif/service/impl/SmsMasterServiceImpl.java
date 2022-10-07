@@ -98,8 +98,8 @@ public class SmsMasterServiceImpl implements SmsMasterService{
 				errorList.add(new Error("04", "Status", "Please Enter Status"));
 			} else if (req.getStatus().length() > 1) {
 				errorList.add(new Error("04", "Status", "Status 1 Character Only"));
-			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()))) {
-				errorList.add(new Error("04", "Status", "Enter Status Y or N Only"));
+			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus())||"P".equals(req.getStatus()))) {
+				errorList.add(new Error("04", "Status", "Enter Status Y or N or P Only"));
 			}
 			if (StringUtils.isBlank(req.getCreatedBy())) {
 				errorList.add(new Error("05", "CreatedBy", "Please Enter CreatedBy"));

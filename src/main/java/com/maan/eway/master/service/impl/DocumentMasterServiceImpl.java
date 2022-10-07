@@ -438,8 +438,8 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 				errorList.add(new Error("04", "Status", "Please Enter Status"));
 			} else if (req.getStatus().length() > 1) {
 				errorList.add(new Error("04", "Status", "Enter Status in 1 Character Only"));
-			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()))) {
-				errorList.add(new Error("04", "Status", "Enter Status Y or N Only"));
+			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus())||"P".equals(req.getStatus()))) {
+				errorList.add(new Error("04", "Status", "Enter Status Y or N or P Only"));
 			}
 			if (req.getRemarks().length() > 100) {
 				errorList.add(new Error("05", "Remarks", "Please Enter Remarks within 100 Characters"));

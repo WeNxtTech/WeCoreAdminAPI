@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.bean.NotifTemplateMaster;
-import com.maan.eway.service.NotifTemplateMasterService;
+//import com.maan.eway.service.NotifTemplateMasterService;
 
 
 /**
@@ -27,8 +27,8 @@ import com.maan.eway.service.NotifTemplateMasterService;
 @RequestMapping("/master")
 public class NotifTemplateMasterController {
 
-	@Autowired
-	private  NotifTemplateMasterService entityService;
+//	@Autowired
+	//private  NotifTemplateMasterService entityService;
 
 /*
 	private static final String ENTITY_TITLE = "NotifTemplateMaster";

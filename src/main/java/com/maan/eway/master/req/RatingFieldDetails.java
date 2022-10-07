@@ -14,4 +14,7 @@ public class RatingFieldDetails {
 	@JsonProperty("ColumnsId")
     private String     columnsId ;
 	
+	@JsonProperty("Status")
+    private String     status ;
+	
 }

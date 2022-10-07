@@ -235,23 +235,18 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 						errorList.add(new Error("09", "BaseRate", "Please Enter Valid Number In BaseRate"));
 					}
 					
-					if (StringUtils.isBlank(req.getSumInsuredStart())) {
-						errorList.add(new Error("09", "SumInsuredStart", "Please Enter SumInsuredStart"));
-					} else if (! req.getSumInsuredStart().matches("[0-9.]+") ) {
-						errorList.add(new Error("09", "SumInsuredStart", "Please Enter Valid Number In SumInsuredStart"));
-					} else if (StringUtils.isBlank(req.getSumInsuredEnd())) {
-						errorList.add(new Error("09", "SumInsuredEnd", "Please Enter SumInsuredEnd"));
-					} else if (! req.getSumInsuredEnd().matches("[0-9.]+") ) {
-						errorList.add(new Error("09", "SumInsuredEnd", "Please Enter Valid Number In SumInsuredEnd"));
-					}  else if (Double.valueOf(req.getSumInsuredStart())  > Double.valueOf(req.getSumInsuredEnd())  ) {
-						errorList.add(new Error("09", "SumInsuredEnd", "SumInsuredEnd must be greater than SumInsuredStart "));
-					}
-					
 					if (StringUtils.isBlank(req.getMinimumPremium())) {
 						errorList.add(new Error("09", "MinimumPremium", "Please Enter MinimumPremium"));
 					} else if (! req.getMinimumPremium().matches("[0-9.]+") ) {
 						errorList.add(new Error("09", "MinimumPremium", "Please Enter Valid Number In MinimumPremium"));
+					} else if (StringUtils.isBlank(req.getSumInsuredEnd())) {
+						errorList.add(new Error("09", "SumInsuredEnd", "Please Enter SumInsuredEnd"));
+					} else if (! req.getSumInsuredEnd().matches("[0-9.]+") ) {
+						errorList.add(new Error("09", "SumInsuredEnd", "Please Enter Valid Number In SumInsuredEnd"));
+					}  else if (Double.valueOf(req.getMinimumPremium())  > Double.valueOf(req.getSumInsuredEnd())  ) {
+						errorList.add(new Error("09", "SumInsuredEnd", "SumInsuredEnd must be greater than MinimumPremium "));
 					}
+					
 				}
 			}
 			
@@ -499,8 +494,7 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 					
 					saveData.setBaseRate(StringUtils.isBlank(req.getBaseRate())? 0D : Double.valueOf(req.getBaseRate()));
 					saveData.setMinPremium(StringUtils.isBlank(req.getMinimumPremium())? 0D : Double.valueOf(req.getMinimumPremium()));
-					saveData.setMaxSuminsured(StringUtils.isBlank(req.getSumInsuredEnd())? 0D : Double.valueOf(req.getSumInsuredEnd()));
-					saveData.setMinSuminsured(StringUtils.isBlank(req.getSumInsuredStart())? 0D : Double.valueOf(req.getSumInsuredStart()));		
+					saveData.setMaxSuminsured(StringUtils.isBlank(req.getSumInsuredEnd())? 0D : Double.valueOf(req.getSumInsuredEnd()));	
 				}
 				
 				saveData.setCoverageLimit(StringUtils.isBlank(req.getCoverageLimit())? 0D : Double.valueOf(req.getCoverageLimit()));

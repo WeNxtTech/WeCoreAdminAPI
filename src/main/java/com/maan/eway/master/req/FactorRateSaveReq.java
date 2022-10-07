@@ -1,0 +1,57 @@
+package com.maan.eway.master.req;
+
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.Data;
+
+@Data
+public class FactorRateSaveReq {
+
+	@JsonProperty("FactorTypeId")
+    private String factorTypeId ;
+
+    @JsonProperty("CompanyId")
+    private String    companyId ;
+  
+    @JsonProperty("ProductId")
+    private String    productId ;
+  
+    @JsonProperty("BranchCode")
+    private String    branchCode ;
+    
+    @JsonProperty("AgencyCode")
+    private String    agencyCode ;
+    
+    @JsonProperty("CoverId")
+    private String    coverId ;
+    
+    @JsonProperty("SubCoverId")
+    private String    subCoverId ;
+    
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    @JsonProperty("EffectiveDateStart")
+    private Date       effectiveDateStart ;
+
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    @JsonProperty("EffectiveDateEnd")
+    private Date       effectiveDateEnd ;
+    
+    @JsonProperty("Status")
+    private String     status ;
+
+    @JsonProperty("CreatedBy")
+    private String     createdBy ;
+    
+    @JsonProperty("FactorParams")
+    private List<FactorParamsInsert>     factorParams;
+    
+}

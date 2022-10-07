@@ -82,8 +82,8 @@ public class CoverMasterSaveReq implements Serializable {
 	@JsonProperty("BaseRate")
 	private String baseRate;
 	
-	@JsonProperty("SumInsuredStart")
-	private String sumInsuredStart;
+/*	@JsonProperty("SumInsuredStart")
+	private String sumInsuredStart; */
 	
 	@JsonProperty("SumInsuredEnd")
 	private String sumInsuredEnd;

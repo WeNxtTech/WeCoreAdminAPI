@@ -45,15 +45,15 @@ public class FactorTypeDetailsSaveReq implements Serializable {
     private String productId    ;
 	
 	@JsonProperty("InsuranceId")
-    private String     companyId    ;
-	
-	@JsonFormat(pattern = "dd/MM/yyyy")
+    private String     companyId    ;@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
     private Date       effectiveDateStart ;
 	
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateEnd")
     private Date       effectiveDateEnd ;
+	
+	
 	
 	@JsonProperty("CreatedBy")
     private String     createdBy    ;

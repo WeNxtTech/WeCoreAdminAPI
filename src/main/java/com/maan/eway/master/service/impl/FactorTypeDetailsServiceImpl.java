@@ -37,6 +37,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.CompanyStateMaster;
 import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.FactorTypeDetails;
 import com.maan.eway.bean.ListItemValue;
@@ -154,6 +155,13 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 				errorList.add(new Error("01", "RatingFieldDetails", "Please Enter Alteast One Rating Field Details"));
 			} else {
 				Long row = 0L ;
+				List<FactorTypeDetails> ratingfieldId = new ArrayList<FactorTypeDetails>();
+				if (StringUtils.isNotBlank(req.getFactorTypeId())) {
+			 ratingfieldId = getRatingFieldDetails(req.getFactorTypeId(),req.getCompanyId(),req.getProductId());
+				
+				}
+				List<Integer> ids = new ArrayList<Integer>();
+				Integer id=0;
 				for( RatingFieldDetails data : req.getRatingFieldDetails() ) {
 					row = row + 1 ;
 					if ( StringUtils.isBlank(data.getColumnsId())   ){
@@ -171,17 +179,26 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 					if ( StringUtils.isBlank(data.getRatingFieldId())) {
 						errorList.add(new Error("03","RatingFieldId", "Please Enter RatingFieldId in Row No : " + row ));
 					}
-					
+				
+					else {
+						List<Integer> rating = ids.stream().filter(o ->  o.equals(Integer.valueOf(data.getRatingFieldId()))).collect(Collectors.toList());
+						if(rating.size()>0) {
+							errorList.add(new Error("03","RatingFieldId", "This  RatingFieldId  already there in Row No : " + row ));						
+						}
+						id=Integer.valueOf(data.getRatingFieldId());
+					}
+					ids.add(id);
 					//Status Validation
-					if(StringUtils.isNotBlank(req.getStatus()) && !(req.getStatus().equalsIgnoreCase("P")) ) {
+					if(StringUtils.isNotBlank(data.getStatus()) && !(data.getStatus().equalsIgnoreCase("P")) ) {
 						if (StringUtils.isBlank(data.getStatus())) {
 							errorList.add(new Error("05", "Status", "Please Enter Status In Row No : " + row ));
-						} else if (req.getStatus().length() > 1) {
+						} else if (data.getStatus().length() > 1) {
 							errorList.add(new Error("05", "Status", "Enter Status 1 Character Only In Row No : " + row ));
-						}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()))) {
+						}else if(!("Y".equals(data.getStatus())||"N".equals(data.getStatus()))) {
 							errorList.add(new Error("05", "Status", "Enter Status Y or N Only In Row No : " + row ));
 						}
-					}	
+					}
+					
 				}
 			}
 		} catch (Exception e) {
@@ -191,6 +208,52 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 		}
 		return errorList;
 	}
+	
+	
+	public List<FactorTypeDetails> getRatingFieldDetails(String factorTypeId , String companyId, String productId ) {
+		List<FactorTypeDetails> list = new ArrayList<FactorTypeDetails>();
+		try {
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<FactorTypeDetails> query = cb.createQuery(FactorTypeDetails.class);
+	
+			// Find All
+			Root<FactorTypeDetails> b = query.from(FactorTypeDetails.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<FactorTypeDetails> ocpm1 = effectiveDate.from(FactorTypeDetails.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a2 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a3 = cb.equal(ocpm1.get("factorTypeId"), b.get("factorTypeId"));
+
+			effectiveDate.where(a1,a2,a3);
+	
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("factorTypeId"),factorTypeId);
+			Predicate n3 = cb.equal(b.get("companyId"),companyId);
+			Predicate n4 = cb.equal(b.get("productId"),productId);
+			
+			query.where(n1,n2,n3,n4);
+			
+			
+			// Get Result
+			TypedQuery<FactorTypeDetails> result = em.createQuery(query);
+			list = result.getResultList();		
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+	
+		}
+		return list;
+	}
+	
+	
 	
 	public List<FactorTypeDetails> getFactorTypeNameExistDetails(String facTypeName , String companyId , String productId) {
 		List<FactorTypeDetails> list = new ArrayList<FactorTypeDetails>();

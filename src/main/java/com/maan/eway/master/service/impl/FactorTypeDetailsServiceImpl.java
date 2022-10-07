@@ -43,12 +43,14 @@ import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.FactorTypeDetailsSaveReq;
+import com.maan.eway.master.req.FactorTypeDropDownReq;
 import com.maan.eway.master.req.FactorTypeGetAllReq;
 import com.maan.eway.master.req.FactorTypeGetReq;
 import com.maan.eway.master.req.FactorUpdateStatusReq;
 import com.maan.eway.master.req.GlobalCommonValidationReq;
 import com.maan.eway.master.req.RatingFieldDetails;
 import com.maan.eway.master.res.FactorTypeDetailsGetRes;
+import com.maan.eway.master.res.FactorTypeDropDownRes;
 import com.maan.eway.master.res.FactorTypeGetAllRes;
 import com.maan.eway.master.res.ProductMasterRes;
 import com.maan.eway.master.service.FactorTypeDetailsService;
@@ -832,6 +834,79 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 		}
 		return res;
 	}
+
+	@Override
+	public List<FactorTypeDropDownRes> factorDropDown(FactorTypeDropDownReq req) {
+		List<FactorTypeDropDownRes> resList = new ArrayList<FactorTypeDropDownRes>();
+		DozerBeanMapper dozermapper = new DozerBeanMapper();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY,23);
+			cal.set(Calendar.MINUTE,1);
+			today = cal.getTime();
+			
+			List<FactorTypeDetails> list = new ArrayList<FactorTypeDetails>();
+			int limit = StringUtils.isBlank(req.getLimit()) ?0: Integer.valueOf(req.getLimit());
+			int offset = StringUtils.isBlank(req.getOffset())?10: Integer.valueOf(req.getOffset());
+		
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<FactorTypeDetails> query=cb.createQuery(FactorTypeDetails.class);
+			//Find all
+			Root<FactorTypeDetails> b=	query.from(FactorTypeDetails.class);
+			// Select
+			query.select(b);
+
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<FactorTypeDetails> ocpm1 = effectiveDate.from(FactorTypeDetails.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("factorTypeId"), b.get("factorTypeId"));
+			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2,a3,a4);
+	
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("effectiveDateStart")));
+			
+			// Where
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
+			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
+			
+			query.where(n1,n2,n3).orderBy(orderList);
+	
+			// Get Result
+			TypedQuery<FactorTypeDetails> result = em.createQuery(query);
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			list = result.getResultList();
+			Map<Integer, List<FactorTypeDetails>>  groupByFactorTypeId = list.stream() .collect(Collectors.groupingBy(w ->   w.getFactorTypeId())) ;
+
+			// Map
+			for (Integer  data : groupByFactorTypeId.keySet()) {
+				List<FactorTypeDetails>  factorTypeDatas = groupByFactorTypeId.get(data);
+				factorTypeDatas.sort(Comparator.comparing(FactorTypeDetails :: getEffectiveDateStart ).reversed());
+				FactorTypeDropDownRes res = new FactorTypeDropDownRes();
+	
+				res = dozermapper.map(factorTypeDatas.get(0), FactorTypeDropDownRes.class);
+				resList.add(res);
+			}
+			
+		
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info(e.getMessage());
+				return null;
+		
+			}
+		return resList;
+	}
+
+	
 
 
 

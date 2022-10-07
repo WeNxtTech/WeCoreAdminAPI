@@ -350,7 +350,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 					b.get("remarks").alias("remarks"), 
 					b.get("coverDesc").alias("coverDesc"),
 					b.get("toolTip").alias("toolTip"),
-					b.get("tiraCode").alias("tiraCode"),
+					b.get("regulatoryCode").alias("regulatoryCode"),
 					b.get("createdBy").alias("createdBy"),
 					section.alias("sectionName")
 					);
@@ -553,7 +553,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 					b.get("remarks").alias("remarks"), 
 					b.get("coverDesc").alias("coverDesc"),
 					b.get("toolTip").alias("toolTip"),
-					b.get("tiraCode").alias("tiraCode"),
+					b.get("regulatoryCode").alias("regulatoryCode"),
 					b.get("createdBy").alias("createdBy"),
 					section.alias("sectionName")
 					);

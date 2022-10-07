@@ -7,10 +7,12 @@ package com.maan.eway.master.service;
 import com.maan.eway.bean.FactorTypeDetails;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.FactorTypeDetailsSaveReq;
+import com.maan.eway.master.req.FactorTypeDropDownReq;
 import com.maan.eway.master.req.FactorTypeGetAllReq;
 import com.maan.eway.master.req.FactorTypeGetReq;
 import com.maan.eway.master.req.FactorUpdateStatusReq;
 import com.maan.eway.master.res.FactorTypeDetailsGetRes;
+import com.maan.eway.master.res.FactorTypeDropDownRes;
 import com.maan.eway.master.res.FactorTypeGetAllRes;
 import com.maan.eway.res.SuccessRes;
 
@@ -32,5 +34,7 @@ List<FactorTypeGetAllRes> getActiveFactocTypes(FactorTypeGetAllReq req);
 FactorTypeDetailsGetRes getByFactorTypeId(FactorTypeGetReq req);
 
 SuccessRes changeStatusOfFactorType(FactorUpdateStatusReq req);
+
+List<FactorTypeDropDownRes> factorDropDown(FactorTypeDropDownReq req);
 
 }

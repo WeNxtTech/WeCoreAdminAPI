@@ -223,32 +223,31 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			
 			
 			r.setLoginBranchDetails(loginBranchRes);
-			
-			List<String> companyIds = new ArrayList<>( removeDuplicateCompany) ;
+
+			List<String> companyIds = new ArrayList<>(removeDuplicateCompany);
 			// Products
-			
+
 			List<LoginProductMaster> loginproduct = loginProductRepo.findByLoginId(login.getLoginId());
 			Integer productId;
-			List<Integer> productIds = new ArrayList<Integer>();
 			List<ProductDropDownRes> resList = new ArrayList<ProductDropDownRes>();
 
-			for(LoginProductMaster products : loginproduct)
-			{
-			productId = products.getProductId();
-			
-			List<ProductMaster> product = productRepo.findByProductIdOrderByEffectiveDateStartDesc(productId);
-			ProductDropDownRes res = new ProductDropDownRes();
-			productIds.add(productId);
-			res.setOldProductName(products.getProductName());
-			res.setNewProductName(product.get(0).getProductName());
-			res.setProductIconId(product.get(0).getProductIconId().toString());
-			res.setProductIconName(product.get(0).getProductIconName());
-			res.setProductId(productId.toString());;
-			resList.add(res);
+			for (LoginProductMaster products : loginproduct) {
+				productId = products.getProductId();
+
+				List<ProductMaster> product = productRepo.findByProductIdOrderByEffectiveDateStartDesc(productId);
+				ProductDropDownRes res = new ProductDropDownRes();
+				res.setOldProductName(products.getProductName());
+				res.setNewProductName(product.get(0).getProductName());
+				res.setProductIconId(product.get(0).getProductIconId().toString());
+				res.setProductIconName(product.get(0).getProductIconName());
+				res.setProductId(productId.toString());
+				
+				resList.add(res);
 			}
+
+			r.setCompanyProducts(resList);
 			
-			r.setCompanyProducts(resList);;
-			
+
 			// Menu Ids
 		  if(login.getMenuIds()!=null && login.getMenuIds().indexOf(",")!=-1) {
 			  String[] split = login.getMenuIds().split(",");

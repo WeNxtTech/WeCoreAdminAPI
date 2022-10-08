@@ -90,7 +90,6 @@ public class CityMasterServiceImpl implements CityMasterService {
 			Date startDate = cal.getTime();
 			Date today = new Date();
 			cal.setTime(req.getEffectiveDateStart());
-			cal.add(Calendar.DAY_OF_MONTH, -1);
 			cal.set(Calendar.HOUR_OF_DAY, today.getHours());
 			cal.set(Calendar.MINUTE, today.getMinutes());
 			Date oldEndDate = cal.getTime();

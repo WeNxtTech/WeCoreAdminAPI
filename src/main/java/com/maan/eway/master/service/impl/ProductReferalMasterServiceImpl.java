@@ -238,7 +238,7 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 				cal.setTime(req.getEffectiveDatestart());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
 				Date startDate = cal.getTime() ;
 				Date today = new Date();
-				cal.setTime(req.getEffectiveDatestart());  cal.add(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
+				cal.setTime(req.getEffectiveDatestart()); cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
 				cal.set(Calendar.SECOND, today.getSeconds());
 				Date oldEndDate = cal.getTime() ;
 				cal.setTime(req.getEffectiveDatestart());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;

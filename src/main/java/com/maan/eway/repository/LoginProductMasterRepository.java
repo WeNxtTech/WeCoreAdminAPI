@@ -13,6 +13,7 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.maan.eway.bean.LoginProductMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,5 +30,7 @@ import com.maan.eway.bean.LoginProductMasterId;
  
  
 public interface LoginProductMasterRepository  extends JpaRepository<LoginProductMaster,LoginProductMasterId > , JpaSpecificationExecutor<LoginProductMaster> {
+
+	List<LoginProductMaster> findByLoginId(String loginId);
 
 }

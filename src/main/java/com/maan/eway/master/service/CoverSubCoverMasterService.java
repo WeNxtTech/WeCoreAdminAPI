@@ -12,6 +12,7 @@ import com.maan.eway.master.req.CoverSubCoverChangeStatusReq;
 import com.maan.eway.master.req.CoverSubCoverMasterGetAllReq;
 import com.maan.eway.master.req.CoverSubCoverMasterGetReq;
 import com.maan.eway.master.req.CoverSubCoverMasterSaveReq;
+import com.maan.eway.master.req.SubCoverDropDownReq;
 import com.maan.eway.master.req.SubCoverGetAllReq;
 import com.maan.eway.master.req.SubCoverMasterGetAllReq;
 import com.maan.eway.master.req.SubCoverMasterGetReq;
@@ -21,6 +22,7 @@ import com.maan.eway.master.res.CoverSubCoverGetRes;
 import com.maan.eway.master.res.SubCoverMasterGetAllRes;
 import com.maan.eway.master.res.SubCoverMasterGetRes;
 import com.maan.eway.master.res.SubCoverMasterRes;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 /**
 * <h2>BankMasterServiceimpl</h2>
@@ -44,6 +46,8 @@ public interface CoverSubCoverMasterService  {
 	List<Error> validateUpdatingSubCover(SubCoverUpdatedReq req);
 
 	SuccessRes updateSubCover(SubCoverUpdatedReq req);
+
+	List<DropDownRes> subcoverDropDown(SubCoverDropDownReq req);
 
 
 }

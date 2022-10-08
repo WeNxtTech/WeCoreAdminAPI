@@ -78,7 +78,20 @@ public class SubCoverMasterSaveReq implements Serializable {
  	
  	@JsonProperty("FactorTypeId")
  	private String factorTypeId;
- 	
+ 	@JsonProperty("IsTaxExcempted")
+	private String isTaxExcempted;
+	
+	@JsonProperty("TaxAmount")
+	private String taxAmount;
+	
+	@JsonProperty("TaxCode")
+	private String taxCode;
+	
+	@JsonProperty("TaxExcemptionReference")
+	private String taxExcemptionReference;
+	
+	@JsonProperty("TaxExcemptionType")
+	private String taxExcemptionType;
  	@JsonProperty("GridDetails")
  	private List<OfsGridSaveReq> gridDetails;
 }

@@ -44,6 +44,7 @@ import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.FactorTypeDetailsSaveReq;
+import com.maan.eway.master.req.FactorTypeDropDownReq;
 import com.maan.eway.master.req.FactorTypeGetAllReq;
 import com.maan.eway.master.req.FactorTypeGetReq;
 import com.maan.eway.master.req.FactorUpdateStatusReq;
@@ -56,6 +57,7 @@ import com.maan.eway.master.service.FactorTypeDetailsService;
 import com.maan.eway.master.service.MasterCommonValidationService;
 import com.maan.eway.repository.FactorTypeDetailsRepository;
 import com.maan.eway.repository.ListItemValueRepository;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 /**
 * <h2>FactorTypeDetailsServiceimpl</h2>
@@ -855,6 +857,81 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 			return null;
 		}
 		return res;
+	}
+
+
+	@Override
+	public List<DropDownRes> factorTypeDropDown(FactorTypeDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<FactorTypeDetails> query = cb.createQuery(FactorTypeDetails.class);
+			List<FactorTypeDetails> list = new ArrayList<FactorTypeDetails>();
+			// Find all
+			Root<FactorTypeDetails> c = query.from(FactorTypeDetails.class);
+			// Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("factorTypeName")));
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<FactorTypeDetails> ocpm1 = effectiveDate.from(FactorTypeDetails.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("factorTypeId"), ocpm1.get("factorTypeId"));
+			javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("productId"),ocpm1.get("productId"));
+			javax.persistence.criteria.Predicate a4 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
+
+			effectiveDate.where(a1, a2,a3,a4);
+			// Effective Date End
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<FactorTypeDetails> ocpm2 = effectiveDate2.from(FactorTypeDetails.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a5 = cb.equal(c.get("factorTypeId"), ocpm2.get("factorTypeId"));
+			Predicate a6 = cb.greaterThanOrEqualTo(c.get("effectiveDateEnd"), todayEnd);
+			Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
+			Predicate a8 = cb.equal(c.get("productId"),ocpm2.get("productId"));
+
+			effectiveDate2.where(a5,a6,a7,a8);
+
+			// Where
+			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
+			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("productId"), req.getProductId());
+			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("companyId"),req.getCompanyId());
+			
+			query.where(n1, n2, n3, n4,n5).orderBy(orderList);
+		
+			// Get Result
+			TypedQuery<FactorTypeDetails> result = em.createQuery(query);
+			list = result.getResultList();
+
+			// Map
+			for (FactorTypeDetails data : list) {
+				// Response
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getFactorTypeId().toString());
+				res.setCodeDesc(data.getFactorTypeName());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
 	}
 
 

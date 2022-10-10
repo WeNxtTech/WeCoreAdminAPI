@@ -31,9 +31,7 @@ public class SubCoverMasterGetRes implements Serializable {
     @JsonProperty("Status")
 	private String status;
 
-	@JsonProperty("CoreAppCode")
-	private String coreAppCode;
-
+	
 	@JsonProperty("Remarks")
 	private String remarks; 
 	
@@ -43,8 +41,8 @@ public class SubCoverMasterGetRes implements Serializable {
 	@JsonProperty("ToolTip")
 	private String toolTip;  
 
-	@JsonProperty("TiraCode")
-	private String tiraCode;
+	@JsonProperty("RegulatoryCode")
+	private String regulatoryCode;
 	
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")

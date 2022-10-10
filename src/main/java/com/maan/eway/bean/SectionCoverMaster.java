@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -108,9 +107,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="RATING_ID")
     private Integer    ratingId ;
 
-    @Column(name="CORE_APP_CODE", length=20)
-    private String     coreAppCode ;
-
     @Column(name="COVERAGE_TYPE", length=1)
     private String     coverageType ;
 
@@ -159,6 +155,24 @@ private static final long serialVersionUID = 1L;
     @Column(name="FACTOR_TYPE_ID")
     private Integer    factorTypeId ;
 
+    @Column(name="IS_TAX_EXCEMPTED",length=1)
+    private String isTaxExcempted;
+
+    
+    @Column(name="TAX_AMOUNT")
+    private Double taxAmount;
+
+    @Column(name="TAX_CODE",length=10)
+    private String taxCode;
+
+    @Column(name="TAX_EXCEMPTION_REFERENCE",length=20)
+    private String taxExcemptionReference;
+
+    @Column(name="TAX_EXCEMPTION_TYPE",length=20)
+    private String taxExcemptionType;
+
+    @Column(name="TAX_EXCEMPTION_TYPE_DESC",length=20)
+    private String taxExcemptionTypeDesc;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 

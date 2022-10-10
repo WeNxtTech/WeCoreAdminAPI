@@ -8,6 +8,7 @@ package com.maan.eway.master.service;
 import java.util.List;
 
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.RatingDropDownReq;
 import com.maan.eway.master.req.RatingFieldMasterGetAllReq;
 import com.maan.eway.master.req.RatingFieldsMasterChangeStatusReq;
 import com.maan.eway.master.req.RatingFieldsMasterGetReq;
@@ -32,7 +33,7 @@ public interface RatingFieldMasterService  {
 
 	SuccessRes changeStatusOfFactorType(RatingFieldsMasterChangeStatusReq req);
 
-	List<DropDownRes> getRatingFieldsDropdown();
+	List<DropDownRes> getRatingFieldsDropdown(RatingDropDownReq req );
 
 
 

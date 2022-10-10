@@ -1011,8 +1011,9 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 		javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 		javax.persistence.criteria.Predicate n4 = cb.equal(c.get("productId"), req.getProductId());
 		javax.persistence.criteria.Predicate n5 = cb.equal(c.get("companyId"),req.getCompanyId());
+		javax.persistence.criteria.Predicate n6 = cb.equal(c.get("factorTypeId"),req.getFactorTypeId());
 
-		query.where(n1, n2, n3, n4,n5).orderBy(orderList);
+		query.where(n1, n2, n3, n4,n5,n6).orderBy(orderList);
 
 		// Get Result
 		TypedQuery<FactorTypeDetails> result = em.createQuery(query);
@@ -1022,7 +1023,7 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 		for (FactorTypeDetails data : list) {
 		// Response
 		DropDownRes res = new DropDownRes();
-		res.setCode(data.getFactorTypeId().toString());
+		res.setCode(data.getRatingFieldId().toString());
 		res.setCodeDesc(data.getFactorTypeName());
 		resList.add(res);
 		}

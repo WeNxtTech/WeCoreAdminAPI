@@ -185,6 +185,42 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 					errorList.add(new Error("09", "CalcType", "Please Select CalcType"));
 				} 
 				
+				
+				// Tax Calculation
+				if (StringUtils.isBlank(req.getIsTaxExcempted())) {
+					errorList.add(new Error("08", "IsTaxExcempted", "Please Enter Is Tax Excempted"));
+				} else if (req.getIsTaxExcempted().length() > 1) {
+					errorList.add(new Error("08", "IsTaxExcempted", "Enter Is Tax Excempted in 1 Character Only"));
+				} else if (!("Y".equals(req.getIsTaxExcempted()) || "N".equals(req.getIsTaxExcempted()))) {
+					errorList.add(new Error("08", "IsTaxExcempted", "Enter Is Tax Excempted Y or N Only"));
+					
+				} else if(req.getIsTaxExcempted().equalsIgnoreCase("Y") ){
+					if (StringUtils.isBlank(req.getTaxExcemptionReference())) {
+						errorList.add(new Error("08", "TaxExcemptionReference", "Please Enter Tax Excemption Reference"));
+					} else if (req.getTaxExcemptionReference().length() >100 ) {
+						errorList.add(new Error("08", "TaxExcemptionReference", "100 Chatracters Only Allowed As Tax Excemption Reference"));
+					} 
+					
+					if (StringUtils.isBlank(req.getTaxExcemptionType())) {
+						errorList.add(new Error("08", "TaxExcemptionType", "Please Select Tax Excemption Type"));
+					} else if (! req.getTaxExcemptionType().matches( "[0-9]+") ) {
+						errorList.add(new Error("08", "TaxExcemptionType", "Please Select Tax Excemption Type"));
+					} 
+				} else if(req.getIsTaxExcempted().equalsIgnoreCase("N") ){
+					if (StringUtils.isBlank(req.getTaxAmount())) {
+						errorList.add(new Error("08", "TaxAmount", "Please Enter TaxAmount"));
+					} else if (! req.getTaxAmount().matches( "[0-9.]+") ) {
+						errorList.add(new Error("08", "TaxAmount", "Please Enter Valid Tax Amount"));
+					} 
+					
+					if (StringUtils.isBlank(req.getTaxCode())) {
+						errorList.add(new Error("08", "TaxCode", "Please Enter Tax Code "));
+					} else if (req.getTaxCode().length() >100 ) {
+						errorList.add(new Error("08", "TaxCode", "100 Chatracters Only Allowed As Tax Code "));
+					} 
+				}
+				
+				
 				if (StringUtils.isNotBlank(req.getCalcType()) &&  req.getCalcType().equalsIgnoreCase("F") ) {
 					
 			/*		if( StringUtils.isBlank(req.getFactorTypeId()) ) {
@@ -302,6 +338,7 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 		try {
 			List<ListItemValue> calcTypes = listRepo.findByItemTypeAndStatus("CALCULATION_TYPE" , "Y");
 			List<ListItemValue> coverageTypes = listRepo.findByItemTypeAndStatus("COVERAGE_TYPE" , "Y");
+			List<ListItemValue> taxExcemptionType = listRepo.findByItemTypeAndStatus("TAX_EXEMPTION_TYPE" , "Y");
 			Integer amendId = 0 ;
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
@@ -438,6 +475,7 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 				
 				dozerMapper.map(req, saveData);
 				subcoverId = coverId ;
+				
 				saveData.setCoverId(Integer.valueOf(coverId));
 				saveData.setSubCoverId(Integer.valueOf(subcoverId));
 				saveData.setEffectiveDateStart(effDate);
@@ -450,7 +488,7 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 				// Amount Details
 				if(req.getCalcType().equalsIgnoreCase("F")  ) {
 					
-					saveData.setFactorTypeId( Integer.valueOf(req.getFactorTypeId()));
+					saveData.setFactorTypeId(req.getFactorTypeId()==null ?null : Integer.valueOf(req.getFactorTypeId()));
 				} else if (req.getCalcType().equalsIgnoreCase("G")  ) {
 				
 					// Delete Old Ofs Records
@@ -500,7 +538,19 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 				saveData.setExcess(StringUtils.isBlank(req.getExcess())? 0D : Double.valueOf(req.getExcess()));
 				saveData.setCalcTypeDesc(calcTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getCalcType()) ).collect(Collectors.toList()).get(0).getItemValue());
 				saveData.setCoverageTypeDesc(coverageTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getCoverageType()) ).collect(Collectors.toList()).get(0).getItemValue());
-			
+				if(  req.getIsTaxExcempted().equalsIgnoreCase("Y") ) {
+					saveData.setTaxExcemptionReference(req.getTaxExcemptionReference());
+					saveData.setTaxExcemptionType(req.getTaxExcemptionType());
+					saveData.setTaxExcemptionTypeDesc(taxExcemptionType.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getTaxExcemptionType()) ).collect(Collectors.toList()).get(0).getItemValue());
+					saveData.setTaxAmount(null);
+					saveData.setTaxCode(null);
+				} else if(req.getIsTaxExcempted().equalsIgnoreCase("N")  ) {
+					saveData.setTaxExcemptionReference(null);
+					saveData.setTaxExcemptionType(null);
+					saveData.setTaxExcemptionTypeDesc(null);
+					saveData.setTaxAmount(req.getTaxAmount()==null ? 0D : Double.valueOf(req.getTaxAmount()));
+					saveData.setTaxCode(req.getTaxCode());
+				}
 				repo.saveAndFlush(saveData);
 				if (list.size() > 0 ) {
 					// Update Old Record

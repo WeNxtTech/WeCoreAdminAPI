@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.RatingDropDownReq;
 import com.maan.eway.master.req.RatingFieldMasterGetAllReq;
 import com.maan.eway.master.req.RatingFieldsMasterChangeStatusReq;
 import com.maan.eway.master.req.RatingFieldsMasterGetReq;
@@ -171,15 +172,15 @@ public class RatingFieldMasterController {
 		}
 		
 		
-		@GetMapping("/dropdown/ratingfields")
+		@PostMapping("/dropdown/ratingfields")
 		@ApiOperation(value = "This method is get Rating Fields Drop Down")
 
-		public ResponseEntity<CommonRes> getRatingFieldsDropdown() {
+		public ResponseEntity<CommonRes> getRatingFieldsDropdown(@RequestBody RatingDropDownReq  req  ) {
 
 			CommonRes data = new CommonRes();
 
 			// Save
-			List<DropDownRes> res = entityService.getRatingFieldsDropdown();
+			List<DropDownRes> res = entityService.getRatingFieldsDropdown(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());

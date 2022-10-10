@@ -11,8 +11,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -34,9 +32,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.RatingFieldMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.RatingDropDownReq;
 import com.maan.eway.master.req.RatingFieldMasterGetAllReq;
 import com.maan.eway.master.req.RatingFieldsMasterChangeStatusReq;
 import com.maan.eway.master.req.RatingFieldsMasterGetReq;
@@ -162,20 +160,18 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 		try {
 			Integer amendId = 0;
 			Calendar cal = new GregorianCalendar();
-			cal.setTime(req.getEffectiveDateStart());
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 59);
-			Date startDate = cal.getTime();
+			cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
+			Date startDate = cal.getTime() ;
 			Date today = new Date();
-			cal.setTime(req.getEffectiveDateStart());
-			cal.set(Calendar.HOUR_OF_DAY, today.getHours());
-			cal.set(Calendar.MINUTE, today.getMinutes());
-			Date oldEndDate = cal.getTime();
-			cal.setTime(req.getEffectiveDateStart());
-			cal.set(Calendar.HOUR_OF_DAY, today.getHours());
-			cal.set(Calendar.MINUTE, today.getMinutes());
+			cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
+			cal.set(Calendar.SECOND, today.getSeconds());
+			Date oldEndDate = cal.getTime() ;
+			cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
+			cal.set(Calendar.SECOND, today.getSeconds());
 			Date effDate = cal.getTime();
 			Date endDate = req.getEffectiveDateEnd();
+			cal.setTime(req.getEffectiveDateEnd());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 50) ;
+			endDate = cal.getTime() ;
 
 			String factorId = "";
 
@@ -352,8 +348,9 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 			Root<RatingFieldMaster> ocpm1 = effectiveDate.from(RatingFieldMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			effectiveDate.where(a1, a2);
+			Predicate a2 = cb.equal(ocpm1.get("ratingId"), b.get("ratingId"));
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1, a2,a3);
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("ratingField")));
@@ -413,8 +410,9 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 			Root<RatingFieldMaster> ocpm1 = effectiveDate.from(RatingFieldMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			effectiveDate.where(a1, a2);
+			Predicate a2 = cb.equal(ocpm1.get("ratingId"), b.get("ratingId"));
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1, a2,a3);
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("ratingField")));
@@ -590,7 +588,7 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 	
 	
 	@Override
-	public List<DropDownRes> getRatingFieldsDropdown() {
+	public List<DropDownRes> getRatingFieldsDropdown(RatingDropDownReq req ) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 			Date today = new Date();
@@ -621,22 +619,24 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
 			Root<RatingFieldMaster> ocpm1 = effectiveDate.from(RatingFieldMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			javax.persistence.criteria.Predicate a4 = cb.equal(c.get("ratingId"), ocpm1.get("ratingId"));
-			javax.persistence.criteria.Predicate a5 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			effectiveDate.where( a4, a5);
+			Predicate a1 = cb.equal(c.get("ratingId"), ocpm1.get("ratingId"));
+			Predicate a2 = cb.equal(c.get("productId"),  ocpm1.get("productId"));
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2,a3);
 			// Effective Date End
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 			Root<RatingFieldMaster> ocpm2 = effectiveDate2.from(RatingFieldMaster.class);
 			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
-			Predicate a6 = cb.equal(c.get("ratingId"),ocpm2.get("ratingId") );
-			Predicate a9 = cb.greaterThanOrEqualTo(c.get("effectiveDateEnd"), todayEnd);
-			effectiveDate2.where(a6,a9);
+			Predicate a4 = cb.equal(c.get("ratingId"),ocpm2.get("ratingId") );
+			Predicate a5 = cb.equal(c.get("productId"),  ocpm2.get("productId"));
+			Predicate a6 = cb.greaterThanOrEqualTo(c.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a4,a5,a6);
 					
 			// Where
-			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
-			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
-			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
-			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("subCoverYn"), "Y");
+			Predicate n1 = cb.equal(c.get("status"), "Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 = cb.equal(c.get("productId"), req.getProductId());
 			query.where(n1, n2,n3,n4).orderBy(orderList);
 
 			// Get Result

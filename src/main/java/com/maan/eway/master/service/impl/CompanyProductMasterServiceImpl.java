@@ -112,6 +112,8 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 					}
 				}
 				
+				
+				
 				if (StringUtils.isBlank(req.getProductName())) {
 					errorList.add(new Error("01", "ProductName", "Please Select Product  Name  in Row No :" + row));
 				}else if (req.getProductName().length() > 100){
@@ -128,6 +130,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 						errorList.add(new Error("02", "ProductIconId", "Please Select  Valid Product Icon in Row No :" + row));	
 					}
 				}
+				
 				
 				if (StringUtils.isBlank(req.getRemarks()) ) {
 					errorList.add(new Error("03", "Remark", "Please Select Remark  in Row No :" + row));
@@ -241,9 +244,15 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 				}
 				
 				if (StringUtils.isBlank(req.getCoreAppCode())) {
-					errorList.add(new Error("08", "CoreAppCode", "Please Enter CoreAppCode  in Row No :" + row));
-				}else if (req.getCoreAppCode().length() > 20) {
-					errorList.add(new Error("11", "CoreAppCode", "Please Enter CoreAppCode within 20 Characters  in Row No :" + row));
+					errorList.add(new Error("02", "CoreAppCode", "Please Enter getCoreAppCode"));
+				} else if (req.getCoreAppCode().length() > 20) {
+					errorList.add(new Error("02", "CoreAppCode", "getCoreAppCode under 20 Characters only allowed"));
+				}else  {
+					List<InsuranceCompanyMaster> CompanyList =  getCoreAppCodeExistDetails(req.getCoreAppCode() );
+					if (CompanyList.size()>0 &&  (! req.getCompanyId().equalsIgnoreCase(CompanyList.get(0).getCompanyId().toString())) ) {
+						errorList.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
+					}
+					
 				}
 				
 				if (StringUtils.isBlank(req.getRegulatoryCode())) {
@@ -264,6 +273,41 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			e.printStackTrace();
 		}
 		return errorList;
+	}
+	
+	private List<InsuranceCompanyMaster> getCoreAppCodeExistDetails(String coreAppCode) {
+		List<InsuranceCompanyMaster> list = new ArrayList<InsuranceCompanyMaster>();
+		try {
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<InsuranceCompanyMaster> query = cb.createQuery(InsuranceCompanyMaster.class);
+	
+			// Find All
+			Root<InsuranceCompanyMaster> b = query.from(InsuranceCompanyMaster.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<InsuranceCompanyMaster> ocpm1 = effectiveDate.from(InsuranceCompanyMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			effectiveDate.where(a1);
+	
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("coreAppCode"), coreAppCode );	
+			query.where(n1,n2);
+			// Get Result
+			TypedQuery<InsuranceCompanyMaster> result = em.createQuery(query);
+			list = result.getResultList();		
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+	
+		}
+		return list;
 	}
 	
 	@Transactional
@@ -720,7 +764,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
 			Predicate a4 = cb.equal(c.get("companyId"), ocpm2.get("companyId") );
 			Predicate a5 = cb.equal(c.get("productId"), ocpm2.get("productId") );
-			Predicate a6 = cb.lessThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			effectiveDate2.where(a4,a5,a6);
 			
 		    // Where	

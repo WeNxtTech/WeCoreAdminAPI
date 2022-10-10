@@ -43,6 +43,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -85,7 +86,7 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 	public List<Error> validateSectionDetails(List<ProductSectionMasterReq> reqList) {
 	
 		List<Error> errorList = new ArrayList<Error>();
-	
+		List<String> coreAppCodes = new ArrayList<String>();
 		try {
 		
 			Long row = 0L ;
@@ -130,23 +131,27 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 				if (StringUtils.isBlank(req.getCreatedBy())) {
 					errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy" + row));
 				}else if (req.getCreatedBy().length() > 50) {
-					errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy within 100 Characters" + row));
+					errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy within 100 Characters in  Row No : " + row));
 				}
 				
-				if (StringUtils.isBlank(req.getCoreAppCode())) {
-					errorList.add(new Error("08", "CoreAppCode", "Please Enter CoreAppCode" + row));
+				if(StringUtils.isBlank(req.getSectionId()) ) {
+					errorList.add(new Error("07", "SectionId", "Please Enter Section Id in Row No : " + row));
+				} else if (! req.getSectionId().matches("[0-9]+") ) {
+					errorList.add(new Error("08", "SectionId", "Please Enter Valid Number Section Id in  Row No : " + row));
+				} else if (StringUtils.isBlank(req.getCoreAppCode())) {
+					errorList.add(new Error("08", "CoreAppCode", "Please Enter CoreAppCode in  Row No : " + row));
 				}else if (req.getCoreAppCode().length() > 20) {
-					errorList.add(new Error("08", "CoreAppCode", "Please Enter CoreAppCode within 20 Characters" + row));
-				}
-				else if (StringUtils.isBlank(req.getSectionId())) {
-					List<ProductSectionMaster> coreAppCode = getCoreAppCodeExistDetails(req.getCompanyId() , req.getProductId() , null);
-					if (coreAppCode.size()>0 ) {
-						errorList.add(new Error("08", "CoreAppCode", "This core App Code  Already Exist "));
+					errorList.add(new Error("08", "CoreAppCode", "Please Enter CoreAppCode within 20 Characters in  Row No : " + row));
+				} else  {
+					List<String> fiterCoreAppCodes = coreAppCodes.stream().filter( o -> o.equalsIgnoreCase(req.getCoreAppCode() )).collect(Collectors.toList()) ;
+					if ( fiterCoreAppCodes.size()>0 ) {
+						errorList.add(new Error("08", "CoreAppCode", "This Core App Code  Duplicate Avaliable in Row No : " + row ));
+					} else {
+						coreAppCodes.add(req.getCoreAppCode());
 					}
-				}else  {
-					List<ProductSectionMaster> coreAppCode =  getCoreAppCodeExistDetails(req.getCompanyId(),req.getProductId() , req.getSectionId() );
-					if (coreAppCode.size()>0 &&  (! req.getSectionId().equalsIgnoreCase(coreAppCode.get(0).getSectionId().toString())) ) {
-						errorList.add(new Error("08", "Core App Code", "This core App Code Already Exist "));
+					List<ProductSectionMaster> coreAppCode = getCoreAppCodeExistDetails(req.getCompanyId() , req.getProductId());
+					if (coreAppCode.size()>0 && ! (Integer.valueOf(req.getSectionId()).equals(coreAppCode.get(0).getSectionId() )) ) {
+						errorList.add(new Error("08", "CoreAppCode", " Row No : " + row + " Core App Code  Already Exist For Another Section"));
 					}
 				}
 				if (StringUtils.isBlank(req.getRegulatoryCode())) {
@@ -171,7 +176,7 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 	}
 	
 	
-	public List<ProductSectionMaster> getCoreAppCodeExistDetails(String companyId , String productId , String sectionId ) {
+	public List<ProductSectionMaster> getCoreAppCodeExistDetails(String companyId , String productId  ) {
 		List<ProductSectionMaster> list = new ArrayList<ProductSectionMaster>();
 		try {
 			// Find Latest Record
@@ -197,12 +202,7 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("companyId"),companyId);	
 			Predicate n3 = cb.equal(b.get("productId"), productId );
-			if( StringUtils.isBlank(sectionId)) {
-				query.where(n1,n2,n3);	
-			} else {
-				Predicate n4 = cb.equal(b.get("sectionId"),sectionId );
-				query.where(n1,n2,n3,n4);
-			}
+			query.where(n1,n2,n3);	
 			
 			// Get Result
 			TypedQuery<ProductSectionMaster> result = em.createQuery(query);

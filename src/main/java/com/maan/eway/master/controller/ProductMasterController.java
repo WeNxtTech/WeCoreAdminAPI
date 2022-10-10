@@ -172,6 +172,30 @@ public class ProductMasterController {
 		}
 
 	}
+	
+
+//	Product Master Drop Down Type
+	@GetMapping("/dropdown/product")
+	@ApiOperation(value = "This method is get Product Master Drop Down")
+
+	public ResponseEntity<CommonRes> getProductMasterDropdown() {
+
+		CommonRes data = new CommonRes();
+
+		// Save
+		List<DropDownRes> res = productService.getProductMasterDropdown();
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
 		
 		
 /*		@PostMapping("/getproductdetails")
@@ -192,29 +216,7 @@ public class ProductMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	} 
-		
-		// Product Master Drop Down Type
-  		@PostMapping("/dropdown/product")
-		@ApiOperation(value = "This method is get Product Master Drop Down")
-
-		public ResponseEntity<CommonRes> getProductMasterDropdown() {
-
-			CommonRes data = new CommonRes();
-
-			// Save
-			List<DropDownRes> res = productService.getProductMasterDropdown();
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
-
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
-
-		} */
+		 */
 		
 
 		

@@ -452,7 +452,7 @@ public ReferalMasterRes getByReferalId(ReferalMasterGetReq req) {
 		Root<ReferalMaster> ocpm1 = effectiveDate.from(ReferalMaster.class);
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 		javax.persistence.criteria.Predicate a1 = cb.equal(c.get("referalId"),ocpm1.get("referalId") );
-		javax.persistence.criteria.Predicate a2 = cb.equal(c.get("effectiveDateStart"),today );
+		javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(c.get("effectiveDateStart"),today );
 		effectiveDate.where(a1,a2);
 		
 		// Order By

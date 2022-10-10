@@ -32,6 +32,8 @@ public class FactorRateMasterId implements Serializable {
     //--- ENTITY KEY ATTRIBUTES 
     private Integer    factorTypeId ;
     
+    private Integer    sNo ;
+    
     private String     companyId ;
     
     private Integer    productId ;
@@ -39,6 +41,8 @@ public class FactorRateMasterId implements Serializable {
     private String     branchCode ;
     
     private String     agencyCode ;
+    
+    private Integer    sectionId ;
     
     private Integer    coverId ;
     

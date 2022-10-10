@@ -56,18 +56,13 @@ public class SectionCoverCriteriaRes {
 
 	    @JsonProperty("Remarks")
 	    private String     remarks ;
-	    
-	    
 	  
 	    @JsonProperty("CoverDesc")
 	    private String     coverDesc ;
 
-	  @JsonProperty("ToolTip")
+	    @JsonProperty("ToolTip")
 	    private String   toolTip;
 	    
-	    @JsonProperty("TiraCode")
-	    private String   tiraCode;
-
 	    @JsonProperty("CreatedBy")
 	    private String  createdBy;
 	    

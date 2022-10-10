@@ -6,40 +6,57 @@ import lombok.Data;
 
 @Data
 public class FactorParamsInsert {
+	
+	@JsonProperty("SNo" )
+	private String sno;
 
-	@JsonProperty("PARAM_1" )
+	@JsonProperty("Param1" )
     private String param1 ;
     
-    @JsonProperty("PARAM_2" )
+    @JsonProperty("Param2" )
     private String param2 ;
     
-    @JsonProperty("PARAM_3" )
+    @JsonProperty("Param3" )
     private String param3 ;
     
-    @JsonProperty("PARAM_4" )
+    @JsonProperty("Param4" )
     private String param4 ;
     
-    @JsonProperty("PARAM_5" )
+    @JsonProperty("Param5" )
     private String param5 ;
     
-    @JsonProperty("PARAM_6" )
+    @JsonProperty("Param6" )
     private String param6 ;
     
-    @JsonProperty("PARAM_7" )
+    @JsonProperty("Param7" )
     private String param7 ;
     
-    @JsonProperty("PARAM_8" )
+    @JsonProperty("Param8" )
     private String param8 ;
     
-    @JsonProperty("PARAM_9" )
+    @JsonProperty("Param9" )
     private String param9 ;
     
-    @JsonProperty("PARAM_10" )
+    @JsonProperty("Param10" )
     private String param10 ;
     
-    @JsonProperty("PARAM_11" )
+    @JsonProperty("Param11" )
     private String param11 ;
     
-    @JsonProperty("PARAM_12" )
+    @JsonProperty("Param12" )
     private String param12 ;
+    
+    @JsonProperty("Rate" )
+    private String rate ;
+    
+    @JsonProperty("MinimumPremium" )
+    private String minimumPremium ;
+    
+    @JsonProperty("CalcType" )
+    private String calType ;
+    
+    @JsonProperty("Status" )
+    private String status ;
+  
+    
 }

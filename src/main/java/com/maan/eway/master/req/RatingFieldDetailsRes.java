@@ -1,14 +1,11 @@
 package com.maan.eway.master.req;
 
-import java.util.Date;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
 
 @Data
-public class RatingFieldDetails {
+public class RatingFieldDetailsRes {
 
 	@JsonProperty("RatingFiledId")
     private String ratingFieldId     ;
@@ -22,13 +19,21 @@ public class RatingFieldDetails {
 	@JsonProperty("Status")
     private String     status ;
 	
+	@JsonProperty("FromColumnName")
+    private String     fromColumnName ;
+	
 	@JsonProperty("FromDisplayName")
     private String     fromDisplayName ;
+	
+	@JsonProperty("ToColumnName")
+    private String     toColumnName ;
 	
 	@JsonProperty("ToDisplayName")
     private String     toDisplayName ;
 	
+	@JsonProperty("DiscreteColumnName")
+    private String discreteColumnName;
+	
 	@JsonProperty("DiscreteDisplayName")
     private String discreteDisplayName;
-	
 }

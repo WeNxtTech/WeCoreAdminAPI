@@ -22,6 +22,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -31,7 +32,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,7 +40,6 @@ import com.google.gson.Gson;
 import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.CoverOfsGridMaster;
 import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CoverChangeStatusReq;
 import com.maan.eway.master.req.CoverMasterGetAllReq;
@@ -603,17 +602,14 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			List<CoverMaster> coverList = new ArrayList<CoverMaster>();
 			// Pagination
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 10 : Integer.valueOf(req.getOffset());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 
-			// Find Latest Record
+			// Find CoverIds
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<CoverMaster> query = cb.createQuery(CoverMaster.class);
+			CriteriaQuery<Long> query = cb.createQuery(Long.class);
 
 			// Find All
 			Root<CoverMaster> b = query.from(CoverMaster.class);
-
-			// Select
-			query.select(b);
 
 			// Effective Date Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
@@ -621,29 +617,65 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
-			
 			effectiveDate.where(a1,a2);
-
+			
+			// Select
+			query.select(b.get("coverId") ).distinct(true);
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("coverName")));
 
 			// Where
-			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n1 =  cb.equal(b.get("effectiveDateStart"), effectiveDate );  
 			query.where(n1).orderBy(orderList);
-
+			
 			// Get Result
-			TypedQuery<CoverMaster> result = em.createQuery(query);
+			TypedQuery<Long> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
-			coverList = result.getResultList();
-			Map<Integer, List<CoverMaster>>  groupByCoverId = coverList.stream() .collect(Collectors.groupingBy(w ->   w.getCoverId())) ;
+			List<Long> coverIds = result.getResultList();
+			
+			
+			// Find Latest Record
+			CriteriaBuilder cb2 = em.getCriteriaBuilder();
+			CriteriaQuery<CoverMaster> query2 = cb2.createQuery(CoverMaster.class);
+
+			// Find All
+			Root<CoverMaster> b2 = query2.from(CoverMaster.class);
+
+			// Select
+			query2.select( b2);
+
+			// Order By
+			List<Order> orderList2 = new ArrayList<Order>();
+			orderList2.add(cb2.asc(b2.get("coverName")));
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate2 = query2.subquery(Long.class);
+			Root<CoverMaster> ocpm2 = effectiveDate2.from(CoverMaster.class);
+			effectiveDate2.select(cb2.max(ocpm2.get("effectiveDateStart")));
+			Predicate a3 = cb2.equal(ocpm2.get("coverId"), b.get("coverId"));
+			Predicate a4 = cb2.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"),today);
+			effectiveDate2.where(a3,a4);
+			//In 
+			Expression<String>e0=b2.get("coverId");
+				
+			// Where
+			Predicate n2 =  cb2.equal(b2.get("effectiveDateStart"), effectiveDate2 );
+			Predicate n3 =  e0.in(coverIds) ; 
+			Predicate n4 =  cb2.equal(b2.get("status"), "Y" );
+			Predicate n5 =  cb2.notEqual(b2.get("status"), "Y" );
+			Predicate n6 =  cb2.or(n4,n5);
+			query2.where(n2,n3,n6).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<CoverMaster> result2 = em.createQuery(query2);
+			coverList = result2.getResultList();
 			
 			// Map
-			for (Integer  data : groupByCoverId.keySet()) {
-				CoverMaster  coverData = groupByCoverId.get(data).get(0);
+			for (CoverMaster  data : coverList) {
 				CoverMasterGetAllRes res = new CoverMasterGetAllRes();
-				res = mapper.map(coverData, CoverMasterGetAllRes.class);
+				res = mapper.map(data, CoverMasterGetAllRes.class);
 				resList.add(res);
 			}
 			resList.sort(Comparator.comparing(CoverMasterGetAllRes :: getCoverName));
@@ -697,7 +729,10 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("coverId"), req.getCoverId());
-			query.where(n1,n2).orderBy(orderList);
+			Predicate n4 =  cb.equal(b.get("status"), "Y" );
+			Predicate n5 =  cb.notEqual(b.get("status"), "Y" );
+			Predicate n6 =  cb.or(n4,n5);
+			query.where(n1,n2,n6).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CoverMaster> result = em.createQuery(query);
@@ -756,15 +791,12 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
 			int offset = StringUtils.isBlank(req.getOffset()) ? 10 : Integer.valueOf(req.getOffset());
 
-			// Find Latest Record
+			// Find CoverIds
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<CoverMaster> query = cb.createQuery(CoverMaster.class);
+			CriteriaQuery<Long> query = cb.createQuery(Long.class);
 
 			// Find All
 			Root<CoverMaster> b = query.from(CoverMaster.class);
-
-			// Select
-			query.select(b);
 
 			// Effective Date Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
@@ -772,30 +804,63 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
-			
 			effectiveDate.where(a1,a2);
-
+			
+			// Select
+			query.select(b.get("coverId") ).distinct(true);
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("coverName")));
 
 			// Where
-			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			Predicate n2 = cb.equal(b.get("status"), "Y");
-			query.where(n1,n2).orderBy(orderList);
-
+			Predicate n1 =  cb.equal(b.get("effectiveDateStart"), effectiveDate );  
+			query.where(n1).orderBy(orderList);
+			
 			// Get Result
-			TypedQuery<CoverMaster> result = em.createQuery(query);
+			TypedQuery<Long> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
-			coverList = result.getResultList();
-			Map<Integer, List<CoverMaster>>  groupByCoverId = coverList.stream() .collect(Collectors.groupingBy(w ->   w.getCoverId())) ;
+			List<Long> coverIds = result.getResultList();
 			
+			
+			// Find Latest Record
+			CriteriaBuilder cb2 = em.getCriteriaBuilder();
+			CriteriaQuery<CoverMaster> query2 = cb2.createQuery(CoverMaster.class);
+
+			// Find All
+			Root<CoverMaster> b2 = query2.from(CoverMaster.class);
+
+			// Select
+			query2.select( b2);
+
+			// Order By
+			List<Order> orderList2 = new ArrayList<Order>();
+			orderList2.add(cb2.asc(b2.get("coverName")));
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate2 = query2.subquery(Long.class);
+			Root<CoverMaster> ocpm2 = effectiveDate2.from(CoverMaster.class);
+			effectiveDate2.select(cb2.max(ocpm2.get("effectiveDateStart")));
+			Predicate a3 = cb2.equal(ocpm2.get("coverId"), b.get("coverId"));
+			Predicate a4 = cb2.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"),today);
+			effectiveDate2.where(a3,a4);
+			//In 
+			Expression<String>e0=b2.get("coverId");
+				
+			// Where
+			Predicate n2 =  cb2.equal(b2.get("effectiveDateStart"), effectiveDate2 );
+			Predicate n3 =  e0.in(coverIds) ; 
+			Predicate n4 =  cb2.equal(b2.get("status"), "Y" );
+			query2.where(n2,n3,n4).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<CoverMaster> result2 = em.createQuery(query2);
+			coverList = result2.getResultList();
+		
 			// Map
-			for (Integer  data : groupByCoverId.keySet()) {
-				CoverMaster  coverData = groupByCoverId.get(data).get(0);
+			for (CoverMaster  data : coverList) {
 				CoverMasterGetAllRes res = new CoverMasterGetAllRes();
-				res = mapper.map(coverData, CoverMasterGetAllRes.class);
+				res = mapper.map(data, CoverMasterGetAllRes.class);
 				resList.add(res);
 			}
 			resList.sort(Comparator.comparing(CoverMasterGetAllRes :: getCoverName));

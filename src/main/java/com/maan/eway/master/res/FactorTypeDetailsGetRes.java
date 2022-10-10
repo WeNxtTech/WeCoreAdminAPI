@@ -6,6 +6,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.maan.eway.master.req.RatingFieldDetails;
+import com.maan.eway.master.req.RatingFieldDetailsRes;
 
 import lombok.Data;
 
@@ -41,5 +42,5 @@ public class FactorTypeDetailsGetRes {
 	@JsonProperty("Status")
     private String     status ;
 	@JsonProperty("RatingFieldDetails")
-    private List<RatingFieldDetails>     ratingFieldDetails  ;  
+    private List<RatingFieldDetailsRes>     ratingFieldDetails  ;  
 }

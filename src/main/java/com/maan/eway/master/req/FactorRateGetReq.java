@@ -23,7 +23,7 @@ public class FactorRateGetReq {
     private String     subCoverId    ;
 	
 	@JsonProperty("BranchCode")
-    private String     branchCpde    ;
+    private String     branchCode    ;
 	
 	@JsonProperty("AgencyCode")
     private String     agencyCode    ;

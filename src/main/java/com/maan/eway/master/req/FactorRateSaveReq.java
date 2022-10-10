@@ -19,7 +19,7 @@ public class FactorRateSaveReq {
 	@JsonProperty("FactorTypeId")
     private String factorTypeId ;
 
-    @JsonProperty("CompanyId")
+    @JsonProperty("InsuranceId")
     private String    companyId ;
   
     @JsonProperty("ProductId")
@@ -30,6 +30,9 @@ public class FactorRateSaveReq {
     
     @JsonProperty("AgencyCode")
     private String    agencyCode ;
+    
+    @JsonProperty("SectionId")
+    private String    sectionId ;
     
     @JsonProperty("CoverId")
     private String    coverId ;
@@ -50,6 +53,9 @@ public class FactorRateSaveReq {
 
     @JsonProperty("CreatedBy")
     private String     createdBy ;
+    
+    @JsonProperty("Remakrs")
+    private String     remarks;
     
     @JsonProperty("FactorParams")
     private List<FactorParamsInsert>     factorParams;

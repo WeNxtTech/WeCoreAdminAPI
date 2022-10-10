@@ -153,6 +153,25 @@ public class FactorTypeDetailsController {
 		}
 	}
 		
+		@PostMapping("/getfactortypeforrating")
+		@ApiOperation("This Method is to get by Product id")
+		public ResponseEntity<CommonRes> getByFactorTypeForRating(@RequestBody FactorTypeGetReq req)
+		{
+		CommonRes data = new CommonRes();
+		FactorTypeDetailsGetRes res = entityService.getByFactorTypeForRating(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+		
 	@PostMapping("/factortype/changestatus")
 	@ApiOperation(value = "This method is get Product Change Status ")
 	public ResponseEntity<CommonRes> changeStatusOfFactorType(@RequestBody FactorUpdateStatusReq req) {

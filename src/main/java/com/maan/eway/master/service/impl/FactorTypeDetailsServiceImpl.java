@@ -49,6 +49,7 @@ import com.maan.eway.master.req.FactorTypeGetReq;
 import com.maan.eway.master.req.FactorUpdateStatusReq;
 import com.maan.eway.master.req.GlobalCommonValidationReq;
 import com.maan.eway.master.req.RatingFieldDetails;
+import com.maan.eway.master.req.RatingFieldDetailsRes;
 import com.maan.eway.master.res.FactorTypeDetailsGetRes;
 import com.maan.eway.master.res.FactorTypeGetAllRes;
 import com.maan.eway.master.res.ProductMasterRes;
@@ -151,21 +152,38 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 				}
 			}
 			
+			
+			List<String> ratingRatingIds = new ArrayList<String>();
+			List<String> ratingColumnIds = new ArrayList<String>();
+			
 			if(  req.getRatingFieldDetails()==null || req.getRatingFieldDetails().size() <= 0 ) {
 				errorList.add(new Error("01", "RatingFieldDetails", "Please Enter Alteast One Rating Field Details"));
 			} else {
 				Long row = 0L ;
-				List<FactorTypeDetails> ratingfieldId = new ArrayList<FactorTypeDetails>();
-				if (StringUtils.isNotBlank(req.getFactorTypeId())) {
-			 ratingfieldId = getRatingFieldDetails(req.getFactorTypeId(),req.getCompanyId(),req.getProductId());
 				
-				}
-				List<Integer> ids = new ArrayList<Integer>();
-				Integer id=0;
-				for( RatingFieldDetails data : req.getRatingFieldDetails() ) {
+				for( RatingFieldDetails data : req.getRatingFieldDetails() ) {	
 					row = row + 1 ;
+					
 					if ( StringUtils.isBlank(data.getColumnsId())   ){
 						errorList.add(new Error("01","Column Id", "Please Enter Column Id in Row No : " + row ));
+					} else {
+						List<String> filterColumnIds =  ratingColumnIds.stream().filter( o -> o.equalsIgnoreCase(data.getColumnsId()) ).collect(Collectors.toList()); 
+						if(filterColumnIds.size()>0  ) {
+							errorList.add(new Error("02", "Column Id", "Duplicate Param Availabe in Row No : " + row ));
+						} else {
+							ratingColumnIds.add(data.getColumnsId());
+						}
+					}
+					
+					if ( StringUtils.isBlank(data.getRatingFieldId())) {
+						errorList.add(new Error("03","RatingFieldId", "Please Enter RatingFieldId in Row No : " + row ));	
+					} else {
+						List<String> filterRatingIds =  ratingRatingIds.stream().filter( o -> o.equalsIgnoreCase(data.getRatingFieldId()) ).collect(Collectors.toList()); 
+						if(filterRatingIds.size()>0  ) {
+							errorList.add(new Error("02", "RatingFieldId", "Duplicate RatingFieldId Availabe in Row No : " + row ));
+						} else {
+							ratingRatingIds.add(data.getRatingFieldId());
+						}
 					}
 					
 					if (StringUtils.isBlank(data.getRangeYn())) {
@@ -174,20 +192,26 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 						errorList.add(new Error("02", "RangeYn", "Enter RangeYn 1 Character Only in Row No : " + row ));
 					}else if(!("Y".equals(data.getRangeYn())||"N".equals(data.getRangeYn()))) {
 						errorList.add(new Error("02", "RangeYn", "Enter RangeYn Y or N Only in Row No : " + row ));
+					} else if(data.getRangeYn().equalsIgnoreCase("Y") ) {
+						if ( StringUtils.isBlank(data.getFromDisplayName())   ){
+							errorList.add(new Error("01","FromDisplayName", "Please Enter From Display Name in Row No : " + row ));
+						} else if ( data.getFromDisplayName().length() > 100   ){
+							errorList.add(new Error("01","FromDisplayName", "From Display Name Must be Under 100 Char Onyly Allowed in Row No : " + row ));
+						}
+		
+						if ( StringUtils.isBlank(data.getToDisplayName())   ){
+							errorList.add(new Error("01","ToDislapyName", "Please Enter To Dislapy Name in Row No : " + row ));
+						} else if ( data.getToDisplayName().length() > 100   ){
+							errorList.add(new Error("01","ToDisplayName", "To Display Name Must be Under 100 Char Onyly Allowed in Row No : " + row ));
+						}
+					} else if( data.getRangeYn().equalsIgnoreCase("N") ) {
+						if ( StringUtils.isBlank(data.getDiscreteDisplayName()) ){
+							errorList.add(new Error("01","DiscreteDisplayName", "Please Enter Discrete Display Name in Row No : " + row ));
+						} else if ( data.getDiscreteDisplayName().length() > 100   ){
+							errorList.add(new Error("01","DiscreteDisplayName", "Discrete Display Name Must be Under 100 Char Onyly Allowed in Row No : " + row ));
+						}
 					}
 					
-					if ( StringUtils.isBlank(data.getRatingFieldId())) {
-						errorList.add(new Error("03","RatingFieldId", "Please Enter RatingFieldId in Row No : " + row ));
-					}
-				
-					else {
-						List<Integer> rating = ids.stream().filter(o ->  o.equals(Integer.valueOf(data.getRatingFieldId()))).collect(Collectors.toList());
-						if(rating.size()>0) {
-							errorList.add(new Error("03","RatingFieldId", "This  RatingFieldId  already there in Row No : " + row ));						
-						}
-						id=Integer.valueOf(data.getRatingFieldId());
-					}
-					ids.add(id);
 					//Status Validation
 					if(StringUtils.isNotBlank(data.getStatus()) && !(data.getStatus().equalsIgnoreCase("P")) ) {
 						if (StringUtils.isBlank(data.getStatus())) {
@@ -405,11 +429,15 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 				saveData.setRangeYn(data.getRangeYn());
 				saveData.setColumnsId(Integer.valueOf(data.getColumnsId()));
 				saveData.setStatus(StringUtils.isBlank(data.getStatus()) ? req.getStatus()  : data.getStatus());
+				
 				if( data.getRangeYn().equalsIgnoreCase("Y") ) {
 					saveData.setRangeFromColumn(range.stream().filter( o -> o.getItemCode().equalsIgnoreCase(data.getColumnsId()) ).collect(Collectors.toList()).get(0).getParam1() );
 					saveData.setRangeToColumn(range.stream().filter( o -> o.getItemCode().equalsIgnoreCase(data.getColumnsId()) ).collect(Collectors.toList()).get(0).getParam2() );
+					saveData.setFromDisplayName(data.getFromDisplayName());
+					saveData.setToDisplayName(data.getToDisplayName());
 				} else if(data.getRangeYn().equalsIgnoreCase("N") ) {
 					saveData.setDiscreteColumn(discrete.stream().filter( o -> o.getItemCode().equalsIgnoreCase(data.getColumnsId()) ).collect(Collectors.toList()).get(0).getParam1() );
+					saveData.setDiscreteDisplayName(data.getDiscreteDisplayName());
 				}
 				
 				repository.saveAndFlush(saveData);
@@ -713,14 +741,11 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 	
 			// Map
 			res = dozerMapper.map(list.get(0) , FactorTypeDetailsGetRes.class );
-			List<RatingFieldDetails>     ratingFieldList = new ArrayList<RatingFieldDetails>()  ;  
+			List<RatingFieldDetailsRes>     ratingFieldList = new ArrayList<RatingFieldDetailsRes>()  ;  
 			
 			for (FactorTypeDetails  data : list ) {
-				RatingFieldDetails rating = new RatingFieldDetails();
-				rating.setColumnsId(data.getColumnsId()==null?"" : String.valueOf(data.getColumnsId()));
-				rating.setRangeYn(data.getRangeYn());
-				rating.setRatingFieldId(data.getRatingFieldId()==null?"" : String.valueOf(data.getRatingFieldId()));
-				rating.setStatus(data.getStatus());
+				RatingFieldDetailsRes rating = new RatingFieldDetailsRes();
+				rating = dozerMapper.map(data , RatingFieldDetailsRes.class );
 				ratingFieldList.add(rating);
 			}
 			res.setRatingFieldDetails(ratingFieldList);
@@ -853,6 +878,82 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
 			return null;
+		}
+		return res;
+	}
+
+
+	@Override
+	public FactorTypeDetailsGetRes getByFactorTypeForRating(FactorTypeGetReq req) {
+		FactorTypeDetailsGetRes res = new FactorTypeDetailsGetRes();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+
+		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			
+			List<FactorTypeDetails> list = new ArrayList<FactorTypeDetails>();
+			
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<FactorTypeDetails> query = cb.createQuery(FactorTypeDetails.class);
+	
+			// Find All
+			Root<FactorTypeDetails> b = query.from(FactorTypeDetails.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<FactorTypeDetails> ocpm1 = effectiveDate.from(FactorTypeDetails.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("factorTypeId"), b.get("factorTypeId"));
+			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a5 = cb.equal(ocpm1.get("ratingFieldId"), b.get("ratingFieldId"));
+			effectiveDate.where(a1,a2,a3,a4,a5);
+	
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("ratingFieldId")));
+			
+			// Where
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
+			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
+			Predicate n4 = cb.equal(b.get("factorTypeId"), req.getFactorTypeId());
+			Predicate n5 = cb.equal(b.get("status"), "Y");
+			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+	
+			// Get Result
+			TypedQuery<FactorTypeDetails> result = em.createQuery(query);
+			list = result.getResultList();
+	
+			// Map
+			res = dozerMapper.map(list.get(0) , FactorTypeDetailsGetRes.class );
+			List<RatingFieldDetailsRes>     ratingFieldList = new ArrayList<RatingFieldDetailsRes>()  ;  
+			
+			for (FactorTypeDetails  data : list ) {
+				RatingFieldDetailsRes rating = new RatingFieldDetailsRes();
+				rating = dozerMapper.map(data , RatingFieldDetailsRes.class );
+				rating.setFromColumnName(data.getRangeFromColumn());
+				rating.setToColumnName(data.getRangeToColumn());
+				rating.setDiscreteColumnName(data.getDiscreteColumn());
+				ratingFieldList.add(rating);
+			}
+			res.setRatingFieldDetails(ratingFieldList);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+	
 		}
 		return res;
 	}

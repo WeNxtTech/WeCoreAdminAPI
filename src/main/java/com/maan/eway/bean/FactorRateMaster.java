@@ -54,6 +54,10 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="FACTOR_TYPE_ID", nullable=false)
     private Integer    factorTypeId ;
+    
+    @Id
+    @Column(name="S_NO", nullable=false)
+    private Integer    sNo ;
 
     @Id
     @Column(name="COMPANY_ID", nullable=false)
@@ -70,6 +74,10 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="AGENCY_CODE", nullable=false)
     private String    agencyCode ;
+    
+    @Id
+    @Column(name="SECTION_ID", nullable=false)
+    private Integer    sectionId ;
     
     @Id
     @Column(name="COVER_ID", nullable=false)
@@ -139,6 +147,17 @@ private static final long serialVersionUID = 1L;
     @Column(name="PARAM_12" )
     private String param12 ;
     
+    @Column(name="RATE")
+    private Double rate ;
+    
+    @Column(name="CALC_TYPE")
+    private String    calcType ;
+    
+    @Column(name="CALC_TYPE_DESC")
+    private String    calcTypeDesc ;
+    
+    @Column(name="MIN_PREMIUM")
+    private Double    minPremium ;
     
     //--- ENTITY LINKS ( RELATIONSHIP )
 

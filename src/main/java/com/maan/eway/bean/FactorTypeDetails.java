@@ -90,12 +90,21 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="RANGE_FROM_COLUMN", length=100)
     private String     rangeFromColumn ;
+    
+    @Column(name="FROM_DISPLAY_NAME", length=100)
+    private String     fromDisplayName ;
 
     @Column(name="RANGE_TO_COLUMN", length=100)
     private String     rangeToColumn ;
+    
+    @Column(name="TO_DISPLAY_NAME", length=100)
+    private String     toDisplayName ;
 
     @Column(name="DISCRETE_COLUMN", length=100)
     private String     discreteColumn ;
+    
+    @Column(name="DISCRETE_DISPLAY_NAME", length=100)
+    private String     discreteDisplayName ;
 
     @Column(name="AMEND_ID")
     private Integer    amendId ;

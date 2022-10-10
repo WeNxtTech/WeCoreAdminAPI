@@ -11,52 +11,38 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.maan.eway.bean.FactorTypeDetails;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.FactorRateGetAllReq;
 import com.maan.eway.master.req.FactorRateGetReq;
 import com.maan.eway.master.req.FactorRateGetRes;
 import com.maan.eway.master.req.FactorRateSaveReq;
 import com.maan.eway.master.req.FactorRateUpdateStatusReq;
-import com.maan.eway.master.req.FactorTypeDetailsSaveReq;
-import com.maan.eway.master.req.FactorTypeGetAllReq;
-import com.maan.eway.master.req.FactorTypeGetReq;
-import com.maan.eway.master.req.FactorUpdateStatusReq;
-import com.maan.eway.master.req.ProductChangeStatusReq;
-import com.maan.eway.master.req.ProductMasterGetAllReq;
-import com.maan.eway.master.req.ProductMasterGetReq;
-import com.maan.eway.master.req.ProductMasterSaveReq;
 import com.maan.eway.master.res.FactorRateGetAllRes;
-import com.maan.eway.master.res.FactorTypeDetailsGetRes;
-import com.maan.eway.master.res.FactorTypeGetAllRes;
-import com.maan.eway.master.res.ProductMasterRes;
-import com.maan.eway.master.service.FactorTypeDetailsService;
+import com.maan.eway.master.service.FactorRateMasterService;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.ApiOperation;
 
-
 /**
-* <h2>FactorTypeDetailsController</h2>
-*/
+ * <h2>FactorTypeDetailsController</h2>
+ */
 @RestController
 @RequestMapping("/master")
 public class FactorRateMasterController {
 
 	@Autowired
-	private  FactorTypeDetailsService entityService;
+	private FactorRateMasterService entityService;
 
 	@Autowired
-	private  PrintReqService reqPrinter;
-	
+	private PrintReqService reqPrinter;
+
 	// save
 	@PostMapping("/insertfactorrates")
 	@ApiOperation(value = "This method is Insert Factor Rate Details")
@@ -76,7 +62,7 @@ public class FactorRateMasterController {
 
 		} else {
 
-			// Get All
+			// Insert
 			SuccessRes res = entityService.insertFactorRateDetails(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
@@ -91,59 +77,54 @@ public class FactorRateMasterController {
 		}
 
 	}
-	
-	//  Get All Product Master
-	
+
+	// Get All Product Master
+
 	@PostMapping("/getallfactorrates")
 	@ApiOperation("This method is getall Factor Rates Details")
-	public ResponseEntity<CommonRes> getallFactorTypeDetails(@RequestBody FactorRateGetAllReq req)
-	{
+	public ResponseEntity<CommonRes> getallFactorTypeDetails(@RequestBody FactorRateGetAllReq req) {
 		CommonRes data = new CommonRes();
 		reqPrinter.reqPrint(req);
-		
+
 		List<FactorRateGetAllRes> res = entityService.getallFactorRates(req);
 		data.setCommonResponse(res);
 		data.setErrorMessage(Collections.emptyList());
 		data.setIsError(false);
 		data.setMessage("Success");
-		
-		if(res!= null) {
-			return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
-		}
-		else {
-			return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	
-	//  Get Active Product Master
-	
-		@PostMapping("/getactivefactorrates")
-		@ApiOperation("This method is get Active Factor Rates Details")
-		public ResponseEntity<CommonRes> getActiveProductDetails(@RequestBody FactorRateGetAllReq req)
-		{
-			CommonRes data = new CommonRes();
-			reqPrinter.reqPrint(req);
-			
-			List<FactorRateGetAllRes> res = entityService.getActiveFactocRates(req);
-			data.setCommonResponse(res);
-			data.setErrorMessage(Collections.emptyList());
-			data.setIsError(false);
-			data.setMessage("Success");
-			
-			if(res!= null) {
-				return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
-			}
-			else {
-				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
-			}
+
+	// Get Active Product Master
+
+	@PostMapping("/getactivefactorrates")
+	@ApiOperation("This method is get Active Factor Rates Details")
+	public ResponseEntity<CommonRes> getActiveProductDetails(@RequestBody FactorRateGetAllReq req) {
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+
+		List<FactorRateGetAllRes> res = entityService.getActiveFactocRates(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
-		
-		// Get By Product Id
-		
-		@PostMapping("/getbyfactorrateid")
-		@ApiOperation("This Method is to get by Product id")
-		public ResponseEntity<CommonRes> getByFactorRateId(@RequestBody FactorRateGetReq req)
-		{
+	}
+
+	// Get By Product Id
+
+	@PostMapping("/getbyfactorrateid")
+	@ApiOperation("This Method is to get by Product id")
+	public ResponseEntity<CommonRes> getByFactorRateId(@RequestBody FactorRateGetReq req) {
 		CommonRes data = new CommonRes();
 		FactorRateGetRes res = entityService.getByFactorRateId(req);
 		data.setCommonResponse(res);
@@ -158,7 +139,7 @@ public class FactorRateMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-		
+
 	@PostMapping("/factorrate/changestatus")
 	@ApiOperation(value = "This method is get Factor Rate Change Status ")
 	public ResponseEntity<CommonRes> changeStatusOfFactorRate(@RequestBody FactorRateUpdateStatusReq req) {

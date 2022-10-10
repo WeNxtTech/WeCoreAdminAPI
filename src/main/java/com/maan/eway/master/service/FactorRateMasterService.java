@@ -24,21 +24,19 @@ import java.util.List;
 /**
 * <h2>FactorTypeDetailsServiceimpl</h2>
 */
-public interface FactorTypeDetailsService  {
+public interface FactorRateMasterService  {
 
-	List<Error> validateFactorTypeDetails(FactorTypeDetailsSaveReq req);
+	List<Error> validateFactorRateDetails(FactorRateSaveReq req);
 
-	SuccessRes insertFactorTypeDetails(FactorTypeDetailsSaveReq req);
+	SuccessRes insertFactorRateDetails(FactorRateSaveReq req);
 
-	List<FactorTypeGetAllRes> getallFactorTypes(FactorTypeGetAllReq req);
+	List<FactorRateGetAllRes> getallFactorRates(FactorRateGetAllReq req);
 
-	List<FactorTypeGetAllRes> getActiveFactocTypes(FactorTypeGetAllReq req);
+	List<FactorRateGetAllRes> getActiveFactocRates(FactorRateGetAllReq req);
 
-	FactorTypeDetailsGetRes getByFactorTypeId(FactorTypeGetReq req);
+	FactorRateGetRes getByFactorRateId(FactorRateGetReq req);
 
-	SuccessRes changeStatusOfFactorType(FactorUpdateStatusReq req);
-
-	FactorTypeDetailsGetRes getByFactorTypeForRating(FactorTypeGetReq req);
+	SuccessRes changeStatusOfFactorRate(FactorRateUpdateStatusReq req);
 
 
 

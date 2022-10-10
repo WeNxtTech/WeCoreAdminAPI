@@ -52,4 +52,11 @@ public class RatingFieldsMasterGetRes {
 	@JsonProperty("AmendId")
 	private String amendId;
 
+	
+	@JsonProperty("InputTableName")
+	private String inputTableName;
+
+	@JsonProperty("InputColumnName")
+	private String inputColumnName;
+	
 }

@@ -84,6 +84,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="INPUT_COLUMN", length=100,nullable=false)
     private String    inputColumn;
 
+    @Column(name="INPUT_TABLE_NAME", length=100,nullable=false)
+    private String    inputTableName;
+
+    @Column(name="INPUT_COLUMN_NAME", length=100,nullable=false)
+    private String    inputColumnName; 
+    
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ENTRY_DATE")
     private Date       entryDate ;

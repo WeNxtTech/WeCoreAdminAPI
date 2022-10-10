@@ -93,7 +93,7 @@ public List<DropDownRes> columnName(ColumnNameDropDownlReq req) {
 		List<OneTimeTableDetails> getList = repo.findByParentIdAndStatusOrderByItemCodeAsc(Integer.valueOf(req.getParentId()), "Y");
 		Integer parentId =Integer.valueOf(req.getParentId());
 		for (OneTimeTableDetails data : getList) {
-			if(parentId!=data.getItemId()) {
+			if(!data.getItemType().equalsIgnoreCase("ONE_TIME_TABLE")) {
 			DropDownRes res = new DropDownRes();
 			res.setCode(data.getItemCode());
 			res.setCodeDesc(data.getItemValue());

@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.OneTimeTableDetails;
 import com.maan.eway.bean.RatingFieldMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.RatingDropDownReq;
@@ -41,6 +42,7 @@ import com.maan.eway.master.req.RatingFieldsMasterGetReq;
 import com.maan.eway.master.req.RatingFieldsMasterSaveReq;
 import com.maan.eway.master.res.RatingFieldsMasterGetRes;
 import com.maan.eway.master.service.RatingFieldMasterService;
+import com.maan.eway.repository.OneTimeTableDetailsRepository;
 import com.maan.eway.repository.RatingFieldMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
@@ -57,6 +59,9 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 
 	@Autowired
 	private RatingFieldMasterRepository factorRepo;
+
+	@Autowired
+	private OneTimeTableDetailsRepository oneTimeRepo;
 
 	Gson json = new Gson();
 
@@ -174,7 +179,8 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 			endDate = cal.getTime() ;
 
 			String factorId = "";
-
+			OneTimeTableDetails tablename = oneTimeRepo.findByItemTypeAndParentId("ONE_TIME_TABLE",Integer.valueOf(req.getInputTable()));
+			OneTimeTableDetails columnname = oneTimeRepo.findByItemTypeAndItemCode(tablename.getItemValue(),req.getInputColumn());
 			if (StringUtils.isBlank(req.getRatingId())) {
 				// Save
 				Long totalCount = getMasterTableCount(req.getProductId());
@@ -229,6 +235,8 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 			saveData.setEffectiveDateEnd(endDate);
 			saveData.setEntryDate(new Date());
 			saveData.setAmendId(amendId);
+			saveData.setInputTableName(tablename.getItemValue());			
+			saveData.setInputColumnName(columnname.getItemValue());
 			factorRepo.saveAndFlush(saveData);
 
 			if (list.size() > 0) {

@@ -13,6 +13,7 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.maan.eway.bean.ProductMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,6 +30,8 @@ import com.maan.eway.bean.ProductMasterId;
  
  
 public interface ProductMasterRepository  extends JpaRepository<ProductMaster,ProductMasterId > , JpaSpecificationExecutor<ProductMaster> {
+
+	List<ProductMaster> findByProductIdOrderByEffectiveDateStartDesc(Integer productId);
 
 
 }

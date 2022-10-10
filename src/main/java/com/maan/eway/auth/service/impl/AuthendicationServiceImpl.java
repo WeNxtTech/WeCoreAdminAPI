@@ -50,6 +50,7 @@ import com.maan.eway.auth.dto.CommonLoginRes;
 import com.maan.eway.auth.dto.LoginBranchCriteriaRes;
 import com.maan.eway.auth.dto.LoginBranchDetailsRes;
 import com.maan.eway.auth.dto.LoginRequest;
+import com.maan.eway.auth.dto.ProductDropDownRes;
 import com.maan.eway.auth.service.AuthendicationService;
 import com.maan.eway.auth.token.EncryDecryService;
 import com.maan.eway.auth.token.JwtTokenUtil;
@@ -59,14 +60,18 @@ import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginMasterId;
+import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginUserInfo;
+import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.RegionMaster;
 import com.maan.eway.bean.SessionMaster;
 import com.maan.eway.repository.BranchMasterRepository;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.LoginMasterRepository;
+import com.maan.eway.repository.LoginProductMasterRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
+import com.maan.eway.repository.ProductMasterRepository;
 import com.maan.eway.repository.SessionMasterRepository;
 
 
@@ -98,6 +103,12 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 	
 	@Autowired
 	private LoginBranchMasterRepository loginBranchRepo;
+	
+	@Autowired
+	private LoginProductMasterRepository loginProductRepo;
+	
+	@Autowired
+	private ProductMasterRepository productRepo;
 	
 	@PersistenceContext
 	private EntityManager em;
@@ -212,11 +223,31 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			
 			
 			r.setLoginBranchDetails(loginBranchRes);
-			
-			List<String> companyIds = new ArrayList<>( removeDuplicateCompany) ;
+
+			List<String> companyIds = new ArrayList<>(removeDuplicateCompany);
 			// Products
-			r.setCompanyProducts( getBrokerProducts(login.getLoginId() , companyIds));
+
+			List<LoginProductMaster> loginproduct = loginProductRepo.findByLoginId(login.getLoginId());
+			Integer productId;
+			List<ProductDropDownRes> resList = new ArrayList<ProductDropDownRes>();
+
+			for (LoginProductMaster products : loginproduct) {
+				productId = products.getProductId();
+
+				List<ProductMaster> product = productRepo.findByProductIdOrderByEffectiveDateStartDesc(productId);
+				ProductDropDownRes res = new ProductDropDownRes();
+				res.setOldProductName(products.getProductName());
+				res.setNewProductName(product.get(0).getProductName());
+				res.setProductIconId(product.get(0).getProductIconId().toString());
+				res.setProductIconName(product.get(0).getProductIconName());
+				res.setProductId(productId.toString());
+				
+				resList.add(res);
+			}
+
+			r.setCompanyProducts(resList);
 			
+
 			// Menu Ids
 		  if(login.getMenuIds()!=null && login.getMenuIds().indexOf(",")!=-1) {
 			  String[] split = login.getMenuIds().split(",");

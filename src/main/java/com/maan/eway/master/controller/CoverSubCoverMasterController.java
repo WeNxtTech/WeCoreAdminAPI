@@ -23,6 +23,7 @@ import com.maan.eway.master.req.CoverSubCoverMasterGetAllReq;
 import com.maan.eway.master.req.CoverSubCoverMasterGetReq;
 import com.maan.eway.master.req.CoverSubCoverMasterSaveReq;
 import com.maan.eway.master.req.SectionCoverUpdateReq;
+import com.maan.eway.master.req.SubCoverDropDownReq;
 import com.maan.eway.master.req.SubCoverGetAllReq;
 import com.maan.eway.master.req.SubCoverMasterGetAllReq;
 import com.maan.eway.master.req.SubCoverMasterGetReq;
@@ -34,6 +35,7 @@ import com.maan.eway.master.res.SubCoverMasterGetRes;
 import com.maan.eway.master.res.SubCoverMasterRes;
 import com.maan.eway.master.service.CoverSubCoverMasterService;
 import com.maan.eway.res.CommonRes;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
@@ -228,4 +230,22 @@ public class CoverSubCoverMasterController {
 			}
 
 		}
+		
+		@PostMapping("/dropdown/subcover")
+		@ApiOperation(value="This method is to get dropdown")
+		public ResponseEntity<CommonRes> subcoverDropDown(@RequestBody SubCoverDropDownReq req){
+			CommonRes data = new CommonRes();
+			List<DropDownRes> res = service.subcoverDropDown(req);
+			reqPrinter.reqPrint(req);
+			data.setCommonResponse(res);
+			data.setErrorMessage(Collections.emptyList());
+			data.setIsError(false);
+			data.setMessage("Success");
+			if(res!=null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			}
+			else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				}
+			}
 }

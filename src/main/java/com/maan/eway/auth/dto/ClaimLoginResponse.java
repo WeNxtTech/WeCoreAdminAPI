@@ -36,7 +36,8 @@ public class ClaimLoginResponse {
     private List<LoginBranchDetailsRes> loginBranchDetails;
 
 	@JsonProperty("BrokerCompanyProducts")
-	private List<BrokerProductCompaniesRes> companyProducts;
+	private List<ProductDropDownRes> companyProducts;
+	
 	
 
 

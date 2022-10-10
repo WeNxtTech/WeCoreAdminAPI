@@ -143,7 +143,23 @@ private static final long serialVersionUID = 1L;
     @Column(name="FACTOR_TYPE_ID")
     private Integer    factorTypeId ;
 
+    @Column(name="IS_TAX_EXCEMPTED",length=1)
+    private String isTaxExcempted;
 
+    
+    @Column(name="TAX_AMOUNT")
+    private Double taxAmount;
+
+    @Column(name="TAX_CODE",length=10)
+    private String taxCode;
+
+    @Column(name="TAX_EXCEMPTION_REFERENCE",length=20)
+    private String taxExcemptionReference;
+
+    @Column(name="TAX_EXCEMPTION_TYPE",length=20)
+    private String taxExcemptionType;
+
+    
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

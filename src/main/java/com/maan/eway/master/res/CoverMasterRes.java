@@ -111,5 +111,18 @@ public class CoverMasterRes implements Serializable {
 	
 	@JsonProperty("GridDetails")
 	private List<OfsGridGetRes> gridDetails;
-
+	@JsonProperty("IsTaxExcempted")
+	private String isTaxExcempted;
+	
+	@JsonProperty("TaxAmount")
+	private String taxAmount;
+	
+	@JsonProperty("TaxCode")
+	private String taxCode;
+	
+	@JsonProperty("TaxExcemptionReference")
+	private String taxExcemptionReference;
+	
+	@JsonProperty("TaxExcemptionType")
+	private String taxExcemptionType;
 }

@@ -187,10 +187,10 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 				
 				if (StringUtils.isNotBlank(req.getCalcType()) &&  req.getCalcType().equalsIgnoreCase("F") ) {
 					
-					if( StringUtils.isBlank(req.getFactorTypeId()) ) {
+			/*		if( StringUtils.isBlank(req.getFactorTypeId()) ) {
 						errorList.add(new Error("09", "Factor Type Id", "Please Enter Factor Type Id "));
 					
-					}
+					} */
 		
 				} else if( StringUtils.isNotBlank(req.getCalcType()) &&  req.getCalcType().equalsIgnoreCase("G")  ) {
 					if(req.getGridDetails() == null || req.getGridDetails().size()<=0 ) {

@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.maan.eway.bean.FactorTypeDetails;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.FactorTypeDetailsSaveReq;
+import com.maan.eway.master.req.FactorTypeDropDownReq;
 import com.maan.eway.master.req.FactorTypeGetAllReq;
 import com.maan.eway.master.req.FactorTypeGetReq;
 import com.maan.eway.master.req.FactorUpdateStatusReq;
@@ -27,11 +28,13 @@ import com.maan.eway.master.req.ProductChangeStatusReq;
 import com.maan.eway.master.req.ProductMasterGetAllReq;
 import com.maan.eway.master.req.ProductMasterGetReq;
 import com.maan.eway.master.req.ProductMasterSaveReq;
+import com.maan.eway.master.req.SubCoverDropDownReq;
 import com.maan.eway.master.res.FactorTypeDetailsGetRes;
 import com.maan.eway.master.res.FactorTypeGetAllRes;
 import com.maan.eway.master.res.ProductMasterRes;
 import com.maan.eway.master.service.FactorTypeDetailsService;
 import com.maan.eway.res.CommonRes;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
@@ -192,4 +195,23 @@ public class FactorTypeDetailsController {
 
 	}
 
+	
+	@PostMapping("/dropdown/factortype")
+	@ApiOperation(value="This method is to get Factor Type dropdown")
+	public ResponseEntity<CommonRes> factorTypeDropDown(@RequestBody FactorTypeDropDownReq req){
+		CommonRes data = new CommonRes();
+		List<DropDownRes> res = entityService.factorTypeDropDown(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		if(res!=null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		}
+		else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+	
+	
 }

@@ -549,5 +549,421 @@ public class DropDownServiceImpl  implements DropDownService{
 		return resList;
 	}
 
+
+	@Override
+	public List<DropDownRes> getMotorCategory() {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("MOTOR_CATEGORY", "Y");
+
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+	@Override
+	public List<DropDownRes> getMotorType() {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("MOTOR_TYPE", "Y");
+
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+	@Override
+	public List<DropDownRes> getMotorUsage() {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("MOTOR_USAGE", "Y");
+
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+
+	@Override
+	public List<DropDownRes> ownerCategory() {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("OWNER_CATEGORY", "Y");
+
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+
+	@Override
+	public List<DropDownRes> fleetType() {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("FLEET_TYPE", "Y");
+
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+
+	@Override
+	public List<DropDownRes> reinsuranceCategory() {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("REINSURANCE_CATEGORY", "Y");
+
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+
+	@Override
+	public List<DropDownRes> participantType() {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("PARTICIPANT_TYPE", "Y");
+
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+
+	@Override
+	public List<DropDownRes> reinsuranceForm() {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("REINSURANCE_FORM", "Y");
+
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+
+	@Override
+	public List<DropDownRes> reinsuranceType() {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("REINSURANCE_TYPE", "Y");
+
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+
+	@Override
+	public List<DropDownRes> claimformdullyfilled() {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeDesc("CLAIM_FORM_DULLY_FILLED", "Y");
+
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+
+	@Override
+	public List<DropDownRes> lostassessmentoption() {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("LOSS_ASSESSMENT_OPTION", "Y");
+
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+
+	@Override
+	public List<DropDownRes> assessoridtype() {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("ASSESSOR_ID_TYPE", "Y");
+
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+
+	@Override
+	public List<DropDownRes> claimantCategory() {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("CLAIMANT_CATEGORY", "Y");
+
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+
+	@Override
+	public List<DropDownRes> claimantType() {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("CLAIMANT_TYPE", "Y");
+
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+
+	@Override
+	public List<DropDownRes> claimantIdType() {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("CLAIMANT_ID_TYPE", "Y");
+
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+
+	@Override
+	public List<DropDownRes> isreassessment() {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeDesc("IS_REASSESSMENT", "Y");
+
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+
+	@Override
+	public List<DropDownRes> offerAccepted() {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeDesc("OFFER_ACCEPTED", "Y");
+
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+
+	@Override
+	public List<DropDownRes> partiesNotified() {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeDesc("PARTIES_NOTIFIED", "Y");
+
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+
+	@Override
+	public List<DropDownRes> claimResultedLitigation() {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeDesc("CLAIM_RESULTED_LITIGATION", "Y");
+
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
 	
 }

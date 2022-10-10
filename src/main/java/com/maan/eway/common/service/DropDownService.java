@@ -42,4 +42,42 @@ public interface DropDownService {
 
 	List<DropDownRes> getCityDropdown(CityDropDownReq req);
 
+	List<DropDownRes> getMotorCategory();
+
+	List<DropDownRes> getMotorType();
+
+	List<DropDownRes> getMotorUsage();
+
+	List<DropDownRes> ownerCategory();
+
+	List<DropDownRes> fleetType();
+
+	List<DropDownRes> reinsuranceCategory();
+
+	List<DropDownRes> participantType();
+
+	List<DropDownRes> reinsuranceForm();
+
+	List<DropDownRes> reinsuranceType();
+
+	List<DropDownRes> claimformdullyfilled();
+
+	List<DropDownRes> lostassessmentoption();
+
+	List<DropDownRes> assessoridtype();
+
+	List<DropDownRes> claimantCategory();
+
+	List<DropDownRes> claimantType();
+
+	List<DropDownRes> claimantIdType();
+
+	List<DropDownRes> isreassessment();
+
+	List<DropDownRes> offerAccepted();
+
+	List<DropDownRes> partiesNotified();
+
+	List<DropDownRes> claimResultedLitigation();
+
 }

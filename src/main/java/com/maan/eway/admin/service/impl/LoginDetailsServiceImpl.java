@@ -361,7 +361,7 @@ this.repository = repo;
 			userInfo.setUpdatedDate(new Date());
 			userInfo.setUpdatedBy(loginReq.getCreatedBy());
 			userInfo.setStatus(saveLogin.getStatus());
-			
+			userInfo.setCountryCode(personalReq.getCountryCode());
 			if(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("User")  ) {
 				List<Tuple> stateCityNames = 	getStateAndCityName(personalReq.getCountryCode() , personalReq.getStateCode() , personalReq.getCityCode());
 				

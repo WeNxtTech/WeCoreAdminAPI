@@ -73,7 +73,7 @@ public List<DropDownRes> tableName() {
 
 		for (OneTimeTableDetails data : getList) {
 			DropDownRes res = new DropDownRes();
-			res.setCode(data.getItemValue());
+			res.setCode(data.getItemCode());
 			res.setCodeDesc(data.getItemValue());
 			resList.add(res);
 		}
@@ -94,7 +94,7 @@ public List<DropDownRes> columnName(ColumnNameDropDownlReq req) {
 		for (OneTimeTableDetails data : getList) {
 			if(!data.getItemType().equalsIgnoreCase("ONE_TIME_TABLE")) {
 			DropDownRes res = new DropDownRes();
-			res.setCode(data.getItemValue());
+			res.setCode(data.getItemCode());
 			res.setCodeDesc(data.getItemValue());
 			resList.add(res);
 			}

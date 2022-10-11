@@ -13,8 +13,8 @@ public class ColumnNameDropDownlReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @JsonProperty("ParentId")
-    private String parentId;
+    @JsonProperty("TableName")
+    private String itemType;
     
 
 }

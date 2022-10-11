@@ -53,21 +53,23 @@ private static final long serialVersionUID = 1L;
  
     //--- ENTITY PRIMARY KEY 
     @Id
-    @Column(name="SNO", nullable=false)
-    private Integer    sno ;
-
-    @Id
     @Column(name="INS_ID", nullable=false, length=100)
     private String     insId ;
 
     @Id
     @Temporal(TemporalType.DATE)
-    @Column(name="EFFECTIVE_DATE", nullable=false)
-    private Date       effectiveDate ;
+    @Column(name="EFFECTIVE_DATE_START", nullable=false)
+    private Date       effectiveDateStart ;
+
 
     @Id
-    @Column(name="AMENDID", nullable=false)
-    private Integer    amendid ;
+    @Temporal(TemporalType.DATE)
+    @Column(name="EFFECTIVE_DATE_END", nullable=false)
+    private Date       effectiveDateEnd ;
+    
+    @Id
+    @Column(name="AMEND_ID", nullable=false)
+    private Integer    amendId ;
 
     @Id
     @Column(name="QUERY_KEY", nullable=false, length=100)
@@ -144,8 +146,15 @@ private static final long serialVersionUID = 1L;
     @Column(name="STATUS", length=10)
     private String     status ;
 
+    @Column(name="CREATED_BY", length=10)
+    private String     createdBy ;
+    
+    @Column(name="CORE_APP_CODE", length=20)
+    private String     coreAppCode ;
+    
+    @Column(name="REGULATORY_CODE", length=20)
+    private String     regulatoryCode ;
 
-    //--- ENTITY LINKS ( RELATIONSHIP )
 
 
 }

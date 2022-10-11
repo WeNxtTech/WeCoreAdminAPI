@@ -13,6 +13,7 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.maan.eway.bean.NotifTemplateMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,5 +30,12 @@ import com.maan.eway.bean.NotifTemplateMasterId;
  
  
 public interface NotifTemplateMasterRepository  extends JpaRepository<NotifTemplateMaster,NotifTemplateMasterId > , JpaSpecificationExecutor<NotifTemplateMaster> {
+
+
+
+	List<NotifTemplateMaster> findByInsIdAndNotificationApplicableOrderByEntryDateDesc(String string,
+			String notificationApplicable);
+
+	List<NotifTemplateMaster> findByInsIdOrderByEntryDateDesc(String companyId);
 
 }

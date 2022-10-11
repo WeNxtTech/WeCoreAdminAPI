@@ -30,13 +30,15 @@ public class NotifTemplateMasterId implements Serializable {
     private static final long serialVersionUID = 1L;
 
     //--- ENTITY KEY ATTRIBUTES 
-    private Integer    sno ;
+
     
     private String     insId ;
     
-    private Date       effectiveDate ;
+    private Date       effectiveDateStart ;
     
-    private Integer    amendid ;
+    private Date       effectiveDateEnd ;
+    
+    private Integer    amendId ;
     
     private String     queryKey ;
     

@@ -5,6 +5,7 @@
 */
 package com.maan.eway.notif.controller;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,56 +18,91 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.bean.NotifTemplateMaster;
+import com.maan.eway.error.Error;
+import com.maan.eway.master.req.BranchMasterSaveReq;
+import com.maan.eway.notif.req.MailMasterGetReq;
+import com.maan.eway.notif.req.NotifTemplateMasterGetReq;
+import com.maan.eway.notif.req.NotifTemplateMasterReq;
+import com.maan.eway.notif.res.MailMasterGetRes;
+import com.maan.eway.notif.res.NotifTemplateMasterRes;
 //import com.maan.eway.service.NotifTemplateMasterService;
+import com.maan.eway.notif.service.NotifTemplateMasterService;
+import com.maan.eway.res.CommonRes;
+import com.maan.eway.res.SuccessRes;
+import com.maan.eway.service.PrintReqService;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 
 /**
 * <h2>NotifTemplateMasterController</h2>
 */
 @RestController
+@Api(tags = "NOTIFICATION TEMPLETE MASTER : Notification Templete Master ", description = "API's")
 @RequestMapping("/master")
 public class NotifTemplateMasterController {
 
-//	@Autowired
-	//private  NotifTemplateMasterService entityService;
+	@Autowired
+	private  NotifTemplateMasterService entityService;
+	
+	@Autowired
+	private  PrintReqService reqPrinter;
+	// Get
 
-/*
-	private static final String ENTITY_TITLE = "NotifTemplateMaster";
+	@PostMapping("/getbynotification")
+	@ApiOperation("This Method is to Get By Notification")
+	public ResponseEntity<CommonRes> getenotiftemplatemaster(@RequestBody NotifTemplateMasterGetReq req) {
+		CommonRes data = new CommonRes();
+		NotifTemplateMasterRes res = entityService.getenotiftemplatemaster(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
 
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 
- 	public NotifTemplateMasterController (NotifTemplateMasterService entityService) {
-		this.entityService = entityService;
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
 	}
-*/
+	
+	// Insert
+	@PostMapping("/insertnotiftemplatemaster")
+	@ApiOperation(value = "This method is Insert Notification Templete")
+	public ResponseEntity<CommonRes> insertnotiftemplatemaster(@RequestBody NotifTemplateMasterReq req) {
 
-/*	@PostMapping(value = "/notiftemplates")
-	public ResponseEntity<NotifTemplateMaster> createNotifTemplateMaster(@RequestBody  NotifTemplateMaster model) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
 
-   		 NotifTemplateMaster data = entityService.create(model);
-    		if (data != null) {
-    			return new ResponseEntity<>(data,HttpStatus.CREATED);
-  			  } else {
-    			return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
-   			 }
-    }
+		List<Error> validation = entityService.validatenotiftemplatemaster(req);
 
-    @GetMapping("/notiftemplatemaster")
-    public ResponseEntity<List<NotifTemplateMaster>> getAllNotifTemplateMaster() {
-        List<NotifTemplateMaster> lst = entityService.getAll();
+		// Validation
+		if (validation != null && validation.size() != 0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
 
-        return new ResponseEntity<>(lst,HttpStatus.OK);
-    } */
-/*
-        @GetMapping(value = "/notiftemplatemaster/{id}")
-    public ResponseEntity<NotifTemplateMaster> getOneNotifTemplateMaster(@PathVariable("id") long id) {
+			// Save
+		} else {
 
-            NotifTemplateMaster e = entityService.getOne(id);
-            if (e == null) {
-            	return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
-            }
-            return new ResponseEntity<>(e, HttpStatus.OK);
-    }
+			SuccessRes res = entityService.insertnotiftemplatemaster(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
 
-*/
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+
+	}
+	
 
 }

@@ -41,6 +41,7 @@ import com.maan.eway.master.req.CompanyProductChangeStatusReq;
 import com.maan.eway.master.req.CompanyProductMasterGetAllReq;
 import com.maan.eway.master.req.CompanyProductMasterGetReq;
 import com.maan.eway.master.req.CompanyProductMasterSaveReq;
+import com.maan.eway.master.req.CompanyProductMultiInsertReq;
 import com.maan.eway.master.req.CoverMasterGetReq;
 import com.maan.eway.master.req.ProductDropDownReq;
 import com.maan.eway.master.req.ProductMasterGetAllReq;
@@ -88,14 +89,13 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 	private Logger log=LogManager.getLogger(CompanyProductMasterServiceImpl.class);
 
 	@Override
-	public List<Error> validateCompanyProductDetails(List<CompanyProductMasterSaveReq> reqList) {
+	public List<Error> validateCompanyProductDetails(List<CompanyProductMultiInsertReq> reqList) {
 		List<Error> errorList = new ArrayList<Error>();
 		
 		try {
 			List<String> productIds = new ArrayList<String>();
-			
 			Long row = 0L ;
-			for (CompanyProductMasterSaveReq req : reqList) {
+			for (CompanyProductMultiInsertReq req : reqList) {
 				row = row + 1 ;
 				if (StringUtils.isBlank(req.getProductId())) {
 					errorList.add(new Error("01", "ProductId", "Please Select Product  Id in Row No :" + row));
@@ -112,159 +112,8 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 					}
 				}
 				
-				
-				
-				if (StringUtils.isBlank(req.getProductName())) {
-					errorList.add(new Error("01", "ProductName", "Please Select Product  Name  in Row No :" + row));
-				}else if (req.getProductName().length() > 100){
-					errorList.add(new Error("01","ProductName", "Please Enter Product  Name within 100 Characters  in Row No :" + row)); 
-				}
-		
-				if (StringUtils.isBlank(req.getProductIconId()) ) {
-					errorList.add(new Error("02", "ProductIconId", "Please Select Product Icon  in Row No :" + row));
-				} else if (! req.getProductIconId().matches("[0-9]+")  ) {
-					errorList.add(new Error("02", "ProductIconId", "Please Select  Valid Product Icon in Row No :" + row));
-				}else {
-					ListItemValue icon = listRepo.findByItemTypeAndItemCodeAndStatus("PRODUCT_ICONS" , req.getProductIconId() ,"Y");
-					if( icon ==null ) {
-						errorList.add(new Error("02", "ProductIconId", "Please Select  Valid Product Icon in Row No :" + row));	
-					}
-				}
-				
-				
-				if (StringUtils.isBlank(req.getRemarks()) ) {
-					errorList.add(new Error("03", "Remark", "Please Select Remark  in Row No :" + row));
-				}else if (req.getRemarks().length() > 100){
-					errorList.add(new Error("03","Remark", "Please Enter Remark within 100 Characters  in Row No :" + row)); 
-				}
-				
-				// Effective Date Validation
-				Calendar cal = new GregorianCalendar();
-				Date today = new Date();
-				cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
-				today = cal.getTime();
-				if (req.getEffectiveDateStart() == null ) {
-					errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start in Row No : " + row));
-
-				} else if (req.getEffectiveDateStart().before(today)) {
-					errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date  in Row No :" + row));
-				} else if (req.getEffectiveDateEnd() == null ) {
-					errorList.add(new Error("04", "EffectiveDateEnd", "Please Enter Effective Date End  in Row No :"));
-
-				} else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart()) || req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
-					errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date End  is After Effective Date Start  in Row No :" + row));
-				} 
-				
-				//Status Validation
-				if (StringUtils.isBlank(req.getStatus())) {
-					errorList.add(new Error("05", "Status", "Please Enter Status  in Row No :" + row));
-				} else if (req.getStatus().length() > 1) {
-					errorList.add(new Error("05", "Status", "Enter Status 1 Character Only in Row No :" + row));
-				}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()))) {
-					errorList.add(new Error("05", "Status", "Enter Status Y or N Only  in Row No :" + row));
-				}
-				
-				if (StringUtils.isBlank(req.getPaymentYn())) {
-					errorList.add(new Error("06", "Payment", "Please Select Payment Type  in Row No :" + row));
-				} else if (req.getPaymentYn().length() > 1) {
-					errorList.add(new Error("06", "Payment", "Enter Payment Type 1 Character Only  in Row No :" + row));
-				}else if(!("Y".equals(req.getPaymentYn())||"N".equals(req.getPaymentYn()))) {
-					errorList.add(new Error("06", "Payment", "Enter Payment Type Y or N Only  in Row No :" + row));
-				}
-				
-				if (StringUtils.isBlank(req.getCommissionVatYn())) {
-					errorList.add(new Error("05", "CommissionVat", "Please Select CommissionVat Type  in Row No :" + row));
-				} else if (req.getCommissionVatYn().length() > 1) {
-					errorList.add(new Error("05", "CommissionVat", "Enter CommissionVat Type 1 Character Only  in Row No :" + row));
-				}else if(!("Y".equals(req.getCommissionVatYn())||"N".equals(req.getCommissionVatYn()))) {
-					errorList.add(new Error("05", "CommissionVat", "Enter CommissionVat Y or N Only  in Row No :" + row));
-				}
-				
-				if (StringUtils.isBlank(req.getCheckerYn())) {
-					errorList.add(new Error("05", "Checker", "Please Select Checker  in Row No :" + row));
-				} else if (req.getCheckerYn().length() > 1) {
-					errorList.add(new Error("05", "Checker", "Enter Checker 1 Character Only  in Row No :" + row));
-				}else if(!("Y".equals(req.getCheckerYn())||"N".equals(req.getCheckerYn()))) {
-					errorList.add(new Error("05", "Checker", "Enter Checker Y or N Only  in Row No :" + row));
-				}
-				
-				if (StringUtils.isBlank(req.getMakerYn())) {
-					errorList.add(new Error("05", "Maker", "Please Select Maker in Row No :" + row));
-				} else if (req.getMakerYn().length() > 1) {
-					errorList.add(new Error("05", "Maker", "Enter Maker 1 Character Only  in Row No :" + row));
-				}else if(!("Y".equals(req.getMakerYn())||"N".equals(req.getMakerYn()))) {
-					errorList.add(new Error("05", "Maker", "Enter Maker Y or N Only  in Row No :" + row));
-				}
-				
-				if (StringUtils.isBlank(req.getCustConfirmYn())) {
-					errorList.add(new Error("05", "CustomerConfirmation", "Please Select CustomerConfirmation  in Row No :" + row));
-				} else if (req.getCustConfirmYn().length() > 1) {
-					errorList.add(new Error("05", "CustomerConfirmation", "Enter CustomerConfirmation 1 Character Only  in Row No :" + row));
-				}else if(!("Y".equals(req.getCustConfirmYn())||"N".equals(req.getCustConfirmYn()))) {
-					errorList.add(new Error("05", "CustomerConfirmation", "Enter CustomerConfirmation Y or N Only  in Row No :" + row));
-				}
-				
-				if(StringUtils.isBlank(req.getSumInsuredStart())) {
-					errorList.add(new Error("02", "Sum Insured Start", "Plese Enter Sum Insured Start in   in Row No :" + row));
-				} else if (! req.getSumInsuredStart().matches("[0-9.]+") ) {
-					errorList.add(new Error("02", "Sum Insured Start", "Plese Enter Valid Number Sum Insured Start in  in Row No :" + row  ));
-				}
-				if(StringUtils.isBlank(req.getSumInsuredEnd())) {
-					errorList.add(new Error("02", "Sum Insured End", "Plese Enter Sum Insured End in  Product Row No : " ));
-				} else if (! req.getSumInsuredEnd().matches("[0-9.]+") ) {
-					errorList.add(new Error("02", "Sum Insured End", "Plese Enter Valid Number Sum Insured End in  Product Row No : " + row ));
-				} else if (StringUtils.isNotBlank(req.getSumInsuredStart()) && StringUtils.isBlank(req.getSumInsuredEnd())  ) {
-					if (Long.valueOf(req.getSumInsuredStart()) > Long.valueOf(req.getSumInsuredEnd()) ) {
-						errorList.add(new Error("02", "Sum Insured End", "Sum Insured Start Greater Than Sum Insured End in  Product Row No : " + row ));
-					}
-				}
-				
-				if (StringUtils.isBlank(req.getProductDesc())) {
-					errorList.add(new Error("08", "ProductDesc", "Please Select Product  Desc in Row No :" + row));
-				}else if (req.getProductDesc().length() > 500) {
-					errorList.add(new Error("08", "ProductDesc", "Please Enter Product Desc within 500 Characters  in Row No :" + row));
-				}
-				
-				if (StringUtils.isBlank(req.getPaymentRedirUrl())) {
-					errorList.add(new Error("08", "PaymentRedirUrl", "Please Select PaymentRedirUrl  Category  in Row No :" + row));
-				}else if (req.getPaymentRedirUrl().length() > 500) {
-					errorList.add(new Error("10", "PaymentRedirUrl", "Please Enter PaymentRedirUrl within 500 Characters  in Row No :" + row));
-				}
-				
-				if (StringUtils.isBlank(req.getAppLoginUrl())) {
-					errorList.add(new Error("08", "AppLoginUrl", "Please Select AppLoginUrl  in Row No :" + row));
-				}else if (req.getAppLoginUrl().length() > 100) {
-					errorList.add(new Error("11", "AppLoginUrl", "Please Enter AppLoginUrl within 100 Characters  in Row No :" + row));
-				}
-				
 				if (StringUtils.isBlank(req.getCreatedBy())) {
-					errorList.add(new Error("08", "CreatedBy", "Please Enter CreatedBy  in Row No :" + row));
-				}else if (req.getCreatedBy().length() > 50) {
-					errorList.add(new Error("11", "CreatedBy", "Please Enter CreatedBy within 100 Characters  in Row No :" + row));
-				}
-				
-				if (StringUtils.isBlank(req.getCoreAppCode())) {
-					errorList.add(new Error("02", "CoreAppCode", "Please Enter getCoreAppCode"));
-				} else if (req.getCoreAppCode().length() > 20) {
-					errorList.add(new Error("02", "CoreAppCode", "getCoreAppCode under 20 Characters only allowed"));
-				}else  {
-					List<InsuranceCompanyMaster> CompanyList =  getCoreAppCodeExistDetails(req.getCoreAppCode() );
-					if (CompanyList.size()>0 &&  (! req.getCompanyId().equalsIgnoreCase(CompanyList.get(0).getCompanyId().toString())) ) {
-						errorList.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
-					}
-					
-				}
-				
-				if (StringUtils.isBlank(req.getRegulatoryCode())) {
-					errorList.add(new Error("09", "RegulatoryCode", "Please Enter RegulatoryCode  in Row No :" + row));
-				}else if (req.getRegulatoryCode().length() > 20) {
-					errorList.add(new Error("09", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters  in Row No :" + row));
-				}
-				
-				if (StringUtils.isBlank(req.getCompanyId())) {
-					errorList.add(new Error("08", "InsuranceId", "Please Enter InsuranceId  in Row No :" + row));
-				}else if (req.getCompanyId().length() > 20) {
-					errorList.add(new Error("11", "InsuranceId", "Please Enter InsuranceId within 20 Characters  in Row No :" + row));
+					errorList.add(new Error("01", "CreatedBy", "Please Select CreatedBy  Id in Row No :" + row));
 				}
 			}
 			
@@ -275,31 +124,56 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 		return errorList;
 	}
 	
-	private List<InsuranceCompanyMaster> getCoreAppCodeExistDetails(String coreAppCode) {
-		List<InsuranceCompanyMaster> list = new ArrayList<InsuranceCompanyMaster>();
+	private List<CompanyProductMaster> getCoreAppCodeExistDetails(String coreAppCode , Date effStartDate , Date effEndDate , String companyId ) {
+		List<CompanyProductMaster> list = new ArrayList<CompanyProductMaster>();
 		try {
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(effStartDate);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			effStartDate   = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			effEndDate = cal.getTime() ;
+			
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<InsuranceCompanyMaster> query = cb.createQuery(InsuranceCompanyMaster.class);
+			CriteriaQuery<CompanyProductMaster> query = cb.createQuery(CompanyProductMaster.class);
 	
 			// Find All
-			Root<InsuranceCompanyMaster> b = query.from(InsuranceCompanyMaster.class);
+			Root<CompanyProductMaster> b = query.from(CompanyProductMaster.class);
 	
 			// Select
 			query.select(b);
 	
 			// Effective Date Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<InsuranceCompanyMaster> ocpm1 = effectiveDate.from(InsuranceCompanyMaster.class);
+			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			effectiveDate.where(a1);
+			Predicate a2 = cb.equal(ocpm1.get("coreAppCode"), b.get("coreAppCode"));
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), effStartDate );
+			Predicate a7 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			effectiveDate.where(a1,a2,a3,a7);
+			
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
+			Predicate a5 = cb.equal(ocpm2.get("coreAppCode"), b.get("coreAppCode"));
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), effEndDate );
+			Predicate a8 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
+			effectiveDate2.where(a4,a5,a6,a8);
 	
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			Predicate n2 = cb.equal(b.get("coreAppCode"), coreAppCode );	
-			query.where(n1,n2);
+			Predicate n2 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n3 = cb.equal(b.get("coreAppCode"), coreAppCode );	
+			Predicate n4 = cb.equal(b.get("companyId"), companyId );
+			query.where(n1,n2,n3,n4);
 			// Get Result
-			TypedQuery<InsuranceCompanyMaster> result = em.createQuery(query);
+			TypedQuery<CompanyProductMaster> result = em.createQuery(query);
 			list = result.getResultList();		
 		
 		} catch (Exception e) {
@@ -312,31 +186,30 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 	
 	@Transactional
 	@Override
-	public SuccessRes insertCompanyProductDetails(List<CompanyProductMasterSaveReq> reqList) {
+	public SuccessRes insertCompanyProductDetails(List<CompanyProductMultiInsertReq> reqList) {
 		SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/YYYY");
 		SuccessRes res = new SuccessRes();
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
-			List<ListItemValue> icons = listRepo.findByItemTypeAndStatus("PRODUCT_ICONS" ,"Y");
+			Calendar cal = new GregorianCalendar();
+			Date today = new Date();
+			cal.setTime(new Date() );  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
+			cal.set(Calendar.SECOND, today.getSeconds());
+			Date effDate = cal.getTime();
+			Date endDate = sdformat.parse("12/12/2050") ;
+			cal.setTime(sdformat.parse("12/12/2050"));  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 50) ;
+			endDate = cal.getTime() ;
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd   = cal.getTime();
 			
-			
-			for (CompanyProductMasterSaveReq req : reqList ) {
+			for (CompanyProductMultiInsertReq req : reqList ) {
 				CompanyProductMaster saveData = new CompanyProductMaster();
-				List<CompanyProductMaster> list = new ArrayList<CompanyProductMaster>();
 				Integer amendId = 0 ;
-				Calendar cal = new GregorianCalendar();
-				cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
-				Date startDate = cal.getTime() ;
-				Date today = new Date();
-				cal.setTime(req.getEffectiveDateStart());   cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
-				cal.set(Calendar.SECOND, today.getSeconds());
-				Date oldEndDate = cal.getTime() ;
-				cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
-				cal.set(Calendar.SECOND, today.getSeconds());
-				Date effDate = cal.getTime();
-				Date endDate = req.getEffectiveDateEnd();
-				cal.setTime(req.getEffectiveDateEnd());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 50) ;
-				endDate = cal.getTime() ;
 				
 				String productId="";
 				
@@ -344,72 +217,71 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 				// Get Less than Equal Today Record 
 				// Criteria
 				productId=req.getProductId().toString();
+				
+				// Criteria
 				CriteriaBuilder cb = em.getCriteriaBuilder();
-				CriteriaQuery<CompanyProductMaster> query = cb.createQuery(CompanyProductMaster.class);
-
+				CriteriaQuery<ProductMaster> query = cb.createQuery(ProductMaster.class);
+				List<ProductMaster> list = new ArrayList<ProductMaster>();
+				
 				// Find All
-				Root<CompanyProductMaster> b = query.from(CompanyProductMaster.class);
-
+				Root<ProductMaster>    c = query.from(ProductMaster.class);		
+				
 				// Select
-				query.select(b);
-
+				query.select(c );
+				
+			
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.asc(c.get("productName")));
+				
 				// Effective Date Max Filter
 				Subquery<Long> effectiveDate = query.subquery(Long.class);
-				Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
+				Root<ProductMaster> ocpm1 = effectiveDate.from(ProductMaster.class);
 				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-				Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-				Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-				Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , startDate);
-				effectiveDate.where(a1,a2,a3);
-
-				// Order By
-			//	List<Order> orderList = new ArrayList<Order>();
-			//	orderList.add(cb.asc(b.get("branchName")));
+				javax.persistence.criteria.Predicate a1 = cb.equal(c.get("productId"),ocpm1.get("productId") );
+				javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+				effectiveDate.where(a1,a2);
 				
-				// Where
-				Predicate n1 = cb.equal(b.get("status"), "Y");
-				Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-				Predicate n3 =  cb.equal(b.get("productId"), req.getProductId() );
-
-				query.where(n1, n2, n3);//.orderBy(orderList);
-
+				// Effective Date Max Filter
+				Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+				Root<ProductMaster> ocpm2 = effectiveDate2.from(ProductMaster.class);
+				effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+				javax.persistence.criteria.Predicate a3 = cb.equal(c.get("productId"),ocpm2.get("productId") );
+				javax.persistence.criteria.Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+				effectiveDate2.where(a3,a4);
+				
+			    // Where	
+				javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
+				javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+				javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+				javax.persistence.criteria.Predicate n4 = cb.equal(c.get("productId"), req.getProductId());
+				query.where(n1,n2,n3,n4).orderBy(orderList);
+				
 				// Get Result
-				TypedQuery<CompanyProductMaster> result = em.createQuery(query);
-				list = result.getResultList();
+				TypedQuery<ProductMaster> result = em.createQuery(query);			
+				list =  result.getResultList();  
 				
-				if( list.size() > 0) {
-					repo.delete(list.get(0));
-					// Amend ID
-					if( list.get(0).getEffectiveDateStart().before(startDate)   ) {
-						String startDatewithoutTime = sdformat.format(startDate) ;
-						String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart()) ;
-						
-						if(startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime) ) {
-							amendId = list.get(0).getAmendId() + 1 ;
-						}
-					}
-				} 
 				res.setResponse("Updated Successfully ");
 				res.setSuccessId(productId);
 					
 				
-			    dozerMapper.map(req, saveData );
+			    dozerMapper.map(list.get(0) , saveData );
 				saveData.setProductId(Integer.valueOf(productId));
-				saveData.setProductName(req.getProductName());
+				saveData.setCompanyId(req.getCompanyId());
+				saveData.setCreatedBy(req.getCreatedBy());
 				saveData.setEffectiveDateStart(effDate);
 				saveData.setEffectiveDateEnd(endDate);
-				saveData.setStatus(req.getStatus());
 				saveData.setEntryDate(new Date());
 				saveData.setAmendId(amendId);
-				saveData.setProductIconName(icons.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getProductIconId())).collect(Collectors.toList()).get(0).getItemValue());
+				saveData.setCheckerYn("Y");
+				saveData.setMakerYn("Y");
+				saveData.setSumInsuredStart(0D);
+				saveData.setSumInsuredEnd(99999999D);
+				saveData.setCoreAppCode("99999");
+				saveData.setCommissionVatYn("Y");
+				saveData.setCustConfirmYn("Y");
+				saveData.setPaymentYn("Y");
 				repo.saveAndFlush(saveData);
-				
-				if(list.size() > 0 ) {
-					// Update Old Record
-					CompanyProductMaster lastRecord = list.get(0) ;
-					lastRecord.setEffectiveDateEnd(oldEndDate);
-					repo.saveAndFlush(lastRecord);
-				}
 				
 				log.info("Saved Details is ---> " + json.toJson(saveData));
 			}
@@ -691,10 +563,10 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			Expression<String>e0= b.get("productId");
 			
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			Predicate n3 = cb.equal(b.get("status"), "Y");
 			Predicate n4 = e0.in(product).not();
 			Predicate n5 = cb.equal(b.get("effectiveDateEnd"), effectiveDate5);
-			query.where(n1,n3,n4,n5).orderBy(orderList);
+			Predicate n6 = cb.equal(b.get("status"), "Y");
+			query.where(n1,n4,n5,n6).orderBy(orderList);
 	
 			// Get Result
 			TypedQuery<ProductMaster> result = em.createQuery(query);
@@ -877,6 +749,287 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 		} catch(Exception e ) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+
+
+	@Override
+	public List<Error> validateUpdateCompanyProductDetails(CompanyProductMasterSaveReq req) {
+List<Error> errorList = new ArrayList<Error>();
+		
+		try {
+		
+			
+		if (StringUtils.isBlank(req.getProductId())) {
+				errorList.add(new Error("01", "ProductId", "Please Select Product  Id" ));
+			}else if (req.getProductId().length() > 3){
+				errorList.add(new Error("01","ProductId", "Please Enter Product  Id within 100 Characters ")); 
+			}else if (! req.getProductId().matches("[0-9]+") ){
+				errorList.add(new Error("01","ProductId", "Please Enter Valid Number in Product  Id ")); 
+			}
+			
+			if (StringUtils.isBlank(req.getProductName())) {
+				errorList.add(new Error("01", "ProductName", "Please Select Product  Name  "));
+			}else if (req.getProductName().length() > 100){
+				errorList.add(new Error("01","ProductName", "Please Enter Product  Name within 100 Characters  ")); 
+			}
+	
+			if (StringUtils.isBlank(req.getProductIconId()) ) {
+				errorList.add(new Error("02", "ProductIconId", "Please Select Product Icon  "));
+			} else if (! req.getProductIconId().matches("[0-9]+")  ) {
+				errorList.add(new Error("02", "ProductIconId", "Please Select  Valid Product Icon "));
+			}else {
+				ListItemValue icon = listRepo.findByItemTypeAndItemCodeAndStatus("PRODUCT_ICONS" , req.getProductIconId() ,"Y");
+				if( icon ==null ) {
+					errorList.add(new Error("02", "ProductIconId", "Please Select  Valid Product Icon "));	
+				}
+			}
+			
+			
+			if (StringUtils.isBlank(req.getRemarks()) ) {
+				errorList.add(new Error("03", "Remark", "Please Select Remark  "));
+			}else if (req.getRemarks().length() > 100){
+				errorList.add(new Error("03","Remark", "Please Enter Remark within 100 Characters  ")); 
+			}
+			
+			// Effective Date Validation
+			Calendar cal = new GregorianCalendar();
+			Date today = new Date();
+			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
+			today = cal.getTime();
+			if (req.getEffectiveDateStart() == null ) {
+				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
+
+			} else if (req.getEffectiveDateStart().before(today)) {
+				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date  "));
+			} else if (req.getEffectiveDateEnd() == null ) {
+				errorList.add(new Error("04", "EffectiveDateEnd", "Please Enter Effective Date End  in Row No :"));
+
+			} else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart()) || req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
+				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date End  is After Effective Date Start  "));
+			} else if (StringUtils.isBlank(req.getCompanyId())) {
+				errorList.add(new Error("08", "InsuranceId", "Please Enter InsuranceId  "));
+			} else if (req.getCompanyId().length() > 20) {
+				errorList.add(new Error("11", "InsuranceId", "Please Enter InsuranceId within 20 Characters  "));
+			} else if (StringUtils.isBlank(req.getCoreAppCode())) {
+				errorList.add(new Error("02", "CoreAppCode", "Please Enter CoreAppCode"));
+			} else if (req.getCoreAppCode().length() > 20) {
+				errorList.add(new Error("02", "CoreAppCode", "CoreAppCode under 20 Characters only allowed"));
+			} else if (StringUtils.isBlank(req.getProductId())) {
+				errorList.add(new Error("09", "ProductId", "Please Enter ProductId  "));
+			} else if (! req.getProductId().matches("[0-9]+") ) {
+				errorList.add(new Error("09", "ProductId", "Please Enter Valid Number ProductId "));
+			} else if( ! req.getCoreAppCode().equalsIgnoreCase("99999")  )  {
+				List<CompanyProductMaster> CompanyList =  getCoreAppCodeExistDetails(req.getCoreAppCode()  , req.getEffectiveDateStart() , req.getEffectiveDateEnd(), req.getCompanyId()   );
+				if (CompanyList.size()>0 &&  (! req.getProductId().equalsIgnoreCase(CompanyList.get(0).getProductId().toString())) ) {
+					errorList.add(new Error("02", "Core App Code", "This Core App Code Already Exist For Another Section "));
+				}	
+			} 
+			
+			//Status Validation
+			if (StringUtils.isBlank(req.getStatus())) {
+				errorList.add(new Error("05", "Status", "Please Enter Status  "));
+			} else if (req.getStatus().length() > 1) {
+				errorList.add(new Error("05", "Status", "Enter Status 1 Character Only "));
+			}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()))) {
+				errorList.add(new Error("05", "Status", "Enter Status Y or N Only  "));
+			}
+			
+			if (StringUtils.isBlank(req.getPaymentYn())) {
+				errorList.add(new Error("06", "Payment", "Please Select Payment Type  "));
+			} else if (req.getPaymentYn().length() > 1) {
+				errorList.add(new Error("06", "Payment", "Enter Payment Type 1 Character Only  "));
+			}else if(!("Y".equals(req.getPaymentYn())||"N".equals(req.getPaymentYn()))) {
+				errorList.add(new Error("06", "Payment", "Enter Payment Type Y or N Only  "));
+			}
+			
+			if (StringUtils.isBlank(req.getCommissionVatYn())) {
+				errorList.add(new Error("05", "CommissionVat", "Please Select CommissionVat Type  "));
+			} else if (req.getCommissionVatYn().length() > 1) {
+				errorList.add(new Error("05", "CommissionVat", "Enter CommissionVat Type 1 Character Only  "));
+			}else if(!("Y".equals(req.getCommissionVatYn())||"N".equals(req.getCommissionVatYn()))) {
+				errorList.add(new Error("05", "CommissionVat", "Enter CommissionVat Y or N Only  "));
+			}
+			
+			if (StringUtils.isBlank(req.getCheckerYn())) {
+				errorList.add(new Error("05", "Checker", "Please Select Checker  "));
+			} else if (req.getCheckerYn().length() > 1) {
+				errorList.add(new Error("05", "Checker", "Enter Checker 1 Character Only  "));
+			}else if(!("Y".equals(req.getCheckerYn())||"N".equals(req.getCheckerYn()))) {
+				errorList.add(new Error("05", "Checker", "Enter Checker Y or N Only  "));
+			}
+			
+			if (StringUtils.isBlank(req.getMakerYn())) {
+				errorList.add(new Error("05", "Maker", "Please Select Maker "));
+			} else if (req.getMakerYn().length() > 1) {
+				errorList.add(new Error("05", "Maker", "Enter Maker 1 Character Only  "));
+			}else if(!("Y".equals(req.getMakerYn())||"N".equals(req.getMakerYn()))) {
+				errorList.add(new Error("05", "Maker", "Enter Maker Y or N Only  "));
+			}
+			
+			if (StringUtils.isBlank(req.getCustConfirmYn())) {
+				errorList.add(new Error("05", "CustomerConfirmation", "Please Select CustomerConfirmation  "));
+			} else if (req.getCustConfirmYn().length() > 1) {
+				errorList.add(new Error("05", "CustomerConfirmation", "Enter CustomerConfirmation 1 Character Only  "));
+			}else if(!("Y".equals(req.getCustConfirmYn())||"N".equals(req.getCustConfirmYn()))) {
+				errorList.add(new Error("05", "CustomerConfirmation", "Enter CustomerConfirmation Y or N Only  "));
+			}
+			
+			if(StringUtils.isBlank(req.getSumInsuredStart())) {
+				errorList.add(new Error("02", "Sum Insured Start", "Plese Enter Sum Insured Start in   "));
+			} else if (! req.getSumInsuredStart().matches("[0-9.]+") ) {
+				errorList.add(new Error("02", "Sum Insured Start", "Plese Enter Valid Number Sum Insured Start in  "  ));
+			}
+			if(StringUtils.isBlank(req.getSumInsuredEnd())) {
+				errorList.add(new Error("02", "Sum Insured End", "Plese Enter Sum Insured End in  Product Row No : " ));
+			} else if (! req.getSumInsuredEnd().matches("[0-9.]+") ) {
+				errorList.add(new Error("02", "Sum Insured End", "Plese Enter Valid Number Sum Insured End " ));
+			} else if (StringUtils.isNotBlank(req.getSumInsuredStart()) && StringUtils.isBlank(req.getSumInsuredEnd())  ) {
+				if (Long.valueOf(req.getSumInsuredStart()) > Long.valueOf(req.getSumInsuredEnd()) ) {
+					errorList.add(new Error("02", "Sum Insured End", "Sum Insured Start Greater Than Sum Insured End " ));
+				}
+			}
+			
+			if (StringUtils.isBlank(req.getProductDesc())) {
+				errorList.add(new Error("08", "ProductDesc", "Please Select Product  Desc "));
+			}else if (req.getProductDesc().length() > 500) {
+				errorList.add(new Error("08", "ProductDesc", "Please Enter Product Desc within 500 Characters  "));
+			}
+			
+			if (StringUtils.isBlank(req.getPaymentRedirUrl())) {
+				errorList.add(new Error("08", "PaymentRedirUrl", "Please Select PaymentRedirUrl  Category  "));
+			}else if (req.getPaymentRedirUrl().length() > 500) {
+				errorList.add(new Error("10", "PaymentRedirUrl", "Please Enter PaymentRedirUrl within 500 Characters  "));
+			}
+			
+			if (StringUtils.isBlank(req.getAppLoginUrl())) {
+				errorList.add(new Error("08", "AppLoginUrl", "Please Select AppLoginUrl  "));
+			}else if (req.getAppLoginUrl().length() > 100) {
+				errorList.add(new Error("11", "AppLoginUrl", "Please Enter AppLoginUrl within 100 Characters  "));
+			}
+			
+			if (StringUtils.isBlank(req.getCreatedBy())) {
+				errorList.add(new Error("08", "CreatedBy", "Please Enter CreatedBy  "));
+			}else if (req.getCreatedBy().length() > 50) {
+				errorList.add(new Error("11", "CreatedBy", "Please Enter CreatedBy within 100 Characters  "));
+			}
+			
+			if (StringUtils.isBlank(req.getRegulatoryCode())) {
+				errorList.add(new Error("09", "RegulatoryCode", "Please Enter RegulatoryCode  "));
+			}else if (req.getRegulatoryCode().length() > 20) {
+				errorList.add(new Error("09", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters  "));
+			}	
+		} catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+		}
+		return errorList;
+	}
+
+	@Override
+	public SuccessRes updateCompanyProductDetails(CompanyProductMasterSaveReq req) {
+		SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/YYYY");
+		SuccessRes res = new SuccessRes();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+		try {
+			List<ListItemValue> icons = listRepo.findByItemTypeAndStatus("PRODUCT_ICONS" ,"Y");
+			CompanyProductMaster saveData = new CompanyProductMaster();
+			List<CompanyProductMaster> list = new ArrayList<CompanyProductMaster>();
+			Integer amendId = 0 ;
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
+			Date startDate = cal.getTime() ;
+			Date today = new Date();
+			cal.setTime(req.getEffectiveDateStart());   cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
+			cal.set(Calendar.SECOND, today.getSeconds());
+			Date oldEndDate = cal.getTime() ;
+			cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
+			cal.set(Calendar.SECOND, today.getSeconds());
+			Date effDate = cal.getTime();
+			Date endDate = req.getEffectiveDateEnd();
+			cal.setTime(req.getEffectiveDateEnd());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 50) ;
+			endDate = cal.getTime() ;
+			
+			String productId="";
+			
+			// Update
+			// Get Less than Equal Today Record 
+			// Criteria
+			productId=req.getProductId().toString();
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CompanyProductMaster> query = cb.createQuery(CompanyProductMaster.class);
+
+			// Find All
+			Root<CompanyProductMaster> b = query.from(CompanyProductMaster.class);
+
+			// Select
+			query.select(b);
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , startDate);
+			effectiveDate.where(a1,a2,a3);
+
+			// Order By
+		//	List<Order> orderList = new ArrayList<Order>();
+		//	orderList.add(cb.asc(b.get("branchName")));
+			
+			// Where
+			Predicate n1 = cb.equal(b.get("status"), "Y");
+			Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 =  cb.equal(b.get("productId"), req.getProductId() );
+
+			query.where(n1, n2, n3);//.orderBy(orderList);
+
+			// Get Result
+			TypedQuery<CompanyProductMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			
+			if( list.size() > 0) {
+				repo.delete(list.get(0));
+				// Amend ID
+				if( list.get(0).getEffectiveDateStart().before(startDate)   ) {
+					String startDatewithoutTime = sdformat.format(startDate) ;
+					String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart()) ;
+					
+					if(startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime) ) {
+						amendId = list.get(0).getAmendId() + 1 ;
+					}
+				}
+			} 
+			res.setResponse("Updated Successfully ");
+			res.setSuccessId(productId);
+				
+			
+		    dozerMapper.map(req, saveData );
+			saveData.setProductId(Integer.valueOf(productId));
+			saveData.setProductName(req.getProductName());
+			saveData.setEffectiveDateStart(effDate);
+			saveData.setEffectiveDateEnd(endDate);
+			saveData.setStatus(req.getStatus());
+			saveData.setEntryDate(new Date());
+			saveData.setAmendId(amendId);
+			saveData.setProductIconName(icons.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getProductIconId())).collect(Collectors.toList()).get(0).getItemValue());
+			repo.saveAndFlush(saveData);
+			
+			if(list.size() > 0 ) {
+				// Update Old Record
+				CompanyProductMaster lastRecord = list.get(0) ;
+				lastRecord.setEffectiveDateEnd(oldEndDate);
+				repo.saveAndFlush(lastRecord);
+			}
+				
+			log.info("Saved Details is ---> " + json.toJson(saveData));
+				
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
 			return null;
 		}
 		return res;

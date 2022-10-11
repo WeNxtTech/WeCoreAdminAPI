@@ -48,7 +48,7 @@ import io.swagger.annotations.ApiOperation;
 */
 @RestController
 @RequestMapping("/master")
-@Api(tags = "MASTER : SubCover Master ", description = "API's")
+@Api(tags = "2. COMPANY CONFIG : SubCover Master ", description = "API's")
 public class CoverSubCoverMasterController {
 
 	@Autowired

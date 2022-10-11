@@ -16,6 +16,7 @@ import com.maan.eway.master.req.ProductSectionsGetReq;
 import com.maan.eway.master.req.SectionMasterGetAllReq;
 import com.maan.eway.master.req.SectionMasterGetReq;
 import com.maan.eway.master.req.SectionMasterSaveReq;
+import com.maan.eway.master.req.SectionMultiInsertReq;
 import com.maan.eway.master.res.ProductSectionGetRes;
 import com.maan.eway.master.res.ProductSectionMasterRes;
 import com.maan.eway.master.res.SectionMasterRes;
@@ -48,7 +49,7 @@ import java.util.List;
 */
 @RestController
 @RequestMapping("/master")
-@Api(tags = "MASTER : Section Master ", description = "API's")
+@Api(tags = "2. COMPANY CONFIG : Section Master ", description = "API's")
 public class ProductSectionMasterController {
 
 	@Autowired
@@ -60,7 +61,7 @@ public class ProductSectionMasterController {
 	// save
 		@PostMapping("/insertproductsection")
 		@ApiOperation(value = "This method is Insert Section Details")
-		public ResponseEntity<CommonRes> insertSection(@RequestBody List<ProductSectionMasterReq> req) {
+		public ResponseEntity<CommonRes> insertSection(@RequestBody List<SectionMultiInsertReq> req) {
 
 			reqPrinter.reqPrint(req);
 			CommonRes data = new CommonRes();
@@ -78,6 +79,40 @@ public class ProductSectionMasterController {
 
 				// Get All
 				SuccessRes res = sectionService.insertSection(req);
+				data.setCommonResponse(res);
+				data.setIsError(false);
+				data.setErrorMessage(Collections.emptyList());
+				data.setMessage("Success");
+
+				if (res != null) {
+					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				} else {
+					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				}
+			}
+
+		}
+		
+		@PostMapping("/updateproductsection")
+		@ApiOperation(value = "This method is Insert Section Details")
+		public ResponseEntity<CommonRes> updatedSection(@RequestBody ProductSectionMasterReq req) {
+
+			reqPrinter.reqPrint(req);
+			CommonRes data = new CommonRes();
+
+			List<Error> validation = sectionService.validateUpdateSectionDetails(req);
+			// validation
+			if (validation != null && validation.size() != 0) {
+				data.setCommonResponse(null);
+				data.setIsError(true);
+				data.setErrorMessage(validation);
+				data.setMessage("Failed");
+				return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+			} else {
+
+				// Get All
+				SuccessRes res = sectionService.updateSection(req);
 				data.setCommonResponse(res);
 				data.setIsError(false);
 				data.setErrorMessage(Collections.emptyList());

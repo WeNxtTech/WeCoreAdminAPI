@@ -10,6 +10,7 @@ import com.maan.eway.master.req.CompanyProductChangeStatusReq;
 import com.maan.eway.master.req.CompanyProductMasterGetAllReq;
 import com.maan.eway.master.req.CompanyProductMasterGetReq;
 import com.maan.eway.master.req.CompanyProductMasterSaveReq;
+import com.maan.eway.master.req.CompanyProductMultiInsertReq;
 import com.maan.eway.master.req.CoverMasterGetReq;
 import com.maan.eway.master.req.ProductDropDownReq;
 import com.maan.eway.master.req.ProductMasterGetAllReq;
@@ -28,9 +29,9 @@ import java.util.List;
 */
 public interface CompanyProductMasterService  {
 
-	List<Error> validateCompanyProductDetails(List<CompanyProductMasterSaveReq> req);
+	List<Error> validateCompanyProductDetails(List<CompanyProductMultiInsertReq> req);
 
-	SuccessRes insertCompanyProductDetails(List<CompanyProductMasterSaveReq> req);
+	SuccessRes insertCompanyProductDetails(List<CompanyProductMultiInsertReq> req);
 
 	List<CompanyProductMasterRes> getallCompanyProductDetails(CompanyProductMasterGetAllReq req);
 
@@ -43,6 +44,10 @@ public interface CompanyProductMasterService  {
 	List<CompanyProductDropDownRes> getCompanyProductMasterDropdown(CompanyProductMasterGetAllReq req);
 
 	SuccessRes changeStatusOfCompanyProduct(CompanyProductChangeStatusReq req);
+
+	List<Error> validateUpdateCompanyProductDetails(CompanyProductMasterSaveReq req);
+
+	SuccessRes updateCompanyProductDetails(CompanyProductMasterSaveReq req);
 
 
 }

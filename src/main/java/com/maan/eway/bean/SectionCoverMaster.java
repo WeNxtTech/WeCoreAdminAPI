@@ -16,6 +16,8 @@ package com.maan.eway.bean;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
@@ -130,6 +132,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="CALC_TYPE_DESC", length=100)
     private String     calcTypeDesc ;
+    
+    @Column(name="CORE_APP_CODE")
+    private String     coreAppCode ;
 
     @Column(name="BASE_RATE")
     private Double     baseRate ;
@@ -174,6 +179,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="TAX_EXCEMPTION_TYPE_DESC",length=20)
     private String taxExcemptionTypeDesc;
 
+    
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

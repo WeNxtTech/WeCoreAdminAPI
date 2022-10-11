@@ -26,32 +26,7 @@ public class CoverSubCoverMasterSaveReq {
 	@JsonProperty("InsuranceId")
 	private String companyId;
 
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDateStart")
-	private Date effectiveDateStart;
-	
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDateEnd")
-	private Date effectiveDateEnd;
-
-	@JsonProperty("SubCoverName")
-	private String subCoverName;
-	
-	@JsonProperty("SubCoverDesc")
-	private String subCoverDesc;
-	
-	@JsonProperty("Status")
-	private String status;
-
-	@JsonProperty("CoreAppCode")
-	private String coreAppCode;
-
-	@JsonProperty("Remarks")
-	private String remarks;
-	
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 	
-	@JsonProperty("RegulatoryCode")
-	private String regulatoryCode;
 }

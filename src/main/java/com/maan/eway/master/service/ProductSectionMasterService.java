@@ -13,6 +13,7 @@ import com.maan.eway.master.req.ProductSectionsGetReq;
 import com.maan.eway.master.req.SectionMasterGetAllReq;
 import com.maan.eway.master.req.SectionMasterGetReq;
 import com.maan.eway.master.req.SectionMasterSaveReq;
+import com.maan.eway.master.req.SectionMultiInsertReq;
 import com.maan.eway.master.res.ProductSectionGetRes;
 import com.maan.eway.master.res.ProductSectionMasterRes;
 import com.maan.eway.master.res.SectionMasterRes;
@@ -25,11 +26,12 @@ import java.util.List;
 */
 public interface ProductSectionMasterService  {
 
-	List<Error> validateSectionDetails(List<ProductSectionMasterReq> reqList );
+
+	List<Error> validateSectionDetails(List<SectionMultiInsertReq> req);
+
+	SuccessRes insertSection(List<SectionMultiInsertReq> req);
 
 	ProductSectionMasterRes getBySectionId(ProductSectionsGetReq req);
-
-	SuccessRes insertSection(List<ProductSectionMasterReq> req);
 
 	List<ProductSectionMasterRes> getallSectionDetails(ProductSectionMasterGetAllReq req);
 
@@ -42,6 +44,10 @@ public interface ProductSectionMasterService  {
 	List<DropDownRes> getProductSectionDropdown(ProductSectionsGetReq req);
 
 	SuccessRes changeStatusOfProductSection(ProductSectionChangeStatusReq req);
+
+	List<Error> validateUpdateSectionDetails(ProductSectionMasterReq req);
+
+	SuccessRes updateSection(ProductSectionMasterReq req);
 
 
 }

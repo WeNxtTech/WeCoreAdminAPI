@@ -424,6 +424,8 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 				saveData = dozerMapper.map(req, FactorTypeDetails.class );
 				saveData.setFactorTypeId(Integer.valueOf(factorTypeId));
 				saveData.setRatingFieldId(Integer.valueOf(data.getRatingFieldId()));
+				saveData.setFactorTypeName(req.getFactorTypeName());
+				saveData.setRemarks(req.getRemarks());
 				saveData.setEffectiveDateStart(effDate);
 				saveData.setEffectiveDateEnd(endDate);
 				saveData.setEntryDate(new Date());

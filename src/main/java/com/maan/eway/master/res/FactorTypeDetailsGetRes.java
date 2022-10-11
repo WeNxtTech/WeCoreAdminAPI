@@ -32,7 +32,13 @@ public class FactorTypeDetailsGetRes {
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateEnd")
     private Date       effectiveDateEnd ;
-
+	 
+    @JsonProperty("FactorTypeName")
+    private String     factorTypeName ;
+    
+    
+    @JsonProperty("Remarks")
+    private String     remarks ;
     @JsonProperty("FactorTypeDesc")
     private String     factorTypeDesc ;
 	@JsonProperty("AmendId")

@@ -22,8 +22,6 @@ public class SectionCoverMasterGetAllRes {
 	@JsonProperty("InsuranceId")
 	private String companyId;
 	
-	@JsonProperty("SectionName")
-	private String sectionName;
 	
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")

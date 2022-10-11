@@ -173,22 +173,7 @@ this.repository = repo;
 				errors.add(new Error("02", "Company Address", "Company Address under 200 Characters only allowed"));
 			}
 			
-			if (StringUtils.isBlank(req.getCoreAppCode())) {
-				errors.add(new Error("02", "CoreAppCode", "Please Enter getCoreAppCode"));
-			} else if (req.getCoreAppCode().length() > 20) {
-				errors.add(new Error("02", "CoreAppCode", "getCoreAppCode under 20 Characters only allowed"));
-			}else if (StringUtils.isBlank(req.getInsuranceId())) {
-				List<InsuranceCompanyMaster> CompanyList = getCoreAppCodeExistDetails(req.getCoreAppCode());
-				if (CompanyList.size()>0 ) {
-					errors.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
-				}
-			}else  {
-				List<InsuranceCompanyMaster> CompanyList =  getCoreAppCodeExistDetails(req.getCoreAppCode() );
-				if (CompanyList.size()>0 &&  (! req.getInsuranceId().equalsIgnoreCase(CompanyList.get(0).getCompanyId().toString())) ) {
-					errors.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
-				}
-				
-			}
+			
 			
 			
 			if (StringUtils.isBlank(req.getCompanyLogo())) {
@@ -230,7 +215,22 @@ this.repository = repo;
 
 		} else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart()) || req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
 			errors.add(new Error("04", "EffectiveDateEnd", "Please Enter Effective Date End  is After Effective Date End"));
-		} 
+		} else if (StringUtils.isBlank(req.getCoreAppCode())) {
+			errors.add(new Error("02", "CoreAppCode", "Please Enter getCoreAppCode"));
+		} else if (req.getCoreAppCode().length() > 20) {
+			errors.add(new Error("02", "CoreAppCode", "getCoreAppCode under 20 Characters only allowed"));
+		}else if (StringUtils.isBlank(req.getInsuranceId())) {
+			List<InsuranceCompanyMaster> CompanyList = getCoreAppCodeExistDetails(req.getCoreAppCode() , req.getEffectiveDateStart() , req.getEffectiveDateEnd()  );
+			if (CompanyList.size()>0 ) {
+				errors.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
+			}
+		}else  {
+			List<InsuranceCompanyMaster> CompanyList =  getCoreAppCodeExistDetails(req.getCoreAppCode()  , req.getEffectiveDateStart() , req.getEffectiveDateEnd() );
+			if (CompanyList.size()>0 &&  (! req.getInsuranceId().equalsIgnoreCase(CompanyList.get(0).getCompanyId().toString())) ) {
+				errors.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
+			}
+			
+		}
 		
 		if (StringUtils.isBlank(req.getCompanyName())) {
 			errors.add(new Error("05", "Company Name", "Please Enter Company Name"));
@@ -349,9 +349,18 @@ this.repository = repo;
 		}
 		return list;
 	}
-	private List<InsuranceCompanyMaster> getCoreAppCodeExistDetails(String coreAppCode) {
+	private List<InsuranceCompanyMaster> getCoreAppCodeExistDetails(String coreAppCode , Date effStartDate , Date effEndDate ) {
 		List<InsuranceCompanyMaster> list = new ArrayList<InsuranceCompanyMaster>();
 		try {
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(effStartDate);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			effStartDate   = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			effEndDate = cal.getTime() ;
+			
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<InsuranceCompanyMaster> query = cb.createQuery(InsuranceCompanyMaster.class);
@@ -367,11 +376,24 @@ this.repository = repo;
 			Root<InsuranceCompanyMaster> ocpm1 = effectiveDate.from(InsuranceCompanyMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			effectiveDate.where(a1);
+			Predicate a2 = cb.equal(ocpm1.get("coreAppCode"), b.get("coreAppCode"));
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), effStartDate );
+			effectiveDate.where(a1,a2,a3);
+			
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<InsuranceCompanyMaster> ocpm2 = effectiveDate2.from(InsuranceCompanyMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
+			Predicate a5 = cb.equal(ocpm2.get("coreAppCode"), b.get("coreAppCode"));
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), effEndDate );
+			effectiveDate2.where(a4,a5,a6);
 	
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			Predicate n2 = cb.equal(b.get("coreAppCode"), coreAppCode );	
-			query.where(n1,n2);
+			Predicate n2 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n3 = cb.equal(b.get("coreAppCode"), coreAppCode );	
+			query.where(n1,n2,n3);
 			// Get Result
 			TypedQuery<InsuranceCompanyMaster> result = em.createQuery(query);
 			list = result.getResultList();		

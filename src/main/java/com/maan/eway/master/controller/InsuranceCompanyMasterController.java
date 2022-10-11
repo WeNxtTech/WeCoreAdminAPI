@@ -44,7 +44,7 @@ import io.swagger.annotations.ApiOperation;
 * <h2>InsuranceCompanyMasterController</h2>
 */
 @RestController
-@Api(  tags="MASTER : Company Master ", description = "API's")
+@Api(  tags="2. COMPANY CONFIG : Company Master ", description = "API's")
 @RequestMapping("/master")
 public class InsuranceCompanyMasterController {
 

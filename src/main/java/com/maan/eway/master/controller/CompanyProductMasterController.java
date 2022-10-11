@@ -11,6 +11,7 @@ import com.maan.eway.master.req.CompanyProductChangeStatusReq;
 import com.maan.eway.master.req.CompanyProductMasterGetAllReq;
 import com.maan.eway.master.req.CompanyProductMasterGetReq;
 import com.maan.eway.master.req.CompanyProductMasterSaveReq;
+import com.maan.eway.master.req.CompanyProductMultiInsertReq;
 import com.maan.eway.master.req.CoverMasterGetAllReq;
 import com.maan.eway.master.req.CoverMasterGetReq;
 import com.maan.eway.master.req.CoverMasterSaveReq;
@@ -49,7 +50,7 @@ import java.util.List;
 */
 @RestController
 @RequestMapping("/master")
-@Api(tags = "MASTER : Company Product Master ", description = "API's")
+@Api(tags = "2. COMPANY CONFIG : Product Master ", description = "API's")
 public class CompanyProductMasterController {
 
 	@Autowired
@@ -60,7 +61,7 @@ public class CompanyProductMasterController {
 	// save
 	@PostMapping("/insertcompanyproducts")
 	@ApiOperation(value = "This method is Insert Company Product Master")
-	public ResponseEntity<CommonRes> insertCompanyProducts(@RequestBody List<CompanyProductMasterSaveReq> req) {
+	public ResponseEntity<CommonRes> insertCompanyProducts(@RequestBody List<CompanyProductMultiInsertReq> req) {
 
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
@@ -93,6 +94,40 @@ public class CompanyProductMasterController {
 	}
 	
 	//  Get All Cover Master
+	@PostMapping("/updatecompanyproducts")
+	@ApiOperation(value = "This method is Insert Company Product Master")
+	public ResponseEntity<CommonRes> insertCompanyProducts(@RequestBody CompanyProductMasterSaveReq req) {
+
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+
+		List<Error> validation = companyProductService.validateUpdateCompanyProductDetails(req);
+		// validation
+		if (validation != null && validation.size() != 0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+		} else {
+
+			// Save
+			SuccessRes res = companyProductService.updateCompanyProductDetails(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+
+	}
+	
 	
 	@PostMapping("/getallcompanyproducts")
 	@ApiOperation("This method is getall Company Product Master")

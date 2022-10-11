@@ -11,6 +11,7 @@ import com.maan.eway.master.req.CompanyRegionChangeStatusReq;
 import com.maan.eway.master.req.CompanyRegionDropDownReq;
 import com.maan.eway.master.req.CompanyRegionGetAllReq;
 import com.maan.eway.master.req.CompanyRegionGetReq;
+import com.maan.eway.master.req.CompanyRegionMultiInsertSaveReq;
 import com.maan.eway.master.req.CompanyRegionNonSelectedReq;
 import com.maan.eway.master.req.CompanyRegionSaveReq;
 import com.maan.eway.master.req.CoverMasterGetReq;
@@ -50,108 +51,137 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Collections;
 import java.util.List;
 
-
 /**
-* <h2>SectionMasterController</h2>
-*/
+ * <h2>SectionMasterController</h2>
+ */
 @RestController
 @RequestMapping("/master")
 @Api(tags = "MASTER : Section Master ", description = "API's")
 public class CompanyRegionMasterController {
 
 	@Autowired
-	private  CompanyRegionMasterService entityService;
+	private CompanyRegionMasterService entityService;
 
 	@Autowired
-	private  PrintReqService reqPrinter;
-	
+	private PrintReqService reqPrinter;
+
 	// save
-		@PostMapping("/insertcompanyregion")
-		@ApiOperation(value = "This method is Insert Company Region Details")
-		public ResponseEntity<CommonRes> insertSection(@RequestBody List<CompanyRegionSaveReq> req) {
+	@PostMapping("/insertcompanyregion")
+	@ApiOperation(value = "This method is Insert Company Region Details")
+	public ResponseEntity<CommonRes> insertSection(@RequestBody List<CompanyRegionMultiInsertSaveReq> req) {
 
-			reqPrinter.reqPrint(req);
-			CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
 
-			List<Error> validation = entityService.validateCompanyRegion(req);
-			// validation
-			if (validation != null && validation.size() != 0) {
-				data.setCommonResponse(null);
-				data.setIsError(true);
-				data.setErrorMessage(validation);
-				data.setMessage("Failed");
-				return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+		List<Error> validation = entityService.validateCompanyRegion(req);
+		// validation
+		if (validation != null && validation.size() != 0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
 
-			} else {
+		} else {
 
-				// Get All
-				SuccessRes res = entityService.insertCompanyRegion(req);
-				data.setCommonResponse(res);
-				data.setIsError(false);
-				data.setErrorMessage(Collections.emptyList());
-				data.setMessage("Success");
-
-				if (res != null) {
-					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-				}
-			}
-
-		}
-		
-		//  Get All Section Master
-		
-		@PostMapping("/getallcompanyregion")
-		@ApiOperation("This method is getall Company Region")
-		public ResponseEntity<CommonRes> getallCompanyRegion(@RequestBody CompanyRegionGetAllReq req)
-		{
-			CommonRes data = new CommonRes();
-			reqPrinter.reqPrint(req);
-			
-			List<CompanyRegionGetRes> res = entityService.getallCompanyRegion(req);
+			// Get All
+			SuccessRes res = entityService.insertCompanyRegion(req);
 			data.setCommonResponse(res);
-			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
 			data.setMessage("Success");
-			
-			if(res!= null) {
-				return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
-			}
-			else {
-				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
 		}
-		
-	//  Get Active Section Master
-		
-			@PostMapping("/getactivecompanyregion")
-			@ApiOperation("This method is get Active Company Region")
-			public ResponseEntity<CommonRes> getActiveCompanyRegion(@RequestBody CompanyRegionGetAllReq req)
-			{
-				CommonRes data = new CommonRes();
-				reqPrinter.reqPrint(req);
-				
-				List<CompanyRegionGetRes> res = entityService.getActiveCompanyRegion(req);
-				data.setCommonResponse(res);
-				data.setErrorMessage(Collections.emptyList());
-				data.setIsError(false);
-				data.setMessage("Success");
-				
-				if(res!= null) {
-					return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
-				}
-				else {
-					return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
-				}
+
+	}
+
+	// save
+	@PostMapping("/updatecompanyregion")
+	@ApiOperation(value = "This method is Update Company Region Details")
+	public ResponseEntity<CommonRes> updateCompanyRegion(@RequestBody CompanyRegionSaveReq req) {
+
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+
+		List<Error> validation = entityService.validateUpdateCompanyRegion(req);
+		// validation
+		if (validation != null && validation.size() != 0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+		} else {
+
+			// Get All
+			SuccessRes res = entityService.updateCompanyRegion(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
-		
-		// Get By Section Id
-		
-		@PostMapping("/getbycompanyregionid")
-		@ApiOperation("This Method is to get by Company Region id")
-		public ResponseEntity<CommonRes> getBySectionId(@RequestBody CompanyRegionGetReq req)
-		{
+		}
+
+	}
+
+	// Get All Section Master
+
+	@PostMapping("/getallcompanyregion")
+	@ApiOperation("This method is getall Company Region")
+	public ResponseEntity<CommonRes> getallCompanyRegion(@RequestBody CompanyRegionGetAllReq req) {
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+
+		List<CompanyRegionGetRes> res = entityService.getallCompanyRegion(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	// Get Active Section Master
+
+	@PostMapping("/getactivecompanyregion")
+	@ApiOperation("This method is get Active Company Region")
+	public ResponseEntity<CommonRes> getActiveCompanyRegion(@RequestBody CompanyRegionGetAllReq req) {
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+
+		List<CompanyRegionGetRes> res = entityService.getActiveCompanyRegion(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	// Get By Section Id
+
+	@PostMapping("/getbycompanyregionid")
+	@ApiOperation("This Method is to get by Company Region id")
+	public ResponseEntity<CommonRes> getBySectionId(@RequestBody CompanyRegionGetReq req) {
 		CommonRes data = new CommonRes();
 		CompanyRegionGetRes res = entityService.getByCompanyRegionId(req);
 		data.setCommonResponse(res);
@@ -166,66 +196,62 @@ public class CompanyRegionMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-		
-		
-		@PostMapping("/getallnonselectedcompanyregion")
-		@ApiOperation("This method is getall Section Details")
-		public ResponseEntity<CommonRes> getallNonSelectedSections(@RequestBody CompanyRegionNonSelectedReq req)
-		{
-			CommonRes data = new CommonRes();
-			reqPrinter.reqPrint(req);
-			
-			List<RegionMasterRes> res = entityService.getallNonSelectedCompanyRegion(req);
-			data.setCommonResponse(res);
-			data.setErrorMessage(Collections.emptyList());
-			data.setIsError(false);
-			data.setMessage("Success");
-			
-			if(res!= null) {
-				return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
-			}
-			else {
-				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
-			}
+
+	@PostMapping("/getallnonselectedcompanyregion")
+	@ApiOperation("This method is getall Section Details")
+	public ResponseEntity<CommonRes> getallNonSelectedSections(@RequestBody CompanyRegionNonSelectedReq req) {
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+
+		List<RegionMasterRes> res = entityService.getallNonSelectedCompanyRegion(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@PostMapping("/dropdown/companyregion")
+	@ApiOperation(value = "This method is get Comapny Region Drop Down")
+
+	public ResponseEntity<CommonRes> getSectionCoverMasterDropdown(@RequestBody CompanyRegionDropDownReq req) {
+
+		CommonRes data = new CommonRes();
+
+		// Save
+		List<DropDownRes> res = entityService.getCompanyRegionDropdown(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 
-		@PostMapping("/dropdown/companyregion")
-		@ApiOperation(value = "This method is get Comapny Region Drop Down")
+	}
 
-		public ResponseEntity<CommonRes> getSectionCoverMasterDropdown(@RequestBody CompanyRegionDropDownReq req) {
-
-			CommonRes data = new CommonRes();
-
-			// Save
-			List<DropDownRes> res = entityService.getCompanyRegionDropdown(req);
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
-
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
-
+	@PostMapping("companyregion/changestatus")
+	@ApiOperation(value = "This method is to Change Company Region Status")
+	public ResponseEntity<CommonRes> changeStatusofCompanyRegion(@RequestBody CompanyRegionChangeStatusReq req) {
+		CommonRes data = new CommonRes();
+		// Change Status
+		SuccessRes res = entityService.changeStatusofCompanyRegion(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
-
-		@PostMapping("companyregion/changestatus")
-		@ApiOperation(value="This method is to Change Company Region Status")
-		public ResponseEntity<CommonRes> changeStatusofCompanyRegion(@RequestBody CompanyRegionChangeStatusReq req){
-			CommonRes data = new CommonRes();
-			// Change Status
-			SuccessRes res = entityService.changeStatusofCompanyRegion(req);
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
-			if(res!=null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			}
-			else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
-		}
+	}
 }

@@ -877,6 +877,7 @@ public class CompanyRegionMasterServiceImpl implements CompanyRegionMasterServic
 				saveData.setEntryDate(new Date());
 				saveData.setAmendId(amendId);
 				saveData.setCoreAppCode("99999");
+				
 				repo.saveAndFlush(saveData);
 
 				log.info("Saved Details is ---> " + json.toJson(saveData));

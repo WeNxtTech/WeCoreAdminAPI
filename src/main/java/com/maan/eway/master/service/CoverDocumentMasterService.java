@@ -12,6 +12,7 @@ import com.maan.eway.master.req.CoverDocumentChangeStatusReq;
 import com.maan.eway.master.req.CoverDocumentMasterGetAllReq;
 import com.maan.eway.master.req.CoverDocumentMasterGetReq;
 import com.maan.eway.master.req.CoverDocumentMasterSaveReq;
+import com.maan.eway.master.req.CoverDocumentMasterUpdateReq;
 import com.maan.eway.master.res.CoverDocumentMasterGetRes;
 import com.maan.eway.master.res.DocumentMasterGetRes;
 import com.maan.eway.res.SuccessRes;
@@ -32,6 +33,10 @@ public interface CoverDocumentMasterService  {
 	List<Error> validateDocument(List<CoverDocumentMasterSaveReq> reqList);
 
 	SuccessRes changeStatusOfDocument(CoverDocumentChangeStatusReq req);
+
+	List<Error> validateUpdateDocument(CoverDocumentMasterUpdateReq req);
+
+	SuccessRes updateDocument(CoverDocumentMasterUpdateReq req);
 
 
 

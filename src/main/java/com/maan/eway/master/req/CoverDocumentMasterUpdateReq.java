@@ -1,6 +1,5 @@
-package com.maan.eway.master.res;
+package com.maan.eway.master.req;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -9,22 +8,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class CoverDocumentMasterGetRes implements Serializable {
+public class CoverDocumentMasterUpdateReq {
 
-    private static final long serialVersionUID = 1L;
-  
-    @JsonProperty("DocumentId")
+	@JsonProperty("DocumentId")
 	private String documentId;
 	
 	@JsonProperty("DocumentDesc")
-	private String documentDesc;
-	
+	private String documentDesc;	
+
+
 	@JsonProperty("DocApplicableId")
 	private String docApplicableId;
-	
 
 	@JsonProperty("DocApplicable")
 	private String docApplicable;
+	
 	
 	@JsonProperty("InsuranceId")
 	private String companyId;
@@ -32,9 +30,11 @@ public class CoverDocumentMasterGetRes implements Serializable {
 	@JsonProperty("ProductId")
 	private String productId;
 	
-
 	@JsonProperty("SectionId")
 	private String sectionId;
+	
+	@JsonProperty("CoverId")
+	private String coverId;
 	
 	@JsonProperty("MandatoryStatus")
 	private String mandatoryStatus;
@@ -42,7 +42,6 @@ public class CoverDocumentMasterGetRes implements Serializable {
 	@JsonProperty("Remarks")
 	private String remarks;
 
-	
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
@@ -57,19 +56,14 @@ public class CoverDocumentMasterGetRes implements Serializable {
 	
 	@JsonProperty("AmendId")
 	private String amendId;
-    
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EntryDate")
-    private Date       entryDate    ;
 	
 	@JsonProperty("Status")
-    private String     status       ;
+	private String status;
 
 	@JsonProperty("RegulatoryCode")
-    private String  regulatoryCode       ;
-
-	@JsonProperty("CreatedBy")
-    private String   createdBy       ;
-
+	private String regulatoryCode;
 	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+
 }

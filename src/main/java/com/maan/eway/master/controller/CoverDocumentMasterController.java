@@ -21,6 +21,7 @@ import com.maan.eway.master.req.CoverDocumentChangeStatusReq;
 import com.maan.eway.master.req.CoverDocumentMasterGetAllReq;
 import com.maan.eway.master.req.CoverDocumentMasterGetReq;
 import com.maan.eway.master.req.CoverDocumentMasterSaveReq;
+import com.maan.eway.master.req.CoverDocumentMasterUpdateReq;
 import com.maan.eway.master.res.CoverDocumentMasterGetRes;
 import com.maan.eway.master.res.DocumentMasterGetRes;
 import com.maan.eway.master.service.CoverDocumentMasterService;
@@ -31,80 +32,107 @@ import com.maan.eway.service.PrintReqService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-
 /**
-* <h2>SectionMasterController</h2>
-*/
+ * <h2>SectionMasterController</h2>
+ */
 @RestController
 @RequestMapping("/master")
 @Api(tags = "2. COMPANY CONFIG : Cover Document Master ", description = "API's")
 public class CoverDocumentMasterController {
 
 	@Autowired
-	private  CoverDocumentMasterService documentservice;
+	private CoverDocumentMasterService documentservice;
 
 	@Autowired
-	private  PrintReqService reqPrinter;
-	
-	
+	private PrintReqService reqPrinter;
+
 	// save
-		@PostMapping("/insertcoverdocument")
-		@ApiOperation(value = "This method is Insert Cover Document Master")
-		public ResponseEntity<CommonRes> insertDocument(@RequestBody List<CoverDocumentMasterSaveReq> reqList) {
-			reqPrinter.reqPrint(reqList);
-			CommonRes data = new CommonRes();
-			List<Error> validation = documentservice.validateDocument(reqList);
-			// validation
-			if (validation != null && validation.size() != 0) {
-				data.setCommonResponse(null);
-				data.setIsError(true);
-				data.setErrorMessage(validation);
-				data.setMessage("Failed");
-				return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+	@PostMapping("/insertcoverdocument")
+	@ApiOperation(value = "This method is Insert Cover Document Master")
+	public ResponseEntity<CommonRes> insertDocument(@RequestBody List<CoverDocumentMasterSaveReq> reqList) {
+		reqPrinter.reqPrint(reqList);
+		CommonRes data = new CommonRes();
+		List<Error> validation = documentservice.validateDocument(reqList);
+		// validation
+		if (validation != null && validation.size() != 0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
 
-			} else {
-				// Get All
-				SuccessRes res = documentservice.insertDocument(reqList);
-				data.setCommonResponse(res);
-				data.setIsError(false);
-				data.setErrorMessage(Collections.emptyList());
-				data.setMessage("Success");
-
-				if (res != null) {
-					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-				}
-			}
-
-		}
-		
-		//  Get All Section Master	
-		@PostMapping("/getallcoverdocuments")
-		@ApiOperation("This method is getall Product Documents")
-		public ResponseEntity<CommonRes> getallDocuments(@RequestBody CoverDocumentMasterGetAllReq req)
-		{
-			CommonRes data = new CommonRes();
-			
-			List<CoverDocumentMasterGetRes> res =documentservice.getallDocuments(req);
+		} else {
+			// Get All
+			SuccessRes res = documentservice.insertDocument(reqList);
 			data.setCommonResponse(res);
-			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
 			data.setMessage("Success");
-			
-			if(res!= null) {
-				return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
-			}
-			else {
-				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
 		}
-		
-		// Get By Document Id
-		@PostMapping("/getbycoverdocument")
-		@ApiOperation("This Method is to get by Product Document Id")
-		public ResponseEntity<CommonRes> getByDocumentId(@RequestBody CoverDocumentMasterGetReq req)
-		{
+
+	}
+
+	// save
+	@PostMapping("/updatecoverdocument")
+	@ApiOperation(value = "This method is Update Cover Document Master")
+	public ResponseEntity<CommonRes> updateDocument(@RequestBody CoverDocumentMasterUpdateReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<Error> validation = documentservice.validateUpdateDocument(req);
+		// validation
+		if (validation != null && validation.size() != 0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+		} else {
+			// Get All
+			SuccessRes res = documentservice.updateDocument(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+
+	}
+
+	// Get All Section Master
+	@PostMapping("/getallcoverdocuments")
+	@ApiOperation("This method is getall Product Documents")
+	public ResponseEntity<CommonRes> getallDocuments(@RequestBody CoverDocumentMasterGetAllReq req) {
+		CommonRes data = new CommonRes();
+
+		List<CoverDocumentMasterGetRes> res = documentservice.getallDocuments(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	// Get By Document Id
+	@PostMapping("/getbycoverdocument")
+	@ApiOperation("This Method is to get by Product Document Id")
+	public ResponseEntity<CommonRes> getByDocumentId(@RequestBody CoverDocumentMasterGetReq req) {
 		CommonRes data = new CommonRes();
 		CoverDocumentMasterGetRes res = documentservice.getByDocumentId(req);
 		data.setCommonResponse(res);
@@ -120,68 +148,62 @@ public class CoverDocumentMasterController {
 		}
 	}
 
-		
-		// Get By Active Status	
-		@PostMapping("/getactivecoverdocument")
-		@ApiOperation("This Method is to Get Active Product Documents")
-		public ResponseEntity<CommonRes> getActiveDocument(@RequestBody CoverDocumentMasterGetAllReq req)
-		{
-			CommonRes data = new CommonRes();
-			List<CoverDocumentMasterGetRes> res = documentservice.getActiveDocument(req);
-			data.setCommonResponse(res);
-			data.setErrorMessage(Collections.emptyList());
-			data.setIsError(false);
-			data.setMessage("Success");
+	// Get By Active Status
+	@PostMapping("/getactivecoverdocument")
+	@ApiOperation("This Method is to Get Active Product Documents")
+	public ResponseEntity<CommonRes> getActiveDocument(@RequestBody CoverDocumentMasterGetAllReq req) {
+		CommonRes data = new CommonRes();
+		List<CoverDocumentMasterGetRes> res = documentservice.getActiveDocument(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
 
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}			
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@PostMapping("/getallnonselectedcoverdocuments")
+	@ApiOperation("This method is getall Cover Document Details")
+	public ResponseEntity<CommonRes> getallNonSelectedProductDocument(@RequestBody CoverDocumentMasterGetAllReq req) {
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+
+		List<DocumentMasterGetRes> res = documentservice.getallNonSelectedCoverDocument(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@PostMapping("/coverdocument/changestatus")
+	@ApiOperation(value = "This method is  Change Status of Documents")
+	public ResponseEntity<CommonRes> changeStatusOfDocument(@RequestBody CoverDocumentChangeStatusReq req) {
+
+		CommonRes data = new CommonRes();
+		// Change Status
+		SuccessRes res = documentservice.changeStatusOfDocument(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 
-		
-		@PostMapping("/getallnonselectedcoverdocuments")
-		@ApiOperation("This method is getall Cover Document Details")
-		public ResponseEntity<CommonRes> getallNonSelectedProductDocument(@RequestBody CoverDocumentMasterGetAllReq req)
-		{
-			CommonRes data = new CommonRes();
-			reqPrinter.reqPrint(req);
-			
-			List<DocumentMasterGetRes> res = documentservice.getallNonSelectedCoverDocument(req);
-			data.setCommonResponse(res);
-			data.setErrorMessage(Collections.emptyList());
-			data.setIsError(false);
-			data.setMessage("Success");
-			
-			if(res!= null) {
-				return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
-			}
-			else {
-				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
-			}
-		}
+	}
 
-		@PostMapping("/coverdocument/changestatus")
-		@ApiOperation(value = "This method is  Change Status of Documents")
-		public ResponseEntity<CommonRes> changeStatusOfDocument(@RequestBody CoverDocumentChangeStatusReq req) {
-
-			CommonRes data = new CommonRes();
-			// Change Status
-			SuccessRes res = documentservice.changeStatusOfDocument(req);
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
-
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
-
-		}
-
-		
 }

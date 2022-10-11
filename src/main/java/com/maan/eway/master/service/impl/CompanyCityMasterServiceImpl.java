@@ -45,8 +45,10 @@ import com.maan.eway.master.req.CompanyCityChangeStatusReq;
 import com.maan.eway.master.req.CompanyCityMasterDropDownReq;
 import com.maan.eway.master.req.CompanyCityMasterGetAllReq;
 import com.maan.eway.master.req.CompanyCityMasterGetReq;
+import com.maan.eway.master.req.CompanyCityMasterMultiInsertSaveReq;
 import com.maan.eway.master.req.CompanyCityMasterSaveReq;
 import com.maan.eway.master.req.CompanyCityNonSelectedReq;
+import com.maan.eway.master.req.CompanyRegionMultiInsertSaveReq;
 import com.maan.eway.master.res.CityMasterRes;
 import com.maan.eway.master.res.CompanyCityMasterRes;
 import com.maan.eway.master.res.CompanyStateMasterRes;
@@ -89,7 +91,7 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 	private Logger log = LogManager.getLogger(CompanyCityMasterServiceImpl.class);
 
 	@Override
-	public List<Error> validateCityDetails(CompanyCityMasterSaveReq req) {
+	public List<Error> validateUpdateCityDetails(CompanyCityMasterSaveReq req) {
 		List<Error> errorList = new ArrayList<Error>();
 
 		try {
@@ -235,7 +237,7 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 	
 	
 	@Override
-	public SuccessRes insertCity(CompanyCityMasterSaveReq req) {
+	public SuccessRes updateCity(CompanyCityMasterSaveReq req) {
 		SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/YYYY");
 		SuccessRes res = new SuccessRes();
 		CompanyCityMaster saveData = new CompanyCityMaster();
@@ -929,5 +931,174 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 		}
 		return resList;
 	}
+
+	@Override
+	public List<Error> validateCityDetails(List<CompanyCityMasterMultiInsertSaveReq> reqList) {
+		List<Error> errorList = new ArrayList<Error>();
+
+		try {
+			Long row = 0L;
+			for (CompanyCityMasterMultiInsertSaveReq req : reqList) {
+				row = row + 1;
+				if (StringUtils.isBlank(req.getRegionId())) {
+					errorList.add(new Error("01", "RegionId", "Please Select RegionId in Row No :" + row));
+				} else if (req.getRegionId().length() > 20) {
+					errorList.add(new Error("01", "RegionId",
+							"Please Enter RegionId within 20 Characters in Row No :" + row));
+				}
+				if (StringUtils.isBlank(req.getCreatedBy())) {
+					errorList.add(new Error("02", "CreatedBy", "Please Select CreatedBy   in Row No :" + row));
+				} else if (req.getCreatedBy().length() > 50) {
+					errorList.add(new Error("02", "CreatedBy",
+							"Please Enter CreatedBy within 50 Characters in Row No :" + row));
+				}
+				if (StringUtils.isBlank(req.getCountryId())) {
+					errorList.add(new Error("03", "CountryId", "Please Select CountryId   in Row No :" + row));
+				} else if (req.getCountryId().length() > 20) {
+					errorList.add(new Error("03", "CountryId",
+							"Please Enter CountryId within 20 Characters in Row No :" + row));
+				}
+				if (StringUtils.isBlank(req.getCompanyId())) {
+					errorList.add(new Error("04", "CompanyId", "Please Select CompanyId in Row No :" + row));
+				} else if (req.getCompanyId().length() > 20) {
+					errorList.add(new Error("04", "CompanyId",
+							"Please Enter CompanyId within 20 Characters in Row No :" + row));
+				}
+				if (StringUtils.isBlank(req.getStateId())) {
+					errorList.add(new Error("05", "StateId", "Please Select StateId in Row No :" + row));
+				} else if (req.getStateId().length() > 20) {
+					errorList.add(new Error("05", "StateId",
+							"Please Enter StateId within 20 Characters in Row No :" + row));
+				}
+				if (StringUtils.isBlank(req.getCityId())) {
+					errorList.add(new Error("06", "CityId", "Please Select CityId in Row No :" + row));
+				} 
+			}
+
+		} catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+		}
+		return errorList;
+	}
+
+	@Override
+	public SuccessRes insertCity(List<CompanyCityMasterMultiInsertSaveReq> reqList) {
+		SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/YYYY");
+		SuccessRes res = new SuccessRes();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			Calendar cal = new GregorianCalendar();
+			Date today = new Date();
+			cal.setTime(new Date());
+			cal.set(Calendar.HOUR_OF_DAY, today.getHours());
+			cal.set(Calendar.MINUTE, today.getMinutes());
+			cal.set(Calendar.SECOND, today.getSeconds());
+			Date effDate = cal.getTime();
+			Date endDate = sdformat.parse("12/12/2050");
+			cal.setTime(sdformat.parse("12/12/2050"));
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 50);
+			endDate = cal.getTime();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+
+			for (CompanyCityMasterMultiInsertSaveReq req : reqList) {
+				CompanyCityMaster saveData = new CompanyCityMaster();
+				Integer amendId = 0;
+
+				String cityId = "";
+
+				// Update
+				// Get Less than Equal Today Record
+				// Criteria
+				cityId = req.getCityId();
+
+				// Criteria
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<CityMaster> query = cb.createQuery(CityMaster.class);
+				List<CityMaster> list = new ArrayList<CityMaster>();
+
+				// Find All
+				Root<CityMaster> c = query.from(CityMaster.class);
+
+				// Select
+				query.select(c);
+
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.asc(c.get("cityName")));
+
+				// Effective Date Max Filter
+				Subquery<Long> effectiveDate = query.subquery(Long.class);
+				Root<CityMaster> ocpm1 = effectiveDate.from(CityMaster.class);
+				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+				javax.persistence.criteria.Predicate a1 = cb.equal(c.get("countryId"), ocpm1.get("countryId"));
+				javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+				javax.persistence.criteria.Predicate a3 = cb.equal(c.get("regionId"), ocpm1.get("regionId"));
+				javax.persistence.criteria.Predicate a4 = cb.equal(c.get("stateId"), ocpm1.get("stateId"));
+				
+				effectiveDate.where(a1, a2,a3,a4);
+
+				// Effective Date Max Filter
+				Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+				Root<CityMaster> ocpm2 = effectiveDate2.from(CityMaster.class);
+				effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+				javax.persistence.criteria.Predicate a5 = cb.equal(c.get("countryId"), ocpm2.get("countryId"));
+				javax.persistence.criteria.Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"),
+						todayEnd);
+				javax.persistence.criteria.Predicate a7 = cb.equal(c.get("regionId"), ocpm2.get("regionId"));
+				javax.persistence.criteria.Predicate a8 = cb.equal(c.get("stateId"), ocpm2.get("stateId"));
+				
+				effectiveDate2.where(a7, a8,a5,a6);
+
+				// Where
+				javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
+				javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+				javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+				javax.persistence.criteria.Predicate n4 = cb.equal(c.get("countryId"), req.getCountryId());
+				javax.persistence.criteria.Predicate n5 = cb.equal(c.get("regionId"), req.getRegionId());
+				javax.persistence.criteria.Predicate n6 = cb.equal(c.get("stateId"), req.getStateId());
+				javax.persistence.criteria.Predicate n7 = cb.equal(c.get("cityId"), req.getCityId());
+
+				query.where(n1, n2, n3, n4, n5,n6,n7).orderBy(orderList);
+
+				// Get Result
+				TypedQuery<CityMaster> result = em.createQuery(query);
+				list = result.getResultList();
+
+				res.setResponse("Inserted Successfully ");
+				res.setSuccessId(cityId);
+
+				dozerMapper.map(list.get(0), saveData);
+				saveData.setCountryId(req.getCountryId());
+				saveData.setStateId(req.getStateId());
+				saveData.setRegionId(req.getRegionId());
+				saveData.setCityId(Integer.valueOf(cityId));				
+				saveData.setCompanyId(req.getCompanyId());
+				saveData.setCreatedBy(req.getCreatedBy());
+				saveData.setEffectiveDateStart(effDate);
+				saveData.setEffectiveDateEnd(endDate);
+				saveData.setEntryDate(new Date());
+				saveData.setAmendId(amendId);
+				saveData.setCoreAppCode("99999");
+				repo.saveAndFlush(saveData);
+
+				log.info("Saved Details is ---> " + json.toJson(saveData));
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+
 
 }

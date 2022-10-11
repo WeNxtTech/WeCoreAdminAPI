@@ -15,6 +15,7 @@ import com.maan.eway.master.req.CompanyCityChangeStatusReq;
 import com.maan.eway.master.req.CompanyCityMasterDropDownReq;
 import com.maan.eway.master.req.CompanyCityMasterGetAllReq;
 import com.maan.eway.master.req.CompanyCityMasterGetReq;
+import com.maan.eway.master.req.CompanyCityMasterMultiInsertSaveReq;
 import com.maan.eway.master.req.CompanyCityMasterSaveReq;
 import com.maan.eway.master.req.CompanyCityNonSelectedReq;
 import com.maan.eway.master.res.CityMasterRes;
@@ -30,9 +31,9 @@ import java.util.List;
 public interface CompanyCityMasterService  {
 
 
-	List<Error> validateCityDetails(CompanyCityMasterSaveReq req);
+	List<Error> validateUpdateCityDetails(CompanyCityMasterSaveReq req);
 
-	SuccessRes insertCity(CompanyCityMasterSaveReq req);
+	SuccessRes updateCity(CompanyCityMasterSaveReq req);
 
 	List<CompanyCityMasterRes> getallCityDetails(CompanyCityMasterGetAllReq req);
 
@@ -47,6 +48,10 @@ public interface CompanyCityMasterService  {
 	SuccessRes changeStatusOfCity(CompanyCityChangeStatusReq req);
 
 	List<CompanyCityMasterRes> getallNonSelectedCompanyState(CompanyCityNonSelectedReq req);
+
+	List<Error> validateCityDetails(List<CompanyCityMasterMultiInsertSaveReq> req);
+
+	SuccessRes insertCity(List<CompanyCityMasterMultiInsertSaveReq> req);
 
 	
 	

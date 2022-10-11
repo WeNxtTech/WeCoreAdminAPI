@@ -15,6 +15,7 @@ import com.maan.eway.master.req.CompanyCityChangeStatusReq;
 import com.maan.eway.master.req.CompanyCityMasterDropDownReq;
 import com.maan.eway.master.req.CompanyCityMasterGetAllReq;
 import com.maan.eway.master.req.CompanyCityMasterGetReq;
+import com.maan.eway.master.req.CompanyCityMasterMultiInsertSaveReq;
 import com.maan.eway.master.req.CompanyCityMasterSaveReq;
 import com.maan.eway.master.req.CompanyCityNonSelectedReq;
 import com.maan.eway.master.req.CompanyStateMasterChangeStatusReq;
@@ -63,9 +64,44 @@ public class CompanyCityMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
+		@PostMapping("/updatecompanycity")
+		@ApiOperation(value = "This method is Insert Company City Details")
+		public ResponseEntity<CommonRes> updateCity(@RequestBody CompanyCityMasterSaveReq req) {
+
+			reqPrinter.reqPrint(req);
+			CommonRes data = new CommonRes();
+
+			List<Error> validation = cityService.validateUpdateCityDetails(req);
+			// validation
+			if (validation != null && validation.size() != 0) {
+				data.setCommonResponse(null);
+				data.setIsError(true);
+				data.setErrorMessage(validation);
+				data.setMessage("Failed");
+				return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+			} else {
+
+				// Get All
+				SuccessRes res = cityService.updateCity(req);
+				data.setCommonResponse(res);
+				data.setIsError(false);
+				data.setErrorMessage(Collections.emptyList());
+				data.setMessage("Success");
+
+				if (res != null) {
+					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				} else {
+					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				}
+			}
+
+		}
+
+		
 		@PostMapping("/insertcompanycity")
 		@ApiOperation(value = "This method is Insert Company City Details")
-		public ResponseEntity<CommonRes> insertCity(@RequestBody CompanyCityMasterSaveReq req) {
+		public ResponseEntity<CommonRes> insertCity(@RequestBody List<CompanyCityMasterMultiInsertSaveReq> req) {
 
 			reqPrinter.reqPrint(req);
 			CommonRes data = new CommonRes();
@@ -96,6 +132,7 @@ public class CompanyCityMasterController {
 			}
 
 		}
+
 		
 		//  Get All City Master
 		

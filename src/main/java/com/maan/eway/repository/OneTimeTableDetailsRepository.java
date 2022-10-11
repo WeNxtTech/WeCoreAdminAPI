@@ -44,4 +44,6 @@ public interface OneTimeTableDetailsRepository  extends JpaRepository<OneTimeTab
 
 	OneTimeTableDetails findByItemTypeAndItemCode(String itemType, String inputColumn);
 
+
+
 }

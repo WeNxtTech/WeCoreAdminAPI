@@ -10,6 +10,7 @@ import com.maan.eway.master.req.ProductReferalChangeStatusReq;
 import com.maan.eway.master.req.ProductReferalGetAllReq;
 import com.maan.eway.master.req.ProductReferalGetReq;
 import com.maan.eway.master.req.ProductReferalMasterSaveReq;
+import com.maan.eway.master.req.ProductReferalMultiInsertReq;
 import com.maan.eway.master.req.ProductReferalsGetReq;
 import com.maan.eway.master.req.ProductSectionMasterReq;
 import com.maan.eway.master.req.ProductSectionsGetReq;
@@ -29,9 +30,9 @@ import java.util.List;
 */
 public interface ProductReferalMasterService  {
 
-	List<Error> validateProductReferalSave(List<ProductReferalMasterSaveReq> req);
+	List<Error> validateProductReferalSave(List<ProductReferalMultiInsertReq> req);
 
-	SuccessRes saveProductReferal(List<ProductReferalMasterSaveReq> req);
+	SuccessRes saveProductReferal(List<ProductReferalMultiInsertReq> req);
 
 	List<ProductReferalGetRes> getallProductReferal(ProductReferalGetAllReq req);
 
@@ -46,6 +47,10 @@ public interface ProductReferalMasterService  {
 	List<DropDownRes> getProductReferalDropdown(ProductReferalGetReq req);
 
 	SuccessRes changestatusofProductReferal(ProductReferalChangeStatusReq req);
+
+	List<Error> validateUpdateProductReferalSave(ProductReferalMasterSaveReq req);
+
+	SuccessRes updateProductReferal(ProductReferalMasterSaveReq req);
 
 	
 

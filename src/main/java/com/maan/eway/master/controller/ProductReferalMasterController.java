@@ -8,11 +8,13 @@ package com.maan.eway.master.controller;
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CompanyChangeStatusReq;
+import com.maan.eway.master.req.CompanyProductMultiInsertReq;
 import com.maan.eway.master.req.CoverMasterGetReq;
 import com.maan.eway.master.req.ProductReferalChangeStatusReq;
 import com.maan.eway.master.req.ProductReferalGetAllReq;
 import com.maan.eway.master.req.ProductReferalGetReq;
 import com.maan.eway.master.req.ProductReferalMasterSaveReq;
+import com.maan.eway.master.req.ProductReferalMultiInsertReq;
 import com.maan.eway.master.req.ProductReferalsGetReq;
 import com.maan.eway.master.req.ProductSectionMasterReq;
 import com.maan.eway.master.req.ProductSectionsGetReq;
@@ -64,7 +66,7 @@ public class ProductReferalMasterController {
 	// save
 	@PostMapping("/insertproductreferal")
 	@ApiOperation(value = "This method is Insert Referal Details")
-	public ResponseEntity<CommonRes> saveProductReferal(@RequestBody List<ProductReferalMasterSaveReq> req) {
+	public ResponseEntity<CommonRes> saveProductReferal(@RequestBody List<ProductReferalMultiInsertReq> req) {
 
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
@@ -80,8 +82,43 @@ public class ProductReferalMasterController {
 
 		} else {
 
-			// Get All
+			// Save
 			SuccessRes res = entityService.saveProductReferal(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+
+	}
+	
+	// update
+	@PostMapping("/updateproductreferal")
+	@ApiOperation(value = "This method is Update Referal Details")
+	public ResponseEntity<CommonRes> updateProductReferal(@RequestBody ProductReferalMasterSaveReq req) {
+
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+
+		List<Error> validation = entityService.validateUpdateProductReferalSave(req);
+		// validation
+		if (validation != null && validation.size() != 0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+		} else {
+
+			
+			SuccessRes res = entityService.updateProductReferal(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());

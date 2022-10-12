@@ -10,43 +10,33 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.repository.ProductReferalMasterRepository;
-import com.maan.eway.repository.ProductSectionMasterRepository;
-import com.maan.eway.repository.SectionMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.google.gson.Gson;
-import com.maan.eway.bean.CoverMaster;
-import com.maan.eway.bean.InsuranceCompanyMaster;
+import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.ProductReferalMaster;
-import com.maan.eway.bean.ProductSectionMaster;
+import com.maan.eway.bean.ProductReferalMaster;
 import com.maan.eway.bean.ReferalMaster;
-import com.maan.eway.bean.SectionCoverMaster;
-import com.maan.eway.bean.SectionMaster;
-import com.maan.eway.bean.SectionMaster;
+import com.maan.eway.bean.ProductReferalMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.ProductReferalChangeStatusReq;
 import com.maan.eway.master.req.ProductReferalGetAllReq;
 import com.maan.eway.master.req.ProductReferalGetReq;
 import com.maan.eway.master.req.ProductReferalMasterSaveReq;
+import com.maan.eway.master.req.ProductReferalMultiInsertReq;
 import com.maan.eway.master.req.ProductReferalsGetReq;
-import com.maan.eway.master.req.ProductSectionMasterReq;
-import com.maan.eway.master.req.ProductSectionsGetReq;
-import com.maan.eway.master.req.SectionMasterGetAllReq;
-import com.maan.eway.master.req.SectionMasterGetReq;
-import com.maan.eway.master.req.SectionMasterSaveReq;
+import com.maan.eway.master.req.SectionMultiInsertReq;
 import com.maan.eway.master.res.ProductReferalGetRes;
-import com.maan.eway.master.res.ProductSectionGetRes;
+
 import com.maan.eway.master.res.ReferalMasterRes;
-import com.maan.eway.master.res.SectionMasterRes;
+
 import com.maan.eway.master.service.ProductReferalMasterService;
-import com.maan.eway.master.service.ProductSectionMasterService;
-import com.maan.eway.master.service.SectionMasterService;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
+
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -57,7 +47,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
+
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
@@ -68,10 +58,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
-import org.modelmapper.ModelMapper;
 
 /**
-* <h2>SectionMasterServiceimpl</h2>
+* <h2>ProductReferalMasterServiceImpl</h2>
 */
 @Service
 @Transactional
@@ -82,102 +71,248 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 
 	@PersistenceContext
 	private EntityManager em;
-
+	
 	Gson json = new Gson();
 
 	private Logger log = LogManager.getLogger(ProductReferalMasterServiceImpl.class);
 	
-	//************************************************ PRoduct Referal DETAILS Validation******************************************************\\
+	
+	//**********************************************Insert Validation*********************************************************//
 	@Override
-	public List<Error> validateProductReferalSave(List<ProductReferalMasterSaveReq> reqList ) {
+	public List<Error> validateProductReferalSave(List<ProductReferalMultiInsertReq> reqList) {
 		List<Error> errorList = new ArrayList<Error>();
 		try {
+			
 			Long row = 0L ;
-			for (ProductReferalMasterSaveReq req : reqList) {
+			for (ProductReferalMultiInsertReq req : reqList) {
 				row = row + 1 ;
+				
+				if (StringUtils.isBlank(req.getProductId())) {
+					errorList.add(new Error("01", "ProductId", "Please Enter Product Id   " + row));
+				}
+				
+				if (StringUtils.isBlank(req.getReferalId()) ) {
+					errorList.add(new Error("02", "ReferalId", "Please Enter ReferalId    " + row));
+				}
+			    if (StringUtils.isBlank(req.getCompanyId())) {
+					errorList.add(new Error("03", "InsuranceId", "Please Enter InsuranceId  in Row No :" + row));
+				} else if (req.getCompanyId().length() > 20) {
+					errorList.add(new Error("03", "InsuranceId", "Please Enter InsuranceId within 20 Characters  in Row No :" + row));
+				} 
+			    
+				if (StringUtils.isBlank(req.getCreatedBy())) {
+					errorList.add(new Error("04", "CreatedBy", "Please Select CreatedBy  Id in Row No :" + row));
+				}
+			}
+		} catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+			errorList.add(new Error("10", "CommonError", e.getMessage()));
+		}
+		return errorList;
+	}
+
+	//**********************************************Insert *********************************************************//
+	@Override
+	public SuccessRes saveProductReferal(List<ProductReferalMultiInsertReq> reqList) {
+		 SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/YYYY");
+			SuccessRes res = new SuccessRes();
+			ProductReferalMaster saveData = new ProductReferalMaster();
+			DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+			
+			try {
+				Calendar cal = new GregorianCalendar();
+				Date today = new Date();
+				cal.setTime(new Date() );  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
+				cal.set(Calendar.SECOND, today.getSeconds());
+				Date effDate = cal.getTime();
+				Date endDate = sdformat.parse("12/12/2050") ;
+				cal.setTime(sdformat.parse("12/12/2050"));  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 50) ;
+				endDate = cal.getTime() ;
+				cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 30);
+				today   = cal.getTime();
+				cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 1);cal.set(Calendar.MINUTE, 1);
+				Date todayEnd   = cal.getTime();
+				for (ProductReferalMultiInsertReq req : reqList ) {
+					
+					String referalId=req.getReferalId();
+					Integer amendId=0;
+					// Update
+					// Get Less than Equal Today Record 
+					// Criteria
+					List<ReferalMaster> list = new ArrayList<ReferalMaster>();
+			
+					// Find Latest Record
+					CriteriaBuilder cb = em.getCriteriaBuilder();
+					CriteriaQuery<ReferalMaster> query = cb.createQuery(ReferalMaster.class);
+			
+					// Find All
+					Root<ReferalMaster> b = query.from(ReferalMaster.class);
+			
+					// Select
+					query.select(b);
+			
+					// Effective Date Max Filter
+					Subquery<Long> effectiveDate = query.subquery(Long.class);
+					Root<ReferalMaster> ocpm1 = effectiveDate.from(ReferalMaster.class);
+					effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+					Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
+					Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+					effectiveDate.where(a1,a2);
+					
+					// Effective Date Max Filter
+					Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+					Root<ReferalMaster> ocpm2 = effectiveDate2.from(ReferalMaster.class);
+					effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+					Predicate a3 = cb.equal(ocpm2.get("referalId"), b.get("referalId"));
+					Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+					effectiveDate2.where(a3,a4);
+			
+					// Order By
+					List<Order> orderList = new ArrayList<Order>();
+					orderList.add(cb.asc(b.get("referalName")));
+			
+					// Where
+					Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+					Predicate n2 = cb.equal(b.get("referalId"), req.getReferalId());
+					Predicate n3 = cb.equal(b.get("status"), "Y");
+			
+					query.where(n1,n2,n3).orderBy(orderList);
+			
+					// Get Result
+					TypedQuery<ReferalMaster> result = em.createQuery(query);
+					list = result.getResultList();
+					
+					res.setResponse("Updated Successfully ");
+					res.setSuccessId(referalId);
+						
+					
+				    dozerMapper.map(list.get(0), saveData );
+					saveData.setReferalId(Integer.valueOf(referalId));
+					saveData.setCompanyId(req.getCompanyId());
+					saveData.setCreatedBy(req.getCreatedBy());
+					saveData.setProductId(Integer.valueOf(req.getProductId()));
+					saveData.setEffectiveDateStart(effDate);
+					saveData.setEffectiveDateEnd(endDate);
+					saveData.setCoreAppCode("99999");
+					saveData.setEntryDate(new Date());
+					saveData.setAmendId(amendId);
+					repo.saveAndFlush(saveData);
+					
+					log.info("Saved Details is ---> " + json.toJson(saveData));
+				}
+				
+					
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Exception is --->" + e.getMessage());
+				return null;
+			}
+			return res;
+	}
+	
+	
+	//************************************************  Update Validation******************************************************\\
+	
+	@Override
+	public List<Error> validateUpdateProductReferalSave(ProductReferalMasterSaveReq req ) {
+		List<Error> errorList = new ArrayList<Error>();
+		try {
+
 				if (StringUtils.isBlank(req.getReferalName())) {
-					errorList.add(new Error("02", "ReferalName", "Please Select Referal  Name in  Row No : " + row));
+					errorList.add(new Error("02", "ReferalName", "Please Select Referal  Name   "));
 				}else if (req.getReferalName().length() > 100){
-					errorList.add(new Error("02","ReferalName", "Please Enter Referal  Name within 100 Characters in  Row No : " + row)); 
+					errorList.add(new Error("02","ReferalName", "Please Enter Referal  Name within 100 Characters   "  )); 
 				}
 				/*
 				else if (StringUtils.isBlank(req.getReferalId().toString())) {
 					Long referalCount = repo.countBySectionNameAndCompanyIdAndProductIdOrderByEntryDateDesc(req.getReferalName(), req.getCompanyId(),Integer.valueOf(req.getProductId()));
 					if (referalCount > 0 ) {
-						errorList.add(new Error("01", "Referal", "This Referal Alrady Exist in  Row No : " + row));
+						errorList.add(new Error("01", "Referal", "This Referal Alrady Exist   "  ));
 					}
 				} */
 		
 				if (StringUtils.isBlank(req.getReferalId()) ) {
-					errorList.add(new Error("03", "ReferalId", "Please Enter Referal Id in  Row No : " + row));
+					errorList.add(new Error("03", "ReferalId", "Please Enter Referal Id   " ));
 				}
 				if (StringUtils.isBlank(req.getProductId()) ) {
-					errorList.add(new Error("03", "ProductId", "Please Enter Product Id in  Row No : " + row));
+					errorList.add(new Error("03", "ProductId", "Please Enter Product Id   " ));
 				}
 				// Date Validation
 				Calendar cal = new GregorianCalendar();
 				Date today = new Date();
 				cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
 				today = cal.getTime();
-				if (req.getEffectiveDatestart() == null ) {
+				if (req.getEffectiveDateStart() == null ) {
 					errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
 
-				} else if (req.getEffectiveDatestart().before(today)) {
+				} else if (req.getEffectiveDateStart().before(today)) {
 					errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
 				} else if (req.getEffectiveDateEnd() == null ) {
 					errorList.add(new Error("04", "EffectiveDateEnd", "Please Enter Effective Date End "));
 
-				} else if (req.getEffectiveDateEnd().before(req.getEffectiveDatestart()) || req.getEffectiveDateEnd().equals(req.getEffectiveDatestart())) {
+				} else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart()) || req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
 					errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date End  is After Effective Date Start"));
-				} 
+				} else if (StringUtils.isBlank(req.getCompanyId())) {
+					errorList.add(new Error("08", "InsuranceId", "Please Enter InsuranceId  "));
+				} else if (req.getCompanyId().length() > 20) {
+					errorList.add(new Error("11", "InsuranceId", "Please Enter InsuranceId within 20 Characters  "));
+				} else if (StringUtils.isBlank(req.getCoreAppCode())) {
+					errorList.add(new Error("02", "CoreAppCode", "Please Enter CoreAppCode"));
+				} else if (req.getCoreAppCode().length() > 20) {
+					errorList.add(new Error("02", "CoreAppCode", "CoreAppCode under 20 Characters only allowed"));
+				} else if (StringUtils.isBlank(req.getProductId())) {
+					errorList.add(new Error("09", "ProductId", "Please Enter ProductId  "));
+				} else if (! req.getProductId().matches("[0-9]+") ) {
+					errorList.add(new Error("09", "ProductId", "Please Enter Valid Number ProductId "));
+				}else if (StringUtils.isBlank(req.getReferalId())) {
+					errorList.add(new Error("09", "ReferalId", "Please Enter ReferalId"));
+				} else if (! req.getReferalId().matches("[0-9]+") ) {
+					errorList.add(new Error("09", "ReferalId", "Please Enter Valid Number ReferalId"));
+				} else if( ! req.getCoreAppCode().equalsIgnoreCase("99999")  )  {
+					List<ProductReferalMaster> referalList =  getCoreAppCodeExistDetails(req.getCoreAppCode()  , req.getEffectiveDateStart() , req.getEffectiveDateEnd(), req.getCompanyId() , req.getProductId()  );
+					if (referalList.size()>0 &&  (! req.getReferalId().equalsIgnoreCase(referalList.get(0).getReferalId().toString())) ) {
+						errorList.add(new Error("02", "Core App Code", "This Core App Code Already Exist For Another Section "));
+					}	
+				}
 				//Status Validation
 				if (StringUtils.isBlank(req.getStatus())) {
-					errorList.add(new Error("05", "Status", "Please Enter Status in  Row No : " + row));
+					errorList.add(new Error("05", "Status", "Please Enter Status   " ));
 				} else if (req.getStatus().length() > 1) {
-					errorList.add(new Error("05", "Status", "Enter Status 1 Character Only in  Row No : " + row));
+					errorList.add(new Error("05", "Status", "Enter Status 1 Character Only   "  ));
 				}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()))) {
-					errorList.add(new Error("05", "Status", "Enter Status Y or N Only in  Row No : " + row));
+					errorList.add(new Error("05", "Status", "Enter Status Y or N Only   "  ));
 				}
 				if (StringUtils.isBlank(req.getCompanyId().toString()) || req.getCompanyId() == null) {
-					errorList.add(new Error("06", "CompanyId", "Please Enter Company Id in  Row No : " + row));
+					errorList.add(new Error("06", "CompanyId", "Please Enter Company Id   "  ));
 				}
 				if (StringUtils.isBlank(req.getCoreAppCode())) {
-					errorList.add(new Error("07", "CoreAppCode", "Please Enter CoreAppCode in  Row No : " + row));
+					errorList.add(new Error("07", "CoreAppCode", "Please Enter CoreAppCode   "  ));
 				} else if (req.getStatus().length() > 20) {
-					errorList.add(new Error("07", "CoreAppCode", "Enter CoreAppCode 20 Character Only in  Row No : " + row));
+					errorList.add(new Error("07", "CoreAppCode", "Enter CoreAppCode 20 Character Only   "  ));
 				}
-				else if (StringUtils.isBlank(req.getReferalId())) {
-					List<ProductReferalMaster> coreAppCode = getCoreAppCodeExistDetails(req.getCompanyId() , req.getProductId() , null);
-					if (coreAppCode.size()>0 ) {
-						errorList.add(new Error("07", "CoreAppCode", "This core App Code  Name Already Exist "));
-					}
-				}else  {
-					List<ProductReferalMaster> coreAppCode =  getCoreAppCodeExistDetails(req.getCompanyId(),req.getProductId() , req.getReferalId() );
-					if (coreAppCode.size()>0 &&  (! req.getReferalId().equalsIgnoreCase(coreAppCode.get(0).getReferalId().toString())) ) {
-						errorList.add(new Error("07", "Core App Code", "This core App Code Already Exist "));
-					}
-				}
+			
 				if (StringUtils.isBlank(req.getRegulatoryCode())) {
-					errorList.add(new Error("08", "RegulatoryCode", "Please Enter RegulatoryCode in  Row No : " + row));
+					errorList.add(new Error("08", "RegulatoryCode", "Please Enter RegulatoryCode   "  ));
 				} else if (req.getRegulatoryCode().length() > 20) {
-					errorList.add(new Error("08", "RegulatoryCode", "Enter RegulatoryCode 20 Character Only in  Row No : " + row));
+					errorList.add(new Error("08", "RegulatoryCode", "Enter RegulatoryCode 20 Character Only   "  ));
 				}
 				
-			
-			}
-			
-			
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
 		}
 		return errorList;
 	}
-	
-	
-	public List<ProductReferalMaster> getCoreAppCodeExistDetails(String companyId , String productId , String referalId ) {
+	public List<ProductReferalMaster> getCoreAppCodeExistDetails(String coreAppCode , Date effStartDate , Date effEndDate , String companyId , String referalId ) {
 		List<ProductReferalMaster> list = new ArrayList<ProductReferalMaster>();
 		try {
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(effStartDate);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 1);
+			effStartDate   = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);cal.set(Calendar.MINUTE, 1);
+			effEndDate = cal.getTime() ;
+			
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<ProductReferalMaster> query = cb.createQuery(ProductReferalMaster.class);
@@ -192,22 +327,33 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
 			Root<ProductReferalMaster> ocpm1 = effectiveDate.from(ProductReferalMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			Predicate a2 = cb.equal(ocpm1.get("productId"),b.get("productId"));
-			Predicate a3 = cb.equal(ocpm1.get("referalId"),b.get("referalId"));
+			
+			Predicate a2 = cb.equal(ocpm1.get("coreAppCode"), b.get("coreAppCode"));
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), effStartDate );
+			Predicate a7 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a8 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a11 = cb.equal(ocpm1.get("referalId"),b.get("referalId"));
+			effectiveDate.where(a2,a3,a7,a8,a11);
+			
 
-			effectiveDate.where(a1,a2,a3);
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<ProductReferalMaster> ocpm2 = effectiveDate2.from(ProductReferalMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+
+			Predicate a5 = cb.equal(ocpm2.get("coreAppCode"), b.get("coreAppCode"));
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), effEndDate );
+			Predicate a9 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
+			Predicate a10 = cb.equal(ocpm2.get("productId"), b.get("productId"));
+			Predicate a12 = cb.equal(ocpm2.get("referalId"),b.get("referalId"));
+			effectiveDate2.where(a5,a6,a9,a10,a12);
 	
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			Predicate n2 = cb.equal(b.get("companyId"),companyId);	
-			Predicate n3 = cb.equal(b.get("productId"), productId );
-			if( StringUtils.isBlank(referalId)) {
-				query.where(n1,n2,n3);	
-			} else {
-				Predicate n4 = cb.equal(b.get("referalId"), referalId );
-				query.where(n1,n2,n3,n4);
-			}
-			
+			Predicate n2 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n3 = cb.equal(b.get("coreAppCode"), coreAppCode );	
+			Predicate n4 = cb.equal(b.get("companyId"), companyId );
+			Predicate n5 = cb.equal(b.get("referalId"), referalId);
+			query.where(n1,n2,n3,n4,n5);
 			// Get Result
 			TypedQuery<ProductReferalMaster> result = em.createQuery(query);
 			list = result.getResultList();		
@@ -220,100 +366,96 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 		return list;
 	}
 	
-	//************************************************Insert/Update Product Referal DETAILS******************************************************\\
+	
+	//************************************************Update Product Referral ******************************************************\\
 	@Transactional
 	@Override
-	public SuccessRes saveProductReferal(List<ProductReferalMasterSaveReq> reqList) {
-		SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/YYYY");
+	public SuccessRes updateProductReferal(ProductReferalMasterSaveReq req) {
+		
 		SuccessRes res = new SuccessRes();
 		ProductReferalMaster saveData = new ProductReferalMaster();
 		List<ProductReferalMaster> list = new ArrayList<ProductReferalMaster>();
-		 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
-		
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+
 		try {
-			Integer amendId = 0 ;
+			Integer amendId = 0;
 			
-			for (ProductReferalMasterSaveReq req : reqList ) {
-				Calendar cal = new GregorianCalendar();
-				cal.setTime(req.getEffectiveDatestart());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
-				Date startDate = cal.getTime() ;
-				Date today = new Date();
-				cal.setTime(req.getEffectiveDatestart()); cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
-				cal.set(Calendar.SECOND, today.getSeconds());
-				Date oldEndDate = cal.getTime() ;
-				cal.setTime(req.getEffectiveDatestart());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
-				cal.set(Calendar.SECOND, today.getSeconds());
-				Date effDate = cal.getTime();
-				Date endDate = req.getEffectiveDateEnd();
-				String referalId="";
-				
-				// Update
-				// Get Less than Equal Today Record 
-				// Criteria
-				referalId=req.getReferalId().toString();
-				CriteriaBuilder cb = em.getCriteriaBuilder();
-				CriteriaQuery<ProductReferalMaster> query = cb.createQuery(ProductReferalMaster.class);
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(req.getEffectiveDateStart());cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 59);
+			Date startDate = cal.getTime();
+			Date today = new Date();
+			cal.setTime(req.getEffectiveDateStart());cal.set(Calendar.HOUR_OF_DAY, today.getHours());cal.set(Calendar.MINUTE, today.getMinutes());cal.set(Calendar.SECOND, today.getSeconds());
+			Date oldEndDate = cal.getTime();
+			cal.setTime(req.getEffectiveDateStart());cal.set(Calendar.HOUR_OF_DAY, today.getHours());cal.set(Calendar.MINUTE, today.getMinutes());cal.set(Calendar.SECOND, today.getSeconds());
+			Date effDate = cal.getTime();
+			Date endDate = req.getEffectiveDateEnd();
+			String referalId = "";
 
-				// Find All
-				Root<ProductReferalMaster> b = query.from(ProductReferalMaster.class);
+			// Update
+			// Get Less than Equal Today Record
+			// Criteria
+			referalId = req.getReferalId().toString();
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ProductReferalMaster> query = cb.createQuery(ProductReferalMaster.class);
 
-				// Select
-				query.select(b);
+			// Find All
+			Root<ProductReferalMaster> b = query.from(ProductReferalMaster.class);
 
-				// Effective Date Max Filter
-				Subquery<Long> effectiveDate = query.subquery(Long.class);
-				Root<ProductReferalMaster> ocpm1 = effectiveDate.from(ProductReferalMaster.class);
-				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-				Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
-				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , startDate);
-				Predicate a3 =  cb.equal(ocpm1.get("productId"), b.get("productId") );
-				Predicate a4 =  cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-				effectiveDate.where(a1,a2,a3,a4);
+			// Select
+			query.select(b);
 
-				// Order By
-			//	List<Order> orderList = new ArrayList<Order>();
-			//	orderList.add(cb.asc(b.get("branchName")));
-				
-				// Where
-				Predicate n1 = cb.equal(b.get("status"), "Y");
-				Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-				Predicate n3 =  cb.equal(b.get("referalId"), req.getReferalId() );
-				Predicate n4 =  cb.equal(b.get("productId"), req.getProductId() );
-				Predicate n5 =  cb.equal(b.get("companyId"), req.getCompanyId() );
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<ProductReferalMaster> ocpm1 = effectiveDate.from(ProductReferalMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
+			Predicate a3 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a4 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			effectiveDate.where(a1, a2, a3, a4);
 
-				query.where(n1, n2, n3,n4,n5);//.orderBy(orderList);
+			// Order By
+			// List<Order> orderList = new ArrayList<Order>();
+			// orderList.add(cb.asc(b.get("branchName")));
 
-				// Get Result
-				TypedQuery<ProductReferalMaster> result = em.createQuery(query);
-				list = result.getResultList();
-				
-				if( list.size() > 0) {
-					repo.delete(list.get(0));
-					amendId = list.get(0).getAmendId() + 1 ;
-				} 
-				res.setResponse("Updated Successfully ");
-				res.setSuccessId(referalId);
-					
-				
-			    dozerMapper.map(req, saveData );
-				saveData.setReferalId(Integer.valueOf(referalId));
-				saveData.setReferalName(req.getReferalName());
-				saveData.setEffectiveDateStart(effDate);
-				saveData.setEffectiveDateEnd(endDate);
-				saveData.setStatus(req.getStatus());
-				saveData.setEntryDate(new Date());
-				saveData.setAmendId(amendId);
-				repo.saveAndFlush(saveData);
-				
-				if(list.size() > 0 ) {
-					// Update Old Record
-					ProductReferalMaster lastRecord = list.get(0) ;
-					lastRecord.setEffectiveDateEnd(oldEndDate);
-					repo.saveAndFlush(lastRecord);
-				}
-				
-				log.info("Saved Details is ---> " + json.toJson(saveData));
+			// Where
+			Predicate n1 = cb.equal(b.get("status"), "Y");
+			Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = cb.equal(b.get("referalId"), req.getReferalId());
+			Predicate n4 = cb.equal(b.get("productId"), req.getProductId());
+			Predicate n5 = cb.equal(b.get("companyId"), req.getCompanyId());
+
+			query.where(n1, n2, n3, n4, n5);// .orderBy(orderList);
+
+			// Get Result
+			TypedQuery<ProductReferalMaster> result = em.createQuery(query);
+			list = result.getResultList();
+
+			if (list.size() > 0) {
+				repo.delete(list.get(0));
+				amendId = list.get(0).getAmendId() + 1;
 			}
+			res.setResponse("Updated Successfully ");
+			res.setSuccessId(referalId);
+
+			dozerMapper.map(req, saveData);
+			saveData.setReferalId(Integer.valueOf(referalId));
+			saveData.setReferalName(req.getReferalName());
+			saveData.setEffectiveDateStart(effDate);
+			saveData.setEffectiveDateEnd(endDate);
+			saveData.setStatus(req.getStatus());
+			saveData.setEntryDate(new Date());
+			saveData.setAmendId(amendId);
+			repo.saveAndFlush(saveData);
+
+			if (list.size() > 0) {
+				// Update Old Record
+				ProductReferalMaster lastRecord = list.get(0);
+				lastRecord.setEffectiveDateEnd(oldEndDate);
+				repo.saveAndFlush(lastRecord);
+			}
+
+			log.info("Saved Details is ---> " + json.toJson(saveData));
 			
 				
 	} catch (Exception e) {
@@ -898,4 +1040,7 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 		}
 		return res;
 	}
+
+
+	
 }

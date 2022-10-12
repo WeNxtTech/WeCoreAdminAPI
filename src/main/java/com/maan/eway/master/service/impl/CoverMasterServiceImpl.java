@@ -440,9 +440,11 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 						saveCover.setCreatedBy(req.getCreatedBy());
 						saveCover.setEffectiveDateStart(effDate);
 						saveCover.setEffectiveDateEnd(endDate);
+						saveCover.setToolTip(req.getToolTip());
 						saveCover.setEntryDate(new Date());
 						saveCover.setAmendId(amendId);
 						saveCover.setStatus(req.getStatus());
+						saveCover.setRemarks(req.getRemarks());
 						saveCover.setSubCoverYn(req.getSubCoverYn());
 						
 						repo.saveAndFlush(saveCover);
@@ -462,12 +464,14 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 					saveCover.setCoverName(req.getCoverName());
 					saveCover.setRegulatoryCode(req.getRegulatoryCode());
 					saveCover.setCoverDesc(req.getCoverDesc());
+					saveCover.setToolTip(req.getToolTip());
 					saveCover.setCreatedBy(req.getCreatedBy());
 					saveCover.setEffectiveDateStart(effDate);
 					saveCover.setEffectiveDateEnd(endDate);
 					saveCover.setEntryDate(new Date());
 					saveCover.setAmendId(amendId);
 					saveCover.setStatus(req.getStatus());
+					saveCover.setRemarks(req.getRemarks());
 					saveCover.setSubCoverYn(req.getSubCoverYn());
 					repo.saveAndFlush(saveCover);
 					
@@ -483,13 +487,18 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 				
 				dozerMapper.map(req, saveData);
 				subcoverId = coverId ;
-				
+				saveData.setCoverName(req.getCoverName());
+				saveData.setRegulatoryCode(req.getRegulatoryCode());
+				saveData.setCoverDesc(req.getCoverDesc());
+				saveData.setCreatedBy(req.getCreatedBy());
+				saveData.setToolTip(req.getToolTip());
 				saveData.setCoverId(Integer.valueOf(coverId));
 				saveData.setSubCoverId(Integer.valueOf(subcoverId));
 				saveData.setEffectiveDateStart(effDate);
 				saveData.setEffectiveDateEnd(endDate);
 				saveData.setEntryDate(new Date());
 				saveData.setAmendId(amendId);
+				saveData.setRemarks(req.getRemarks());
 				saveData.setRatingId(Integer.valueOf(coverId));	
 			
 				saveData.setSubCoverYn(subCoverYn);
@@ -747,7 +756,6 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 				res = mapper.map(data, CoverMasterGetAllRes.class);
 				resList.add(res);
 			}
-			resList.sort(Comparator.comparing(CoverMasterGetAllRes :: getCoverName));
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -935,7 +943,7 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 				res = mapper.map(data, CoverMasterGetAllRes.class);
 				resList.add(res);
 			}
-			resList.sort(Comparator.comparing(CoverMasterGetAllRes :: getCoverName));
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info(e.getMessage());

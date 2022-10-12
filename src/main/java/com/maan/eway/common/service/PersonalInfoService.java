@@ -14,12 +14,7 @@ import java.util.List;
 */
 public interface PersonalInfoService  {
 
-PersonalInfo create(PersonalInfo d);
-PersonalInfo update(PersonalInfo d);
-//PersonalInfo getOne(long id) ;
- List<PersonalInfo> getAll();
-long getTotal();
-//boolean delete(long id);
+
 SuccessRes saveCustomerDetails(PersonalInfoSaveReq req);
 
 }

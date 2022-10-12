@@ -6,8 +6,14 @@
 package com.maan.eway.common.service.impl;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
@@ -16,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.gson.Gson;
+import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.common.req.PersonalInfoSaveReq;
 import com.maan.eway.common.service.PersonalInfoService;
@@ -32,6 +40,12 @@ public class PersonalInfoServiceImpl implements PersonalInfoService {
 private PersonalInfoRepository repository;
 
 
+@PersistenceContext
+private EntityManager em;
+
+Gson json = new Gson();
+
+
 private Logger log=LogManager.getLogger(PersonalInfoServiceImpl.class);
 /*
 public PersonalInfoServiceImpl(PersonalInfoRepository repo) {
@@ -39,114 +53,46 @@ this.repository = repo;
 }
 
   */
- @Override
-    public PersonalInfo create(PersonalInfo d) {
-
-       PersonalInfo entity;
-
-        try {
-            entity = repository.save(d);
-
-        } catch (Exception ex) {
-			log.error(ex);
-            return null;
-        }
-        return entity;
-    }
-
-    
-    @Override
-    public PersonalInfo update(PersonalInfo d) {
-        PersonalInfo c;
-
-        try {
-            c = repository.saveAndFlush(d);
-
-        } catch (Exception ex) {
-			log.error(ex);
-            return null;
-        }
-        return c;
-    }
-
-/*
-    @Override
-    public PersonalInfo getOne(long id) {
-        PersonalInfo t;
-
-        try {
-            t = repository.findById(id).orElse(null);
-
-        } catch (Exception ex) {
-			log.error(ex);
-            return null;
-        }
-        return t;
-    }
-
-*/
-    @Override
-    public List<PersonalInfo> getAll() {
-        List<PersonalInfo> lst;
-
-        try {
-            lst = repository.findAll();
-
-        } catch (Exception ex) {
-			log.error(ex);
-            return Collections.emptyList();
-        }
-        return lst;
-    }
-
-
-    @Override
-    public long getTotal() {
-        long total;
-
-        try {
-            total = repository.count();
-        } catch (Exception ex) {
-            log.error(ex);
-			return 0;
-        }
-        return total;
-    }
-
 
 	@Override
 	public SuccessRes saveCustomerDetails(PersonalInfoSaveReq req) {
 		SuccessRes res = new SuccessRes();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		PersonalInfo save = new PersonalInfo();
 		try {
-		//	PersonalInfo personalInfo = repository.findByReferalMaster
-			
-		//	PersonalInfo personalInfo = new PersonalInfo();
-		//	dozerMapper.map(req, personalInfo);
-			
-			
-			
+			PersonalInfo findData = repository.findByClientTypeidAndIdNumber(req.getClientTypeid(), req.getIdNumber());
+			Date entryDate = null;
+
+			if (findData == null) {
+
+				// Save
+
+				entryDate = new Date();
+				res.setResponse("Saved Succesfully");
+				res.setSuccessId(req.getIdNumber());
+			} else {
+
+				// Update
+
+				entryDate = findData.getEntryDate();
+				res.setResponse("Updated Succesfully");
+			}
+
+			save = dozerMapper.map(req, PersonalInfo.class);
+			save.setStatus("Y");
+			save.setEntryDate(entryDate);
+
+			repository.save(save);
+			log.info("Saved Details is ---> " + json.toJson(save));
+
 		} catch (Exception e) {
 			e.printStackTrace();
-            log.info("Exception is ---> " + e.getMessage());
-			return null ;
-        }
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
         return res;
     }
 
-/*
-    @Override
-    public boolean delete(long id) {
-        try {
-            repository.deleteById(id);
-            return true;
 
-        } catch (Exception ex) {
-			log.error(ex);
-            return false;
-        }
-    }
-
- */
 
 }

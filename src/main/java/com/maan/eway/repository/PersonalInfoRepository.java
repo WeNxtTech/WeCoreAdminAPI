@@ -13,6 +13,7 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.maan.eway.bean.PersonalInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,5 +30,9 @@ import com.maan.eway.bean.PersonalInfoId;
  
  
 public interface PersonalInfoRepository  extends JpaRepository<PersonalInfo,PersonalInfoId > , JpaSpecificationExecutor<PersonalInfo> {
+
+	PersonalInfo findByClientTypeidAndIdNumber(String clientTypeid, String idNumber);
+
+
 
 }

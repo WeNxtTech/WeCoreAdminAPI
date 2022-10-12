@@ -84,23 +84,6 @@ public class PersonalInfoController {
 		}
     }
 
-    @GetMapping(value = "/personalinfo")
-    public ResponseEntity<List<PersonalInfo>> getAllPersonalInfo() {
-        List<PersonalInfo> lst = entityService.getAll();
 
-        return new ResponseEntity<>(lst,HttpStatus.OK);
-    }
-/*
-        @GetMapping(value = "/personalinfo/{id}")
-    public ResponseEntity<PersonalInfo> getOnePersonalInfo(@PathVariable("id") long id) {
-
-            PersonalInfo e = entityService.getOne(id);
-            if (e == null) {
-            	return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
-            }
-            return new ResponseEntity<>(e, HttpStatus.OK);
-    }
-
-*/
 
 }

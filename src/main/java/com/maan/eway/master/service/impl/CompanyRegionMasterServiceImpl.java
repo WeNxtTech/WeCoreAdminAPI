@@ -160,7 +160,8 @@ public class CompanyRegionMasterServiceImpl implements CompanyRegionMasterServic
 	 * } catch (Exception e) { log.error(e); e.printStackTrace(); errorList.add(new
 	 * Error("10", "CommonError", e.getMessage())); } return errorList; }
 	 */
-	public List<CompanyRegionMaster> getCoreAppCodeExistDetails(String companyId, String countryId, String regionCode) {
+	public List<CompanyRegionMaster> getCoreAppCodeExistDetails(String coreAppCode, Date effStartDate, Date effEndDate,
+			String companyId) {
 		List<CompanyRegionMaster> list = new ArrayList<CompanyRegionMaster>();
 		try {
 			// Find Latest Record
@@ -178,19 +179,26 @@ public class CompanyRegionMasterServiceImpl implements CompanyRegionMasterServic
 			Root<CompanyRegionMaster> ocpm1 = effectiveDate.from(CompanyRegionMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			Predicate a2 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
+			Predicate a2 = cb.equal(ocpm1.get("coreAppCode"), b.get("coreAppCode"));
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), effStartDate);
 
-			effectiveDate.where(a1, a2);
+			effectiveDate.where(a1, a2, a3);
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<CompanyRegionMaster> ocpm2 = effectiveDate.from(CompanyRegionMaster.class);
+			effectiveDate.select(cb.max(ocpm2.get("effectiveDateStart")));
+			Predicate a4 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
+			Predicate a5 = cb.equal(ocpm2.get("coreAppCode"), b.get("coreAppCode"));
+			Predicate a6 = cb.lessThanOrEqualTo(ocpm2.get("effectiveDateEnd"), effEndDate);
+
+			effectiveDate2.where(a4, a5, a6);
 
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			Predicate n2 = cb.equal(b.get("companyId"), companyId);
-			Predicate n3 = cb.equal(b.get("countryId"), countryId);
-			if (StringUtils.isBlank(regionCode)) {
-				query.where(n1, n2, n3);
-			} else {
-				Predicate n4 = cb.equal(b.get("regionCode"), regionCode);
-				query.where(n1, n2, n3, n4);
-			}
+			Predicate n2 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n3 = cb.equal(b.get("coreAppCode"), coreAppCode);
+			Predicate n4 = cb.equal(b.get("companyId"), companyId);
+			query.where(n1, n2, n3, n4);
 
 			// Get Result
 			TypedQuery<CompanyRegionMaster> result = em.createQuery(query);
@@ -747,6 +755,7 @@ public class CompanyRegionMasterServiceImpl implements CompanyRegionMasterServic
 		List<Error> errorList = new ArrayList<Error>();
 
 		try {
+			List<String> regionIds = new ArrayList<String>();
 			Long row = 0L;
 			for (CompanyRegionMultiInsertSaveReq req : reqList) {
 				row = row + 1;
@@ -755,6 +764,15 @@ public class CompanyRegionMasterServiceImpl implements CompanyRegionMasterServic
 				} else if (req.getRegionCode().length() > 20) {
 					errorList.add(new Error("01", "RegionCode",
 							"Please Enter RegionCode within 20 Characters in Row No :" + row));
+				} else {
+					List<String> filterRegionCodes = regionIds.stream()
+							.filter(o -> o.equalsIgnoreCase(req.getRegionCode())).collect(Collectors.toList());
+					if (filterRegionCodes.size() > 0) {
+						errorList.add(
+								new Error("01", "Region Code", "Duplicate Region Code  Selected in Row No :" + row));
+					} else {
+						regionIds.add(req.getRegionCode());
+					}
 				}
 				if (StringUtils.isBlank(req.getCreatedBy())) {
 					errorList.add(new Error("02", "CreatedBy", "Please Select CreatedBy   in Row No :" + row));
@@ -877,7 +895,7 @@ public class CompanyRegionMasterServiceImpl implements CompanyRegionMasterServic
 				saveData.setEntryDate(new Date());
 				saveData.setAmendId(amendId);
 				saveData.setCoreAppCode("99999");
-				
+
 				repo.saveAndFlush(saveData);
 
 				log.info("Saved Details is ---> " + json.toJson(saveData));
@@ -905,23 +923,12 @@ public class CompanyRegionMasterServiceImpl implements CompanyRegionMasterServic
 						"Please Enter Region  Name within 100 Characters in  Row No : " + row));
 			}
 
-			if (StringUtils.isBlank(req.getRegionCode())) {
-				errorList.add(new Error("02", "RegionCode", "Please Select Region Code in  Row No : " + row));
-			} else if (req.getRegionCode().length() > 20) {
-				errorList.add(new Error("02", "RegionCode",
-						"Please Enter Region Code within 100 Characters in  Row No : " + row));
-			}
-
 			if (StringUtils.isBlank(req.getRegionShortCode())) {
 				errorList
 						.add(new Error("02", "RegionShortCode", "Please Select Region Short Code in  Row No : " + row));
 			} else if (req.getRegionShortCode().length() > 100) {
 				errorList.add(new Error("02", "RegionShortCode",
 						"Please Enter Region Short Code within 100 Characters in  Row No : " + row));
-			}
-
-			if (StringUtils.isBlank(req.getCompanyId())) {
-				errorList.add(new Error("02", "InsuranceId", "Please Select InsuranceId in  Row No : " + row));
 			}
 
 			// Date Validation
@@ -945,6 +952,26 @@ public class CompanyRegionMasterServiceImpl implements CompanyRegionMasterServic
 					|| req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
 				errorList.add(new Error("04", "EffectiveDateEnd",
 						"Please Enter Effective Date End  is After Effective Date End"));
+			} else if (StringUtils.isBlank(req.getCompanyId())) {
+				errorList.add(new Error("06", "CompanyId", "Please Enter Company Id in  Row No : "));
+			} else if (StringUtils.isBlank(req.getRegionCode())) {
+				errorList.add(new Error("02", "RegionCode", "Please Select Region Code in  Row No : "));
+			} else if (req.getRegionCode().length() > 20) {
+				errorList.add(new Error("02", "RegionCode",
+						"Please Enter Region Code within 100 Characters in  Row No : " + row));
+			} else if (StringUtils.isBlank(req.getCompanyId())) {
+				errorList.add(new Error("03", "InsuranceId", "Please Select InsuranceId in  Row No : "));
+			} else if (StringUtils.isBlank(req.getCoreAppCode())) {
+				errorList.add(new Error("08", "CoreAppCode", "Please Enter CoreAppCode"));
+			} else if (req.getCoreAppCode().length() > 20) {
+				errorList.add(new Error("08", "CoreAppCode", "Please Enter CoreAppCode within 20 Characters"));
+			} else if (!req.getCoreAppCode().equalsIgnoreCase("99999")) {
+				List<CompanyRegionMaster> coreAppCode = getCoreAppCodeExistDetails(req.getCoreAppCode(),
+						req.getEffectiveDateStart(), req.getEffectiveDateEnd(), req.getCompanyId());
+				if (coreAppCode.size() > 0
+						&& (!req.getRegionCode().equalsIgnoreCase(coreAppCode.get(0).getRegionCode()))) {
+					errorList.add(new Error("08", "CoreAppCode", "This core App Code  Already Exist "));
+				}
 			}
 			// Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
@@ -954,33 +981,13 @@ public class CompanyRegionMasterServiceImpl implements CompanyRegionMasterServic
 			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()))) {
 				errorList.add(new Error("05", "Status", "Enter Status Y or N Only in  Row No : " + row));
 			}
-			if (StringUtils.isBlank(req.getCompanyId())) {
-				errorList.add(new Error("06", "CompanyId", "Please Enter Company Id in  Row No : " + row));
-			}
+
 			if (StringUtils.isBlank(req.getCreatedBy())) {
 				errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy"));
 			} else if (req.getCreatedBy().length() > 50) {
 				errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
 			}
 
-			if (StringUtils.isBlank(req.getCoreAppCode())) {
-				errorList.add(new Error("08", "CoreAppCode", "Please Enter CoreAppCode"));
-			} else if (req.getCoreAppCode().length() > 20) {
-				errorList.add(new Error("08", "CoreAppCode", "Please Enter CoreAppCode within 20 Characters"));
-			} else if (StringUtils.isBlank(req.getCoreAppCode())) {
-				List<CompanyRegionMaster> coreAppCode = getCoreAppCodeExistDetails(req.getCompanyId(),
-						req.getCountryId(), null);
-				if (coreAppCode.size() > 0) {
-					errorList.add(new Error("08", "CoreAppCode", "This core App Code  Already Exist "));
-				}
-			} else {
-				List<CompanyRegionMaster> coreAppCode = getCoreAppCodeExistDetails(req.getCompanyId(),
-						req.getCountryId(), req.getRegionCode());
-				if (coreAppCode.size() > 0
-						&& (!req.getRegionCode().equalsIgnoreCase(coreAppCode.get(0).getRegionCode().toString()))) {
-					errorList.add(new Error("08", "Core App Code", "This core App Code Already Exist "));
-				}
-			}
 			if (StringUtils.isBlank(req.getRegulatoryCode())) {
 				errorList.add(new Error("09", "RegulatoryCode", "Please Enter RegulatoryCode"));
 			} else if (req.getRegulatoryCode().length() > 20) {
@@ -1037,8 +1044,8 @@ public class CompanyRegionMasterServiceImpl implements CompanyRegionMasterServic
 			String regionId = "";
 			Integer amendId = 0;
 
-			// Update 
-			// Get Less than Equal Today Record 
+			// Update
+			// Get Less than Equal Today Record
 			// Criteria
 			regionId = req.getRegionCode();
 			CriteriaBuilder cb = em.getCriteriaBuilder();

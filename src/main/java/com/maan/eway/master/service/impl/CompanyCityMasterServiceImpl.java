@@ -107,10 +107,6 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 				}
 			}
 
-			if (StringUtils.isBlank(req.getCountryId()) || req.getCountryId() == null) {
-				errorList.add(new Error("03", "CountryId", "Please Select Country Id "));
-			}
-
 			// Date Validation
 			Calendar cal = new GregorianCalendar();
 			Date today = new Date();
@@ -132,6 +128,25 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 					|| req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
 				errorList.add(new Error("04", "EffectiveDateStart",
 						"Please Enter Effective Date End  is After Effective Date Start"));
+			} else if (StringUtils.isBlank(req.getCountryId()) || req.getCountryId() == null) {
+				errorList.add(new Error("03", "CountryId", "Please Select Country Id "));
+			} else if (StringUtils.isBlank(req.getStateId()) || req.getStateId() == null) {
+				errorList.add(new Error("06", "StateId", "Please Select State Id "));
+			} else if (StringUtils.isBlank(req.getCompanyId())) {
+				errorList.add(new Error("09", "CompanyId", "Please Enter Company Id in  Row No : "));
+			} else if (StringUtils.isBlank(req.getCompanyId())) {
+				errorList.add(new Error("03", "InsuranceId", "Please Select InsuranceId in  Row No : "));
+			} else if (StringUtils.isBlank(req.getCoreAppCode())) {
+				errorList.add(new Error("08", "CoreAppCode", "Please Enter CoreAppCode"));
+			} else if (req.getCoreAppCode().length() > 20) {
+				errorList.add(new Error("08", "CoreAppCode", "Please Enter CoreAppCode within 20 Characters"));
+			} else if (!req.getCoreAppCode().equalsIgnoreCase("99999")) {
+				List<CompanyCityMaster> coreAppCode = getCoreAppCodeExistDetails(req.getCoreAppCode(),
+						req.getEffectiveDateStart(), req.getEffectiveDateEnd(), req.getCompanyId());
+				if (coreAppCode.size() > 0
+						&& (!req.getCityId().equalsIgnoreCase(coreAppCode.get(0).getCityId().toString()))) {
+					errorList.add(new Error("08", "CoreAppCode", "This core App Code  Already Exist "));
+				}
 			}
 			// Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
@@ -142,31 +157,12 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 				errorList.add(new Error("05", "Status", "Enter Status Y or N Only"));
 			}
 
-			if (StringUtils.isBlank(req.getStateId()) || req.getStateId() == null) {
-				errorList.add(new Error("06", "StateId", "Please Select State Id "));
-			}
 			if (StringUtils.isBlank(req.getCreatedBy())) {
 				errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy"));
 			} else if (req.getCreatedBy().length() > 100) {
 				errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
 			}
 
-			if (StringUtils.isBlank(req.getCoreAppCode())) {
-				errorList.add(new Error("08", "CoreAppCode", "Please Enter CoreAppCode"));
-			} else if (req.getCoreAppCode().length() > 20) {
-				errorList.add(new Error("08", "CoreAppCode", "Please Enter CoreAppCode within 20 Characters"));
-			}
-			else if (StringUtils.isBlank(req.getCoreAppCode())) {
-				List<CompanyCityMaster> coreAppCode = getCoreAppCodeExistDetails(req.getCompanyId() , req.getCountryId() ,req.getRegionId(),req.getStateId(),null);
-				if (coreAppCode.size()>0 ) {
-					errorList.add(new Error("08", "CoreAppCode", "This core App Code  Already Exist "));
-				}
-			}else  {
-				List<CompanyCityMaster> coreAppCode =  getCoreAppCodeExistDetails(req.getCompanyId(),req.getCountryId() , req.getRegionId(),req.getStateId(),req.getCityId());
-				if (coreAppCode.size()>0 &&  (! req.getCityId().equalsIgnoreCase(coreAppCode.get(0).getCityId().toString())) ) {
-					errorList.add(new Error("08", "Core App Code", "This core App Code Already Exist "));
-				}
-			}
 			if (StringUtils.isBlank(req.getRegulatoryCode())) {
 				errorList.add(new Error("09", "RegulatoryCode", "Please Enter RegulatoryCode"));
 			} else if (req.getRegulatoryCode().length() > 20) {
@@ -185,57 +181,58 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 		return errorList;
 	}
 
-	public List<CompanyCityMaster> getCoreAppCodeExistDetails(String companyId , String countryId , String regionCode, String stateId, String cityId ) {
+	public List<CompanyCityMaster> getCoreAppCodeExistDetails(String coreAppCode, Date effStartDate, Date effEndDate,
+			String companyId) {
 		List<CompanyCityMaster> list = new ArrayList<CompanyCityMaster>();
 		try {
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<CompanyCityMaster> query = cb.createQuery(CompanyCityMaster.class);
-	
+
 			// Find All
 			Root<CompanyCityMaster> b = query.from(CompanyCityMaster.class);
-	
+
 			// Select
 			query.select(b);
-	
+
 			// Effective Date Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
 			Root<CompanyCityMaster> ocpm1 = effectiveDate.from(CompanyCityMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			Predicate a2 = cb.equal(ocpm1.get("countryId"),b.get("countryId"));
-			Predicate a3 = cb.equal(ocpm1.get("regionCode"), b.get("regionCode"));
-			Predicate a4 = cb.equal(ocpm1.get("stateId"), b.get("stateId"));
-			
-			effectiveDate.where(a1,a2,a3,a4);
-	
+			Predicate a2 = cb.equal(ocpm1.get("coreAppCode"), b.get("coreAppCode"));
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), effStartDate);
+
+			effectiveDate.where(a1, a2, a3);
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<CompanyCityMaster> ocpm2 = effectiveDate.from(CompanyCityMaster.class);
+			effectiveDate.select(cb.max(ocpm2.get("effectiveDateStart")));
+			Predicate a4 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
+			Predicate a5 = cb.equal(ocpm2.get("coreAppCode"), b.get("coreAppCode"));
+			Predicate a6 = cb.lessThanOrEqualTo(ocpm2.get("effectiveDateEnd"), effEndDate);
+
+			effectiveDate2.where(a4, a5, a6);
+
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			Predicate n2 = cb.equal(b.get("companyId"),companyId);	
-			Predicate n3 = cb.equal(b.get("countryId"), countryId );
-			Predicate n4 = cb.equal(b.get("regionCode"),regionCode);
-			Predicate n5 = cb.equal(b.get("stateId"),stateId);
-			
-			if( StringUtils.isBlank(cityId)) {
-				query.where(n1,n2,n3,n4,n5);	
-			} else {
-				Predicate n6 = cb.equal(b.get("cityId"),cityId);
-				query.where(n1,n2,n3,n4,n5,n6);
-			}
-			
+			Predicate n2 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n3 = cb.equal(b.get("coreAppCode"), coreAppCode);
+			Predicate n4 = cb.equal(b.get("companyId"), companyId);
+			query.where(n1, n2, n3, n4);
+
 			// Get Result
 			TypedQuery<CompanyCityMaster> result = em.createQuery(query);
-			list = result.getResultList();		
-		
+			list = result.getResultList();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info(e.getMessage());
-	
+
 		}
 		return list;
 	}
-	
-	
-	
+
 	@Override
 	public SuccessRes updateCity(CompanyCityMasterSaveReq req) {
 		SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/YYYY");
@@ -937,6 +934,8 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 		List<Error> errorList = new ArrayList<Error>();
 
 		try {
+			List<String> cityIds = new ArrayList<String>();
+
 			Long row = 0L;
 			for (CompanyCityMasterMultiInsertSaveReq req : reqList) {
 				row = row + 1;
@@ -967,12 +966,20 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 				if (StringUtils.isBlank(req.getStateId())) {
 					errorList.add(new Error("05", "StateId", "Please Select StateId in Row No :" + row));
 				} else if (req.getStateId().length() > 20) {
-					errorList.add(new Error("05", "StateId",
-							"Please Enter StateId within 20 Characters in Row No :" + row));
+					errorList.add(
+							new Error("05", "StateId", "Please Enter StateId within 20 Characters in Row No :" + row));
 				}
 				if (StringUtils.isBlank(req.getCityId())) {
 					errorList.add(new Error("06", "CityId", "Please Select CityId in Row No :" + row));
-				} 
+				} else {
+					List<String> filtercityIds = cityIds.stream().filter(o -> o.equalsIgnoreCase(req.getCityId()))
+							.collect(Collectors.toList());
+					if (filtercityIds.size() > 0) {
+						errorList.add(new Error("06", "City Id", "Duplicate City Id  Selected in Row No :" + row));
+					} else {
+						cityIds.add(req.getCityId());
+					}
+				}
 			}
 
 		} catch (Exception e) {
@@ -1042,8 +1049,8 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 				javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 				javax.persistence.criteria.Predicate a3 = cb.equal(c.get("regionId"), ocpm1.get("regionId"));
 				javax.persistence.criteria.Predicate a4 = cb.equal(c.get("stateId"), ocpm1.get("stateId"));
-				
-				effectiveDate.where(a1, a2,a3,a4);
+
+				effectiveDate.where(a1, a2, a3, a4);
 
 				// Effective Date Max Filter
 				Subquery<Long> effectiveDate2 = query.subquery(Long.class);
@@ -1054,8 +1061,8 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 						todayEnd);
 				javax.persistence.criteria.Predicate a7 = cb.equal(c.get("regionId"), ocpm2.get("regionId"));
 				javax.persistence.criteria.Predicate a8 = cb.equal(c.get("stateId"), ocpm2.get("stateId"));
-				
-				effectiveDate2.where(a7, a8,a5,a6);
+
+				effectiveDate2.where(a7, a8, a5, a6);
 
 				// Where
 				javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
@@ -1066,7 +1073,7 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 				javax.persistence.criteria.Predicate n6 = cb.equal(c.get("stateId"), req.getStateId());
 				javax.persistence.criteria.Predicate n7 = cb.equal(c.get("cityId"), req.getCityId());
 
-				query.where(n1, n2, n3, n4, n5,n6,n7).orderBy(orderList);
+				query.where(n1, n2, n3, n4, n5, n6, n7).orderBy(orderList);
 
 				// Get Result
 				TypedQuery<CityMaster> result = em.createQuery(query);
@@ -1079,7 +1086,7 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 				saveData.setCountryId(req.getCountryId());
 				saveData.setStateId(req.getStateId());
 				saveData.setRegionId(req.getRegionId());
-				saveData.setCityId(Integer.valueOf(cityId));				
+				saveData.setCityId(Integer.valueOf(cityId));
 				saveData.setCompanyId(req.getCompanyId());
 				saveData.setCreatedBy(req.getCreatedBy());
 				saveData.setEffectiveDateStart(effDate);
@@ -1099,6 +1106,5 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 		}
 		return res;
 	}
-
 
 }

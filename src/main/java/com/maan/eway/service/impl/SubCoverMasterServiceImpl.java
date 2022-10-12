@@ -358,7 +358,9 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 					saveData.setCoverName(list.get(0).getCoverName());
 					saveData.setCoverDesc(list.get(0).getCoverDesc());
 					saveData.setRatingId(list.get(0).getCoverId());	
-					
+					saveData.setToolTip(list.get(0).getToolTip());
+					saveData.setRemarks(list.get(0).getRemarks());
+					;
 					// Amend ID
 					if (list.get(0).getEffectiveDateStart().before(startDate)) {
 						String startDatewithoutTime = sdformat.format(startDate);
@@ -380,6 +382,7 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 				saveData.setEntryDate(new Date());
 				saveData.setAmendId(amendId);
 				saveData.setSubCoverYn("Y");
+				saveData.setRemarks(req.getRemarks());
 
 				// Amount Details
 				if(req.getCalcType().equalsIgnoreCase("F")  ) {

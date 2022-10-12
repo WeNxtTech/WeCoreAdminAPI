@@ -384,8 +384,16 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 				// Amount Details
 				if(req.getCalcType().equalsIgnoreCase("F")  ) {
 					
-					saveData.setFactorTypeId(req.getFactorTypeId()==null ?null : Integer.valueOf(req.getFactorTypeId()));
-				} else if (req.getCalcType().equalsIgnoreCase("G")  ) {
+					//saveData.setFactorTypeId(req.getFactorTypeId()==null ?null : Integer.valueOf(req.getFactorTypeId()));
+				}  else if(req.getCalcType().equalsIgnoreCase("P")  ) {
+					
+					// Amount 
+					saveData.setBaseRate(StringUtils.isBlank(req.getBaseRate())? 0D : Double.valueOf(req.getBaseRate()));
+					saveData.setMinPremium(StringUtils.isBlank(req.getMinimumPremium())? 0D : Double.valueOf(req.getMinimumPremium()));
+					saveData.setMaxSuminsured(StringUtils.isBlank(req.getSumInsuredEnd())? 0D : Double.valueOf(req.getSumInsuredEnd()));
+					saveData.setMinSuminsured(StringUtils.isBlank(req.getSumInsuredStart())? 0D : Double.valueOf(req.getSumInsuredStart()));
+					
+				}  else if (req.getCalcType().equalsIgnoreCase("G")  ) {
 			
 				// Delete Old Ofs Records
 				List<CoverOfsGridMaster> ofsGrids   = ofsRepo.findByCoverIdAndSubCoverIdOrderByCoveragesSubIdAsc(Integer.valueOf(coverId) ,Integer.valueOf(subcoverId) ); 
@@ -673,6 +681,9 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 		res.setSubCoverId(String.valueOf(list.get(0).getSubCoverId()));
 		res.setEntryDate(list.get(0).getEntryDate());
 		res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
+		res.setMinimumPremium(list.get(0).getMinPremium() == null ? "" : list.get(0).getMinPremium().toString());
+		res.setSumInsuredEnd(list.get(0).getMaxSuminsured() == null ? "" : list.get(0).getMaxSuminsured().toString());
+		res.setBaseRate(list.get(0).getBaseRate() == null ? "" : list.get(0).getBaseRate().toString());
 		
 		// Ofs Details
 			List<OfsGridGetRes> gridDetails =  new ArrayList<OfsGridGetRes>();

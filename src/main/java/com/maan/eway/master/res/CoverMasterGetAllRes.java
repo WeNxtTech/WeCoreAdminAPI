@@ -88,4 +88,6 @@ public class CoverMasterGetAllRes {
 	@JsonProperty("TaxExcemptionType")
 	private String taxExcemptionType;
 
+	@JsonProperty("DiscountCoverId")
+	private String discountCoverId;
 }

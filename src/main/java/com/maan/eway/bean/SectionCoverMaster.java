@@ -179,7 +179,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="TAX_EXCEMPTION_TYPE_DESC",length=20)
     private String taxExcemptionTypeDesc;
 
-    
+    @Column(name="DISCOUNT_COVER_ID")
+    private Integer discountCoverId;
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

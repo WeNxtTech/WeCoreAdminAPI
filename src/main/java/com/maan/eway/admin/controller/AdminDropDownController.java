@@ -273,4 +273,45 @@ public class AdminDropDownController {
 
 	}
 	
+	@GetMapping("/rangeparams")
+	@ApiOperation(value = "This method is to CoverageType  Drop Down")
+	public ResponseEntity<CommonRes> getRangeParams() {
+		CommonRes data = new CommonRes();
+
+		// Save
+		List<DropDownRes> res = dropDownService.getRangeParams();
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
+	
+	
+	@GetMapping("/discreteparams")
+	@ApiOperation(value = "This method is to CoverageType  Drop Down")
+	public ResponseEntity<CommonRes> getDiscreteParams() {
+		CommonRes data = new CommonRes();
+
+		// Save
+		List<DropDownRes> res = dropDownService.getDiscreteParams();
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
+	
 }

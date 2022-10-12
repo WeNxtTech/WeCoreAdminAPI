@@ -730,7 +730,7 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("ratingFieldId")));
+			orderList.add(cb.asc(b.get("columnsId")));
 			
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
@@ -924,7 +924,7 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("ratingFieldId")));
+			orderList.add(cb.asc(b.get("columnsId")));
 			
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
@@ -1013,20 +1013,21 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 		javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 		javax.persistence.criteria.Predicate n4 = cb.equal(c.get("productId"), req.getProductId());
 		javax.persistence.criteria.Predicate n5 = cb.equal(c.get("companyId"),req.getCompanyId());
-		javax.persistence.criteria.Predicate n6 = cb.equal(c.get("factorTypeId"),req.getFactorTypeId());
-
-		query.where(n1, n2, n3, n4,n5,n6).orderBy(orderList);
+		
+		query.where(n1, n2, n3, n4,n5).orderBy(orderList);
 
 		// Get Result
 		TypedQuery<FactorTypeDetails> result = em.createQuery(query);
 		list = result.getResultList();
-
-		// Map
-		for (FactorTypeDetails data : list) {
+		Map<Integer , List<FactorTypeDetails>> groupByFactorType = list.stream().collect(Collectors.groupingBy(FactorTypeDetails :: getFactorTypeId));	
+				
+	// Map
+		for (Integer data : groupByFactorType.keySet() ) {
 		// Response
+		FactorTypeDetails factor =  groupByFactorType.get(data).get(0);
 		DropDownRes res = new DropDownRes();
-		res.setCode(data.getRatingFieldId().toString());
-		res.setCodeDesc(data.getFactorTypeName());
+		res.setCode(factor.getFactorTypeId().toString());
+		res.setCodeDesc(factor.getFactorTypeName());
 		resList.add(res);
 		}
 		} catch (Exception e) {

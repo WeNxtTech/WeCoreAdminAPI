@@ -89,4 +89,22 @@ public class SectionCoverMasterGetAllRes {
 	
 	@JsonProperty("AmendId")
 	private String amendId;
+	
+	@JsonProperty("DiscountCoverId")
+	private String discountCoverId;
+	
+	@JsonProperty("IsTaxExcempted")
+	private String isTaxExcempted;
+	
+	@JsonProperty("TaxAmount")
+	private String taxAmount;
+	
+	@JsonProperty("TaxCode")
+	private String taxCode;
+	
+	@JsonProperty("TaxExcemptionReference")
+	private String taxExcemptionReference;
+	
+	@JsonProperty("TaxExcemptionType")
+	private String taxExcemptionType;
 }

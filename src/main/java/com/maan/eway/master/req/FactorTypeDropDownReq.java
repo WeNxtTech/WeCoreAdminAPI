@@ -13,6 +13,4 @@ public class FactorTypeDropDownReq {
 	@JsonProperty("ProductId")
 	private String productId;
 	
-	@JsonProperty("FactorTypeId")
-	private String factorTypeId;
 }

@@ -112,4 +112,7 @@ public class CoverMasterSaveReq implements Serializable {
 	@JsonProperty("TaxExcemptionType")
 	private String taxExcemptionType;
 	
+	@JsonProperty("DiscountCoverId")
+	private String discountCoverId;
+	
 }

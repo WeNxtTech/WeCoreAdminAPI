@@ -7,6 +7,7 @@ package com.maan.eway.master.service;
 import java.util.List;
 
 import com.maan.eway.error.Error;
+import com.maan.eway.master.controller.DiscountCoverReq;
 import com.maan.eway.master.req.CoverChangeStatusReq;
 import com.maan.eway.master.req.CoverMasterGetAllReq;
 import com.maan.eway.master.req.CoverMasterGetReq;
@@ -33,6 +34,8 @@ public interface CoverMasterService  {
 	SuccessRes changeStatusOfProduct(CoverChangeStatusReq req);
 
 	List<DropDownRes> getCoverMasterDropdown();
+
+	List<DropDownRes> getDiscountCoverMasterDropdown(DiscountCoverReq req);
 
 
 }

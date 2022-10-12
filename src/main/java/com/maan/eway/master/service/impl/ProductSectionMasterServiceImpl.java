@@ -597,9 +597,9 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			effectiveDate2.where(eff1,eff2,eff3,eff4);
 			// Effective Date End
 			Subquery<Long> effectiveDate5 = query.subquery(Long.class);
-			Root<ProductMaster> ocpm5 = effectiveDate5.from(ProductMaster.class);
+			Root<SectionMaster> ocpm5 = effectiveDate5.from(SectionMaster.class);
 			effectiveDate5.select(cb.max(ocpm5.get("effectiveDateEnd")));
-			Predicate a4 = cb.equal(b.get("productId"), ocpm5.get("productId"));
+			Predicate a4 = cb.equal(b.get("sectionId"), ocpm5.get("sectionId"));
 			Predicate a5 = cb.greaterThanOrEqualTo(ocpm5.get("effectiveDateEnd"), todayEnd);
 			effectiveDate5.where(a4, a5);
 			

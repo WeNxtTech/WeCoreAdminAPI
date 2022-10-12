@@ -12,6 +12,7 @@ import com.maan.eway.admin.service.impl.BasicLoginValidationService;
 import com.maan.eway.common.req.CoverNoteDetailsSaveReq;
 import com.maan.eway.common.req.CustomerCommonSaveReq;
 import com.maan.eway.common.req.EserviceCustomerSaveReq;
+import com.maan.eway.common.req.PersonalInfoSaveReq;
 import com.maan.eway.common.service.CustomerSaveValidationService;
 import com.maan.eway.error.Error;
 
@@ -204,5 +205,12 @@ public class CustomerSaveValidationServiceImpl implements CustomerSaveValidation
 			errors.add(new Error("01","Common Error",e.getMessage() ));
 		}
 		return errors;
+	}
+
+
+	@Override
+	public List<Error> validatePersonalInfo(PersonalInfoSaveReq req) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

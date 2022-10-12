@@ -122,4 +122,7 @@ public class CoverMasterRes implements Serializable {
 	
 	@JsonProperty("TaxExcemptionType")
 	private String taxExcemptionType;
+	
+	@JsonProperty("DiscountCoverId")
+	private String discountCoverId;
 }

@@ -49,5 +49,7 @@ public interface SectionCoverMasterService  {
 
 	SuccessRes updateectionCover(SectionCoverUpdateReq req);
 
+	List<DropDownRes> getsectionCoverDiscountDropdown(SectionCoverMasterGetReq req);
+
 
 }

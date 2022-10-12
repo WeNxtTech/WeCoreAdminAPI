@@ -90,7 +90,27 @@ public class SectionCoverMasterRes {
 	
 	@JsonProperty("AmendId")
 	private String amendId;
+	@JsonProperty("SumInsuredStart")
+	private String sumInsuredStart;
 	
 	@JsonProperty("GridDetails")
 	private List<OfsGridGetRes> gridDetails;
+	
+	@JsonProperty("DiscountCoverId")
+	private String discountCoverId;
+	
+	@JsonProperty("IsTaxExcempted")
+	private String isTaxExcempted;
+	
+	@JsonProperty("TaxAmount")
+	private String taxAmount;
+	
+	@JsonProperty("TaxCode")
+	private String taxCode;
+	
+	@JsonProperty("TaxExcemptionReference")
+	private String taxExcemptionReference;
+	
+	@JsonProperty("TaxExcemptionType")
+	private String taxExcemptionType;
 }

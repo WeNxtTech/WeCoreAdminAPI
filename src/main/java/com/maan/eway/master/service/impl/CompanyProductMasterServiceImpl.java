@@ -843,7 +843,12 @@ List<Error> errorList = new ArrayList<Error>();
 				errorList.add(new Error("06", "Payment", "Enter Payment Type 1 Character Only  "));
 			}else if(!("Y".equals(req.getPaymentYn())||"N".equals(req.getPaymentYn()))) {
 				errorList.add(new Error("06", "Payment", "Enter Payment Type Y or N Only  "));
+			} else if (StringUtils.isBlank(req.getPaymentRedirUrl())) {
+				errorList.add(new Error("08", "PaymentRedirUrl", "Please Select PaymentRedirUrl  Category  "));
+			}else if (req.getPaymentRedirUrl().length() > 500) {
+				errorList.add(new Error("10", "PaymentRedirUrl", "Please Enter PaymentRedirUrl within 500 Characters  "));
 			}
+			
 			
 			if (StringUtils.isBlank(req.getCommissionVatYn())) {
 				errorList.add(new Error("05", "CommissionVat", "Please Select CommissionVat Type  "));
@@ -898,17 +903,12 @@ List<Error> errorList = new ArrayList<Error>();
 				errorList.add(new Error("08", "ProductDesc", "Please Enter Product Desc within 500 Characters  "));
 			}
 			
-			if (StringUtils.isBlank(req.getPaymentRedirUrl())) {
-				errorList.add(new Error("08", "PaymentRedirUrl", "Please Select PaymentRedirUrl  Category  "));
-			}else if (req.getPaymentRedirUrl().length() > 500) {
-				errorList.add(new Error("10", "PaymentRedirUrl", "Please Enter PaymentRedirUrl within 500 Characters  "));
-			}
-			
-			if (StringUtils.isBlank(req.getAppLoginUrl())) {
+		
+	/*		if (StringUtils.isBlank(req.getAppLoginUrl())) {
 				errorList.add(new Error("08", "AppLoginUrl", "Please Select AppLoginUrl  "));
 			}else if (req.getAppLoginUrl().length() > 100) {
 				errorList.add(new Error("11", "AppLoginUrl", "Please Enter AppLoginUrl within 100 Characters  "));
-			}
+			} */
 			
 			if (StringUtils.isBlank(req.getCreatedBy())) {
 				errorList.add(new Error("08", "CreatedBy", "Please Enter CreatedBy  "));

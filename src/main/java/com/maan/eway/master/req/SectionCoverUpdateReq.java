@@ -104,4 +104,8 @@ public class SectionCoverUpdateReq {
 	
 	@JsonProperty("TaxExcemptionType")
 	private String taxExcemptionType;
+	
+
+	@JsonProperty("DiscountCoverId")
+	private String discountCoverId;
 }

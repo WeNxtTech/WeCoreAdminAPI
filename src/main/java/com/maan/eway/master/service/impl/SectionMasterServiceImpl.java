@@ -210,7 +210,7 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			String sectionId="";
 			Integer	amendId=0;
 			
-			if (StringUtils.isBlank(req.getSectionId().toString())) {
+			if (StringUtils.isBlank(req.getSectionId())) {
 					// Save
 				    //Long totalCount = repo.count();
 					Long totalCount = getMasterTableCount();

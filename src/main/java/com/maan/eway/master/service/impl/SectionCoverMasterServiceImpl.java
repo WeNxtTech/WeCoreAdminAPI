@@ -438,7 +438,11 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
 			res.setCreatedBy(list.get(0).getCreatedBy() == null ? "" : list.get(0).getCreatedBy());
 			res.setToolTip(list.get(0).getToolTip() == null ? "" : list.get(0).getToolTip());
-
+			res.setMinimumPremium(list.get(0).getMinPremium() == null ? "" : list.get(0).getMinPremium().toString());
+			res.setSumInsuredStart(list.get(0).getMinSuminsured() == null ? "" : list.get(0).getMinSuminsured().toString());
+			res.setSumInsuredEnd(list.get(0).getMaxSuminsured() == null ? "" : list.get(0).getMaxSuminsured().toString());
+			res.setBaseRate(list.get(0).getBaseRate() == null ? "" : list.get(0).getBaseRate().toString());;
+			
 			// Ofs Details
 			List<OfsGridGetRes> gridDetails =  new ArrayList<OfsGridGetRes>();
 			if( res.getCalcType().equalsIgnoreCase("G") ) {
@@ -1368,6 +1372,17 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				if(req.getCalcType().equalsIgnoreCase("F")  ) {
 					
 					saveData.setFactorTypeId( Integer.valueOf(req.getFactorTypeId()));
+				} else if(req.getCalcType().equalsIgnoreCase("D")  ) {
+					
+					saveData.setDiscountCoverId(req.getDiscountCoverId()==null ?null : Integer.valueOf(req.getDiscountCoverId()));
+				}  else if(req.getCalcType().equalsIgnoreCase("P")  ) {
+					
+					// Amount 
+					saveData.setBaseRate(StringUtils.isBlank(req.getBaseRate())? 0D : Double.valueOf(req.getBaseRate()));
+					saveData.setMinPremium(StringUtils.isBlank(req.getMinimumPremium())? 0D : Double.valueOf(req.getMinimumPremium()));
+					saveData.setMaxSuminsured(StringUtils.isBlank(req.getSumInsuredEnd())? 0D : Double.valueOf(req.getSumInsuredEnd()));
+					saveData.setMinSuminsured(StringUtils.isBlank(req.getSumInsuredStart())? 0D : Double.valueOf(req.getSumInsuredStart()));
+					
 				} else if (req.getCalcType().equalsIgnoreCase("G")  ) {
 				
 					// Delete Old Ofs Records
@@ -1457,6 +1472,92 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			return null;
 		}
 		return res;
+	}
+
+	@Override
+	public List<DropDownRes> getsectionCoverDiscountDropdown(SectionCoverMasterGetReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<SectionCoverMaster> query = cb.createQuery(SectionCoverMaster.class);
+			List<SectionCoverMaster> list = new ArrayList<SectionCoverMaster>();
+
+			// Find All
+			Root<SectionCoverMaster> c = query.from(SectionCoverMaster.class);
+
+			// Select
+			query.select(c);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("coverName")));
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<SectionCoverMaster> ocpm1 = effectiveDate.from(SectionCoverMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			javax.persistence.criteria.Predicate a2 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("sectionId"), ocpm1.get("sectionId"));
+			javax.persistence.criteria.Predicate a4 = cb.equal(c.get("coverId"), ocpm1.get("coverId"));
+			javax.persistence.criteria.Predicate a5 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1, a2, a3, a4, a5);
+			// Effective Date End
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<SectionCoverMaster> ocpm2 = effectiveDate2.from(SectionCoverMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a6 = cb.equal(c.get("sectionId"), ocpm2.get("sectionId"));
+			Predicate a7 = cb.equal(c.get("coverId"), ocpm2.get("coverId"));
+			Predicate a8 = cb.equal(c.get("companyId"), ocpm2.get("companyId") );
+			Predicate a9 = cb.equal(c.get("productId"), ocpm2.get("productId") );
+			Predicate a10 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a6,a7,a8,a9,a10);
+					
+			// Where
+			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
+			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"), req.getCompanyId());
+			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("productId"), req.getProductId());
+			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("sectionId"), req.getSectionId());
+			javax.persistence.criteria.Predicate n6 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			if(StringUtils.isNotBlank(req.getCoverId()) ) {
+				javax.persistence.criteria.Predicate n7 = cb.notEqual(c.get("coverId"), req.getCoverId());
+				query.where(n1, n2, n3, n4, n5,n6,n7).orderBy(orderList);
+			} else {
+				query.where(n1, n2, n3, n4, n5,n6).orderBy(orderList);
+			}
+			
+
+			// Get Result
+			TypedQuery<SectionCoverMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			Map<Integer, List<SectionCoverMaster>>  groupByCoverId = list.stream() .collect(Collectors.groupingBy(w ->   w.getCoverId())) ;
+			
+			// Map
+			for (Integer  data : groupByCoverId.keySet()) {
+				SectionCoverMaster  coverData = groupByCoverId.get(data).get(0);
+				// Response
+				DropDownRes res = new DropDownRes();
+				res.setCode(coverData.getCoverId().toString());
+				res.setCodeDesc(coverData.getCoverName());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
 	}
 
 }

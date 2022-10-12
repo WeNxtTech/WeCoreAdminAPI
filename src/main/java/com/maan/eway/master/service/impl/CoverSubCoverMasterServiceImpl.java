@@ -46,6 +46,7 @@ import com.maan.eway.master.req.CoverSubCoverChangeStatusReq;
 import com.maan.eway.master.req.CoverSubCoverMasterGetAllReq;
 import com.maan.eway.master.req.CoverSubCoverMasterGetReq;
 import com.maan.eway.master.req.CoverSubCoverMasterSaveReq;
+import com.maan.eway.master.req.OfsGridGetRes;
 import com.maan.eway.master.req.OfsGridSaveReq;
 import com.maan.eway.master.req.SubCoverDropDownReq;
 import com.maan.eway.master.req.SubCoverUpdatedReq;
@@ -420,6 +421,31 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			res = dozerMapper.map(list.get(0), CoverSubCoverGetRes.class);
 			res.setEntryDate(list.get(0).getEntryDate());
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
+			res.setMinimumPremium(list.get(0).getMinPremium() == null ? "" : list.get(0).getMinPremium().toString());
+			res.setSumInsuredStart(list.get(0).getMinSuminsured() == null ? "" : list.get(0).getMinSuminsured().toString());
+			res.setSumInsuredEnd(list.get(0).getMaxSuminsured() == null ? "" : list.get(0).getMaxSuminsured().toString());
+			res.setBaseRate(list.get(0).getBaseRate() == null ? "" : list.get(0).getBaseRate().toString());
+			
+			// Ofs Details
+			List<OfsGridGetRes> gridDetails =  new ArrayList<OfsGridGetRes>();
+			if( res.getCalcType().equalsIgnoreCase("G") ) {
+				List<SectionCoverOfsGridMaster> ofsGrids   = secOfsRepo.findByCompanyIdAndProductIdAndSectionIdAndCoverIdAndSubCoverIdOrderByCoveragesSubIdAsc(list.get(0).getCompanyId() ,list.get(0).getProductId() ,list.get(0).getSectionId(), list.get(0).getCoverId() , list.get(0).getSubCoverId() );
+				
+				for( SectionCoverOfsGridMaster data : ofsGrids ) {
+					OfsGridGetRes dataRes = new OfsGridGetRes();
+					dataRes.setBaseRate(data.getBaseRate() ==null ?"" : String.valueOf(data.getBaseRate()) );
+					dataRes.setCalcType(data.getCalcType() );
+					dataRes.setCalcTypeDesc(data.getCalcTypeDesc() );
+					dataRes.setMinimumPremium(data.getMinimumPremium() ==null ?"" : String.valueOf(data.getMinimumPremium()) );
+					dataRes.setSumInsuredStart(data.getStartSumInsured() ==null ?"" : String.valueOf(data.getStartSumInsured()) );
+					dataRes.setSumInsuredEnd(data.getEndSumInsured() ==null ?"" : String.valueOf(data.getEndSumInsured()) );
+					dataRes.setCoverageSubId(String.valueOf(data.getCoveragesSubId()));
+					
+					gridDetails.add(dataRes);
+				}
+			}
+			
+			res.setGridDetails(gridDetails);
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -1049,7 +1075,15 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			if (req.getCalcType().equalsIgnoreCase("F")) {
 
 				saveData.setFactorTypeId(Integer.valueOf(req.getFactorTypeId()));
-			} else if (req.getCalcType().equalsIgnoreCase("G")) {
+			}  else if(req.getCalcType().equalsIgnoreCase("P")  ) {
+				
+				// Amount 
+				saveData.setBaseRate(StringUtils.isBlank(req.getBaseRate())? 0D : Double.valueOf(req.getBaseRate()));
+				saveData.setMinPremium(StringUtils.isBlank(req.getMinimumPremium())? 0D : Double.valueOf(req.getMinimumPremium()));
+				saveData.setMaxSuminsured(StringUtils.isBlank(req.getSumInsuredEnd())? 0D : Double.valueOf(req.getSumInsuredEnd()));
+				saveData.setMinSuminsured(StringUtils.isBlank(req.getSumInsuredStart())? 0D : Double.valueOf(req.getSumInsuredStart()));
+				
+			}  else if (req.getCalcType().equalsIgnoreCase("G")) {
 
 				// Delete Old Ofs Records
 				List<SectionCoverOfsGridMaster> ofsGrids = secOfsRepo

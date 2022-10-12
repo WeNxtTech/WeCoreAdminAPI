@@ -32,5 +32,9 @@ public interface AdminDropDownService {
 
 	List<DropDownRes> getCoverageTypes();
 
+	List<DropDownRes> getRangeParams();
+
+	List<DropDownRes> getDiscreteParams();
+
 
 }

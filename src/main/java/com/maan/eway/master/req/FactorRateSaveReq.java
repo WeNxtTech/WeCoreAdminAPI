@@ -50,6 +50,9 @@ public class FactorRateSaveReq {
     
     @JsonProperty("Status")
     private String     status ;
+    
+    @JsonProperty("SubCoverYn")
+    private String     subCoverYn;
 
     @JsonProperty("CreatedBy")
     private String     createdBy ;

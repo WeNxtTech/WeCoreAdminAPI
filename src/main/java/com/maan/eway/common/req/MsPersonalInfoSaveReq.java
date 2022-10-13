@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class PersonalInfoSaveReq implements Serializable {
+public class MsPersonalInfoSaveReq implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 

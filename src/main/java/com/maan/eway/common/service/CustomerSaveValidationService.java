@@ -10,6 +10,5 @@ public interface CustomerSaveValidationService {
 
 	List<Error> validateCustomerDetails(EserviceCustomerSaveReq req);
 
-	List<Error> validatePersonalInfo(PersonalInfoSaveReq req);
 
 }

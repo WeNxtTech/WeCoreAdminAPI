@@ -43,11 +43,11 @@ import javax.persistence.*;
 @DynamicInsert
 @DynamicUpdate
 @Builder
-@IdClass(PersonalInfoId.class)
-@Table(name="personal_info")
+@IdClass(MsCustomerDetailsId.class)
+@Table(name="ms_customer_details")
 
 
-public class PersonalInfo implements Serializable {
+public class MsCustomerDetails implements Serializable {
  
 private static final long serialVersionUID = 1L;
  

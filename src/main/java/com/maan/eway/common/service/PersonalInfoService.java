@@ -5,7 +5,11 @@
 */
 package com.maan.eway.common.service;
 import com.maan.eway.bean.PersonalInfo;
+import com.maan.eway.common.req.PersonalInfoGetReq;
+import com.maan.eway.common.req.PersonalInfoGetallReq;
 import com.maan.eway.common.req.PersonalInfoSaveReq;
+import com.maan.eway.common.res.PersonalInfoGetRes;
+import com.maan.eway.error.Error;
 import com.maan.eway.res.SuccessRes;
 
 import java.util.List;
@@ -16,5 +20,13 @@ public interface PersonalInfoService  {
 
 
 SuccessRes saveCustomerDetails(PersonalInfoSaveReq req);
+
+PersonalInfoGetRes getPersonalInfo(PersonalInfoGetReq req);
+
+List<PersonalInfoGetRes> getallPersonalInfo(PersonalInfoGetallReq req);
+
+List<PersonalInfoGetRes> getActiveExchange(PersonalInfoGetallReq req);
+
+List<Error> validatePersonalInfo(PersonalInfoSaveReq req);
 
 }

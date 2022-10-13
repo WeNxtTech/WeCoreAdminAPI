@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.maan.eway.common.req.PersonalInfoGetReq;
-import com.maan.eway.common.req.PersonalInfoGetallReq;
-import com.maan.eway.common.req.PersonalInfoSaveReq;
-import com.maan.eway.common.res.PersonalInfoGetRes;
+import com.maan.eway.common.req.MsPersonalInfoGetReq;
+import com.maan.eway.common.req.MsPersonalInfoGetallReq;
+import com.maan.eway.common.req.MsPersonalInfoSaveReq;
+import com.maan.eway.common.res.MsPersonalInfoGetRes;
 import com.maan.eway.common.service.CustomerSaveValidationService;
-import com.maan.eway.common.service.PersonalInfoService;
+import com.maan.eway.common.service.MsCustomerDetailsService;
 import com.maan.eway.error.Error;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.SuccessRes;
@@ -35,11 +35,11 @@ import io.swagger.annotations.Api;
 */
 @RestController
 @RequestMapping("/api")
-@Api(tags = "3. COMMON : Pesonal Info ", description = "API's")
-public class PersonalInfoController {
+@Api(tags = "3. COMMON :Ms Pesonal Info ", description = "API's")
+public class MsCustomerDetailsController {
 
 	@Autowired
-	private  PersonalInfoService entityService;
+	private  MsCustomerDetailsService entityService;
 	
 	@Autowired
 	private  CustomerSaveValidationService validationService;
@@ -55,12 +55,12 @@ public class PersonalInfoController {
 	}
 */
 
-	@PostMapping(value = "/savepersonalinfo")
-	public ResponseEntity<CommonRes> savePersonalInfo(@RequestBody  PersonalInfoSaveReq req) {
+	@PostMapping(value = "/savemscustomerdetails")
+	public ResponseEntity<CommonRes> saveMsPersonalInfo(@RequestBody  MsPersonalInfoSaveReq req) {
 
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		List<Error> validation = entityService.validatePersonalInfo(req);
+		List<Error> validation = entityService.validateMsPersonalInfo(req);
 		//// validation
 		if (validation != null && validation.size() != 0) {
 			data.setCommonResponse(null);
@@ -71,7 +71,7 @@ public class PersonalInfoController {
 
 		} else {
 			/////// save
-			SuccessRes res = entityService.saveCustomerDetails(req);
+			SuccessRes res = entityService.saveMsCustomerDetails(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());
@@ -84,11 +84,11 @@ public class PersonalInfoController {
 		}
     }
 	// Get
-		@PostMapping("/getpersonalinfo")
-		public ResponseEntity<CommonRes> getPersonalInfo(@RequestBody PersonalInfoGetReq req){
+		@PostMapping("/getmsmscustomerdetails")
+		public ResponseEntity<CommonRes> getMsPersonalInfo(@RequestBody MsPersonalInfoGetReq req){
 		CommonRes data = new CommonRes();
 		reqPrinter.reqPrint(req);
-		PersonalInfoGetRes res = entityService.getPersonalInfo(req);
+		MsPersonalInfoGetRes res = entityService.getMsPersonalInfo(req);
 		data.setCommonResponse(res);
 		data.setErrorMessage(Collections.emptyList());
 		data.setIsError(false);
@@ -102,11 +102,11 @@ public class PersonalInfoController {
 		}
 		
 		//Getall
-		@PostMapping("/getallpersonalinfo")
-		public ResponseEntity<CommonRes> getallPersonalInfo(@RequestBody PersonalInfoGetallReq req){
+		@PostMapping("/getallmscustomerdetails")
+		public ResponseEntity<CommonRes> getallMsPersonalInfo(@RequestBody MsPersonalInfoGetallReq req){
 		CommonRes data = new CommonRes();
 		reqPrinter.reqPrint(req);
-		List<PersonalInfoGetRes> res = entityService.getallPersonalInfo(req);
+		List<MsPersonalInfoGetRes> res = entityService.getallMsPersonalInfo(req);
 		data.setCommonResponse(res);
 		data.setErrorMessage(Collections.emptyList());
 		data.setIsError(false);
@@ -121,11 +121,11 @@ public class PersonalInfoController {
 
 		// Active
 		
-		@PostMapping("/getactivepersonalinfo")
-		public ResponseEntity<CommonRes> getActiveExchange(@RequestBody PersonalInfoGetallReq req){
+		@PostMapping("/getactivemscustomerdetails")
+		public ResponseEntity<CommonRes> getActiveMsPersonalInfo(@RequestBody MsPersonalInfoGetallReq req){
 			CommonRes data = new CommonRes();
 			reqPrinter.reqPrint(req);
-			List<PersonalInfoGetRes> res = entityService.getActiveExchange(req);
+			List<MsPersonalInfoGetRes> res = entityService.getActiveMsPersonalInfo(req);
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);

@@ -6,17 +6,13 @@
 package com.maan.eway.common.service.impl;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.Period;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -25,7 +21,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
-import org.dozer.inject.DozerBeanContainer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,16 +31,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.bean.LoginBranchMaster;
-import com.maan.eway.bean.PersonalInfo;
-import com.maan.eway.common.req.PersonalInfoGetReq;
-import com.maan.eway.common.req.PersonalInfoGetallReq;
-import com.maan.eway.common.req.PersonalInfoSaveReq;
-import com.maan.eway.common.res.PersonalInfoGetRes;
-import com.maan.eway.common.service.PersonalInfoService;
+import com.maan.eway.bean.MsCustomerDetails;
+import com.maan.eway.common.req.MsPersonalInfoGetReq;
+import com.maan.eway.common.req.MsPersonalInfoGetallReq;
+import com.maan.eway.common.req.MsPersonalInfoSaveReq;
+import com.maan.eway.common.res.MsPersonalInfoGetRes;
+import com.maan.eway.common.service.MsCustomerDetailsService;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.ListItemValueRepository;
-import com.maan.eway.repository.PersonalInfoRepository;
+import com.maan.eway.repository.MsCustomerDetailsRepository;
 import com.maan.eway.res.SuccessRes;
 
 /**
@@ -53,20 +47,21 @@ import com.maan.eway.res.SuccessRes;
  */
 @Service
 @Transactional
-public class PersonalInfoServiceImpl implements PersonalInfoService {
+public class MsCustomerDetailsServiceImpl implements MsCustomerDetailsService {
 
 	@Autowired
-	private PersonalInfoRepository repository;
-
+	private MsCustomerDetailsRepository repository;
+	
 	@Autowired
 	private ListItemValueRepository listRepo;
-
+	
+	
 	@PersistenceContext
 	private EntityManager em;
 
 	Gson json = new Gson();
 
-	private Logger log = LogManager.getLogger(PersonalInfoServiceImpl.class);
+	private Logger log = LogManager.getLogger(MsCustomerDetailsServiceImpl.class);
 	/*
 	 * public PersonalInfoServiceImpl(PersonalInfoRepository repo) { this.repository
 	 * = repo; }
@@ -74,127 +69,7 @@ public class PersonalInfoServiceImpl implements PersonalInfoService {
 	 */
 
 	@Override
-	public SuccessRes saveCustomerDetails(PersonalInfoSaveReq req) {
-		SuccessRes res = new SuccessRes();
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-		DozerBeanMapper dozerMapper = new DozerBeanMapper();
-		PersonalInfo save = new PersonalInfo();
-		try {
-			PersonalInfo findData = repository.findByPolicyHolderTypeidAndPolicyHolderTypeAndIdNumber(
-					req.getPolicyHolderTypeid(), req.getPolicyHolderType(), req.getIdNumber());
-			Date entryDate = null;
-			if (findData == null) {
-				// Save
-				entryDate = new Date();
-				res.setResponse("Saved Succesfully");
-			} else {
-				// Update
-				entryDate = findData.getEntryDate();
-				res.setResponse("Updated Succesfully");
-			}
-			save = dozerMapper.map(req, PersonalInfo.class);
-			save.setStatus("Y");
-			res.setSuccessId(req.getPolicyHolderTypeid());
-			save.setEntryDate(entryDate);
-
-			// Age Calculation
-			Date dob = req.getDobOrRegDate();
-			Calendar cal = Calendar.getInstance();
-			Date today = new Date();
-			int age = today.getYear() - dob.getYear();
-
-			// From List Item Value
-			ListItemValue gender = listRepo.findByItemTypeAndItemCode("GENDER", req.getGender());
-			ListItemValue title = listRepo.findByItemTypeAndItemCode("NAME_TITLE", req.getTitle());
-			ListItemValue language = listRepo.findByItemTypeAndItemCode("LANGUAGE", req.getLanguage());
-
-			save.setGenderDesc(gender.getItemValue());
-			save.setTitleDesc(title.getItemValue());
-			save.setLanguageDesc(language.getItemValue());
-			save.setAge(age);
-			repository.save(save);
-			log.info("Saved Details is ---> " + json.toJson(save));
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			log.info("Exception is ---> " + e.getMessage());
-			return null;
-		}
-		return res;
-	}
-
-	@Override
-	public PersonalInfoGetRes getPersonalInfo(PersonalInfoGetReq req) {
-		PersonalInfoGetRes res = new PersonalInfoGetRes();
-		DozerBeanMapper dozerMapper = new DozerBeanMapper();
-
-		try {
-			PersonalInfo data = repository.findByPolicyHolderTypeidAndPolicyHolderTypeAndIdNumber(
-					req.getPolicyHolderTypeid(), req.getPolicyHolderType(), req.getIdNumber());
-			res = dozerMapper.map(data, PersonalInfoGetRes.class);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			log.info("Exception is ---> " + e.getMessage());
-			return null;
-		}
-		return res;
-	}
-
-	@Override
-	public List<PersonalInfoGetRes> getallPersonalInfo(PersonalInfoGetallReq req) {
-		List<PersonalInfoGetRes> resList = new ArrayList<PersonalInfoGetRes>();
-		DozerBeanMapper dozerMapper = new DozerBeanMapper();
-
-		try {
-			// Limit , Offset
-			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 10 : Integer.valueOf(req.getOffset());
-			Pageable paging = PageRequest.of(limit, offset, Sort.by("entryDate").descending());
-
-			Page<PersonalInfo> datas = repository.findAll(paging);
-			for (PersonalInfo data : datas) {
-				PersonalInfoGetRes res = new PersonalInfoGetRes();
-				res = dozerMapper.map(data, PersonalInfoGetRes.class);
-				resList.add(res);
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			log.info("Exception is ---> " + e.getMessage());
-			return null;
-		}
-		return resList;
-	}
-
-	@Override
-	public List<PersonalInfoGetRes> getActiveExchange(PersonalInfoGetallReq req) {
-		List<PersonalInfoGetRes> resList = new ArrayList<PersonalInfoGetRes>();
-		DozerBeanMapper dozerMapper = new DozerBeanMapper();
-
-		try {
-			// Limit , Offset
-			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 10 : Integer.valueOf(req.getOffset());
-			Pageable paging = PageRequest.of(limit, offset, Sort.by("entryDate").descending());
-
-			Page<PersonalInfo> datas = repository.findByStatus(paging, "Y");
-			for (PersonalInfo data : datas) {
-				PersonalInfoGetRes res = new PersonalInfoGetRes();
-				res = dozerMapper.map(data, PersonalInfoGetRes.class);
-				resList.add(res);
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			log.info("Exception is ---> " + e.getMessage());
-			return null;
-		}
-		return resList;
-	}
-
-	@Override
-	public List<Error> validatePersonalInfo(PersonalInfoSaveReq req) {
+	public List<Error> validateMsPersonalInfo(MsPersonalInfoSaveReq req) {
 		List<Error> errorList = new ArrayList<Error>();
 
 		try {
@@ -425,5 +300,130 @@ public class PersonalInfoServiceImpl implements PersonalInfoService {
 
 	}
 
+
+	@Override
+	public SuccessRes saveMsCustomerDetails(MsPersonalInfoSaveReq req) {
+		SuccessRes res = new SuccessRes();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		MsCustomerDetails save = new MsCustomerDetails();
+		try {
+			MsCustomerDetails findData = repository.findByPolicyHolderTypeidAndPolicyHolderTypeAndIdNumber(
+					req.getPolicyHolderTypeid(), req.getPolicyHolderType(), req.getIdNumber());
+			Date entryDate = null;
+			if (findData == null) {
+				// Save
+				entryDate = new Date();
+				res.setResponse("Saved Succesfully");
+			} else {
+				// Update
+				entryDate = findData.getEntryDate();
+				res.setResponse("Updated Succesfully");
+			}
+			save = dozerMapper.map(req, MsCustomerDetails.class);
+			save.setStatus("Y");
+			res.setSuccessId(req.getPolicyHolderTypeid());
+			save.setEntryDate(entryDate);
+			
+			// Age Calculation
+			Date dob= req.getDobOrRegDate();
+			Calendar cal = Calendar.getInstance();
+			Date today = new Date();
+			int age = today.getYear()-dob.getYear();
+
+			//From List Item Value
+			ListItemValue gender = listRepo.findByItemTypeAndItemCode("GENDER",req.getGender());
+			ListItemValue title = listRepo.findByItemTypeAndItemCode("NAME_TITLE",req.getTitle());
+			ListItemValue language = listRepo.findByItemTypeAndItemCode("LANGUAGE",req.getLanguage());
+			
+			save.setGenderDesc(gender.getItemValue());
+			save.setTitleDesc(title.getItemValue());
+			save.setLanguageDesc(language.getItemValue());
+			save.setAge(age);
+			repository.save(save);
+			log.info("Saved Details is ---> " + json.toJson(save));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+
+
+
+	@Override
+	public MsPersonalInfoGetRes getMsPersonalInfo(MsPersonalInfoGetReq req) {
+		MsPersonalInfoGetRes res = new MsPersonalInfoGetRes();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+
+		try {
+			MsCustomerDetails data = repository.findByPolicyHolderTypeidAndPolicyHolderTypeAndIdNumber(
+					req.getPolicyHolderTypeid(), req.getPolicyHolderType(), req.getIdNumber());
+			res = dozerMapper.map(data, MsPersonalInfoGetRes.class);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+
+
+	@Override
+	public List<MsPersonalInfoGetRes> getallMsPersonalInfo(MsPersonalInfoGetallReq req) {
+		List<MsPersonalInfoGetRes> resList = new ArrayList<MsPersonalInfoGetRes>();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+
+		try {
+			// Limit , Offset
+			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 10 : Integer.valueOf(req.getOffset());
+			Pageable paging = PageRequest.of(limit, offset, Sort.by("entryDate").descending());
+
+			Page<MsCustomerDetails> datas = repository.findAll(paging);
+			for (MsCustomerDetails data : datas) {
+				MsPersonalInfoGetRes res = new MsPersonalInfoGetRes();
+				res=dozerMapper.map(data, MsPersonalInfoGetRes.class);
+				resList.add(res);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+
+	@Override
+	public List<MsPersonalInfoGetRes> getActiveMsPersonalInfo(MsPersonalInfoGetallReq req) {
+		List<MsPersonalInfoGetRes> resList = new ArrayList<MsPersonalInfoGetRes>();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+
+		try {			
+			// Limit , Offset
+			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 10 : Integer.valueOf(req.getOffset());
+			Pageable paging = PageRequest.of(limit, offset, Sort.by("entryDate").descending());
+
+			Page<MsCustomerDetails> datas = repository.findByStatus(paging,"Y");
+			for (MsCustomerDetails data : datas) {
+				MsPersonalInfoGetRes res = new MsPersonalInfoGetRes();
+				res=dozerMapper.map(data, MsPersonalInfoGetRes.class);
+				resList.add(res);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
 
 }

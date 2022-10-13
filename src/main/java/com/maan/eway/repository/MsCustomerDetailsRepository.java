@@ -12,16 +12,13 @@
 
 package com.maan.eway.repository;
 
-import java.math.BigDecimal;
-import java.util.List;
-
-import com.maan.eway.bean.PersonalInfo;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import com.maan.eway.bean.PersonalInfoId;
+
+import com.maan.eway.bean.MsCustomerDetails;
+import com.maan.eway.bean.MsCustomerDetailsId;
 /**
  * <h2>PersonalInfoRepository</h2>
  *
@@ -32,14 +29,12 @@ import com.maan.eway.bean.PersonalInfoId;
  
  
  
-public interface PersonalInfoRepository  extends JpaRepository<PersonalInfo,PersonalInfoId > , JpaSpecificationExecutor<PersonalInfo> {
+public interface MsCustomerDetailsRepository  extends JpaRepository<MsCustomerDetails,MsCustomerDetailsId > , JpaSpecificationExecutor<MsCustomerDetailsId> {
 
-
-	Page<PersonalInfo> findByStatus(Pageable paging, String string);
-
-	PersonalInfo findByPolicyHolderTypeidAndPolicyHolderTypeAndIdNumber(String policyHolderTypeid,
+	MsCustomerDetails findByPolicyHolderTypeidAndPolicyHolderTypeAndIdNumber(String policyHolderTypeid,
 			String policyHolderType, String idNumber);
 
+	Page<MsCustomerDetails> findByStatus(Pageable paging, String string);
 
 
 }

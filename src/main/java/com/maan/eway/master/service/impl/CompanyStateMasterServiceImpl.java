@@ -7,12 +7,12 @@ package com.maan.eway.master.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -30,45 +30,35 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
-import org.modelmapper.ModelMapper;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.maan.eway.master.req.CompanyRegionSaveReq;
+
 import com.maan.eway.master.req.CompanyStateMasterChangeStatusReq;
 import com.maan.eway.master.req.CompanyStateMasterDropDownReq;
 import com.maan.eway.master.req.CompanyStateMasterGetAllReq;
 import com.maan.eway.master.req.CompanyStateMasterGetReq;
 import com.maan.eway.master.req.CompanyStateMasterSaveReq;
+import com.maan.eway.master.req.CompanyStateMultiInsertReq;
 import com.maan.eway.master.req.CompanyStateNonSelectedReq;
-import com.maan.eway.master.req.StateMasterChangeStatusReq;
-import com.maan.eway.master.req.StateMasterDropDownReq;
-import com.maan.eway.master.req.StateMasterGetAllReq;
-import com.maan.eway.master.req.StateMasterGetReq;
-import com.maan.eway.master.req.StateMasterSaveReq;
 import com.maan.eway.master.res.CompanyStateMasterRes;
-import com.maan.eway.master.res.RegionMasterRes;
-import com.maan.eway.master.res.StateMasterRes;
 import com.maan.eway.master.service.CompanyStateMasterService;
-import com.maan.eway.master.service.StateMasterService;
-import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.CompanyRegionMaster;
 import com.maan.eway.bean.CompanyStateMaster;
-import com.maan.eway.bean.InsuranceCompanyMaster;
-import com.maan.eway.bean.RegionMaster;
-import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.bean.StateMaster;
+
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.CompanyStateMasterRepository;
-import com.maan.eway.repository.StateMasterRepository;
+
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
-import com.maan.eway.service.impl.BasicValidationService;
+
 
 /**
- * <h2>StateMasterServiceimpl</h2>
+ * <h2>CompanyStateMasterServiceImpl</h2>
  */
 @Service
 @Transactional
@@ -84,10 +74,10 @@ public class CompanyStateMasterServiceImpl implements CompanyStateMasterService 
 
 	private Logger log = LogManager.getLogger(CompanyStateMasterServiceImpl.class);
 
-//************************************************INSERT/UPDATE STATE DETAILS******************************************************\\
+//***********************************************UPDATE STATE DETAILS******************************************************\\
 	@Transactional
 	@Override
-	public SuccessRes insertCompanyState(List<CompanyStateMasterSaveReq> reqList) {
+	public SuccessRes updateCompanyState(CompanyStateMasterSaveReq req) {
 		SuccessRes res = new SuccessRes();
 		CompanyStateMaster saveData = new CompanyStateMaster();
 		List<CompanyStateMaster> list = new ArrayList<CompanyStateMaster>();
@@ -95,7 +85,7 @@ public class CompanyStateMasterServiceImpl implements CompanyStateMasterService 
 		SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/YYYY");
 
 		try {
-			for (CompanyStateMasterSaveReq req : reqList ) {
+			
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
 			Date startDate = cal.getTime() ;
@@ -189,7 +179,7 @@ public class CompanyStateMasterServiceImpl implements CompanyStateMasterService 
 			}
 
 			log.info("Saved Details is ---> " + json.toJson(saveData));
-			}
+		
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
@@ -199,103 +189,87 @@ public class CompanyStateMasterServiceImpl implements CompanyStateMasterService 
 	}
 
 	@Override
-	public 	List<Error> validateCompanyStateDetails(List<CompanyStateMasterSaveReq> reqList) {
+	public 	List<Error> validateUpdateCompanyStateDetails(CompanyStateMasterSaveReq req) {
 
 		List<Error> errorList = new ArrayList<Error>();
 
 		try {
-
-
-			Long row = 0L;
-			for (CompanyStateMasterSaveReq req : reqList) {
-				row = row + 1;
 				if (StringUtils.isBlank(req.getStateName())) {
-					errorList.add(new Error("01", "StateName", "Please Select State  Name "+row));
+					errorList.add(new Error("01", "StateName", "Please Select State  Name " ));
 				} else if (req.getStateName().length() > 100) {
-					errorList.add(new Error("01", "StateName", "Please Enter State Name within 100 Characters"+row));
+					errorList.add(new Error("01", "StateName", "Please Enter State Name within 100 Characters" ));
 				}
-				if (StringUtils.isBlank(req.getRegionCode())) {
-					errorList.add(new Error("02", "RegionCode", "Please Select Region Code in  Row No : " + row));
-				}else if (req.getRegionCode().length() > 20){
-					errorList.add(new Error("02","RegionCode", "Please Enter Region Code within 100 Characters in  Row No : " + row)); 
-				}
-
-				if (StringUtils.isBlank(req.getCountryId().toString())) {
-					errorList.add(new Error("03", "CountryId", "Please Select Country Id "+row));
-				}
-
-				// Date Validation
+								// Date Validation
 				Calendar cal = new GregorianCalendar();
 				Date today = new Date();
 				cal.setTime(today);
-				cal.add(Calendar.DAY_OF_MONTH, -1);
-				cal.set(Calendar.HOUR_OF_DAY, 23);
-				cal.set(Calendar.MINUTE, 50);
+				cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
 				today = cal.getTime();
 				if (req.getEffectiveDateStart() == null) {
-					errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "+row));
+					errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start " ));
 
 				} else if (req.getEffectiveDateStart().before(today)) {
 					errorList.add(
-							new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"+row));
+							new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date" ));
 				} else if (req.getEffectiveDateEnd() == null) {
-					errorList.add(new Error("04", "EffectiveDateEnd", "Please Enter Effective Date End "+row));
+					errorList.add(new Error("04", "EffectiveDateEnd", "Please Enter Effective Date End " ));
 
 				} else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart())|| req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
-					errorList.add(new Error("04", "EffectiveDateEnd","Please Enter Effective Date End  is After Effective Date End"+row));
+					errorList.add(new Error("04", "EffectiveDateEnd","Please Enter Effective Date End  is After Effective Date End" ));
+				} else if (StringUtils.isBlank(req.getRegionCode())) {
+					errorList.add(new Error("02", "RegionCode", "Please Select Region Code  "));
+				} else if (req.getRegionCode().length() > 20) {
+					errorList.add(new Error("02", "RegionCode","Please Enter Region Code within 100 Characters in  "));
+				} else if (StringUtils.isBlank(req.getCompanyId())) {
+					errorList.add(new Error("03", "InsuranceId", "Please Select InsuranceId"));
+				} else if (StringUtils.isBlank(req.getCoreAppCode())) {
+					errorList.add(new Error("05", "CoreAppCode", "Please Enter CoreAppCode"));
+				} else if (req.getCoreAppCode().length() > 20) {
+					errorList.add(new Error("05", "CoreAppCode", "Please Enter CoreAppCode within 20 Characters"));
+				} else if (!req.getCoreAppCode().equalsIgnoreCase("99999")) {
+					List<CompanyStateMaster> coreAppCode = getCoreAppCodeExistDetails(req.getCoreAppCode(),req.getEffectiveDateStart(), req.getEffectiveDateEnd(), req.getCompanyId());
+					if (coreAppCode.size() > 0
+							&& (!req.getRegionCode().equalsIgnoreCase(coreAppCode.get(0).getRegionCode()))) {
+						errorList.add(new Error("05", "CoreAppCode", "This core App Code  Already Exist "));
+					}
 				}
 				// Status Validation
 				if (StringUtils.isBlank(req.getStatus())) {
-					errorList.add(new Error("05", "Status", "Please Enter Status"+row));
+					errorList.add(new Error("05", "Status", "Please Enter Status" ));
 				} else if (req.getStatus().length() > 1) {
-					errorList.add(new Error("05", "Status", "Enter Status 1 Character Only"+row));
+					errorList.add(new Error("06", "Status", "Enter Status 1 Character Only" ));
 				} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()))) {
-					errorList.add(new Error("05", "Status", "Enter Status Y or N Only"+row));
+					errorList.add(new Error("06", "Status", "Enter Status Y or N Only" ));
 				}
 
 				if (StringUtils.isBlank(req.getCreatedBy())) {
-					errorList.add(new Error("06", "CreatedBy", "Please Enter CreatedBy"+row));
+					errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy" ));
 				} else if (req.getCreatedBy().length() > 50) {
-					errorList.add(new Error("06", "CreatedBy", "Please Enter CreatedBy within 100 Characters"+row));
+					errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy within 100 Characters" ));
 				}
 
-				if (StringUtils.isBlank(req.getCoreAppCode())) {
-					errorList.add(new Error("07", "CoreAppCode", "Please Enter CoreAppCode"+row));
-				} else if (req.getCoreAppCode().length() > 20) {
-					errorList.add(new Error("07", "CoreAppCode", "Please Enter CoreAppCode within 20 Characters"+row));
-				}
-				else if (StringUtils.isBlank(req.getCoreAppCode())) {
-					List<CompanyStateMaster> coreAppCode = getCoreAppCodeExistDetails(req.getCompanyId() , req.getCountryId() ,req.getRegionCode(),null);
-					if (coreAppCode.size()>0 ) {
-						errorList.add(new Error("08", "CoreAppCode", "This core App Code  Already Exist "));
-					}
-				}else  {
-					List<CompanyStateMaster> coreAppCode =  getCoreAppCodeExistDetails(req.getCompanyId(),req.getCountryId() , req.getRegionCode(),req.getStateId());
-					if (coreAppCode.size()>0 &&  (! req.getStateId().equalsIgnoreCase(coreAppCode.get(0).getStateId().toString())) ) {
-						errorList.add(new Error("08", "Core App Code", "This core App Code Already Exist "));
-					}
-				}
+				
 				if (StringUtils.isBlank(req.getRegulatoryCode())) {
-					errorList.add(new Error("08", "RegulatoryCode", "Please Enter RegulatoryCode"+row));
+					errorList.add(new Error("08", "RegulatoryCode", "Please Enter RegulatoryCode" ));
 				} else if (req.getRegulatoryCode().length() > 20) {
-					errorList.add(new Error("08", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters"+row));
+					errorList.add(new Error("08", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters" ));
 				}
 				if (StringUtils.isBlank(req.getRemarks())) {
-					errorList.add(new Error("09", "Remarks", "Please Enter Remarks"+row));
+					errorList.add(new Error("09", "Remarks", "Please Enter Remarks" ));
 				} else if (req.getRemarks().length() > 100) {
-					errorList.add(new Error("09", "Remarks", "Please Enter Remarks within 100 Characters"+row));
+					errorList.add(new Error("09", "Remarks", "Please Enter Remarks within 100 Characters" ));
 				}
 				if (StringUtils.isBlank(req.getStateShortCode())) {
-					errorList.add(new Error("10", "StateShortCode", "Please Enter StateShortCode"+row));
+					errorList.add(new Error("10", "StateShortCode", "Please Enter StateShortCode" ));
 				} else if (req.getStateShortCode().length() > 20) {
 					errorList
-							.add(new Error("10", "StateShortCode", "Please Enter StateShortCode within 20 Characters"+row));
+							.add(new Error("10", "StateShortCode", "Please Enter StateShortCode within 20 Characters" ));
 				}
 				if (StringUtils.isBlank(req.getStateId())) {
-					errorList.add(new Error("11", "StateId", "Please Select State Id "+row));
+					errorList.add(new Error("11", "StateId", "Please Select State Id " ));
 				} 
 
-			}
+			
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
@@ -304,51 +278,65 @@ public class CompanyStateMasterServiceImpl implements CompanyStateMasterService 
 		return errorList;
 	}
 
-	public List<CompanyStateMaster> getCoreAppCodeExistDetails(String companyId , String countryId , String regionCode, String stateId ) {
-		List<CompanyStateMaster> list = new ArrayList<CompanyStateMaster>();
+	public List<CompanyStateMaster> getCoreAppCodeExistDetails(String coreAppCode , Date effStartDate , Date effEndDate , String companyId  ) {
+	List<CompanyStateMaster> list = new ArrayList<CompanyStateMaster>();
 		try {
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(effStartDate);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 1);
+			effStartDate = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);cal.set(Calendar.MINUTE, 1);
+			effEndDate = cal.getTime();
+
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<CompanyStateMaster> query = cb.createQuery(CompanyStateMaster.class);
-	
+
 			// Find All
 			Root<CompanyStateMaster> b = query.from(CompanyStateMaster.class);
-	
+
 			// Select
 			query.select(b);
-	
+
 			// Effective Date Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
 			Root<CompanyStateMaster> ocpm1 = effectiveDate.from(CompanyStateMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			Predicate a2 = cb.equal(ocpm1.get("countryId"),b.get("countryId"));
-			Predicate a3 = cb.equal(ocpm1.get("regionCode"), b.get("regionCode"));
-			effectiveDate.where(a1,a2,a3);
+			Predicate a2 = cb.equal(ocpm1.get("coreAppCode"), b.get("coreAppCode"));
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), effStartDate);
+			Predicate a7 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 	
+			effectiveDate.where(a1, a2, a3, a7);
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<CompanyStateMaster> ocpm2 = effectiveDate2.from(CompanyStateMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
+			Predicate a5 = cb.equal(ocpm2.get("coreAppCode"), b.get("coreAppCode"));
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), effEndDate);
+			Predicate a9 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
+			Predicate a10 = cb.equal(ocpm2.get("stateId"), b.get("stateId"));
+			effectiveDate2.where(a4, a5, a6, a9, a10);
+
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			Predicate n2 = cb.equal(b.get("companyId"),companyId);	
-			Predicate n3 = cb.equal(b.get("countryId"), countryId );
-			Predicate n4 = cb.equal(b.get("regionCode"),regionCode);
-			if( StringUtils.isBlank(stateId)) {
-				query.where(n1,n2,n3,n4);	
-			} else {
-				Predicate n5 = cb.equal(b.get("stateId"),stateId);
-				query.where(n1,n2,n3,n4,n5);
-			}
-			
+			Predicate n2 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n3 = cb.equal(b.get("coreAppCode"), coreAppCode);
+			Predicate n4 = cb.equal(b.get("companyId"), companyId);
+	
+			query.where(n1, n2, n3, n4);
 			// Get Result
 			TypedQuery<CompanyStateMaster> result = em.createQuery(query);
-			list = result.getResultList();		
-		
+			list = result.getResultList();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info(e.getMessage());
-	
+
 		}
 		return list;
 	}
-	
+
 ///*********************************************************************GET ALL******************************************************\\
 	@Override
 	public List<CompanyStateMasterRes> getallCompanyStateDetails(CompanyStateMasterGetAllReq req) {
@@ -805,6 +793,141 @@ public class CompanyStateMasterServiceImpl implements CompanyStateMasterService 
 	
 		}
 		return resList;
+	}
+	//**********************************************************Insert Validation *******************************************\\ 
+	@Override
+	public List<Error> validateCompanyStateDetails(List<CompanyStateMultiInsertReq> reqList) {
+		List<Error> errorList = new ArrayList<Error>();
+		try {
+		
+			Long row = 0L ;
+			for (CompanyStateMultiInsertReq req : reqList) {
+				row = row + 1 ;
+				
+				if (StringUtils.isBlank(req.getRegionCode())) {
+					errorList.add(new Error("01", "RegionCode", "Please Enter RegionCode in  Row No : " + row));
+				}
+				
+				if (StringUtils.isBlank(req.getStateId()) ) {
+					errorList.add(new Error("02", "StateId", "Please Enter StateId  in  Row No : " + row));
+				}
+			    if (StringUtils.isBlank(req.getCompanyId())) {
+					errorList.add(new Error("03", "InsuranceId", "Please Enter InsuranceId  in Row No :" + row));
+				} else if (req.getCompanyId().length() > 20) {
+					errorList.add(new Error("03", "InsuranceId", "Please Enter InsuranceId within 20 Characters  in Row No :" + row));
+				} 
+			    
+			    if (StringUtils.isBlank(req.getCreatedBy())) {
+					errorList.add(new Error("04", "CreatedBy", "Please Select CreatedBy  Id in Row No :" + row));
+				}
+			}
+	
+		} catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+			errorList.add(new Error("05", "CommonError", e.getMessage()));
+		}
+		return errorList;
+	}
+	//**********************************************************Insert *******************************************\\
+	@Override
+	public SuccessRes insertCompanyState(List<CompanyStateMultiInsertReq> reqList) {
+		SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/YYYY");
+		SuccessRes res = new SuccessRes();
+		CompanyStateMaster saveData = new CompanyStateMaster();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+
+		try {
+			Calendar cal = new GregorianCalendar();
+			Date today = new Date();
+			cal.setTime(new Date());cal.set(Calendar.HOUR_OF_DAY, today.getHours());cal.set(Calendar.MINUTE, today.getMinutes());
+			cal.set(Calendar.SECOND, today.getSeconds());
+			Date effDate = cal.getTime();
+			Date endDate = sdformat.parse("12/12/2050");
+			cal.setTime(sdformat.parse("12/12/2050"));
+			cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
+			endDate = cal.getTime();
+			cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 30);
+			today = cal.getTime();
+			cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 1);cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			for (CompanyStateMultiInsertReq req : reqList) {
+
+				String stateId = req.getStateId();
+				Integer amendId = 0;
+				// Update
+				// Get Less than Equal Today Record
+				// Criteria
+				List<StateMaster> list = new ArrayList<StateMaster>();
+
+				// Find Latest Record
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<StateMaster> query = cb.createQuery(StateMaster.class);
+
+				// Find All
+				Root<StateMaster> b = query.from(StateMaster.class);
+
+				// Select
+				query.select(b);
+
+				// Effective Date Max Filter
+				Subquery<Long> effectiveDate = query.subquery(Long.class);
+				Root<StateMaster> ocpm1 = effectiveDate.from(StateMaster.class);
+				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+				Predicate a1 = cb.equal(b.get("countryId"), ocpm1.get("countryId"));
+				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+				Predicate a3 = cb.equal(b.get("regionCode"), ocpm1.get("regionCode"));
+				effectiveDate.where(a1, a2,a3);
+
+				// Effective Date Max Filter
+				Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+				Root<StateMaster> ocpm2 = effectiveDate2.from(StateMaster.class);
+				effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+				Predicate a4 = cb.equal(b.get("countryId"), ocpm1.get("countryId"));
+				Predicate a5 = cb.equal(b.get("regionCode"), ocpm1.get("regionCode"));
+				Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+				effectiveDate2.where(a4, a5,a6);
+
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.asc(b.get("stateName")));
+
+				// Where
+				Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+				Predicate n2= cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
+				Predicate n3 = cb.equal(b.get("stateId"), req.getStateId());
+				Predicate n4 = cb.equal(b.get("status"), "Y");
+				Predicate n5 = cb.equal(b.get("regionCode"), req.getRegionCode());
+				
+				query.where(n1, n2, n3,n4,n5).orderBy(orderList);
+
+				// Get Result
+				TypedQuery<StateMaster> result = em.createQuery(query);
+				list = result.getResultList();
+
+				res.setResponse("Saved Successfully ");
+				res.setSuccessId(stateId);
+
+				dozerMapper.map(list.get(0), saveData);
+				saveData.setStateId(Integer.valueOf(stateId));
+				saveData.setCompanyId(req.getCompanyId());
+				saveData.setCreatedBy(req.getCreatedBy());
+				saveData.setEffectiveDateStart(effDate);
+				saveData.setEffectiveDateEnd(endDate);
+				saveData.setCoreAppCode("99999");
+				saveData.setEntryDate(new Date());
+				saveData.setAmendId(amendId);
+				repo.saveAndFlush(saveData);
+
+				log.info("Saved Details is ---> " + json.toJson(saveData));
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return res;
 	}
 
 }

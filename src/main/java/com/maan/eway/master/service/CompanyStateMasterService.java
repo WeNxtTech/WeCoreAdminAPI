@@ -13,6 +13,7 @@ import com.maan.eway.master.req.CompanyStateMasterDropDownReq;
 import com.maan.eway.master.req.CompanyStateMasterGetAllReq;
 import com.maan.eway.master.req.CompanyStateMasterGetReq;
 import com.maan.eway.master.req.CompanyStateMasterSaveReq;
+import com.maan.eway.master.req.CompanyStateMultiInsertReq;
 import com.maan.eway.master.req.CompanyStateNonSelectedReq;
 import com.maan.eway.master.req.ReferalMasterGetAllReq;
 import com.maan.eway.master.req.ReferalMasterGetReq;
@@ -40,9 +41,9 @@ import java.util.List;
 */
 public interface CompanyStateMasterService  {
 
-	List<Error> validateCompanyStateDetails(List<CompanyStateMasterSaveReq> req);
+	List<Error> validateCompanyStateDetails(List<CompanyStateMultiInsertReq> req);
 
-	SuccessRes insertCompanyState(List<CompanyStateMasterSaveReq> req);
+	SuccessRes insertCompanyState(List<CompanyStateMultiInsertReq> req);
 
 	List<CompanyStateMasterRes> getallCompanyStateDetails(CompanyStateMasterGetAllReq req);
 
@@ -55,5 +56,9 @@ public interface CompanyStateMasterService  {
 	SuccessRes changeStatusOfCompanyStateMaster(CompanyStateMasterChangeStatusReq req);
 
 	List<CompanyStateMasterRes> getallNonSelectedCompanyState(CompanyStateNonSelectedReq req);
+
+	List<Error> validateUpdateCompanyStateDetails(CompanyStateMasterSaveReq req);
+
+	SuccessRes updateCompanyState(CompanyStateMasterSaveReq req);
 
 }

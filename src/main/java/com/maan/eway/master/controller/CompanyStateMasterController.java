@@ -12,6 +12,7 @@ import com.maan.eway.master.req.CompanyStateMasterDropDownReq;
 import com.maan.eway.master.req.CompanyStateMasterGetAllReq;
 import com.maan.eway.master.req.CompanyStateMasterGetReq;
 import com.maan.eway.master.req.CompanyStateMasterSaveReq;
+import com.maan.eway.master.req.CompanyStateMultiInsertReq;
 import com.maan.eway.master.req.CompanyStateNonSelectedReq;
 import com.maan.eway.master.req.SectionMasterChangeStatusReq;
 import com.maan.eway.master.req.StateMasterChangeStatusReq;
@@ -62,40 +63,77 @@ public class CompanyStateMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
-		@PostMapping("/insertcompanystate")
-		@ApiOperation(value = "This method is Insert Company State Details")
-		public ResponseEntity<CommonRes> insertCompanyState(@RequestBody List<CompanyStateMasterSaveReq> req) {
+	@PostMapping("/insertcompanystate")
+	@ApiOperation(value = "This method is Insert Company State Details")
+	public ResponseEntity<CommonRes> insertCompanyState(@RequestBody List<CompanyStateMultiInsertReq> req) {
 
-			reqPrinter.reqPrint(req);
-			CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
 
-			List<Error> validation = service.validateCompanyStateDetails(req);
-			// validation
-			if (validation != null && validation.size() != 0) {
-				data.setCommonResponse(null);
-				data.setIsError(true);
-				data.setErrorMessage(validation);
-				data.setMessage("Failed");
-				return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+		List<Error> validation = service.validateCompanyStateDetails(req);
+		// validation
+		if (validation != null && validation.size() != 0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
 
+		} else {
+
+			// Save
+			SuccessRes res = service.insertCompanyState(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 			} else {
-
-				// Save
-				SuccessRes res = service.insertCompanyState(req);
-				data.setCommonResponse(res);
-				data.setIsError(false);
-				data.setErrorMessage(Collections.emptyList());
-				data.setMessage("Success");
-
-				if (res != null) {
-					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-				}
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
-
 		}
-		
+
+	}
+	
+	// Update
+	@PostMapping("/updatecompanystate")
+	@ApiOperation(value = "This method is Insert Company State Details")
+	public ResponseEntity<CommonRes> updateCompanyState(@RequestBody CompanyStateMasterSaveReq req) {
+
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+
+		List<Error> validation = service.validateUpdateCompanyStateDetails(req);
+		// validation
+		if (validation != null && validation.size() != 0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+		} else {
+
+			// Save
+			SuccessRes res = service.updateCompanyState(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+
+	}
+
+
+
 		//  Get All
 		
 		@PostMapping("/getallcompanystatedetails")

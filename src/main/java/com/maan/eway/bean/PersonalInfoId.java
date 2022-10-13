@@ -29,7 +29,7 @@ public class PersonalInfoId implements Serializable {
     private static final long serialVersionUID = 1L;
 
     //--- ENTITY KEY ATTRIBUTES 
-    private String     clientTypeid ;
+    private String     policyHolderTypeid ;
     
     private String     idType ;
     
@@ -45,7 +45,7 @@ public class PersonalInfoId implements Serializable {
     
     private String     regionCode ;
     
-    private String     taxExemptedYn ;
+    private String     isTaxExempted ;
     
      
 }

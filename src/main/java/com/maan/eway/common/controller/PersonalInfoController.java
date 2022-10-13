@@ -11,15 +11,15 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.maan.eway.bean.PersonalInfo;
+import com.maan.eway.common.req.PersonalInfoGetReq;
+import com.maan.eway.common.req.PersonalInfoGetallReq;
 import com.maan.eway.common.req.PersonalInfoSaveReq;
-import com.maan.eway.common.res.CustomerDetailsSaveRes;
+import com.maan.eway.common.res.PersonalInfoGetRes;
 import com.maan.eway.common.service.CustomerSaveValidationService;
 import com.maan.eway.common.service.PersonalInfoService;
 import com.maan.eway.error.Error;
@@ -60,7 +60,7 @@ public class PersonalInfoController {
 
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		List<Error> validation = validationService.validatePersonalInfo(req);
+		List<Error> validation = entityService.validatePersonalInfo(req);
 		//// validation
 		if (validation != null && validation.size() != 0) {
 			data.setCommonResponse(null);
@@ -83,7 +83,58 @@ public class PersonalInfoController {
 			}
 		}
     }
+	// Get
+		@PostMapping("/getpersonalinfo")
+		public ResponseEntity<CommonRes> getPersonalInfo(@RequestBody PersonalInfoGetReq req){
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		PersonalInfoGetRes res = entityService.getPersonalInfo(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		if(res!=null) {
+			return new ResponseEntity<CommonRes>(data,HttpStatus.CREATED);
+		}
+		else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+		}
+		
+		//Getall
+		@PostMapping("/getallpersonalinfo")
+		public ResponseEntity<CommonRes> getallPersonalInfo(@RequestBody PersonalInfoGetallReq req){
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		List<PersonalInfoGetRes> res = entityService.getallPersonalInfo(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		if(res!=null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		}
+		else {
+		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);	
+		}
+	}
 
-
-
-}
+		// Active
+		
+		@PostMapping("/getactivepersonalinfo")
+		public ResponseEntity<CommonRes> getActiveExchange(@RequestBody PersonalInfoGetallReq req){
+			CommonRes data = new CommonRes();
+			reqPrinter.reqPrint(req);
+			List<PersonalInfoGetRes> res = entityService.getActiveExchange(req);
+			data.setCommonResponse(res);
+			data.setErrorMessage(Collections.emptyList());
+			data.setIsError(false);
+			data.setMessage("Success");
+			if(res!=null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			}
+			else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+	}

@@ -208,9 +208,5 @@ public class CustomerSaveValidationServiceImpl implements CustomerSaveValidation
 	}
 
 
-	@Override
-	public List<Error> validatePersonalInfo(PersonalInfoSaveReq req) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 }

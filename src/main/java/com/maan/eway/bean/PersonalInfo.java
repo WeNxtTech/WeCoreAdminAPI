@@ -53,8 +53,8 @@ private static final long serialVersionUID = 1L;
  
     //--- ENTITY PRIMARY KEY 
     @Id
-    @Column(name="CLIENT_TYPEID", nullable=false, length=100)
-    private String     clientTypeid ;
+    @Column(name="POLICY_HOLDER_TYPEID", nullable=false, length=100)
+    private String     policyHolderTypeid ;
 
     @Id
     @Column(name="ID_TYPE", nullable=false, length=2)
@@ -85,15 +85,17 @@ private static final long serialVersionUID = 1L;
     private String     regionCode ;
 
     @Id
-    @Column(name="TAX_EXEMPTED_YN", nullable=false, length=1)
-    private String     taxExemptedYn ;
+    @Column(name="IS_TAX_EXEMPTED", nullable=false, length=1)
+    private String     isTaxExempted ;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="CLIENT_NAME", length=100)
     private String     clientName ;
 
-    @Column(name="ADDRESS", length=100)
-    private String     address ;
+    @Column(name="ADDRESS_1", length=100)
+    private String     address1 ;
+    @Column(name="ADDRESS_2", length=100)
+    private String     address2 ;
 
     @Column(name="TITLE", length=1)
     private String     title ;
@@ -101,22 +103,19 @@ private static final long serialVersionUID = 1L;
     @Column(name="TITLE_DESC", length=20)
     private String     titleDesc ;
 
-    @Column(name="ACCOUNT_NUMBER", length=100)
-    private String     accountNumber ;
-
     @Column(name="CLIENT_STATUS", length=20)
     private String     clientStatus ;
 
     @Column(name="CLIENT_STATUS_DESC", length=100)
     private String     clientStatusDesc ;
 
-    @Column(name="CLIENT_TYPE", length=2)
-    private String     clientType ;
+    @Column(name="POLICY_HOLDER_TYPE", length=2)
+    private String     policyHolderType ;
 
     @Column(name="ID_TYPE_DESC", length=100)
     private String     idTypeDesc ;
 
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     @Column(name="DOB_OR_REG_DATE")
     private Date       dobOrRegDate ;
 
@@ -189,24 +188,24 @@ private static final long serialVersionUID = 1L;
     @Column(name="LANGUAGE_DESC", length=20)
     private String     languageDesc ;
 
-    @Column(name="TAX_EXEMPTED_REASON", length=20)
-    private String     taxExemptedReason ;
+    @Column(name="TAX_EXEMPTED_ID", length=20)
+    private String     taxExemptedId ;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ENTRY_DATE")
     private Date       entryDate ;
     
-    @Column(name="CREATED_BY")
+    @Column(name="CREATED_BY", length=100)
     private String createdBy ;
     
-    @Column(name="STATUS")
+    @Column(name="STATUS", length=1)
     private String status ;
     
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="UPDATED_DATE")
     private Date       updatedDate ;
     
-    @Column(name="UPDATED_BY")
+    @Column(name="UPDATED_BY", length=100)
     private String updatedBy;
     
     //--- ENTITY LINKS ( RELATIONSHIP )

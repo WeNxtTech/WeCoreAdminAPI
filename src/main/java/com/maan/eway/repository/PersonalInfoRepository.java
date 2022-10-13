@@ -16,6 +16,9 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import com.maan.eway.bean.PersonalInfo;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import com.maan.eway.bean.PersonalInfoId;
@@ -31,7 +34,11 @@ import com.maan.eway.bean.PersonalInfoId;
  
 public interface PersonalInfoRepository  extends JpaRepository<PersonalInfo,PersonalInfoId > , JpaSpecificationExecutor<PersonalInfo> {
 
-	PersonalInfo findByClientTypeidAndIdNumber(String clientTypeid, String idNumber);
+
+	Page<PersonalInfo> findByStatus(Pageable paging, String string);
+
+	PersonalInfo findByPolicyHolderTypeidAndPolicyHolderTypeAndIdNumber(String policyHolderTypeid,
+			String policyHolderType, String idNumber);
 
 
 

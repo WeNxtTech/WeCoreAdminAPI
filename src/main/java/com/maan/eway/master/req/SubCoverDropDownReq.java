@@ -11,5 +11,12 @@ public class SubCoverDropDownReq {
 	@JsonProperty("CoverId")
 	private String coverId;
 	
+	@JsonProperty("InsuranceId")
+	private String companyId;
 	
+	@JsonProperty("ProductId")
+	private String productId;
+	
+	@JsonProperty("SectionId")
+	private String sectionId;
 }

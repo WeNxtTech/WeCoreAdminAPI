@@ -72,94 +72,7 @@ public class CompanyRegionMasterServiceImpl implements CompanyRegionMasterServic
 
 	private Logger log = LogManager.getLogger(CompanyRegionMasterServiceImpl.class);
 
-	/*
-	 * @Override public List<Error> validateCompanyRegion(List<CompanyRegionSaveReq>
-	 * reqList) { List<Error> errorList = new ArrayList<Error>(); try {
-	 * 
-	 * Long row = 0L ; for (CompanyRegionSaveReq req : reqList) { row = row + 1 ; if
-	 * (StringUtils.isBlank(req.getRegionName())) { errorList.add(new Error("02",
-	 * "RegionName", "Please Select Region Name in  Row No : " + row)); }else if
-	 * (req.getRegionName().length() > 100){ errorList.add(new
-	 * Error("02","RegionName",
-	 * "Please Enter Region  Name within 100 Characters in  Row No : " + row)); }
-	 * 
-	 * if (StringUtils.isBlank(req.getRegionCode())) { errorList.add(new Error("02",
-	 * "RegionCode", "Please Select Region Code in  Row No : " + row)); }else if
-	 * (req.getRegionCode().length() > 20){ errorList.add(new
-	 * Error("02","RegionCode",
-	 * "Please Enter Region Code within 100 Characters in  Row No : " + row)); }
-	 * 
-	 * if (StringUtils.isBlank(req.getRegionShortCode())) { errorList.add(new
-	 * Error("02", "RegionShortCode",
-	 * "Please Select Region Short Code in  Row No : " + row)); }else if
-	 * (req.getRegionShortCode().length() > 100){ errorList.add(new
-	 * Error("02","RegionShortCode",
-	 * "Please Enter Region Short Code within 100 Characters in  Row No : " + row));
-	 * }
-	 * 
-	 * if (StringUtils.isBlank(req.getCompanyId())) { errorList.add(new Error("02",
-	 * "InsuranceId", "Please Select InsuranceId in  Row No : " + row)); }
-	 * 
-	 * // Date Validation Calendar cal = new GregorianCalendar(); Date today = new
-	 * Date(); cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH,
-	 * -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50); today =
-	 * cal.getTime(); if (req.getEffectiveDateStart() == null ) { errorList.add(new
-	 * Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
-	 * 
-	 * } else if (req.getEffectiveDateStart().before(today)) { errorList.add(new
-	 * Error("04", "EffectiveDateStart",
-	 * "Please Enter Effective Date Start as Future Date")); } else if
-	 * (req.getEffectiveDateEnd() == null ) { errorList.add(new Error("04",
-	 * "EffectiveDateEnd", "Please Enter Effective Date End "));
-	 * 
-	 * } else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart()) ||
-	 * req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
-	 * errorList.add(new Error("04", "EffectiveDateEnd",
-	 * "Please Enter Effective Date End  is After Effective Date End")); } //Status
-	 * Validation if (StringUtils.isBlank(req.getStatus())) { errorList.add(new
-	 * Error("05", "Status", "Please Enter Status in  Row No : " + row)); } else if
-	 * (req.getStatus().length() > 1) { errorList.add(new Error("05", "Status",
-	 * "Enter Status 1 Character Only in  Row No : " + row)); }else
-	 * if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()))) {
-	 * errorList.add(new Error("05", "Status",
-	 * "Enter Status Y or N Only in  Row No : " + row)); } if
-	 * (StringUtils.isBlank(req.getCompanyId())) { errorList.add(new Error("06",
-	 * "CompanyId", "Please Enter Company Id in  Row No : " + row)); } if
-	 * (StringUtils.isBlank(req.getCreatedBy())) { errorList.add(new Error("07",
-	 * "CreatedBy", "Please Enter CreatedBy")); }else if
-	 * (req.getCreatedBy().length() > 50) { errorList.add(new Error("07",
-	 * "CreatedBy", "Please Enter CreatedBy within 100 Characters")); }
-	 * 
-	 * if (StringUtils.isBlank(req.getCoreAppCode())) { errorList.add(new
-	 * Error("08", "CoreAppCode", "Please Enter CoreAppCode")); }else if
-	 * (req.getCoreAppCode().length() > 20) { errorList.add(new Error("08",
-	 * "CoreAppCode", "Please Enter CoreAppCode within 20 Characters")); } else if
-	 * (StringUtils.isBlank(req.getCoreAppCode())) { List<CompanyRegionMaster>
-	 * coreAppCode = getCoreAppCodeExistDetails(req.getCompanyId() ,
-	 * req.getCountryId() , null); if (coreAppCode.size()>0 ) { errorList.add(new
-	 * Error("08", "CoreAppCode", "This core App Code  Already Exist ")); } }else {
-	 * List<CompanyRegionMaster> coreAppCode =
-	 * getCoreAppCodeExistDetails(req.getCompanyId(),req.getCountryId() ,
-	 * req.getRegionCode() ); if (coreAppCode.size()>0 && (!
-	 * req.getRegionCode().equalsIgnoreCase(coreAppCode.get(0).getRegionCode().
-	 * toString())) ) { errorList.add(new Error("08", "Core App Code",
-	 * "This core App Code Already Exist ")); } } if
-	 * (StringUtils.isBlank(req.getRegulatoryCode())) { errorList.add(new
-	 * Error("09", "RegulatoryCode", "Please Enter RegulatoryCode")); }else if
-	 * (req.getRegulatoryCode().length() > 20) { errorList.add(new Error("09",
-	 * "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters")); }
-	 * 
-	 * 
-	 * if (StringUtils.isBlank(req.getRemarks())) { errorList.add(new Error("10",
-	 * "Remarks", "Please Enter Remarks")); }else if (req.getRemarks().length() >
-	 * 100) { errorList.add(new Error("10", "Remarks",
-	 * "Please Enter Remarks within 100 Characters")); }
-	 * 
-	 * }
-	 * 
-	 * } catch (Exception e) { log.error(e); e.printStackTrace(); errorList.add(new
-	 * Error("10", "CommonError", e.getMessage())); } return errorList; }
-	 */
+	
 	public List<CompanyRegionMaster> getCoreAppCodeExistDetails(String coreAppCode, Date effStartDate, Date effEndDate,
 			String companyId) {
 		List<CompanyRegionMaster> list = new ArrayList<CompanyRegionMaster>();
@@ -212,96 +125,13 @@ public class CompanyRegionMasterServiceImpl implements CompanyRegionMasterServic
 		return list;
 	}
 
-	/*
-	 * @Transactional
-	 * 
-	 * @Override public SuccessRes insertCompanyRegion(List<CompanyRegionSaveReq>
-	 * reqList) { SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/YYYY");
-	 * SuccessRes res = new SuccessRes(); CompanyRegionMaster saveData = new
-	 * CompanyRegionMaster(); List<CompanyRegionMaster> list = new
-	 * ArrayList<CompanyRegionMaster>(); DozerBeanMapper dozerMapper = new
-	 * DozerBeanMapper();
-	 * 
-	 * try { for (CompanyRegionSaveReq req : reqList ) { Calendar cal = new
-	 * GregorianCalendar(); cal.setTime(req.getEffectiveDateStart());
-	 * cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59); Date
-	 * startDate = cal.getTime() ; Date today = new Date();
-	 * cal.setTime(req.getEffectiveDateStart()); cal.set(Calendar.HOUR_OF_DAY,
-	 * today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
-	 * cal.set(Calendar.SECOND, today.getSeconds()); Date oldEndDate = cal.getTime()
-	 * ; cal.setTime(req.getEffectiveDateStart()); cal.set(Calendar.HOUR_OF_DAY,
-	 * today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
-	 * cal.set(Calendar.SECOND, today.getSeconds()); Date effDate = cal.getTime();
-	 * Date endDate = req.getEffectiveDateEnd();
-	 * cal.setTime(req.getEffectiveDateEnd()); cal.set(Calendar.HOUR_OF_DAY, 23);
-	 * cal.set(Calendar.MINUTE, 50) ; endDate = cal.getTime() ;
-	 * 
-	 * 
-	 * String regionId=""; Integer amendId=0;
-	 * 
-	 * 
-	 * // Update // Get Less than Equal Today Record // Criteria
-	 * regionId=req.getRegionCode(); CriteriaBuilder cb = em.getCriteriaBuilder();
-	 * CriteriaQuery<CompanyRegionMaster> query =
-	 * cb.createQuery(CompanyRegionMaster.class);
-	 * 
-	 * // Find All Root<CompanyRegionMaster> b =
-	 * query.from(CompanyRegionMaster.class);
-	 * 
-	 * // Select query.select(b);
-	 * 
-	 * // Effective Date Max Filter Subquery<Long> effectiveDate =
-	 * query.subquery(Long.class); Root<CompanyRegionMaster> ocpm1 =
-	 * effectiveDate.from(CompanyRegionMaster.class);
-	 * effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart"))); Predicate a1 =
-	 * cb.equal(ocpm1.get("regionCode"), b.get("regionCode")); Predicate a2 =
-	 * cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , startDate); Predicate
-	 * a3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-	 * effectiveDate.where(a1,a2,a3);
-	 * 
-	 * // Order By // List<Order> orderList = new ArrayList<Order>(); //
-	 * orderList.add(cb.asc(b.get("branchName")));
-	 * 
-	 * // Where Predicate n1 = cb.equal(b.get("status"), "Y"); Predicate n2 =
-	 * cb.equal(b.get("effectiveDateStart"), effectiveDate); Predicate n3 =
-	 * cb.equal(b.get("regionCode"), req.getRegionCode() ); Predicate n4 =
-	 * cb.equal(b.get("companyId"), req.getCompanyId() ); query.where(n1, n2,
-	 * n3,n4);//.orderBy(orderList);
-	 * 
-	 * // Get Result TypedQuery<CompanyRegionMaster> result = em.createQuery(query);
-	 * list = result.getResultList();
-	 * 
-	 * if( list.size() > 0) { repo.delete(list.get(0)); // Amend Id if(
-	 * list.get(0).getEffectiveDateStart().before(startDate) ) { String
-	 * startDatewithoutTime = sdformat.format(startDate) ; String oldDatewithoutTime
-	 * = sdformat.format(list.get(0).getEffectiveDateStart()) ;
-	 * 
-	 * if(startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime) ) { amendId =
-	 * list.get(0).getAmendId() + 1 ; } } }
-	 * res.setResponse("Updated Successfully "); res.setSuccessId(regionId);
-	 * 
-	 * 
-	 * dozerMapper.map(req, saveData ); saveData.setEffectiveDateStart(effDate);
-	 * saveData.setEffectiveDateEnd(endDate); saveData.setStatus(req.getStatus());
-	 * saveData.setEntryDate(new Date()); saveData.setAmendId(amendId);
-	 * repo.saveAndFlush(saveData);
-	 * 
-	 * if(list.size() > 0 ) { // Update Old Record CompanyRegionMaster lastRecord =
-	 * list.get(0) ; lastRecord.setEffectiveDateEnd(oldEndDate);
-	 * repo.saveAndFlush(lastRecord); }
-	 * 
-	 * log.info("Saved Details is ---> " + json.toJson(saveData)); }
-	 * 
-	 * 
-	 * } catch (Exception e) { e.printStackTrace(); log.info("Exception is --->" +
-	 * e.getMessage()); return null; } return res; }
-	 */
+	
 	@Override
 	public List<CompanyRegionGetRes> getallCompanyRegion(CompanyRegionGetAllReq req) {
 		List<CompanyRegionGetRes> resList = new ArrayList<CompanyRegionGetRes>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			Date today = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -369,7 +199,7 @@ public class CompanyRegionMasterServiceImpl implements CompanyRegionMasterServic
 		List<CompanyRegionGetRes> resList = new ArrayList<CompanyRegionGetRes>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			Date today = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -438,7 +268,7 @@ public class CompanyRegionMasterServiceImpl implements CompanyRegionMasterServic
 		CompanyRegionGetRes res = new CompanyRegionGetRes();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			Date today = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -494,7 +324,7 @@ public class CompanyRegionMasterServiceImpl implements CompanyRegionMasterServic
 		List<RegionMasterRes> resList = new ArrayList<RegionMasterRes>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			Date today = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -667,7 +497,7 @@ public class CompanyRegionMasterServiceImpl implements CompanyRegionMasterServic
 	public SuccessRes changeStatusofCompanyRegion(CompanyRegionChangeStatusReq req) {
 		SuccessRes res = new SuccessRes();
 		try {
-			Date today = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 
 			CompanyRegionMaster updateRecord = new CompanyRegionMaster();
@@ -1108,6 +938,12 @@ public class CompanyRegionMasterServiceImpl implements CompanyRegionMasterServic
 				// Update Old Record
 				CompanyRegionMaster lastRecord = list.get(0);
 				lastRecord.setEffectiveDateEnd(oldEndDate);
+				String startDatewithoutTime = sdformat.format(startDate);
+				String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
+
+				if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
+					lastRecord.setStatus("N");	
+				}
 				repo.saveAndFlush(lastRecord);
 			}
 

@@ -5,6 +5,7 @@
 */
 package com.maan.eway.master.service.impl;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -182,7 +183,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				Predicate a4 = cb.equal(ocpm2.get("coverId"), b.get("coverId"));
 				Predicate a5 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 				Predicate a6 = cb.equal(ocpm2.get("subCoverId"), b.get("subCoverId"));
-				effectiveDate2.where(a4,a5,a6);
+				effectiveDate2.where(a4, a5,a6);
 
 				// Order By
 				// List<Order> orderList = new ArrayList<Order>();
@@ -201,42 +202,83 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				
 				// Section COver Master Insert
 				for (CoverMaster data  : list) {
-					SectionCoverMaster secCover = new SectionCoverMaster(); 
-					dozerMapper.map(data, secCover) ;
-					secCover.setEffectiveDateStart(effDate);
-					secCover.setEffectiveDateEnd(endDate);
-					secCover.setEntryDate(new Date());
-					secCover.setSectionId(Integer.valueOf(req.getSectionId()));
-					secCover.setProductId(Integer.valueOf(req.getProductId()));
-					secCover.setCompanyId(req.getCompanyId());
-					secCover.setCreatedBy(req.getCreatedBy());
-					secCover.setCoreAppCode("99999");
-					repo.saveAndFlush(secCover);
-					
-					if(StringUtils.isNotBlank(secCover.getCalcType()) &&  secCover.getCalcType().equalsIgnoreCase("G")  ) {
+					if(data.getSubCoverYn().equalsIgnoreCase("Y") && !(data.getCoverId().equals(data.getSubCoverId())) ) {  
+						SectionCoverMaster secCover = new SectionCoverMaster();
 						
-						// find old records
-						List<SectionCoverOfsGridMaster> secOfsDatas =  secOfsRepo.findByCompanyIdAndProductIdAndSectionIdAndCoverIdAndSubCoverIdOrderByCoveragesSubIdAsc(req.getCompanyId() , Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId()) ,   secCover.getCoverId() , secCover.getSubCoverId()  );	
-						    
-						if(secOfsDatas.size() > 0 ) {
-							secOfsRepo.deleteAll(secOfsDatas);
+						dozerMapper.map(data, secCover) ;
+						secCover.setEffectiveDateStart(effDate);
+						secCover.setEffectiveDateEnd(endDate);
+						secCover.setEntryDate(new Date());
+						secCover.setSectionId(Integer.valueOf(req.getSectionId()));
+						secCover.setProductId(Integer.valueOf(req.getProductId()));
+						secCover.setCompanyId(req.getCompanyId());
+						secCover.setCreatedBy(req.getCreatedBy());
+						secCover.setCoreAppCode("99999");
+						repo.saveAndFlush(secCover);
+						
+						if(StringUtils.isNotBlank(secCover.getCalcType()) &&  secCover.getCalcType().equalsIgnoreCase("G")  ) {
+							
+							// find old records
+							List<SectionCoverOfsGridMaster> secOfsDatas =  secOfsRepo.findByCompanyIdAndProductIdAndSectionIdAndCoverIdAndSubCoverIdOrderByCoveragesSubIdAsc(req.getCompanyId() , Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId()) ,   secCover.getCoverId() , secCover.getSubCoverId()  );	
+							    
+							if(secOfsDatas.size() > 0 ) {
+								secOfsRepo.deleteAll(secOfsDatas);
+							}
+							
+							// Save new Rceords 
+							List<CoverOfsGridMaster> ofsDatas =  ofsRepo.findByCoverIdAndSubCoverIdOrderByCoveragesSubIdAsc(   secCover.getCoverId() , secCover.getSubCoverId()  );	
+							
+							for( CoverOfsGridMaster ofs : ofsDatas ) {
+								SectionCoverOfsGridMaster secOfsSave  = new SectionCoverOfsGridMaster();
+								dozerMapper.map(ofs, secOfsSave);
+								secOfsSave.setCompanyId(req.getCompanyId());
+								secOfsSave.setProductId(Integer.valueOf(req.getProductId()));
+								secOfsSave.setSectionId(Integer.valueOf(req.getSectionId()));
+								secOfsSave.setEntryDate(new Date());
+								secOfsSave.setCreatedBy(req.getCreatedBy());
+								secOfsRepo.saveAndFlush(secOfsSave);
+							}
 						}
+						log.info("Saved Detail is  --->" + secCover );
+					} else if( data.getCoverId().equals(data.getSubCoverId()) ) {
+						SectionCoverMaster secCover = new SectionCoverMaster();
 						
-						// Save new Rceords 
-						List<CoverOfsGridMaster> ofsDatas =  ofsRepo.findByCoverIdAndSubCoverIdOrderByCoveragesSubIdAsc(   secCover.getCoverId() , secCover.getSubCoverId()  );	
+						dozerMapper.map(data, secCover) ;
+						secCover.setEffectiveDateStart(effDate);
+						secCover.setEffectiveDateEnd(endDate);
+						secCover.setEntryDate(new Date());
+						secCover.setSectionId(Integer.valueOf(req.getSectionId()));
+						secCover.setProductId(Integer.valueOf(req.getProductId()));
+						secCover.setCompanyId(req.getCompanyId());
+						secCover.setCreatedBy(req.getCreatedBy());
+						secCover.setCoreAppCode("99999");
+						repo.saveAndFlush(secCover);
 						
-						for( CoverOfsGridMaster ofs : ofsDatas ) {
-							SectionCoverOfsGridMaster secOfsSave  = new SectionCoverOfsGridMaster();
-							dozerMapper.map(ofs, secOfsSave);
-							secOfsSave.setCompanyId(req.getCompanyId());
-							secOfsSave.setProductId(Integer.valueOf(req.getProductId()));
-							secOfsSave.setSectionId(Integer.valueOf(req.getSectionId()));
-							secOfsSave.setEntryDate(new Date());
-							secOfsSave.setCreatedBy(req.getCreatedBy());
-							secOfsRepo.saveAndFlush(secOfsSave);
+						if(StringUtils.isNotBlank(secCover.getCalcType()) &&  secCover.getCalcType().equalsIgnoreCase("G")  ) {
+							
+							// find old records
+							List<SectionCoverOfsGridMaster> secOfsDatas =  secOfsRepo.findByCompanyIdAndProductIdAndSectionIdAndCoverIdAndSubCoverIdOrderByCoveragesSubIdAsc(req.getCompanyId() , Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId()) ,   secCover.getCoverId() , secCover.getSubCoverId()  );	
+							    
+							if(secOfsDatas.size() > 0 ) {
+								secOfsRepo.deleteAll(secOfsDatas);
+							}
+							
+							// Save new Rceords 
+							List<CoverOfsGridMaster> ofsDatas =  ofsRepo.findByCoverIdAndSubCoverIdOrderByCoveragesSubIdAsc(   secCover.getCoverId() , secCover.getSubCoverId()  );	
+							
+							for( CoverOfsGridMaster ofs : ofsDatas ) {
+								SectionCoverOfsGridMaster secOfsSave  = new SectionCoverOfsGridMaster();
+								dozerMapper.map(ofs, secOfsSave);
+								secOfsSave.setCompanyId(req.getCompanyId());
+								secOfsSave.setProductId(Integer.valueOf(req.getProductId()));
+								secOfsSave.setSectionId(Integer.valueOf(req.getSectionId()));
+								secOfsSave.setEntryDate(new Date());
+								secOfsSave.setCreatedBy(req.getCreatedBy());
+								secOfsRepo.saveAndFlush(secOfsSave);
+							}
 						}
+						log.info("Saved Detail is  --->" + secCover );
 					}
-					log.info("Saved Detail is  --->" + secCover );
 				}
 				
 				res.setResponse(successRes);
@@ -258,7 +300,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 		List<SectionCoverMasterGetAllRes> resList = new ArrayList<SectionCoverMasterGetAllRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
-			Date today = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -377,8 +419,11 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 	public SectionCoverMasterRes getBySectionCoverId(SectionCoverMasterGetReq req) {
 		SectionCoverMasterRes res = new SectionCoverMasterRes();
 		DozerBeanMapper mapper = new DozerBeanMapper();
+		String pattern = "#####0.00000";
+		DecimalFormat df = new DecimalFormat(pattern);
+		
 		try {
-			Date today = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -438,24 +483,24 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
 			res.setCreatedBy(list.get(0).getCreatedBy() == null ? "" : list.get(0).getCreatedBy());
 			res.setToolTip(list.get(0).getToolTip() == null ? "" : list.get(0).getToolTip());
-			res.setMinimumPremium(list.get(0).getMinPremium() == null ? "" : list.get(0).getMinPremium().toString());
-			res.setSumInsuredStart(list.get(0).getMinSuminsured() == null ? "" : list.get(0).getMinSuminsured().toString());
-			res.setSumInsuredEnd(list.get(0).getMaxSuminsured() == null ? "" : list.get(0).getMaxSuminsured().toString());
-			res.setBaseRate(list.get(0).getBaseRate() == null ? "" : list.get(0).getBaseRate().toString());;
-			
+			res.setMinimumPremium(list.get(0).getMinPremium() == null ? "" :df.format(list.get(0).getMinPremium()));
+			res.setSumInsuredEnd(list.get(0).getMaxSuminsured() == null ? "" :df.format(list.get(0).getMaxSuminsured()));
+			res.setBaseRate(list.get(0).getBaseRate() == null ? "" : df.format(list.get(0).getBaseRate()));
+			res.setCoverageLimit(list.get(0).getCoverageLimit() == null ? "" : df.format(list.get(0).getCoverageLimit()));
+			res.setExcess(list.get(0).getExcess() == null ? "" :df.format(list.get(0).getExcess()));
 			// Ofs Details
 			List<OfsGridGetRes> gridDetails =  new ArrayList<OfsGridGetRes>();
-			if( res.getCalcType().equalsIgnoreCase("G") ) {
+			if(StringUtils.isNotBlank(res.getCalcType()) && res.getCalcType().equalsIgnoreCase("G") ) {
 				List<SectionCoverOfsGridMaster> ofsGrids   = secOfsRepo.findByCompanyIdAndProductIdAndSectionIdAndCoverIdAndSubCoverIdOrderByCoveragesSubIdAsc(list.get(0).getCompanyId() ,list.get(0).getProductId() ,list.get(0).getSectionId(), list.get(0).getCoverId() , list.get(0).getSubCoverId() );
 				
 				for( SectionCoverOfsGridMaster data : ofsGrids ) {
 					OfsGridGetRes dataRes = new OfsGridGetRes();
-					dataRes.setBaseRate(data.getBaseRate() ==null ?"" : String.valueOf(data.getBaseRate()) );
+					dataRes.setBaseRate(data.getBaseRate() ==null ?"" : df.format(data.getBaseRate()) );
 					dataRes.setCalcType(data.getCalcType() );
 					dataRes.setCalcTypeDesc(data.getCalcTypeDesc() );
-					dataRes.setMinimumPremium(data.getMinimumPremium() ==null ?"" : String.valueOf(data.getMinimumPremium()) );
-					dataRes.setSumInsuredStart(data.getStartSumInsured() ==null ?"" : String.valueOf(data.getStartSumInsured()) );
-					dataRes.setSumInsuredEnd(data.getEndSumInsured() ==null ?"" : String.valueOf(data.getEndSumInsured()) );
+					dataRes.setMinimumPremium(data.getMinimumPremium() ==null ?"" : df.format(data.getMinimumPremium()) );
+					dataRes.setSumInsuredStart(data.getStartSumInsured() ==null ?"" : df.format(data.getStartSumInsured()) );
+					dataRes.setSumInsuredEnd(data.getEndSumInsured() ==null ?"" : df.format(data.getEndSumInsured()) );
 					dataRes.setCoverageSubId(String.valueOf(data.getCoveragesSubId()));
 					
 					gridDetails.add(dataRes);
@@ -478,7 +523,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 		List<SectionCoverMasterGetAllRes> resList = new ArrayList<SectionCoverMasterGetAllRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
-			Date today = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -595,7 +640,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 		List<CoverMasterGetAllRes> resList = new ArrayList<CoverMasterGetAllRes>();
 		ModelMapper mapper = new ModelMapper();
 		try {
-			Date today = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -767,7 +812,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 	public SuccessRes changestatusofSectionCover(SectionCoverChangeStatusReq req) {
 		SuccessRes res = new SuccessRes();
 		try {
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			
 			SectionCoverMaster updateRecord  = new SectionCoverMaster();
@@ -1302,6 +1347,9 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 						subcoverId = coverId ;
 						saveCover.setSubCoverId(Integer.valueOf(subcoverId));						
 						saveCover.setCoverName(req.getCoverName());
+						saveCover.setCoverDesc(req.getCoverDesc());
+						saveCover.setToolTip(req.getToolTip());
+						
 						saveCover.setSectionId(Integer.valueOf(req.getSectionId()));
 						saveCover.setProductId(Integer.valueOf(req.getProductId()));
 						saveCover.setCompanyId(req.getCompanyId());
@@ -1334,6 +1382,8 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 					saveCover.setCompanyId(req.getCompanyId());
 					saveCover.setCoverName(req.getCoverName());
 					saveCover.setCoverDesc(req.getCoverDesc());
+					saveCover.setToolTip(req.getToolTip());
+					
 					saveCover.setCreatedBy(req.getCreatedBy());
 					saveCover.setRegulatoryCode(req.getRegulatoryCode());
 					saveCover.setEffectiveDateStart(effDate);
@@ -1366,7 +1416,10 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				saveData.setEntryDate(new Date());
 				saveData.setAmendId(amendId);
 				saveData.setRatingId(Integer.valueOf(coverId));	
-			
+				saveData.setCoverName(req.getCoverName());
+				saveData.setCoverDesc(req.getCoverDesc());
+				saveData.setToolTip(req.getToolTip());
+				
 				saveData.setSubCoverYn(subCoverYn);
 				// Amount Details
 				if(req.getCalcType().equalsIgnoreCase("F")  ) {
@@ -1456,7 +1509,13 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 						SectionCoverMaster lastRecord = data;
 						lastRecord.setEffectiveDateEnd(oldEndDate);
 						lastRecord.setSubCoverYn(subCoverYn);
-						lastRecord.setStatus("N");	
+						String startDatewithoutTime = sdformat.format(startDate);
+						String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
+
+						if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
+							lastRecord.setStatus("N");	
+						}
+						
 						repo.saveAndFlush(lastRecord);
 						log.info("Saved Details is ---> " + json.toJson(saveData));
 					}

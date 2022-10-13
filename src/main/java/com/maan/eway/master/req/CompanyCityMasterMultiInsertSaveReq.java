@@ -22,9 +22,6 @@ public class CompanyCityMasterMultiInsertSaveReq implements Serializable {
 	@JsonProperty("CountryId")
 	private String countryId;
 
-	@JsonProperty("RegionId")
-	private String regionId;
-
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 

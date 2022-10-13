@@ -22,4 +22,8 @@ public class SectionCoverMasterGetReq {
 
 	@JsonProperty("ProductId")
     private String     productId     ;
+	
+	@JsonFormat(pattern ="dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
 }

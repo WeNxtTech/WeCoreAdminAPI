@@ -353,6 +353,12 @@ public class MailMasterServiceImpl implements MailMasterService {
 				// Update Old Record
 				MailMaster lastRecord = list.get(0);
 				lastRecord.setEffectiveDateEnd(oldEndDate);
+				String startDatewithoutTime = sdformat.format(startDate);
+				String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
+
+				if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
+					lastRecord.setStatus("N");	
+				}
 				mailRepo.saveAndFlush(lastRecord);
 			}
 			log.info("Saved Details is --> " + json.toJson(saveData));
@@ -369,7 +375,7 @@ public class MailMasterServiceImpl implements MailMasterService {
 		MailMasterGetRes res = new MailMasterGetRes();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
-			Date today = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);

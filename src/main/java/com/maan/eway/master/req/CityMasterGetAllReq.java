@@ -26,6 +26,7 @@ public class CityMasterGetAllReq implements Serializable {
     @JsonProperty("StateId")
     private String stateId;
     
-    @JsonProperty("RegionId")
-    private String regionId;
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
 }

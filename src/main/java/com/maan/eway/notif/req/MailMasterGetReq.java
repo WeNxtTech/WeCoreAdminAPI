@@ -19,6 +19,10 @@ public class MailMasterGetReq implements Serializable {
     
     @JsonProperty("InsuranceId")
     private String companyId;
+    
+    @JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
    
     
 }

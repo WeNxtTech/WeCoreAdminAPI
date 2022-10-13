@@ -163,6 +163,12 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 				// Update Old Record
 				DocumentMaster lastRecord = list.get(0);
 				lastRecord.setEffectiveDateEnd(oldEndDate);
+				String startDatewithoutTime = sdf.format(startDate);
+				String oldDatewithoutTime = sdf.format(list.get(0).getEffectiveDateStart());
+
+				if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
+					lastRecord.setStatus("N");	
+				}
 				repo.saveAndFlush(lastRecord);
 			}
 
@@ -214,7 +220,7 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
 			// Criteria
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -268,7 +274,7 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 		List<DocumentMasterGetRes> resList = new ArrayList<DocumentMasterGetRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -336,7 +342,7 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
 			List<DocumentMaster> list = new ArrayList<DocumentMaster>();
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -540,7 +546,7 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 	public SuccessRes changeStatusOfDocument(DocumentChangeStatusReq req) {
 		SuccessRes res = new SuccessRes();
 		try {
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			
 			DocumentMaster updateRecord  = new DocumentMaster();

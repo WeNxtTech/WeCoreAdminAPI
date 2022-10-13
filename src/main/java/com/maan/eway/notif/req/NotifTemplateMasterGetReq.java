@@ -19,5 +19,9 @@ public class NotifTemplateMasterGetReq implements Serializable {
    
 	@JsonProperty("NotificationApplicable")
 	private String notificationApplicable;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
     
 }

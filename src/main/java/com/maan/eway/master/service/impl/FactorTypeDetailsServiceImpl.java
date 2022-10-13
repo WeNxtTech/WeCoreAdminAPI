@@ -455,6 +455,12 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 				for (FactorTypeDetails data :  list) {
 					 FactorTypeDetails updateRecord = data ;
 					 updateRecord.setEffectiveDateEnd(oldEndDate);
+					 String startDatewithoutTime = sdformat.format(startDate);
+					 String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
+
+					 if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
+						updateRecord.setStatus("N");	
+					 }
 					 repository.saveAndFlush(updateRecord);
 				}
 			}			
@@ -538,7 +544,7 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 
 		try {
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -621,7 +627,7 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 
 		try {
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -698,7 +704,7 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 
 		try {
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -768,7 +774,7 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 	public SuccessRes changeStatusOfFactorType(FactorUpdateStatusReq req) {
 		SuccessRes res = new SuccessRes();
 		try {
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			
 			FactorTypeDetails updateRecord  = new FactorTypeDetails();
@@ -892,7 +898,7 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 		FactorTypeDetailsGetRes res = new FactorTypeDetailsGetRes();
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);

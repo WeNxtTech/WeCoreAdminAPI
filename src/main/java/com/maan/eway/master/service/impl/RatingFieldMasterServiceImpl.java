@@ -243,6 +243,12 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 				// Update Old Record
 				RatingFieldMaster lastRecord = list.get(0);
 				lastRecord.setEffectiveDateEnd(oldEndDate);
+				String startDatewithoutTime = sdformat.format(startDate);
+				String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
+
+				if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
+					lastRecord.setStatus("N");	
+				}
 				factorRepo.saveAndFlush(lastRecord);
 			}
 			log.info("Saved Details is --> " + json.toJson(saveData));
@@ -334,7 +340,7 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 		List<RatingFieldsMasterGetRes> resList = new ArrayList<RatingFieldsMasterGetRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
-			Date today = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -396,7 +402,7 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 		List<RatingFieldsMasterGetRes> resList = new ArrayList<RatingFieldsMasterGetRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
-			Date today = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -459,7 +465,7 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 		RatingFieldsMasterGetRes res = new RatingFieldsMasterGetRes();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
-			Date today = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -510,7 +516,7 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 	public SuccessRes changeStatusOfFactorType(RatingFieldsMasterChangeStatusReq req) {
 		SuccessRes res = new SuccessRes();
 		try {
-			Date today = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 
 			RatingFieldMaster updateRecord = new RatingFieldMaster();

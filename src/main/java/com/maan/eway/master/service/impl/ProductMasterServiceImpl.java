@@ -185,6 +185,12 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 					// Update Old Record
 					ProductMaster lastRecord = list.get(0) ;
 					lastRecord.setEffectiveDateEnd(oldEndDate);
+					String startDatewithoutTime = sdformat.format(startDate);
+					String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
+
+					if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
+						lastRecord.setStatus("N");	
+					}
 					repo.saveAndFlush(lastRecord);
 				}
 				
@@ -365,9 +371,9 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 
 		try {
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
-			cal.setTime(today);
+			cal.setTime(today );
 			cal.set(Calendar.HOUR_OF_DAY, 23);
 			cal.set(Calendar.MINUTE, 1);
 			today   = cal.getTime();
@@ -433,7 +439,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 		ProductMasterRes res = new ProductMasterRes();
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -564,7 +570,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 
 		try {
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -636,7 +642,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 		public SuccessRes changeStatusOfProduct(ProductChangeStatusReq req) {
 			SuccessRes res = new SuccessRes();
 			try {
-				Date today  = new Date();
+				Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 				Calendar cal = new GregorianCalendar(); 
 				
 				ProductMaster updateRecord  = new ProductMaster();

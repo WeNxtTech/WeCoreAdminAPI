@@ -43,6 +43,7 @@ import com.maan.eway.master.req.BranchChangeStatusReq;
 import com.maan.eway.master.req.BranchMasterGetAllReq;
 import com.maan.eway.master.req.BranchMasterGetReq;
 import com.maan.eway.master.req.BranchMasterSaveReq;
+import com.maan.eway.master.req.CompanyBranchGetReq;
 import com.maan.eway.master.req.CompanyBranchReq;
 import com.maan.eway.master.req.RegionMasterGetReq;
 import com.maan.eway.master.res.BranchMasterRes;
@@ -661,7 +662,7 @@ public BranchMasterRes getByBranchCode(BranchMasterGetReq req) {
 
 //**********************************************************DROPDOWN********************************************************************\\
 @Override
-public List<DropDownRes> getBranchMasterDropdown() {
+public List<DropDownRes> getBranchMasterDropdown(CompanyBranchGetReq req) {
 	List<DropDownRes> resList = new ArrayList<DropDownRes>();
 	try {
 		Date today  = new Date();
@@ -670,6 +671,10 @@ public List<DropDownRes> getBranchMasterDropdown() {
 		cal.set(Calendar.HOUR_OF_DAY, 23);
 		cal.set(Calendar.MINUTE, 1);
 		today   = cal.getTime();
+		cal.setTime(today);
+		cal.set(Calendar.HOUR_OF_DAY, 1);
+		cal.set(Calendar.MINUTE, 1);
+		Date todayEnd   = cal.getTime();
 		
 		// Criteria
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -691,15 +696,26 @@ public List<DropDownRes> getBranchMasterDropdown() {
 		Subquery<Long> effectiveDate = query.subquery(Long.class);
 		Root<BranchMaster> ocpm1 = effectiveDate.from(BranchMaster.class);
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-		javax.persistence.criteria.Predicate a1 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode") );
-		javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-		effectiveDate.where(a1,a2);
+		Predicate a1 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode") );
+		Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
+		Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+		effectiveDate.where(a1,a2,a3);
+		
+		// Effective Date Max Filter
+		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+		Root<BranchMaster> ocpm2 = effectiveDate2.from(BranchMaster.class);
+		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+		Predicate a4 = cb.equal(c.get("branchCode"),ocpm2.get("branchCode") );
+		Predicate a5 = cb.equal(c.get("companyId"),ocpm2.get("companyId") );
+		Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+		effectiveDate2.where(a4,a5,a6);
 		
 	    // Where	
-		javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
-		javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
-		
-		query.where(n1,n2).orderBy(orderList);
+		Predicate n1 = cb.equal(c.get("status"), "Y");
+		Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+		Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+		Predicate n4 = cb.equal(c.get("companyId"), req.getCompanyId());
+		query.where(n1,n2,n3,n4).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<BranchMaster> result = em.createQuery(query);			

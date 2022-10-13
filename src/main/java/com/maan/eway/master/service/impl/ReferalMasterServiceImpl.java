@@ -176,6 +176,12 @@ public SuccessRes insertReferal(ReferalMasterSaveReq req) {
 				// Update Old Record
 				ReferalMaster lastRecord = list.get(0) ;
 				lastRecord.setEffectiveDateEnd(oldEndDate);
+				String startDatewithoutTime = sdformat.format(startDate);
+				String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
+
+				if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
+					lastRecord.setStatus("N");	
+				}
 				repo.saveAndFlush(lastRecord);
 			}
 			
@@ -364,7 +370,7 @@ public List<ReferalMasterRes> getallReferalDetails(ReferalMasterGetAllReq req) {
 	List<ReferalMasterRes> resList = new ArrayList<ReferalMasterRes>();
 	 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 	try {
-		Date today  = new Date();
+		Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 		Calendar cal = new GregorianCalendar(); 
 		cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 30);
 		today   = cal.getTime();
@@ -431,7 +437,7 @@ public ReferalMasterRes getByReferalId(ReferalMasterGetReq req) {
 	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
 	try {
-		Date today  = new Date();
+		Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 		Calendar cal = new GregorianCalendar(); 
 		cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 30);
 		today   = cal.getTime();
@@ -548,7 +554,7 @@ public List<ReferalMasterRes> getActiveReferalDetails(ReferalMasterGetAllReq req
 	 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 	try {
 		
-		Date today  = new Date();
+		Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 		Calendar cal = new GregorianCalendar(); 
 		cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 30);
 		today   = cal.getTime();
@@ -613,7 +619,7 @@ public List<ReferalMasterRes> getActiveReferalDetails(ReferalMasterGetAllReq req
 public SuccessRes changeStatusOfReferal(ReferalMasterChangeStatusReq req) {
 	SuccessRes res = new SuccessRes();
 	try {
-		Date today  = new Date();
+		Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 		Calendar cal = new GregorianCalendar(); 
 		
 		ReferalMaster updateRecord  = new ReferalMaster();

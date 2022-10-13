@@ -23,5 +23,7 @@ public class RatingFieldMasterGetAllReq implements Serializable {
     @JsonProperty("ProductId")
     private String productId;
       
-    
+    @JsonFormat(pattern ="dd/MM/yyyy")
+    @JsonProperty("EffectiveDateStart")
+    private Date effectiveDateStart;
 }

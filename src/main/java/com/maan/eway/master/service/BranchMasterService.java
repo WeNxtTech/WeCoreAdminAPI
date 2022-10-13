@@ -12,6 +12,7 @@ import com.maan.eway.master.req.BranchChangeStatusReq;
 import com.maan.eway.master.req.BranchMasterGetAllReq;
 import com.maan.eway.master.req.BranchMasterGetReq;
 import com.maan.eway.master.req.BranchMasterSaveReq;
+import com.maan.eway.master.req.CompanyBranchGetReq;
 import com.maan.eway.master.req.CompanyBranchReq;
 import com.maan.eway.master.res.BankMasterRes;
 import com.maan.eway.master.res.BranchMasterRes;
@@ -25,7 +26,7 @@ import java.util.List;
 */
 public interface BranchMasterService  {
 
-	List<DropDownRes> getBranchMasterDropdown();
+	List<DropDownRes> getBranchMasterDropdown(CompanyBranchGetReq req);
 
 	BranchMasterRes getByBranchCode(BranchMasterGetReq req);
 

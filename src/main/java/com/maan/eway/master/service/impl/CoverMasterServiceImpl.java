@@ -5,6 +5,7 @@
 */
 package com.maan.eway.master.service.impl;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -586,7 +587,12 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 						CoverMaster lastRecord = data;
 						lastRecord.setEffectiveDateEnd(oldEndDate);
 						lastRecord.setSubCoverYn(subCoverYn);
-						lastRecord.setStatus("N");	
+						String startDatewithoutTime = sdformat.format(startDate);
+						String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
+
+						if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
+							lastRecord.setStatus("N");	
+						}
 						repo.saveAndFlush(lastRecord);
 						log.info("Saved Details is ---> " + json.toJson(saveData));
 					}
@@ -671,7 +677,7 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 		List<CoverMasterGetAllRes> resList = new ArrayList<CoverMasterGetAllRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -771,8 +777,10 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 	public CoverMasterRes getByCoverId(CoverMasterGetReq req) {
 		CoverMasterRes res = new CoverMasterRes();
 		DozerBeanMapper mapper = new DozerBeanMapper();
+		String pattern = "#####0.00000";
+		DecimalFormat df = new DecimalFormat(pattern);
 		try {
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -821,9 +829,11 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
 			res.setCreatedBy(list.get(0).getCreatedBy() == null ? "" : list.get(0).getCreatedBy());
 			res.setToolTip(list.get(0).getToolTip() == null ? "" : list.get(0).getToolTip());
-			res.setMinimumPremium(list.get(0).getMinPremium() == null ? "" : list.get(0).getMinPremium().toString());
-			res.setSumInsuredEnd(list.get(0).getMaxSuminsured() == null ? "" : list.get(0).getMaxSuminsured().toString());
-			res.setBaseRate(list.get(0).getBaseRate() == null ? "" : list.get(0).getBaseRate().toString());
+			res.setExcess(list.get(0).getExcess() == null ? "" :df.format(list.get(0).getExcess()));
+			res.setMinimumPremium(list.get(0).getMinPremium() == null ? "" :df.format(list.get(0).getMinPremium()));
+			res.setSumInsuredEnd(list.get(0).getMaxSuminsured() == null ? "" :df.format(list.get(0).getMaxSuminsured()));
+			res.setBaseRate(list.get(0).getBaseRate() == null ? "" : df.format(list.get(0).getBaseRate()));
+			res.setCoverageLimit(list.get(0).getCoverageLimit() == null ? "" : df.format(list.get(0).getCoverageLimit()));
 			
 			// Ofs Details
 			List<OfsGridGetRes> gridDetails =  new ArrayList<OfsGridGetRes>();
@@ -832,12 +842,12 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 				
 				for( CoverOfsGridMaster data : ofsGrids ) {
 					OfsGridGetRes dataRes = new OfsGridGetRes();
-					dataRes.setBaseRate(data.getBaseRate() ==null ?"" : String.valueOf(data.getBaseRate()) );
+					dataRes.setBaseRate(data.getBaseRate() ==null ?"" : df.format(data.getBaseRate()) );
 					dataRes.setCalcType(data.getCalcType() );
 					dataRes.setCalcTypeDesc(data.getCalcTypeDesc() );
-					dataRes.setMinimumPremium(data.getMinimumPremium() ==null ?"" : String.valueOf(data.getMinimumPremium()) );
-					dataRes.setSumInsuredStart(data.getStartSumInsured() ==null ?"" : String.valueOf(data.getStartSumInsured()) );
-					dataRes.setSumInsuredEnd(data.getEndSumInsured() ==null ?"" : String.valueOf(data.getEndSumInsured()) );
+					dataRes.setMinimumPremium(data.getMinimumPremium() ==null ?"" : df.format(data.getMinimumPremium()) );
+					dataRes.setSumInsuredStart(data.getStartSumInsured() ==null ?"" : df.format(data.getStartSumInsured()) );
+					dataRes.setSumInsuredEnd(data.getEndSumInsured() ==null ?"" : df.format(data.getEndSumInsured()) );
 					dataRes.setCoverageSubId(String.valueOf(data.getCoveragesSubId()));
 					
 					gridDetails.add(dataRes);
@@ -860,7 +870,7 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 		List<CoverMasterGetAllRes> resList = new ArrayList<CoverMasterGetAllRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date(); today  = new Date();
 			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -957,7 +967,7 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 	public SuccessRes changeStatusOfProduct(CoverChangeStatusReq req) {
 		SuccessRes res = new SuccessRes();
 		try {
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			
 			CoverMaster updateRecord  = new CoverMaster();

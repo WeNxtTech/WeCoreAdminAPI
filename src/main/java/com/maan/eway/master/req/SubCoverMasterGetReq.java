@@ -19,4 +19,7 @@ public class SubCoverMasterGetReq implements Serializable {
 	@JsonProperty("CoverId")
     private String coverId; 
 	    
+	 @JsonFormat(pattern ="dd/MM/yyyy")
+	 @JsonProperty("EffectiveDateStart")
+	 private Date effectiveDateStart;
 }

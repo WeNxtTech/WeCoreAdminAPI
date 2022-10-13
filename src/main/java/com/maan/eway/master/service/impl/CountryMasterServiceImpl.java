@@ -171,6 +171,13 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 				// Update Old Record
 				CountryMaster lastRecord = list.get(0);
 				lastRecord.setEffectiveDateEnd(oldEndDate);
+				String startDatewithoutTime = sdformat.format(startDate);
+				String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
+
+				if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
+					lastRecord.setStatus("N");	
+				}
+
 				repo.saveAndFlush(lastRecord);
 			}
 
@@ -362,7 +369,7 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 		List<CountryMasterRes> resList = new ArrayList<CountryMasterRes>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -431,7 +438,7 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 		CountryMasterRes res = new CountryMasterRes();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -562,7 +569,7 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 		List<CountryMasterRes> resList = new ArrayList<CountryMasterRes>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -631,7 +638,7 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 	public SuccessRes changeStatusOfCountry(CountryChangeStatusReq req) {
 		SuccessRes res = new SuccessRes();
 		try {
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			
 			CountryMaster updateRecord  = new CountryMaster();

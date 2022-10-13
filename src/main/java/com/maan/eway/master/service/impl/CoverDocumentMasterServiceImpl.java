@@ -186,7 +186,7 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 		List<CoverDocumentMasterGetRes> resList = new ArrayList<CoverDocumentMasterGetRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
-			Date today = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -264,7 +264,7 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 		DozerBeanMapper mapper = new DozerBeanMapper();
 
 		try {
-			Date today = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -334,7 +334,7 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 		List<CoverDocumentMasterGetRes> resList = new ArrayList<CoverDocumentMasterGetRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
-			Date today = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -418,7 +418,7 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 		List<DocumentMasterGetRes> resList = new ArrayList<DocumentMasterGetRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
-			Date today = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -564,7 +564,7 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 	public SuccessRes changeStatusOfDocument(CoverDocumentChangeStatusReq req) {
 		SuccessRes res = new SuccessRes();
 		try {
-			Date today = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 
 			CoverDocumentMaster updateRecord = new CoverDocumentMaster();
@@ -632,7 +632,7 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 				Predicate n10 = cb.equal(pm.get("coverId"), req.getCoverId());
 				Predicate n11 = cb.equal(pm.get("productId"), req.getProductId());
 				Predicate n12 = cb.greaterThanOrEqualTo(pm.get("effectiveDateStart"), today);
-				delete.where(n7, n8);
+				delete.where(n7, n8,n9,n10,n11,n12);
 				em.createQuery(delete).executeUpdate();
 				// Insert Updated Record
 				updateRecord.setStatus(req.getStatus());
@@ -904,6 +904,12 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 				// Update Old Record
 				CoverDocumentMaster lastRecord = list.get(0);
 				lastRecord.setEffectiveDateEnd(oldEndDate);
+				String startDatewithoutTime = sdf.format(startDate);
+				String oldDatewithoutTime = sdf.format(list.get(0).getEffectiveDateStart());
+
+				if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
+					lastRecord.setStatus("N");	
+				}
 				repo.saveAndFlush(lastRecord);
 			}
 

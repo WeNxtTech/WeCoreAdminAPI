@@ -98,6 +98,25 @@ private static final long serialVersionUID = 1L;
     private Date       effectiveDateEnd ;
     
     //--- ENTITY DATA FIELDS 
+    @Column(name="FACTOR_TYPE_NAME")
+    private String factorTypeName ;
+    
+    @Column(name="FACTOR_TYPE_DESC")
+    private String factorTypeDesc ;
+
+    @Column(name="COVER_NAME")
+    private String coverName ;
+
+    @Column(name="COVER_DESC")
+    private String coverDesc ;
+
+    @Column(name="SUB_COVER_NAME")
+    private String subCoverName ;
+
+    @Column(name="SUB_COVER_DESC")
+    private String subCoverDesc ;
+
+    
     @Column(name="STATUS", length=1)
     private String     status ;
 

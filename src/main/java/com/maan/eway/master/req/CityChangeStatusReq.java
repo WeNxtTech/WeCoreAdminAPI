@@ -1,5 +1,8 @@
 package com.maan.eway.master.req;
 
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
@@ -12,4 +15,14 @@ public class CityChangeStatusReq {
 	 
 	 @JsonProperty("Status")
 	 private String status;
+	 
+	 @JsonProperty("CountryId")
+	 private String countryId;
+	    
+	 @JsonProperty("StateId")
+	 private String stateId;
+	 
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
 }

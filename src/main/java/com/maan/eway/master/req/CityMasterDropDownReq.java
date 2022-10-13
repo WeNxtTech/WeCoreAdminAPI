@@ -19,9 +19,6 @@ public class CityMasterDropDownReq implements Serializable {
     
 	@JsonProperty("CountryId")
     private String     countryId     ;
-    
-	
-	@JsonProperty("RegionId")
-    private String    regionId     ;
+ 
     
 }

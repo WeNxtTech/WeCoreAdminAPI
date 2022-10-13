@@ -22,7 +22,10 @@ import com.maan.eway.master.req.FactorRateGetReq;
 import com.maan.eway.master.req.FactorRateGetRes;
 import com.maan.eway.master.req.FactorRateSaveReq;
 import com.maan.eway.master.req.FactorRateUpdateStatusReq;
+import com.maan.eway.master.req.FactorRateViewReq;
+import com.maan.eway.master.res.FactorRateCoverRes;
 import com.maan.eway.master.res.FactorRateGetAllRes;
+import com.maan.eway.master.res.FactorRateViewRes;
 import com.maan.eway.master.service.FactorRateMasterService;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.SuccessRes;
@@ -158,6 +161,25 @@ public class FactorRateMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 
+	}
+	
+	@PostMapping("/viewfactorratecovers")
+	@ApiOperation("This method is get Active Factor Rates Details")
+	public ResponseEntity<CommonRes> viewFactorRateDetails(@RequestBody FactorRateViewReq req) {
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+
+		List<FactorRateCoverRes> res = entityService.viewFactorRateDetails(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
 	}
 
 }

@@ -175,6 +175,12 @@ public class CompanyStateMasterServiceImpl implements CompanyStateMasterService 
 				// Update Old Record
 				CompanyStateMaster lastRecord = list.get(0);
 				lastRecord.setEffectiveDateEnd(oldEndDate);
+				String startDatewithoutTime = sdformat.format(startDate);
+				String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
+
+				if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
+					lastRecord.setStatus("N");	
+				}
 				repo.saveAndFlush(lastRecord);
 			}
 
@@ -343,7 +349,7 @@ public class CompanyStateMasterServiceImpl implements CompanyStateMasterService 
 		List<CompanyStateMasterRes> resList = new ArrayList<CompanyStateMasterRes>();
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 30);
@@ -415,7 +421,7 @@ public class CompanyStateMasterServiceImpl implements CompanyStateMasterService 
 
 		try {
 			
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -547,7 +553,7 @@ public class CompanyStateMasterServiceImpl implements CompanyStateMasterService 
 		List<CompanyStateMasterRes> resList = new ArrayList<CompanyStateMasterRes>();
 		 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 30);
 			today   = cal.getTime();
@@ -618,7 +624,7 @@ public class CompanyStateMasterServiceImpl implements CompanyStateMasterService 
 	public SuccessRes changeStatusOfCompanyStateMaster(CompanyStateMasterChangeStatusReq req) {
 		SuccessRes res = new SuccessRes();
 		try {
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			
 			CompanyStateMaster updateRecord  = new CompanyStateMaster();
@@ -702,7 +708,7 @@ public class CompanyStateMasterServiceImpl implements CompanyStateMasterService 
 		List<CompanyStateMasterRes> resList = new ArrayList<CompanyStateMasterRes>();
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
-			Date today = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 1);
 			today = cal.getTime();

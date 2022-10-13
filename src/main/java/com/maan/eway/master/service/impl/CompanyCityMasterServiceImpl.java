@@ -305,11 +305,10 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 				Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 				Predicate n3 = cb.equal(b.get("cityId"), req.getCityId());
 				Predicate n4 = cb.equal(b.get("countryId"), req.getCountryId());
-				Predicate n5 = cb.equal(b.get("regionId"), req.getRegionId());
 				Predicate n6 = cb.equal(b.get("stateId"), req.getStateId());
 				Predicate n7 = cb.equal(b.get("companyId"), req.getCompanyId());
 
-				query.where(n1, n2, n3, n4, n5, n6, n7);// .orderBy(orderList);
+				query.where(n1, n2, n3, n4, n6, n7);// .orderBy(orderList);
 
 				// Get Result
 				TypedQuery<CompanyCityMaster> result = em.createQuery(query);
@@ -346,6 +345,12 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 				// Update Old Record
 				CompanyCityMaster lastRecord = list.get(0);
 				lastRecord.setEffectiveDateEnd(oldEndDate);
+				String startDatewithoutTime = sdformat.format(startDate);
+				String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
+
+				if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
+					lastRecord.setStatus("N");	
+				}
 				repo.saveAndFlush(lastRecord);
 			}
 
@@ -406,7 +411,7 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 		List<CompanyCityMasterRes> resList = new ArrayList<CompanyCityMasterRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
-			Date today = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 
 			cal.setTime(today);
@@ -449,11 +454,10 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("countryId"), req.getCountryId());
-			Predicate n3 = cb.equal(b.get("regionId"), req.getRegionId());
 			Predicate n4 = cb.equal(b.get("stateId"), req.getStateId());
 			Predicate n5 = cb.equal(b.get("companyId"), req.getCompanyId());
 
-			query.where(n1, n2, n3, n4, n5).orderBy(orderList);
+			query.where(n1, n2, n4, n5).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CompanyCityMaster> result = em.createQuery(query);
@@ -484,7 +488,7 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 		List<CompanyCityMasterRes> resList = new ArrayList<CompanyCityMasterRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
-			Date today = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -527,11 +531,10 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("status"), "Y");
 			Predicate n3 = cb.equal(b.get("countryId"), req.getCountryId());
-			Predicate n4 = cb.equal(b.get("regionId"), req.getRegionId());
 			Predicate n5 = cb.equal(b.get("stateId"), req.getStateId());
 			Predicate n6 = cb.equal(b.get("companyId"), req.getCompanyId());
 
-			query.where(n1, n2, n3, n4, n5, n6).orderBy(orderList);
+			query.where(n1, n2, n3, n5, n6).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CompanyCityMaster> result = em.createQuery(query);
@@ -564,7 +567,7 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
 		try {
-			Date today = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -604,11 +607,10 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("cityId"), req.getCityId());
 			Predicate n3 = cb.equal(c.get("countryId"), req.getCountryId());
-			Predicate n4 = cb.equal(c.get("regionId"), req.getRegionId());
 			Predicate n5 = cb.equal(c.get("stateId"), req.getStateId());
 			Predicate n6 = cb.equal(c.get("companyId"), req.getCompanyId());
 
-			query.where(n1, n2, n3, n4, n5, n6).orderBy(orderList);
+			query.where(n1, n2, n3, n5, n6).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CompanyCityMaster> result = em.createQuery(query);
@@ -701,12 +703,11 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("countryId"), req.getCountryId());
-			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("regionId"), req.getRegionId());
 			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("stateId"), req.getStateId());
 			javax.persistence.criteria.Predicate n6 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 			javax.persistence.criteria.Predicate n7 = cb.equal(c.get("companyId"), req.getCompanyId());
 
-			query.where(n1, n2, n3, n4, n5, n6, n7).orderBy(orderList);
+			query.where(n1, n2, n3,  n5, n6, n7).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CompanyCityMaster> result = em.createQuery(query);
@@ -731,7 +732,7 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 	public SuccessRes changeStatusOfCity(CompanyCityChangeStatusReq req) {
 		SuccessRes res = new SuccessRes();
 		try {
-			Date today = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 
 			CompanyCityMaster updateRecord = new CompanyCityMaster();
@@ -821,7 +822,7 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 		List<CompanyCityMasterRes> resList = new ArrayList<CompanyCityMasterRes>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			Date today = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -939,12 +940,7 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 			Long row = 0L;
 			for (CompanyCityMasterMultiInsertSaveReq req : reqList) {
 				row = row + 1;
-				if (StringUtils.isBlank(req.getRegionId())) {
-					errorList.add(new Error("01", "RegionId", "Please Select RegionId in Row No :" + row));
-				} else if (req.getRegionId().length() > 20) {
-					errorList.add(new Error("01", "RegionId",
-							"Please Enter RegionId within 20 Characters in Row No :" + row));
-				}
+			
 				if (StringUtils.isBlank(req.getCreatedBy())) {
 					errorList.add(new Error("02", "CreatedBy", "Please Select CreatedBy   in Row No :" + row));
 				} else if (req.getCreatedBy().length() > 50) {
@@ -1069,11 +1065,10 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 				javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 				javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 				javax.persistence.criteria.Predicate n4 = cb.equal(c.get("countryId"), req.getCountryId());
-				javax.persistence.criteria.Predicate n5 = cb.equal(c.get("regionId"), req.getRegionId());
 				javax.persistence.criteria.Predicate n6 = cb.equal(c.get("stateId"), req.getStateId());
 				javax.persistence.criteria.Predicate n7 = cb.equal(c.get("cityId"), req.getCityId());
 
-				query.where(n1, n2, n3, n4, n5, n6, n7).orderBy(orderList);
+				query.where(n1, n2, n3, n4, n6, n7).orderBy(orderList);
 
 				// Get Result
 				TypedQuery<CityMaster> result = em.createQuery(query);
@@ -1085,7 +1080,6 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 				dozerMapper.map(list.get(0), saveData);
 				saveData.setCountryId(req.getCountryId());
 				saveData.setStateId(req.getStateId());
-				saveData.setRegionId(req.getRegionId());
 				saveData.setCityId(Integer.valueOf(cityId));
 				saveData.setCompanyId(req.getCompanyId());
 				saveData.setCreatedBy(req.getCreatedBy());

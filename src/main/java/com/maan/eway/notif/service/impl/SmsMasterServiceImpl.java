@@ -239,6 +239,12 @@ public class SmsMasterServiceImpl implements SmsMasterService{
 				// Update Old Record
 				SmsMaster lastRecord = list.get(0);
 				lastRecord.setEffectiveDateEnd(oldEndDate);
+				String startDatewithoutTime = sdformat.format(startDate);
+				String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
+
+				if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
+					lastRecord.setStatus("N");	
+				}
 				smsrepo.saveAndFlush(lastRecord);
 			}
 			log.info("Saved Details is --> " + json.toJson(saveData));
@@ -326,7 +332,7 @@ public class SmsMasterServiceImpl implements SmsMasterService{
 		SmsMasterGetRes res = new SmsMasterGetRes();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
-			Date today = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);

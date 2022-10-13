@@ -5,6 +5,7 @@
 */
 package com.maan.eway.master.service.impl;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -21,6 +22,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -34,10 +36,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
+import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.FactorRateMaster;
 import com.maan.eway.bean.FactorTypeDetails;
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.ProductSectionMaster;
+import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.FactorParamsInsert;
 import com.maan.eway.master.req.FactorRateGetAllReq;
@@ -45,8 +51,12 @@ import com.maan.eway.master.req.FactorRateGetReq;
 import com.maan.eway.master.req.FactorRateGetRes;
 import com.maan.eway.master.req.FactorRateSaveReq;
 import com.maan.eway.master.req.FactorRateUpdateStatusReq;
+import com.maan.eway.master.req.FactorRateViewReq;
 import com.maan.eway.master.req.RangeParamsReq;
+import com.maan.eway.master.res.FactorRateCoverRes;
 import com.maan.eway.master.res.FactorRateGetAllRes;
+import com.maan.eway.master.res.FactorRateSubCoverRes;
+import com.maan.eway.master.res.FactorRateViewRes;
 import com.maan.eway.master.service.FactorRateMasterService;
 import com.maan.eway.master.service.MasterCommonValidationService;
 import com.maan.eway.repository.FactorRateMasterRepository;
@@ -227,8 +237,6 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 										List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
 										if ( filter9Discrete.size()>0 ) {
 											errorList.add(new Error("01",param1Name,param1Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-										} else {
-											discrete9Values.add( data.getParam9());	
 										}
 									}	
 								} 
@@ -372,8 +380,6 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 										List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
 										if ( filter9Discrete.size()>0 ) {
 											errorList.add(new Error("01",param3Name,param3Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-										} else {
-											discrete9Values.add( data.getParam9());	
 										}
 									}	
 								} 
@@ -517,8 +523,6 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 										List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
 										if ( filter9Discrete.size()>0 ) {
 											errorList.add(new Error("01",param5Name,param5Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-										} else {
-											discrete9Values.add( data.getParam9());	
 										}
 									}	
 								} 
@@ -662,8 +666,6 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 										List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
 										if ( filter9Discrete.size()>0 ) {
 											errorList.add(new Error("01",param7Name,param7Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-										} else {
-											discrete9Values.add( data.getParam9());	
 										}
 									}	
 								} 
@@ -821,57 +823,32 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					if( row ==1 ) {
 						if ( param9==true && param10==false && param11==false && param12==false   ) {
 							if( StringUtils.isNotBlank(data.getParam9())) {
-								List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-								if ( filter9Discrete.size()>0 ) {
-									errorList.add(new Error("01",param8Name,param8Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-								} else {
+								
 									discrete9Values.add( data.getParam9());	
-								}
+								
 							}	
 						} 
 						if ( param9==true && param10==true && param11==false && param12==false   ) {
 							if( StringUtils.isNotBlank(data.getParam9()) &&  StringUtils.isNotBlank(data.getParam10())) {
-								List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-								List<String> filter10Discrete = discrete10Values.stream().filter( o -> o.equals(data.getParam10())).collect(Collectors.toList()) ;
 								
-								if ( filter9Discrete.size()>0 && filter10Discrete.size()>0 ) {
-									errorList.add(new Error("01",param8Name,param8Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-								} else {
 									discrete9Values.add( data.getParam9());	
-									discrete10Values.add( data.getParam10());	
-								}
+									discrete10Values.add( data.getParam10());		
 							}	
 						}
 						if ( param9==true && param10==true && param11==true && param12==false   ) {
 							if( StringUtils.isNotBlank(data.getParam9()) &&  StringUtils.isNotBlank(data.getParam10())  &&  StringUtils.isNotBlank(data.getParam11())) {
-								List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-								List<String> filter10Discrete = discrete10Values.stream().filter( o -> o.equals(data.getParam10())).collect(Collectors.toList()) ;
-								List<String> filter11Discrete = discrete11Values.stream().filter( o -> o.equals(data.getParam11())).collect(Collectors.toList()) ;
-								
-								if ( filter9Discrete.size()>0 && filter10Discrete.size()>0 && filter11Discrete.size()>0 ) {
-									errorList.add(new Error("01",param8Name,param8Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-								} else {
 									discrete9Values.add( data.getParam9());	
 									discrete10Values.add( data.getParam10());	
-									discrete11Values.add( data.getParam11());	
-								}
+									discrete11Values.add( data.getParam11());			
 							}	
 						}
 						if ( param9==true && param10==true && param11==true && param12==true   ) {
 							if( StringUtils.isNotBlank(data.getParam9()) &&  StringUtils.isNotBlank(data.getParam10()) &&  StringUtils.isNotBlank(data.getParam11()) &&  StringUtils.isNotBlank(data.getParam12())) {
-								List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-								List<String> filter10Discrete = discrete10Values.stream().filter( o -> o.equals(data.getParam10())).collect(Collectors.toList()) ;
-								List<String> filter11Discrete = discrete11Values.stream().filter( o -> o.equals(data.getParam11())).collect(Collectors.toList()) ;
-								List<String> filter12Discrete = discrete12Values.stream().filter( o -> o.equals(data.getParam12())).collect(Collectors.toList()) ;
-								
-								if ( filter9Discrete.size()>0 && filter10Discrete.size()>0 && filter11Discrete.size()>0 && filter12Discrete.size()>0 ) {
-									errorList.add(new Error("01",param8Name,param8Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-								} else {
 									discrete9Values.add( data.getParam9());	
 									discrete10Values.add( data.getParam10());	
 									discrete11Values.add( data.getParam11());	
 									discrete12Values.add( data.getParam12());	
-								}
+								
 							}	
 						}
 					}
@@ -1069,6 +1046,105 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					
 			} 
 			List<ListItemValue> calcTypes = listRepo.findByItemTypeAndStatus("CALCULATION_TYPE" , "Y");
+			cal.setTime(today);  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 50) ;
+			today = cal.getTime();
+			
+			// COver SubCoverDetails
+			List<SectionCoverMaster> coverlist = new ArrayList<SectionCoverMaster>();
+			{
+				// Find Latest Record
+				CriteriaBuilder cb2 = em.getCriteriaBuilder();
+				CriteriaQuery<SectionCoverMaster> query2 = cb2.createQuery(SectionCoverMaster.class);
+	
+				// Find All
+				Root<SectionCoverMaster> b2 = query2.from(SectionCoverMaster.class);
+	
+				// Effective Date Max Filter
+				
+				Subquery<Long> effectiveDate2 = query2.subquery(Long.class);
+				Root<SectionCoverMaster> ocpm2 = effectiveDate2.from(SectionCoverMaster.class);
+				effectiveDate2.select(cb2.max(ocpm2.get("effectiveDateStart")));
+				Predicate a10 = cb2.equal(ocpm2.get("coverId"), b2.get("coverId"));
+				Predicate a11 = cb2.equal(ocpm2.get("sectionId"), b2.get("sectionId"));
+				Predicate a12 = cb2.equal(ocpm2.get("productId"), b2.get("productId"));
+				Predicate a13 = cb2.equal(ocpm2.get("companyId"), b2.get("companyId"));
+				Predicate a14 = cb2.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"), today);
+				effectiveDate2.where(a10,a11,a12,a13,a14);
+	
+				// Select
+				query2.select(b2);
+	
+				// Order By
+				List<Order> orderList2 = new ArrayList<Order>();
+				orderList2.add(cb2.desc(b2.get("effectiveDateStart")));
+	
+				// Where
+				Predicate n7 = cb2.equal(b2.get("effectiveDateStart"),effectiveDate2);
+				Predicate n8 =cb2.equal(b2.get("coverId"), req.getCoverId());
+				Predicate n9 = cb2.equal(b2.get("productId"), req.getProductId());
+				Predicate n10 = cb2.equal(b2.get("companyId"), req.getCompanyId());
+				Predicate n11 = cb2.equal(b2.get("sectionId"), req.getSectionId());
+				Predicate n12 = cb2.equal(b2.get("status"), "Y");
+				Predicate n13 = cb2.notEqual(b2.get("status"), "Y");
+				Predicate n14 = cb2.or(n12,n13);
+				Predicate n15 = null ; 
+				if( StringUtils.isBlank(req.getSubCoverId()) ) {
+					n15 = cb2.equal(b2.get("subCoverId"), req.getCoverId());
+				} else {
+					n15 = cb2.equal(b2.get("subCoverId"), req.getSubCoverId());
+				}
+				
+				query2.where(n7,n8,n9,n10,n11,n14,n15).orderBy(orderList2);
+				// Get Result
+				TypedQuery<SectionCoverMaster> result2 = em.createQuery(query2);
+				coverlist  = result2.getResultList();
+			}
+			
+			// Factor Type Name
+			List<FactorTypeDetails> factorTypes = new ArrayList<FactorTypeDetails>();
+			{
+				// COver SubCoverDetails
+				
+				
+				// Find Latest Record
+				CriteriaBuilder cb2 = em.getCriteriaBuilder();
+				CriteriaQuery<FactorTypeDetails> query2 = cb2.createQuery(FactorTypeDetails.class);
+	
+				// Find All
+				Root<FactorTypeDetails> b2 = query2.from(FactorTypeDetails.class);
+	
+				// Effective Date Max Filter
+				
+				Subquery<Long> effectiveDate2 = query2.subquery(Long.class);
+				Root<FactorTypeDetails> ocpm2 = effectiveDate2.from(FactorTypeDetails.class);
+				effectiveDate2.select(cb2.max(ocpm2.get("effectiveDateStart")));
+				Predicate a12 = cb2.equal(ocpm2.get("productId"), b2.get("productId"));
+				Predicate a13 = cb2.equal(ocpm2.get("companyId"), b2.get("companyId"));
+				Predicate a14 = cb2.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"), today);
+				Predicate a15 = cb2.equal(ocpm2.get("factorTypeId"), b2.get("factorTypeId"));
+				effectiveDate2.where(a12,a13,a14,a15);
+	
+				// Select
+				query2.select(b2);
+	
+				// Order By
+				List<Order> orderList2 = new ArrayList<Order>();
+				orderList2.add(cb2.desc(b2.get("effectiveDateStart")));
+	
+				// Where
+				Predicate n7 = cb2.equal(b2.get("effectiveDateStart"),effectiveDate2);
+				Predicate n9 = cb2.equal(b2.get("productId"), req.getProductId());
+				Predicate n10 = cb2.equal(b2.get("companyId"), req.getCompanyId());
+				Predicate n12 = cb2.equal(b2.get("status"), "Y");
+				Predicate n13 = cb2.notEqual(b2.get("status"), "Y");
+				Predicate n14 = cb2.or(n12,n13);
+				Predicate n15 = cb2.equal(b2.get("factorTypeId"), req.getFactorTypeId());
+				
+				query2.where(n7,n9,n10,n14,n15).orderBy(orderList2);
+				// Get Result
+				TypedQuery<FactorTypeDetails> result2 = em.createQuery(query2);
+				factorTypes  = result2.getResultList();
+			}
 			
 			for ( FactorParamsInsert data :  req.getFactorParams() ) {
 				// Save New Records
@@ -1101,6 +1177,13 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				saveData.setStatus(StringUtils.isBlank(data.getStatus()) ? req.getStatus()  : data.getStatus());
 				saveData.setAgencyCode(StringUtils.isBlank(req.getAgencyCode()) ? "99999" : req.getAgencyCode());
 				saveData.setBranchCode(StringUtils.isBlank(req.getBranchCode()) ? "99999"  : req.getBranchCode());
+				saveData.setCoverName(coverlist.size()>0 ? coverlist.get(0).getCoverName() : "") ;
+				saveData.setCoverDesc(coverlist.size()>0 ? coverlist.get(0).getCoverDesc() : "") ;
+				saveData.setSubCoverName(coverlist.size()>0 ? coverlist.get(0).getSubCoverName() : "") ;
+				saveData.setSubCoverDesc(coverlist.size()>0 ? coverlist.get(0).getSubCoverDesc() : "") ;
+				saveData.setFactorTypeName(factorTypes.size()>0 ? factorTypes.get(0).getFactorTypeName() : "");
+				saveData.setFactorTypeDesc(factorTypes.size()>0 ? factorTypes.get(0).getFactorTypeDesc(): "");
+				
 				repository.saveAndFlush(saveData);
 				log.info("Saved Details is ---> " + json.toJson(saveData));
 			}
@@ -1113,6 +1196,12 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				for (FactorRateMaster data :  list) {
 					FactorRateMaster updateRecord = data ;
 					 updateRecord.setEffectiveDateEnd(oldEndDate);
+					 String startDatewithoutTime = sdformat.format(startDate);
+						String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
+
+						if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
+							updateRecord.setStatus("N");	
+						}
 					 repository.saveAndFlush(updateRecord);
 				}
 			}			
@@ -1131,7 +1220,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 
 		try {
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -1237,7 +1326,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 
 		try {
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -1344,9 +1433,11 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 	public FactorRateGetRes getByFactorRateId(FactorRateGetReq req) {
 		FactorRateGetRes res = new FactorRateGetRes();
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
-
+		String pattern = "#####0.00000";
+		DecimalFormat df = new DecimalFormat(pattern);
+		
 		try {
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -1425,9 +1516,9 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					FactorParamsInsert fParam = new FactorParamsInsert();
 					fParam  =  dozerMapper.map(data, FactorParamsInsert.class);
 					fParam.setSno(data.getSNo().toString());
-					fParam.setRate(data.getRate().toString());
+					fParam.setRate(df.format(data.getRate()));
 					fParam.setCalType(data.getCalcType());
-					fParam.setMinimumPremium(data.getMinPremium().toString());
+					fParam.setMinimumPremium(df.format(data.getMinPremium()));
 					factorParams.add(fParam);
 				}
 				res.setFactorParams(factorParams);
@@ -1447,7 +1538,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 	public SuccessRes changeStatusOfFactorRate(FactorRateUpdateStatusReq req) {
 		SuccessRes res = new SuccessRes();
 		try {
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			
 			FactorRateMaster updateRecord  = new FactorRateMaster();
@@ -1584,6 +1675,157 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 			return null;
 		}
 		return res;
+	}
+
+	@Override
+	public  List<FactorRateCoverRes> viewFactorRateDetails(FactorRateViewReq req) {
+		 List<FactorRateCoverRes> resList = new ArrayList<FactorRateCoverRes>();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+		
+		try {
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd   = cal.getTime();
+			
+			//Pagination
+			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+	
+			
+			List<SectionCoverMaster> list = new ArrayList<SectionCoverMaster>();
+			
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<SectionCoverMaster> query = cb.createQuery(SectionCoverMaster.class);
+	
+			// Find All
+			Root<SectionCoverMaster> b = query.from(SectionCoverMaster.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<SectionCoverMaster> ocpm1 = effectiveDate.from(SectionCoverMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
+			Predicate a4 = cb.equal(ocpm1.get("subCoverId"), b.get("subCoverId"));
+			Predicate a5 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
+			Predicate a6 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , today);
+			effectiveDate.where(a1,a2,a3,a4,a5,a6);
+			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<SectionCoverMaster> ocpm2 = effectiveDate2.from(SectionCoverMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a7 = cb.equal(ocpm2.get("productId"), b.get("productId"));
+			Predicate a8 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
+			Predicate a9 = cb.equal(ocpm2.get("coverId"), b.get("coverId"));
+			Predicate a10 = cb.equal(ocpm2.get("subCoverId"), b.get("subCoverId"));
+			Predicate a11 = cb.equal(ocpm2.get("sectionId"), b.get("sectionId"));
+			Predicate a12 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd") , todayEnd);
+			effectiveDate2.where(a7,a8,a9,a10,a11,a12);
+	
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("sectionId")));
+			orderList.add(cb.desc(b.get("coverId")));
+			orderList.add(cb.desc(b.get("subCoverId")));
+						
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("productId"), req.getProductId() );	
+			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId() );		
+			Predicate n4 = cb.equal(b.get("factorTypeId"),req.getFactorTypeId());
+			Predicate n5 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n6 = cb.equal(b.get("status"), "Y");
+			query.where(n1, n2, n3,n4,n5,n6).orderBy(orderList);
+				
+	
+			// Get Result
+			TypedQuery<SectionCoverMaster> result = em.createQuery(query);
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			list = result.getResultList();
+			
+			
+			// Section Names Query
+			// Criteria
+			CriteriaBuilder cb2 = em.getCriteriaBuilder();
+			CriteriaQuery<ProductSectionMaster> query2 = cb2.createQuery(ProductSectionMaster.class);
+			List<ProductSectionMaster> sectionlist = new ArrayList<ProductSectionMaster>();
+			
+			// Find All
+			Root<ProductSectionMaster>    c = query2.from(ProductSectionMaster.class);		
+			
+			// Select
+			query2.select(c );
+			
+		
+			// Order By
+			List<Order> orderList2 = new ArrayList<Order>();
+			orderList2.add(cb2.asc(c.get("sectionName")));
+			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate3 = query2.subquery(Long.class);
+			Root<ProductSectionMaster> ocpm3 = effectiveDate3.from(ProductSectionMaster.class);
+			effectiveDate3.select(cb2.max(ocpm3.get("effectiveDateStart")));
+			Predicate a13 = cb2.equal(c.get("sectionId"),ocpm3.get("sectionId") );
+			Predicate a14 = cb2.equal(c.get("companyId"), ocpm3.get("companyId") );
+			Predicate a15 = cb2.equal(c.get("productId"), ocpm3.get("productId") );
+			Predicate a16 = cb2.lessThanOrEqualTo(ocpm3.get("effectiveDateStart"), today);
+			effectiveDate3.where(a13,a14,a15,a16);
+	
+		    // Where	
+			Predicate n7 = cb2.equal(c.get("status"), "Y");
+			Predicate n8 = cb2.equal(c.get("effectiveDateStart"), effectiveDate3);
+			Predicate n9 = cb2.equal(c.get("companyId"), req.getCompanyId());
+			Predicate n10 = cb2.equal(c.get("productId"), req.getProductId());
+			
+			query2.where(n7,n8,n9,n10).orderBy(orderList2);
+			
+			// Get Result
+			TypedQuery<ProductSectionMaster> result2 = em.createQuery(query2);			
+			sectionlist =  result2.getResultList();  
+			
+		/*	List<SectionCoverMaster> filterCovers = list.stream().filter( o -> o.getSubCoverYn().equalsIgnoreCase("N") && o.getCoverId().equals(o.getSubCoverId()) ).collect(Collectors.toList()); 
+			List<SectionCoverMaster> filterSubCovers = list.stream().filter( o -> o.getSubCoverYn().equalsIgnoreCase("Y") && !( o.getCoverId().equals(o.getSubCoverId())) ).collect(Collectors.toList()); 
+			
+			List<FactorRateCoverRes> coverList  = new ArrayList<FactorRateCoverRes>();
+			for ( SectionCoverMaster cover : filterCovers) {
+				FactorRateCoverRes coverRes = new FactorRateCoverRes();
+				dozerMapper.map(cover, coverRes);
+				coverList.add(coverRes);
+			}
+			
+			List<FactorRateSubCoverRes> subCoverList = new ArrayList<FactorRateSubCoverRes>(); */
+			for ( SectionCoverMaster cover : list) {
+				FactorRateCoverRes coverRes = new FactorRateCoverRes();
+				dozerMapper.map(cover, coverRes);
+				List<ProductSectionMaster> filterSection = sectionlist.stream().filter( o -> o.getSectionId().equals(cover.getSectionId()) ).collect(Collectors.toList());
+				coverRes.setSectionName(filterSection.size()>0 ? filterSection.get(0).getSectionName() : "" );
+				resList.add(coverRes);
+			}
+			
+			// Response 
+	//		res.setCoverList(coverList);
+	//		res.setSubCoverList(subCoverList);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+	
+		}
+		return resList;
 	}
 
 

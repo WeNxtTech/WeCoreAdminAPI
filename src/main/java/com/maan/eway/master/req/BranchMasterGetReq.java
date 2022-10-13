@@ -15,5 +15,9 @@ public class BranchMasterGetReq implements Serializable {
 
 	@JsonProperty("BranchCode")
     private String     branchCode     ;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart ;
     
 }

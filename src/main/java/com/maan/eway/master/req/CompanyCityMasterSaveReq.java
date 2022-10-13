@@ -33,8 +33,6 @@ public class CompanyCityMasterSaveReq implements Serializable {
 	@JsonProperty("CountryId")
 	private String countryId;
 
-	@JsonProperty("RegionId")
-	private String regionId;
 
 	@JsonProperty("Status")
 	private String status;

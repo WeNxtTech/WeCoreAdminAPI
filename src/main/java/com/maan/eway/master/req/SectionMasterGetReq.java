@@ -10,7 +10,10 @@ import lombok.Data;
 
 @Data
 public class SectionMasterGetReq {
-	@JsonProperty("SectionId")
-    private Integer     sectionId     ;
+	  @JsonProperty("SectionId")
+      private Integer     sectionId     ;
     
+	  @JsonFormat(pattern ="dd/MM/yyyy")
+	  @JsonProperty("EffectiveDateStart")
+	  private Date effectiveDateStart;
 }

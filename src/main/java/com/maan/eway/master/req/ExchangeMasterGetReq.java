@@ -17,4 +17,8 @@ public class ExchangeMasterGetReq {
 
 	@JsonProperty("ExchangeId")
 	private String exchangeId;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
 }

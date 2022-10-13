@@ -173,6 +173,12 @@ private Logger log=LogManager.getLogger(RegionMasterServiceImpl.class);
 					// Update Old Record
 					RegionMaster lastRecord = list.get(0) ;
 					lastRecord.setEffectiveDateEnd(oldEndDate);
+					String startDatewithoutTime = sdformat.format(startDate);
+					String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
+
+					if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
+						lastRecord.setStatus("N");	
+					}
 					repo.saveAndFlush(lastRecord);
 				}
 				
@@ -373,7 +379,7 @@ private Logger log=LogManager.getLogger(RegionMasterServiceImpl.class);
 		List<RegionMasterRes> resList = new ArrayList<RegionMasterRes>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -442,7 +448,7 @@ private Logger log=LogManager.getLogger(RegionMasterServiceImpl.class);
 		RegionMasterRes res = new RegionMasterRes();
 		ModelMapper mapper = new ModelMapper();
 		try {
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -583,7 +589,7 @@ private Logger log=LogManager.getLogger(RegionMasterServiceImpl.class);
 		List<RegionMasterRes> resList = new ArrayList<RegionMasterRes>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -654,7 +660,7 @@ private Logger log=LogManager.getLogger(RegionMasterServiceImpl.class);
 	public SuccessRes changeStatusOfRegion(RegionChangeStatusReq req) {
 		SuccessRes res = new SuccessRes();
 		try {
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			
 			RegionMaster updateRecord  = new RegionMaster();

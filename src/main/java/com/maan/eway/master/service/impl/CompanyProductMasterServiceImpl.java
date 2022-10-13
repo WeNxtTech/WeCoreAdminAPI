@@ -300,7 +300,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 		List<CompanyProductMasterRes> resList = new ArrayList<CompanyProductMasterRes>();
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -369,7 +369,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 		List<CompanyProductMasterRes> resList = new ArrayList<CompanyProductMasterRes>();
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -439,7 +439,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 		CompanyProductMasterRes res = new CompanyProductMasterRes();
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -496,7 +496,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 		List<ProductMasterRes> resList = new ArrayList<ProductMasterRes>();
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
-			Date today = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -672,7 +672,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 	public SuccessRes changeStatusOfCompanyProduct(CompanyProductChangeStatusReq req) {
 		SuccessRes res = new SuccessRes();
 		try {
-			Date today  = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar(); 
 			
 			CompanyProductMaster updateRecord  = new CompanyProductMaster();
@@ -1022,6 +1022,12 @@ List<Error> errorList = new ArrayList<Error>();
 				// Update Old Record
 				CompanyProductMaster lastRecord = list.get(0) ;
 				lastRecord.setEffectiveDateEnd(oldEndDate);
+				String startDatewithoutTime = sdformat.format(startDate);
+				String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
+
+				if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
+					lastRecord.setStatus("N");	
+				}
 				repo.saveAndFlush(lastRecord);
 			}
 				

@@ -5,6 +5,7 @@
 */
 package com.maan.eway.master.service.impl;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -259,7 +260,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 		List<CoverSubCoverGetRes> resList = new ArrayList<CoverSubCoverGetRes>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			Date today = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -351,9 +352,10 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 		CoverSubCoverGetRes res = new CoverSubCoverGetRes();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-
+		String pattern = "#####0.00000";
+		DecimalFormat df = new DecimalFormat(pattern);
 		try {
-			Date today = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -421,11 +423,11 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			res = dozerMapper.map(list.get(0), CoverSubCoverGetRes.class);
 			res.setEntryDate(list.get(0).getEntryDate());
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
-			res.setMinimumPremium(list.get(0).getMinPremium() == null ? "" : list.get(0).getMinPremium().toString());
-			res.setSumInsuredStart(list.get(0).getMinSuminsured() == null ? "" : list.get(0).getMinSuminsured().toString());
-			res.setSumInsuredEnd(list.get(0).getMaxSuminsured() == null ? "" : list.get(0).getMaxSuminsured().toString());
-			res.setBaseRate(list.get(0).getBaseRate() == null ? "" : list.get(0).getBaseRate().toString());
-			
+			res.setMinimumPremium(list.get(0).getMinPremium() == null ? "" :df.format(list.get(0).getMinPremium()));
+			res.setSumInsuredEnd(list.get(0).getMaxSuminsured() == null ? "" :df.format(list.get(0).getMaxSuminsured()));
+			res.setBaseRate(list.get(0).getBaseRate() == null ? "" : df.format(list.get(0).getBaseRate()));
+			res.setCoverageLimit(list.get(0).getCoverageLimit() == null ? "" : df.format(list.get(0).getCoverageLimit()));
+			res.setExcess(list.get(0).getExcess() == null ? "" :df.format(list.get(0).getExcess()));
 			// Ofs Details
 			List<OfsGridGetRes> gridDetails =  new ArrayList<OfsGridGetRes>();
 			if( res.getCalcType().equalsIgnoreCase("G") ) {
@@ -433,12 +435,12 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 				
 				for( SectionCoverOfsGridMaster data : ofsGrids ) {
 					OfsGridGetRes dataRes = new OfsGridGetRes();
-					dataRes.setBaseRate(data.getBaseRate() ==null ?"" : String.valueOf(data.getBaseRate()) );
+					dataRes.setBaseRate(data.getBaseRate() ==null ?"" : df.format(data.getBaseRate()) );
 					dataRes.setCalcType(data.getCalcType() );
 					dataRes.setCalcTypeDesc(data.getCalcTypeDesc() );
-					dataRes.setMinimumPremium(data.getMinimumPremium() ==null ?"" : String.valueOf(data.getMinimumPremium()) );
-					dataRes.setSumInsuredStart(data.getStartSumInsured() ==null ?"" : String.valueOf(data.getStartSumInsured()) );
-					dataRes.setSumInsuredEnd(data.getEndSumInsured() ==null ?"" : String.valueOf(data.getEndSumInsured()) );
+					dataRes.setMinimumPremium(data.getMinimumPremium() ==null ?"" : df.format(data.getMinimumPremium()) );
+					dataRes.setSumInsuredStart(data.getStartSumInsured() ==null ?"" : df.format(data.getStartSumInsured()) );
+					dataRes.setSumInsuredEnd(data.getEndSumInsured() ==null ?"" : df.format(data.getEndSumInsured()) );
 					dataRes.setCoverageSubId(String.valueOf(data.getCoveragesSubId()));
 					
 					gridDetails.add(dataRes);
@@ -459,7 +461,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 		List<SubCoverMasterGetRes> resList = new ArrayList<SubCoverMasterGetRes>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			Date today = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -569,7 +571,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 		List<CoverSubCoverGetRes> resList = new ArrayList<CoverSubCoverGetRes>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			Date today = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -659,7 +661,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 	public SuccessRes changeStatusOfCoverSubCover(CoverSubCoverChangeStatusReq req) {
 		SuccessRes res = new SuccessRes();
 		try {
-			Date today = new Date();
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 
 			SectionCoverMaster updateRecord = new SectionCoverMaster();
@@ -817,10 +819,10 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()))) {
 				errorList.add(new Error("08", "Status", "Enter Status Y or N Only"));
 			}
-			if (StringUtils.isBlank(req.getTiraCode())) {
-				errorList.add(new Error("09", "Tira Code", "Please Enter Tira Code"));
-			} else if (req.getTiraCode().length() > 20) {
-				errorList.add(new Error("09", "Tira Code", "Enter Tira Code  within 20 Characters Only"));
+			if (StringUtils.isBlank(req.getRegulatoryCode())) {
+				errorList.add(new Error("09", "RegulatoryCode", "Please Enter RegulatoryCode"));
+			} else if (req.getRegulatoryCode().length() > 20) {
+				errorList.add(new Error("09", "RegulatoryCode", "Enter RegulatoryCode within 20 Characters Only"));
 			}
 
 			if (StringUtils.isBlank(req.getRemarks())) {
@@ -1004,7 +1006,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			endDate = cal.getTime();
 
 			String coverId = StringUtils.isBlank(req.getCoverId()) ? "" : req.getCoverId();
-			String subcoverId = "";
+			String subcoverId =  req.getSubCoverId();
 			String subCoverYn = "Y";
 			SectionCoverMaster saveData = new SectionCoverMaster();
 			List<SectionCoverMaster> list = new ArrayList<SectionCoverMaster>();
@@ -1056,10 +1058,10 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			repo.delete(list.get(0));
 
 			dozerMapper.map(req, saveData);
-			subcoverId = coverId;
 			saveData.setCoverId(Integer.valueOf(coverId));
 			saveData.setCoverName(list.get(0).getCoverName());
 			saveData.setCoverDesc(list.get(0).getCoverDesc());
+			saveData.setToolTip(list.get(0).getToolTip());
 			saveData.setSubCoverId(Integer.valueOf(subcoverId));
 			saveData.setSectionId(Integer.valueOf(req.getSectionId()));
 			saveData.setProductId(Integer.valueOf(req.getProductId()));
@@ -1172,7 +1174,12 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			SectionCoverMaster lastRecord = list.get(0);
 			lastRecord.setEffectiveDateEnd(oldEndDate);
 			lastRecord.setSubCoverYn(subCoverYn);
-			lastRecord.setStatus("N");
+			String startDatewithoutTime = sdformat.format(startDate);
+			String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
+
+			if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
+				lastRecord.setStatus("N");	
+			}
 			repo.saveAndFlush(lastRecord);
 			log.info("Saved Details is ---> " + json.toJson(saveData));
 

@@ -11,11 +11,14 @@ import com.maan.eway.master.req.FactorRateGetReq;
 import com.maan.eway.master.req.FactorRateGetRes;
 import com.maan.eway.master.req.FactorRateSaveReq;
 import com.maan.eway.master.req.FactorRateUpdateStatusReq;
+import com.maan.eway.master.req.FactorRateViewReq;
 import com.maan.eway.master.req.FactorTypeDetailsSaveReq;
 import com.maan.eway.master.req.FactorTypeGetAllReq;
 import com.maan.eway.master.req.FactorTypeGetReq;
 import com.maan.eway.master.req.FactorUpdateStatusReq;
+import com.maan.eway.master.res.FactorRateCoverRes;
 import com.maan.eway.master.res.FactorRateGetAllRes;
+import com.maan.eway.master.res.FactorRateViewRes;
 import com.maan.eway.master.res.FactorTypeDetailsGetRes;
 import com.maan.eway.master.res.FactorTypeGetAllRes;
 import com.maan.eway.res.SuccessRes;
@@ -37,6 +40,8 @@ public interface FactorRateMasterService  {
 	FactorRateGetRes getByFactorRateId(FactorRateGetReq req);
 
 	SuccessRes changeStatusOfFactorRate(FactorRateUpdateStatusReq req);
+
+	 List<FactorRateCoverRes> viewFactorRateDetails(FactorRateViewReq req);
 
 
 

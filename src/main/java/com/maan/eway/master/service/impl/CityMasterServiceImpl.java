@@ -358,10 +358,9 @@ public class CityMasterServiceImpl implements CityMasterService {
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("countryId"), req.getCountryId());
-			Predicate n3 = cb.equal(b.get("regionId"), req.getRegionId());
 			Predicate n4 = cb.equal(b.get("stateId"), req.getStateId());
 
-			query.where(n1, n2, n3, n4).orderBy(orderList);
+			query.where(n1, n2, n4).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CityMaster> result = em.createQuery(query);
@@ -434,11 +433,10 @@ public class CityMasterServiceImpl implements CityMasterService {
 
 			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("cityId"), req.getCityId());
-			Predicate n3 = cb.equal(c.get("countryId"), req.getRegionId());
-			Predicate n4 = cb.equal(c.get("regionId"), req.getRegionId());
+			Predicate n3 = cb.equal(c.get("countryId"), req.getCountryId());
 			Predicate n5 = cb.equal(c.get("stateId"), req.getStateId());
 
-			query.where(n1, n2, n3, n4, n5).orderBy(orderList);
+			query.where(n1, n2, n3, n5).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CityMaster> result = em.createQuery(query);
@@ -529,11 +527,10 @@ public class CityMasterServiceImpl implements CityMasterService {
 			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("countryId"), req.getCountryId());
-			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("regionId"), req.getRegionId());
 			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("stateId"), req.getStateId());
 			javax.persistence.criteria.Predicate n6 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 
-			query.where(n1, n2, n3, n4, n5, n6).orderBy(orderList);
+			query.where(n1, n2, n3, n5, n6).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CityMaster> result = em.createQuery(query);
@@ -602,10 +599,9 @@ public class CityMasterServiceImpl implements CityMasterService {
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("status"), "Y");
 			Predicate n3 = cb.equal(b.get("countryId"), req.getCountryId());
-			Predicate n4 = cb.equal(b.get("regionId"), req.getRegionId());
 			Predicate n5 = cb.equal(b.get("stateId"), req.getStateId());
 
-			query.where(n1, n2, n3, n4, n5).orderBy(orderList);
+			query.where(n1, n2, n3, n5).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CityMaster> result = em.createQuery(query);
@@ -661,8 +657,10 @@ public class CityMasterServiceImpl implements CityMasterService {
 			Root<CityMaster> ocpm1 = effectiveDate.from(CityMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("cityId"), b.get("cityId"));
-			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			effectiveDate.where(a1, a2);
+			Predicate a2 = cb.equal(ocpm1.get("stateId"), b.get("stateId"));
+			Predicate a3 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
+			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1, a2,a3,a4);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -671,8 +669,10 @@ public class CityMasterServiceImpl implements CityMasterService {
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("cityId"), req.getCityId());
-
-			query.where(n1, n2).orderBy(orderList);
+			Predicate n3 = cb.equal(b.get("stateId"), req.getStateId());
+			Predicate n4 = cb.equal(b.get("countryId"), req.getCountryId());
+			
+			query.where(n1, n2,n3,n4).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CityMaster> result = em.createQuery(query);
@@ -691,9 +691,11 @@ public class CityMasterServiceImpl implements CityMasterService {
 				Root<CityMaster> pm = delete.from(CityMaster.class);
 
 				// Where
-				javax.persistence.criteria.Predicate n3 = cb.equal(pm.get("cityId"), req.getCityId());
-				javax.persistence.criteria.Predicate n4 = cb.greaterThanOrEqualTo(pm.get("effectiveDateStart"), today);
-				delete.where(n3, n4);
+				Predicate n5 = cb.equal(pm.get("cityId"), req.getCityId());
+				Predicate n6 = cb.equal(b.get("stateId"), req.getStateId());
+				Predicate n7 = cb.equal(b.get("countryId"), req.getCountryId());
+				javax.persistence.criteria.Predicate n8 = cb.greaterThanOrEqualTo(pm.get("effectiveDateStart"), today);
+				delete.where(n5,n6,n7,n8);
 				em.createQuery(delete).executeUpdate();
 				// Insert Updated Record
 				updateRecord.setStatus(req.getStatus());

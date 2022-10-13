@@ -82,11 +82,11 @@ import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.LoginUserInfoArch;
 import com.maan.eway.bean.MenuMaster;
 import com.maan.eway.bean.StateMaster;
-import com.maan.eway.master.req.GetPolicyDetailsReq;
 import com.maan.eway.repository.LoginMasterArchRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.LoginUserInfoArchRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
+import com.maan.eway.res.DropDownRes;
 /**
 * <h2>LoginMasterServiceimpl</h2>
 */
@@ -748,13 +748,13 @@ this.repository = repo;
 			// Where
 			Predicate n1 = cb.equal(l.get("loginId"), u.get("loginId"));
 			Predicate n2 = cb.equal(l.get("userType"), req.getUserType());
-			
+			Predicate n4 = cb.equal(l.get("oaCode"), req.getOaCode());
 			if(StringUtils.isNotBlank( req.getSubUserType())  ) {
 				Predicate n3 = cb.equal(l.get("subUserType"), req.getSubUserType());
-				query.where(n1,n2,n3).orderBy(orderList);
+				query.where(n1,n2,n3,n4).orderBy(orderList);
 				
 			} else {
-				query.where(n1,n2).orderBy(orderList);
+				query.where(n1,n2,n4).orderBy(orderList);
 			}
 			
 			// Get Result
@@ -1247,6 +1247,63 @@ this.repository = repo;
 			return null;
 		}
 		return res;
+	}
+
+
+	@Override
+	public List<DropDownRes> getBrokerIds() {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 
+		ModelMapper mapper = new ModelMapper(); 
+		try { 
+			// Limit Offset
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<LoginDetailsCriteriaRes> query = cb.createQuery(LoginDetailsCriteriaRes.class);
+			List<LoginDetailsCriteriaRes> list = new ArrayList<LoginDetailsCriteriaRes>();
+			
+			// Find All
+			Root<LoginMaster> l = query.from(LoginMaster.class);
+			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
+			
+
+			// Select
+			query.multiselect( l.get("loginId").alias("loginId") , l.get("createdBy").alias("createdBy") , 
+					l.get("entryDate").alias("entryDate") , l.get("updatedDate").alias("updatedDate") ,
+					l.get("updatedBy").alias("updatedBy") , l.get("attachedBranches").alias("attachedBranches") ,
+					l.get("status").alias("status") ,  l.get("oaCode").alias("oaCode"),l.get("agencyCode").alias("agencyCode") ,l.get("subUserType").alias("subUserType"), 
+					 l.get("bankCode").alias("bankCode") ,
+					//cb.selectCase().when(l.get("bankCode").isNotNull(), l.get("bankCode") ).otherwise("No Bank").alias("BankCode") ,
+					u.get("userName").alias("userName")  ,
+					u.get("userMobile").alias("userMobile") , u.get("userMail").alias("userMail")    );
+			
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(u.get("userName")));
+			
+			// Where
+			Predicate n1 = cb.equal(l.get("userType"), "Broker");
+			Predicate n2 = cb.equal(l.get("status"), "Y");
+			Predicate n3 = cb.equal(l.get("loginId"), u.get("loginId"));
+				query.where(n1,n2,n3).orderBy(orderList);
+
+			// Get Result
+			TypedQuery<LoginDetailsCriteriaRes> result = em.createQuery(query);
+			list = result.getResultList();
+			
+
+			for( LoginDetailsCriteriaRes data :list ) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getAgencyCode());
+				res.setCodeDesc(data.getUserName());	
+				resList.add(res);
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return resList;
 	}
 
 

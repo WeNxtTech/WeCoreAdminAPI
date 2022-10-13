@@ -14,7 +14,7 @@ public class FactorRateGetRes {
 	@JsonProperty("FactorTypeId")
     private String factorTypeId ;
 
-    @JsonProperty("CompanyId")
+    @JsonProperty("InsuranceId")
     private String    companyId ;
   
     @JsonProperty("ProductId")

@@ -19,5 +19,7 @@ public class CountryMasterGetAllReq implements Serializable {
     @JsonProperty("Offset")
     private String offset;
    
-
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
 }

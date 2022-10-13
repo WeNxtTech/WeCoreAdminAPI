@@ -18,5 +18,7 @@ public class StateMasterGetReq implements Serializable {
 	@JsonProperty("StateId")
     private String    stateId     ;
 
-    
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
 }

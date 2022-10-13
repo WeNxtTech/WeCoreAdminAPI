@@ -22,4 +22,8 @@ public class RegionMasterGetAllReq implements Serializable {
     @JsonProperty("CountryId")
     private String countryId;
     
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
+    
 }

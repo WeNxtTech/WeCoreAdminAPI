@@ -24,5 +24,10 @@ public class ProductSectionMasterGetAllReq implements Serializable {
     
     @JsonProperty("Offset")
     private String offset;
+    
+    @JsonFormat(pattern ="dd/MM/yyyy")
+    @JsonProperty("EffectiveDateStart")
+    private Date effectiveDateStart;
+
   
 }

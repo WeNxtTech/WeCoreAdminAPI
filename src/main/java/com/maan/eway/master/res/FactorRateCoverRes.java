@@ -8,7 +8,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class FactorRateGetAllRes {
+public class FactorRateCoverRes {
+
 
 	@JsonProperty("FactorTypeId")
     private String factorTypeId ;
@@ -18,18 +19,30 @@ public class FactorRateGetAllRes {
   
     @JsonProperty("ProductId")
     private String    productId ;
-  
-    @JsonProperty("BranchCode")
-    private String    branchCode ;
-    
-    @JsonProperty("AgencyCode")
-    private String    agencyCode ;
-    
+   
     @JsonProperty("CoverId")
     private String    coverId ;
     
+    @JsonProperty("CoverName")
+    private String    coverName ;
+    
+    @JsonProperty("SectionName")
+    private String    sectionName ;
+    
+    @JsonProperty("CoverDesc")
+    private String    coverDesc ;
+    
+    @JsonProperty("SectionId")
+    private String    sectionId ;
+    
     @JsonProperty("SubCoverId")
     private String    subCoverId ;
+    
+    @JsonProperty("SubCoverName")
+    private String    subCoverName ;
+    
+    @JsonProperty("SubCoverDesc")
+    private String    subCoverDesc ;
     
     @JsonFormat(pattern = "dd/MM/yyyy")
     @JsonProperty("EffectiveDateStart")

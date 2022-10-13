@@ -183,12 +183,12 @@ public class BranchMasterController {
 		@GetMapping("/getallcompanybranches")
 		@ApiOperation(value = "This method is get Branch Master Drop Down")
 
-		public ResponseEntity<CommonRes> getAllCompanyBranch() {
+		public ResponseEntity<CommonRes> getAllCompanyBranch(@RequestBody CompanyBranchGetReq req) {
 
 			CommonRes data = new CommonRes();
 
 			// Save
-			List<DropDownRes> res = branchService.getBranchMasterDropdown();
+			List<DropDownRes> res = branchService.getBranchMasterDropdown(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());
@@ -202,7 +202,7 @@ public class BranchMasterController {
 
 		}
 		
-		@PostMapping("/getinduvidualcompanybranches")
+	/*	@PostMapping("/getinduvidualcompanybranches")
 		@ApiOperation(value = "This method is get Branch Master Drop Down")
 
 		public ResponseEntity<CommonRes> getBranchMasterDropdown(@RequestBody CompanyBranchGetReq req ) {
@@ -222,7 +222,7 @@ public class BranchMasterController {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
 
-		}
+		} */
 		
 		
 		

@@ -10,6 +10,10 @@ public class UserLoginGridReq {
 	@JsonProperty("UserType")
 	private String userType ;
 	
+	@JsonProperty("OaCode")
+	private String oaCode;
+
+	
 	@JsonProperty("SubUserType")
 	private String subUserType ;
 	

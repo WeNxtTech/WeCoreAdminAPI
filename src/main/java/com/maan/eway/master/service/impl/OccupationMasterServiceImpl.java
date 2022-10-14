@@ -18,6 +18,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
@@ -38,6 +39,7 @@ import com.google.gson.Gson;
 import com.maan.eway.master.req.CurrencyMasterGetAllReq;
 import com.maan.eway.master.req.CurrencyMasterGetReq;
 import com.maan.eway.master.req.CurrencyMasterSaveReq;
+import com.maan.eway.master.req.OccupationChangeStatusReq;
 import com.maan.eway.master.req.OccupationMasterGetAllReq;
 import com.maan.eway.master.req.OccupationMasterGetReq;
 import com.maan.eway.master.req.OccupationMasterSaveReq;
@@ -99,9 +101,9 @@ public List<Error> validateOccupation(OccupationMasterSaveReq req) {
 		}
 		
 		if (StringUtils.isBlank(req.getRemarks())) {
-			errorList.add(new Error("04", "Remark", "Please Select Remark "));
+			errorList.add(new Error("04", "Remarks", "Please Select Remarks "));
 		}else if (req.getRemarks().length() > 100){
-			errorList.add(new Error("04","Remark", "Please Enter Remark within 100 Characters")); 
+			errorList.add(new Error("04","Remarks", "Please Enter Remarks within 100 Characters")); 
 		}
 		
 		// Date Validation 
@@ -488,5 +490,142 @@ public OccupationMasterRes getByOccupationId(OccupationMasterGetReq req) {
 	return res;
 }
 
+@Override
+public List<DropDownRes> getOccupationMasterDropdown() {
+List<DropDownRes> resList = new ArrayList<DropDownRes>();
+try {
+	Date today = new Date();
+	Calendar cal = new GregorianCalendar();
+	cal.setTime(today);
+	cal.set(Calendar.HOUR_OF_DAY, 23);;
+	cal.set(Calendar.MINUTE, 1);
+	today = cal.getTime();
+	cal.set(Calendar.HOUR_OF_DAY, 1);
+	cal.set(Calendar.MINUTE, 1);
+	Date todayEnd = cal.getTime();
+	
+	// Criteria
+	CriteriaBuilder cb = em.getCriteriaBuilder();
+	CriteriaQuery<OccupationMaster> query=  cb.createQuery(OccupationMaster.class);
+	List<OccupationMaster> list = new ArrayList<OccupationMaster>();
+	// Find All
+	Root<OccupationMaster> c = query.from(OccupationMaster.class);
+	//Select
+	query.select(c);
+	// Order By
+	List<Order> orderList = new ArrayList<Order>();
+	orderList.add(cb.asc(c.get("occupationName")));
+	
+	// Effective Date Start Max Filter
+	Subquery<Long> effectiveDate = query.subquery(Long.class);
+	Root<OccupationMaster> ocpm1 = effectiveDate.from(OccupationMaster.class);
+	effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+	Predicate a1 = cb.equal(c.get("occupationId"),ocpm1.get("occupationId"));
+	Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+	effectiveDate.where(a1,a2);
+	// Effective Date End Max Filter
+	Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+	Root<OccupationMaster> ocpm2 = effectiveDate2.from(OccupationMaster.class);
+	effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+	Predicate a3 = cb.equal(c.get("occupationId"),ocpm2.get("occupationId"));
+	Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+	effectiveDate2.where(a3,a4);
+	// Where
+	Predicate n1 = cb.equal(c.get("status"),"Y");
+	Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
+	Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
+	query.where(n1,n2,n3).orderBy(orderList);
+	// Get Result
+	TypedQuery<OccupationMaster> result = em.createQuery(query);
+	list = result.getResultList();
+	for (OccupationMaster data : list) {
+		// Response 
+		DropDownRes res = new DropDownRes();
+		res.setCode(data.getOccupationId());
+		res.setCodeDesc(data.getOccupationName());
+		resList.add(res);
+	}
+}
+	catch(Exception e) {
+		e.printStackTrace();
+		log.info("Exception is --->"+e.getMessage());
+		return null;
+		}
+	return resList;
+}
+	
+@Override
+public SuccessRes changeStatusOfOccupation(OccupationChangeStatusReq req) {
+	SuccessRes res = new SuccessRes();
+	try {
+		Date today = req.getEffectiveDateStart()!=null ? req.getEffectiveDateStart(): new Date();
+		Calendar cal = new GregorianCalendar();
+		OccupationMaster updateRecord = new OccupationMaster();
+		cal.setTime(today);
+		cal.set(Calendar.HOUR_OF_DAY, 23);
+		cal.set(Calendar.MINUTE, 1);
+		today = cal.getTime();
+		List<OccupationMaster> list = new ArrayList<OccupationMaster>();
+		// Find Latest Record
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<OccupationMaster> query = cb.createQuery(OccupationMaster.class);
+		// Find all
+		Root<OccupationMaster> b = query.from(OccupationMaster.class);
+		//Select
+		query.select(b);
+		// Effective Date Max Filter
+		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Root<OccupationMaster> ocpm1 = effectiveDate.from(OccupationMaster.class);
+		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		Predicate a1 = cb.equal(ocpm1.get("occupationId"),b.get("occupationId"));
+		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
+		effectiveDate.where(a1,a2);
+		//Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.desc(b.get("effectiveDateStart")));
+		//where 
+		Predicate n1 = cb.equal(b.get("effectiveDateStart"),effectiveDate);
+		Predicate n2 = cb.equal(b.get("occupationId"),req.getOccupationId());
+		query.where(n1,n2).orderBy(orderList);
+		// Get Result 
+		TypedQuery<OccupationMaster> result = em.createQuery(query);
+		list = result.getResultList();
+		updateRecord = list.get(0);
+		
+		if(req.getStatus().equalsIgnoreCase("N")) {
+			// Delete Old Records
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 30);
+			today = cal.getTime();
+			// Create Update
+			CriteriaDelete<OccupationMaster> delete = cb.createCriteriaDelete(OccupationMaster.class);
+			Root<OccupationMaster> pm = delete.from(OccupationMaster.class);
+			// Where
+			
+			Predicate n3 = cb.equal(pm.get("occupationId"), req.getOccupationId());
+			Predicate n4 = cb.greaterThanOrEqualTo(pm.get("effectiveDateStart"),today);
+			delete.where(n3,n4);
+			em.createQuery(delete).executeUpdate();
+			// Insert Update Record
+			updateRecord.setStatus(req.getStatus());
+			repo.save(updateRecord);
+		}
+		else if(req.getStatus().equalsIgnoreCase("Y")) {
+			// Insert Update Record
+			updateRecord.setStatus(req.getStatus());
+			repo.save(updateRecord);
+			}
+		// Perform Update
+		res.setResponse("Status Changed");
+		res.setSuccessId(req.getOccupationId());
+	}
+	catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is --> " + e.getMessage());
+		return null;
+		}
+	return res;
+}
 
 }

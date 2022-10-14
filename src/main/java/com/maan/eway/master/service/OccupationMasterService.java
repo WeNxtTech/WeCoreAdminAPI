@@ -11,6 +11,7 @@ import com.maan.eway.master.req.BankMasterSaveReq;
 import com.maan.eway.master.req.CurrencyMasterGetAllReq;
 import com.maan.eway.master.req.CurrencyMasterGetReq;
 import com.maan.eway.master.req.CurrencyMasterSaveReq;
+import com.maan.eway.master.req.OccupationChangeStatusReq;
 import com.maan.eway.master.req.OccupationMasterGetAllReq;
 import com.maan.eway.master.req.OccupationMasterGetReq;
 import com.maan.eway.master.req.OccupationMasterSaveReq;
@@ -44,5 +45,9 @@ public interface OccupationMasterService  {
 	OccupationMasterRes getByOccupationId(OccupationMasterGetReq req);
 
 	List<OccupationMasterRes> getActiveOccupation(OccupationMasterGetAllReq req);
+
+	List<DropDownRes> getOccupationMasterDropdown();
+
+	SuccessRes changeStatusOfOccupation(OccupationChangeStatusReq req);
 
 }

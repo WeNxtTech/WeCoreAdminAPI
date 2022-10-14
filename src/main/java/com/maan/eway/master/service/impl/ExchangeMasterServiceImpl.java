@@ -11,6 +11,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
@@ -29,7 +30,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.gson.Gson;
 import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.ExchangeMaster;
+import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.ExchangeChangeStatusReq;
 import com.maan.eway.master.req.ExchangeMasterGetReq;
 import com.maan.eway.master.req.ExchangeMasterGetallReq;
 import com.maan.eway.master.req.ExchangeMasterSaveReq;
@@ -37,6 +40,7 @@ import com.maan.eway.master.res.CityMasterRes;
 import com.maan.eway.master.res.ExchangeMasterGetRes;
 import com.maan.eway.master.service.ExchangeMasterService;
 import com.maan.eway.repository.ExchangeMasterRepository;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 
 @Service
@@ -45,14 +49,14 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 
 	@PersistenceContext
 	private EntityManager em;
-	
+
 	@Autowired
 	private ExchangeMasterRepository repo;
-	
+
 	Gson json = new Gson();
-	
+
 	private Logger log = LogManager.getLogger(ExchangeMasterServiceImpl.class);
-	
+
 	@Transactional
 	@Override
 	public List<Error> validateInsertExchangeMaster(ExchangeMasterSaveReq req) {
@@ -61,27 +65,31 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 		try {
 			if (StringUtils.isBlank(req.getRemarks())) {
 				errorList.add(new Error("03", "Remark", "Please Select Remark "));
-			}else if (req.getRemarks().length() > 100){
-				errorList.add(new Error("03","Remark", "Please Enter Remark within 100 Characters")); 
+			} else if (req.getRemarks().length() > 100) {
+				errorList.add(new Error("03", "Remark", "Please Enter Remark within 100 Characters"));
 			}
-			
-			// Date Validation 
+
+			// Date Validation
 			Calendar cal = new GregorianCalendar();
 			Date today = new Date();
-			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
+			cal.setTime(today);
+			cal.add(Calendar.DAY_OF_MONTH, -1);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 50);
 			today = cal.getTime();
 			if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
 				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start"));
 
 			} else if (req.getEffectiveDateStart().before(today)) {
-				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+				errorList
+						.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
 			}
-			//Status Validation
+			// Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
 				errorList.add(new Error("05", "Status", "Please Enter Status"));
 			} else if (req.getStatus().length() > 1) {
 				errorList.add(new Error("05", "Status", "Enter Status in 1 Character Only"));
-			}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()))) {
+			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()))) {
 				errorList.add(new Error("05", "Status", "Enter Status in Y or N Only"));
 			}
 			if (StringUtils.isBlank(req.getExchangeRate())) {
@@ -103,128 +111,127 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 	@Transactional
 	@Override
 	public SuccessRes insertExchangeMaster(ExchangeMasterSaveReq req) {
-	SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/yyyy");
-	SuccessRes res = new SuccessRes();
-	ExchangeMaster saveData = new ExchangeMaster();
-	List<ExchangeMaster> list = new ArrayList<ExchangeMaster>();
-	DozerBeanMapper dozerMapper = new DozerBeanMapper();
-	try {
-		Integer amendId=0;
-		Calendar cal = new GregorianCalendar();
-		cal.setTime(req.getEffectiveDateStart());
-		cal.set(Calendar.HOUR_OF_DAY, 23);
-		cal.set(Calendar.MINUTE, 59);
-		Date startDate = cal.getTime();
-		Date today = new Date();
-		cal.setTime(req.getEffectiveDateStart());
-		cal.set(Calendar.HOUR_OF_DAY, today.getHours());
-		cal.set(Calendar.MINUTE, today.getMinutes());
-		Date oldEndDate = cal.getTime();
-		cal.setTime(req.getEffectiveDateStart());
-		cal.set(Calendar.HOUR_OF_DAY, today.getHours());
-		cal.set(Calendar.MINUTE, today.getMinutes());
-		Date effDate = cal.getTime();
-		Date endDate = req.getEffectiveDateEnd();
-		
-		String exchangeId ="";
-		if(StringUtils.isBlank(req.getExchangeId().toString())) {
-			// Save
-			Long totalCount = getMasterTableCount();
-			exchangeId = Long.valueOf(totalCount+1).toString();
-			res.setResponse("Saved Successfully");
-			res.setSuccessId(exchangeId);
-		}
-		else {
-			// Update
-			exchangeId = req.getExchangeId();
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<ExchangeMaster> query = cb.createQuery(ExchangeMaster.class);
-			//Find all
-			Root<ExchangeMaster> b = query.from(ExchangeMaster.class);
-			//Select 
-			query.select(b);
-			//Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<ExchangeMaster> ocpm1 = effectiveDate.from(ExchangeMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			Predicate a1 = cb.equal(ocpm1.get("exchangeId"), b.get("exchangeId"));
-			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"),startDate);
-			Predicate a3 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
-			effectiveDate.where(a1,a2,a3);
-			
-			// Where
-			Predicate n1 = cb.equal(b.get("status"),"Y");
-			Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			Predicate n3 = cb.equal(b.get("exchangeId"), req.getExchangeId());
-			Predicate n4 = cb.equal(b.get("countryId"),req.getCountryId());
-			
-			query.where(n1,n2,n3,n4);
-			
-			// Get Result 
-			TypedQuery<ExchangeMaster> result = em.createQuery(query);
-			list = result.getResultList();
-			if(list.size()>0) {
-				repo.delete(list.get(0));
-				// Amend Id
-				
-				if(list.get(0).getEffectiveDateStart().before(startDate)) {
-					String startDatewithoutTime = sdformat.format(startDate);
-					String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
-				
-				if(startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime));{
-					amendId = list.get(0).getAmendId()+1;
-				}
-				}
-			}
-			res.setResponse("Updated Successfully");
-			res.setSuccessId(exchangeId);
-		}
-		dozerMapper.map(req, saveData);
-		saveData.setExchangeId(Integer.valueOf(exchangeId));
-		saveData.setEffectiveDateStart(effDate);
-		saveData.setEffectiveDateEnd(endDate);
-		saveData.setStatus(req.getStatus());
-		saveData.setEntryDate(new Date());
-		saveData.setAmendId(amendId);
-		saveData.setSNo(Integer.valueOf(exchangeId));
-		repo.saveAndFlush(saveData);
-		if(list.size()>0) {
-			// Update Old Record
-			ExchangeMaster lastRecord = list.get(0);
-			lastRecord.setEffectiveDateEnd(oldEndDate);
-			String startDatewithoutTime = sdformat.format(startDate);
-			String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
+		SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/yyyy");
+		SuccessRes res = new SuccessRes();
+		ExchangeMaster saveData = new ExchangeMaster();
+		List<ExchangeMaster> list = new ArrayList<ExchangeMaster>();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			Integer amendId = 0;
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(req.getEffectiveDateStart());
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 59);
+			Date startDate = cal.getTime();
+			Date today = new Date();
+			cal.setTime(req.getEffectiveDateStart());
+			cal.set(Calendar.HOUR_OF_DAY, today.getHours());
+			cal.set(Calendar.MINUTE, today.getMinutes());
+			Date oldEndDate = cal.getTime();
+			cal.setTime(req.getEffectiveDateStart());
+			cal.set(Calendar.HOUR_OF_DAY, today.getHours());
+			cal.set(Calendar.MINUTE, today.getMinutes());
+			Date effDate = cal.getTime();
+			Date endDate = req.getEffectiveDateEnd();
 
-			if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
-				lastRecord.setStatus("N");	
+			String exchangeId = "";
+			if (StringUtils.isBlank(req.getExchangeId().toString())) {
+				// Save
+				Long totalCount = getMasterTableCount();
+				exchangeId = Long.valueOf(totalCount + 1).toString();
+				res.setResponse("Saved Successfully");
+				res.setSuccessId(exchangeId);
+			} else {
+				// Update
+				exchangeId = req.getExchangeId();
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<ExchangeMaster> query = cb.createQuery(ExchangeMaster.class);
+				// Find all
+				Root<ExchangeMaster> b = query.from(ExchangeMaster.class);
+				// Select
+				query.select(b);
+				// Effective Date Max Filter
+				Subquery<Long> effectiveDate = query.subquery(Long.class);
+				Root<ExchangeMaster> ocpm1 = effectiveDate.from(ExchangeMaster.class);
+				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+				Predicate a1 = cb.equal(ocpm1.get("exchangeId"), b.get("exchangeId"));
+				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
+				Predicate a3 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
+				effectiveDate.where(a1, a2, a3);
+
+				// Where
+				Predicate n1 = cb.equal(b.get("status"), "Y");
+				Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+				Predicate n3 = cb.equal(b.get("exchangeId"), req.getExchangeId());
+				Predicate n4 = cb.equal(b.get("countryId"), req.getCountryId());
+
+				query.where(n1, n2, n3, n4);
+
+				// Get Result
+				TypedQuery<ExchangeMaster> result = em.createQuery(query);
+				list = result.getResultList();
+				if (list.size() > 0) {
+					repo.delete(list.get(0));
+					// Amend Id
+
+					if (list.get(0).getEffectiveDateStart().before(startDate)) {
+						String startDatewithoutTime = sdformat.format(startDate);
+						String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
+
+						if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime))
+							;
+						{
+							amendId = list.get(0).getAmendId() + 1;
+						}
+					}
+				}
+				res.setResponse("Updated Successfully");
+				res.setSuccessId(exchangeId);
 			}
-			repo.saveAndFlush(lastRecord);
-			
+			dozerMapper.map(req, saveData);
+			saveData.setExchangeId(Integer.valueOf(exchangeId));
+			saveData.setEffectiveDateStart(effDate);
+			saveData.setEffectiveDateEnd(endDate);
+			saveData.setStatus(req.getStatus());
+			saveData.setEntryDate(new Date());
+			saveData.setAmendId(amendId);
+			saveData.setSNo(Integer.valueOf(exchangeId));
+			repo.saveAndFlush(saveData);
+			if (list.size() > 0) {
+				// Update Old Record
+				ExchangeMaster lastRecord = list.get(0);
+				lastRecord.setEffectiveDateEnd(oldEndDate);
+				String startDatewithoutTime = sdformat.format(startDate);
+				String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
+
+				if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
+					lastRecord.setStatus("N");
+				}
+				repo.saveAndFlush(lastRecord);
+
+			}
+
+			log.info("Saved Details is --> " + json.toJson(saveData));
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --> " + e.getMessage());
+			return null;
 		}
-		
-		log.info("Saved Details is --> " + json.toJson(saveData));
-		}
-	catch (Exception e) {
-		e.printStackTrace();
-		log.info("Exception is --> "+ e.getMessage());
-		return null;
-	}
-	return res;
+		return res;
 	}
 
-	
 	public Long getMasterTableCount() {
-		Long data =0L;
+		Long data = 0L;
 		try {
 			List<Long> list = new ArrayList<Long>();
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<Long> query = cb.createQuery(Long.class);
-		// Find all
+			// Find all
 			Root<ExchangeMaster> b = query.from(ExchangeMaster.class);
-			//Select 
+			// Select
 			query.multiselect(cb.count(b));
-			//Effective Date Max Filter
+			// Effective Date Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
 			Root<ExchangeMaster> ocpm1 = effectiveDate.from(ExchangeMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
@@ -236,20 +243,19 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 			TypedQuery<Long> result = em.createQuery(query);
 			list = result.getResultList();
 			data = list.get(0);
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			log.info(e.getMessage());
 		}
 		return data;
 	}
-	
+
 	@Override
 	public ExchangeMasterGetRes getExchangeMaster(ExchangeMasterGetReq req) {
 		ExchangeMasterGetRes res = new ExchangeMasterGetRes();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
-			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
+			Date today = req.getEffectiveDateStart() != null ? req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -257,7 +263,7 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 			today = cal.getTime();
 
 			List<ExchangeMaster> list = new ArrayList<ExchangeMaster>();
-		
+
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<ExchangeMaster> query = cb.createQuery(ExchangeMaster.class);
@@ -276,7 +282,7 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 			Predicate a2 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
 			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 
-			effectiveDate.where(a1, a2,a3);
+			effectiveDate.where(a1, a2, a3);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -311,7 +317,7 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 		List<ExchangeMasterGetRes> resList = new ArrayList<ExchangeMasterGetRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
-			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
+			Date today = req.getEffectiveDateStart() != null ? req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -365,7 +371,8 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 				res.setExchangeId(data.getExchangeId().toString());
 				res.setCountryId(data.getCountryId());
 				res.setCurrencyId(data.getCurrencyId());
-				res.setExchangeRate(data.getExchangeRate().toString());;
+				res.setExchangeRate(data.getExchangeRate().toString());
+				;
 				resList.add(res);
 			}
 
@@ -383,7 +390,7 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 		List<ExchangeMasterGetRes> resList = new ArrayList<ExchangeMasterGetRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
-			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
+			Date today = req.getEffectiveDateStart() != null ? req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -422,7 +429,7 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("status"), "Y");
 
-			query.where(n1,n2).orderBy(orderList);
+			query.where(n1, n2).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<ExchangeMaster> result = em.createQuery(query);
@@ -447,6 +454,141 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 
 		}
 		return resList;
+	}
+
+	@Override
+	public List<DropDownRes> getExchangeMasterDropdown() {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ExchangeMaster> query = cb.createQuery(ExchangeMaster.class);
+			List<ExchangeMaster> list = new ArrayList<ExchangeMaster>();
+			// Find All
+			Root<ExchangeMaster> c = query.from(ExchangeMaster.class);
+			// Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("exchangeId")));
+
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<ExchangeMaster> ocpm1 = effectiveDate.from(ExchangeMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("exchangeId"),ocpm1.get("exchangeId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<ExchangeMaster> ocpm2 = effectiveDate2.from(ExchangeMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a3 = cb.equal(c.get("exchangeId"),ocpm2.get("exchangeId"));
+			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a3,a4);
+			// Where
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
+			query.where(n1,n2,n3).orderBy(orderList);
+	// Get Result
+			TypedQuery<ExchangeMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			for (ExchangeMaster data : list) {
+				// Response
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getExchangeId().toString());
+				res.setCodeDesc(data.getCurrencyId());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details -->" + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+	@Override
+	public SuccessRes changeStatusOfExchange(ExchangeChangeStatusReq req) {
+		SuccessRes res = new SuccessRes();
+		try {
+			Date today = req.getEffectiveDateStart() != null ? req.getEffectiveDateStart() : new Date();
+			Calendar cal = new GregorianCalendar();
+			ExchangeMaster updateRecord = new ExchangeMaster();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			List<ExchangeMaster> list = new ArrayList<ExchangeMaster>();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ExchangeMaster> query = cb.createQuery(ExchangeMaster.class);
+			// Find all
+			Root<ExchangeMaster> b = query.from(ExchangeMaster.class);
+			// Select
+			query.select(b);
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<ExchangeMaster> ocpm1 = effectiveDate.from(ExchangeMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("exchangeId"), b.get("exchangeId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1, a2);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("effectiveDateStart")));
+			// Where
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("exchangeId"), Integer.valueOf(req.getExchangeId()));
+			query.where(n1, n2).orderBy(orderList);
+			// Get Result
+			TypedQuery<ExchangeMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			updateRecord = list.get(0);
+			if (req.getStatus().equalsIgnoreCase("N")) {
+				// Delete Old Records
+				cal.setTime(today);
+				cal.set(Calendar.HOUR_OF_DAY, 23);
+				cal.set(Calendar.MINUTE, 30);
+				today = cal.getTime();
+				// Create Update
+				CriteriaDelete<ExchangeMaster> delete = cb.createCriteriaDelete(ExchangeMaster.class);
+				;
+				Root<ExchangeMaster> pm = delete.from(ExchangeMaster.class);
+				// Where
+				Predicate n3 = cb.equal(pm.get("exchangeId"), req.getExchangeId());
+				Predicate n4 = cb.greaterThanOrEqualTo(pm.get("effectiveDateStart"), today);
+				delete.where(n3, n4);
+				em.createQuery(delete).executeUpdate();
+				// Insert Update Record
+				updateRecord.setStatus(req.getStatus());
+				repo.save(updateRecord);
+			} else if (req.getStatus().equalsIgnoreCase("Y")) {
+
+				// Insert Update Record
+				updateRecord.setStatus(req.getStatus());
+				repo.save(updateRecord);
+			}
+			// Perform Update
+			res.setResponse("Status Changed");
+			res.setSuccessId(req.getExchangeId());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details -->" + e.getMessage());
+			return null;
+		}
+		return res;
 	}
 
 }

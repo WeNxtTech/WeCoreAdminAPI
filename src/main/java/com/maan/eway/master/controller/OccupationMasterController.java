@@ -6,9 +6,11 @@ package com.maan.eway.master.controller;
 */
 
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.CountryChangeStatusReq;
 import com.maan.eway.master.req.CurrencyMasterGetAllReq;
 import com.maan.eway.master.req.CurrencyMasterGetReq;
 import com.maan.eway.master.req.CurrencyMasterSaveReq;
+import com.maan.eway.master.req.OccupationChangeStatusReq;
 import com.maan.eway.master.req.OccupationMasterGetAllReq;
 import com.maan.eway.master.req.OccupationMasterGetReq;
 import com.maan.eway.master.req.OccupationMasterSaveReq;
@@ -155,7 +157,50 @@ public class OccupationMasterController {
 		}
 	}
 		
+		// Occupation Master Drop Down Type
+		@GetMapping("/dropdown/occupation")
+		@ApiOperation(value = "This method is get Occupation Master Drop Down")
+
+		public ResponseEntity<CommonRes> getOccupationMasterDropdown() {
+
+			CommonRes data = new CommonRes();
+
+			// Save
+			List<DropDownRes> res = service.getOccupationMasterDropdown();
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+
+		}
 		
+
+		@PostMapping("/occupation/changestatus")
+		@ApiOperation(value = "This method is get Occupation Change Status")
+		public ResponseEntity<CommonRes> changeStatusOfOccupation(@RequestBody OccupationChangeStatusReq req) {
+
+			CommonRes data = new CommonRes();
+			// Change Status
+			SuccessRes res = service.changeStatusOfOccupation(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+
+		}
+	
 		
 
 }

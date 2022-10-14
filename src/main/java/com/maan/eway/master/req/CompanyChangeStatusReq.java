@@ -10,8 +10,8 @@ import lombok.Data;
 @Data
 public class CompanyChangeStatusReq {
 
-	 @JsonProperty("ColorId")
-	 private String colorId;
+	 @JsonProperty("InsuranceId")
+	 private String companyId;
 	 
 	 @JsonProperty("Status")
 	 private String status;

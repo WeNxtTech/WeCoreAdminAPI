@@ -11,6 +11,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
@@ -29,7 +30,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.gson.Gson;
 import com.maan.eway.bean.MotorColorMaster;
 import com.maan.eway.bean.MotorMakeMaster;
+import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.ColorChangeStatusReq;
 import com.maan.eway.master.req.MotorColorGetAllReq;
 import com.maan.eway.master.req.MotorColorGetReq;
 import com.maan.eway.master.req.MotorColorSaveReq;
@@ -37,6 +40,7 @@ import com.maan.eway.master.res.MotorColorGetRes;
 import com.maan.eway.master.res.MotorMakeGetRes;
 import com.maan.eway.master.service.MotorColorMasterService;
 import com.maan.eway.repository.MotorColorMasterRepository;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 
 @Service
@@ -123,7 +127,7 @@ public class MotorColorMasterServiceImpl implements MotorColorMasterService {
 			cal.set(Calendar.HOUR_OF_DAY, today.getHours());
 			cal.set(Calendar.MINUTE, today.getMinutes());
 			Date effDate = cal.getTime();
-			Date endDate = sdformat.parse("12/12/2050");
+			Date endDate = req.getEffectiveDateEnd();
 
 			String colorId = "";
 
@@ -418,6 +422,144 @@ public class MotorColorMasterServiceImpl implements MotorColorMasterService {
 
 		}
 		return resList;
+	}
+
+	@Override
+	public List<DropDownRes> getColorMasterDropdown() {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);;
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<MotorColorMaster> query=  cb.createQuery(MotorColorMaster.class);
+			List<MotorColorMaster> list = new ArrayList<MotorColorMaster>();
+			// Find All
+			Root<MotorColorMaster> c = query.from(MotorColorMaster.class);
+			//Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("colorCode")));
+			
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<MotorColorMaster> ocpm1 = effectiveDate.from(MotorColorMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("colorCode"),ocpm1.get("colorCode"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<MotorColorMaster> ocpm2 = effectiveDate2.from(MotorColorMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a3 = cb.equal(c.get("colorCode"),ocpm2.get("colorCode"));
+			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a3,a4);
+			// Where
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
+			query.where(n1,n2,n3).orderBy(orderList);
+			// Get Result
+			TypedQuery<MotorColorMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			for (MotorColorMaster data : list) {
+				// Response 
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getColorId().toString());
+				res.setCodeDesc(data.getColorCode());
+				resList.add(res);
+			}
+		}
+			catch(Exception e) {
+				e.printStackTrace();
+				log.info("Exception is --->"+e.getMessage());
+				return null;
+				}
+			return resList;
+		}
+
+	@Override
+	public SuccessRes changeStatusOfColor(ColorChangeStatusReq req) {
+		SuccessRes res = new SuccessRes();
+		try {
+			Date today = req.getEffectiveDateStart()!=null ? req.getEffectiveDateStart(): new Date();
+			Calendar cal = new GregorianCalendar();
+			MotorColorMaster updateRecord = new MotorColorMaster();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			List<MotorColorMaster> list = new ArrayList<MotorColorMaster>();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<MotorColorMaster> query = cb.createQuery(MotorColorMaster.class);
+			// Find all
+			Root<MotorColorMaster> b = query.from(MotorColorMaster.class);
+			//Select
+			query.select(b);
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<MotorColorMaster> ocpm1 = effectiveDate.from(MotorColorMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("colorId"),b.get("colorId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
+			effectiveDate.where(a1,a2);
+			//Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("effectiveDateStart")));
+			//where 
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"),effectiveDate);
+			Predicate n2 = cb.equal(b.get("colorId"),req.getColorId());
+			query.where(n1,n2).orderBy(orderList);
+			// Get Result 
+			TypedQuery<MotorColorMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			updateRecord = list.get(0);
+			
+			if(req.getStatus().equalsIgnoreCase("N")) {
+				// Delete Old Records
+				cal.setTime(today);
+				cal.set(Calendar.HOUR_OF_DAY, 23);
+				cal.set(Calendar.MINUTE, 30);
+				today = cal.getTime();
+				// Create Update
+				CriteriaDelete<MotorColorMaster> delete = cb.createCriteriaDelete(MotorColorMaster.class);
+				Root<MotorColorMaster> pm = delete.from(MotorColorMaster.class);
+				// Where
+				
+				Predicate n3 = cb.equal(pm.get("colorId"), req.getColorId());
+				Predicate n4 = cb.greaterThanOrEqualTo(pm.get("effectiveDateStart"),today);
+				delete.where(n3,n4);
+				em.createQuery(delete).executeUpdate();
+				// Insert Update Record
+				updateRecord.setStatus(req.getStatus());
+				repo.save(updateRecord);
+			}
+			else if(req.getStatus().equalsIgnoreCase("Y")) {
+				// Insert Update Record
+				updateRecord.setStatus(req.getStatus());
+				repo.save(updateRecord);
+				}
+			// Perform Update
+			res.setResponse("Status Changed");
+			res.setSuccessId(req.getColorId());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --> " + e.getMessage());
+			return null;
+			}
+		return res;
 	}
 
 }

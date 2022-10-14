@@ -11,6 +11,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
@@ -30,6 +31,7 @@ import com.google.gson.Gson;
 import com.maan.eway.bean.MotorBodyTypeMaster;
 import com.maan.eway.bean.MotorMakeMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.BodyTypeChangeStatusReq;
 import com.maan.eway.master.req.MotorBodySaveReq;
 import com.maan.eway.master.req.MotorBodyTypeGetAllReq;
 import com.maan.eway.master.req.MotorBodyTypeGetReq;
@@ -37,6 +39,7 @@ import com.maan.eway.master.res.MotorBodyTypeGetRes;
 import com.maan.eway.master.res.MotorMakeGetRes;
 import com.maan.eway.master.service.MotorBodyTypeMasterService;
 import com.maan.eway.repository.MotorBodyTypeMasterRepository;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 
 @Service
@@ -112,7 +115,7 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 			cal.setTime(req.getEffectiveDateStart());
 			cal.set(Calendar.HOUR_OF_DAY, today.getHours());cal.set(Calendar.MINUTE, today.getMinutes());
 			Date effDate = cal.getTime();
-			Date endDate = sdformat.parse("12/12/2050");
+			Date endDate = req.getEffectiveDateEnd();
 
 			String bodyId = "";
 
@@ -417,6 +420,147 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 		}
 		return resList;
 	}
+
+	@Override
+	public List<DropDownRes> getBodyTypeMasterDropdown() {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);;
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<MotorBodyTypeMaster> query=  cb.createQuery(MotorBodyTypeMaster.class);
+			List<MotorBodyTypeMaster> list = new ArrayList<MotorBodyTypeMaster>();
+			// Find All
+			Root<MotorBodyTypeMaster> c = query.from(MotorBodyTypeMaster.class);
+			//Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("bodyId")));
+			
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<MotorBodyTypeMaster> ocpm1 = effectiveDate.from(MotorBodyTypeMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("bodyId"),ocpm1.get("bodyId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<MotorBodyTypeMaster> ocpm2 = effectiveDate2.from(MotorBodyTypeMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a3 = cb.equal(c.get("bodyId"),ocpm2.get("bodyId"));
+			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a3,a4);
+			// Where
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
+			query.where(n1,n2,n3).orderBy(orderList);
+			// Get Result
+			TypedQuery<MotorBodyTypeMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			for (MotorBodyTypeMaster data : list) {
+				// Response 
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getBodyId().toString());
+				res.setCodeDesc(data.getBodyNameEn());
+				resList.add(res);
+			}
+		}
+			catch(Exception e) {
+				e.printStackTrace();
+				log.info("Exception is --->"+e.getMessage());
+				return null;
+				}
+			return resList;
+		}
+
+
+	@Override
+	public SuccessRes changeStatusOfBodyType(BodyTypeChangeStatusReq req) {
+		SuccessRes res = new SuccessRes();
+		try {
+			Date today = req.getEffectiveDateStart()!=null ? req.getEffectiveDateStart(): new Date();
+			Calendar cal = new GregorianCalendar();
+			MotorBodyTypeMaster updateRecord = new MotorBodyTypeMaster();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			List<MotorBodyTypeMaster> list = new ArrayList<MotorBodyTypeMaster>();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<MotorBodyTypeMaster> query = cb.createQuery(MotorBodyTypeMaster.class);
+			// Find all
+			Root<MotorBodyTypeMaster> b = query.from(MotorBodyTypeMaster.class);
+			//Select
+			query.select(b);
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<MotorBodyTypeMaster> ocpm1 = effectiveDate.from(MotorBodyTypeMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("bodyId"),b.get("bodyId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
+			effectiveDate.where(a1,a2);
+			//Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("effectiveDateStart")));
+			//where 
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"),effectiveDate);
+			Predicate n2 = cb.equal(b.get("bodyId"),req.getBodyId());
+			query.where(n1,n2).orderBy(orderList);
+			// Get Result 
+			TypedQuery<MotorBodyTypeMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			updateRecord = list.get(0);
+			
+			if(req.getStatus().equalsIgnoreCase("N")) {
+				// Delete Old Records
+				cal.setTime(today);
+				cal.set(Calendar.HOUR_OF_DAY, 23);
+				cal.set(Calendar.MINUTE, 30);
+				today = cal.getTime();
+				// Create Update
+				CriteriaDelete<MotorBodyTypeMaster> delete = cb.createCriteriaDelete(MotorBodyTypeMaster.class);
+				Root<MotorBodyTypeMaster> pm = delete.from(MotorBodyTypeMaster.class);
+				// Where
+				
+				Predicate n3 = cb.equal(pm.get("bodyId"), req.getBodyId());
+				Predicate n4 = cb.greaterThanOrEqualTo(pm.get("effectiveDateStart"),today);
+				delete.where(n3,n4);
+				em.createQuery(delete).executeUpdate();
+				// Insert Update Record
+				updateRecord.setStatus(req.getStatus());
+				repo.save(updateRecord);
+			}
+			else if(req.getStatus().equalsIgnoreCase("Y")) {
+				// Insert Update Record
+				updateRecord.setStatus(req.getStatus());
+				repo.save(updateRecord);
+				}
+			// Perform Update
+			res.setResponse("Status Changed");
+			res.setSuccessId(req.getBodyId());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --> " + e.getMessage());
+			return null;
+			}
+		return res;
+	}
+
+
 
 	
 	

@@ -11,6 +11,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
@@ -27,14 +28,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.MotorColorMaster;
 import com.maan.eway.bean.MotorMakeMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.MotorMakeChangeStatusReq;
 import com.maan.eway.master.req.MotorMakeGetAllReq;
 import com.maan.eway.master.req.MotorMakeGetReq;
 import com.maan.eway.master.req.MotorMakeSaveReq;
 import com.maan.eway.master.res.MotorMakeGetRes;
 import com.maan.eway.master.service.MotorMakeMasterService;
 import com.maan.eway.repository.MotorMakeMasterRepository;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 
 @Service
@@ -64,20 +68,16 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 			else if (req.getMakeNameEn().length()>100) {
 				errorList.add(new Error("01", "Make Name En", "Please Enter Make Name En within 100 Characters "));
 			}
-			// Date Validation
+			// Date Validation 
 			Calendar cal = new GregorianCalendar();
 			Date today = new Date();
-			cal.setTime(today);
-			cal.add(Calendar.DAY_OF_MONTH, -1);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 50);
+			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
 			today = cal.getTime();
 			if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
 				errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start"));
 
 			} else if (req.getEffectiveDateStart().before(today)) {
-				errorList
-						.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+				errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
 			}
 			// Status Validation
 			 if (req.getStatus().length() > 1) {
@@ -106,16 +106,15 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 
 		try {
 			Calendar cal = new GregorianCalendar();
-			cal.setTime(req.getEffectiveDateStart());cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 59);
-			Date startDate = cal.getTime();
+			cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
+			Date startDate = cal.getTime() ;
 			Date today = new Date();
 			cal.setTime(req.getEffectiveDateStart());   cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
-			Date oldEndDate = cal.getTime();
-			cal.setTime(req.getEffectiveDateStart());
-			cal.set(Calendar.HOUR_OF_DAY, today.getHours());cal.set(Calendar.MINUTE, today.getMinutes());
+			Date oldEndDate = cal.getTime() ;
+			cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
 			Date effDate = cal.getTime();
 			Date endDate = sdformat.parse("12/12/2050");
-
+			
 			String makeId = "";
 
 			if (StringUtils.isBlank(req.getMakeId())) {
@@ -411,6 +410,145 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 		}
 		return resList;
 	}
+
+	@Override
+	public List<DropDownRes> getMotorMakeDropdown() {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);;
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<MotorMakeMaster> query=  cb.createQuery(MotorMakeMaster.class);
+			List<MotorMakeMaster> list = new ArrayList<MotorMakeMaster>();
+			// Find All
+			Root<MotorMakeMaster> c = query.from(MotorMakeMaster.class);
+			//Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("makeId")));
+			
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<MotorMakeMaster> ocpm1 = effectiveDate.from(MotorMakeMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("makeId"),ocpm1.get("makeId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<MotorMakeMaster> ocpm2 = effectiveDate2.from(MotorMakeMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a3 = cb.equal(c.get("makeId"),ocpm2.get("makeId"));
+			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a3,a4);
+			// Where
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
+			query.where(n1,n2,n3).orderBy(orderList);
+			// Get Result
+			TypedQuery<MotorMakeMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			for (MotorMakeMaster data : list) {
+				// Response 
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getMakeId().toString());
+				res.setCodeDesc(data.getMakeNameEn());
+				resList.add(res);
+			}
+		}
+			catch(Exception e) {
+				e.printStackTrace();
+				log.info("Exception is --->"+e.getMessage());
+				return null;
+				}
+			return resList;
+		}
+
+	@Override
+	public SuccessRes changeStatusOfMotorMake(MotorMakeChangeStatusReq req) {
+		SuccessRes res = new SuccessRes();
+		try {
+			Date today = req.getEffectiveDateStart()!=null ? req.getEffectiveDateStart(): new Date();
+			Calendar cal = new GregorianCalendar();
+			MotorMakeMaster updateRecord = new MotorMakeMaster();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			List<MotorMakeMaster> list = new ArrayList<MotorMakeMaster>();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<MotorMakeMaster> query = cb.createQuery(MotorMakeMaster.class);
+			// Find all
+			Root<MotorMakeMaster> b = query.from(MotorMakeMaster.class);
+			//Select
+			query.select(b);
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<MotorMakeMaster> ocpm1 = effectiveDate.from(MotorMakeMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("makeId"),b.get("makeId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
+			effectiveDate.where(a1,a2);
+			//Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("effectiveDateStart")));
+			//where 
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"),effectiveDate);
+			Predicate n2 = cb.equal(b.get("makeId"),req.getMakeId());
+			query.where(n1,n2).orderBy(orderList);
+			// Get Result 
+			TypedQuery<MotorMakeMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			updateRecord = list.get(0);
+			
+			if(req.getStatus().equalsIgnoreCase("N")) {
+				// Delete Old Records
+				cal.setTime(today);
+				cal.set(Calendar.HOUR_OF_DAY, 23);
+				cal.set(Calendar.MINUTE, 30);
+				today = cal.getTime();
+				// Create Update
+				CriteriaDelete<MotorMakeMaster> delete = cb.createCriteriaDelete(MotorMakeMaster.class);
+				Root<MotorMakeMaster> pm = delete.from(MotorMakeMaster.class);
+				// Where
+				
+				Predicate n3 = cb.equal(pm.get("makeId"), req.getMakeId());
+				Predicate n4 = cb.greaterThanOrEqualTo(pm.get("effectiveDateStart"),today);
+				delete.where(n3,n4);
+				em.createQuery(delete).executeUpdate();
+				// Insert Update Record
+				updateRecord.setStatus(req.getStatus());
+				repo.save(updateRecord);
+			}
+			else if(req.getStatus().equalsIgnoreCase("Y")) {
+				// Insert Update Record
+				updateRecord.setStatus(req.getStatus());
+				repo.save(updateRecord);
+				}
+			// Perform Update
+			res.setResponse("Status Changed");
+			res.setSuccessId(req.getMakeId());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --> " + e.getMessage());
+			return null;
+			}
+		return res;
+	}
+
 
 
 	

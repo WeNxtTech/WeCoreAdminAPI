@@ -29,6 +29,10 @@ public class MotorColorSaveReq {
 	private String remarks;
 	@JsonProperty("Status")
 	private String status;
+	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("EffectiveDateEnd")
+	private Date effectiveDateEnd;
+	
 }                                      
   
    

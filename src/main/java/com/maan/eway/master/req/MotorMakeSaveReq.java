@@ -1,5 +1,7 @@
 package com.maan.eway.master.req;
 
+
+
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -25,15 +27,20 @@ public class MotorMakeSaveReq {
 	@JsonProperty("Remarks")
 	private String remarks;
 	
-	@JsonFormat(pattern="dd/MM/YYYY")
-	@JsonProperty("EffectiveDateStart")
-	private Date effectiveDateStart;
-	  
 	@JsonProperty("ColorDesc")
 	private String colorDesc;
 		
 	@JsonProperty("Status")
 	private String status;
 	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateEnd")
+	private Date effectiveDateEnd;
 
+
+	
 }

@@ -23,6 +23,10 @@ public class MotorBodySaveReq {
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
+	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("EffectiveDateEnd")
+	private Date effectiveDateEnd;
+	
 	@JsonProperty("Remarks")
 	private String remarks;
 	@JsonProperty("SeatingCapacity")

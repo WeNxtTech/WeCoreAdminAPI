@@ -80,4 +80,6 @@ public interface DropDownService {
 
 	List<DropDownRes> claimResultedLitigation();
 
+	List<DropDownRes> tonnage();
+
 }

@@ -706,4 +706,24 @@ public class DropDownController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}	
+	
+	@GetMapping("/tonnage")
+	@ApiOperation(value = "This method is get all Tonnage Drop Down")
+	public ResponseEntity<CommonRes> tonnage() {
+
+		CommonRes data = new CommonRes();
+
+		// Save
+		List<DropDownRes> res = dropDownService.tonnage();
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}	
 }

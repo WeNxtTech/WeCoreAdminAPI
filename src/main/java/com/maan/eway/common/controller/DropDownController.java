@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.common.req.NcdDetailsGetReq;
 import com.maan.eway.common.service.DropDownService;
 import com.maan.eway.master.req.CityDropDownReq;
 import com.maan.eway.master.req.RegionDropDownReq;
@@ -725,5 +726,21 @@ public class DropDownController {
 		} else {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
-	}	
+	}
+	
+	
+	@PostMapping("/getncddetails")
+	public ResponseEntity<CommonRes> getNcdDetails(@RequestBody NcdDetailsGetReq req) {
+		CommonRes data = new CommonRes();
+		List<DropDownRes> res = dropDownService.getNcdDetails(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 }

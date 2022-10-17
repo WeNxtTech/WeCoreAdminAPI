@@ -2,6 +2,7 @@ package com.maan.eway.common.service;
 
 import java.util.List;
 
+import com.maan.eway.common.req.NcdDetailsGetReq;
 import com.maan.eway.master.req.CityDropDownReq;
 import com.maan.eway.master.req.RegionDropDownReq;
 import com.maan.eway.master.req.StateDropDownReq;
@@ -81,5 +82,7 @@ public interface DropDownService {
 	List<DropDownRes> claimResultedLitigation();
 
 	List<DropDownRes> tonnage();
+
+	List<DropDownRes> getNcdDetails(NcdDetailsGetReq req);
 
 }

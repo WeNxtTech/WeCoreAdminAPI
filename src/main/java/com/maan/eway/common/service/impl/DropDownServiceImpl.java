@@ -26,6 +26,7 @@ import com.maan.eway.bean.CompanyRegionMaster;
 import com.maan.eway.bean.CompanyStateMaster;
 import com.maan.eway.bean.CountryMaster;
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.common.req.NcdDetailsGetReq;
 import com.maan.eway.common.service.DropDownService;
 import com.maan.eway.master.req.CityDropDownReq;
 import com.maan.eway.master.req.CountryChangeStatusReq;
@@ -984,6 +985,32 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
+
+
+	@Override
+	public List<DropDownRes> getNcdDetails(NcdDetailsGetReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			Integer year = Calendar.getInstance().get(Calendar.YEAR);
+			Integer manuyear = Integer.valueOf(req.getManufactureYear());
+			Integer ncdyear = year-manuyear;
+			
+			for (Integer i=0;i<ncdyear;i++){
+				DropDownRes res = new DropDownRes();
+				List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("NCD", "Y");
+				res.setCode(i.toString());
+				res.setCodeDesc(i+" "+getList.get(0).getItemType());
+				resList.add(res);
+				}
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			log.info("Log Details"+e.getMessage());
+			return null;
+			}
+		return resList;
+	}
+
 
 
 	

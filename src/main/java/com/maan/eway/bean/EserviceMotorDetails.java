@@ -70,71 +70,20 @@ private static final long serialVersionUID = 1L;
     @Column(name="GEOGRAPHICAL_EXTENSION", length=1)
     private String     geographicalExtension ;
 
-    @Column(name="LOSS_OF_USE")
-    private Double     lossOfUse ;
-
-    @Column(name="INCREASED_TPPD", length=100)
-    private String     increasedTppd ;
-
-    @Column(name="EXCESS_PROTECTOR", length=100)
-    private String     excessProtector ;
-
-    @Column(name="EXCESS_PVT", length=100)
-    private String     excessPvt ;
-
     @Column(name="ACCIDENT", length=1)
     private String     accident ;
-
+    
     @Column(name="GPS_TRACKING_INSTALLED", length=1)
     private String     gpsTrackingInstalled ;
 
     @Column(name="WIND_SCREEN_COVER_REQUIRED", length=1)
     private String     windScreenCoverRequired ;
 
-    @Column(name="MEMBERSHIP_DISCOUNT")
-    private Double     membershipDiscount ;
-
-    @Column(name="FLEET_CLAIM")
-    private Double     fleetClaim ;
-
-    @Column(name="MANUFACTURE_YEAR", length=10)
-    private String     manufactureYear ;
-
-    @Column(name="ADDITIONAL_DISCOUNT")
-    private Double     additionalDiscount ;
-
-    @Column(name="VAT")
-    private Double     vat ;
-
-    @Column(name="BY_PERCENT_AMOUNT")
-    private Double     byPercentAmount ;
-
-    @Column(name="STAMP_DUTY")
-    private Double     stampDuty ;
-
-    @Column(name="WINDSCREEN_RATE")
-    private Double     windscreenRate ;
-
     @Column(name="INSURANCE_TYPE", length=1)
     private String     insuranceType ;
 
     @Column(name="INSURANCE_TYPE_DESC", length=100)
     private String     insuranceTypeDesc ;
-
-    @Column(name="INSURANCE_CLASS", length=1)
-    private String     insuranceClass ;
-
-    @Column(name="INSURANCE_CLASS_DESC", length=100)
-    private String     insuranceClassDesc ;
-
-    @Column(name="OTHER_DESCRIPTION", length=100)
-    private String     otherDescription ;
-
-    @Column(name="OWNER_CATEGORY", length=1)
-    private String     ownerCategory ;
-
-    @Column(name="OWNER_CATEGORY_DESC", length=100)
-    private String     ownerCategoryDesc ;
 
     @Column(name="MOTOR_CATEGORY", length=1)
     private String     motorCategory ;
@@ -181,6 +130,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="FUEL_TYPE_DESC", length=100)
     private String     fuelTypeDesc ;
 
+    @Column(name="MANUFACTURE_YEAR")
+    private Integer  manufactureYear ;
+    
     @Column(name="REGISTRATION_YEAR")
     private Integer    registrationYear ;
 
@@ -208,26 +160,14 @@ private static final long serialVersionUID = 1L;
     @Column(name="COVERNOTE_NO", length=20)
     private String     covernoteNo ;
 
-    @Column(name="ADJUST_PREMIUM")
-    private Double     adjustPremium ;
-
     @Column(name="STICKER_NO", length=20)
     private String     stickerNo ;
-
-    @Column(name="OVERRIDE")
-    private Double     override ;
-
-    @Column(name="DISCOUNT_PREMIUM")
-    private Double     discountPremium ;
 
     @Column(name="PERIOD_OF_INSURANCE", length=20)
     private String     periodOfInsurance ;
 
     @Column(name="WIND_SCREEN_SUM_INSURED")
     private Double     windScreenSumInsured ;
-
-    @Column(name="WIND_SCREEN_PREMIUM")
-    private Double     windScreenPremium ;
 
     @Column(name="ACCCESSORIES_SUM_INSURED")
     private Double     acccessoriesSumInsured ;
@@ -244,56 +184,20 @@ private static final long serialVersionUID = 1L;
     @Column(name="SUM_INSURED")
     private Double     sumInsured ;
 
-    @Column(name="RATE")
-    private Double     rate ;
+    @Column(name="OVERRIDE_PERCENTAGE")
+    private Double    overridePercentage;
 
     @Column(name="TPPD_FREE_LIMIT")
     private Double     tppdFreeLimit ;
 
     @Column(name="TPPD_INCREAE_LIMIT")
     private Double     tppdIncreaeLimit ;
-
-    @Column(name="SHORT_PERIOD")
-    private Double     shortPeriod ;
-
-    @Column(name="STICKER_OTHER_FEE")
-    private Double     stickerOtherFee ;
-
-    @Column(name="VAT_AMOUNT")
-    private Double     vatAmount ;
-
-    @Column(name="PH_GUARANTY_FUND")
-    private Double     phGuarantyFund ;
-
-    @Column(name="TRAINING_INSURANCE_LEVY")
-    private Double     trainingInsuranceLevy ;
-
-    @Column(name="STAMP_DUTY_AMOUNT")
-    private Double     stampDutyAmount ;
-
+    
     @Column(name="NCD")
     private Double     ncd ;
 
-    @Column(name="COMMISSION_RATE")
-    private Double     commissionRate ;
-
-    @Column(name="BROKER_COMMISSION")
-    private Double     brokerCommission ;
-
-    @Column(name="VAT_ON_COMMISSION")
-    private Double     vatOnCommission ;
-
     @Column(name="INSURER_SETTLEMENT")
     private Double     insurerSettlement ;
-
-    @Column(name="DISCOUNT_ON_COMMISSION")
-    private Double     discountOnCommission ;
-
-    @Column(name="DISCOUNT_COMMISSION")
-    private Double     discountCommission ;
-
-    @Column(name="TOTAL_RECEIVABLE")
-    private Double     totalReceivable ;
 
     @Column(name="POLICY_TYPE", length=5)
     private String     policyType ;
@@ -318,24 +222,6 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="DRIVEN_BY_DESC", length=100)
     private String     drivenByDesc ;
-
-    @Column(name="DRIVEN_BY_UNDER_AGE", length=5)
-    private String     drivenByUnderAge ;
-
-    @Column(name="DEFECTIVE_VISION_OR_HEARING", length=5)
-    private String     defectiveVisionOrHearing ;
-
-    @Column(name="MOTORING_OFFENCE", length=5)
-    private String     motoringOffence ;
-
-    @Column(name="SUSPENSION_OF_LICENSE", length=5)
-    private String     suspensionOfLicense ;
-
-    @Column(name="SPECIAL_TERMS_OR_PREMIUM", length=5)
-    private String     specialTermsOrPremium ;
-
-    @Column(name="IRRESPECTIVE_OF_BLAME", length=5)
-    private String     irrespectiveOfBlame ;
 
     @Column(name="VEHICLE_INTERESTED_COMPANY", length=5)
     private String     vehicleInterestedCompany ;
@@ -364,9 +250,11 @@ private static final long serialVersionUID = 1L;
     @Column(name="ADDITIONAL_CIRCUMSTANCES", length=200)
     private String     additionalCircumstances ;
 
+    @Column(name="ENDORSEMENT_TYPE")
+    private Integer  endorsementType;
 
-    //--- ENTITY LINKS ( RELATIONSHIP )
-
+    @Column(name="ENDORSEMENT_TYPE_DESC",length=100)
+    private String  endorsementTypeDesc;
 
 }
 

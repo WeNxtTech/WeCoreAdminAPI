@@ -10,5 +10,8 @@ public class LoginCreationRes {
 
 	@JsonProperty("Response")
 	private String response;
+	
+	@JsonProperty("AgencyCode")
+	private String agencyCode;
 
 }

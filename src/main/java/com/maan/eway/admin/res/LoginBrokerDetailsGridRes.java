@@ -60,4 +60,20 @@ public class LoginBrokerDetailsGridRes {
 	
 	@JsonProperty("BrokerCompanyYn")
     private String    brokerCompanyYn ;
+	
+	@JsonProperty("ContactPersonName")
+	private String    contactPersonName ;
+	
+	@JsonProperty("EffectiveDateStart")
+	private String    effectiveDateStart ;
+	
+	@JsonProperty("MobileCode")
+	private String    mobileCode ;
+	
+	
+	@JsonProperty("WhatsappCode")
+	private String    whatsappCode ;
+	
+	@JsonProperty("WhatsappNo")
+	private String    whatsappNo ;
 }

@@ -235,6 +235,41 @@ public class CompanyCityMasterController {
 
 			}
 		}
+		
+		@PostMapping("/dropdown/companycities")
+		@ApiOperation(value = "This method is get Company City Master Drop Down")
+
+		public ResponseEntity<CommonRes> getCompanyCityDropdown(@RequestBody CompanyCityMasterDropDownReq req) {
+
+			CommonRes data = new CommonRes();
+
+			List<Error> validation = cityService.validateCompanyCity(req);
+			// validation
+			if (validation != null && validation.size() != 0) {
+				data.setCommonResponse(null);
+				data.setIsError(true);
+				data.setErrorMessage(validation);
+				data.setMessage("Failed");
+				return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+			} else {
+
+				
+				List<DropDownRes> res = cityService.getCompanyCityDropdown(req);
+				data.setCommonResponse(res);
+				data.setIsError(false);
+				data.setErrorMessage(Collections.emptyList());
+				data.setMessage("Success");
+
+				if (res != null) {
+					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				} else {
+					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				}
+
+			}
+		}
+		
 		@PostMapping("/companycity/changestatus")
 		@ApiOperation(value = "This method is get Company City Change Status")
 		public ResponseEntity<CommonRes> changeStatusOfCity(@RequestBody CompanyCityChangeStatusReq req) {

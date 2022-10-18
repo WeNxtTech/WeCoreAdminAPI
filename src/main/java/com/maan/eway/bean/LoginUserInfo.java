@@ -158,10 +158,32 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="MAKER_YN")
     private String    makerYn ;
- 
+    
+    @Column(name="CONTACT_PERSON_NAME")
+    private String    contactPersonName ;
+    
+    @Column(name="DESIGNATION")
+    private String    designation ;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EFFECTIVE_DATE_START")
+    private Date       effectiveDateStart ;
+    
+    @Column(name="MOBILE_CODE")
+    private String    mobileCode ;
+    
+    @Column(name="MOBILE_CODE_DESC")
+    private String    mobileCodeDesc ;
+    
+    @Column(name="WHATSAPP_CODE")
+    private String    whatsappCode ;
+    
+    @Column(name="WHATSAPP_CODE_DESC")
+    private String    whatsappCodeDesc ;
     
     
-   
+    @Column(name="WHATSAPP_No")
+    private String    whatsappNo ;
     
     //--- ENTITY LINKS ( RELATIONSHIP )
 

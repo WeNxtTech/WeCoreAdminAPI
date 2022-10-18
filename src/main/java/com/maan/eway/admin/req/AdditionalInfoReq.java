@@ -1,5 +1,8 @@
 package com.maan.eway.admin.req;
 
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
@@ -75,4 +78,23 @@ public class AdditionalInfoReq {
     
     @JsonProperty("MakerYn")
     private String    makerYn ;
+    
+    @JsonProperty("ContactPersonName")
+    private String    contactPersonName ;
+    
+    @JsonFormat(pattern ="dd/MM/yyyy")
+    @JsonProperty("EffectiveDateStart")
+    private Date effectiveDateStart ;
+    
+    @JsonProperty("MobileCode")
+    private String    mobileCode ;
+    
+    @JsonProperty("Designation")
+    private String    designation ;
+    
+    @JsonProperty("WhatsappCode")
+    private String    whatsappCode ;
+    
+    @JsonProperty("WhatsappNo")
+    private String    whatsappNo ;
 }

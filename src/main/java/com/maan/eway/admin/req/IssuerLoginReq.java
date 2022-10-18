@@ -1,7 +1,9 @@
 package com.maan.eway.admin.req;
 
+import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
@@ -38,4 +40,11 @@ public class IssuerLoginReq {
     private String     status       ;
 	@JsonProperty("BrokerCompanyYn")
     private String    brokerCompanyYn ;
+	
+	 @JsonFormat(pattern = "dd/MM/yyyy")
+	 @JsonProperty("EffectiveDateStart")
+	 private Date    effectiveDateStart ;
+	 
+	 @JsonProperty("InsuranceId")
+	 private String    companyId ;
 }

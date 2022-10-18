@@ -24,6 +24,8 @@ public class BrokerLoginDetailsGetRes {
 	@JsonProperty("AgencyCode")
 	private String agencyCode ;
 	
+	@JsonProperty("InsuranceId")
+	private String companyId ;
 	
 /*	@JsonProperty("AttachedBranches")
     private List<String>     getBranches ;
@@ -57,4 +59,9 @@ public class BrokerLoginDetailsGetRes {
 	
 	@JsonProperty("BrokerCompanyYn")
     private String    brokerCompanyYn ;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart ;
+	    
 }

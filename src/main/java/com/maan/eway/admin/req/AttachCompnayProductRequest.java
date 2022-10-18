@@ -12,9 +12,12 @@ public class AttachCompnayProductRequest {
 	@JsonProperty("LoginId")
 	private String loginId ;
 	@JsonProperty("InsuranceId")
-	private String  insuranceId;  
+	private String  insuranceId; 
+	
+	@JsonProperty("CreatedBy")
+	private String  createdBy; 
 	
 	
-	@JsonProperty("AttachedProducts")
-	private List<AttachedProductReq> attachedProducts ;
+	@JsonProperty("ProductIds")
+	private List<String> productIds ;
 }

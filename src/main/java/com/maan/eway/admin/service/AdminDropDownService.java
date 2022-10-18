@@ -36,5 +36,7 @@ public interface AdminDropDownService {
 
 	List<DropDownRes> getDiscreteParams();
 
+	List<DropDownRes> getMobileCodes();
+
 
 }

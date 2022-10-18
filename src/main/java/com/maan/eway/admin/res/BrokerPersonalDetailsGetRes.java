@@ -28,7 +28,7 @@ public class BrokerPersonalDetailsGetRes {
     private String    address3 ;
     
     
-    @JsonProperty("CityCode;")
+    @JsonProperty("CityCode")
     private String    cityCode;
     
     @JsonProperty("CityName")
@@ -62,6 +62,9 @@ public class BrokerPersonalDetailsGetRes {
     @JsonProperty("MissippiId")
     private String    missippiId ;
     
+    @JsonProperty("Designation")
+    private String    designation;
+    
     @JsonProperty("ApprovedPreparedBy")
     private String    approvedPreparedBy ;
     
@@ -85,4 +88,18 @@ public class BrokerPersonalDetailsGetRes {
     
     @JsonProperty("MakerYn")
     private String    makerYn ;
+    
+    @JsonProperty("ContactPersonName")
+    private String    contactPersonName ;
+    
+   
+    @JsonProperty("MobileCode")
+    private String    mobileCode ;
+    
+    
+    @JsonProperty("WhatsappCode")
+    private String    whatsappCode ;
+    
+    @JsonProperty("WhatsappNo")
+    private String    whatsappNo ;
 }

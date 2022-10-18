@@ -162,7 +162,7 @@ private static final long serialVersionUID = 1L;
     private String    stateName ;
     
     @Column(name="COUNTRY_CODE")
-    private Integer    countryCode ;
+    private String    countryCode ;
     
     @Column(name="COUNTRY_NAME",length = 50)
     private String    countryName ;

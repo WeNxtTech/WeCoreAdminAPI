@@ -1,7 +1,9 @@
 package com.maan.eway.admin.req;
 
+import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
@@ -28,9 +30,16 @@ public class AttachBrokerBranchReq {
 
 	@JsonProperty("AttachedCompany")
 	private String brokerAttachedCompany;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
 
 	@JsonProperty("BranchName")
 	private String branchName;
+	
+	@JsonProperty("BranchType")
+	private String branchType;
 	
 	@JsonProperty("Address1")
 	private String address1;

@@ -53,6 +53,10 @@ public interface CompanyCityMasterService  {
 
 	SuccessRes insertCity(List<CompanyCityMasterMultiInsertSaveReq> req);
 
+	List<Error> validateCompanyCity(CompanyCityMasterDropDownReq req);
+
+	List<DropDownRes> getCompanyCityDropdown(CompanyCityMasterDropDownReq req);
+
 	
 	
 

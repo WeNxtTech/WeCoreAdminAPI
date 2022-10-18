@@ -757,7 +757,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 
 	@Override
 	public List<Error> validateUpdateCompanyProductDetails(CompanyProductMasterSaveReq req) {
-List<Error> errorList = new ArrayList<Error>();
+		List<Error> errorList = new ArrayList<Error>();
 		
 		try {
 		

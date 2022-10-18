@@ -1,5 +1,8 @@
 package com.maan.eway.admin.res;
 
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -38,5 +41,15 @@ public class LoginProductCriteriaRes {
 	
 	@JsonProperty("CompanyName")
 	private String companyName ;
+	
+	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart ;
+	
+	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("EffectiveDateEnd")
+	private Date EffectiveDateEnd ;
+	
+	
 	
 }

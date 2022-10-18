@@ -106,7 +106,19 @@ private static final long serialVersionUID = 1L;
     private String    custConfirmYn ;
     
     @Column(name="COMMISSION_PERCENT")
-    private Integer commissionPercent ;
+    private Double commissionPercent ;
+    
+    @Column(name="CREATED_BY")
+    private String createdBy ;
+    
+    @Column(name="AMEND_ID")
+    private Integer amendId ;
+    
+    @Column(name="REGULATORY_CODE")
+    private String regulatoryCode ;
+    
+    @Column(name="CORE_APP_CODE")
+    private String coreAppCode ;
  
 }
 

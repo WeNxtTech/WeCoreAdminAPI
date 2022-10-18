@@ -92,9 +92,16 @@ private static final long serialVersionUID = 1L;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ENTRY_DATE")
     private Date       entryDate ;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EFFECTIVE_DATE_START")
+    private Date       effectiveDateStart ;
 
     @Column(name="BRANCH_NAME", length=100)
     private String     branchName ;
+    
+    @Column(name="BRANCH_TYPE", length=100)
+    private String     branchType ;
     
     @Column(name="ADDRESS1", length=100)
     private String     address1 ;

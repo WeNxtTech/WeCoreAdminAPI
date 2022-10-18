@@ -76,12 +76,14 @@ import com.maan.eway.auth.dto.Menu;
 import com.maan.eway.auth.token.passwordEnc;
 import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.CountryMaster;
+import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginMasterArch;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.LoginUserInfoArch;
 import com.maan.eway.bean.MenuMaster;
 import com.maan.eway.bean.StateMaster;
+import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginMasterArchRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.LoginUserInfoArchRepository;
@@ -105,6 +107,9 @@ public class LoginDetailsServiceImpl implements LoginDetailsService {
 	
 	@Autowired
 	private LoginUserInfoArchRepository loginUserArchRepo ;
+	
+	@Autowired
+	private ListItemValueRepository listRepo;
 	
 	@PersistenceContext
 	private EntityManager em;
@@ -209,16 +214,14 @@ this.repository = repo;
 			if (loginData ==null) {
 				// Save
 				saveRes =   newLoginInsert(commonReq) ;
+				res.setAgencyCode(saveRes);
 				res.setResponse("Saved Successfully");
 				
 			} else {
 				// Update
 				saveRes = updateLoginDetails(commonReq);
+				res.setAgencyCode(saveRes);
 				res.setResponse("Updated Successfully");
-			}
-			
-			if(! saveRes.equalsIgnoreCase("Success")  ) {
-				return null; 
 			}
 			
 		} catch (Exception e) {
@@ -280,11 +283,13 @@ this.repository = repo;
 			if (loginData ==null) {
 				// Save
 				saveRes =   newLoginInsert(commonReq) ;
+				res.setAgencyCode(saveRes);
 				res.setResponse("Saved Successfully");
 				
 			} else {
 				// Update
 				saveRes = updateLoginDetails(commonReq);
+				res.setAgencyCode(saveRes);
 				res.setResponse("Updated Successfully");
 			}
 			
@@ -350,6 +355,7 @@ this.repository = repo;
 			}
 			loginRepo.saveAndFlush(saveLogin);
 				
+			List<ListItemValue> mobileCodes = listRepo.findByItemTypeAndStatusOrderByItemCodeDesc("MOBILE_CODE" , "Y");
 			// Login User Details Insert
 			CommonPersonalInforReq personalReq = req.getPersonalInformation() ;
 			LoginUserInfo userInfo = new LoginUserInfo(); 
@@ -362,8 +368,11 @@ this.repository = repo;
 			userInfo.setUpdatedBy(loginReq.getCreatedBy());
 			userInfo.setStatus(saveLogin.getStatus());
 			userInfo.setCountryCode(personalReq.getCountryCode());
+			userInfo.setMobileCodeDesc(mobileCodes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(personalReq.getMobileCode()) ).collect(Collectors.toList()).get(0).getItemValue() );
+			userInfo.setWhatsappCodeDesc(mobileCodes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(personalReq.getWhatsappCode()) ).collect(Collectors.toList()).get(0).getItemValue() );
+			
 			if(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("User")  ) {
-				List<Tuple> stateCityNames = 	getStateAndCityName(personalReq.getCountryCode() , personalReq.getStateCode() , personalReq.getCityCode());
+				List<Tuple> stateCityNames = 	getStateAndCityName(personalReq.getCountryCode() ,  personalReq.getCityCode());
 				
 				userInfo.setCityName(stateCityNames.get(0).get("cityName") == null ? "" :  stateCityNames.get(0).get("cityName").toString());
 				userInfo.setStateName(stateCityNames.get(0).get("stateName") == null ? "" :  stateCityNames.get(0).get("stateName").toString());
@@ -374,7 +383,7 @@ this.repository = repo;
 			loginUserRepo.saveAndFlush(userInfo);
 			
 			
-			res = "Success" ; 
+			res = saveLogin.getAgencyCode() ; 
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -385,7 +394,7 @@ this.repository = repo;
 	}
 	
 	
-	public List<Tuple> getStateAndCityName(String countryId , String stateId , String cityId  ) {
+	public List<Tuple> getStateAndCityName(String countryId , String cityId  ) {
 		List<Tuple> list = new ArrayList<Tuple>();
 		try {
 			Date today = new Date();
@@ -409,7 +418,6 @@ this.repository = repo;
 			
 			Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate1);
 			Predicate n2 = cb.equal(c.get("cityId"), cityId);
-			Predicate n3 = cb.equal(c.get("stateId"), stateId);
 			Predicate n4 = cb.equal(c.get("countryId"), countryId);
 			Predicate n5 = cb.equal(c.get("status"), "Y");
 			
@@ -456,7 +464,7 @@ this.repository = repo;
 			// Select
 			query.multiselect( c.get("cityId").alias("cityId") ,c.get("cityName").alias("cityName") , state.alias("stateName") ,country.alias("countryName") );
 			
-			query.where(n1,n2,n3,n4,n5);
+			query.where(n1,n2,n4,n5);
 			// Get Result
 			TypedQuery<Tuple> result = em.createQuery(query);
 			list = result.getResultList();
@@ -546,7 +554,7 @@ this.repository = repo;
 			updateUser.setStatus(updateLogin.getStatus());		
 			
 			if(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("User")  ) {
-				List<Tuple> stateCityNames = 	getStateAndCityName(personalReq.getCountryCode() , personalReq.getStateCode() , personalReq.getCityCode());
+				List<Tuple> stateCityNames = 	getStateAndCityName(personalReq.getCountryCode() ,  personalReq.getCityCode());
 				
 				updateUser.setCityName(stateCityNames.get(0).get("cityName") == null ? "" :  stateCityNames.get(0).get("cityName").toString());
 				updateUser.setStateName(stateCityNames.get(0).get("stateName") == null ? "" :  stateCityNames.get(0).get("stateName").toString());
@@ -555,7 +563,7 @@ this.repository = repo;
 			loginUserRepo.saveAndFlush(updateUser);
 			log.info( "Login User Info Updated Details ---> " + json.toJson(updateUser) );
 			
-			res = "Success" ;
+			res = updateLogin.getAgencyCode() ;
 			
 			/*// Branch Setup	
 			String branches  =  String.join(",", loginReq.getAttachedBranches());

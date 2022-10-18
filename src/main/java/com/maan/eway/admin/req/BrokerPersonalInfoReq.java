@@ -1,7 +1,10 @@
 package com.maan.eway.admin.req;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
@@ -82,4 +85,21 @@ public class BrokerPersonalInfoReq {
     
     @JsonProperty("MakerYn")
     private String    makerYn ;
+    
+    @JsonProperty("Designation")
+    private String    designation;
+    
+    @JsonProperty("ContactPersonName")
+    private String    contactPersonName ;
+    
+    
+    @JsonProperty("MobileCode")
+    private String    mobileCode ;
+    
+    
+    @JsonProperty("WhatsappCode")
+    private String    whatsappCode ;
+    
+    @JsonProperty("WhatsappNo")
+    private String    whatsappNo ;
 }

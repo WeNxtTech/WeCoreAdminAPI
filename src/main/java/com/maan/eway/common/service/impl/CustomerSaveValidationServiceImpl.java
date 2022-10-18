@@ -22,29 +22,6 @@ public class CustomerSaveValidationServiceImpl implements CustomerSaveValidation
 	private Logger log=LogManager.getLogger(CustomerSaveValidationServiceImpl.class);
 
 	
-	@Override
-	public List<Error> validateCustomerDetails(EserviceCustomerSaveReq req) {
-		List<Error> errors = new ArrayList<Error>();
-		try {
-			
-			// Cutomer Common Validation
-			List<Error> commonErrors =  customerCommonSaveValidation(req.getCustomerCommonDetails());
-			if(commonErrors.size()>0 ) {
-				errors.addAll(commonErrors);
-			}
-			//Cover Note Details Validation
-			List<Error> coverNoteErrors =  coverNoteDetailsSaveReqValidation(req.getCoverNoteDetails());
-			if(commonErrors.size()>0 ) {
-				errors.addAll(commonErrors);
-			}
-		} catch(Exception e) {
-			e.printStackTrace();
-			log.info("Exception is ---> " + e.getMessage());
-			errors.add(new Error("01","Common Error",e.getMessage() ));
-		}
-		return errors;
-	}
-
 	
 	public List<Error> customerCommonSaveValidation(CustomerCommonSaveReq req) {
 		List<Error> errors = new ArrayList<Error>();

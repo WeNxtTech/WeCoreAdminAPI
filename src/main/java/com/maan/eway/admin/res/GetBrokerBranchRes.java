@@ -31,7 +31,10 @@ public class GetBrokerBranchRes {
 	@JsonProperty("UpdatedDate")
 	private Date updatedDate;
 	
-
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
+	
 	@JsonProperty("InsuranceId")
 	private String companyId;
 	
@@ -49,6 +52,10 @@ public class GetBrokerBranchRes {
 	
 	@JsonProperty("Address2")
 	private String address2;
+	
+	
+	@JsonProperty("BranchType")
+	private String branchType;
 	
 	@JsonProperty("Email")
 	private String email;

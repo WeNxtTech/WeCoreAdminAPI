@@ -8,7 +8,5 @@ import com.maan.eway.error.Error;
 
 public interface CustomerSaveValidationService {
 
-	List<Error> validateCustomerDetails(EserviceCustomerSaveReq req);
-
-
+	
 }

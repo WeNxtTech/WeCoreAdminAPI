@@ -1,7 +1,9 @@
 package com.maan.eway.admin.service.impl;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -74,16 +76,22 @@ public class BasicLoginValidationService {
 				errors.add(new Error("02", "Login Id", "Logi"
 						+ "n Id Under 5 - 50 Characters Only Allowed"));
 			} 
-			
-			if (StringUtils.isBlank(loginReq.getPassword())) {
-				errors.add(new Error("04", "Password", "Please Enter Password"));
-			} else if (loginReq.getPassword().length() > 50) {
-				errors.add(new Error("03", "PassWord", "Password Must Be Under 50 Characters Only Allowed"));
+			if( StringUtils.isBlank(loginReq.getAgencyCode())) {
+				if (StringUtils.isBlank(loginReq.getPassword())) {
+					errors.add(new Error("04", "Password", "Please Enter Password"));
+				} else if (loginReq.getPassword().length() > 50) {
+					errors.add(new Error("03", "PassWord", "Password Must Be Under 50 Characters Only Allowed"));
+				}
 			}
+			
 			
 			if (StringUtils.isBlank(loginReq.getStatus())) {
 				errors.add(new Error("05", "Status", "Please Select Status"));
 			} 
+			
+			if (StringUtils.isBlank(loginReq.getCompanyId())) {
+				errors.add(new Error("05", "InsuranceId", "Please Select InsuranceId"));
+			}
 			
 			if( StringUtils.isBlank(loginReq.getUserType()) ) {
 				errors.add(new Error("05", "UserType", "Please Select UserType"));
@@ -117,11 +125,22 @@ public class BasicLoginValidationService {
 				} 
 			}
 			
+			// Effective Date Validation
+			Calendar cal = new GregorianCalendar();
+			Date today = new Date();
+			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
+			today = cal.getTime();
+			if (loginReq.getEffectiveDateStart() == null ) {
+				errors.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
+
+			} else if (loginReq.getEffectiveDateStart().before(today)) {
+				errors.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date  "));
+			}
 			
 			if(StringUtils.isNotBlank(loginReq.getSubUserType() ) && ! loginReq.getSubUserType().equalsIgnoreCase("bank") &&   StringUtils.isNotBlank(loginReq.getBankCode())   ) {
 				errors.add(new Error("06","BankCode","You Can't Enter BankCode"));
 			}
-			if( loginReq.getAttachedBranches()==null || loginReq.getAttachedBranches().size() == 0 ) {
+		/*	if( loginReq.getAttachedBranches()==null || loginReq.getAttachedBranches().size() == 0 ) {
 				errors.add(new Error("06", "Attached Branch", "Please Choose Atleast One Branch"));
 			} 
 			if( loginReq.getAttachedRegions()==null || loginReq.getAttachedRegions().size() == 0 ) {
@@ -129,7 +148,7 @@ public class BasicLoginValidationService {
 			}
 			if( loginReq.getAttachedCompanies()==null || loginReq.getAttachedCompanies().size() == 0 ) {
 				errors.add(new Error("06", "Attached Branch", "Please Choose Atleast One Branch"));
-			}
+			} */
 			// Personal Info Validation
 			CommonPersonalInforReq personalReq = req.getPersonalInformation() ; 
 			
@@ -150,6 +169,7 @@ public class BasicLoginValidationService {
 			}  else if( isNotValidMail(personalReq.getUserMail()) ){
 				errors.add(new Error("08", "User Mail", "Please Enter Valid User Mail"));
 			}
+			
 			
 			if( StringUtils.isBlank(personalReq.getUserMobile()) ) {
 				errors.add(new Error("07", "User Mobile", "Please Enter User Mobile"));
@@ -265,7 +285,7 @@ public class BasicLoginValidationService {
 		return stateCount;
 	}
 	
-	public Long getCityCount(String countryId, String stateId ,String cityId) {
+	public Long getCityCount(String countryId,String cityId) {
 		Long cityCount = 0L ;
 		try {
 			Date today = new Date();
@@ -289,14 +309,13 @@ public class BasicLoginValidationService {
 			
 			Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(c.get("countryId"), countryId);
-			Predicate n3 = cb.equal(c.get("stateId"), stateId);
 			Predicate n4 = cb.equal(c.get("cityId"), cityId );
 			Predicate n5 = cb.equal(c.get("status"), "Y");
 			
 			// Select
 			query.multiselect( cb.count(c) );
 			
-			query.where(n1,n2,n3,n4,n5);
+			query.where(n1,n2,n4,n5);
 			// Get Result
 			TypedQuery<Long> result = em.createQuery(query);
 			List<Long> list = result.getResultList();
@@ -347,14 +366,11 @@ public class BasicLoginValidationService {
 				errors.add(new Error("13", "ApprovedPreparedBy", "ApprovedPreparedBy Must Be Under 30 Character Only Allowed" ));
 			}
 			
-			
-			
-			if(StringUtils.isBlank(brokerReq.getCompanyName())  ) {
-				errors.add(new Error("17", "CompanyName", "Plese Enter CompanyName" ));
-			}else if(brokerReq.getCompanyName().length()>100 ) {
-				errors.add(new Error("17", "CompanyName", "CompanyName Must Be Under 100 Character Only Allowed" ));
-			}
-			
+			if(StringUtils.isBlank(brokerReq.getDesignation())  ) {
+				errors.add(new Error("17", "Designation", "Plese Enter Designation" ));
+			}else if(brokerReq.getDesignation().length()>100 ) {
+				errors.add(new Error("17", "Designation", "Designation Must Be Under 100 Character Only Allowed" ));
+			} 
 			
 			
 			if(StringUtils.isBlank(brokerReq.getFax())  ) {
@@ -388,11 +404,6 @@ public class BasicLoginValidationService {
 				errors.add(new Error("26", "Customer Confirm ", "Please Select Customer Confirm  Y or N"));
 			}
 			
-			if(StringUtils.isBlank(brokerReq.getMissippiId())  ) {
-				errors.add(new Error("24", "MissippiId", "Plese Select MissippiId" ));
-			} else if(! brokerReq.getMissippiId().matches("[0-9]+")  ) {
-				errors.add(new Error("24", "MissippiId", "Plese Enter Valid Number In MissippiId" ));
-			}
 			
 			if(StringUtils.isBlank(brokerReq.getPobox())  ) {
 				errors.add(new Error("25", "Post Box No", "Plese Enter Post Box No" ));
@@ -425,7 +436,7 @@ public class BasicLoginValidationService {
 				}
 			}
 			
-			if(StringUtils.isBlank(brokerReq.getStateCode())  ) {
+		/*	if(StringUtils.isBlank(brokerReq.getStateCode())  ) {
 				errors.add(new Error("28", "State", "Plese Select State" ));
 			} else if(! brokerReq.getStateCode().matches("[0-9]+")  ) {
 				errors.add(new Error("18", "Country", "Plese Enter Valid Number In Country" ));
@@ -435,25 +446,51 @@ public class BasicLoginValidationService {
 				if(stateCount <=0 ) {
 					errors.add(new Error("18", "State", "Please Select Valid State" ));
 				}
-			}
+			} */
 			
 			if(StringUtils.isBlank(brokerReq.getCityCode())  ) {
 				errors.add(new Error("15", "City", "Plese Select City" ));
 			} else if(! brokerReq.getCityCode().matches("[0-9]+")  ) {
-				errors.add(new Error("15", "City", "Plese Enter Valid Number In City" ));
+
 			}else if(StringUtils.isNotBlank(brokerReq.getCountryCode()) &&   brokerReq.getCountryCode().matches("[0-9]+")  ){
 	
-				Long cityCount  = getCityCount(brokerReq.getCountryCode() , brokerReq.getStateCode() , brokerReq.getCityCode());//cityRepo.countByCityIdAndStateIdAndCountryIdAndStatusAndEffectiveDateStartLessThanEqual(Integer.valueOf(brokerReq.getCityCode()) , Integer.valueOf(brokerReq.getStateCode()) , Integer.valueOf(brokerReq.getCountryCode()),"Y", today );
+				Long cityCount  = getCityCount(brokerReq.getCountryCode() , brokerReq.getCityCode());//cityRepo.countByCityIdAndStateIdAndCountryIdAndStatusAndEffectiveDateStartLessThanEqual(Integer.valueOf(brokerReq.getCityCode()) , Integer.valueOf(brokerReq.getStateCode()) , Integer.valueOf(brokerReq.getCountryCode()),"Y", today );
 				if(cityCount  <=0 ) {
 					errors.add(new Error("18", "City", "Please Select Valid City" ));
 				}
 			} 
 			
 			if(StringUtils.isBlank(brokerReq.getVatRegNo())  ) {
-				errors.add(new Error("29", "VatRegNo", "Plese Select Country" ));
+				errors.add(new Error("29", "VatRegNo", "Plese Select VatRegNo" ));
 			} else if(brokerReq.getVatRegNo().length()>100  ) {
 				errors.add(new Error("29", "VatRegNo", "VatRegNo Must Be Under 100 Characters Only Allowed" ));
 			}
+			
+			
+						
+			if(StringUtils.isBlank(brokerReq.getContactPersonName())  ) {
+				errors.add(new Error("29", "ContactPersonName", "Plese Enter ContactPersonName" ));
+			} else if(brokerReq.getContactPersonName().length()>100  ) {
+				errors.add(new Error("29", "ContactPersonName", "ContactPersonName Must Be Under 100 Characters Only Allowed" ));
+			}
+			
+			if(StringUtils.isBlank(brokerReq.getMobileCode())  ) {
+				errors.add(new Error("29", "MobileCode", "Plese Select MobileCode" ));
+			} 
+			
+			
+			if(StringUtils.isBlank(brokerReq.getWhatsappCode())  ) {
+				errors.add(new Error("29", "WhatsappCode", "Plese Select WhatsappCode" ));
+			} 
+			
+			if(StringUtils.isBlank(brokerReq.getWhatsappNo())  ) {
+				errors.add(new Error("29", "WhatsappNo", "Plese Enter WhatsappNo" ));
+			} else if(! brokerReq.getWhatsappNo().matches("[0-9]+")  ) {
+				errors.add(new Error("29", "WhatsappNo", "Plese Enter Valid Number in WhatsappNo" ));
+			} else if(brokerReq.getWhatsappNo().length()>20  ) {
+				errors.add(new Error("29", "WhatsappNo", "WhatsappNo Must Be Under 20 Characters Only Allowed" ));
+			}
+			
 			
 		} catch (Exception e) {
 			e.printStackTrace();

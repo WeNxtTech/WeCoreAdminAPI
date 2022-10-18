@@ -59,4 +59,7 @@ public class AttachBrokerBranchReq {
 	@JsonProperty("Status")
 	private String status;
 	
+	@JsonProperty("Remarks")
+	private String remarks;
+	
 }

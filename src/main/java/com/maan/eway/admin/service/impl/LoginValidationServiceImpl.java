@@ -378,7 +378,9 @@ public List<Error> validateBrokerCompanyBranchReq(AttachBrokerBranchReq req) {
 			errors.add(new Error("03", "AttachedComapany", "Plese Enter AttachedComapany" ));
 		}
 		
-	
+		if (StringUtils.isBlank(req.getRemarks())) {
+			errors.add(new Error("03", "Remarks", "Plese Enter Remarks"));
+		}
 		Calendar cal = new GregorianCalendar();
 		Date today = new Date();
 		cal.setTime(today);

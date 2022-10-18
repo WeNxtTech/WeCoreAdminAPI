@@ -1492,15 +1492,21 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("sNo")));
 			
-			if(StringUtils.isBlank(req.getAgencyCode()) && StringUtils.isBlank(req.getBranchCode()) ) {
+			if(StringUtils.isBlank(req.getAgencyCode())  ) {
 				n8 = cb.equal(b.get("agencyCode"), "99999");
 				n9 = cb.equal(b.get("branchCode"), "99999");
 				query.where(n1, n2, n3,n4,n5,n6,n7,n8,n9).orderBy(orderList);
 				
 			} else {
 				n8 = cb.equal(b.get("agencyCode"), req.getAgencyCode());
+				if(StringUtils.isNotBlank(req.getBranchCode())   ) { 
 				n9 = cb.equal(b.get("branchCode"), req.getBranchCode());
 				query.where(n1, n2, n3,n4,n5,n6,n7,n8,n9).orderBy(orderList);
+				} else {
+					n9 = cb.equal(b.get("branchCode"), "99999");
+					query.where(n1, n2, n3,n4,n5,n6,n7,n8,n9).orderBy(orderList);
+				}
+				
 			}	
 	
 			// Get Result

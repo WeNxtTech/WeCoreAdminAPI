@@ -117,7 +117,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="CORE_APP_CODE", length=100)
     private String     coreAppCode ;
-	
+    
+    @Column(name="REMARKS", length=100)
+    private String     remarks ;
 
 }
 

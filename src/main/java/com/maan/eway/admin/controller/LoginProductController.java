@@ -22,9 +22,12 @@ import com.maan.eway.admin.service.LoginValidationService;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.BrokerCompanyProductReq;
 import com.maan.eway.master.req.BrokerProductChangeReq;
+import com.maan.eway.master.req.BrokerProductReq;
+import com.maan.eway.master.req.CompanyBranchReq;
 import com.maan.eway.master.req.CompanyProductChangeStatusReq;
 import com.maan.eway.master.res.CompanyProductMasterRes;
 import com.maan.eway.res.CommonRes;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
@@ -202,4 +205,26 @@ public class LoginProductController {
 
 	}
 	
+	// Branch Master Drop Down Type
+	@PostMapping("/dropdown/brokerproducts")
+	@ApiOperation(value = "This method is get Branch Master Drop Down")
+
+	public ResponseEntity<CommonRes> getBrokerProductDropdown(@RequestBody BrokerProductReq req ) {
+
+		CommonRes data = new CommonRes();
+
+		// Save
+		List<DropDownRes> res = entityService.getBrokerProductDropdown(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
 }

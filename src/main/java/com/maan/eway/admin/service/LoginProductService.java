@@ -14,7 +14,9 @@ import com.maan.eway.auth.dto.BrokerProductCompaniesRes;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.BrokerCompanyProductReq;
 import com.maan.eway.master.req.BrokerProductChangeReq;
+import com.maan.eway.master.req.BrokerProductReq;
 import com.maan.eway.master.res.CompanyProductMasterRes;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 
 public interface LoginProductService {
@@ -34,6 +36,8 @@ public interface LoginProductService {
 	List<CompanyProductMasterRes> getallNonSelectedBrokerCompanyProducts(BrokerCompanyProductGetReq req);
 
 	SuccessRes changeStatusOfCompanyProduct(BrokerProductChangeReq req);
+
+	List<DropDownRes> getBrokerProductDropdown(BrokerProductReq req);
 
 	
 }

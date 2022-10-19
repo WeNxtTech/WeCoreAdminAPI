@@ -186,8 +186,8 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				effectiveDate2.where(a4, a5,a6);
 
 				// Order By
-				// List<Order> orderList = new ArrayList<Order>();
-				// orderList.add(cb.asc(b.get("branchName")));
+				 List<Order> orderList = new ArrayList<Order>();
+				 orderList.add(cb.desc(b.get("effectiveDateStart")));
 
 				// Where
 				Predicate n1 = cb.equal(b.get("status"), "Y");
@@ -204,7 +204,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				for (CoverMaster data  : list) {
 					if(data.getSubCoverYn().equalsIgnoreCase("Y") && !(data.getCoverId().equals(data.getSubCoverId())) ) {  
 						SectionCoverMaster secCover = new SectionCoverMaster();
-						
+						subCover = true ;
 						dozerMapper.map(data, secCover) ;
 						secCover.setEffectiveDateStart(effDate);
 						secCover.setEffectiveDateEnd(endDate);
@@ -240,9 +240,9 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 							}
 						}
 						log.info("Saved Detail is  --->" + secCover );
-					} else if( data.getCoverId().equals(data.getSubCoverId()) ) {
+					} else if(data.getSubCoverYn().equalsIgnoreCase("N") && data.getCoverId().equals(data.getSubCoverId()) ) {
 						SectionCoverMaster secCover = new SectionCoverMaster();
-						
+						cover = true;
 						dozerMapper.map(data, secCover) ;
 						secCover.setEffectiveDateStart(effDate);
 						secCover.setEffectiveDateEnd(endDate);

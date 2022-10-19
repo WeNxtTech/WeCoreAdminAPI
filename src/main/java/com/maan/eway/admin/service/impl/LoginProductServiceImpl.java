@@ -318,6 +318,7 @@ public class LoginProductServiceImpl  implements LoginProductService {
 
 			Root<LoginProductMaster> lm  = query.from(LoginProductMaster.class);
 			
+			
 			// Company Effective Date Max Filter
 			Subquery<Long> company = query.subquery(Long.class);
 			Root<InsuranceCompanyMaster> ins = company.from(InsuranceCompanyMaster.class);

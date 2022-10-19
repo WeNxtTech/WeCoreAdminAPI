@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
@@ -324,20 +325,29 @@ public class CityMasterServiceImpl implements CityMasterService {
 			cal.set(Calendar.MINUTE, 1);
 			today = cal.getTime();
 
+			
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CityMaster> query = cb.createQuery(CityMaster.class);
+			// Find All
+			Root<CityMaster> b = query.from(CityMaster.class);
+		//	Root<ProductMaster> b = query.from(CityMaster.class);
+		//	Root<SectionMaster> b = query.from(CityMaster.class);
+			
+			query.multiselect( );
+			
+			
 			List<CityMaster> list = new ArrayList<CityMaster>();
 			// Pagination
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
 			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 
 			// Find Latest Record
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<CityMaster> query = cb.createQuery(CityMaster.class);
+		//	CriteriaBuilder cb = em.getCriteriaBuilder();
+		//	CriteriaQuery<CityMaster> query = cb.createQuery(CityMaster.class);
 
-			// Find All
-			Root<CityMaster> b = query.from(CityMaster.class);
-
+		
 			// Select
-			query.select(b);
+			
 
 			// Effective Date Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);

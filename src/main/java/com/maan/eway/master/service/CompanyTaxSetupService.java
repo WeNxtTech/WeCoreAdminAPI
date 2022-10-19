@@ -14,8 +14,13 @@ import com.maan.eway.master.req.BranchMasterGetReq;
 import com.maan.eway.master.req.BranchMasterSaveReq;
 import com.maan.eway.master.req.CompanyBranchGetReq;
 import com.maan.eway.master.req.CompanyBranchReq;
+import com.maan.eway.master.req.CompanyTaxChangeStatusReq;
+import com.maan.eway.master.req.CompanyTaxSetupGetAllReq;
+import com.maan.eway.master.req.CompanyTaxSetupGetReq;
+import com.maan.eway.master.req.CompanyTaxSetupSaveReq;
 import com.maan.eway.master.res.BankMasterRes;
 import com.maan.eway.master.res.BranchMasterRes;
+import com.maan.eway.master.res.CompanyTaxGetRes;
 import com.maan.eway.error.Error;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
@@ -26,21 +31,17 @@ import java.util.List;
 */
 public interface CompanyTaxSetupService  {
 
-	List<DropDownRes> getBranchMasterDropdown(CompanyBranchGetReq req);
+	List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req);
 
-	BranchMasterRes getByBranchCode(BranchMasterGetReq req);
+	SuccessRes insertCompanyTax(CompanyTaxSetupSaveReq req);
 
-	List<BranchMasterRes> getActiveBranchDetails(BranchMasterGetAllReq req);
+	List<CompanyTaxGetRes> getallComapnyTaxes(CompanyTaxSetupGetAllReq req);
 
-	List<BranchMasterRes> getallBranchDetails(BranchMasterGetAllReq req);
+	List<CompanyTaxGetRes> getActiveCompanyTaxes(CompanyTaxSetupGetAllReq req);
 
-	SuccessRes insertBranch(BranchMasterSaveReq req);
+	CompanyTaxGetRes getByCompanyTaxes(CompanyTaxSetupGetReq req);
 
-	List<Error> validateBranchDetails(BranchMasterSaveReq req);
-
-	List<DropDownRes> getCompanyBranchMasterDropdown(CompanyBranchReq req);
-
-	SuccessRes changeStatusOfBranch(BranchChangeStatusReq req);
+	SuccessRes changeStatusOfTax(CompanyTaxChangeStatusReq req);
 
 
 

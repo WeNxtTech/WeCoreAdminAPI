@@ -15,67 +15,55 @@ public class CompanyTaxGetRes implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-	@JsonProperty("BranchCode")
-	private String branchCode;
-	
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDate")
-	private Date effectiveDateStart;
-	
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDateEnd")
-	private Date effectiveDateEnd;
+    
+    @JsonProperty("TaxId")
+    private String     taxId ;
 
-	@JsonProperty("BranchName")
-	private String branchName;
+    
+    @JsonProperty("ProductId")
+    private String productId ;
+
+    
+    @JsonProperty("InsuranceId")
+    private String     companyId;
+    
+    
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    @JsonProperty("EffectiveDateStart")
+    private Date       effectiveDateStart ;
+
+    
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    @JsonProperty("EffectiveDateEnd")
+    private Date       effectiveDateEnd ;
+    
+    //--- ENTITY DATA FIELDS 
+    @JsonProperty("TaxName")
+    private String     taxName ;
+    
+    @JsonProperty("TaxDesc")
+    private String     taxDesc ;
+
+    @JsonProperty("CalcType")
+    private String     calcType ;
+
+    
+    @JsonProperty("Value")
+    private String    value ;
+
+    @JsonProperty("CreatedBy")
+    private String   createdBy ;
+    
+    @JsonProperty("Status")
+    private String     status ; 
+    
+    @JsonProperty("Remarks")
+    private String remarks; 
 	
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EntryDate")
 	private Date entryDate;
-	
-	@JsonProperty("Status")
-	private String status;
-	
-	@JsonProperty("RegionCode")
-	private String regionCode;
-	
-	@JsonProperty("InsuranceId")
-	private String companyId;
 
-	@JsonProperty("CoreAppCode")
-	private String coreAppCode;
-
-	@JsonProperty("Remarks")
-	private String remarks;
-	
-	@JsonProperty("CreatedBy")
-	private String createdBy;
-
-	@JsonProperty("StateCode")
-    private String stateCode ;
-
-    @JsonProperty("StateName")
-    private String     stateName ;
-
-    @JsonProperty("CityCode"  )
-    private String cityCode ;
-
-    @JsonProperty("CityName")
-    private String     cityName ;
-	
-    @JsonProperty("RegulatoryCode"  )
-    private String regulatoryCode ;
-    
-    @JsonProperty("Address1")
-    private String    address1     ;
-	@JsonProperty("Address2")
-    private String    address2     ;
-	@JsonProperty("Email")
-    private String    email    ;
-	@JsonProperty("MobileNumber")
-    private String   mobileNumber;
-	@JsonProperty("BranchType")
-    private String    branchType  ;
 	@JsonProperty("AmendId")
     private String    amendId;
 	

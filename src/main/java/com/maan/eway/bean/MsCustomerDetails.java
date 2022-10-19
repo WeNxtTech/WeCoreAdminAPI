@@ -215,14 +215,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="UPDATED_BY", length=100)
     private String updatedBy;
     
-    @Column(name="COMPANY_ID", length=20)
-    private String companyId;
-
-    @Column(name="BRANCH_CODE", length=20)
-    private String branchCode;
-
-    @Column(name="AGENCY_CODE", length=20)
-    private String agencyCode;
 
 }
 

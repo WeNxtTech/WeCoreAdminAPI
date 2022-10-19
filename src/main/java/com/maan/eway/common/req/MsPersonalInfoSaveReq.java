@@ -6,6 +6,7 @@
 package com.maan.eway.common.req;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 import lombok.*;
 import java.util.Date;
@@ -164,5 +165,8 @@ public class MsPersonalInfoSaveReq implements Serializable {
 
 	@JsonProperty("UpdatedBy")
 	private String updatedBy;
+
+	@JsonProperty("CdRefNo")
+	 private String   cdRefNo ;
 
 }

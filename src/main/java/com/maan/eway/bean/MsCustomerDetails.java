@@ -20,6 +20,7 @@ import javax.persistence.Table;
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import java.util.Date;
@@ -88,6 +89,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="IS_TAX_EXEMPTED", nullable=false, length=1)
     private String     isTaxExempted ;
 
+    @Id
+    @Column(name="CD_REF_NO")
+    private Integer   cdRefNo ;
+
+    
+    
     //--- ENTITY DATA FIELDS 
     @Column(name="CLIENT_NAME", length=100)
     private String     clientName ;

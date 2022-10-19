@@ -274,6 +274,9 @@ public class MsCustomerDetailsServiceImpl implements MsCustomerDetailsService {
 					errorList.add(new Error("38", "DobOrRegDate", "Please Enter DobOrRegDate format as DD/MM/YYYY"));
 
 				}
+				if (StringUtils.isBlank(req.getCdRefNo())) {
+					errorList.add(new Error("39", "CdRefNo", "Please Enter CdRefNo "));
+				}
 			}
 		} catch (Exception e) {
 			log.error(e);

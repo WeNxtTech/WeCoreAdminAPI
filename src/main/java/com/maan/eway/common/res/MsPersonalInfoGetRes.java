@@ -146,5 +146,7 @@ public class MsPersonalInfoGetRes {
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EntryDate")
 	private Date entryDate;
+	@JsonProperty("CdRefNo")
+	 private String   cdRefNo ;
 
 }

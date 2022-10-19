@@ -149,4 +149,16 @@ public class MsPersonalInfoGetRes {
 	@JsonProperty("CdRefNo")
 	 private String   cdRefNo ;
 
+	@JsonProperty("InsuranceId")
+	 private String   companyId;
+
+
+	@JsonProperty("BranchCode")
+	 private String   branchCode;
+
+
+	@JsonProperty("AgencyCode")
+	 private String   agencyCode ;
+
+
 }

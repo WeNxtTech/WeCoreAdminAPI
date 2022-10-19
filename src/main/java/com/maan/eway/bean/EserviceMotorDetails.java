@@ -20,6 +20,7 @@ import javax.persistence.Table;
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.*;
@@ -133,8 +134,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="MANUFACTURE_YEAR")
     private Integer  manufactureYear ;
     
+    @Temporal(TemporalType.DATE)
     @Column(name="REGISTRATION_YEAR")
-    private Integer    registrationYear ;
+    private Date    registrationYear ;
 
     @Column(name="SEATING_CAPACITY")
     private Integer    seatingCapacity ;

@@ -90,7 +90,7 @@ public List<DropDownRes> tableName() {
 public List<DropDownRes> columnName(ColumnNameDropDownlReq req) {
 	List<DropDownRes> resList = new ArrayList<DropDownRes>();
 	try {
-		List<OneTimeTableDetails> getList = repo.findByParentIdAndStatusOrderByItemCodeAsc(Integer.valueOf(req.getParentId()), "Y");
+		List<OneTimeTableDetails> getList = repo.findByItemIdAndStatusOrderByItemCodeAsc(Integer.valueOf(req.getItemId()), "Y");
 		for (OneTimeTableDetails data : getList) {
 			if(!data.getItemType().equalsIgnoreCase("ONE_TIME_TABLE")) {
 			DropDownRes res = new DropDownRes();

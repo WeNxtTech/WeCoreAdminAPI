@@ -227,7 +227,67 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			List<String> companyIds = new ArrayList<>(removeDuplicateCompany);
 			// Products
 
-			List<LoginProductMaster> loginproduct = loginProductRepo.findByLoginId(login.getLoginId());
+			List<LoginProductMaster> loginproduct = new ArrayList<LoginProductMaster>();//loginProductRepo.findByLoginId(login.getLoginId());
+			{
+				Date today  = new Date();
+				Calendar cal = new GregorianCalendar(); 
+				cal.setTime(today);
+				cal.set(Calendar.HOUR_OF_DAY, 23);
+				cal.set(Calendar.MINUTE, 1);
+				today   = cal.getTime();
+				cal.setTime(today);
+				cal.set(Calendar.HOUR_OF_DAY, 1);
+				cal.set(Calendar.MINUTE, 1);
+				Date todayEnd   = cal.getTime();
+				
+				// Criteria
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<LoginProductMaster> query = cb.createQuery(LoginProductMaster.class);
+			
+				// Find All
+				Root<LoginProductMaster>    c = query.from(LoginProductMaster.class);		
+				
+				// Select
+				query.select(c );
+				
+			
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.asc(c.get("productName")));
+				
+				// Effective Date Max Filter
+				Subquery<Long> effectiveDate = query.subquery(Long.class);
+				Root<LoginProductMaster> ocpm1 = effectiveDate.from(LoginProductMaster.class);
+				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+				Predicate a1 = cb.equal(c.get("productId"),ocpm1.get("productId") );
+				Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
+				Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+				Predicate a4 = cb.equal(c.get("loginId"),ocpm1.get("loginId") );
+				effectiveDate.where(a1,a2,a3,a4);
+				
+				// Effective Date Max Filter
+				Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+				Root<LoginProductMaster> ocpm2 = effectiveDate2.from(LoginProductMaster.class);
+				effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+				Predicate a5 = cb.equal(c.get("productId"),ocpm2.get("productId") );
+				Predicate a6 = cb.equal(c.get("companyId"),ocpm2.get("companyId") );
+				Predicate a7 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+				Predicate a8 = cb.equal(c.get("loginId"),ocpm2.get("loginId") );
+				effectiveDate2.where(a5,a6,a7,a8);
+				
+			    // Where	
+				Predicate n1 = cb.equal(c.get("status"), "Y");
+				Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+				Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+				Predicate n4 = cb.equal(c.get("companyId"), companyIds.get(0));
+				Predicate n5 = cb.equal(c.get("loginId"), login.getLoginId());
+				query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+				
+				// Get Result
+				TypedQuery<LoginProductMaster> result = em.createQuery(query);			
+				loginproduct =  result.getResultList(); 
+			}
+			
 			Integer productId;
 			List<ProductDropDownRes> resList = new ArrayList<ProductDropDownRes>();
 

@@ -19,6 +19,9 @@ public class BranchMasterGetAllReq implements Serializable {
     @JsonProperty("Offset")
     private String offset;
     
+    @JsonProperty("InsuranceId")
+    private String insuranceId;
+    
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart ;

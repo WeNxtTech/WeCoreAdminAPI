@@ -13,11 +13,19 @@ public class CompanyTaxSetupGetAllReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @JsonProperty("ProductId")
+    private String productId;
+	@JsonProperty("InsuranceId")
+    private String     companyId     ;
     @JsonProperty("Limit")
     private String limit;
     
     @JsonProperty("Offset")
     private String offset;
+    
+    @JsonFormat(pattern ="dd/MM/yyyy")
+    @JsonProperty("EffectiveDateStart")
+    private Date effectiveDateStart;
     
 
 }

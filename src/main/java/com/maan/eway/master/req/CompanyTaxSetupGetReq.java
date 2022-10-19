@@ -13,7 +13,16 @@ public class CompanyTaxSetupGetReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-	@JsonProperty("BankCode")
-    private String     bankCode     ;
+	@JsonProperty("ProductId")
+    private String     productId ;
+	@JsonProperty("InsuranceId")
+    private String     companyId     ;
+	@JsonProperty("TaxId")
+    private String     taxId ;
+	
+	  
+    @JsonFormat(pattern ="dd/MM/yyyy")
+    @JsonProperty("EffectiveDateStart")
+    private Date effectiveDateStart;
     
 }

@@ -16,7 +16,12 @@ import com.maan.eway.master.req.BranchMasterSaveReq;
 import com.maan.eway.master.req.CityChangeStatusReq;
 import com.maan.eway.master.req.CompanyBranchGetReq;
 import com.maan.eway.master.req.CompanyBranchReq;
+import com.maan.eway.master.req.CompanyTaxChangeStatusReq;
+import com.maan.eway.master.req.CompanyTaxSetupGetAllReq;
+import com.maan.eway.master.req.CompanyTaxSetupGetReq;
+import com.maan.eway.master.req.CompanyTaxSetupSaveReq;
 import com.maan.eway.master.res.BranchMasterRes;
+import com.maan.eway.master.res.CompanyTaxGetRes;
 import com.maan.eway.master.service.BranchMasterService;
 import com.maan.eway.master.service.CompanyTaxSetupService;
 import com.maan.eway.bean.BranchMaster;
@@ -46,12 +51,12 @@ import java.util.List;
 * <h2>BranchMasterController</h2>
 */
 @RestController
-@Api(tags = "COMPANY CONFIG : Company Tax ", description = "API's")
-@RequestMapping("/company")
+@Api(tags = "2. COMPANY CONFIG : Company Tax ", description = "API's")
+@RequestMapping("/master")
 public class CompanyTaxSetupController {
 
 	@Autowired
-	private  CompanyTaxSetupService branchService;
+	private  CompanyTaxSetupService entityService;
 	
 	@Autowired
 	private  PrintReqService reqPrinter;
@@ -59,12 +64,12 @@ public class CompanyTaxSetupController {
 	// save
 		@PostMapping("/insertcompanytax")
 		@ApiOperation(value = "This method is Insert Company Tax Details")
-		public ResponseEntity<CommonRes> insertBranch(@RequestBody BranchMasterSaveReq req) {
+		public ResponseEntity<CommonRes> insertCompanyTax(@RequestBody CompanyTaxSetupSaveReq req) {
 
 			reqPrinter.reqPrint(req);
 			CommonRes data = new CommonRes();
 
-			List<Error> validation = branchService.validateBranchDetails(req);
+			List<Error> validation = entityService.validateCompanyTax(req);
 			// validation
 			if (validation != null && validation.size() != 0) {
 				data.setCommonResponse(null);
@@ -76,7 +81,7 @@ public class CompanyTaxSetupController {
 			} else {
 
 				// Get All
-				SuccessRes res = branchService.insertBranch(req);
+				SuccessRes res = entityService.insertCompanyTax(req);
 				data.setCommonResponse(res);
 				data.setIsError(false);
 				data.setErrorMessage(Collections.emptyList());
@@ -93,14 +98,14 @@ public class CompanyTaxSetupController {
 		
 		//  Get All Branch Master
 		
-		@PostMapping("/getallbranchdetails")
-		@ApiOperation("This method is getall Branch Details")
-		public ResponseEntity<CommonRes> getallBranchDetails(@RequestBody BranchMasterGetAllReq req)
+		@PostMapping("/getallcompanytaxes")
+		@ApiOperation("This method is getall Company Taxes")
+		public ResponseEntity<CommonRes> getallComapnyTaxes(@RequestBody CompanyTaxSetupGetAllReq req)
 		{
 			CommonRes data = new CommonRes();
 			reqPrinter.reqPrint(req);
 			
-			List<BranchMasterRes> res = branchService.getallBranchDetails(req);
+			List<CompanyTaxGetRes> res = entityService.getallComapnyTaxes(req);
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);
@@ -116,14 +121,14 @@ public class CompanyTaxSetupController {
 		
 	//  Get Active Branch Master
 		
-			@PostMapping("/getactivebranch")
+			@PostMapping("/getactivecompanytaxes")
 			@ApiOperation("This method is get Active Branch Details")
-			public ResponseEntity<CommonRes> getActiveBranchDetails(@RequestBody BranchMasterGetAllReq req)
+			public ResponseEntity<CommonRes> getActiveCompanyTaxes(@RequestBody CompanyTaxSetupGetAllReq req)
 			{
 				CommonRes data = new CommonRes();
 				reqPrinter.reqPrint(req);
 				
-				List<BranchMasterRes> res = branchService.getActiveBranchDetails(req);
+				List<CompanyTaxGetRes> res = entityService.getActiveCompanyTaxes(req);
 				data.setCommonResponse(res);
 				data.setErrorMessage(Collections.emptyList());
 				data.setIsError(false);
@@ -139,12 +144,12 @@ public class CompanyTaxSetupController {
 		
 		// Get By Branch Id
 		
-		@PostMapping("/getbybranchid")
+		@PostMapping("/getbycompanytaxesid")
 		@ApiOperation("This Method is to get by Branch id")
-		public ResponseEntity<CommonRes> getByBranchCode(@RequestBody BranchMasterGetReq req)
+		public ResponseEntity<CommonRes> getByCompanyTaxes(@RequestBody CompanyTaxSetupGetReq req)
 		{
 		CommonRes data = new CommonRes();
-		BranchMasterRes res = branchService.getByBranchCode(req);
+		CompanyTaxGetRes res = entityService.getByCompanyTaxes(req);
 		data.setCommonResponse(res);
 		data.setErrorMessage(Collections.emptyList());
 		data.setIsError(false);
@@ -158,82 +163,13 @@ public class CompanyTaxSetupController {
 		}
 	}
 		
-		// Branch Master Drop Down Type
-		@PostMapping("/dropdown/branchmaster")
-		@ApiOperation(value = "This method is get Branch Master Drop Down")
-
-		public ResponseEntity<CommonRes> getCompanyBranchMasterDropdown(@RequestBody CompanyBranchReq req ) {
-
-			CommonRes data = new CommonRes();
-
-			// Save
-			List<DropDownRes> res = branchService.getCompanyBranchMasterDropdown(req);
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
-
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
-
-		}
-		
-		@GetMapping("/getallcompanybranches")
-		@ApiOperation(value = "This method is get Branch Master Drop Down")
-
-		public ResponseEntity<CommonRes> getAllCompanyBranch(@RequestBody CompanyBranchGetReq req) {
-
-			CommonRes data = new CommonRes();
-
-			// Save
-			List<DropDownRes> res = branchService.getBranchMasterDropdown(req);
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
-
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
-
-		}
-		
-	/*	@PostMapping("/getinduvidualcompanybranches")
-		@ApiOperation(value = "This method is get Branch Master Drop Down")
-
-		public ResponseEntity<CommonRes> getBranchMasterDropdown(@RequestBody CompanyBranchGetReq req ) {
-
-			CommonRes data = new CommonRes();
-
-			// Save
-			List<DropDownRes> res = branchService.getBranchMasterDropdown();
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
-
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
-
-		} */
-		
-		
-		
-		@PostMapping("/branch/changestatus")
+		@PostMapping("/companytax/changestatus")
 		@ApiOperation(value = "This method is Branch Change Status")
-		public ResponseEntity<CommonRes> changeStatusOfBranch(@RequestBody BranchChangeStatusReq req) {
+		public ResponseEntity<CommonRes> changeStatusOfTax(@RequestBody CompanyTaxChangeStatusReq req) {
 
 			CommonRes data = new CommonRes();
 			// Change Status
-			SuccessRes res = branchService.changeStatusOfBranch(req);
+			SuccessRes res = entityService.changeStatusOfTax(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());
@@ -247,44 +183,7 @@ public class CompanyTaxSetupController {
 
 		}
 
-/*
-	private static final String ENTITY_TITLE = "BranchMaster";
 
-
- 	public BranchMasterController (BranchMasterService entityService) {
-		this.entityService = entityService;
-	}
-*/
-
-/*	@PostMapping(value = "/Branchmaster")
-	public ResponseEntity<BranchMaster> createBranchMaster(@RequestBody  BranchMaster model) {
-
-   		 BranchMaster data = entityService.create(model);
-    		if (data != null) {
-    			return new ResponseEntity<>(data,HttpStatus.CREATED);
-  			  } else {
-    			return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
-   			 }
-    }
-
-    @GetMapping(value = "/Branchmaster")
-    public ResponseEntity<List<BranchMaster>> getAllBranchMaster() {
-        List<BranchMaster> lst = entityService.getAll();
-
-        return new ResponseEntity<>(lst,HttpStatus.OK);
-    }
-/*
-        @GetMapping(value = "/Branchmaster/{id}")
-    public ResponseEntity<BranchMaster> getOneBranchMaster(@PathVariable("id") long id) {
-
-            BranchMaster e = entityService.getOne(id);
-            if (e == null) {
-            	return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
-            }
-            return new ResponseEntity<>(e, HttpStatus.OK);
-    }
-
-*/
 		
 
 }

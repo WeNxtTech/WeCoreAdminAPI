@@ -336,7 +336,6 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 				effectiveDate.where(a1, a2);
 	
 				// Where
-				Predicate n1 = cb.equal(b.get("status"), "Y");
 				Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 				Predicate n3 = cb.equal(b.get("coverId"), req.getCoverId());
 				if( StringUtils.isBlank(subcoverId)  ) {
@@ -344,7 +343,7 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 					Long totalCount = getSubCoverMasterTableCount( req.getCoverId());
 					subcoverId = String.valueOf(totalCount + 100);
 				} 
-				query.where(n1, n2, n3);
+				query.where(n2, n3);
 				// Get Result
 				TypedQuery<CoverMaster> result = em.createQuery(query);
 				list = result.getResultList();

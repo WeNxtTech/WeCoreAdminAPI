@@ -19,51 +19,48 @@ public class CompanyTaxSetupSaveReq implements Serializable {
     private static final long serialVersionUID = 1L;
 
     
- /*   @JsonProperty("TAX_ID")
-    private Integer     taxId ;
+    @JsonProperty("TaxId")
+    private String     taxId ;
 
     
-    @JsonProperty("PRODUCT_ID")
-    private Integer productId ;
+    @JsonProperty("ProductId")
+    private String productId ;
 
     
-    @JsonProperty("COMPANY_ID", nullable=false, length=20)
+    @JsonProperty("InsuranceId")
     private String     companyId;
     
     
-    @Temporal(TemporalType.TIMESTAMP)
-    @JsonProperty("EFFECTIVE_DATE_START", nullable=false)
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    @JsonProperty("EffectiveDateStart")
     private Date       effectiveDateStart ;
 
     
-    @Temporal(TemporalType.TIMESTAMP)
-    @JsonProperty("EFFECTIVE_DATE_END", nullable=false)
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    @JsonProperty("EffectiveDateEnd")
     private Date       effectiveDateEnd ;
     
     //--- ENTITY DATA FIELDS 
-    @JsonProperty("TAX_NAME", length=100)
+    @JsonProperty("TaxName")
     private String     taxName ;
     
-    @JsonProperty("TAX_DESC", length=20)
+    @JsonProperty("TaxDesc")
     private String     taxDesc ;
 
-    @JsonProperty("CALC_TYPE")
+    @JsonProperty("CalcType")
     private String     calcType ;
 
-    @JsonProperty("CALC_TYPE_DESC", length=100)
-    private String     calcTypeDesc ;
     
-    @JsonProperty("VALUE", length=20)
-    private Double    value ;
+    @JsonProperty("Value")
+    private String    value ;
 
-    @JsonProperty("CREATED_BY", length=20)
+    @JsonProperty("CreatedBy")
     private String   createdBy ;
     
-    @Temporal(TemporalType.TIMESTAMP)
-    @JsonProperty("ENTRY_DATE")
-    private Date       entryDate ;
-
-    @JsonProperty("STATUS", length=1)
-    private String     status ; */
+    @JsonProperty("Status")
+    private String     status ; 
+    
+    @JsonProperty("Remarks")
+    private String remarks; 
 
 }

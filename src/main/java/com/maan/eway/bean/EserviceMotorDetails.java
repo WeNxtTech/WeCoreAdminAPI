@@ -193,9 +193,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="TPPD_INCREAE_LIMIT")
     private Double     tppdIncreaeLimit ;
     
-    @Column(name="NCD")
-    private Double     ncd ;
-
+    
     @Column(name="INSURER_SETTLEMENT")
     private Double     insurerSettlement ;
 
@@ -258,6 +256,21 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="INSURANCE_CLASS",length=20)
     private String  insuranceClass;
+
+    @Column(name="OWNER_CATEGORY",length=20)
+    private String ownerCategory;
+
+    @Column(name="MANUFACTURE_AGE")
+    private Integer manufactureAge;
+
+    @Column(name="REGISTRATION_AGE")
+    private Integer registrationAge;
+    
+    @Column(name="NCD_YEARS")
+    private Integer ncdYears;
+
+    @Column(name="NCD_YN",length=1)
+    private String    ncdYn ;
 
 }
 

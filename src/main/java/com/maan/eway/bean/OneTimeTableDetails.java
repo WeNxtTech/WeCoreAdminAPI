@@ -51,13 +51,13 @@ private static final long serialVersionUID = 1L;
  
     //--- ENTITY PRIMARY KEY 
     @Id
-    @Column(name="ITEM_ID", nullable=false)
-    private Integer     itemId ;
+    @Column(name="PARENT_ID", nullable=false)
+    private Integer     parentId ;
 
     //--- ENTITY DATA FIELDS 
 
-    @Column(name="PARENT_ID", nullable=false)
-    private Integer     parentId;
+    @Column(name="ITEM_ID", nullable=false)
+    private Integer     itemId;
 
     
     @Column(name="ITEM_TYPE", length=300)

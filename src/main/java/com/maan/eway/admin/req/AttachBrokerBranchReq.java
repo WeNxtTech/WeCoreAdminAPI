@@ -29,11 +29,7 @@ public class AttachBrokerBranchReq {
 	private String attachedBranch;
 
 	@JsonProperty("AttachedCompany")
-	private String brokerAttachedCompany;
-	
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDateStart")
-	private Date effectiveDateStart;
+	private String attachedCompany;
 
 	@JsonProperty("BranchName")
 	private String branchName;
@@ -62,4 +58,7 @@ public class AttachBrokerBranchReq {
 	@JsonProperty("Remarks")
 	private String remarks;
 	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
 }

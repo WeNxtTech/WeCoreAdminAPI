@@ -95,7 +95,7 @@ public List<DropDownRes> columnName(ColumnNameDropDownlReq req) {
 			if(!data.getItemType().equalsIgnoreCase("ONE_TIME_TABLE")) {
 			DropDownRes res = new DropDownRes();
 			res.setCode(data.getItemCode());
-			res.setCodeDesc(data.getItemValue());
+			res.setCodeDesc(data.getDisplayName());
 			resList.add(res);
 			}
 		}

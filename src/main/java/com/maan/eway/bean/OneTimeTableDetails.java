@@ -69,6 +69,10 @@ private static final long serialVersionUID = 1L;
     @Column(name="ITEM_VALUE", length=300)
     private String     itemValue ;
     
+    @Column(name="DISPLAY_NAME", length=300)
+    private String  displayName;
+    
+    
     @Temporal(TemporalType.DATE)
     @Column(name="ENTRY_DATE")
     private Date       entryDate ;

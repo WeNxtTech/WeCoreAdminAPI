@@ -51,6 +51,7 @@ import com.maan.eway.admin.req.IssuerActiveGridReq;
 import com.maan.eway.admin.req.IssuerCraeationReq;
 import com.maan.eway.admin.req.IssuerDetailsGetReq;
 import com.maan.eway.admin.req.IssuerLoginGridReq;
+import com.maan.eway.admin.req.MenuIdSaveReq;
 import com.maan.eway.admin.req.MenuListReq;
 import com.maan.eway.admin.req.UserActiveGridReq;
 import com.maan.eway.admin.req.UserCreationReq;
@@ -89,6 +90,7 @@ import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.LoginUserInfoArchRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.SuccessRes;
 /**
 * <h2>LoginMasterServiceimpl</h2>
 */
@@ -1315,5 +1317,35 @@ this.repository = repo;
 	}
 
 
-
+	@Override
+	public SuccessRes savemenuids(MenuIdSaveReq req) {
+	SuccessRes res = new SuccessRes();
+	DozerBeanMapper mapper = new DozerBeanMapper();
+	LoginMaster savedata = new LoginMaster();
+	try {
+		LoginMaster data = loginRepo.findByLoginId(req.getLoginId());
+		String key = "";
+		if(data!=null) {
+			List<String> keys = req.getMenuIds();
+			for (int i = 0; i < keys.size(); i++) {			
+			key = key + "," + keys.get(i);
+			}
+			}
+		mapper.map(data,savedata);
+		savedata.setMenuIds(key);
+		loginRepo.save(savedata);
+		res.setResponse("Menu Ids Added Successfully");
+		res.setSuccessId(req.getLoginId());
+		}
+	catch(Exception e) {
+		e.printStackTrace();
+		log.info("Log Details"+e.getMessage());
+		return null;
+		}
+		return res;
+	}
+	
+	
 }
+
+

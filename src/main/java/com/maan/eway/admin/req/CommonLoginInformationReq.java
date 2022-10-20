@@ -22,8 +22,8 @@ public class CommonLoginInformationReq {
     private String     oaCode       ;
 	@JsonProperty("AgencyCode")
     private String     agencyCode       ;
-	@JsonProperty("IsuranceId")
-    private String     companyId ;
+	@JsonProperty("InsuranceId")
+    private String     companyId;
 	
 	@JsonProperty("AttachedBranches")
     private List<String>     attachedBranches ;

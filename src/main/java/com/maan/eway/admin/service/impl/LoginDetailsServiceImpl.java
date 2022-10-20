@@ -51,6 +51,7 @@ import com.maan.eway.admin.req.IssuerActiveGridReq;
 import com.maan.eway.admin.req.IssuerCraeationReq;
 import com.maan.eway.admin.req.IssuerDetailsGetReq;
 import com.maan.eway.admin.req.IssuerLoginGridReq;
+import com.maan.eway.admin.req.MenuIdGetReq;
 import com.maan.eway.admin.req.MenuIdSaveReq;
 import com.maan.eway.admin.req.MenuListReq;
 import com.maan.eway.admin.req.UserActiveGridReq;
@@ -69,6 +70,7 @@ import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.admin.res.LoginDetailsCriteriaRes;
 import com.maan.eway.admin.res.LoginIssuerGridRes;
 import com.maan.eway.admin.res.LoginUserGridRes;
+import com.maan.eway.admin.res.MenuIdGetRes;
 import com.maan.eway.admin.res.UserDetailsGetRes;
 import com.maan.eway.admin.res.UserLoginGetRes;
 import com.maan.eway.admin.res.UserPersonalInfoGetRes;
@@ -1344,8 +1346,27 @@ this.repository = repo;
 		}
 		return res;
 	}
-	
-	
+
+
+	@Override
+	public MenuIdGetRes getmenuids(MenuIdGetReq req) {
+		MenuIdGetRes res = new MenuIdGetRes();
+		DozerBeanMapper mapper = new DozerBeanMapper();
+		LoginMaster savedata = new LoginMaster();
+		try {
+			LoginMaster data = loginRepo.findByLoginId(req.getLoginId());
+			String menuid = data.getMenuIds();
+			List<String> menuids = new ArrayList<String>(Arrays.asList(menuid.split(",")));
+			res.setMenuId(menuids);	
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			log.info("Log Details"+e.getMessage());
+			return null;
+			}
+			return res;
+		}
+
 }
 
 

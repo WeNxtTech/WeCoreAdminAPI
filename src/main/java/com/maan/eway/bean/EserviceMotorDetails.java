@@ -20,6 +20,7 @@ import javax.persistence.Table;
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.*;
@@ -130,11 +131,10 @@ private static final long serialVersionUID = 1L;
     @Column(name="FUEL_TYPE_DESC", length=100)
     private String     fuelTypeDesc ;
 
-    @Column(name="MANUFACTURE_YEAR")
-    private Integer  manufactureYear ;
-    
+   
+    @Temporal(TemporalType.DATE)
     @Column(name="REGISTRATION_YEAR")
-    private Integer    registrationYear ;
+    private Date    registrationYear ;
 
     @Column(name="SEATING_CAPACITY")
     private Integer    seatingCapacity ;
@@ -193,9 +193,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="TPPD_INCREAE_LIMIT")
     private Double     tppdIncreaeLimit ;
     
-    @Column(name="NCD")
-    private Double     ncd ;
-
+    
     @Column(name="INSURER_SETTLEMENT")
     private Double     insurerSettlement ;
 
@@ -255,6 +253,45 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="ENDORSEMENT_TYPE_DESC",length=100)
     private String  endorsementTypeDesc;
+
+    @Column(name="INSURANCE_CLASS",length=20)
+    private String  insuranceClass;
+
+    @Column(name="OWNER_CATEGORY",length=20)
+    private String ownerCategory;
+
+    @Column(name="MANUFACTURE_AGE")
+    private Integer manufactureAge;
+
+    @Column(name="REGISTRATION_AGE")
+    private Integer registrationAge;
+    
+    @Column(name="NCD_YEARS")
+    private Integer ncdYears;
+
+    @Column(name="NCD_YN",length=1)
+    private String    ncdYn ;
+
+    @Temporal(TemporalType.DATE)
+    @Column(name="MANUFACTURE_YEAR")
+    private Date manufactureYear;
+
+    @Column(name="STATUS",length=1)
+    private String   status;
+
+    @Temporal(TemporalType.DATE)
+    @Column(name="UPDATED_DATE")
+    private Date updatedDate;
+
+    @Column(name="UPDATED_BY",length=100)
+    private String  updatedBy;
+
+    @Column(name="CREATED_BY",length=100)
+    private String  createdBy;
+
+    @Temporal(TemporalType.DATE)
+    @Column(name="ENTRY_DATE")
+    private Date entryDate;
 
 }
 

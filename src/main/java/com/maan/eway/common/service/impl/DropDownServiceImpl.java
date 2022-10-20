@@ -994,13 +994,16 @@ public class DropDownServiceImpl  implements DropDownService{
 			Integer year = Calendar.getInstance().get(Calendar.YEAR);
 			Integer manuyear = Integer.valueOf(req.getManufactureYear());
 			Integer ncdyear = year-manuyear;
-			
-			for (Integer i=0;i<ncdyear;i++){
-				DropDownRes res = new DropDownRes();
 				List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("NCD", "Y");
-				res.setCode(i.toString());
-				res.setCodeDesc(i+" "+getList.get(0).getItemType());
+				
+				for(ListItemValue data : getList) {				
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
 				resList.add(res);
+				if(ncdyear+2==Integer.valueOf(data.getItemCode())) {
+				break;			
+				}	
 				}
 		}
 		catch(Exception e) {

@@ -130,7 +130,7 @@ public class BasicLoginValidationService {
 			Date today = new Date();
 			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
 			today = cal.getTime();
-			if (loginReq.getEffectiveDateStart() == null ) {
+			if (loginReq.getEffectiveDateStart().toString() == null ) {
 				errors.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
 
 			} else if (loginReq.getEffectiveDateStart().before(today)) {

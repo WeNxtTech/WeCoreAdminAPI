@@ -340,8 +340,6 @@ public class MsCustomerDetailsServiceImpl implements MsCustomerDetailsService {
 			ListItemValue language = listRepo.findByItemTypeAndItemCode("LANGUAGE",req.getLanguage());
 			
 			save.setGenderDesc(gender.getItemValue());
-			save.setTitleDesc(title.getItemValue());
-			save.setLanguageDesc(language.getItemValue());
 			save.setAge(age);
 			repository.save(save);
 			log.info("Saved Details is ---> " + json.toJson(save));

@@ -39,6 +39,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.admin.req.AttachBrokerBranchReq;
+import com.maan.eway.admin.req.AttachCompnayProductRequest;
 import com.maan.eway.admin.req.BrokerActiveGridReq;
 import com.maan.eway.admin.req.BrokerCreationReq;
 import com.maan.eway.admin.req.BrokerDetailsGetReq;
@@ -74,23 +76,29 @@ import com.maan.eway.admin.res.MenuIdGetRes;
 import com.maan.eway.admin.res.UserDetailsGetRes;
 import com.maan.eway.admin.res.UserLoginGetRes;
 import com.maan.eway.admin.res.UserPersonalInfoGetRes;
+import com.maan.eway.admin.service.LoginBranchService;
 import com.maan.eway.admin.service.LoginDetailsService;
+import com.maan.eway.admin.service.LoginProductService;
 import com.maan.eway.auth.dto.Menu;
 import com.maan.eway.auth.token.passwordEnc;
 import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.CountryMaster;
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginMasterArch;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.LoginUserInfoArch;
 import com.maan.eway.bean.MenuMaster;
 import com.maan.eway.bean.StateMaster;
+import com.maan.eway.master.req.BrokerProductReq;
 import com.maan.eway.repository.ListItemValueRepository;
+import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.LoginMasterArchRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.LoginUserInfoArchRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
+import com.maan.eway.res.BrokerDropDownRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 /**
@@ -111,6 +119,15 @@ public class LoginDetailsServiceImpl implements LoginDetailsService {
 	
 	@Autowired
 	private LoginUserInfoArchRepository loginUserArchRepo ;
+	
+	@Autowired
+	private LoginProductService loginProductService ;
+	
+	@Autowired
+	private LoginBranchService loginBranchService ;
+	
+	@Autowired
+	private LoginBranchMasterRepository loginBranchRepo ;
 	
 	@Autowired
 	private ListItemValueRepository listRepo;
@@ -260,9 +277,31 @@ this.repository = repo;
 				res.setResponse("Updated Successfully");
 			}
 			
-			if(! saveRes.equalsIgnoreCase("Success")  ) {
-				return null; 
+			// Product Insert 
+			AttachCompnayProductRequest productReq = new AttachCompnayProductRequest();
+			productReq.setCreatedBy(req.getLoginInformation().getCreatedBy());
+			productReq.setInsuranceId(req.getLoginInformation().getCompanyId());
+			productReq.setLoginId(req.getLoginInformation().getLoginId());
+			productReq.setProductIds(req.getLoginInformation().getProductIds());
+			
+			LoginCreationRes productRes = loginProductService.saveBrokerProductDetails(productReq) ;
+			
+			// Branch Insert 
+			for (String branch :   req.getLoginInformation().getAttachedBranches() ) {
+				AttachBrokerBranchReq branchReq = new AttachBrokerBranchReq();
+				branchReq.setAddress1(req.getPersonalInformation().getAddress1());
+				branchReq.setAddress2(req.getPersonalInformation().getAddress2());
+				branchReq.setBranchCode(branch);
+				branchReq.setCreatedBy(req.getLoginInformation().getCreatedBy());
+				branchReq.setCompanyId(req.getLoginInformation().getCompanyId());
+				branchReq.setEmail(req.getPersonalInformation().getUserMail());
+				branchReq.setMobile(req.getPersonalInformation().getUserMobile() );
+				branchReq.setRemarks(req.getPersonalInformation().getRemarks());
+				branchReq.setStatus(req.getLoginInformation().getStatus());
+				
+				LoginCreationRes branchRes  = loginBranchService.attachBrokerCompanyBranch(branchReq);
 			}
+			
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -296,12 +335,7 @@ this.repository = repo;
 				res.setAgencyCode(saveRes);
 				res.setResponse("Updated Successfully");
 			}
-			
-			if(! saveRes.equalsIgnoreCase("Success")  ) {
-				return null; 
-			}
-			
-			
+					
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
@@ -389,6 +423,7 @@ this.repository = repo;
 			
 			res = saveLogin.getAgencyCode() ; 
 			
+			// Branch Id
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
@@ -690,7 +725,7 @@ this.repository = repo;
 					 l.get("bankCode").alias("bankCode") ,
 					//cb.selectCase().when(l.get("bankCode").isNotNull(), l.get("bankCode") ).otherwise("No Bank").alias("BankCode") ,
 					u.get("userName").alias("userName")  ,
-					u.get("userMobile").alias("userMobile") , u.get("userMail").alias("userMail")    );
+					u.get("userMobile").alias("userMobile") , u.get("userMail").alias("userMail")  ,  l.get("companyId").alias("companyId")    );
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -751,7 +786,7 @@ this.repository = repo;
 					 l.get("bankCode").alias("bankCode") ,
 					//cb.selectCase().when(l.get("bankCode").isNotNull(), l.get("bankCode") ).otherwise("No Bank").alias("BankCode") ,
 					u.get("userName").alias("userName")  ,
-					u.get("userMobile").alias("userMobile") , u.get("userMail").alias("userMail")    );
+					u.get("userMobile").alias("userMobile") , u.get("userMail").alias("userMail") ,  l.get("companyId").alias("companyId")     );
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -815,7 +850,7 @@ this.repository = repo;
 					 l.get("bankCode").alias("bankCode") ,
 					//cb.selectCase().when(l.get("bankCode").isNotNull(), l.get("bankCode") ).otherwise("No Bank").alias("BankCode") ,
 					u.get("userName").alias("userName")  ,
-					u.get("userMobile").alias("userMobile") , u.get("userMail").alias("userMail")    );
+					u.get("userMobile").alias("userMobile") , u.get("userMail").alias("userMail")  ,  l.get("companyId").alias("companyId")    );
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -878,7 +913,7 @@ this.repository = repo;
 					 l.get("bankCode").alias("bankCode") ,
 					//cb.selectCase().when(l.get("bankCode").isNotNull(), l.get("bankCode") ).otherwise("No Bank").alias("BankCode") ,
 					u.get("userName").alias("userName")  ,
-					u.get("userMobile").alias("userMobile") , u.get("userMail").alias("userMail")    );
+					u.get("userMobile").alias("userMobile") , u.get("userMail").alias("userMail")  ,  l.get("companyId").alias("companyId")    );
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -942,7 +977,7 @@ this.repository = repo;
 					 l.get("bankCode").alias("bankCode") ,
 					//cb.selectCase().when(l.get("bankCode").isNotNull(), l.get("bankCode") ).otherwise("No Bank").alias("BankCode") ,
 					u.get("userName").alias("userName")  ,
-					u.get("userMobile").alias("userMobile") , u.get("userMail").alias("userMail")    );
+					u.get("userMobile").alias("userMobile") , u.get("userMail").alias("userMail")  ,  l.get("companyId").alias("companyId")    );
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -1006,7 +1041,7 @@ this.repository = repo;
 					 l.get("bankCode").alias("bankCode") ,
 					//cb.selectCase().when(l.get("bankCode").isNotNull(), l.get("bankCode") ).otherwise("No Bank").alias("BankCode") ,
 					u.get("userName").alias("userName")  ,
-					u.get("userMobile").alias("userMobile") , u.get("userMail").alias("userMail")    );
+					u.get("userMobile").alias("userMobile") , u.get("userMail").alias("userMail") ,  l.get("companyId").alias("companyId")     );
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -1057,6 +1092,24 @@ this.repository = repo;
 			LoginUserInfo userData = loginUserRepo.findByLoginId(req.getLoginId());	
 			BrokerPersonalDetailsGetRes personalInfo = new BrokerPersonalDetailsGetRes();
 			personalInfo = dozerMapper.map(userData, BrokerPersonalDetailsGetRes.class);
+			
+			BrokerProductReq productReq = new BrokerProductReq();
+			productReq.setInsuranceId(loginData.getCompanyId());
+			productReq.setLoginId(loginData.getLoginId());
+			
+			List<DropDownRes> productRes = loginProductService.getBrokerProductDropdown(productReq) ;
+			
+			List<String> productIds = productRes.stream().map( o -> o.getCode()).collect(Collectors.toList());
+			
+			
+			loginInfo.setProductIds(productIds );
+			
+			
+			List<LoginBranchMaster> findBranches = loginBranchRepo.findByLoginIdAndCompanyIdOrderByBranchCodeAsc(loginData.getLoginId() ,  loginData.getCompanyId());
+			
+			List<String> branchIds = findBranches.stream().map( o -> o.getBranchCode()).collect(Collectors.toList());
+			
+			loginInfo.setGetBranches(branchIds);
 			
 			// Response
 			res.setLoginInformation(loginInfo);
@@ -1133,11 +1186,13 @@ this.repository = repo;
 		try {
 			LoginMaster login =loginRepo.findByLoginId(req.getLoginId());
 			// Menu Ids
+			List<String> asList =  new ArrayList<String>();
+			 List<MenuMaster> findBymenuList = new ArrayList<>();
 			  if(login.getMenuIds()!=null && login.getMenuIds().indexOf(",")!=-1) {
 				  String[] split = login.getMenuIds().split(",");
-				  List<String> asList = Arrays.asList(split);
-				  List<MenuMaster> findBymenuList = new ArrayList<>();
-				  
+				  asList = Arrays.asList(split);
+				 
+			  }
 			// Get Menus 	  
 			if(req.getSubUserType().equalsIgnoreCase("both")  )	  {
 				List<MenuMaster> adminmenuList = getMenuListCriteria(asList , "admin" );
@@ -1148,6 +1203,9 @@ this.repository = repo;
 				List<MenuMaster> adminmenuList = getMenuListCriteria(asList , "admin" );
 				findBymenuList.addAll(adminmenuList);
 			} else if(req.getSubUserType().equalsIgnoreCase("low")  ) {
+				List<MenuMaster> usermenuList = getMenuListCriteria(asList , req.getUserType()  );
+				findBymenuList.addAll(usermenuList);
+			} else  {
 				List<MenuMaster> usermenuList = getMenuListCriteria(asList , req.getUserType()  );
 				findBymenuList.addAll(usermenuList);
 			}
@@ -1171,7 +1229,7 @@ this.repository = repo;
 					}
 					 
 				}
-			  }					
+			  			
 			return menusret;
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -1197,10 +1255,15 @@ this.repository = repo;
 			orderList.add(cb.asc(m.get("menuId")));
 			
 			Predicate p1 = cb.equal(m.get("status"), "Y");
-			Predicate p2 = e0.in(menuids);
+			
 			Predicate p3 =  cb.like(m.get("usertype"), "%" + usertype + "%" );
 			
-			query.select(m ).where(p1,p2,p3).orderBy(orderList) ;
+			if(menuids.size()>0) {
+				Predicate p2 = e0.in(menuids).not();
+				query.select(m ).where(p1,p2,p3).orderBy(orderList) ;
+			} else {
+				query.select(m ).where(p1,p3).orderBy(orderList) ;
+			}
 
 			TypedQuery<MenuMaster> result = em.createQuery(query);
 			menuList = result.getResultList();
@@ -1263,8 +1326,8 @@ this.repository = repo;
 
 
 	@Override
-	public List<DropDownRes> getBrokerIds() {
-		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+	public List<BrokerDropDownRes> getBrokerIds() {
+		List<BrokerDropDownRes> resList = new ArrayList<BrokerDropDownRes>();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 
 		ModelMapper mapper = new ModelMapper(); 
 		try { 
@@ -1286,7 +1349,7 @@ this.repository = repo;
 					 l.get("bankCode").alias("bankCode") ,
 					//cb.selectCase().when(l.get("bankCode").isNotNull(), l.get("bankCode") ).otherwise("No Bank").alias("BankCode") ,
 					u.get("userName").alias("userName")  ,
-					u.get("userMobile").alias("userMobile") , u.get("userMail").alias("userMail")    );
+					u.get("userMobile").alias("userMobile") , u.get("userMail").alias("userMail") ,  l.get("companyId").alias("companyId")   );
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -1304,9 +1367,10 @@ this.repository = repo;
 			
 
 			for( LoginDetailsCriteriaRes data :list ) {
-				DropDownRes res = new DropDownRes();
-				res.setCode(data.getAgencyCode());
-				res.setCodeDesc(data.getUserName());	
+				BrokerDropDownRes res = new BrokerDropDownRes();
+				res.setBrokerId(data.getAgencyCode());
+				res.setBrokerName(data.getUserName());
+				res.setCompanyId(data.getCompanyId());
 				resList.add(res);
 			}
 			

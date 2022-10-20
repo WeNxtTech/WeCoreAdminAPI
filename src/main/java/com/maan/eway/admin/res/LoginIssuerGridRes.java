@@ -1,6 +1,7 @@
 package com.maan.eway.admin.res;
 
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -43,8 +44,14 @@ public class LoginIssuerGridRes {
 	@JsonProperty("UserMail")
 	private String userMail ;
 	
-	@JsonProperty("BranchCodes")
-	private String attachedBranches;
+	@JsonProperty("AttachedBranches")
+	private List<String> attachedBranches;
+	
+	@JsonProperty("AttachedProducts")
+	private List<String> attachedProducts;
+	
+	@JsonProperty("InsuranceId")
+	private String companyId ;
 	
 	@JsonProperty("BankCode")
 	private String bankCode;

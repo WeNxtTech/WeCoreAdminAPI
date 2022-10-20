@@ -51,8 +51,6 @@ public class MsCustomerDetailsId implements Serializable {
     private Long       cdRefno ;
     
     private String     isTaxExempted ;
-    
-    private Integer   cdRefNo ;
-
+   
      
 }

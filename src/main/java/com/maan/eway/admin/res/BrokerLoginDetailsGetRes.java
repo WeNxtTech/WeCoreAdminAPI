@@ -27,10 +27,13 @@ public class BrokerLoginDetailsGetRes {
 	@JsonProperty("InsuranceId")
 	private String companyId ;
 	
-/*	@JsonProperty("AttachedBranches")
+	@JsonProperty("AttachedBranches")
     private List<String>     getBranches ;
 	
-	@JsonProperty("AttachedCompanies")
+	@JsonProperty("ProductIds")
+    private List<String>     productIds ;
+	
+	/*	@JsonProperty("AttachedCompanies")
     private List<String>     getCompanies ;
 	
 	@JsonProperty("AttachedRegions")

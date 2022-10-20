@@ -179,7 +179,7 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 			endDate = cal.getTime() ;
 
 			String factorId = "";
-			OneTimeTableDetails tablename = oneTimeRepo.findByItemTypeAndParentId("ONE_TIME_TABLE",Integer.valueOf(req.getInputTable()));
+			OneTimeTableDetails tablename = oneTimeRepo.findByItemTypeAndItemCode("ONE_TIME_TABLE",req.getInputTable());
 			OneTimeTableDetails columnname = oneTimeRepo.findByItemTypeAndItemCode(tablename.getItemValue(),req.getInputColumn());
 			if (StringUtils.isBlank(req.getRatingId())) {
 				// Save

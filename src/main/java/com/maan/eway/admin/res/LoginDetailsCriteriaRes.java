@@ -55,4 +55,7 @@ public class LoginDetailsCriteriaRes {
 	@JsonProperty("UserMail")
 	private String userMail;
 	
+	@JsonProperty("CompanyId")
+	private String companyId;
+	
 }

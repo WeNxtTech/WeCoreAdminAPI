@@ -14,4 +14,31 @@ public class IssuerPersonalInfoReq {
     private String     userMobile   ;
 	@JsonProperty("UserMail")
     private String     userMail     ;
+	
+    @JsonProperty("Address1")
+    private String    address1 ;
+    
+    @JsonProperty("Address2")
+    private String    address2 ;
+    
+    @JsonProperty("CityCode")
+    private String    cityCode;
+    
+    
+    @JsonProperty("CountryCode")
+    private String    countryCode;
+    
+    @JsonProperty("MobileCode")
+    private String    mobileCode ;
+    
+    @JsonProperty("Remarks")
+    private String    remarks ;
+    
+    @JsonProperty("WhatappCode")
+    private String    whatsappCode ;
+    
+    @JsonProperty("WhatsappNo")
+    private String    whatsappNo ;
+    
+   
 }

@@ -47,4 +47,7 @@ public class IssuerLoginReq {
 	 
 	 @JsonProperty("InsuranceId")
 	 private String    companyId ;
+	 
+	 @JsonProperty("ProductIds")
+	    private List<String>  productIds ;
 }

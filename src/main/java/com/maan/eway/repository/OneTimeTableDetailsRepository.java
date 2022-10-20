@@ -45,5 +45,8 @@ public interface OneTimeTableDetailsRepository  extends JpaRepository<OneTimeTab
 	List<OneTimeTableDetails> findByItemIdAndStatusOrderByItemCodeAsc(Integer valueOf, String string);
 
 
+	OneTimeTableDetails findByItemTypeAndItemId(String string, Integer valueOf);
+
+
 
 }

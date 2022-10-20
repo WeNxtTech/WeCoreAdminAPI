@@ -27,7 +27,10 @@ import com.maan.eway.admin.req.AttachedProductReq;
 import com.maan.eway.admin.req.BrokerBranchesReq;
 import com.maan.eway.admin.req.BrokerCreationReq;
 import com.maan.eway.admin.req.CommonLoginCreationReq;
+import com.maan.eway.admin.req.CommonPersonalInforReq;
 import com.maan.eway.admin.req.IssuerCraeationReq;
+import com.maan.eway.admin.req.IssuerLoginReq;
+import com.maan.eway.admin.req.IssuerPersonalInfoReq;
 import com.maan.eway.admin.req.UserCreationReq;
 import com.maan.eway.admin.service.LoginValidationService;
 import com.maan.eway.bean.LoginMaster;
@@ -100,7 +103,55 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 				errors.addAll(commonErrors);
 			}
 			
+			IssuerPersonalInfoReq personalReq = req.getPersonalInformation() ;
+			IssuerLoginReq loginReq = req.getLoginInformation();
+			
+			if( loginReq.getAttachedBranches()==null || loginReq.getAttachedBranches().size() == 0 ) {
+				errors.add(new Error("06", "Attached Branch", "Please Choose Atleast One Branch"));
+			} 
+			
+			if( loginReq.getProductIds()==null || loginReq.getProductIds().size() == 0 ) {
+				errors.add(new Error("06", "ProductIds", "Please Choose Atleast One Product"));
+			} 
+			
 			// Additional Errors
+			if(StringUtils.isBlank(personalReq.getAddress1())  ) {
+				errors.add(new Error("10", "Address1", "Plese Enter Address1" ));
+			} else if(personalReq.getAddress1().length()>100 ) {
+				errors.add(new Error("10", "Address1", "Address1 Must Be Under 100 Character Only Allowed" ));
+			}
+			
+			if(StringUtils.isBlank(personalReq.getAddress2())  ) {
+				errors.add(new Error("11", "Address2", "Plese Enter Address2" ));
+			} else if(personalReq.getAddress2().length()>100 ) {
+				errors.add(new Error("11", "Address2", "Address2 Must Be Under 100 Character Only Allowed" ));
+			}
+			
+			if(StringUtils.isBlank(personalReq.getCountryCode())  ) {
+				errors.add(new Error("18", "Country", "Plese Select Country" ));
+			}
+				
+			if(StringUtils.isBlank(personalReq.getCityCode())  ) {
+				errors.add(new Error("15", "City", "Plese Select City" ));
+			} else if(! personalReq.getCityCode().matches("[0-9]+")  ) {
+
+			}
+			
+			if(StringUtils.isBlank(personalReq.getMobileCode())  ) {
+				errors.add(new Error("29", "MobileCode", "Plese Select MobileCode" ));
+			} 
+			
+			if(StringUtils.isBlank(personalReq.getWhatsappCode())  ) {
+				errors.add(new Error("29", "WhatsappCode", "Plese Select WhatsappCode" ));
+			} 
+			
+			if(StringUtils.isBlank(personalReq.getWhatsappNo())  ) {
+				errors.add(new Error("29", "WhatsappNo", "Plese Enter WhatsappNo" ));
+			} else if(! personalReq.getWhatsappNo().matches("[0-9]+")  ) {
+				errors.add(new Error("29", "WhatsappNo", "Plese Enter Valid Number in WhatsappNo" ));
+			} else if(personalReq.getWhatsappNo().length()>20  ) {
+				errors.add(new Error("29", "WhatsappNo", "WhatsappNo Must Be Under 20 Characters Only Allowed" ));
+			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();

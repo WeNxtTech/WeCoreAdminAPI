@@ -204,7 +204,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				for (CoverMaster data  : list) {
 					if(data.getSubCoverYn().equalsIgnoreCase("Y") && !(data.getCoverId().equals(data.getSubCoverId())) ) {  
 						SectionCoverMaster secCover = new SectionCoverMaster();
-						subCover = true ;
+						
 						dozerMapper.map(data, secCover) ;
 						secCover.setEffectiveDateStart(effDate);
 						secCover.setEffectiveDateEnd(endDate);
@@ -242,7 +242,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 						log.info("Saved Detail is  --->" + secCover );
 					} else if(data.getSubCoverYn().equalsIgnoreCase("N") && data.getCoverId().equals(data.getSubCoverId()) ) {
 						SectionCoverMaster secCover = new SectionCoverMaster();
-						cover = true;
+						
 						dozerMapper.map(data, secCover) ;
 						secCover.setEffectiveDateStart(effDate);
 						secCover.setEffectiveDateEnd(endDate);

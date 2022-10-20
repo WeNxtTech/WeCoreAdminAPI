@@ -46,6 +46,7 @@ import com.maan.eway.admin.service.LoginDetailsService;
 import com.maan.eway.admin.service.LoginValidationService;
 import com.maan.eway.auth.dto.Menu;
 import com.maan.eway.error.Error;
+import com.maan.eway.res.BrokerDropDownRes;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
@@ -411,7 +412,7 @@ public class LoginDetailsController {
 		CommonRes data = new CommonRes();
 
 		// Save
-		List<DropDownRes> res = entityService.getBrokerIds();
+		List<BrokerDropDownRes> res = entityService.getBrokerIds();
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());

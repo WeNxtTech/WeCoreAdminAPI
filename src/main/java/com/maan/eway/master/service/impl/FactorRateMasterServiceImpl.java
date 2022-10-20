@@ -9,6 +9,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -45,6 +46,7 @@ import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.DuplicateParamCheckingReq;
 import com.maan.eway.master.req.FactorParamsInsert;
 import com.maan.eway.master.req.FactorRateGetAllReq;
 import com.maan.eway.master.req.FactorRateGetReq;
@@ -210,17 +212,20 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				errorList.add(new Error("01", "please enter", "Please Enter Alteast One Factor Params Details"));
 			} else {
 				Long row = 0L ;
-				  List<RangeParamsReq>  param1to2Values = new ArrayList<RangeParamsReq>();
+			  List<RangeParamsReq>  param1to2Values = new ArrayList<RangeParamsReq>();
 				  List<RangeParamsReq>  param3To4Values = new ArrayList<RangeParamsReq>();
 				  List<RangeParamsReq>  param5To6Values = new ArrayList<RangeParamsReq>();
 				  List<RangeParamsReq>  param7To8Values = new ArrayList<RangeParamsReq>();
-				  List<String>  discrete9Values = new ArrayList<String>();
+					/*	  List<String>  discrete9Values = new ArrayList<String>();
 				  List<String>  discrete10Values = new ArrayList<String>();
 				  List<String>  discrete11Values = new ArrayList<String>();
-				  List<String>  discrete12Values = new ArrayList<String>();
+				  List<String>  discrete12Values = new ArrayList<String>(); */
+				  
+				  List<DuplicateParamCheckingReq> duplicateParams = new ArrayList<DuplicateParamCheckingReq>();
 				
 				for( FactorParamsInsert data : req.getFactorParams() ) {
 					row = row + 1 ;
+					DuplicateParamCheckingReq dupParams = new DuplicateParamCheckingReq();
 					
 					// Param 1 & Param 2 Validation
 					if ( param1==true  ) {
@@ -228,15 +233,249 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 							errorList.add(new Error("01", param1Name, "Please Enter " +  param1Name + " in Row No : " + row  ));
 						else if(! data.getParam1().matches("[0-9.]+")) 
 							errorList.add(new Error("01",param1Name, "Please Enter Valid "  + param1Name + " Value in Row No : " + row ));	
+						
+					}
+					if ( param2==true  ) {
+						if( StringUtils.isBlank(data.getParam2())  ) 
+							errorList.add(new Error("02", param2Name, "Please Enter " +  param2Name + "in Row No : " + row  ));
+						else if(! data.getParam2().matches("[0-9.]+")) 
+							errorList.add(new Error("02",param2Name, "Please Enter Valid "  + param2Name + " Value in Row No : " + row ));
+						else if ( param1==true &&  StringUtils.isNotBlank(data.getParam1()) &&  data.getParam1().matches("[0-9.]+") ) {
+							if( Double.valueOf(data.getParam1()) >  Double.valueOf(data.getParam2()) ) 
+								errorList.add(new Error("02", param2Name,  param1Name + " Greater Than  " + param2Name + " Not Allowed in Row No : " + row  ));
+						}
+					}
+					
+					// Param 3 & Param 4 Validation
+					if ( param3==true  ) {
+						if( StringUtils.isBlank(data.getParam3())  ) 
+							errorList.add(new Error("03", param3Name, "Please Enter " +  param3Name + "in Row No : " + row  ));
+						else if(! data.getParam3().matches("[0-9.]+")) 
+							errorList.add(new Error("03",param3Name, "Please Enter Valid "  + param3Name + " Value in Row No : " + row ));	
+				
+					}
+					if ( param4==true  ) {
+						if( StringUtils.isBlank(data.getParam4())  ) 
+							errorList.add(new Error("04", param4Name, "Please Enter " +  param4Name + "in Row No : " + row  ));
+						else if(! data.getParam4().matches("[0-9.]+")) 
+							errorList.add(new Error("04",param4Name, "Please Enter Valid "  + param4Name + " Value in Row No : " + row ));
+						else if ( param3==true &&  StringUtils.isNotBlank(data.getParam3()) &&  data.getParam3().matches("[0-9.]+") ) {
+							if( Double.valueOf(data.getParam3()) >  Double.valueOf(data.getParam4()) ) 
+								errorList.add(new Error("04", param4Name,  param3Name + " Greater Than  " + param4Name + " Not Allowed in Row No : " + row  ));
+						}
+					}
+					
+					// Param 5 & Param 6 Validation
+					if ( param5==true  ) {
+						if( StringUtils.isBlank(data.getParam5())  ) 
+							errorList.add(new Error("05", param5Name, "Please Enter " +  param5Name + "in Row No : " + row  ));
+						else if(! data.getParam5().matches("[0-9.]+")) 
+							errorList.add(new Error("05",param5Name, "Please Enter Valid "  + param5Name + " Value in Row No : " + row ));	
+						
+					}
+					if ( param6==true  ) {
+						if( StringUtils.isBlank(data.getParam6())  ) 
+							errorList.add(new Error("06", param6Name, "Please Enter " +  param6Name + "in Row No : " + row  ));
+						else if(! data.getParam6().matches("[0-9.]+")) 
+							errorList.add(new Error("06",param6Name, "Please Enter Valid "  + param6Name + " Value in Row No : " + row ));
+						else if ( param5==true &&  StringUtils.isNotBlank(data.getParam5()) &&  data.getParam5().matches("[0-9.]+") ) {
+							if( Double.valueOf(data.getParam5()) >  Double.valueOf(data.getParam6()) ) 
+								errorList.add(new Error("06", param6Name,  param5Name + " Greater Than  " + param6Name + " Not Allowed in Row No : " + row  ));
+						}
+						
+			
+					}
+					// Param 7 & Param 8 Validation
+					if ( param7==true  ) {
+						if( StringUtils.isBlank(data.getParam7())  ) 
+							errorList.add(new Error("07", param7Name, "Please Enter " +  param7Name + "in Row No : " + row  ));
+						else if(! data.getParam7().matches("[0-9.]+")) 
+							errorList.add(new Error("07",param7Name, "Please Enter Valid "  + param7Name + " Value in Row No : " + row ));	
+						
+					}
+					if ( param8==true  ) {
+						if( StringUtils.isBlank(data.getParam8())  ) 
+							errorList.add(new Error("08", param8Name, "Please Enter " +  param8Name + "in Row No : " + row  ));
+						else if(! data.getParam8().matches("[0-9.]+")) 
+							errorList.add(new Error("08",param8Name, "Please Enter Valid "  + param8Name + " Value in Row No : " + row ));
+						else if ( param7==true &&  StringUtils.isNotBlank(data.getParam7()) &&  data.getParam7().matches("[0-9.]+") ) {
+							if( Double.valueOf(data.getParam7()) >  Double.valueOf(data.getParam8()) ) 
+								errorList.add(new Error("08", param8Name,  param7Name + " Greater Than  " + param8Name + " Not Allowed in Row No : " + row  ));
+						}
+						
+					}
+				
+					// Param 9 - 12 Validation
+					if ( param9==true  ) {
+						if( StringUtils.isBlank(data.getParam9())  ) 
+							errorList.add(new Error("09", param9Name, "Please Enter " +  param9Name + "in Row No : " + row  ));
+							
+					}
+					if ( param10==true  ) {
+						if( StringUtils.isBlank(data.getParam10())  ) 
+							errorList.add(new Error("10", param10Name, "Please Enter " +  param10Name + "in Row No : " + row  ));
+						
+					}
+					if ( param11==true  ) {
+						if( StringUtils.isBlank(data.getParam11())  ) 
+							errorList.add(new Error("11", param11Name, "Please Enter " +  param11Name + "in Row No : " + row  ));
+						
+					}
+					if ( param12==true  ) {
+						if( StringUtils.isBlank(data.getParam12())  ) 
+							errorList.add(new Error("12", param12Name, "Please Enter " +  param12Name + "in Row No : " + row  ));
+							
+					}
+					
+					Double param1Value = StringUtils.isNotBlank(data.getParam1())  && data.getParam1().matches("[0-9.]+") ? Double.valueOf(data.getParam1()) : 0D ;
+					Double param2Value = StringUtils.isNotBlank(data.getParam2())  && data.getParam2().matches("[0-9.]+") ? Double.valueOf(data.getParam2()) : 0D ;
+					Double param3Value = StringUtils.isNotBlank(data.getParam3())  && data.getParam3().matches("[0-9.]+") ? Double.valueOf(data.getParam3()) : 0D;												
+					Double param4Value = StringUtils.isNotBlank(data.getParam4())  && data.getParam4().matches("[0-9.]+") ? Double.valueOf(data.getParam4()) : 0D;
+					Double param5Value = StringUtils.isNotBlank(data.getParam5())  && data.getParam5().matches("[0-9.]+") ? Double.valueOf(data.getParam5()) : 0D	;			
+					Double param6Value = StringUtils.isNotBlank(data.getParam6())  && data.getParam6().matches("[0-9.]+") ? Double.valueOf(data.getParam6()) : 0D;
+					Double param7Value = StringUtils.isNotBlank(data.getParam7())  && data.getParam7().matches("[0-9.]+") ? Double.valueOf(data.getParam7()) : 0D;
+					Double param8Value = StringUtils.isNotBlank(data.getParam8())  && data.getParam8().matches("[0-9.]+") ? Double.valueOf(data.getParam8()) : 0D;
+					String param9Value = data.getParam9() ;
+					String param10Value = data.getParam10() ;
+					String param11Value = data.getParam11() ;
+					String param12Value = data.getParam12();
+					
+					boolean param1Dup = false ;
+					boolean param2Dup = false ;
+					boolean param3Dup = false ;
+					boolean param4Dup = false ;
+					boolean param5Dup = false ;
+					boolean param6Dup = false ;
+					boolean param7Dup = false ;
+					boolean param8Dup = false ;
+					
+					List<RangeParamsReq>  fiterParam1 = param1to2Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null && ( o.getParamStartValue() <= param1Value &&  param1Value <= o.getParamEndValue())  ).collect(Collectors.toList()) ;
+					//fiterParam1 = fiterParam1.size() <= 0 ? param1to2Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&  param1Value <= o.getParamStartValue()  && param1Value <= o.getParamEndValue()      ).collect(Collectors.toList()) : fiterParam1 ;
+					fiterParam1 = fiterParam1.size() <= 0 ? param1to2Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null && param1Value <= o.getParamStartValue()   ).collect(Collectors.toList()) :fiterParam1 ;
+					List<RangeParamsReq>  fiterParam2 = param1to2Values.stream().filter(o ->  o.getParamStartValue()!=null && o.getParamEndValue()!=null &&  (o.getParamStartValue() <= param2Value &&  param2Value <= o.getParamEndValue()) ).collect(Collectors.toList()) ;
+					//fiterParam2 = fiterParam2.size() <= 0 ? param1to2Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&  param2Value <= o.getParamStartValue()  &&  param2Value  <=  o.getParamEndValue()   ).collect(Collectors.toList()) : fiterParam2 ;
+					fiterParam2 = fiterParam2.size() <= 0 ? param1to2Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&    param2Value <= o.getParamEndValue()     ).collect(Collectors.toList()) : fiterParam2 ;
+					List<RangeParamsReq>  fiterParam3 = param3To4Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null && ( o.getParamStartValue() <= param3Value &&  param3Value <= o.getParamEndValue()) ).collect(Collectors.toList()) ;
+					//fiterParam3 = fiterParam3.size() <= 0 ? param3To4Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&  param3Value <= o.getParamStartValue()  &&    param3Value  <= o.getParamEndValue() ).collect(Collectors.toList()) : fiterParam3 ;
+					fiterParam3 = fiterParam3.size() <= 0 ? param3To4Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&   param3Value <= o.getParamStartValue() ).collect(Collectors.toList()) : fiterParam3 ;
+					List<RangeParamsReq>  fiterParam4 = param3To4Values.stream().filter(o ->  o.getParamStartValue()!=null && o.getParamEndValue()!=null && ( o.getParamStartValue() <= param4Value &&  param4Value <= o.getParamEndValue()) ).collect(Collectors.toList()) ;
+					//fiterParam4 = fiterParam4.size() <= 0 ? param3To4Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&  param4Value <= o.getParamStartValue()  && param4Value <= o.getParamEndValue()     ).collect(Collectors.toList()) : fiterParam4;
+					fiterParam4 = fiterParam4.size() <= 0 ? param3To4Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&  param4Value <= o.getParamEndValue()    ).collect(Collectors.toList()) :fiterParam4 ;
+					List<RangeParamsReq>  fiterParam5 = param5To6Values.stream().filter(o ->  o.getParamStartValue()!=null && o.getParamEndValue()!=null && ( o.getParamStartValue() <= param5Value &&  param5Value <= o.getParamEndValue()) ).collect(Collectors.toList()) ;
+					//fiterParam5 = fiterParam5.size() <= 0 ? param5To6Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&  param5Value <= o.getParamStartValue()  && param5Value <= o.getParamEndValue()    ).collect(Collectors.toList()) : fiterParam5 ;
+					fiterParam5 = fiterParam5.size() <= 0 ? param5To6Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&  o.getParamStartValue() <= param5Value   && param5Value <= o.getParamEndValue()    ).collect(Collectors.toList()) : fiterParam5 ;
+					List<RangeParamsReq>  fiterParam6 = param5To6Values.stream().filter(o ->  o.getParamStartValue()!=null && o.getParamEndValue()!=null && ( param5Value <= o.getParamStartValue() )  ).collect(Collectors.toList()) ;
+					//fiterParam6 = fiterParam6.size() <= 0 ? param5To6Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&  param6Value <= o.getParamStartValue()  &&  param6Value  <= o.getParamEndValue()   ).collect(Collectors.toList()) :fiterParam6 ;
+					fiterParam6 = fiterParam6.size() <= 0 ? param5To6Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&    param6Value <= o.getParamEndValue()   ).collect(Collectors.toList()) : fiterParam6;
+					List<RangeParamsReq>  fiterParam7 = param7To8Values.stream().filter(o ->  o.getParamStartValue()!=null && o.getParamEndValue()!=null && ( o.getParamStartValue() <= param7Value &&  param7Value <= o.getParamEndValue()) ).collect(Collectors.toList()) ;
+					//fiterParam7 = fiterParam7.size() <= 0 ? param7To8Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&  param7Value <= o.getParamStartValue()  && param7Value <= o.getParamEndValue()     ).collect(Collectors.toList()) :fiterParam7 ;
+					fiterParam7 = fiterParam7.size() <= 0 ? param7To8Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null && o.getParamStartValue() <= param7Value   && param7Value <= o.getParamEndValue()     ).collect(Collectors.toList()) :fiterParam7 ;
+					List<RangeParamsReq>  fiterParam8 = param7To8Values.stream().filter(o ->  o.getParamStartValue()!=null && o.getParamEndValue()!=null && ( param7Value <= o.getParamStartValue()  )).collect(Collectors.toList()) ;
+					//fiterParam8 = fiterParam8.size() <= 0 ? param7To8Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&  param8Value <= o.getParamStartValue()  && param8Value <= o.getParamEndValue()    ).collect(Collectors.toList()) : fiterParam8 ;
+					fiterParam8 = fiterParam8.size() <= 0 ? param7To8Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&     param8Value <= o.getParamEndValue()   ).collect(Collectors.toList()) : fiterParam8 ;
+					
+					// Param1 to 2 Duplicate Setup
+					RangeParamsReq param1To2 = new RangeParamsReq();
+					if(fiterParam1.size() > 0 ) {
+						param1Dup = true ;
+						param2Dup = true ;
+					}
+					
+					if(fiterParam2.size() > 0 ) {
+						param1Dup = true ;
+						param2Dup = true ;
+					} 
+					param1To2.setParamStartValue(param1Value);
+					param1To2.setParamEndValue(param2Value);
+					param1to2Values.add(param1To2);
+					
+					
+					// Param3 to 4 Duplicate Setup
+					RangeParamsReq param3To4 = new RangeParamsReq();
+					if(fiterParam3.size() > 0 ) {
+						param3Dup = true ;
+						param4Dup = true ;
+					}
+					if(fiterParam4.size() > 0 ) {
+						param3Dup = true ;
+						param4Dup = true ;
+					}
+					
+					param3To4.setParamStartValue(param3Value);
+					param3To4.setParamEndValue(param4Value);
+					param3To4Values.add(param3To4);
+					
+					// Param5 to 6 Duplicate Setup
+					RangeParamsReq param5To6 = new RangeParamsReq();
+					if(fiterParam5.size() > 0 ) {
+						param5Dup = true ;
+						param6Dup = true ;
+					}
+					if(fiterParam6.size() > 0 ) {
+						param5Dup = true ;
+						param6Dup = true ;
+					}
+					param5To6.setParamStartValue(param5Value);
+					param5To6.setParamEndValue(param6Value);
+					param5To6Values.add(param5To6);
+					
+					// Param7 to 8 Duplicate Setup
+					RangeParamsReq param7To8 = new RangeParamsReq();
+					if(fiterParam7.size() > 0 ) {
+						param7Dup = true ;
+						param8Dup = true ;
+					}
+					if(fiterParam8.size() > 0 ) {
+						param7Dup = true ;
+						param8Dup = true ;
+					}
+					param7To8.setParamStartValue(param7Value);
+					param7To8.setParamEndValue(param8Value);
+					param7To8Values.add(param7To8);
+					
+					// Full Setup Duplicate
+					List<DuplicateParamCheckingReq> filterDupParams = new ArrayList<DuplicateParamCheckingReq>();
+					if(  param1Dup==true  && param2Dup==true && param3Dup==true && param4Dup==true && param5Dup==true &&
+							param6Dup==true && param7Dup==true && param8Dup==true  ) {
+						filterDupParams = duplicateParams.stream().filter( o -> o.getParam9().equalsIgnoreCase(param9Value) && o.getParam10().equalsIgnoreCase(param10Value) && 
+								o.getParam11().equalsIgnoreCase(param11Value) && o.getParam12().equalsIgnoreCase(param12Value) ).collect(Collectors.toList());
+						
+					}		
+					
+					if ( filterDupParams.size()>0 ) {
+						errorList.add(new Error("01","Duplicate" ," Duplicate  Setup Available In Row No : " + row ));	
+					} else {
+						dupParams.setParam1(param1Value);
+						dupParams.setParam2(param2Value);
+						dupParams.setParam3(param3Value);
+						dupParams.setParam4(param4Value);
+						dupParams.setParam5(param5Value);
+						dupParams.setParam6(param6Value);
+						dupParams.setParam7(param7Value);
+						dupParams.setParam8(param8Value);
+						dupParams.setParam9(param9Value);
+						dupParams.setParam10(param10Value);
+						dupParams.setParam11(param11Value);
+						dupParams.setParam12(param12Value);
+						duplicateParams.add(dupParams);
+						
+					}
+					/*
+					// Param 1 & Param 2 Validation
+					if ( param1==true  ) {
+						if( StringUtils.isBlank(data.getParam1())  ) 
+							errorList.add(new Error("01", param1Name, "Please Enter " +  param1Name + " in Row No : " + row  ));
+						else if(! data.getParam1().matches("[0-9.]+")) 
+							errorList.add(new Error("01",param1Name, "Please Enter Valid "  + param1Name + " Value in Row No : " + row ));	
 						else {
-							// Duplicate Range Checking
-							List<RangeParamsReq> filterRange = param1to2Values.stream().filter( o -> o.getParamStartValue() <= Double.valueOf(data.getParam1()) &&  Double.valueOf(data.getParam1()) <= o.getParamEndValue() ).collect(Collectors.toList()) ;
+							// Duplicate Range Checking 
+							List<RangeParamsReq> filterRange = param1to2Values.stream().filter(o -> o.getParamStartValue() <= Double.valueOf(data.getParam1()) &&  Double.valueOf(data.getParam1()) <= o.getParamEndValue() ).collect(Collectors.toList()) ;
 							if(filterRange.size()>0 ) {
 								if ( param9==true && param10==false && param11==false && param12==false   ) {
 									if( StringUtils.isNotBlank(data.getParam9())) {
 										List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
 										if ( filter9Discrete.size()>0 ) {
-											errorList.add(new Error("01",param1Name,param1Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
+											errorList.add(new Error("01",param1Name,param1Name+ " Duplicate  Range Setup AvDouble.valueOf(ailable In Row No : " + row ));	
 										}
 									}	
 								} 
@@ -851,7 +1090,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 								
 							}	
 						}
-					}
+					}*/
 					
 					// Other Range Validation
 					

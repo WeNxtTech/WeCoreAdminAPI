@@ -95,6 +95,10 @@ public class MenuMasterServiceImpl implements MenuMasterService{
 				criteriaQuery.where(p1,p2,p3).orderBy(orderList);
 				query = em.createQuery(criteriaQuery);
 				adminMenulist = query.getResultList();
+			} else {
+				criteriaQuery.where(p1,p2,p3).orderBy(orderList);	
+				query = em.createQuery(criteriaQuery);
+				otherMenulist = query.getResultList();
 			}
 			
 			

@@ -131,9 +131,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="FUEL_TYPE_DESC", length=100)
     private String     fuelTypeDesc ;
 
-    @Column(name="MANUFACTURE_YEAR")
-    private Integer  manufactureYear ;
-    
+   
     @Temporal(TemporalType.DATE)
     @Column(name="REGISTRATION_YEAR")
     private Date    registrationYear ;
@@ -273,6 +271,27 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="NCD_YN",length=1)
     private String    ncdYn ;
+
+    @Temporal(TemporalType.DATE)
+    @Column(name="MANUFACTURE_YEAR")
+    private Date manufactureYear;
+
+    @Column(name="STATUS",length=1)
+    private String   status;
+
+    @Temporal(TemporalType.DATE)
+    @Column(name="UPDATED_DATE")
+    private Date updatedDate;
+
+    @Column(name="UPDATED_BY",length=100)
+    private String  updatedBy;
+
+    @Column(name="CREATED_BY",length=100)
+    private String  createdBy;
+
+    @Temporal(TemporalType.DATE)
+    @Column(name="ENTRY_DATE")
+    private Date entryDate;
 
 }
 

@@ -1127,8 +1127,14 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 						} else if(!("Y".equals(data.getStatus())||"N".equals(data.getStatus()))) {
 							errorList.add(new Error("05", "Status", "Enter Status Y or N Only In Row No : " + row ));
 						}
-					}	
-				}
+					}
+					if (StringUtils.isBlank(data.getRegulatoryCode())) {
+						errorList.add(new Error("06", "RegulatoryCode", "Please Enter RegulatoryCode In Row No : " + row ));
+					}
+					else if(data.getRegulatoryCode().length()>20) {
+						errorList.add(new Error("06", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters In Row No : " + row ));
+						}
+					}
 			}
 		} catch (Exception e) {
 			log.error(e);
@@ -1422,7 +1428,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				saveData.setSubCoverDesc(coverlist.size()>0 ? coverlist.get(0).getSubCoverDesc() : "") ;
 				saveData.setFactorTypeName(factorTypes.size()>0 ? factorTypes.get(0).getFactorTypeName() : "");
 				saveData.setFactorTypeDesc(factorTypes.size()>0 ? factorTypes.get(0).getFactorTypeDesc(): "");
-				
+				saveData.setRegulatoryCode(data.getRegulatoryCode());
 				repository.saveAndFlush(saveData);
 				log.info("Saved Details is ---> " + json.toJson(saveData));
 			}

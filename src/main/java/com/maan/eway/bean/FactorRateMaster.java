@@ -177,9 +177,10 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="MIN_PREMIUM")
     private Double    minPremium ;
-    
-    //--- ENTITY LINKS ( RELATIONSHIP )
-
+ 
+    @Column(name="REGULATORY_CODE",length=20)
+    private String regulatoryCode;
+ 
 
 }
 

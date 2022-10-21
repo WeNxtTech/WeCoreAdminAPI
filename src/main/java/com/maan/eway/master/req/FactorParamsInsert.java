@@ -58,5 +58,7 @@ public class FactorParamsInsert {
     @JsonProperty("Status" )
     private String status ;
   
+    @JsonProperty("RegulatoryCode" )
+    private String regulatoryCode;
     
 }

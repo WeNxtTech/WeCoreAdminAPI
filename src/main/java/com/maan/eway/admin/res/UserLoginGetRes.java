@@ -21,7 +21,9 @@ public class UserLoginGetRes {
 	@JsonProperty("OaCode")
     private String     oaCode       ;
 	
-
+	@JsonProperty("InsuranceId")
+	private String companyId ;
+	
 	@JsonProperty("AgencyCode")
 	private String agencyCode ;
 	
@@ -59,4 +61,8 @@ public class UserLoginGetRes {
 	
 	@JsonProperty("BrokerCompanyYn")
     private String    brokerCompanyYn ;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart ;
 }

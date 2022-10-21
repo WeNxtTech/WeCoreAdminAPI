@@ -9,4 +9,7 @@ public class SubUserTypeReq {
 
 	@JsonProperty("UserType")
 	private String userType ;
+	
+	@JsonProperty("LoginId")
+	private String loginId ;
 }

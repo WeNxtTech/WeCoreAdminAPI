@@ -3,6 +3,7 @@ package com.maan.eway.admin.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,9 @@ import org.springframework.stereotype.Service;
 
 import com.maan.eway.admin.service.AdminDropDownService;
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.repository.ListItemValueRepository;
+import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.req.SubUserTypeReq;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SubUserTypeDropDownRes;
@@ -25,7 +28,8 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 	@Autowired
 	private ListItemValueRepository listRepo;
 	
-	
+	@Autowired
+	private LoginMasterRepository loginRepo ;
 	
 	
 	// Gender
@@ -75,12 +79,47 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 			try {
 				List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc(req.getUserType(), "Y");
 
+				LoginMaster loginData = null ;
+				if(StringUtils.isNotBlank(req.getLoginId()) ) {
+					loginData = loginRepo.findByLoginId(req.getLoginId()) ;
+				}
+				 
+				
 				for (ListItemValue data : getList) {
 					SubUserTypeDropDownRes res = new SubUserTypeDropDownRes();
-					res.setCode(data.getItemCode());
-					res.setCodeDesc(data.getItemValue());
-					res.setDisplayName(data.getParam1());
-					resList.add(res);
+					if( loginData != null ) {
+						
+						// Issuer
+						if (loginData.getUserType().equalsIgnoreCase("Issuer")  ) {
+							
+							if(  loginData.getSubUserType().equalsIgnoreCase("both")  &&  (data.getItemValue().equalsIgnoreCase("low") || data.getItemValue().equalsIgnoreCase("high")))  {
+								res.setCode(data.getItemCode());
+								res.setCodeDesc(data.getItemValue());
+								res.setDisplayName(data.getParam1());
+								resList.add(res);
+							} else  {
+								if(loginData.getSubUserType().equalsIgnoreCase(data.getItemValue()) ) {
+									res.setCode(data.getItemCode());
+									res.setCodeDesc(data.getItemValue());
+									res.setDisplayName(data.getParam1());
+									resList.add(res);
+								}
+							}
+						}  else  {
+							if(loginData.getSubUserType().equalsIgnoreCase(data.getItemValue()) ) {
+								res.setCode(data.getItemCode());
+								res.setCodeDesc(data.getItemValue());
+								res.setDisplayName(data.getParam1());
+								resList.add(res);
+							}
+						}
+					} else {
+						res.setCode(data.getItemCode());
+						res.setCodeDesc(data.getItemValue());
+						res.setDisplayName(data.getParam1());
+						resList.add(res);
+					}
+					
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

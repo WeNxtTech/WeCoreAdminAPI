@@ -188,11 +188,14 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 			if(StringUtils.isBlank(req.getLoginInformation().getOaCode())  ) {
 				errors.add(new Error("06","Broker","Please Select Broker OaCode"));
 			}
-			if(StringUtils.isBlank(commonReq.getLoginInformation().getBrokerCompanyYn()))  {
-				errors.add(new Error("01","BrokerCompanyYn","Please Select BrokerCompany Y or N"));
-			} else if( ! (commonReq.getLoginInformation().getBrokerCompanyYn().equalsIgnoreCase("Y") || commonReq.getLoginInformation().getBrokerCompanyYn().equalsIgnoreCase("N")) )  {
-				errors.add(new Error("01","BrokerCompanyYn","Please Select BrokerCompany Y or N"));
+			if(StringUtils.isNotBlank(commonReq.getLoginInformation().getUserType())  && commonReq.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  ) {
+				if(StringUtils.isBlank(commonReq.getLoginInformation().getBrokerCompanyYn()))  {
+					errors.add(new Error("01","BrokerCompanyYn","Please Select BrokerCompany Y or N"));
+				} else if( ! (commonReq.getLoginInformation().getBrokerCompanyYn().equalsIgnoreCase("Y") || commonReq.getLoginInformation().getBrokerCompanyYn().equalsIgnoreCase("N")) )  {
+					errors.add(new Error("01","BrokerCompanyYn","Please Select BrokerCompany Y or N"));
+				}
 			}
+			
 			
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -38,6 +38,9 @@ public class Menu {
 	@JsonProperty("orderby")
 	private Long orderby;
 	
+	@JsonProperty("IsDesti")
+	private boolean isdesti ;
+	
 	@JsonProperty("children")
 	private List<Menu> children;
 	

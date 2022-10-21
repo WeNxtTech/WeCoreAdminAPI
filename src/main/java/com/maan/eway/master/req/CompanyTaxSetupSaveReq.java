@@ -2,6 +2,7 @@ package com.maan.eway.master.req;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -19,9 +20,6 @@ public class CompanyTaxSetupSaveReq implements Serializable {
     private static final long serialVersionUID = 1L;
 
     
-    @JsonProperty("TaxId")
-    private String     taxId ;
-
     
     @JsonProperty("ProductId")
     private String productId ;
@@ -41,26 +39,14 @@ public class CompanyTaxSetupSaveReq implements Serializable {
     private Date       effectiveDateEnd ;
     
     //--- ENTITY DATA FIELDS 
-    @JsonProperty("TaxName")
-    private String     taxName ;
-    
-    @JsonProperty("TaxDesc")
-    private String     taxDesc ;
-
-    @JsonProperty("CalcType")
-    private String     calcType ;
-
-    
-    @JsonProperty("Value")
-    private String    value ;
-
+ 
     @JsonProperty("CreatedBy")
     private String   createdBy ;
     
-    @JsonProperty("Status")
-    private String     status ; 
     
-    @JsonProperty("Remarks")
-    private String remarks; 
+    @JsonProperty("CompanyTaxDetails")
+    private List<TaxMultiInsertReq> companyTaxDetails ; 
+    
+    
 
 }

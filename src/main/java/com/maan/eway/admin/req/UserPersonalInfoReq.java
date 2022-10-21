@@ -72,4 +72,21 @@ public class UserPersonalInfoReq {
     
     @JsonProperty("MakerYn")
     private String    makerYn ;
+    
+    @JsonProperty("Designation")
+    private String    designation;
+    
+    @JsonProperty("ContactPersonName")
+    private String    contactPersonName ;
+    
+    
+    @JsonProperty("MobileCode")
+    private String    mobileCode ;
+    
+    
+    @JsonProperty("WhatsappCode")
+    private String    whatsappCode ;
+    
+    @JsonProperty("WhatsappNo")
+    private String    whatsappNo ;
 }

@@ -12,12 +12,16 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -101,6 +105,9 @@ import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.res.BrokerDropDownRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toCollection;
+
 /**
 * <h2>LoginMasterServiceimpl</h2>
 */
@@ -269,11 +276,13 @@ this.repository = repo;
 			if (loginData ==null) {
 				// Save
 				saveRes =   newLoginInsert(commonReq) ;
+				res.setAgencyCode(saveRes);
 				res.setResponse("Saved Successfully");
 				
 			} else {
 				// Update
 				saveRes = updateLoginDetails(commonReq);
+				res.setAgencyCode(saveRes);
 				res.setResponse("Updated Successfully");
 			}
 			
@@ -298,6 +307,7 @@ this.repository = repo;
 				branchReq.setMobile(req.getPersonalInformation().getUserMobile() );
 				branchReq.setRemarks(req.getPersonalInformation().getRemarks());
 				branchReq.setStatus(req.getLoginInformation().getStatus());
+				branchReq.setLoginId(req.getLoginInformation().getLoginId());
 				
 				LoginCreationRes branchRes  = loginBranchService.attachBrokerCompanyBranch(branchReq);
 			}
@@ -345,12 +355,15 @@ this.repository = repo;
 	}
 	
 	// Login Save Method
-	
+	@Transactional
 	public String newLoginInsert(CommonLoginCreationReq req ) {
 		String res = "" ;  
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
 			CommonLoginInformationReq loginReq = req.getLoginInformation() ;
+			
+			LoginMaster findBroker = loginRepo.findByAgencyCodeAndOaCode(loginReq.getOaCode() ,loginReq.getOaCode());
+			
 			// Branch Setup
 			String branches  = loginReq.getAttachedBranches()==null  || loginReq.getAttachedBranches().size()==0 ?"" : String.join(",", loginReq.getAttachedBranches());
 			String regions   = loginReq.getAttachedRegions()==null   || loginReq.getAttachedRegions().size()==0 ?"" : String.join(",", loginReq.getAttachedRegions());
@@ -388,6 +401,8 @@ this.repository = repo;
 			saveLogin.setAttachedRegions(regions);
 			saveLogin.setAttachedCompanies(companies);
 			saveLogin.setMenuIds(menuId);
+			saveLogin.setBrokerCompanyYn(findBroker!=null ? findBroker.getBrokerCompanyYn() : loginReq.getBrokerCompanyYn());
+			
 			if( ! loginReq.getSubUserType().equalsIgnoreCase("bank") ) {
 				saveLogin.setBankCode("");
 			}
@@ -409,6 +424,15 @@ this.repository = repo;
 			userInfo.setMobileCodeDesc(mobileCodes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(personalReq.getMobileCode()) ).collect(Collectors.toList()).get(0).getItemValue() );
 			userInfo.setWhatsappCodeDesc(mobileCodes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(personalReq.getWhatsappCode()) ).collect(Collectors.toList()).get(0).getItemValue() );
 			
+			if(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("Issuer") ) {
+				userInfo.setOaCode(saveLogin.getOaCode());
+				userInfo.setAgencyCode(saveLogin.getAgencyCode());
+				
+			} else if(req.getLoginInformation().getUserType().equalsIgnoreCase("User") ) {
+				userInfo.setOaCode(saveLogin.getOaCode());
+				userInfo.setAgencyCode(saveLogin.getAgencyCode());
+			}
+			
 			if(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("User")  ) {
 				List<Tuple> stateCityNames = 	getStateAndCityName(personalReq.getCountryCode() ,  personalReq.getCityCode());
 				
@@ -417,6 +441,7 @@ this.repository = repo;
 				userInfo.setCountryName(stateCityNames.get(0).get("countryName") == null ? "" :  stateCityNames.get(0).get("countryName").toString());
 			}
 				
+
 			
 			loginUserRepo.saveAndFlush(userInfo);
 			
@@ -518,6 +543,7 @@ this.repository = repo;
 	
 	// Login Save Method
 	
+	@Transactional
 	public String updateLoginDetails(CommonLoginCreationReq req ) {
 		String res = "";
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
@@ -545,6 +571,8 @@ this.repository = repo;
 			
 			// Update Login Master
 			CommonLoginInformationReq loginReq = req.getLoginInformation() ;
+			LoginMaster findBroker = loginRepo.findByAgencyCodeAndOaCode(loginReq.getOaCode() ,loginReq.getOaCode());
+			
 			// Branch Setup
 			String branches  = loginReq.getAttachedBranches()==null  || loginReq.getAttachedBranches().size()==0 ?"" : String.join(",", loginReq.getAttachedBranches());
 			String regions   = loginReq.getAttachedRegions()==null   || loginReq.getAttachedRegions().size()==0 ?"" : String.join(",", loginReq.getAttachedRegions());
@@ -573,7 +601,8 @@ this.repository = repo;
 			updateLogin.setAttachedBranches(branches);
 			updateLogin.setAttachedRegions(regions);
 			updateLogin.setAttachedCompanies(companies);
-			updateLogin.setMenuIds(menuId);
+			updateLogin.setMenuIds(findLogin.getMenuIds());
+			updateLogin.setBrokerCompanyYn(findBroker !=null ? findBroker.getBrokerCompanyYn() : loginReq.getBrokerCompanyYn());
 			if( ! loginReq.getSubUserType().equalsIgnoreCase("bank") ) {
 				updateLogin.setBankCode("");
 			}
@@ -590,7 +619,15 @@ this.repository = repo;
 			updateUser.setAgencyCode(updateLogin.getAgencyCode());
 			updateUser.setUpdatedDate(new Date());
 			updateUser.setUpdatedBy(loginReq.getCreatedBy());
-			updateUser.setStatus(updateLogin.getStatus());		
+			updateUser.setStatus(updateLogin.getStatus());
+			if(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("Issuer") ) {
+				updateUser.setOaCode(loginReq.getOaCode());
+				updateUser.setAgencyCode(loginReq.getOaCode());
+				
+			} else if(req.getLoginInformation().getUserType().equalsIgnoreCase("User") ) {
+				updateUser.setOaCode(loginReq.getOaCode());
+				updateUser.setAgencyCode(loginReq.getAgencyCode());
+			}
 			
 			if(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("User")  ) {
 				List<Tuple> stateCityNames = 	getStateAndCityName(personalReq.getCountryCode() ,  personalReq.getCityCode());
@@ -1093,23 +1130,7 @@ this.repository = repo;
 			BrokerPersonalDetailsGetRes personalInfo = new BrokerPersonalDetailsGetRes();
 			personalInfo = dozerMapper.map(userData, BrokerPersonalDetailsGetRes.class);
 			
-			BrokerProductReq productReq = new BrokerProductReq();
-			productReq.setInsuranceId(loginData.getCompanyId());
-			productReq.setLoginId(loginData.getLoginId());
 			
-			List<DropDownRes> productRes = loginProductService.getBrokerProductDropdown(productReq) ;
-			
-			List<String> productIds = productRes.stream().map( o -> o.getCode()).collect(Collectors.toList());
-			
-			
-			loginInfo.setProductIds(productIds );
-			
-			
-			List<LoginBranchMaster> findBranches = loginBranchRepo.findByLoginIdAndCompanyIdOrderByBranchCodeAsc(loginData.getLoginId() ,  loginData.getCompanyId());
-			
-			List<String> branchIds = findBranches.stream().map( o -> o.getBranchCode()).collect(Collectors.toList());
-			
-			loginInfo.setGetBranches(branchIds);
 			
 			// Response
 			res.setLoginInformation(loginInfo);
@@ -1138,6 +1159,24 @@ this.repository = repo;
 			LoginUserInfo userData = loginUserRepo.findByLoginId(req.getLoginId());	
 			IssuerPersonalInfoGetRes personalInfo = new IssuerPersonalInfoGetRes();
 			personalInfo = dozerMapper.map(userData, IssuerPersonalInfoGetRes.class);
+			
+			BrokerProductReq productReq = new BrokerProductReq();
+			productReq.setInsuranceId(loginData.getCompanyId());
+			productReq.setLoginId(loginData.getLoginId());
+			
+			List<DropDownRes> productRes = loginProductService.getBrokerProductDropdown(productReq) ;
+			
+			List<String> productIds = productRes.stream().map( o -> o.getCode()).collect(Collectors.toList());
+			
+			
+			loginInfo.setProductIds(productIds );
+			
+			
+			List<LoginBranchMaster> findBranches = loginBranchRepo.findByLoginIdAndCompanyIdOrderByBranchCodeAsc(loginData.getLoginId() ,  loginData.getCompanyId());
+			
+			List<String> branchIds = findBranches.stream().map( o -> o.getBranchCode()).collect(Collectors.toList());
+			
+			loginInfo.setGetBranches(branchIds);
 			
 			// Response
 			res.setLoginInformation(loginInfo);
@@ -1188,9 +1227,9 @@ this.repository = repo;
 			// Menu Ids
 			List<String> asList =  new ArrayList<String>();
 			 List<MenuMaster> findBymenuList = new ArrayList<>();
-			  if(login.getMenuIds()!=null && login.getMenuIds().indexOf(",")!=-1) {
-				  String[] split = login.getMenuIds().split(",");
-				  asList = Arrays.asList(split);
+			  if(StringUtils.isNotBlank(login.getMenuIds()) ) {
+				  // String[] split = login.getMenuIds().split(",");
+				  asList = Arrays.asList(login.getMenuIds().split(",") );
 				 
 			  }
 			// Get Menus 	  
@@ -1205,13 +1244,23 @@ this.repository = repo;
 			} else if(req.getSubUserType().equalsIgnoreCase("low")  ) {
 				List<MenuMaster> usermenuList = getMenuListCriteria(asList , req.getUserType()  );
 				findBymenuList.addAll(usermenuList);
+			}  else if(req.getSubUserType().equalsIgnoreCase("SuperAdmin")  ) {
+				List<MenuMaster> usermenuList = getMenuListCriteria(asList , "SuperAdmin" );
+				findBymenuList.addAll(usermenuList);
 			} else  {
 				List<MenuMaster> usermenuList = getMenuListCriteria(asList , req.getUserType()  );
 				findBymenuList.addAll(usermenuList);
 			}
-			 
+			List<MenuMaster> unique = findBymenuList.stream()
+                    .collect(collectingAndThen(toCollection(() -> new TreeSet<>(Comparator.comparingInt((MenuMaster::getMenuId)))),
+                                               ArrayList::new));
+/*			
+			List<Employee> unique = employee.stream()
+                    .collect(collectingAndThen(toCollection(() -> new TreeSet<>(comparingInt(Employee::getId))),
+                                               ArrayList::new));
+*/
 				List<Menu> menus=new ArrayList<Menu>();
-				for (MenuMaster menuMaster : findBymenuList) {
+				for (MenuMaster menuMaster : unique) {
 					Menu m = Menu.builder().title(menuMaster.getMenuName()).link(menuMaster.getMenuUrl()).id(menuMaster.getMenuId().toString()).parent(menuMaster.getParentMenu())
 							.icon(menuMaster.getMenuLogo()).orderby(menuMaster.getDisplayOrder()==null?0:menuMaster.getDisplayOrder().longValue()).build();
 					menus.add(m);
@@ -1229,7 +1278,7 @@ this.repository = repo;
 					}
 					 
 				}
-			  			
+				 menusret.sort(Comparator.comparing(Menu :: getOrderby));
 			return menusret;
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -1260,9 +1309,20 @@ this.repository = repo;
 			
 			if(menuids.size()>0) {
 				Predicate p2 = e0.in(menuids).not();
-				query.select(m ).where(p1,p2,p3).orderBy(orderList) ;
+				if (usertype.equalsIgnoreCase("admin") ) {
+					Predicate p4 =  cb.notEqual(m.get("usertype"), "SuperAdmin" );
+					query.select(m ).where(p1,p2,p3,p4).orderBy(orderList) ;
+				} else {
+					query.select(m ).where(p1,p2,p3).orderBy(orderList) ;
+				}
+				
 			} else {
-				query.select(m ).where(p1,p3).orderBy(orderList) ;
+				if (usertype.equalsIgnoreCase("admin") ) {
+					Predicate p4 =  cb.notEqual(m.get("usertype"), "SuperAdmin" );
+					query.select(m ).where(p1,p3,p4).orderBy(orderList) ;
+				} else {
+					query.select(m ).where(p1,p3).orderBy(orderList) ;
+				}
 			}
 
 			TypedQuery<MenuMaster> result = em.createQuery(query);
@@ -1386,20 +1446,17 @@ this.repository = repo;
 	@Override
 	public SuccessRes savemenuids(MenuIdSaveReq req) {
 	SuccessRes res = new SuccessRes();
-	DozerBeanMapper mapper = new DozerBeanMapper();
-	LoginMaster savedata = new LoginMaster();
 	try {
 		LoginMaster data = loginRepo.findByLoginId(req.getLoginId());
 		String key = "";
 		if(data!=null) {
-			List<String> keys = req.getMenuIds();
-			for (int i = 0; i < keys.size(); i++) {			
-			key = key + "," + keys.get(i);
+			List<String> keys = req.getMenuIds()!=null && req.getMenuIds().size() >0 ?req.getMenuIds() : new ArrayList<String>() ;
+			for (String menuId : keys ) {			
+			key =StringUtils.isBlank(key) ? menuId  : key + "," + menuId;
 			}
 			}
-		mapper.map(data,savedata);
-		savedata.setMenuIds(key);
-		loginRepo.save(savedata);
+		data.setMenuIds(key);
+		loginRepo.save(data);
 		res.setResponse("Menu Ids Added Successfully");
 		res.setSuccessId(req.getLoginId());
 		}
@@ -1420,7 +1477,7 @@ this.repository = repo;
 		try {
 			LoginMaster data = loginRepo.findByLoginId(req.getLoginId());
 			String menuid = data.getMenuIds();
-			List<String> menuids = new ArrayList<String>(Arrays.asList(menuid.split(",")));
+			List<String> menuids = menuid!=null ? new ArrayList<String>(Arrays.asList(menuid.split(","))) : new ArrayList<String>() ;
 			res.setMenuId(menuids);	
 		}
 		catch(Exception e) {

@@ -8,11 +8,14 @@ package com.maan.eway.master.service.impl;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -57,6 +60,7 @@ import com.maan.eway.master.req.CompanyTaxChangeStatusReq;
 import com.maan.eway.master.req.CompanyTaxSetupGetAllReq;
 import com.maan.eway.master.req.CompanyTaxSetupGetReq;
 import com.maan.eway.master.req.CompanyTaxSetupSaveReq;
+import com.maan.eway.master.req.TaxMultiInsertReq;
 import com.maan.eway.master.res.BranchMasterRes;
 import com.maan.eway.master.res.CompanyTaxGetRes;
 import com.maan.eway.master.service.CompanyTaxSetupService;
@@ -98,12 +102,7 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 	List<Error> errorList = new ArrayList<Error>();
 	try {
 	
-		if (StringUtils.isBlank(req.getRemarks()) ) {
-			errorList.add(new Error("03", "Remark", "Please Select Remark "));
-		}else if (req.getRemarks().length() > 100){
-			errorList.add(new Error("03","Remark", "Please Enter Remark within 100 Characters")); 
-		}
-		
+	
 		// Date Validation 
 		Calendar cal = new GregorianCalendar();
 		Date today = new Date();
@@ -120,14 +119,7 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 		} else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart()) || req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
 			errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date End  is After Effective Date Start"));
 		} 
-		//Status Validation
-		if (StringUtils.isBlank(req.getStatus())) {
-			errorList.add(new Error("05", "Status", "Please Enter Status"));
-		} else if (req.getStatus().length() > 1) {
-			errorList.add(new Error("05", "Status", "Enter Status 1 Character Only"));
-		}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()))) {
-			errorList.add(new Error("05", "Status", "Enter Status Y or N Only"));
-		}
+		
 		
 		if (StringUtils.isBlank(req.getCreatedBy())) {
 			errorList.add(new Error("08", "CreatedBy", "Please Enter CreatedBy"));
@@ -141,29 +133,50 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 			errorList.add(new Error("09", "CreatedBy", "Please Enter CreatedBy within 20 Characters"));
 		}
 		
-		if (StringUtils.isBlank(req.getTaxName())) {
-			errorList.add(new Error("09", "TaxName", "Please Enter Tax Name"));
-		}else if (req.getTaxName().length() > 100) {
-			errorList.add(new Error("09", "TaxName", "Please Enter Tax Name within 100 Characters"));
-		}
-	
-		if (StringUtils.isBlank(req.getTaxDesc())) {
-			errorList.add(new Error("08", "TaxDesc", "Please Select Tax Desc "));
-		}else if (req.getTaxDesc().length() > 200) {
-			errorList.add(new Error("08", "TaxDesc", "Please Enter Tax Desc with in 200 Characters"));
+		
+		
+		if( req.getCompanyTaxDetails() ==null || req.getCompanyTaxDetails().size()<=0 ) {
+			errorList.add(new Error("12", "Value", "Please Enter Atleas One Tax Details"));
+		} else {
+			Integer row = 0 ;
+			for(TaxMultiInsertReq data :   req.getCompanyTaxDetails()) {
+				row = row +1 ;
+				
+				if (StringUtils.isBlank(data.getTaxName())) {
+					errorList.add(new Error("09", "TaxName", "Please Enter Tax Name In Row No :" + row ));
+				}else if (data.getTaxName().length() > 100) {
+					errorList.add(new Error("09", "TaxName", "Please Enter Tax Name within 100 Characters In Row No :" + row));
+				}
+			
+				if (StringUtils.isBlank(data.getTaxDesc())) {
+					errorList.add(new Error("08", "TaxDesc", "Please Select Tax Desc In Row No :" + row));
+				}else if (data.getTaxDesc().length() > 200) {
+					errorList.add(new Error("08", "TaxDesc", "Please Enter Tax Desc with in 200 Characters In Row No :" + row));
+				}
+				
+				if (StringUtils.isBlank(data.getCalcType())) {
+					errorList.add(new Error("12", "Calc Type", "Please Select Calc Type In Row No :" + row));
+				} else if(StringUtils.isBlank(data.getValue())   ) {
+					errorList.add(new Error("12", "Value", "Please Enter Tax Value In Row No :" + row));
+				} else if(! data.getValue().matches("[0-9.]+")   ) {
+					errorList.add(new Error("12", "Value", "Please Enter Valid Number In Tax Value In Row No :" + row));
+				} else if(data.getCalcType().equalsIgnoreCase("P") ) {
+					if(Double.valueOf(data.getValue())>100   ) {
+						errorList.add(new Error("12", "Value", "Please Enter Valid Percent In Tax Value In Row No :" + row));
+					}
+				} 
+				
+				//Status Validation
+				if (StringUtils.isBlank(data.getStatus())) {
+					errorList.add(new Error("05", "Status", "Please Enter StatusPercent In Tax Value In Row No :" + row));
+				} else if (data.getStatus().length() > 1) {
+					errorList.add(new Error("05", "Status", "Enter Status 1 Character Only Percent In Tax Value In Row No :" + row));
+				}else if(!("Y".equals(data.getStatus())||"N".equals(data.getStatus()))) {
+					errorList.add(new Error("05", "Status", "Enter Status Y or N Only Percent In Tax Value In Row No :" + row));
+				}
+			}
 		}
 		
-		if (StringUtils.isBlank(req.getCalcType())) {
-			errorList.add(new Error("12", "Calc Type", "Please Select Calc Type"));
-		} else if(StringUtils.isBlank(req.getValue())   ) {
-			errorList.add(new Error("12", "Value", "Please Enter Tax Value"));
-		} else if(! req.getValue().matches("[0-9.]+")   ) {
-			errorList.add(new Error("12", "Value", "Please Enter Valid Number In Tax Value"));
-		} else if(req.getCalcType().equalsIgnoreCase("P") ) {
-			if(Double.valueOf(req.getValue())>100   ) {
-				errorList.add(new Error("12", "Value", "Please Enter Valid Percent In Tax Value"));
-			}
-		} 
 		
 		if (StringUtils.isBlank(req.getProductId()) ) {
 			errorList.add(new Error("03", "ProductId", "Please Enter ProductId"));
@@ -181,8 +194,9 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 	return errorList;
 }
 
+	@Transactional
 	@Override
-	public SuccessRes insertCompanyTax(CompanyTaxSetupSaveReq req) {
+	public SuccessRes insertCompanyTax(CompanyTaxSetupSaveReq request) {
 		SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/YYYY");
 		SuccessRes res = new SuccessRes();
 		CompanyTaxSetup saveData = new CompanyTaxSetup();
@@ -191,98 +205,83 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 		try {
 			Integer amendId = 0 ;
 			Calendar cal = new GregorianCalendar();
-			cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
+			cal.setTime(request.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
 			Date startDate = cal.getTime() ;
 			Date today = new Date();
-			cal.setTime(req.getEffectiveDateStart());   cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
+			cal.setTime(request.getEffectiveDateStart());   cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
 			Date oldEndDate = cal.getTime() ;
-			cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
+			cal.setTime(request.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
 			Date effDate = cal.getTime();
-			Date endDate = req.getEffectiveDateEnd();
+			Date endDate = request.getEffectiveDateEnd();
 			String taxId="";
 			List<ListItemValue> calcTypes = listRepo.findByItemTypeAndStatus("CALCULATION_TYPE" , "Y");
-			if (StringUtils.isBlank(req.getTaxId())) {
-					// Save
-				//	Long totalCount = branchRepo.count();
-					Long totalCount=getCompanyTaxTableCount(req.getCompanyId() ,req.getProductId() );
-					
-					taxId = Long.valueOf(totalCount + 1).toString();
-					
-					saveData.setTaxId(Integer.valueOf(taxId));
-					
-					res.setResponse("Saved Successfully ");
-					res.setSuccessId(taxId);
-					
-				} else {
-					// Update
-					// Get Less than Equal Today Record 
-					// Criteria
-					CriteriaBuilder cb = em.getCriteriaBuilder();
-					CriteriaQuery<CompanyTaxSetup> query = cb.createQuery(CompanyTaxSetup.class);
-	
-					// Find All
-					Root<CompanyTaxSetup> b = query.from(CompanyTaxSetup.class);
-	
-					// Select
-					query.select(b);
-	
-					// Effective Date Max Filter
-					Subquery<Long> effectiveDate = query.subquery(Long.class);
-					Root<CompanyTaxSetup> ocpm1 = effectiveDate.from(CompanyTaxSetup.class);
-					effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-					Predicate a1 = cb.equal(ocpm1.get("taxId"), b.get("taxId"));
-					Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , startDate);
-					Predicate a3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-					Predicate a4 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-					effectiveDate.where(a1,a2,a3,a4);
-	
-					// Order By
-				//	List<Order> orderList = new ArrayList<Order>();
-				//	orderList.add(cb.asc(b.get("branchName")));
-					
-					// Where
-					Predicate n1 = cb.equal(b.get("status"), "Y");
-					Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-					Predicate n3 =  cb.equal(b.get("taxId"), req.getTaxId() );
-					Predicate n4 =  cb.equal(b.get("companyId"), req.getCompanyId() );
-					Predicate n5 =  cb.equal(b.get("productId"), req.getProductId() );
-					query.where(n1, n2, n3,n4,n5);//.orderBy(orderList);
-	
-					// Get Result
-					TypedQuery<CompanyTaxSetup> result = em.createQuery(query);
-					list = result.getResultList();
-					
-					if( list.size() > 0) {
-						companyRepo.delete(list.get(0));
-						// Amend ID
-						if( list.get(0).getEffectiveDateStart().before(startDate)   ) {
-							String startDatewithoutTime = sdformat.format(startDate) ;
-							String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart()) ;
-							
-							if(startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime) ) {
-								amendId = list.get(0).getAmendId() + 1 ;
-							}
-						}
-					} 
-					saveData.setTaxId(Integer.valueOf(req.getTaxId()));
-					saveData.setTaxName(req.getTaxName());
-					res.setResponse("Saved Successfully ");
-					res.setSuccessId(taxId);
-	
-				}
 			
+			for (TaxMultiInsertReq  req  : request.getCompanyTaxDetails()) {
+				// Update
+				// Get Less than Equal Today Record 
+				// Criteria
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<CompanyTaxSetup> query = cb.createQuery(CompanyTaxSetup.class);
+
+				// Find All
+				Root<CompanyTaxSetup> b = query.from(CompanyTaxSetup.class);
+
+				// Select
+				query.select(b);
+
+				// Effective Date Max Filter
+				Subquery<Long> effectiveDate = query.subquery(Long.class);
+				Root<CompanyTaxSetup> ocpm1 = effectiveDate.from(CompanyTaxSetup.class);
+				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+				Predicate a1 = cb.equal(ocpm1.get("taxId"), b.get("taxId"));
+				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , startDate);
+				Predicate a3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+				Predicate a4 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+				effectiveDate.where(a1,a2,a3,a4);
+
+				// Order By
+			//	List<Order> orderList = new ArrayList<Order>();
+			//	orderList.add(cb.asc(b.get("branchName")));
+				
+				// Where
+				Predicate n1 = cb.equal(b.get("status"), "Y");
+				Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+				Predicate n3 =  cb.equal(b.get("taxId"), req.getTaxId() );
+				Predicate n4 =  cb.equal(b.get("companyId"), request.getCompanyId() );
+				Predicate n5 =  cb.equal(b.get("productId"), request.getProductId() );
+				query.where(n1, n2, n3,n4,n5);//.orderBy(orderList);
+	
+				// Get Result
+				TypedQuery<CompanyTaxSetup> result = em.createQuery(query);
+				list = result.getResultList();
+				if( list.size() > 0) {
+					companyRepo.delete(list.get(0));
+					// Amend ID
+					if( list.get(0).getEffectiveDateStart().before(startDate)   ) {
+						String startDatewithoutTime = sdformat.format(startDate) ;
+						String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart()) ;
+						
+						if(startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime) ) {
+							amendId = list.get(0).getAmendId() + 1 ;
+						}
+					}
+				} 
+				
+				
 				mapper.map(req, saveData);
-				saveData.setCompanyId(req.getCompanyId());
+				saveData.setCompanyId(request.getCompanyId());
+				saveData.setProductId(Integer.valueOf(request.getProductId()));
 				saveData.setEffectiveDateStart(effDate);
 				saveData.setEffectiveDateEnd(endDate);
 				saveData.setEntryDate(new Date());
 				saveData.setStatus(req.getStatus());
 				saveData.setAmendId(amendId);
-				saveData.setTaxId(Integer.valueOf(taxId));
+				saveData.setCreatedBy(request.getCreatedBy());
 				saveData.setCalcTypeDesc(calcTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getCalcType()) ).collect(Collectors.toList()).get(0).getItemValue());
-				
 				companyRepo.saveAndFlush(saveData);
 				
+				res.setResponse("Saved Successfully ");
+				res.setSuccessId(taxId);
 				if(list.size() > 0 ) {
 					// Update Old Record
 					CompanyTaxSetup lastRecord = list.get(0) ;
@@ -296,7 +295,8 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 					companyRepo.saveAndFlush(lastRecord);
 				}
 				
-				log.info("Saved Details is ---> " + json.toJson(saveData));
+			}
+			log.info("Saved Details is ---> " + json.toJson(saveData));
 				
 	} catch (Exception e) {
 			e.printStackTrace();
@@ -511,10 +511,12 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 
 			// Select
 			query.select(b);
-
+			
 			// Effective Date Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
 			Root<CompanyTaxSetup> ocpm1 = effectiveDate.from(CompanyTaxSetup.class);
+		
+			// Effective Date Max Filter
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("taxId"), b.get("taxId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
@@ -522,9 +524,10 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1,a2,a3,a4);
 
+			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("taxName")));
+			orderList.add(cb.asc(b.get("taxId")));
 			
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
@@ -539,7 +542,17 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 			// Map
 			res = dozerMapper.map(list.get(0) , CompanyTaxGetRes.class);
 			
-
+			Map<Integer ,List<CompanyTaxSetup>> groupBy = list.stream().collect(Collectors.groupingBy(CompanyTaxSetup :: getTaxId));
+			
+			List<TaxMultiInsertReq> taxDetails = new ArrayList<TaxMultiInsertReq>();
+			for (Integer id : groupBy.keySet() ) {
+				TaxMultiInsertReq tax = new TaxMultiInsertReq();
+				List<CompanyTaxSetup> datas = groupBy.get(id);
+				datas.sort(Comparator.comparing(CompanyTaxSetup :: getEffectiveDateStart).reversed() );
+				dozerMapper.map(datas.get(0), tax);
+				 taxDetails.add(tax);
+			}
+			res.setCompanyTaxDetails(taxDetails);
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info(e.getMessage());

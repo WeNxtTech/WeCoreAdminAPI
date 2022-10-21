@@ -25,10 +25,10 @@ public class IssuerLoginGetRes {
 	@JsonProperty("AgencyCode")
 	private String agencyCode ;
 	
-/*	@JsonProperty("AttachedBranches")
+	@JsonProperty("AttachedBranches")
     private List<String>     getBranches ;
 	
-	@JsonProperty("AttachedCompanies")
+/*	@JsonProperty("AttachedCompanies")
     private List<String>     getCompanies ;
 	
 	@JsonProperty("AttachedRegions")
@@ -36,10 +36,22 @@ public class IssuerLoginGetRes {
 	
 	@JsonProperty("Password")
     private String     password     ; */
+	
+	@JsonProperty("ProductIds")
+    private List<String>     productIds ;
+	
 	@JsonProperty("Createdby")
     private String     createdBy    ;
+	
+	@JsonProperty("InsuranceId")
+    private String     companyId ;
+	
 	@JsonProperty("Status")
     private String     status       ;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+    private Date   effectiveDateStart;
 	
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EntryDate")

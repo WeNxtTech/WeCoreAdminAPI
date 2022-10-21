@@ -110,7 +110,7 @@ public class MenuMasterServiceImpl implements MenuMasterService{
 			// User Menu List 
 			for (MenuMaster menuMaster : otherMenulist) {
 				Menu menu = Menu.builder().title(menuMaster.getMenuName()).link(menuMaster.getMenuUrl()).id(menuMaster.getMenuId().toString()).parent(menuMaster.getParentMenu())
-						.icon(menuMaster.getMenuLogo()).orderby(menuMaster.getDisplayOrder()==null?0:menuMaster.getDisplayOrder().longValue()).build();
+						.icon(menuMaster.getMenuLogo() ).isdesti(false).orderby(menuMaster.getDisplayOrder()==null?0:menuMaster.getDisplayOrder().longValue()).build();
 				userMenus.add(menu);
 			}
 			 List<Menu> collect = userMenus.stream().filter(i-> "99999".equals(i.getParent())).collect(Collectors.toList());
@@ -124,7 +124,7 @@ public class MenuMasterServiceImpl implements MenuMasterService{
 			// Admin Menu List 
 			for (MenuMaster menuMaster : adminMenulist) {
 				Menu menu = Menu.builder().title(menuMaster.getMenuName()).link(menuMaster.getMenuUrl()).id(menuMaster.getMenuId().toString()).parent(menuMaster.getParentMenu())
-						.icon(menuMaster.getMenuLogo()).orderby(menuMaster.getDisplayOrder()==null?0:menuMaster.getDisplayOrder().longValue()).build();
+						.icon(menuMaster.getMenuLogo()).isdesti(false).orderby(menuMaster.getDisplayOrder()==null?0:menuMaster.getDisplayOrder().longValue()).build();
 				adminMenus.add(menu);
 			}
 			List<Menu> collect2 = adminMenus.stream().filter(i-> "99999".equals(i.getParent())).collect(Collectors.toList());

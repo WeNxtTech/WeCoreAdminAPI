@@ -2,11 +2,13 @@ package com.maan.eway.master.res;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.maan.eway.master.req.TaxMultiInsertReq;
 
 import lombok.Data;
 
@@ -15,11 +17,7 @@ public class CompanyTaxGetRes implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    
-    @JsonProperty("TaxId")
-    private String     taxId ;
-
-    
+   
     @JsonProperty("ProductId")
     private String productId ;
 
@@ -38,28 +36,16 @@ public class CompanyTaxGetRes implements Serializable {
     private Date       effectiveDateEnd ;
     
     //--- ENTITY DATA FIELDS 
-    @JsonProperty("TaxName")
-    private String     taxName ;
     
-    @JsonProperty("TaxDesc")
-    private String     taxDesc ;
-
-    @JsonProperty("CalcType")
-    private String     calcType ;
-
+    @JsonProperty("CompanyTaxDetais")
+    private List<TaxMultiInsertReq> companyTaxDetails ; 
     
-    @JsonProperty("Value")
-    private String    value ;
-
     @JsonProperty("CreatedBy")
     private String   createdBy ;
     
     @JsonProperty("Status")
     private String     status ; 
     
-    @JsonProperty("Remarks")
-    private String remarks; 
-	
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EntryDate")
 	private Date entryDate;

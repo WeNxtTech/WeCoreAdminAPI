@@ -473,6 +473,9 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 			
 			save.setOaCode(loginData.getOaCode());
 			save.setAgencyCode(Integer.valueOf(loginData.getAgencyCode()));	
+			save.setAttachedBranch(StringUtils.isBlank(req.getAttachedBranch())? req.getBranchCode() : req.getAttachedBranch() );
+			save.setAttachedCompany(StringUtils.isBlank(req.getAttachedCompany())? req.getCompanyId() : req.getAttachedCompany() );
+			
 			loginBrokerRepo.save(save);
 			
 			

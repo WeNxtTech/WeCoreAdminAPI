@@ -30,5 +30,7 @@ import com.maan.eway.bean.InsuranceCompanyMasterId;
  
 public interface InsuranceCompanyMasterRepository  extends JpaRepository<InsuranceCompanyMaster,InsuranceCompanyMasterId > , JpaSpecificationExecutor<InsuranceCompanyMaster> {
 
+	InsuranceCompanyMaster findByCompanyId(String insuranceId);
+
 
 }

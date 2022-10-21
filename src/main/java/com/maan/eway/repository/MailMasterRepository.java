@@ -30,4 +30,6 @@ import com.maan.eway.bean.MailMasterId;
  
 public interface MailMasterRepository  extends JpaRepository<MailMaster,MailMasterId > , JpaSpecificationExecutor<MailMaster> {
 
+	MailMaster findByCompanyId(String insuranceId);
+
 }

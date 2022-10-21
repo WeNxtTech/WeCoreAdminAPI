@@ -17,6 +17,11 @@ public class SmsGetReq {
 	@JsonProperty("InsuranceId")
 	private String companyId;
 	
+
+	@JsonProperty("MobileNo")
+	private String mobileNo;
+	
+	
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;

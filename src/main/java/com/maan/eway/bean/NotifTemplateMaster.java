@@ -57,6 +57,11 @@ private static final long serialVersionUID = 1L;
     private String     insId ;
 
     @Id
+    @Column(name="SNO", nullable=false)
+    private Integer sno;
+
+    
+    @Id
     @Temporal(TemporalType.DATE)
     @Column(name="EFFECTIVE_DATE_START", nullable=false)
     private Date       effectiveDateStart ;

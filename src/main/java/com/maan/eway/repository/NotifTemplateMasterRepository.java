@@ -13,6 +13,7 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import com.maan.eway.bean.NotifTemplateMaster;
@@ -37,5 +38,8 @@ public interface NotifTemplateMasterRepository  extends JpaRepository<NotifTempl
 			String notificationApplicable);
 
 	List<NotifTemplateMaster> findByInsIdOrderByEntryDateDesc(String companyId);
+
+	List<NotifTemplateMaster> findBySnoAndStatusAndNotificationApplicableAndInsIdAndEffectiveDateStartLessThanEqualOrderByEntryDateDesc(
+			Integer sno, String string, String notificationApplicable, String insuranceId, Date date);
 
 }

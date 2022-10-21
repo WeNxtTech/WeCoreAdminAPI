@@ -1128,13 +1128,13 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 							errorList.add(new Error("05", "Status", "Enter Status Y or N Only In Row No : " + row ));
 						}
 					}
-					if (StringUtils.isBlank(data.getRegulatoryCode())) {
+				/*	if (StringUtils.isBlank(data.getRegulatoryCode())) {
 						errorList.add(new Error("06", "RegulatoryCode", "Please Enter RegulatoryCode In Row No : " + row ));
 					}
 					else if(data.getRegulatoryCode().length()>20) {
 						errorList.add(new Error("06", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters In Row No : " + row ));
-						}
-					}
+						} */
+					} 
 			}
 		} catch (Exception e) {
 			log.error(e);

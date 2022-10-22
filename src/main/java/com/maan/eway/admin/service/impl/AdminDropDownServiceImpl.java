@@ -77,7 +77,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 		public List<SubUserTypeDropDownRes> getSubUserType(SubUserTypeReq req) {
 			List<SubUserTypeDropDownRes> resList = new ArrayList<SubUserTypeDropDownRes>();
 			try {
-				List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc(req.getUserType(), "Y");
+				List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByParam2Asc(req.getUserType(), "Y");
 
 				LoginMaster loginData = null ;
 				if(StringUtils.isNotBlank(req.getLoginId()) ) {

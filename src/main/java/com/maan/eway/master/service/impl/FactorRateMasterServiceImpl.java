@@ -335,10 +335,10 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					Double param6Value = StringUtils.isNotBlank(data.getParam6())  && data.getParam6().matches("[0-9.]+") ? Double.valueOf(data.getParam6()) : 0D;
 					Double param7Value = StringUtils.isNotBlank(data.getParam7())  && data.getParam7().matches("[0-9.]+") ? Double.valueOf(data.getParam7()) : 0D;
 					Double param8Value = StringUtils.isNotBlank(data.getParam8())  && data.getParam8().matches("[0-9.]+") ? Double.valueOf(data.getParam8()) : 0D;
-					String param9Value = data.getParam9() ;
-					String param10Value = data.getParam10() ;
-					String param11Value = data.getParam11() ;
-					String param12Value = data.getParam12();
+					String param9Value = StringUtils.isNotBlank(data.getParam9()) ? "" :data.getParam9() ;
+					String param10Value =StringUtils.isNotBlank( data.getParam10()) ? "" :data.getParam10()  ;
+					String param11Value = StringUtils.isNotBlank(data.getParam11()) ? "" :data.getParam11() ;
+					String param12Value = StringUtils.isNotBlank(data.getParam12())  ? "" :data.getParam12() ;
 					
 					boolean param1Dup = false ;
 					boolean param2Dup = false ;
@@ -437,7 +437,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					List<DuplicateParamCheckingReq> filterDupParams = new ArrayList<DuplicateParamCheckingReq>();
 					if(  param1Dup==true  && param2Dup==true && param3Dup==true && param4Dup==true && param5Dup==true &&
 							param6Dup==true && param7Dup==true && param8Dup==true  ) {
-						filterDupParams = duplicateParams.stream().filter( o -> o.getParam9().equalsIgnoreCase(param9Value) && o.getParam10().equalsIgnoreCase(param10Value) && 
+						filterDupParams = duplicateParams.stream().filter( o ->   o.getParam9().equalsIgnoreCase(param9Value) && o.getParam10().equalsIgnoreCase(param10Value) && 
 								o.getParam11().equalsIgnoreCase(param11Value) && o.getParam12().equalsIgnoreCase(param12Value) ).collect(Collectors.toList());
 						
 					}		

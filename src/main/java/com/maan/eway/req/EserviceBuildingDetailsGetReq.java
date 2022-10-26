@@ -13,7 +13,7 @@ public class EserviceBuildingDetailsGetReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
     
-	@JsonProperty("Requestreferenceno")
+	@JsonProperty("CustomerRequestReferenceNo")
     private String     requestReferenceNo ;
     
 

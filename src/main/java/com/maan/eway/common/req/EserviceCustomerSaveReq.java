@@ -18,15 +18,10 @@ public class EserviceCustomerSaveReq {
 	@JsonProperty("PolicyHolderTypeid")
 	private String policyHolderTypeid;
 
-	@JsonProperty("IdType")
-	private String idType;
-
 	@JsonProperty("IdNumber")
 	private String idNumber;
 
-	@JsonProperty("Age")
-	private String age;
-
+	
 	@JsonProperty("Gender")
 	private String gender;
 
@@ -54,20 +49,13 @@ public class EserviceCustomerSaveReq {
 	@JsonProperty("Title")
 	private String title;
 
-	@JsonProperty("TitleDesc")
-	private String titleDesc;
-
+	
 	@JsonProperty("Clientstatus")
 	private String clientStatus;
 
-	@JsonProperty("ClientStatusDesc")
-	private String clientStatusDesc;
 
 	@JsonProperty("PolicyHolderType")
 	private String policyHolderType;
-
-	@JsonProperty("IdTypeDesc")
-	private String idTypeDesc;
 
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("DobOrRegDate")
@@ -78,6 +66,24 @@ public class EserviceCustomerSaveReq {
 
 	@JsonProperty("Placeofbirth")
 	private String placeOfBirth;
+/*
+	@JsonProperty("IdTypeDesc")
+	private String idTypeDesc;
+
+	@JsonProperty("IdType")
+	private String idType;
+
+
+	@JsonProperty("Age")
+	private String age;
+
+
+	@JsonProperty("TitleDesc")
+	private String titleDesc;
+
+	
+	@JsonProperty("ClientStatusDesc")
+	private String clientStatusDesc;
 
 	@JsonProperty("GenderDesc")
 	private String genderDesc;
@@ -90,7 +96,7 @@ public class EserviceCustomerSaveReq {
 
 	@JsonProperty("Vrngst")
 	private String vrnGst;
-
+*/
 	@JsonProperty("StateCode")
 	private String stateCode;
 

@@ -33,6 +33,44 @@ public class DropDownController {
 	@Autowired
 	private DropDownService dropDownService;
 
+	@GetMapping("/insurancetype")
+	@ApiOperation(value = "This method is to Cover Note Drop Down")
+	public ResponseEntity<CommonRes> insuranceType() {
+		CommonRes data = new CommonRes();
+
+		List<DropDownRes> res = dropDownService.insuranceType();
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
+	
+	@GetMapping("/insuranceclass")
+	@ApiOperation(value = "This method is to Cover Note Drop Down")
+	public ResponseEntity<CommonRes> insuranceClass() {
+		CommonRes data = new CommonRes();
+
+		List<DropDownRes> res = dropDownService.insuranceClass();
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
+	
 	@GetMapping("/covernotetype")
 	@ApiOperation(value = "This method is to Cover Note Drop Down")
 	public ResponseEntity<CommonRes> coverNoteType() {

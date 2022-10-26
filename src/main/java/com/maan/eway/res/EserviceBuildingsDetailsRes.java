@@ -39,7 +39,7 @@ public class EserviceBuildingsDetailsRes implements Serializable {
     //----------------------------------------------------------------------
     // ENTITY PRIMARY KEY 
     //----------------------------------------------------------------------
-	@JsonProperty("RequestReferenceNo")
+	@JsonProperty("CustomerRequestReferenceNo")
     private String     requestReferenceNo ;
 	@JsonProperty("CustomerId")
     private String    customerId   ;

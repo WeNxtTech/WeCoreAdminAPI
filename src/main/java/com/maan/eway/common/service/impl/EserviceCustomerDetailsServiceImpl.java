@@ -83,9 +83,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				errorList.add(new Error("08", "Policy Holder Type Id", "Please Select Policy Holder Type Id"));
 			}
 			
-			if (StringUtils.isBlank(req.getIdType())) {
-				errorList.add(new Error("09", "IdType", "Please Select IdType"));
-			}
+//			if (StringUtils.isBlank(req.getIdType())) {
+//				errorList.add(new Error("09", "IdType", "Please Select IdType"));
+//			}
 
 			if (StringUtils.isBlank(req.getIdNumber())) {
 				errorList.add(new Error("11", "IdNumber", "Please Enter IdNumber"));
@@ -111,10 +111,10 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			if (StringUtils.isBlank(req.getBusinessType())) {
 				errorList.add(new Error("16", "BusinessType", "Please Select BusinessType"));
 			}
-
-			if (req.getVrnGst().length() > 20) {
-				errorList.add(new Error("17", "VrnGst", "Please Enter VrnGst within 20 Characters"));
-			}
+//
+//			if (req.getVrnGst().length() > 20) {
+//				errorList.add(new Error("17", "VrnGst", "Please Enter VrnGst within 20 Characters"));
+//			}
 			if (StringUtils.isBlank(req.getRegionCode())) {
 				errorList.add(new Error("18", "RegionCode", "Please Enter RegionCode"));
 			} else if (req.getRegionCode().length() > 20) {
@@ -305,6 +305,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			saveData.setTitleDesc(title.getItemValue());
 			saveData.setLanguageDesc(language.getItemValue());
 			saveData.setAge(age);
+			saveData.setIdType(req.getPolicyHolderTypeid());
 			repository.save(saveData);
 			
 			// Response

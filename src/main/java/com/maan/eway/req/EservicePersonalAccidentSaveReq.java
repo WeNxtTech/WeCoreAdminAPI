@@ -32,7 +32,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @ToString
 public class EservicePersonalAccidentSaveReq {
 
-	@JsonProperty("RequestReferenceNo")
+	@JsonProperty("CustomerRequestReferenceNo")
     private String     requestReferenceNo ;
 	@JsonProperty("SectionId")
     private Integer    sectionId    ;

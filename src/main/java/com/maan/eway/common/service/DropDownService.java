@@ -85,4 +85,8 @@ public interface DropDownService {
 
 	List<DropDownRes> getNcdDetails(NcdDetailsGetReq req);
 
+	List<DropDownRes> insuranceType();
+
+	List<DropDownRes> insuranceClass();
+
 }

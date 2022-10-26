@@ -34,7 +34,7 @@ public class EserviceAllRisksSaveReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-	@JsonProperty("RequestReferenceNo")
+	@JsonProperty("CustomerRequestReferenceNo")
     private String     requestReferenceNo ;
 	
 	@JsonProperty("SectionId")

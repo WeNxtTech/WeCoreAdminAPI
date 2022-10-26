@@ -18,7 +18,7 @@ public class RiskDetailsRes {
 	@JsonProperty("CustomerId")
     private String     customerId ;
 	
-	@JsonProperty("RequestReferenceNo")
+	@JsonProperty("CustomerRequestReferenceNo")
     private String     requestReferenceNo ;
 	
 	@JsonProperty("InsuranceId")

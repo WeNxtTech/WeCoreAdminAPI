@@ -89,4 +89,6 @@ public interface DropDownService {
 
 	List<DropDownRes> insuranceClass();
 
+	List<DropDownRes> title();
+
 }

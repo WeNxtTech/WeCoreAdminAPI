@@ -91,4 +91,6 @@ public interface DropDownService {
 
 	List<DropDownRes> title();
 
+	List<DropDownRes> borrowerType();
+
 }

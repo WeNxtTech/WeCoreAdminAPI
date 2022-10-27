@@ -774,6 +774,12 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 				errorList.add(new Error("03", "SubCoverDesc", "Please Enter Sub Cover Desc"));
 			}
 
+			if (StringUtils.isNotBlank(req.getDependentCoverYn()) && req.getDependentCoverYn().equalsIgnoreCase("Y") ) {
+				if (StringUtils.isBlank(req.getDependentCoverId()) ) {
+					errorList.add(new Error("08", "Dependent Cover Id", "Please Select Dependent Cover Id"));
+				}
+			}
+			
 			// Date Validation
 			Calendar cal = new GregorianCalendar();
 			Date today = new Date();
@@ -1071,7 +1077,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			saveData.setEntryDate(new Date());
 			saveData.setAmendId(amendId);
 			saveData.setRatingId(Integer.valueOf(coverId));
-
+			saveData.setDependentCoverYn(StringUtils.isNotBlank(req.getDependentCoverYn()) ? req.getDependentCoverYn() : "N" );
 			saveData.setSubCoverYn(subCoverYn);
 			// Amount Details
 			if (req.getCalcType().equalsIgnoreCase("F")) {
@@ -1168,6 +1174,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 				saveData.setTaxAmount(req.getTaxAmount()==null ? 0D : Double.valueOf(req.getTaxAmount()));
 				saveData.setTaxCode(req.getTaxCode());
 			}
+			saveData.setDependentCoverYn(StringUtils.isNotBlank(req.getDependentCoverYn()) ? req.getDependentCoverYn() : "N" );
 			repo.saveAndFlush(saveData);
 
 			// Update Old Record

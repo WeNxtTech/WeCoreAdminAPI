@@ -117,4 +117,9 @@ public class CoverSubCoverGetRes {
 		@JsonProperty("Remarks")
 		private String remarks;
 		
+		@JsonProperty("DependentCoverYn")
+	    private String dependentCoverYn;
+	    
+		@JsonProperty("DependentCoverId")
+	    private String dependentCoverId;
 }

@@ -182,7 +182,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="DISCOUNT_COVER_ID")
     private Integer discountCoverId;
     //--- ENTITY LINKS ( RELATIONSHIP )
-
+    @Column(name="DEPENDENT_COVER_YN")
+    private String dependentCoverYn;
+    
+    @Column(name="DEPENDENT_COVER_ID")
+    private Integer dependentCoverId;
+    
 
 }
 

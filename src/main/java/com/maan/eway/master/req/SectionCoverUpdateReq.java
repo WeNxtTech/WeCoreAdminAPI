@@ -108,4 +108,10 @@ public class SectionCoverUpdateReq {
 
 	@JsonProperty("DiscountCoverId")
 	private String discountCoverId;
+	
+	@JsonProperty("DependentCoverYn")
+    private String dependentCoverYn;
+    
+	@JsonProperty("DependentCoverId")
+    private String dependentCoverId;
 }

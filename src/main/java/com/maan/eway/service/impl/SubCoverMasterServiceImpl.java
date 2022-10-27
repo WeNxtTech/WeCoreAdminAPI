@@ -104,6 +104,12 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 			}
 		}
 
+		if (StringUtils.isNotBlank(req.getDependentCoverYn()) && req.getDependentCoverYn().equalsIgnoreCase("Y") ) {
+			if (StringUtils.isBlank(req.getDependentCoverId()) ) {
+				errorList.add(new Error("08", "Dependent Cover Id", "Please Select Dependent Cover Id"));
+			}
+		}
+		
 		if (StringUtils.isBlank(req.getSubCoverDesc())) {
 			errorList.add(new Error("03", "SubCoverDesc", "Please Enter Sub Cover Desc"));
 		}
@@ -459,6 +465,8 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 				saveData.setTaxAmount(req.getTaxAmount()==null ? 0D : Double.valueOf(req.getTaxAmount()));
 				saveData.setTaxCode(req.getTaxCode());
 			}
+
+			saveData.setDependentCoverYn(StringUtils.isNotBlank(req.getDependentCoverYn()) ? req.getDependentCoverYn() : "N" );
 			repo.saveAndFlush(saveData);
 			
 			if (list.size() == 1 && list.get(0).getCoverId() ==   list.get(0).getSubCoverId() ) {

@@ -90,6 +90,13 @@ public class SubCoverMasterSaveReq implements Serializable {
 	
 	@JsonProperty("TaxExcemptionType")
 	private String taxExcemptionType;
+	
+	@JsonProperty("DependentCoverYn")
+    private String dependentCoverYn;
+    
+	@JsonProperty("DependentCoverId")
+    private String dependentCoverId;
+	
  	@JsonProperty("GridDetails")
  	private List<OfsGridSaveReq> gridDetails;
 }

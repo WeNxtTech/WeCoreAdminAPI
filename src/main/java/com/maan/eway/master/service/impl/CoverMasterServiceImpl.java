@@ -157,6 +157,11 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 				errorList.add(new Error("08", "SubCoverYn", "Enter SubCoverYn Y or N Only"));
 			}
 			
+			if (StringUtils.isNotBlank(req.getDependentCoverYn()) && req.getDependentCoverYn().equalsIgnoreCase("Y") ) {
+				if (StringUtils.isBlank(req.getDependentCoverId()) ) {
+					errorList.add(new Error("08", "Dependent Cover Id", "Please Select Dependent Cover Id"));
+				}
+			}
 			
 			if (StringUtils.isBlank(req.getRemarks())) {
 				errorList.add(new Error("09", "Remarks", "Please Enter Remarks"));
@@ -447,7 +452,7 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 						saveCover.setStatus(req.getStatus());
 						saveCover.setRemarks(req.getRemarks());
 						saveCover.setSubCoverYn(req.getSubCoverYn());
-						
+						saveCover.setDependentCoverYn(StringUtils.isNotBlank(req.getDependentCoverYn()) ? req.getDependentCoverYn() : "N" );
 						repo.saveAndFlush(saveCover);
 						
 						// Update Old Record 
@@ -474,6 +479,7 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 					saveCover.setStatus(req.getStatus());
 					saveCover.setRemarks(req.getRemarks());
 					saveCover.setSubCoverYn(req.getSubCoverYn());
+					saveCover.setDependentCoverYn(StringUtils.isNotBlank(req.getDependentCoverYn()) ? req.getDependentCoverYn() : "N" );
 					repo.saveAndFlush(saveCover);
 					
 				}
@@ -501,7 +507,7 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 				saveData.setAmendId(amendId);
 				saveData.setRemarks(req.getRemarks());
 				saveData.setRatingId(Integer.valueOf(coverId));	
-			
+				saveData.setDependentCoverYn(StringUtils.isNotBlank(req.getDependentCoverYn()) ? req.getDependentCoverYn() : "N" );
 				saveData.setSubCoverYn(subCoverYn);
 				// Amount Details
 				if(req.getCalcType().equalsIgnoreCase("F")  ) {

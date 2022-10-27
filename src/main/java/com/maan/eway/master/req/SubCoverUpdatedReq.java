@@ -101,4 +101,10 @@ public class SubCoverUpdatedReq {
 		
 		@JsonProperty("TaxExcemptionType")
 		private String taxExcemptionType;
+		
+		@JsonProperty("DependentCoverYn")
+	    private String dependentCoverYn;
+	    
+		@JsonProperty("DependentCoverId")
+	    private String dependentCoverId;
 }

@@ -924,6 +924,12 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				
 			}
 			
+			if (StringUtils.isNotBlank(req.getDependentCoverYn()) && req.getDependentCoverYn().equalsIgnoreCase("Y") ) {
+				if (StringUtils.isBlank(req.getDependentCoverId()) ) {
+					errorList.add(new Error("08", "Dependent Cover Id", "Please Select Dependent Cover Id"));
+				}
+			}
+			
 			if (StringUtils.isBlank(req.getSubCoverYn())) {
 				errorList.add(new Error("08", "SubCoverYn", "Please Enter SubCoverYn"));
 			} else if (req.getSubCoverYn().length() > 1) {
@@ -1362,7 +1368,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 						saveCover.setAmendId(amendId);
 						saveCover.setStatus(req.getStatus());
 						saveCover.setSubCoverYn(req.getSubCoverYn());
-						
+						saveCover.setDependentCoverYn(StringUtils.isNotBlank(req.getDependentCoverYn()) ? req.getDependentCoverYn() : "N" );
 						repo.saveAndFlush(saveCover);
 						
 						// Update Old Record 
@@ -1392,6 +1398,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 					saveCover.setAmendId(amendId);
 					saveCover.setStatus(req.getStatus());
 					saveCover.setSubCoverYn(req.getSubCoverYn());
+					saveCover.setDependentCoverYn(StringUtils.isNotBlank(req.getDependentCoverYn()) ? req.getDependentCoverYn() : "N" );
 					repo.saveAndFlush(saveCover);
 					
 				}
@@ -1419,7 +1426,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				saveData.setCoverName(req.getCoverName());
 				saveData.setCoverDesc(req.getCoverDesc());
 				saveData.setToolTip(req.getToolTip());
-				
+				saveData.setDependentCoverYn(StringUtils.isNotBlank(req.getDependentCoverYn()) ? req.getDependentCoverYn() : "N" );
 				saveData.setSubCoverYn(subCoverYn);
 				// Amount Details
 				if(req.getCalcType().equalsIgnoreCase("F")  ) {

@@ -26,9 +26,6 @@ public class ExchangeMasterSaveReq {
 	@JsonProperty("ExchangeRate")
 	private String exchangeRate;
 	
-	@JsonProperty("CountryId")
-	private String countryId;
-	
 	@JsonProperty("CurrencyId")
 	private String currencyId;
 	
@@ -45,4 +42,8 @@ public class ExchangeMasterSaveReq {
 	
 	@JsonProperty("Remarks")
 	private String remarks;
+	
+	@JsonProperty("InsuranceId")
+	private String companyId;
+	
 }

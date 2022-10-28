@@ -58,8 +58,46 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 	private Logger log = LogManager.getLogger(PolicyTypeMasterServiceImpl.class);
 	@Override
 	public List<Error> validatePolicyType(PolicyTypeMasterSaveReq req) {
-		// TODO Auto-generated method stub
-		return null;
+		List<Error> error = new ArrayList<Error>();
+		try {
+			if (StringUtils.isBlank(req.getPolicyTypeName())) {
+				error.add(new Error("01", "Policy Type Name", "Please Enter Policy Type Name "));
+			} else if (req.getPolicyTypeName().length() > 100) {
+				error.add(new Error("01", "Policy Type Name", "Please Enter Policy Type Name within 100 Characters"));
+			} 
+			// Date Validation
+			Calendar cal = new GregorianCalendar();
+			Date today = new Date();
+			cal.setTime(today);
+			cal.add(Calendar.DAY_OF_MONTH, -1);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 50);
+			today = cal.getTime();
+			if (req.getEffectiveDateStart() == null) {
+				error.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start "));
+
+			} else if (req.getEffectiveDateStart().before(today)) {
+				error
+						.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			} else if (req.getEffectiveDateEnd() == null) {
+				error.add(new Error("03", "EffectiveDateEnd", "Please Enter Effective Date End "));
+
+			} else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart())
+					|| req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
+				error.add(new Error("03", "EffectiveDateStart",
+						"Please Enter Effective Date End  is After Effective Date Start"));
+
+		}
+			if (req.getRemarks().length() > 100) {
+				error.add(new Error("04", "Remarks", "Please Enter Remarks within 100 Characters"));
+			} 	
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details"+e.getMessage());;
+			return null;
+		}
+		return error;
 	}
 
 	@Override

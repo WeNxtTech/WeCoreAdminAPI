@@ -44,4 +44,6 @@ public class ExchangeMasterGetRes {
 	@JsonProperty("EntryDate")
 	private Date entryDate;
 	
+	@JsonProperty("InsuranceId")
+	private String companyId;
 }

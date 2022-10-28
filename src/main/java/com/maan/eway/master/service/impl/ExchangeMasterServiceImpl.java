@@ -101,6 +101,9 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 			if (StringUtils.isBlank(req.getCountryId())) {
 				errorList.add(new Error("08", "CountryId", "Please Enter CountryId"));
 			}
+			if (StringUtils.isBlank(req.getCompanyId())) {
+				errorList.add(new Error("09", "CompanyId", "Please Enter CompanyId"));
+			}
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
@@ -157,15 +160,18 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 				Predicate a1 = cb.equal(ocpm1.get("exchangeId"), b.get("exchangeId"));
 				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
 				Predicate a3 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
-				effectiveDate.where(a1, a2, a3);
+				Predicate a4 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+
+				effectiveDate.where(a1, a2, a3,a4);
 
 				// Where
 				Predicate n1 = cb.equal(b.get("status"), "Y");
 				Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 				Predicate n3 = cb.equal(b.get("exchangeId"), req.getExchangeId());
 				Predicate n4 = cb.equal(b.get("countryId"), req.getCountryId());
+				Predicate n5 = cb.equal(b.get("companyId"), req.getCompanyId());
 
-				query.where(n1, n2, n3, n4);
+				query.where(n1, n2, n3, n4,n5);
 
 				// Get Result
 				TypedQuery<ExchangeMaster> result = em.createQuery(query);
@@ -281,8 +287,9 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 			Predicate a1 = cb.equal(ocpm1.get("exchangeId"), b.get("exchangeId"));
 			Predicate a2 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
 			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a4 = cb.equal(b.get("companyId"),b.get("companyId"));
 
-			effectiveDate.where(a1, a2, a3);
+			effectiveDate.where(a1, a2, a3,a4);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();

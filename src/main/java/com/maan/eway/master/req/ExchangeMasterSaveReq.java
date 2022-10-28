@@ -45,4 +45,8 @@ public class ExchangeMasterSaveReq {
 	
 	@JsonProperty("Remarks")
 	private String remarks;
+	
+	@JsonProperty("InsuranceId")
+	private String companyId;
+	
 }

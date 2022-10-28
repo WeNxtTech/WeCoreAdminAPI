@@ -32,6 +32,7 @@ import com.maan.eway.master.req.CityDropDownReq;
 import com.maan.eway.master.req.CountryChangeStatusReq;
 import com.maan.eway.master.req.RegionDropDownReq;
 import com.maan.eway.master.req.StateDropDownReq;
+import com.maan.eway.master.service.impl.PolicyTypeMasterServiceImpl;
 import com.maan.eway.repository.CompanyCityMasterRepository;
 import com.maan.eway.repository.CompanyRegionMasterRepository;
 import com.maan.eway.repository.CompanyStateMasterRepository;
@@ -63,6 +64,9 @@ public class DropDownServiceImpl  implements DropDownService{
 	
 	@Autowired
 	private CompanyCityMasterRepository cityrepo;
+	
+	@Autowired
+	private PolicyTypeMasterServiceImpl service;
 	
 	// Cover Note Type Drop Down
 
@@ -1017,8 +1021,9 @@ public class DropDownServiceImpl  implements DropDownService{
 
 	@Override
 	public List<DropDownRes> insuranceType() {
-		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		/*	List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
+
 			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("INSURANCE_TYPE", "Y");
 
 			for (ListItemValue data : getList) {
@@ -1033,6 +1038,10 @@ public class DropDownServiceImpl  implements DropDownService{
 			return null;
 		}
 		return resList;
+		*/
+	
+		return service.getPolicyTypeMasterDropdown();
+
 	}
 
 

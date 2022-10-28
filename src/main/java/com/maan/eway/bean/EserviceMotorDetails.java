@@ -74,7 +74,7 @@ private static final long serialVersionUID = 1L;
     private String     windScreenCoverRequired ;
 
     @Column(name="MANUFACTURE_YEAR", length=10)
-    private String     manufactureYear ;
+    private Integer     manufactureYear ;
 
     @Column(name="INSURANCE_TYPE", length=1)
     private String     insuranceType ;

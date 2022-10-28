@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -95,9 +94,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="Fuel_Type", nullable=false, length=10)
     private String     fuelType ;
 
-    @Temporal(TemporalType.DATE)
-    @Column(name="Manufacture_Year", nullable=false)
-    private Date       manufactureYear ;
+    @Column(name="MANUFACTURE_YEAR", length=10)
+    private Integer     manufactureYear ;
 
     @Column(name="Manufacture_age", nullable=false)
     private Integer    manufactureAge ;

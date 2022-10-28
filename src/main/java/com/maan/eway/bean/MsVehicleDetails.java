@@ -159,7 +159,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="TPD_INCREASE_LIMIT", nullable=false)
     private Double     tpdIncreaseLimit ;
 
-    
+
+    @Column(name="MOTOR_USAGE")
+    private String motorUsage;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 

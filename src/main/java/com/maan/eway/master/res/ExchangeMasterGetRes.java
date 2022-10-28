@@ -19,9 +19,6 @@ public class ExchangeMasterGetRes {
 	@JsonProperty("ExchangeRate")
 	private String exchangeRate;
 	
-	@JsonProperty("CountryId")
-	private String countryId;
-	
 	@JsonProperty("CurrencyId")
 	private String currencyId;
 	

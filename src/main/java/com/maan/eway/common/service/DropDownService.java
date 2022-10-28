@@ -93,4 +93,6 @@ public interface DropDownService {
 
 	List<DropDownRes> borrowerType();
 
+	List<DropDownRes> cityLimit();
+
 }

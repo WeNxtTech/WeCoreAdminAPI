@@ -69,8 +69,8 @@ public class ExchangeMaster implements Serializable {
 	@Column(name = "EXCHANGE_RATE")
 	private Double exchangeRate;
 
-	@Column(name = "COUNTRY_ID", length = 20)
-	private String countryId;
+	@Column(name = "COMPANY_ID", length = 20)
+	private String companyId;
 
 	@Column(name = "CURRENCY_ID", length = 20)
 	private String currencyId;

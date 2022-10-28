@@ -6,6 +6,7 @@ package com.maan.eway.master.controller;
 */
 
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.CurrencyDropDownReq;
 import com.maan.eway.master.req.CurrencyMasterGetAllReq;
 import com.maan.eway.master.req.CurrencyMasterGetReq;
 import com.maan.eway.master.req.CurrencyMasterSaveReq;
@@ -13,6 +14,7 @@ import com.maan.eway.master.res.CurrencyMasterRes;
 import com.maan.eway.master.service.CurrencyMasterService;
 import com.maan.eway.bean.CurrencyMaster;
 import com.maan.eway.res.CommonRes;
+import com.maan.eway.res.CuurencyDropDownRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -151,15 +153,15 @@ public class CurrencyMasterController {
 	}
 		
 		// Currency Master Drop Down Type
-		@GetMapping("/dropdown/currency")
+		@PostMapping("/dropdown/currency")
 		@ApiOperation(value = "This method is get Currency Master Drop Down")
 
-		public ResponseEntity<CommonRes> getCurrencyMasterDropdown() {
+		public ResponseEntity<CommonRes> getCurrencyMasterDropdown(@RequestBody CurrencyDropDownReq req  ) {
 
 			CommonRes data = new CommonRes();
 
 			// Save
-			List<DropDownRes> res = currencyService.getCurrencyMasterDropdown();
+			List<CuurencyDropDownRes> res = currencyService.getCurrencyMasterDropdown(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());

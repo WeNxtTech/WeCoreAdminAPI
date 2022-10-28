@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -34,7 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-
+import com.maan.eway.master.req.CurrencyDropDownReq;
 import com.maan.eway.master.req.CurrencyMasterGetAllReq;
 import com.maan.eway.master.req.CurrencyMasterGetReq;
 import com.maan.eway.master.req.CurrencyMasterSaveReq;
@@ -42,9 +43,11 @@ import com.maan.eway.master.res.CurrencyMasterRes;
 import com.maan.eway.master.service.CurrencyMasterService;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.CurrencyMaster;
+import com.maan.eway.bean.ExchangeMaster;
 import com.maan.eway.bean.StateMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.CurrencyMasterRepository;
+import com.maan.eway.res.CuurencyDropDownRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.impl.BasicValidationService;
@@ -490,26 +493,60 @@ public CurrencyMasterRes getByCurrencyId(CurrencyMasterGetReq req) {
 
 //**********************************************************DROPDOWN********************************************************************\\
 @Override
-public List<DropDownRes> getCurrencyMasterDropdown() {
-	List<DropDownRes> resList = new ArrayList<DropDownRes>();
+public List<CuurencyDropDownRes> getCurrencyMasterDropdown( CurrencyDropDownReq req ) {
+	List<CuurencyDropDownRes> resList = new ArrayList<CuurencyDropDownRes>();
 	try {
-		Date today  = new Date();
-		Calendar cal = new GregorianCalendar(); 
+		Date today = new Date();
+		Calendar cal = new GregorianCalendar();
 		cal.setTime(today);
 		cal.set(Calendar.HOUR_OF_DAY, 23);
 		cal.set(Calendar.MINUTE, 1);
-		today   = cal.getTime();
+		today = cal.getTime();
+		cal.set(Calendar.HOUR_OF_DAY, 1);
+		cal.set(Calendar.MINUTE, 1);
+		Date todayEnd = cal.getTime();
 		
 		// Criteria
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<CurrencyMaster> query = cb.createQuery(CurrencyMaster.class);
-		List<CurrencyMaster> list = new ArrayList<CurrencyMaster>();
+		CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+		List<Tuple> list = new ArrayList<Tuple>();
 		
 		// Find All
 		Root<CurrencyMaster>    c = query.from(CurrencyMaster.class);		
 		
+		Subquery<Long> exchangeRate = query.subquery(Long.class);
+		Root<ExchangeMaster> ex = exchangeRate.from(ExchangeMaster.class);
+		// Exchange Effective Date Start Max Filter
+		Subquery<Long> effectiveDate3 = query.subquery(Long.class);
+		Root<ExchangeMaster> ocpm3 = effectiveDate3.from(ExchangeMaster.class);
+		effectiveDate3.select(cb.max(ocpm3.get("effectiveDateStart")));
+		Predicate a1 = cb.equal(ex.get("exchangeId"),ocpm3.get("exchangeId"));
+		Predicate a2 = cb.equal(ex.get("currencyId"),ocpm3.get("currencyId"));
+		Predicate a15 = cb.equal(ex.get("companyId"),ocpm3.get("companyId"));
+		Predicate a3 = cb.lessThanOrEqualTo(ocpm3.get("effectiveDateStart"), today);
+		effectiveDate3.where(a1,a2,a3,a15);
+		
+		// Exhange Effective Date End Max Filter
+		Subquery<Long> effectiveDate4 = query.subquery(Long.class);
+		Root<ExchangeMaster> ocpm4 = effectiveDate4.from(ExchangeMaster.class);
+		effectiveDate4.select(cb.max(ocpm4.get("effectiveDateEnd")));
+		Predicate a4 = cb.equal(ex.get("exchangeId"),ocpm4.get("exchangeId"));
+		Predicate a5 = cb.equal(ex.get("currencyId"),ocpm4.get("currencyId"));
+		Predicate a16 = cb.equal(ex.get("companyId"),ocpm4.get("companyId"));
+		Predicate a6 = cb.greaterThanOrEqualTo(ocpm4.get("effectiveDateEnd"), todayEnd);
+		effectiveDate4.where(a4,a5,a6,a16);
+		
+		// Exhange Rate Sub Query
+		exchangeRate.select(ex.get("exchangeRate"));
+		Predicate a7 = cb.equal(ex.get("currencyId"),c.get("currencyId"));
+		Predicate a8 = cb.equal(ex.get("status"),"Y");
+		Predicate a9 = cb.equal(ex.get("effectiveDateStart"), effectiveDate3);
+		Predicate a10 = cb.equal(ex.get("effectiveDateEnd"), effectiveDate4);
+		Predicate a17 = cb.equal(ex.get("companyId"),req.getInsuranceId());
+		exchangeRate.where(a7,a8,a9,a10,a17);
+
 		// Select
-		query.select(c );
+		query.multiselect(c.get("currencyId").alias("currencyId") ,c.get("currencyName").alias("currencyName") , exchangeRate.alias("exchangeRate"));
 		
 	
 		// Order By
@@ -520,25 +557,35 @@ public List<DropDownRes> getCurrencyMasterDropdown() {
 		Subquery<Long> effectiveDate = query.subquery(Long.class);
 		Root<CurrencyMaster> ocpm1 = effectiveDate.from(CurrencyMaster.class);
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-		javax.persistence.criteria.Predicate a1 = cb.equal(c.get("currencyId"),ocpm1.get("currencyId") );
-		javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-		effectiveDate.where(a1,a2);
+		javax.persistence.criteria.Predicate a11 = cb.equal(c.get("currencyId"),ocpm1.get("currencyId") );
+		javax.persistence.criteria.Predicate a12 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+		effectiveDate.where(a11,a12);
+		
+		// Effective Date Max Filter
+		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+		Root<CurrencyMaster> ocpm2 = effectiveDate2.from(CurrencyMaster.class);
+		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+		javax.persistence.criteria.Predicate a13 = cb.equal(c.get("currencyId"),ocpm2.get("currencyId") );
+		javax.persistence.criteria.Predicate a14 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+		effectiveDate2.where(a13,a14);
 		
 	    // Where	
 		javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
 		javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+		javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 		
-		query.where(n1,n2).orderBy(orderList);
+		query.where(n1,n2,n3).orderBy(orderList);
 		
 		// Get Result
-		TypedQuery<CurrencyMaster> result = em.createQuery(query);			
+		TypedQuery<Tuple> result = em.createQuery(query);			
 		list =  result.getResultList();  
 		
-		for(CurrencyMaster data : list ) {
+		for(Tuple data : list ) {
 			// Response
-			DropDownRes res = new DropDownRes();
-			res.setCode(data.getCurrencyId().toString());
-			res.setCodeDesc(data.getCurrencyName());
+			CuurencyDropDownRes res = new CuurencyDropDownRes();
+			res.setCode(data.get("currencyId")==null?"" :data.get("currencyId").toString()  );
+			res.setCodeDesc(data.get("currencyName")==null?"" :data.get("currencyName").toString()  );
+			res.setExchangeRate(data.get("exchangeRate")==null?"0" : data.get("exchangeRate").toString() );
 			resList.add(res);
 		}		
 	} catch (Exception e) {

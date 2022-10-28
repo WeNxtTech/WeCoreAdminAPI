@@ -369,7 +369,7 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 
 				res = mapper.map(data, ExchangeMasterGetRes.class);
 				res.setExchangeId(data.getExchangeId().toString());
-				res.setCountryId(data.getCountryId());
+				res.setCountryId(data.getCompanyId());
 				res.setCurrencyId(data.getCurrencyId());
 				res.setExchangeRate(data.getExchangeRate().toString());
 				;

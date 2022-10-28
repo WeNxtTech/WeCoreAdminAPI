@@ -33,6 +33,7 @@ public class DropDownController {
 	@Autowired
 	private DropDownService dropDownService;
 
+
 	@GetMapping("/insurancetype")
 	@ApiOperation(value = "This method is to Cover Note Drop Down")
 	public ResponseEntity<CommonRes> insuranceType() {
@@ -52,6 +53,24 @@ public class DropDownController {
 
 	}
 	
+	@GetMapping("/citylimit")
+	@ApiOperation(value = "This method is to Cover Note Drop Down")
+	public ResponseEntity<CommonRes> cityLimit() {
+		CommonRes data = new CommonRes();
+
+		List<DropDownRes> res = dropDownService.cityLimit();
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
 	@GetMapping("/borrowertype")
 	@ApiOperation(value = "This method is to Cover Note Drop Down")
 	public ResponseEntity<CommonRes> borrowerType() {

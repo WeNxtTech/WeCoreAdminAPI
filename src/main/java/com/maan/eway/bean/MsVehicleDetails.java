@@ -156,6 +156,10 @@ private static final long serialVersionUID = 1L;
     @Column(name="CLAIM_RATIO", nullable=false)
     private Double     claimRatio ;
 
+    @Column(name="TPD_INCREASE_LIMIT", nullable=false)
+    private Double     tpdIncreaseLimit ;
+
+    
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 

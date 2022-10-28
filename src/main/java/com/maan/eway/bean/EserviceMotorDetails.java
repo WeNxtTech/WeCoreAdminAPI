@@ -359,7 +359,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="ADDITIONAL_CIRCUMSTANCES", length=200)
     private String     additionalCircumstances ;
 
-
+    @Column(name="CITY_LIMIT")
+    private String     cityLimit ;
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

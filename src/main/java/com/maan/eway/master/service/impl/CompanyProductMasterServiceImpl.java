@@ -7,11 +7,12 @@ package com.maan.eway.master.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -20,7 +21,6 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
@@ -31,43 +31,33 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.CompanyProductMaster;
+import com.maan.eway.bean.InsuranceCompanyMaster;
+import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.LoginMaster;
+import com.maan.eway.bean.ProductMaster;
+import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CompanyProductChangeStatusReq;
 import com.maan.eway.master.req.CompanyProductMasterGetAllReq;
 import com.maan.eway.master.req.CompanyProductMasterGetReq;
 import com.maan.eway.master.req.CompanyProductMasterSaveReq;
 import com.maan.eway.master.req.CompanyProductMultiInsertReq;
-import com.maan.eway.master.req.CoverMasterGetReq;
-import com.maan.eway.master.req.ProductDropDownReq;
-import com.maan.eway.master.req.ProductMasterGetAllReq;
-import com.maan.eway.master.req.ProductMasterGetReq;
-import com.maan.eway.master.req.ProductMasterSaveReq;
-import com.maan.eway.master.req.ProductSectionMasterReq;
 import com.maan.eway.master.res.CompanyProductMasterRes;
 import com.maan.eway.master.res.ProductMasterRes;
-import com.maan.eway.master.res.SectionMasterRes;
 import com.maan.eway.master.service.CompanyProductMasterService;
-import com.maan.eway.master.service.ProductMasterService;
-import com.maan.eway.bean.BranchMaster;
-import com.maan.eway.bean.CompanyProductMaster;
-import com.maan.eway.bean.InsuranceCompanyMaster;
-import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.bean.ProductMaster;
-import com.maan.eway.bean.ProductSectionMaster;
-import com.maan.eway.bean.SectionMaster;
-import com.maan.eway.error.Error;
+import com.maan.eway.notif.req.MailFramingReq;
+import com.maan.eway.notif.service.impl.MailThreadServiceImpl;
 import com.maan.eway.repository.CompanyProductMasterRepository;
+import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
-import com.maan.eway.repository.ProductMasterRepository;
+import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.res.CompanyProductDropDownRes;
-import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
-import com.maan.eway.service.impl.BasicValidationService;
 /**
 * <h2>ProductMasterServiceimpl</h2>
 */
@@ -83,6 +73,16 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 	
 	@Autowired
 	private ListItemValueRepository listRepo ;
+	
+	@Autowired
+	private InsuranceCompanyMasterRepository insrepo;
+	
+	@Autowired
+	private LoginMasterRepository loginRepo;
+	
+	@Autowired
+	private MailThreadServiceImpl mailThreadService;
+
 	
 	Gson json = new Gson();
 	
@@ -284,6 +284,36 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 				repo.saveAndFlush(saveData);
 				
 				log.info("Saved Details is ---> " + json.toJson(saveData));
+			
+				// Thread To Trigger Mail
+				
+				InsuranceCompanyMaster companyData = insrepo.findByCompanyId(req.getCompanyId());
+				LoginMaster loginData = loginRepo.findByLoginId(req.getCreatedBy());
+
+				List<String> ccMails = new ArrayList<String>();
+				ccMails.add(companyData.getCompanyEmail());
+			//	ccMails.add(loginData.getUserMail());
+
+				List<String> toMails = new ArrayList<String>();
+				toMails.add(companyData.getCompanyEmail());
+
+				Map<String, Object> keys = new HashMap<String, Object>();
+				keys.put("PRODUCT_ID", productId == null ? "" : productId.toString());
+
+				// Set Mail Request
+				MailFramingReq mailFrameReq = new MailFramingReq();
+				mailFrameReq.setInsId(req.getCompanyId().toString());
+				mailFrameReq.setNotifTemplateId("PRODUCT");
+				mailFrameReq.setKeys(keys);
+				mailFrameReq.setMailCc(ccMails);
+				mailFrameReq.setMailTo(toMails);
+				mailFrameReq.setMailRegards(companyData.getRegards());
+				mailFrameReq.setStatus(res.getResponse());
+
+				log.info("{ Mail Pushed SuccessFully . ProductId is ---> }" + productId  );
+				// mailFrameService.sendSms(mailReq);
+				mailThreadService.threadToSendMail(mailFrameReq);
+				
 			}
 			
 				

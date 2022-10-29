@@ -21,7 +21,7 @@ public class AsyncConfiguration  {
 		taskExecuter.setCorePoolSize(1);
 		taskExecuter.setMaxPoolSize(1);
 		taskExecuter.setQueueCapacity(100);
-		taskExecuter.setThreadNamePrefix("CRM-NEW-");
+		taskExecuter.setThreadNamePrefix("Eway-New");
 		taskExecuter.initialize();
 		log.info("Running Thread :" + taskExecuter);
 		return taskExecuter;

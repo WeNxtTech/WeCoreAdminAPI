@@ -12,6 +12,7 @@ import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collector;
@@ -41,7 +42,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.gson.Gson;
 import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.CoverOfsGridMaster;
+import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.bean.SectionCoverOfsGridMaster;
@@ -58,8 +61,12 @@ import com.maan.eway.master.res.CoverMasterGetAllRes;
 import com.maan.eway.master.res.SectionCoverMasterGetAllRes;
 import com.maan.eway.master.res.SectionCoverMasterRes;
 import com.maan.eway.master.service.SectionCoverMasterService;
+import com.maan.eway.notif.req.MailFramingReq;
+import com.maan.eway.notif.service.impl.MailThreadServiceImpl;
 import com.maan.eway.repository.CoverOfsGridMasterRepository;
+import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
+import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.ProductCoverRatingMasterRepository;
 import com.maan.eway.repository.SectionCoverMasterRepository;
 import com.maan.eway.repository.SectionCoverOfsGridMasterRepository;
@@ -88,6 +95,14 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 	@Autowired
 	private ListItemValueRepository listRepo;
 	
+	@Autowired
+	private InsuranceCompanyMasterRepository insrepo;
+	
+	@Autowired
+	private LoginMasterRepository loginRepo;
+	
+	@Autowired
+	private MailThreadServiceImpl mailThreadService;
 	@PersistenceContext
 	private EntityManager em;
 
@@ -279,6 +294,40 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 						}
 						log.info("Saved Detail is  --->" + secCover );
 					}
+					
+					
+					// Thread To Trigger Mail
+					
+					InsuranceCompanyMaster companyData = insrepo.findByCompanyId(req.getCompanyId());
+					LoginMaster loginData = loginRepo.findByLoginId(req.getCreatedBy());
+
+					List<String> ccMails = new ArrayList<String>();
+					ccMails.add(companyData.getCompanyEmail());
+				//	ccMails.add(loginData.getUserMail());
+
+					List<String> toMails = new ArrayList<String>();
+					toMails.add(companyData.getCompanyEmail());
+
+					Map<String, Object> keys = new HashMap<String, Object>();
+					keys.put("COVER_ID", req.getCoverId() == null ? "" : req.getCoverId());
+
+					// Set Mail Request
+					MailFramingReq mailFrameReq = new MailFramingReq();
+					mailFrameReq.setInsId(req.getCompanyId().toString());
+					mailFrameReq.setNotifTemplateId("COVER");
+					mailFrameReq.setKeys(keys);
+					mailFrameReq.setMailCc(ccMails);
+					mailFrameReq.setMailTo(toMails);
+					mailFrameReq.setMailRegards(companyData.getRegards());
+					mailFrameReq.setStatus(res.getResponse());
+
+					log.info("{ Mail Pushed SuccessFully . CoverId is ---> }" + req.getCoverId() );
+					// mailFrameService.sendSms(mailReq);
+					mailThreadService.threadToSendMail(mailFrameReq);
+					
+
+					
+					
 				}
 				
 				res.setResponse(successRes);

@@ -10,10 +10,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
@@ -33,7 +36,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.BranchMaster;
+import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
+import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.SectionMaster;
@@ -46,6 +52,10 @@ import com.maan.eway.master.req.SectionMultiInsertReq;
 import com.maan.eway.master.res.ProductSectionGetRes;
 import com.maan.eway.master.res.ProductSectionMasterRes;
 import com.maan.eway.master.service.ProductSectionMasterService;
+import com.maan.eway.notif.req.MailFramingReq;
+import com.maan.eway.notif.service.impl.MailThreadServiceImpl;
+import com.maan.eway.repository.InsuranceCompanyMasterRepository;
+import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.ProductSectionMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
@@ -60,6 +70,15 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 	@Autowired
 	private ProductSectionMasterRepository repo;
 
+	@Autowired
+	private InsuranceCompanyMasterRepository insrepo;
+	
+	@Autowired
+	private LoginMasterRepository loginRepo;
+	
+	@Autowired
+	private MailThreadServiceImpl mailThreadService;
+	
 	@PersistenceContext
 	private EntityManager em;
 
@@ -239,7 +258,7 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 				TypedQuery<SectionMaster> result = em.createQuery(query);
 				list = result.getResultList();
 				
-				res.setResponse("Updated Successfully ");
+				res.setResponse("Inserted Successfully ");
 				res.setSuccessId(sectionId);
 					
 				
@@ -256,6 +275,29 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 				repo.saveAndFlush(saveData);
 				
 				log.info("Saved Details is ---> " + json.toJson(saveData));
+				
+				// Thread to Trigger Mail
+				InsuranceCompanyMaster companyData = insrepo.findByCompanyId(req.getCompanyId());
+				LoginMaster loginData = loginRepo.findByLoginId(req.getCreatedBy());
+				List<String> ccMails = new ArrayList<String>();
+				ccMails.add(companyData.getCompanyEmail());
+				List<String> toMails = new ArrayList<String>();
+				toMails.add(companyData.getCompanyEmail());
+				Map<String, Object> keys = new HashMap<String, Object>();
+				keys.put("PRODUCT_ID", req.getProductId()==null ? ""  :req.getProductId());				
+				keys.put("SECTION_ID", sectionId==null ? ""  : sectionId.toString());
+				// Set Mail Request
+				MailFramingReq mailFrameReq = new MailFramingReq();
+				mailFrameReq.setInsId(req.getCompanyId().toString());
+				mailFrameReq.setNotifTemplateId("SECTION");
+				mailFrameReq.setKeys(keys);
+				mailFrameReq.setMailCc(ccMails);
+				mailFrameReq.setMailTo(toMails);
+				mailFrameReq.setMailRegards(companyData.getRegards());
+				mailFrameReq.setStatus(res.getResponse());
+			
+				log.info("{Mail Pushed Successfully. Section Id is --->}"+ sectionId);
+				mailThreadService.threadToSendMail(mailFrameReq);
 			}
 			
 				

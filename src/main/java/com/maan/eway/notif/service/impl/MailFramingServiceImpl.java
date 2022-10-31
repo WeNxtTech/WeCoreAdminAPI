@@ -41,7 +41,12 @@ public class MailFramingServiceImpl implements MailFramingService {
 			if(mReq.getNotifTemplateId().equalsIgnoreCase("PRODUCT") ) {
 				contents = mailCriteriaService.productCreatedCreateria(mReq);
 			}
-			
+			else if(mReq.getNotifTemplateId().equalsIgnoreCase("SECTION")) {
+				contents = mailCriteriaService.sectionCreatedCriteria(mReq);
+			}
+			else if(mReq.getNotifTemplateId().equalsIgnoreCase("COVER")) {
+				contents = mailCriteriaService.coverCreatedCriteria(mReq);
+			}
 		
 			
 			if(contents !=null && contents.size()>0 ) {

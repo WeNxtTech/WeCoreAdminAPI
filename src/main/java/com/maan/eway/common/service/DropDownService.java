@@ -95,4 +95,6 @@ public interface DropDownService {
 
 	List<DropDownRes> cityLimit();
 
+	List<DropDownRes> getLanguage();
+
 }

@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class GetCustomerDetailsReq {
 
-	@JsonProperty("RequestReferenceNo")
-	private String requestReferenceNo ;
+	@JsonProperty("CustomerReferenceNo")
+	private String customerReferenceNo ;
 	
 }

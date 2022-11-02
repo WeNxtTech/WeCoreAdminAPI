@@ -256,43 +256,42 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 	public SuccessRes saveCustomerDetails(EserviceCustomerSaveReq req) {
 		SuccessRes res = new SuccessRes();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyMM"); 
+		SimpleDateFormat sdf = new SimpleDateFormat("yyMMddmmssSSS"); 
 		try {
 			EserviceCustomerDetails saveData = new EserviceCustomerDetails(); 
 			Date entryDate = null ;
 			String createdBy = "" ;
-			String refNo = "" ;
+			String custRefNo = "" ;
 			
-			if(StringUtils.isBlank(req.getRequestReferenceNo())) {
+			if(StringUtils.isBlank(req.getCustomerReferenceNo())) {
 				// Save
 				entryDate = new Date();
 				createdBy = req.getCreatedBy();
-
 				 Random rand = new Random();
 	             int random=rand.nextInt(90)+10; 
-	             Long count = repository.count() ;
-	             refNo = "Ref-" + sdf.format(new Date()) + (count + 1001) + random  ; 
+	             
+	             custRefNo = "Cust-" + sdf.format(new Date()) + random ; 
 	             res.setResponse("Saved Successfully");
-	 			 res.setSuccessId(refNo);
+	 			 res.setSuccessId(custRefNo);
 			} 
 			else {
 				// Update
-				refNo = req.getRequestReferenceNo() ;
-				EserviceCustomerDetails findData = repository.findByRequestReferenceNo(req.getRequestReferenceNo() );
+				custRefNo = req.getCustomerReferenceNo() ;
+				EserviceCustomerDetails findData = repository.findByCustomerReferenceNo(req.getCustomerReferenceNo() );
 				entryDate = findData.getEntryDate() ;
 				createdBy = findData.getCreatedBy() ;
 				res.setResponse("Updated Successfully");
-				res.setSuccessId(refNo);
+				res.setSuccessId(custRefNo);
 			}
 			dozerMapper.map(req, saveData);
 			saveData.setEntryDate(entryDate);
 			saveData.setCreatedBy(createdBy);
 			saveData.setUpdatedDate(new Date());
 			saveData.setUpdatedBy(req.getCreatedBy());
-			saveData.setRequestReferenceNo(refNo);
+			saveData.setCustomerReferenceNo(custRefNo);
+			saveData.setStatus("Y");			
 			// Age Calculation
 			Date dob= req.getDobOrRegDate();
-			Calendar cal = Calendar.getInstance();
 			Date today = new Date();
 			int age = today.getYear()-dob.getYear();
 
@@ -327,7 +326,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 
 		try {
-			EserviceCustomerDetails data = repository.findByRequestReferenceNo(req.getRequestReferenceNo());
+			EserviceCustomerDetails data = repository.findByCustomerReferenceNo(req.getCustomerReferenceNo());
 			res = dozerMapper.map(data, CustomerDetailsGetRes.class);
 
 		} catch (Exception e) {
@@ -347,9 +346,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			// Limit , Offset
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
 			int offset = StringUtils.isBlank(req.getOffset()) ? 10 : Integer.valueOf(req.getOffset());
-			Pageable paging = PageRequest.of(limit, offset, Sort.by("entryDate").descending());
+			Pageable paging = PageRequest.of(limit, offset, Sort.by("updatedDate").descending());
 
-			Page<EserviceCustomerDetails> datas = repository.findAll(paging);
+			Page<EserviceCustomerDetails> datas = repository.findByCompanyIdAndProductId(paging , req.getComapanyId() , Integer.valueOf(req.getProductId()));
 			for (EserviceCustomerDetails data : datas) {
 				CustomerDetailsGetRes res = new CustomerDetailsGetRes();
 				res=dozerMapper.map(data, CustomerDetailsGetRes.class);

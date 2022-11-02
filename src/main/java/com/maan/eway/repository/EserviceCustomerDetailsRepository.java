@@ -16,6 +16,9 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import com.maan.eway.bean.DocumentMaster;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import com.maan.eway.bean.DocumentMasterId;
@@ -23,7 +26,9 @@ import com.maan.eway.bean.EserviceCustomerDetails;
 
 public interface EserviceCustomerDetailsRepository  extends JpaRepository<EserviceCustomerDetails,String > , JpaSpecificationExecutor<EserviceCustomerDetails> {
 
-	EserviceCustomerDetails findByRequestReferenceNo(String requestReferenceNo);
+	EserviceCustomerDetails findByCustomerReferenceNo(String requestReferenceNo);
+
+	Page<EserviceCustomerDetails> findByCompanyIdAndProductId(Pageable paging, String comapanyId, Integer valueOf);
 	
 
 }

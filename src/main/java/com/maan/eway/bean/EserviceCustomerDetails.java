@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -43,6 +42,7 @@ import javax.persistence.*;
 @DynamicInsert
 @DynamicUpdate
 @Builder
+@IdClass(EserviceCustomeDetailsId.class)
 @Table(name="eservice_customer_details")
 
 
@@ -52,9 +52,20 @@ private static final long serialVersionUID = 1L;
  
     //--- ENTITY PRIMARY KEY 
 	@Id
-	@Column(name="REQUEST_REFERENCE_NO", nullable=false, length=100)
-	private String     requestReferenceNo ;
+	@Column(name="CUSTOMER_REFERENCE_NO", nullable=false, length=100)
+	private String     customerReferenceNo;
+	
+	@Id
+	@Column(name="COMPANY_ID", nullable=false, length=20)
+	private String     companyId ;
+	
+	@Id
+	@Column(name="PRODUCT_ID", nullable=false, length=20)
+	private Integer     productId ;
 
+	@Column(name="BRANCH_CODE", nullable=false, length=20)
+	private String     branchCode ;
+	
     @Column(name="POLICY_HOLDER_TYPEID", nullable=false, length=100)
     private String     policyHolderTypeid ;
     

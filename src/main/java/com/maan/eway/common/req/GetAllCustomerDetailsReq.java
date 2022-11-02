@@ -8,6 +8,16 @@ import lombok.Data;
 public class GetAllCustomerDetailsReq {
 
 
+
+    @JsonProperty("InsuranceId")
+    private String   comapanyId;
+
+    @JsonProperty("ProductId")
+    private String   productId;
+
+    @JsonProperty("BranchCode")
+    private String   branchCode;
+    
     @JsonProperty("Limit")
     private String   limit;
 	

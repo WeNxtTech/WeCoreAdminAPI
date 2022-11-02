@@ -12,8 +12,8 @@ import lombok.Setter;
 @Setter
 public class EserviceCustomerSaveReq {
 
-	@JsonProperty("RequestReferenceNo")
-	private String requestReferenceNo;
+	@JsonProperty("CustomerReferenceNo")
+	private String customerReferenceNo;
 
 	@JsonProperty("PolicyHolderTypeid")
 	private String policyHolderTypeid;
@@ -146,5 +146,14 @@ public class EserviceCustomerSaveReq {
 
 	@JsonProperty("Status")
 	private String status;
+	
+	@JsonProperty("InsuranceId")
+	private String companyId;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
+	
+	@JsonProperty("ProductId")
+	private String productId;
 	
 }

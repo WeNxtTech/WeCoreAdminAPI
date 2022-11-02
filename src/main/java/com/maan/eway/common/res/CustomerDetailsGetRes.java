@@ -10,9 +10,9 @@ import lombok.Data;
 @Data
 public class CustomerDetailsGetRes {
 
-	@JsonProperty("RequestReferenceNo")
-	private String requestReferenceNo;
-	
+	@JsonProperty("CustomerReferenceNo")
+	private String customerReferenceNo;
+
 	@JsonProperty("PolicyHolderTypeid")
 	private String policyHolderTypeid;
 
@@ -149,4 +149,13 @@ public class CustomerDetailsGetRes {
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EntryDate")
 	private Date entryDate;
+	
+	@JsonProperty("InsuranceId")
+	private String companyId;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
+	
+	@JsonProperty("ProductId")
+	private String productId;
 }

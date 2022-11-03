@@ -94,13 +94,13 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			}
 
 			
-			if (StringUtils.isNotBlank(req.getPolicyHolderTypeid())) {
-				errorList.add(new Error("08", "Policy Holder Type Id", "Please Select Policy Holder Type Id"));
-			if(req.getPolicyHolderTypeid().equalsIgnoreCase("2")){
-				if (StringUtils.isBlank(req.getBusinessType())) {
-				errorList.add(new Error("16", "BusinessType", "Please Select BusinessType"));
-			}
-			}
+			if (StringUtils.isNotBlank(req.getPolicyHolderType())) {
+				
+				if(req.getPolicyHolderType().equalsIgnoreCase("2")){
+					if (StringUtils.isBlank(req.getBusinessType())) {
+					errorList.add(new Error("16", "BusinessType", "Please Select BusinessType"));
+					}
+				}
 			}
 //			if (StringUtils.isBlank(req.getIdType())) {
 //				errorList.add(new Error("09", "IdType", "Please Select IdType"));
@@ -114,7 +114,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			if (StringUtils.isBlank(req.getNationality())) {
 				errorList.add(new Error("12", "Nationality", "Please select Natinality"));
 			}
-			if (StringUtils.isBlank(req.getPlaceOfBirth())) {
+		/*	if (StringUtils.isBlank(req.getPlaceOfBirth())) {
 				errorList.add(new Error("13", "PlaceOfBirth", "Please Enter PlaceOfBirth "));
 			} else if (req.getPlaceOfBirth().length() > 100) {
 				errorList.add(new Error("13", "PlaceOfBirth", "Please Enter PlaceOfBirth within 100 Characters"));
@@ -125,7 +125,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 
 			if (StringUtils.isBlank(req.getOccupation())) {
 				errorList.add(new Error("15", "Occupation", "Please Select Occupation"));
-			}
+			} */
 
 			
 //
@@ -149,7 +149,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				errorList.add(new Error("21", "TelephoneNo1", "Please Enter TelephoneNo1 within 20 Characters"));
 			} else if (!req.getTelephoneNo1().matches("\\d+")) {
 				errorList.add(new Error("21", "TelephoneNo1", "Please Enter TelephoneNo1 only in numbers"));
-			}
+			} 
 
 			if (StringUtils.isBlank(req.getMobileNo1())) {
 				errorList.add(new Error("24", "MobileNo1", "Please Enter MobileNo1"));
@@ -408,13 +408,16 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			saveData.setUpdatedBy(req.getCreatedBy());
 			saveData.setCustomerReferenceNo(custRefNo);
 			saveData.setStatus("Y");
+			saveData.setGender(StringUtils.isBlank(req.getGender())? "M" :req.getGender() );
+			saveData.setOccupation(StringUtils.isBlank(req.getOccupation())? "2" :req.getOccupation() );
+			
 			// Age Calculation
 			Date dob = req.getDobOrRegDate();
 			Date today = new Date();
 			int age = today.getYear() - dob.getYear();
 
 			// From List Item Value
-			ListItemValue gender = listRepo.findByItemTypeAndItemCode("GENDER", req.getGender());
+			ListItemValue gender = listRepo.findByItemTypeAndItemCode("GENDER", saveData.getGender());
 			ListItemValue title = listRepo.findByItemTypeAndItemCode("NAME_TITLE", req.getTitle());
 			ListItemValue language = listRepo.findByItemTypeAndItemCode("LANGUAGE", req.getLanguage());
 			OccupationMaster occupation =occupationRepo.findByOccupationId(req.getOccupation());
@@ -454,6 +457,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 		return res;
 	}
 
+	
 	@Override
 	public List<CustomerDetailsGetRes> getallCustomerDetails(GetAllCustomerDetailsReq req) {
 		List<CustomerDetailsGetRes> resList = new ArrayList<CustomerDetailsGetRes>();

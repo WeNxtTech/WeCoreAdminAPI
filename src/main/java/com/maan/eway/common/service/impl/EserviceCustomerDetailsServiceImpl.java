@@ -33,7 +33,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.MsCustomerDetails;
+import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.common.req.EserviceCustomerSaveReq;
+import com.maan.eway.common.req.EserviceCustomerSearchVrtinReq;
 import com.maan.eway.common.req.GetAllCustomerDetailsReq;
 import com.maan.eway.common.req.GetCustomerDetailsReq;
 import com.maan.eway.common.res.CustomerDetailsGetRes;
@@ -42,6 +44,7 @@ import com.maan.eway.common.service.EserviceCustomerDetailsService;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
 import com.maan.eway.repository.ListItemValueRepository;
+import com.maan.eway.repository.OccupationMasterRepository;
 import com.maan.eway.res.SuccessRes;
 
 @Service
@@ -56,6 +59,10 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 	@Autowired
 	private ListItemValueRepository listRepo;
 
+	@Autowired
+	private OccupationMasterRepository occupationRepo;
+
+	
 	@PersistenceContext
 	private EntityManager em;
 
@@ -241,6 +248,14 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			} else if (req.getCompanyId().length() > 20) {
 				errorList.add(new Error("41", "CompanyId", "Please Enter CompanyId within 20 Characters"));
 			}
+			if (StringUtils.isBlank(req.getVrTinNo())) {
+				errorList.add(new Error("42", "VrTinNo", "Please Enter VrTinNo"));
+			} else if (req.getVrTinNo().length() > 20) {
+				errorList.add(new Error("42", "VrTinNo", "Please Enter VrTinNo within 20 Characters"));
+			}
+			
+			
+			
 			List<EserviceCustomerDetails> list = new ArrayList<EserviceCustomerDetails>();
 			if ((StringUtils.isNotBlank(req.getAddress1())) && (StringUtils.isNotBlank(req.getAddress2()))
 					&& (StringUtils.isNotBlank(req.getBranchCode())) && (StringUtils.isNotBlank(req.getBusinessType()))
@@ -402,10 +417,11 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			ListItemValue gender = listRepo.findByItemTypeAndItemCode("GENDER", req.getGender());
 			ListItemValue title = listRepo.findByItemTypeAndItemCode("NAME_TITLE", req.getTitle());
 			ListItemValue language = listRepo.findByItemTypeAndItemCode("LANGUAGE", req.getLanguage());
-
+			OccupationMaster occupation =occupationRepo.findByOccupationId(req.getOccupation());
 			saveData.setGenderDesc(gender.getItemValue());
 			saveData.setTitleDesc(title.getItemValue());
 			saveData.setLanguageDesc(language.getItemValue());
+			saveData.setOccupationDesc(occupation.getOccupationName());
 			saveData.setAge(age);
 			saveData.setIdType(req.getPolicyHolderTypeid());
 			repository.save(saveData);
@@ -449,8 +465,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			int offset = StringUtils.isBlank(req.getOffset()) ? 10 : Integer.valueOf(req.getOffset());
 			Pageable paging = PageRequest.of(limit, offset, Sort.by("updatedDate").descending());
 
-			Page<EserviceCustomerDetails> datas = repository.findByCompanyIdAndProductId(paging, req.getComapanyId(),
-					Integer.valueOf(req.getProductId()));
+			Page<EserviceCustomerDetails> datas = repository.findByCompanyIdAndProductIdAndCreatedBy
+					(paging, req.getComapanyId(), Integer.valueOf(req.getProductId()) , req.getCreatedBy());
 			for (EserviceCustomerDetails data : datas) {
 				CustomerDetailsGetRes res = new CustomerDetailsGetRes();
 				res = dozerMapper.map(data, CustomerDetailsGetRes.class);
@@ -463,6 +479,22 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			return null;
 		}
 		return resList;
+	}
+
+	@Override
+	public CustomerDetailsGetRes getbyvrtinno(EserviceCustomerSearchVrtinReq req) {
+		CustomerDetailsGetRes res = new CustomerDetailsGetRes();
+		DozerBeanMapper dozermapper = new DozerBeanMapper();
+		try {
+			EserviceCustomerDetails data = repository.findByVrTinNo(req.getVrTinNo());
+			dozermapper.map(data,res);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			log.info("Log Details"+e.getMessage());;
+			return null;
+		}
+		return res;
 	}
 
 }

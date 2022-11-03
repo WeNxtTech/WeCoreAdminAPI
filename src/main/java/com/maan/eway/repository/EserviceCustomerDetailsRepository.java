@@ -25,6 +25,11 @@ public interface EserviceCustomerDetailsRepository  extends JpaRepository<Eservi
 	EserviceCustomerDetails findByCustomerReferenceNo(String requestReferenceNo);
 
 	Page<EserviceCustomerDetails> findByCompanyIdAndProductId(Pageable paging, String comapanyId, Integer valueOf);
+
+	EserviceCustomerDetails findByVrTinNo(String vrTinNo);
+
+	Page<EserviceCustomerDetails> findByCompanyIdAndProductIdAndCreatedBy(Pageable paging, String comapanyId,
+			Integer valueOf, String createdBy);
 	
 
 }

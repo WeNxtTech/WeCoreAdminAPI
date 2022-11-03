@@ -18,6 +18,9 @@ public class GetAllCustomerDetailsReq {
     @JsonProperty("BranchCode")
     private String   branchCode;
     
+    @JsonProperty("CreatedBy")
+    private String   createdBy;
+    
     @JsonProperty("Limit")
     private String   limit;
 	

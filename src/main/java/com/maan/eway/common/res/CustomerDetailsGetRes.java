@@ -158,4 +158,7 @@ public class CustomerDetailsGetRes {
 	
 	@JsonProperty("ProductId")
 	private String productId;
+	
+	@JsonProperty("VrTinNo")
+	private String vrTinNo;
 }

@@ -219,6 +219,11 @@ private static final long serialVersionUID = 1L;
     @Column(name="UPDATED_BY", length=100)
     private String updatedBy;
     
+    @Column(name="VR_TIN_NO", length=20)
+    private String vrTinNo;
+    
+    
+    
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.req.EserviceCustomerSaveReq;
+import com.maan.eway.common.req.EserviceCustomerSearchVrtinReq;
 import com.maan.eway.common.req.GetAllCustomerDetailsReq;
 import com.maan.eway.common.req.GetCustomerDetailsReq;
 import com.maan.eway.common.req.MsPersonalInfoGetReq;
@@ -104,5 +105,26 @@ public class EserviceCustomerDetailsController {
 	return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);	
 	}
 	}
+
+	// Search by Vr Tin No
+	
+	@PostMapping("/searchbyvrtinno")
+	public ResponseEntity<CommonRes> getbyvrtinno(@RequestBody EserviceCustomerSearchVrtinReq req){
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		CustomerDetailsGetRes res = entityService.getbyvrtinno(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+	if(res!=null) {
+		return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+	}
+	else {
+		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+	}
+	}
+	
+	
 	
 }

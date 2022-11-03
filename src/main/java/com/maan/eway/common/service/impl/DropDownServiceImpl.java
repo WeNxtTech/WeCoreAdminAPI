@@ -1021,7 +1021,7 @@ public class DropDownServiceImpl  implements DropDownService{
 
 	@Override
 	public List<DropDownRes> insuranceType() {
-		/*	List<DropDownRes> resList = new ArrayList<DropDownRes>();
+			List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 
 			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("INSURANCE_TYPE", "Y");
@@ -1038,16 +1038,15 @@ public class DropDownServiceImpl  implements DropDownService{
 			return null;
 		}
 		return resList;
-		*/
+		
 	
-		return service.getPolicyTypeMasterDropdown();
 
 	}
 
 
 	@Override
 	public List<DropDownRes> insuranceClass() {
-		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+/*		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("INSURANCE_CLASS", "Y");
 
@@ -1057,12 +1056,16 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setCodeDesc(data.getItemValue());
 				resList.add(res);
 			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
 			return null;
 		}
 		return resList;
+	*/	
+		return service.getPolicyTypeMasterDropdown();
+
 	}
 
 

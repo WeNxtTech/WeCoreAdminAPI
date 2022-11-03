@@ -420,7 +420,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			ListItemValue gender = listRepo.findByItemTypeAndItemCode("GENDER", saveData.getGender());
 			ListItemValue title = listRepo.findByItemTypeAndItemCode("NAME_TITLE", req.getTitle());
 			ListItemValue language = listRepo.findByItemTypeAndItemCode("LANGUAGE", req.getLanguage());
-			OccupationMaster occupation =occupationRepo.findByOccupationId(req.getOccupation());
+			OccupationMaster occupation =occupationRepo.findByOccupationId(saveData.getOccupation());
 			saveData.setGenderDesc(gender.getItemValue());
 			saveData.setTitleDesc(title.getItemValue());
 			saveData.setLanguageDesc(language.getItemValue());

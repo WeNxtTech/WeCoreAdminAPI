@@ -93,13 +93,15 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				errorList.add(new Error("05", "Client Status", "Please Select Client Status"));
 			}
 
-			if (StringUtils.isBlank(req.getPolicyHolderType())) {
-				errorList.add(new Error("07", "Policy Holder Type", "Please Select Policy Holder Type "));
-			}
-			if (StringUtils.isBlank(req.getPolicyHolderTypeid())) {
+			
+			if (StringUtils.isNotBlank(req.getPolicyHolderTypeid())) {
 				errorList.add(new Error("08", "Policy Holder Type Id", "Please Select Policy Holder Type Id"));
+			if(req.getPolicyHolderTypeid().equalsIgnoreCase("2")){
+				if (StringUtils.isBlank(req.getBusinessType())) {
+				errorList.add(new Error("16", "BusinessType", "Please Select BusinessType"));
 			}
-
+			}
+			}
 //			if (StringUtils.isBlank(req.getIdType())) {
 //				errorList.add(new Error("09", "IdType", "Please Select IdType"));
 //			}
@@ -125,9 +127,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				errorList.add(new Error("15", "Occupation", "Please Select Occupation"));
 			}
 
-			if (StringUtils.isBlank(req.getBusinessType())) {
-				errorList.add(new Error("16", "BusinessType", "Please Select BusinessType"));
-			}
+			
 //
 //			if (req.getVrnGst().length() > 20) {
 //				errorList.add(new Error("17", "VrnGst", "Please Enter VrnGst within 20 Characters"));

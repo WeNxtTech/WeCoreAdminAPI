@@ -38,5 +38,7 @@ public interface AdminDropDownService {
 
 	List<DropDownRes> getMobileCodes();
 
+	List<DropDownRes> getBusinessType();
+
 
 }

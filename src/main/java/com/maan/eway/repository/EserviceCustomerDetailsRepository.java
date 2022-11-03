@@ -12,19 +12,15 @@
 
 package com.maan.eway.repository;
 
-import java.math.BigDecimal;
-import java.util.List;
-
-import com.maan.eway.bean.DocumentMaster;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import com.maan.eway.bean.DocumentMasterId;
-import com.maan.eway.bean.EserviceCustomerDetails;
 
-public interface EserviceCustomerDetailsRepository  extends JpaRepository<EserviceCustomerDetails,String > , JpaSpecificationExecutor<EserviceCustomerDetails> {
+import com.maan.eway.bean.EserviceCustomerDetails;
+import com.maan.eway.bean.EserviceCustomerDetailsId;
+
+public interface EserviceCustomerDetailsRepository  extends JpaRepository<EserviceCustomerDetails,EserviceCustomerDetailsId > , JpaSpecificationExecutor<EserviceCustomerDetails> {
 
 	EserviceCustomerDetails findByCustomerReferenceNo(String requestReferenceNo);
 

@@ -31,6 +31,8 @@ public class EserviceMotorDetailsId implements Serializable {
     //--- ENTITY KEY ATTRIBUTES 
     private String     requestReferenceNo ;
     
+    private String     customerReferenceNo ;
+    
     private String     idNumber ;
     
     private Integer    vehicleId ;

@@ -56,6 +56,10 @@ private static final long serialVersionUID = 1L;
     private String     requestReferenceNo ;
 
     @Id
+    @Column(name="CUSTOMER_REFERENCE_NO", nullable=false, length=20)
+    private String     customerReferenceNo ;
+    
+    @Id
     @Column(name="ID_NUMBER", nullable=false, length=20)
     private String     idNumber ;
 
@@ -130,8 +134,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="OVERRIDE_PERCENTAGE")
     private Double     overridePercentage ;
 
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name="REGISTRATION_YEAR")
-    private Integer    registrationYear ;
+    private Date    registrationYear ;
 
     @Column(name="SEATING_CAPACITY")
     private Integer    seatingCapacity ;

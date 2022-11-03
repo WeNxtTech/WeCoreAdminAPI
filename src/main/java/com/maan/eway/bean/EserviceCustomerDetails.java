@@ -42,7 +42,7 @@ import javax.persistence.*;
 @DynamicInsert
 @DynamicUpdate
 @Builder
-@IdClass(EserviceCustomeDetailsId.class)
+@IdClass(EserviceCustomerDetailsId.class)
 @Table(name="eservice_customer_details")
 
 

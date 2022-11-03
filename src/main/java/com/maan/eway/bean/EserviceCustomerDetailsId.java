@@ -8,7 +8,7 @@ import javax.persistence.Id;
 import lombok.Data;
 
 @Data
-public class EserviceCustomeDetailsId implements Serializable {
+public class EserviceCustomerDetailsId implements Serializable {
 	private static final long serialVersionUID = 1L;
 	 
 	private String     customerReferenceNo;

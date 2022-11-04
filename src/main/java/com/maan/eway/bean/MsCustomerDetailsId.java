@@ -42,7 +42,6 @@ public class MsCustomerDetailsId implements Serializable {
     
     private String     occupation ;
     
-    private String     businessType ;
     
     private String     regionCode ;
     

@@ -76,8 +76,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="OCCUPATION", nullable=false, length=1)
     private String     occupation ;
 
-    @Id
-    @Column(name="BUSINESS_TYPE", nullable=false, length=1)
+    @Column(name="BUSINESS_TYPE", length=1)
     private String     businessType ;
 
     @Id

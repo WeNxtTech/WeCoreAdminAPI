@@ -407,7 +407,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			saveData.setUpdatedDate(new Date());
 			saveData.setUpdatedBy(req.getCreatedBy());
 			saveData.setCustomerReferenceNo(custRefNo);
-			saveData.setStatus("Y");
+			saveData.setStatus(req.getStatus());
 			saveData.setGender(StringUtils.isBlank(req.getGender())? "M" :req.getGender() );
 			saveData.setOccupation(StringUtils.isBlank(req.getOccupation())? "2" :req.getOccupation() );
 			

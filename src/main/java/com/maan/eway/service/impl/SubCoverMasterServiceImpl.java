@@ -366,6 +366,7 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 					saveData.setRatingId(list.get(0).getCoverId());	
 					saveData.setToolTip(list.get(0).getToolTip());
 					saveData.setRemarks(list.get(0).getRemarks());
+					saveData.setIsSelectedYn(list.get(0).getIsSelectedYn());
 					;
 					// Amend ID
 					if (list.get(0).getEffectiveDateStart().before(startDate)) {

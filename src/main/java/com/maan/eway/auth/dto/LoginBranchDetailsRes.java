@@ -49,4 +49,7 @@ public class LoginBranchDetailsRes {
 	
 	@JsonProperty("AttachedCompanyLogo")
 	private String attachedCompanyLogo ;
+	
+	@JsonProperty("CurrencyId")
+	private String currencyId;
 }

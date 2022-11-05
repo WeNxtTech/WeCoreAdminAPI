@@ -1068,6 +1068,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			saveData.setCoverName(list.get(0).getCoverName());
 			saveData.setCoverDesc(list.get(0).getCoverDesc());
 			saveData.setToolTip(list.get(0).getToolTip());
+			saveData.setIsSelectedYn(list.get(0).getIsSelectedYn());
 			saveData.setSubCoverId(Integer.valueOf(subcoverId));
 			saveData.setSectionId(Integer.valueOf(req.getSectionId()));
 			saveData.setProductId(Integer.valueOf(req.getProductId()));

@@ -11,6 +11,7 @@ import com.maan.eway.common.req.MotorVehicleUsageChangeStatusReq;
 import com.maan.eway.common.req.MotorVehicleUsageMasterGetReq;
 import com.maan.eway.common.req.MotorVehicleUsageMasterGetallReq;
 import com.maan.eway.common.req.MotorVehicleUsageMasterSaveReq;
+import com.maan.eway.common.req.UsageDropDownReq;
 import com.maan.eway.common.res.MotorVehicleUsageMasterGetRes;
 import com.maan.eway.error.Error;
 import com.maan.eway.res.DropDownRes;
@@ -31,9 +32,10 @@ public interface MotorVeicleUsageMasterService  {
 
 	List<MotorVehicleUsageMasterGetRes> getactiveMotorVehicleDetails(MotorVehicleUsageMasterGetallReq req);
 
-	List<DropDownRes> getVehicleUsageDropdown();
-
+	
 	SuccessRes changeStatusOfVehicleUsage(MotorVehicleUsageChangeStatusReq req);
+
+	List<DropDownRes> getVehicleUsageDropdown(UsageDropDownReq req);
 
 	
 	

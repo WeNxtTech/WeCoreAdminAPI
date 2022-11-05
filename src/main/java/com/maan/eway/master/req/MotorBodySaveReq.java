@@ -18,6 +18,8 @@ public class MotorBodySaveReq {
 
 	@JsonProperty("BodyId")
 	private String bodyId;
+	@JsonProperty("SectionId")
+	private String sectionId;
 	@JsonProperty("BodyNameEn")
 	private String bodyNameEn;
 	@JsonFormat(pattern="dd/MM/yyyy")

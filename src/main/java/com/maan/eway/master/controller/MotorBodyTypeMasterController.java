@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.BodyTypeChangeStatusReq;
+import com.maan.eway.master.req.BodyTypeDropDownReq;
 import com.maan.eway.master.req.ColorChangeStatusReq;
 import com.maan.eway.master.req.MotorBodySaveReq;
 import com.maan.eway.master.req.MotorBodyTypeGetAllReq;
@@ -145,15 +146,15 @@ public class MotorBodyTypeMasterController {
 		}
 
 		// Body Type Master Drop Down Type
-		@GetMapping("/dropdown/bodytype")
+		@PostMapping("/dropdown/bodytype")
 		@ApiOperation(value = "This method is get Body Type Drop Down")
 
-		public ResponseEntity<CommonRes> getBodyTypeMasterDropdown() {
+		public ResponseEntity<CommonRes> getBodyTypeMasterDropdown(@RequestBody BodyTypeDropDownReq req) {
 
 			CommonRes data = new CommonRes();
 
 			// Save
-			List<DropDownRes> res = service.getBodyTypeMasterDropdown();
+			List<DropDownRes> res = service.getBodyTypeMasterDropdown(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());

@@ -12,6 +12,8 @@ public class MotorVehicleUsageMasterSaveReq {
 	
 	@JsonProperty("VehicleUsageId")
     private String vehicleUsageId   ;
+	@JsonProperty("SectionId")
+    private String sectionId   ;
 	@JsonProperty("VehicleUsageDesc")
     private String  vehicleUsageDesc;
 	@JsonProperty("Status")

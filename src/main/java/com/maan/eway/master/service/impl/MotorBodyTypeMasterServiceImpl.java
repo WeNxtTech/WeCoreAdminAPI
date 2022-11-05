@@ -32,6 +32,7 @@ import com.maan.eway.bean.MotorBodyTypeMaster;
 import com.maan.eway.bean.MotorMakeMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.BodyTypeChangeStatusReq;
+import com.maan.eway.master.req.BodyTypeDropDownReq;
 import com.maan.eway.master.req.MotorBodySaveReq;
 import com.maan.eway.master.req.MotorBodyTypeGetAllReq;
 import com.maan.eway.master.req.MotorBodyTypeGetReq;
@@ -147,16 +148,16 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 				Predicate a1 = cb.equal(ocpm1.get("bodyId"), b.get("bodyId"));
 				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
-				
-				effectiveDate.where(a1, a2);
+				Predicate a3 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
+				effectiveDate.where(a1, a2,a3);
 
 
 				// Where
 				Predicate n1 = cb.equal(b.get("status"), "Y");
 				Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 				Predicate n3 = cb.equal(b.get("bodyId"), req.getBodyId());
-
-				query.where(n1, n2, n3);
+				Predicate n4 = cb.equal(b.get("sectionId"), req.getSectionId());
+				query.where(n1, n2, n3 , n4);
 				
 				// Get Result
 				TypedQuery<MotorBodyTypeMaster> result = em.createQuery(query);
@@ -315,8 +316,8 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 			Root<MotorBodyTypeMaster> ocpm1 = effectiveDate.from(MotorBodyTypeMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("bodyId"), b.get("bodyId"));
-
-			effectiveDate.where(a1);
+			Predicate a2 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
+			effectiveDate.where(a1,a2);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -324,8 +325,8 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-
-			query.where(n1).orderBy(orderList);
+			Predicate n2 = cb.equal(b.get("sectionId"), req.getSectionId());
+			query.where(n1,n2).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<MotorBodyTypeMaster> result = em.createQuery(query);
@@ -380,8 +381,8 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 			Root<MotorBodyTypeMaster> ocpm1 = effectiveDate.from(MotorBodyTypeMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("bodyId"), b.get("bodyId"));
-
-			effectiveDate.where(a1);
+			Predicate a2 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
+			effectiveDate.where(a1,a2);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -390,7 +391,7 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("status"), "Y");
-
+			Predicate n3 = cb.equal(b.get("sectionId"), req.getSectionId());
 			query.where(n1,n2).orderBy(orderList);
 
 			// Get Result
@@ -422,7 +423,7 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 	}
 
 	@Override
-	public List<DropDownRes> getBodyTypeMasterDropdown() {
+	public List<DropDownRes> getBodyTypeMasterDropdown(BodyTypeDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 			Date today = new Date();
@@ -465,7 +466,8 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 			Predicate n1 = cb.equal(c.get("status"),"Y");
 			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
-			query.where(n1,n2,n3).orderBy(orderList);
+			Predicate n4 = cb.equal(c.get("sectionId"),req.getSectionId());	
+			query.where(n1,n2,n3,n4).orderBy(orderList);
 			// Get Result
 			TypedQuery<MotorBodyTypeMaster> result = em.createQuery(query);
 			list = result.getResultList();

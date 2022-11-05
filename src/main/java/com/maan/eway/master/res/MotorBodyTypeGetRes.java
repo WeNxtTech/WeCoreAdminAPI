@@ -18,6 +18,8 @@ public class MotorBodyTypeGetRes {
 
 	@JsonProperty("BodyId")
 	private Integer bodyId;
+	@JsonProperty("SectionId")
+	private String sectionId;
 	
 	@JsonProperty("BodyNameEn")
 	private String bodyNameEn;

@@ -19,6 +19,7 @@ public class MotorVehicleUsageMasterId implements Serializable {
 	*/
 	private static final long serialVersionUID = 1L;
     private Integer   vehicleUsageId;
+    private String   sectionId;
     private Date       effectiveDateStart ;
     private Date       effectiveDateEnd ;
 

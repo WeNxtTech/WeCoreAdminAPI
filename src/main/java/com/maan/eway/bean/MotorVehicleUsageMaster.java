@@ -48,6 +48,10 @@ private static final long serialVersionUID = 1L;
     private Integer   vehicleUsageId;
 
     @Id
+    @Column(name="SECTION_ID")
+    private String   sectionId;
+    
+    @Id
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="EFFECTIVE_DATE_START", nullable=false)
     private Date       effectiveDateStart ;

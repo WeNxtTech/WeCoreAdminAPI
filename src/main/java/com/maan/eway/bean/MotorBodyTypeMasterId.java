@@ -20,6 +20,7 @@ public class MotorBodyTypeMasterId implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Integer bodyId;
+	private Integer sectionId;
 	private Date effectiveDateStart;
 	private Integer amendId;
 	private Date effectiveDateEnd;

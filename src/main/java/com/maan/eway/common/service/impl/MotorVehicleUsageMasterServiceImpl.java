@@ -41,6 +41,7 @@ import com.maan.eway.common.req.MotorVehicleUsageChangeStatusReq;
 import com.maan.eway.common.req.MotorVehicleUsageMasterGetReq;
 import com.maan.eway.common.req.MotorVehicleUsageMasterGetallReq;
 import com.maan.eway.common.req.MotorVehicleUsageMasterSaveReq;
+import com.maan.eway.common.req.UsageDropDownReq;
 import com.maan.eway.common.res.MotorVehicleUsageMasterGetRes;
 import com.maan.eway.common.service.MotorVeicleUsageMasterService;
 import com.maan.eway.error.Error;
@@ -79,6 +80,9 @@ public List<Error> validateMotorVehicleUsageDetails(MotorVehicleUsageMasterSaveR
 
 		if (StringUtils.isBlank(req.getVehicleUsageId())) {
 			errorList.add(new Error("01", "VehicleUsageId", "Please Enter VehicleUsageId "));
+		}
+		if (StringUtils.isBlank(req.getSectionId())) {
+			errorList.add(new Error("01", "SectionId", "Please Enter SectionId "));
 		}
 		if (StringUtils.isBlank(req.getVehicleUsageDesc())) {
 			errorList.add(new Error("02", "VehicleUsageDesc", "Please Enter VehicleUsageDesc"));
@@ -173,14 +177,16 @@ public SuccessRes saveMotorVehicleUsageDetails(MotorVehicleUsageMasterSaveReq re
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("vehicleUsageId"), b.get("vehicleUsageId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
-			effectiveDate.where(a1, a2);
+			Predicate a3 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
+			effectiveDate.where(a1, a2,a3);
 
 			// Where
 			Predicate n1 = cb.equal(b.get("status"), "Y");
 			Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n3 = cb.equal(b.get("vehicleUsageId"), req.getVehicleUsageId());
-
-			query.where(n1, n2, n3);
+			Predicate n4 = cb.equal(b.get("sectionId"), req.getSectionId());
+			
+			query.where(n1, n2, n3,n4);
 
 			// Get Result
 			TypedQuery<MotorVehicleUsageMaster> result = em.createQuery(query);
@@ -419,8 +425,8 @@ public List<MotorVehicleUsageMasterGetRes> getactiveMotorVehicleDetails(MotorVeh
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(ocpm1.get("vehicleUsageId"), b.get("vehicleUsageId"));
 		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-
-		effectiveDate.where(a1, a2);
+		Predicate a3 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
+		effectiveDate.where(a1, a2,a3);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -429,8 +435,9 @@ public List<MotorVehicleUsageMasterGetRes> getactiveMotorVehicleDetails(MotorVeh
 		// Where
 		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 		Predicate n2 = cb.equal(b.get("status"),"Y");
-
-		query.where(n1).orderBy(orderList);
+		Predicate n3 = cb.equal(b.get("sectionId"), req.getSectionId());
+		
+		query.where(n1,n2,n3).orderBy(orderList);
 
 		// Get Result
 		TypedQuery<MotorVehicleUsageMaster> result = em.createQuery(query);
@@ -457,7 +464,7 @@ public List<MotorVehicleUsageMasterGetRes> getactiveMotorVehicleDetails(MotorVeh
 }
 
 @Override
-public List<DropDownRes> getVehicleUsageDropdown() {
+public List<DropDownRes> getVehicleUsageDropdown(UsageDropDownReq req) {
 	List<DropDownRes> resList = new ArrayList<DropDownRes>();
 	try {
 		Date today = new Date();
@@ -488,19 +495,22 @@ public List<DropDownRes> getVehicleUsageDropdown() {
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(c.get("vehicleUsageId"),ocpm1.get("vehicleUsageId"));
 		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-		effectiveDate.where(a1,a2);
+		Predicate a5 = cb.equal(c.get("sectionId"),ocpm1.get("sectionId"));
+		effectiveDate.where(a1,a2,a5);
 		// Effective Date End Max Filter
 		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 		Root<MotorVehicleUsageMaster> ocpm2 = effectiveDate2.from(MotorVehicleUsageMaster.class);
 		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
 		Predicate a3 = cb.equal(c.get("vehicleUsageId"),ocpm2.get("vehicleUsageId"));
 		Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-		effectiveDate2.where(a3,a4);
+		Predicate a6 = cb.equal(c.get("sectionId"),ocpm2.get("sectionId"));
+		effectiveDate2.where(a3,a4,a6);
 		// Where
 		Predicate n1 = cb.equal(c.get("status"),"Y");
 		Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 		Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
-		query.where(n1,n2,n3).orderBy(orderList);
+		Predicate n4 = cb.like(c.get("sectionId"), "%" +req.getSectionId() + "%");
+		query.where(n1,n2,n3,n4).orderBy(orderList);
 		// Get Result
 		TypedQuery<MotorVehicleUsageMaster> result = em.createQuery(query);
 		list = result.getResultList();

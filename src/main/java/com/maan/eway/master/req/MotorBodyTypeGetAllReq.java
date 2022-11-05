@@ -19,4 +19,8 @@ public class MotorBodyTypeGetAllReq {
 	@JsonProperty("Offset")
 	private String offset;
 	
+
+	@JsonProperty("SectionId")
+	private String sectionId;
+	
 }

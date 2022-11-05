@@ -35,6 +35,10 @@ public class MotorBodyTypeMaster implements Serializable {
 	@Id
 	@Column(name = "BODY_ID", nullable = false)
 	private Integer bodyId;
+	
+	@Id
+	@Column(name = "SECTION_ID", nullable = false)
+	private Integer sectionId;
 
 	@Id
 	@Temporal(TemporalType.TIMESTAMP)

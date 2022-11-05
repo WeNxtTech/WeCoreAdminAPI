@@ -131,4 +131,7 @@ public class CoverMasterRes implements Serializable {
     
 	@JsonProperty("DependentCoverId")
     private String dependentCoverId;
+	
+	@JsonProperty("IsSelectedYn")
+    private String isSelectedYn;
 }

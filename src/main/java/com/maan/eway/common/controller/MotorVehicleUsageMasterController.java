@@ -21,6 +21,7 @@ import com.maan.eway.common.req.MotorVehicleUsageChangeStatusReq;
 import com.maan.eway.common.req.MotorVehicleUsageMasterGetReq;
 import com.maan.eway.common.req.MotorVehicleUsageMasterGetallReq;
 import com.maan.eway.common.req.MotorVehicleUsageMasterSaveReq;
+import com.maan.eway.common.req.UsageDropDownReq;
 import com.maan.eway.common.res.MotorVehicleUsageMasterGetRes;
 import com.maan.eway.common.service.MotorVeicleUsageMasterService;
 import com.maan.eway.error.Error;
@@ -131,15 +132,15 @@ public class MotorVehicleUsageMasterController {
 				}
 				
 				// Motor Vehicle Usage Master Drop Down Type
-				@GetMapping("/dropdown/vehicleusage")
+				@PostMapping("/dropdown/vehicleusage")
 				@ApiOperation(value = "This method is get Motor Vehicle Usage Master Drop Down")
 
-				public ResponseEntity<CommonRes> getVehicleUsageDropdown() {
+				public ResponseEntity<CommonRes> getVehicleUsageDropdown(@RequestBody UsageDropDownReq req ) {
 
 					CommonRes data = new CommonRes();
 
 					// Save
-					List<DropDownRes> res = entityService.getVehicleUsageDropdown();
+					List<DropDownRes> res = entityService.getVehicleUsageDropdown(req);
 					data.setCommonResponse(res);
 					data.setIsError(false);
 					data.setErrorMessage(Collections.emptyList());

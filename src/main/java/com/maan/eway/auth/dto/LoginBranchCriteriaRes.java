@@ -31,5 +31,8 @@ public class LoginBranchCriteriaRes {
 	@JsonProperty("CompanyLogo")
 	private String companyLogo ;  
 	
+	@JsonProperty("CurrencyId")
+	private String currencyId;  
+	
 	  
 }

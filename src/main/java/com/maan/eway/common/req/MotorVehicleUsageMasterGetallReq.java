@@ -17,4 +17,6 @@ public class MotorVehicleUsageMasterGetallReq {
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
+	@JsonProperty("SectionId")
+    private String sectionId  ;
 }

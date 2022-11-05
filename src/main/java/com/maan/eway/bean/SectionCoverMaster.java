@@ -188,6 +188,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="DEPENDENT_COVER_ID")
     private Integer dependentCoverId;
     
+    @Column(name="IS_SELECTED_YN")
+    private String isSelectedYn;
 
 }
 

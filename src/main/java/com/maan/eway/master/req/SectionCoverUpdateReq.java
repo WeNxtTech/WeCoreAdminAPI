@@ -114,4 +114,7 @@ public class SectionCoverUpdateReq {
     
 	@JsonProperty("DependentCoverId")
     private String dependentCoverId;
+	
+	@JsonProperty("IsSelectedYn")
+    private String isSelectedYn;
 }

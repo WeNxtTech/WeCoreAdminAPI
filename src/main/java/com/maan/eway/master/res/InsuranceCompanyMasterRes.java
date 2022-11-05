@@ -67,4 +67,6 @@ public class InsuranceCompanyMasterRes implements Serializable {
 	@JsonProperty("AmendId")
 	private String amendId;
 	
+	@JsonProperty("CurrencyId")
+	private String currencyId;
 }

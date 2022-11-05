@@ -81,5 +81,8 @@ public class InsuranceCompanyMasterSaveReq {
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 	
+	@JsonProperty("CurrencyId")
+	private String currencyId;
+	
   
 }

@@ -7,4 +7,5 @@ public class RangeParamsReq {
 
 	private Double paramStartValue ;
 	private Double paramEndValue ;
+	private Long rowNo ;
 }

@@ -216,6 +216,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				  List<RangeParamsReq>  param3To4Values = new ArrayList<RangeParamsReq>();
 				  List<RangeParamsReq>  param5To6Values = new ArrayList<RangeParamsReq>();
 				  List<RangeParamsReq>  param7To8Values = new ArrayList<RangeParamsReq>();
+					
 					/*	  List<String>  discrete9Values = new ArrayList<String>();
 				  List<String>  discrete10Values = new ArrayList<String>();
 				  List<String>  discrete11Values = new ArrayList<String>();
@@ -350,28 +351,27 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					boolean param8Dup = false ;
 					
 					List<RangeParamsReq>  fiterParam1 = param1to2Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null && ( o.getParamStartValue() <= param1Value &&  param1Value <= o.getParamEndValue())  ).collect(Collectors.toList()) ;
-					//fiterParam1 = fiterParam1.size() <= 0 ? param1to2Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&  param1Value <= o.getParamStartValue()  && param1Value <= o.getParamEndValue()      ).collect(Collectors.toList()) : fiterParam1 ;
 					fiterParam1 = fiterParam1.size() <= 0 ? param1to2Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null && param1Value <= o.getParamStartValue()   ).collect(Collectors.toList()) :fiterParam1 ;
+					
 					List<RangeParamsReq>  fiterParam2 = param1to2Values.stream().filter(o ->  o.getParamStartValue()!=null && o.getParamEndValue()!=null &&  (o.getParamStartValue() <= param2Value &&  param2Value <= o.getParamEndValue()) ).collect(Collectors.toList()) ;
-					//fiterParam2 = fiterParam2.size() <= 0 ? param1to2Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&  param2Value <= o.getParamStartValue()  &&  param2Value  <=  o.getParamEndValue()   ).collect(Collectors.toList()) : fiterParam2 ;
 					fiterParam2 = fiterParam2.size() <= 0 ? param1to2Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&    param2Value <= o.getParamEndValue()     ).collect(Collectors.toList()) : fiterParam2 ;
+					
 					List<RangeParamsReq>  fiterParam3 = param3To4Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null && ( o.getParamStartValue() <= param3Value &&  param3Value <= o.getParamEndValue()) ).collect(Collectors.toList()) ;
-					//fiterParam3 = fiterParam3.size() <= 0 ? param3To4Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&  param3Value <= o.getParamStartValue()  &&    param3Value  <= o.getParamEndValue() ).collect(Collectors.toList()) : fiterParam3 ;
 					fiterParam3 = fiterParam3.size() <= 0 ? param3To4Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&   param3Value <= o.getParamStartValue() ).collect(Collectors.toList()) : fiterParam3 ;
+					
 					List<RangeParamsReq>  fiterParam4 = param3To4Values.stream().filter(o ->  o.getParamStartValue()!=null && o.getParamEndValue()!=null && ( o.getParamStartValue() <= param4Value &&  param4Value <= o.getParamEndValue()) ).collect(Collectors.toList()) ;
-					//fiterParam4 = fiterParam4.size() <= 0 ? param3To4Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&  param4Value <= o.getParamStartValue()  && param4Value <= o.getParamEndValue()     ).collect(Collectors.toList()) : fiterParam4;
 					fiterParam4 = fiterParam4.size() <= 0 ? param3To4Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&  param4Value <= o.getParamEndValue()    ).collect(Collectors.toList()) :fiterParam4 ;
+					
 					List<RangeParamsReq>  fiterParam5 = param5To6Values.stream().filter(o ->  o.getParamStartValue()!=null && o.getParamEndValue()!=null && ( o.getParamStartValue() <= param5Value &&  param5Value <= o.getParamEndValue()) ).collect(Collectors.toList()) ;
-					//fiterParam5 = fiterParam5.size() <= 0 ? param5To6Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&  param5Value <= o.getParamStartValue()  && param5Value <= o.getParamEndValue()    ).collect(Collectors.toList()) : fiterParam5 ;
 					fiterParam5 = fiterParam5.size() <= 0 ? param5To6Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&  o.getParamStartValue() <= param5Value   && param5Value <= o.getParamEndValue()    ).collect(Collectors.toList()) : fiterParam5 ;
+					
 					List<RangeParamsReq>  fiterParam6 = param5To6Values.stream().filter(o ->  o.getParamStartValue()!=null && o.getParamEndValue()!=null && ( param5Value <= o.getParamStartValue() )  ).collect(Collectors.toList()) ;
-					//fiterParam6 = fiterParam6.size() <= 0 ? param5To6Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&  param6Value <= o.getParamStartValue()  &&  param6Value  <= o.getParamEndValue()   ).collect(Collectors.toList()) :fiterParam6 ;
 					fiterParam6 = fiterParam6.size() <= 0 ? param5To6Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&    param6Value <= o.getParamEndValue()   ).collect(Collectors.toList()) : fiterParam6;
+					
 					List<RangeParamsReq>  fiterParam7 = param7To8Values.stream().filter(o ->  o.getParamStartValue()!=null && o.getParamEndValue()!=null && ( o.getParamStartValue() <= param7Value &&  param7Value <= o.getParamEndValue()) ).collect(Collectors.toList()) ;
-					//fiterParam7 = fiterParam7.size() <= 0 ? param7To8Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&  param7Value <= o.getParamStartValue()  && param7Value <= o.getParamEndValue()     ).collect(Collectors.toList()) :fiterParam7 ;
 					fiterParam7 = fiterParam7.size() <= 0 ? param7To8Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null && o.getParamStartValue() <= param7Value   && param7Value <= o.getParamEndValue()     ).collect(Collectors.toList()) :fiterParam7 ;
+					
 					List<RangeParamsReq>  fiterParam8 = param7To8Values.stream().filter(o ->  o.getParamStartValue()!=null && o.getParamEndValue()!=null && ( param7Value <= o.getParamStartValue()  )).collect(Collectors.toList()) ;
-					//fiterParam8 = fiterParam8.size() <= 0 ? param7To8Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&  param8Value <= o.getParamStartValue()  && param8Value <= o.getParamEndValue()    ).collect(Collectors.toList()) : fiterParam8 ;
 					fiterParam8 = fiterParam8.size() <= 0 ? param7To8Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&     param8Value <= o.getParamEndValue()   ).collect(Collectors.toList()) : fiterParam8 ;
 					
 					// Param1 to 2 Duplicate Setup
@@ -387,6 +387,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					} 
 					param1To2.setParamStartValue(param1Value);
 					param1To2.setParamEndValue(param2Value);
+					param1To2.setRowNo(row);
 					param1to2Values.add(param1To2);
 					
 					
@@ -403,6 +404,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					
 					param3To4.setParamStartValue(param3Value);
 					param3To4.setParamEndValue(param4Value);
+					param3To4.setRowNo(row);
 					param3To4Values.add(param3To4);
 					
 					// Param5 to 6 Duplicate Setup
@@ -417,6 +419,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					}
 					param5To6.setParamStartValue(param5Value);
 					param5To6.setParamEndValue(param6Value);
+					param5To6.setRowNo(row);
 					param5To6Values.add(param5To6);
 					
 					// Param7 to 8 Duplicate Setup
@@ -431,36 +434,69 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					}
 					param7To8.setParamStartValue(param7Value);
 					param7To8.setParamEndValue(param8Value);
+					param7To8.setRowNo(row);
 					param7To8Values.add(param7To8);
 					
 					
 					// Full Setup Duplicate
 					List<DuplicateParamCheckingReq> filterDupParams = new ArrayList<DuplicateParamCheckingReq>();
 					if(  param1Dup==true  && param2Dup==true && param3Dup==true && param4Dup==true && param5Dup==true &&
-							param6Dup==true && param7Dup==true && param8Dup==true  ) {
-						filterDupParams = duplicateParams.stream().filter( o ->   o.getParam9().equalsIgnoreCase(param9Value) && o.getParam10().equalsIgnoreCase(param10Value) && 
+							param6Dup==true && param7Dup==true && param8Dup==true  ) { 
+						filterDupParams = duplicateParams.stream().filter( o ->  
+						o.getParam9().equalsIgnoreCase(param9Value) && o.getParam10().equalsIgnoreCase(param10Value) && 
 								o.getParam11().equalsIgnoreCase(param11Value) && o.getParam12().equalsIgnoreCase(param12Value) ).collect(Collectors.toList());
+						
+						if( filterDupParams.size()>0 ) {
+						
+							// Row No Filter
+							List<Long> fiterParam1RowNo  =  fiterParam1.stream().map( RangeParamsReq :: getRowNo ).collect(Collectors.toList());
+							//List<Long> fiterParam2RowNo  =  fiterParam2.stream().map( RangeParamsReq :: getRowNo ).collect(Collectors.toList());	
+							List<Long> fiterParam3RowNo  =  fiterParam3.stream().map( RangeParamsReq :: getRowNo ).collect(Collectors.toList());	
+							//List<Long> fiterParam4RowNo  =  fiterParam4.stream().map( RangeParamsReq :: getRowNo ).collect(Collectors.toList());	
+							List<Long> fiterParam5RowNo  =  fiterParam5.stream().map( RangeParamsReq :: getRowNo ).collect(Collectors.toList());	
+							//List<Long> fiterParam6RowNo  =  fiterParam6.stream().map( RangeParamsReq :: getRowNo ).collect(Collectors.toList());	
+							List<Long> fiterParam7RowNo  =  fiterParam7.stream().map( RangeParamsReq :: getRowNo ).collect(Collectors.toList());	
+							//List<Long> fiterParam8RowNo  =  fiterParam8.stream().map( RangeParamsReq :: getRowNo ).collect(Collectors.toList());
+							
+							
+							List<Long> sameRowNoFilter   =  fiterParam1RowNo.stream().filter(e -> fiterParam3RowNo.contains(e)).collect(Collectors.toList());
+							
+							if(sameRowNoFilter.size()> 0) {
+								sameRowNoFilter =  sameRowNoFilter.stream().filter(e -> fiterParam5RowNo.contains(e)).collect(Collectors.toList());
+								if(sameRowNoFilter.size()> 0) {
+										sameRowNoFilter =  sameRowNoFilter.stream().filter(e -> fiterParam7RowNo.contains(e)).collect(Collectors.toList());
+									if(sameRowNoFilter.size()> 0) {
+											List<Long> dupParamRows = 	filterDupParams.stream().map(DuplicateParamCheckingReq :: getRowNo ).collect(Collectors.toList());				
+											sameRowNoFilter =  sameRowNoFilter.stream().filter(e -> dupParamRows.contains(e)).collect(Collectors.toList());
+											
+										if(sameRowNoFilter.size()> 0) {
+											errorList.add(new Error("01","Duplicate" ," Duplicate  Setup Available In Row No : " + row ));
+										}
+									}
+								}
+							}
+
+							
+						}
 						
 					}		
 					
-					if ( filterDupParams.size()>0 ) {
-						errorList.add(new Error("01","Duplicate" ," Duplicate  Setup Available In Row No : " + row ));	
-					} else {
-						dupParams.setParam1(param1Value);
-						dupParams.setParam2(param2Value);
-						dupParams.setParam3(param3Value);
-						dupParams.setParam4(param4Value);
-						dupParams.setParam5(param5Value);
-						dupParams.setParam6(param6Value);
-						dupParams.setParam7(param7Value);
-						dupParams.setParam8(param8Value);
-						dupParams.setParam9(param9Value);
-						dupParams.setParam10(param10Value);
-						dupParams.setParam11(param11Value);
-						dupParams.setParam12(param12Value);
-						duplicateParams.add(dupParams);
+					dupParams.setParam1(param1Value);
+					dupParams.setParam2(param2Value);
+					dupParams.setParam3(param3Value);
+					dupParams.setParam4(param4Value);
+					dupParams.setParam5(param5Value);
+					dupParams.setParam6(param6Value);
+					dupParams.setParam7(param7Value);
+					dupParams.setParam8(param8Value);
+					dupParams.setParam9(param9Value);
+					dupParams.setParam10(param10Value);
+					dupParams.setParam11(param11Value);
+					dupParams.setParam12(param12Value);
+					dupParams.setRowNo(row);
+					duplicateParams.add(dupParams);
 						
-					}
+				
 					/*
 					// Param 1 & Param 2 Validation
 					if ( param1==true  ) {

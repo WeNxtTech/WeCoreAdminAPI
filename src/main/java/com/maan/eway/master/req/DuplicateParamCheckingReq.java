@@ -42,4 +42,8 @@ public class DuplicateParamCheckingReq {
     
     @JsonProperty("Param12" )
     private String param12 ;
+    
+    @JsonProperty("RowNo" )
+    private Long rowNo ;
+   
 }

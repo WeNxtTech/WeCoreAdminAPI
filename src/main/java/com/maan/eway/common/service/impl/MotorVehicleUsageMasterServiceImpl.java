@@ -480,7 +480,7 @@ public List<DropDownRes> getVehicleUsageDropdown() {
 		query.select(c);
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(c.get("vehicleUsageId")));
+		orderList.add(cb.asc(c.get("vehicleUsageDesc")));
 		
 		// Effective Date Start Max Filter
 		Subquery<Long> effectiveDate = query.subquery(Long.class);

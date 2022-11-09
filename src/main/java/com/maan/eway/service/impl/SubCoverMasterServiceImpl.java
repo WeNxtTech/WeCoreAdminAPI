@@ -652,7 +652,7 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 	public SubCoverMasterGetRes getBySubCoverId(SubCoverMasterGetReq req) {
 		SubCoverMasterGetRes res = new SubCoverMasterGetRes();
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
-		String pattern = "#####0.00000";
+		String pattern = "#####0.00";
 		DecimalFormat df = new DecimalFormat(pattern);
 		
 	try {

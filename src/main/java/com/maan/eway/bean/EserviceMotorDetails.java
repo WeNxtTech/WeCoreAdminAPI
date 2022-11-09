@@ -278,7 +278,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="DRIVEN_BY", length=5)
     private String     drivenBy ;
 
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name="POLICY_START_DATE")
     private Date       policyStartDate ;
 
@@ -288,7 +288,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="DRIVEN_BY_UNDER_AGE", length=5)
     private String     drivenByUnderAge ;
 
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name="POLICY_END_DATE")
     private Date       policyEndDate ;
 
@@ -350,7 +350,7 @@ private static final long serialVersionUID = 1L;
     private String     otherInsurance ;
 
     @Column(name="FIRST_LOSS_PAYEE")
-    private Double     firstLossPayee ;
+    private String     firstLossPayee ;
 
     @Column(name="OTHER_INSURANCE_DETAILS", length=200)
     private String     otherInsuranceDetails ;

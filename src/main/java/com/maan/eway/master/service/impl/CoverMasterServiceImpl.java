@@ -783,7 +783,7 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 	public CoverMasterRes getByCoverId(CoverMasterGetReq req) {
 		CoverMasterRes res = new CoverMasterRes();
 		DozerBeanMapper mapper = new DozerBeanMapper();
-		String pattern = "#####0.00000";
+		String pattern = "#####0.00";
 		DecimalFormat df = new DecimalFormat(pattern);
 		try {
 			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();

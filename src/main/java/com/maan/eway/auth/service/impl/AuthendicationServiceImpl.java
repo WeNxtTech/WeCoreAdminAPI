@@ -385,7 +385,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 					BrokerProductsGetRes productRes = new BrokerProductsGetRes();
 					
 					if(StringUtils.isNotBlank(data.getStatus()) && data.getStatus().equalsIgnoreCase("Y")  ) {
-						String pattern = "#####0";
+						String pattern = "#####0.00";
 						DecimalFormat df = new DecimalFormat(pattern);
 						productRes.setOldProductName(data.getOldProductName() );
 						productRes.setSumInsuredStart(data.getSumInsuredStart()==null?"" : df.format(data.getSumInsuredStart()) );

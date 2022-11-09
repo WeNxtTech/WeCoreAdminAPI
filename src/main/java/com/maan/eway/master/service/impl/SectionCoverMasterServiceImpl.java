@@ -468,7 +468,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 	public SectionCoverMasterRes getBySectionCoverId(SectionCoverMasterGetReq req) {
 		SectionCoverMasterRes res = new SectionCoverMasterRes();
 		DozerBeanMapper mapper = new DozerBeanMapper();
-		String pattern = "#####0.00000";
+		String pattern = "#####0.00";
 		DecimalFormat df = new DecimalFormat(pattern);
 		
 		try {
@@ -1404,7 +1404,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 						saveCover.setCoverName(req.getCoverName());
 						saveCover.setCoverDesc(req.getCoverDesc());
 						saveCover.setToolTip(req.getToolTip());
-						
+						saveCover.setCoreAppCode(req.getCoreAppCode());
 						saveCover.setSectionId(Integer.valueOf(req.getSectionId()));
 						saveCover.setProductId(Integer.valueOf(req.getProductId()));
 						saveCover.setCompanyId(req.getCompanyId());
@@ -1438,7 +1438,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 					saveCover.setCoverName(req.getCoverName());
 					saveCover.setCoverDesc(req.getCoverDesc());
 					saveCover.setToolTip(req.getToolTip());
-					
+					saveCover.setCoreAppCode(req.getCoreAppCode());
 					saveCover.setCreatedBy(req.getCreatedBy());
 					saveCover.setRegulatoryCode(req.getRegulatoryCode());
 					saveCover.setEffectiveDateStart(effDate);
@@ -1471,6 +1471,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				saveData.setEffectiveDateEnd(endDate);
 				saveData.setEntryDate(new Date());
 				saveData.setAmendId(amendId);
+				saveData.setCoreAppCode(req.getCoreAppCode());
 				saveData.setRatingId(Integer.valueOf(coverId));	
 				saveData.setCoverName(req.getCoverName());
 				saveData.setCoverDesc(req.getCoverDesc());

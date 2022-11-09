@@ -415,7 +415,7 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			for(LoginProductCriteriaRes data :  loginProducts) {
 				BrokerCompanyProductsGetRes productRes = new BrokerCompanyProductsGetRes();
 				
-				String pattern = "#####0";
+				String pattern = "#####0.00";
 				DecimalFormat df = new DecimalFormat(pattern);
 				productRes.setProductId(data.getProductId()==null?"" :data.getProductId().toString() );
 				productRes.setProductName(data.getProductName());

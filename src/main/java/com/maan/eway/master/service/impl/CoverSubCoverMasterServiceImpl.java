@@ -352,7 +352,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 		CoverSubCoverGetRes res = new CoverSubCoverGetRes();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-		String pattern = "#####0.00000";
+		String pattern = "#####0.00";
 		DecimalFormat df = new DecimalFormat(pattern);
 		try {
 			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();

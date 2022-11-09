@@ -1715,7 +1715,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 	public FactorRateGetRes getByFactorRateId(FactorRateGetReq req) {
 		FactorRateGetRes res = new FactorRateGetRes();
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
-		String pattern = "#####0.00000";
+		String pattern = "#####0.00";
 		DecimalFormat df = new DecimalFormat(pattern);
 		
 		try {

@@ -270,7 +270,7 @@ public class LoginReferalServiceImpl implements LoginReferalService {
 						
 						referalRes.setStatus("N");
 						if (filterLoginReferals.size() > 0 ) {
-							String pattern = "#####0";
+							String pattern = "#####0.00";
 							DecimalFormat df = new DecimalFormat(pattern);
 							referalRes.setOldReferalName(filterLoginReferals.get(0).getOldReferalName() );
 							referalRes.setSumInsuredStart(filterLoginReferals.get(0).getSumInsuredStart()==null?"" : df.format(filterLoginReferals.get(0).getSumInsuredStart()) );
@@ -457,7 +457,7 @@ public class LoginReferalServiceImpl implements LoginReferalService {
 			for(IssuerReferalCriteriaRes data :  loginReferals) {
 				IssuerReferalCompanyGetRes referalRes = new IssuerReferalCompanyGetRes();
 				
-				String pattern = "#####0";
+				String pattern = "#####0.00";
 				DecimalFormat df = new DecimalFormat(pattern);
 				referalRes.setOldReferalName(data.getOldReferalName());
 				referalRes.setSumInsuredStart(data.getSumInsuredStart()==null?"" : df.format(data.getSumInsuredStart()) );

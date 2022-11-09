@@ -87,6 +87,16 @@ private static final long serialVersionUID = 1L;
     @Column(name="DISC_LOAD_ID", nullable=false)
     private Integer    discLoadId ;
 
+    
+    @Column(name="CD_REFNO", nullable=false)
+    private String       cdRefno ;
+
+    @Column(name="MS_REFNO", nullable=false)
+    private String       msRefno ;
+
+    @Column(name="VD_REFNO", nullable=false)
+    private String       vdRefno ;
+    
     //--- ENTITY DATA FIELDS 
     @Column(name="COVER_NAME", length=100)
     private String     coverName ;

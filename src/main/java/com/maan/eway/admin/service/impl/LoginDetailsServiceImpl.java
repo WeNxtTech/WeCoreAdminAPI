@@ -580,11 +580,12 @@ this.repository = repo;
 			String menuId = loginReq.getMenuId()==null || loginReq.getMenuId().size()==0 ?"" : String.join(",", loginReq.getMenuId());
 			dozerMapper.map(loginReq, updateLogin);
 			
-			if (StringUtils.isNotBlank(loginReq.getPassword())) {
+		/*	if (StringUtils.isNotBlank(loginReq.getPassword())) {
 				passwordEnc passEnc = new passwordEnc();
 				String newpass =  passEnc.crypt(loginReq.getPassword().trim());
 				updateLogin.setPassword(newpass);
-			}
+			} */
+			updateLogin.setPassword(findLogin.getPassword());
 			updateLogin.setCreatedBy(findLogin.getCreatedBy() );
 			if(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("Issuer") ) {
 				updateLogin.setOaCode(loginReq.getOaCode());

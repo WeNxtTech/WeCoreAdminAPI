@@ -13,6 +13,7 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import com.maan.eway.bean.CustomerDetails;
@@ -39,4 +40,9 @@ public interface EServiceMotorDetailsRepository  extends JpaRepository<EserviceM
 
 	EserviceMotorDetails findByRequestReferenceNoAndIdNumberAndVehicleId(String requestReferenceNo, String idNumber,
 			Integer valueOf);
+
+	List<EserviceMotorDetails> findByRequestReferenceNoOrderByVehicleIdAsc(String requestReferenceNo);
+
+	List<EserviceMotorDetails> findByRequestReferenceNoAndVehicleIdInOrderByVehicleIdAsc(String requestReferenceNo,
+			List<Integer> vehicleIds);
 }

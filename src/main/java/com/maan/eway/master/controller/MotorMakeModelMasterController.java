@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +24,7 @@ import com.maan.eway.master.res.MotorColorGetRes;
 import com.maan.eway.master.res.MotorMakeModelGetRes;
 import com.maan.eway.master.service.MotorMakeModelMasterService;
 import com.maan.eway.res.CommonRes;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
@@ -136,6 +139,28 @@ public class MotorMakeModelMasterController {
 		} else {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
+	}
+	
+	@GetMapping("/dropdown/motormakemodel/{makeid}")
+	@ApiOperation(value = "This method is get Motor Make Master Drop Down")
+
+	public ResponseEntity<CommonRes> getMotorMakeModelDropdown(@PathVariable ("makeid") String makeId ) {
+
+		CommonRes data = new CommonRes();
+
+		// Save
+		List<DropDownRes> res = service.getMotorMakeModelDropdown(makeId);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
 	}
 
 }

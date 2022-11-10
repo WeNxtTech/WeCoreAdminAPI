@@ -605,6 +605,73 @@ public SuccessRes changeStatusOfVehicleUsage(MotorVehicleUsageChangeStatusReq re
 }
 
 
+@Override
+public List<DropDownRes> getInduvidualVehicleUsageDropdown() {
+	List<DropDownRes> resList = new ArrayList<DropDownRes>();
+	try {
+		Date today = new Date();
+		Calendar cal = new GregorianCalendar();
+		cal.setTime(today);
+		cal.set(Calendar.HOUR_OF_DAY, 23);;
+		cal.set(Calendar.MINUTE, 1);
+		today = cal.getTime();
+		cal.set(Calendar.HOUR_OF_DAY, 1);
+		cal.set(Calendar.MINUTE, 1);
+		Date todayEnd = cal.getTime();
+		
+		// Criteria
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<MotorVehicleUsageMaster> query=  cb.createQuery(MotorVehicleUsageMaster.class);
+		List<MotorVehicleUsageMaster> list = new ArrayList<MotorVehicleUsageMaster>();
+		// Find All
+		Root<MotorVehicleUsageMaster> c = query.from(MotorVehicleUsageMaster.class);
+		//Select
+		query.select(c);
+		// Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.asc(c.get("vehicleUsageDesc")));
+		
+		// Effective Date Start Max Filter
+		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Root<MotorVehicleUsageMaster> ocpm1 = effectiveDate.from(MotorVehicleUsageMaster.class);
+		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		Predicate a1 = cb.equal(c.get("vehicleUsageId"),ocpm1.get("vehicleUsageId"));
+		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+		Predicate a5 = cb.equal(c.get("sectionId"),ocpm1.get("sectionId"));
+		effectiveDate.where(a1,a2,a5);
+		// Effective Date End Max Filter
+		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+		Root<MotorVehicleUsageMaster> ocpm2 = effectiveDate2.from(MotorVehicleUsageMaster.class);
+		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+		Predicate a3 = cb.equal(c.get("vehicleUsageId"),ocpm2.get("vehicleUsageId"));
+		Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+		Predicate a6 = cb.equal(c.get("sectionId"),ocpm2.get("sectionId"));
+		effectiveDate2.where(a3,a4,a6);
+		// Where
+		Predicate n1 = cb.equal(c.get("status"),"Y");
+		Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
+		Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
+		query.where(n1,n2,n3).orderBy(orderList);
+		// Get Result
+		TypedQuery<MotorVehicleUsageMaster> result = em.createQuery(query);
+		list = result.getResultList();
+		for (MotorVehicleUsageMaster data : list) {
+			// Response 
+			DropDownRes res = new DropDownRes();
+			res.setCode(data.getVehicleUsageId().toString());
+			res.setCodeDesc(data.getVehicleUsageDesc());
+			resList.add(res);
+		}
+	}
+		catch(Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->"+e.getMessage());
+			return null;
+			}
+		return resList;
+	}
+
+
 
 
 

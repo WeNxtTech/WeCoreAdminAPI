@@ -168,6 +168,29 @@ public class MotorBodyTypeMasterController {
 
 		}
 		
+		// Body Type Master Drop Down Type
+		@GetMapping("/dropdown/induvidual/bodytype")
+		@ApiOperation(value = "This method is get Body Type Drop Down")
+
+		public ResponseEntity<CommonRes> getInduvidualBodyTypeMasterDropdown() {
+
+			CommonRes data = new CommonRes();
+
+			// Save
+			List<DropDownRes> res = service.getInduvidualBodyTypeMasterDropdown();
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+
+		}
+		
 
 		@PostMapping("/bodytype/changestatus")
 		@ApiOperation(value = "This method is get Body Type Change Status")

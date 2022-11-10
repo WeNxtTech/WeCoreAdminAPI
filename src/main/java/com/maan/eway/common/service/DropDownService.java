@@ -97,4 +97,6 @@ public interface DropDownService {
 
 	List<DropDownRes> getLanguage();
 
+	List<DropDownRes> getFuelType();
+
 }

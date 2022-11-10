@@ -13,6 +13,7 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.maan.eway.bean.FactorRateRequestDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,5 +30,16 @@ import com.maan.eway.bean.FactorRateRequestDetailsId;
  
  
 public interface FactorRateRequestDetailsRepository  extends JpaRepository<FactorRateRequestDetails,FactorRateRequestDetailsId > , JpaSpecificationExecutor<FactorRateRequestDetails> {
+
+	List<FactorRateRequestDetails> findByRequestReferenceNoAndDiscLoadIdOrderByVehicleIdAsc(String requestReferenceNo,
+			int i);
+
+	List<FactorRateRequestDetails> findByRequestReferenceNoOrderByVehicleIdAsc(String requestReferenceNo);
+
+	List<FactorRateRequestDetails> findByRequestReferenceNoAndDiscLoadIdAndVehicleIdInOrderByVehicleIdAsc(
+			String requestReferenceNo, int i, List<Integer> vehicleIds);
+
+	List<FactorRateRequestDetails> findByRequestReferenceNoAndVehicleIdInOrderByVehicleIdAsc(String requestReferenceNo,
+			List<Integer> vehicleIds);
 
 }

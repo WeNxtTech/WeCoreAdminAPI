@@ -80,8 +80,8 @@ public class PersonalInfoServiceImpl implements PersonalInfoService {
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		PersonalInfo save = new PersonalInfo();
 		try {
-			PersonalInfo findData = repository.findByPolicyHolderTypeidAndPolicyHolderTypeAndIdNumber(
-					req.getPolicyHolderTypeid(), req.getPolicyHolderType(), req.getIdNumber());
+			PersonalInfo findData = null ; // repository.findByPolicyHolderTypeidAndPolicyHolderTypeAndIdNumber(
+			//		req.getPolicyHolderTypeid(), req.getPolicyHolderType(), req.getIdNumber());
 			Date entryDate = null;
 			if (findData == null) {
 				// Save
@@ -129,8 +129,8 @@ public class PersonalInfoServiceImpl implements PersonalInfoService {
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 
 		try {
-			PersonalInfo data = repository.findByPolicyHolderTypeidAndPolicyHolderTypeAndIdNumber(
-					req.getPolicyHolderTypeid(), req.getPolicyHolderType(), req.getIdNumber());
+			PersonalInfo data = null ; //repository.findByPolicyHolderTypeidAndPolicyHolderTypeAndIdNumber(
+			//		req.getPolicyHolderTypeid(), req.getPolicyHolderType(), req.getIdNumber());
 			res = dozerMapper.map(data, PersonalInfoGetRes.class);
 
 		} catch (Exception e) {
@@ -178,7 +178,7 @@ public class PersonalInfoServiceImpl implements PersonalInfoService {
 			int offset = StringUtils.isBlank(req.getOffset()) ? 10 : Integer.valueOf(req.getOffset());
 			Pageable paging = PageRequest.of(limit, offset, Sort.by("entryDate").descending());
 
-			Page<PersonalInfo> datas = repository.findByStatus(paging, "Y");
+			Page<PersonalInfo> datas =null ;// repository.findByStatus(paging, "Y");
 			for (PersonalInfo data : datas) {
 				PersonalInfoGetRes res = new PersonalInfoGetRes();
 				res = dozerMapper.map(data, PersonalInfoGetRes.class);

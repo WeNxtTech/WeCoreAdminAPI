@@ -155,6 +155,30 @@ public class MotorVehicleUsageMasterController {
 				}
 				
 
+				// Motor Vehicle Usage Master Drop Down Type
+				@GetMapping("/dropdown/induvidual/vehicleusage")
+				@ApiOperation(value = "This method is get Motor Vehicle Usage Master Drop Down")
+
+				public ResponseEntity<CommonRes> getInduvidualVehicleUsageDropdown() {
+
+					CommonRes data = new CommonRes();
+
+					// Save
+					List<DropDownRes> res = entityService.getInduvidualVehicleUsageDropdown();
+					data.setCommonResponse(res);
+					data.setIsError(false);
+					data.setErrorMessage(Collections.emptyList());
+					data.setMessage("Success");
+
+					if (res != null) {
+						return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+					} else {
+						return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+					}
+
+				}
+				
+
 				@PostMapping("/vehicleusage/changestatus")
 				@ApiOperation(value = "This method is get Vehicle Usage Change Status")
 				public ResponseEntity<CommonRes> changeStatusOfVehicleUsage(@RequestBody MotorVehicleUsageChangeStatusReq req) {

@@ -37,6 +37,8 @@ public interface MotorVeicleUsageMasterService  {
 
 	List<DropDownRes> getVehicleUsageDropdown(UsageDropDownReq req);
 
+	List<DropDownRes> getInduvidualVehicleUsageDropdown();
+
 	
 	
 }

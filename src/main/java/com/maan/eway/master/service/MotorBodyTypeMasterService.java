@@ -30,5 +30,7 @@ public interface MotorBodyTypeMasterService {
 
 	List<DropDownRes> getBodyTypeMasterDropdown(BodyTypeDropDownReq req);
 
+	List<DropDownRes> getInduvidualBodyTypeMasterDropdown();
+
 
 }

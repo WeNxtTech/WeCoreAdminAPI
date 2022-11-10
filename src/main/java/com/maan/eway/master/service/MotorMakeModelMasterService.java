@@ -8,6 +8,7 @@ import com.maan.eway.master.req.MotorMakeModelGetReq;
 import com.maan.eway.master.req.MotorMakeModelSaveReq;
 import com.maan.eway.master.res.MotorColorGetRes;
 import com.maan.eway.master.res.MotorMakeModelGetRes;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 
 public interface MotorMakeModelMasterService {
@@ -21,5 +22,7 @@ public interface MotorMakeModelMasterService {
 	List<MotorMakeModelGetRes> getallMotorMakeModel(MotorMakeModelGetAllReq req);
 
 	List<MotorColorGetRes> getactiveMakeModel(MotorMakeModelGetAllReq req);
+
+	List<DropDownRes> getMotorMakeModelDropdown( String makeId );
 
 }

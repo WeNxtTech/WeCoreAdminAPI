@@ -104,7 +104,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			
 			String productId="";
 			
-			if (StringUtils.isBlank(req.getProductId().toString())) {
+			if (req.getProductId() ==null || StringUtils.isBlank(req.getProductId().toString())) {
 					// Save
 				    //Long totalCount = repo.count();
 					Long totalCount =getProductMasterTableCount();

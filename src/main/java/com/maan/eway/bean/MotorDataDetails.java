@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -170,8 +169,17 @@ private static final long serialVersionUID = 1L;
     @Column(name="TARE_WEIGHT")
     private Double     tareWeight ;
 
-    @Column(name="ACTUAL_PREMIUM")
-    private Double     actualPremium ;
+    @Column(name="ACTUAL_PREMIUM_LC")
+    private Double     actualPremiumLc ;
+    
+    @Column(name="ACTUAL_PREMIUM_FC")
+    private Double     actualPremiumFc ;
+    
+    @Column(name="OVERALL_PREMIUM_LC")
+    private Double     overAllPremiumLc ;
+    
+    @Column(name="OVERALL_PREMIUM_FC")
+    private Double     overAllPremiumFc ;
 
     @Column(name="COVERNOTE_NO", length=20)
     private String     covernoteNo ;

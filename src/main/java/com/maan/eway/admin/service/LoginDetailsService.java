@@ -6,6 +6,7 @@
 package com.maan.eway.admin.service;
 import java.util.List;
 
+import com.maan.eway.admin.controller.BelogingBrokerDropDwonReq;
 import com.maan.eway.admin.req.AttachCompaniesReq;
 import com.maan.eway.admin.req.AttachCompnayProductRequest;
 import com.maan.eway.admin.req.AttachIssuerReferalReq;
@@ -76,6 +77,7 @@ SuccessRes savemenuids(MenuIdSaveReq req);
 MenuIdGetRes getmenuids(MenuIdGetReq req);
 
 List<BrokerDropDownRes> getBrokerIds();
+List<BrokerDropDownRes> getBelogingBroker(BelogingBrokerDropDwonReq req);
 
 
 

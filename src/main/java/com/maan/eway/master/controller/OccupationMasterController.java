@@ -18,6 +18,7 @@ import com.maan.eway.master.res.CurrencyMasterRes;
 import com.maan.eway.master.res.OccupationMasterRes;
 import com.maan.eway.master.service.CurrencyMasterService;
 import com.maan.eway.master.service.OccupationMasterService;
+import com.maan.eway.master.service.impl.AcExecutiveDropDownReq;
 import com.maan.eway.bean.CurrencyMaster;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
@@ -180,6 +181,28 @@ public class OccupationMasterController {
 
 		}
 		
+		// Occupation Master Drop Down Type
+		@GetMapping("/dropdown/acexecutives")
+		@ApiOperation(value = "This method is get Occupation Master Drop Down")
+
+		public ResponseEntity<CommonRes> getAcExecutivesDropdown(@RequestBody AcExecutiveDropDownReq req) {
+
+			CommonRes data = new CommonRes();
+
+			// Save
+			List<DropDownRes> res = service.getAcExecutivesDropdown(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+
+		}
 
 		@PostMapping("/occupation/changestatus")
 		@ApiOperation(value = "This method is get Occupation Change Status")

@@ -12,9 +12,20 @@ public class NewQuoteReq {
 	@JsonProperty("RequestReferenceNo")
 	private String requestReferenceNo ;
 	
-	@JsonProperty("VehicleIdsList")
+	@JsonProperty("Vehicles")
 	private List<VehicleIdsReq> vehicleIdsList;
 	
 	@JsonProperty("CreatedBy")
 	private String createdBy;
+	
+	@JsonProperty("BrokerCode")
+	private String brokerCode;
+	@JsonProperty("BrokerLoginId")
+	private String brokerLoginId;
+	
+	@JsonProperty("AcExecutiveId")
+	private String acExecutiveId;
+	
+	@JsonProperty("ProductId")
+	private String productId;
 }

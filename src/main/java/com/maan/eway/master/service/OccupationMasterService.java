@@ -26,6 +26,7 @@ import com.maan.eway.master.res.CurrencyMasterRes;
 import com.maan.eway.master.res.OccupationMasterRes;
 import com.maan.eway.master.res.ProductMasterRes;
 import com.maan.eway.master.res.RegionMasterRes;
+import com.maan.eway.master.service.impl.AcExecutiveDropDownReq;
 import com.maan.eway.error.Error;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
@@ -49,5 +50,7 @@ public interface OccupationMasterService  {
 	List<DropDownRes> getOccupationMasterDropdown();
 
 	SuccessRes changeStatusOfOccupation(OccupationChangeStatusReq req);
+
+	List<DropDownRes> getAcExecutivesDropdown(AcExecutiveDropDownReq req);
 
 }

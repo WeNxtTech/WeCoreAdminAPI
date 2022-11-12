@@ -428,6 +428,26 @@ public class LoginDetailsController {
 
 	}
 	
+	@PostMapping("/dropdown/belongingbroker")
+	@ApiOperation(value = "This method is to Belonging Broker  Drop Down")
+	public ResponseEntity<CommonRes> getBelogingBroker(@RequestBody BelogingBrokerDropDwonReq req	 ) {
+		CommonRes data = new CommonRes();
+
+		// Save
+		List<BrokerDropDownRes> res = entityService.getBelogingBroker(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
+	
 	
 	@PostMapping("/savemenuids")
 	@ApiOperation(value="This method is to save menu ids")

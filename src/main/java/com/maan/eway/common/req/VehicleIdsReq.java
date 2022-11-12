@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public class VehicleIdsReq {
 
-	@JsonProperty("VehicleId")
+	@JsonProperty("Id")
 	private Integer vehicleId;
 	
 	@JsonProperty("Covers")

@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -94,6 +93,12 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="POLICY_HOLDER_TYPEID", nullable=false, length=100)
     private String     policyHolderTypeid ;
+    
+    @Column(name="POLICY_HOLDER_TYPE_DESC", length=100)
+    private String     policyHolderTypeDesc ;
+
+    @Column(name="POLICY_HOLDER_TYPE_ID_DESC", length=100)
+    private String     policyHolderTypeIdDesc ;
 
     @Column(name="VR_TIN_NO", length=20)
     private String     vrTinNo ;

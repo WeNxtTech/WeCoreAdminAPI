@@ -83,7 +83,19 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="LOGIN_ID", nullable=false, length=50)
     private String     loginId ;
+    
+    @Column(name="EXCHANGE_RATE" )
+    private Double exchangeRate;
+    
+    @Column(name="TAX1" )
+    private Double tax1;
 
+    @Column(name="TAX2" )
+    private Double tax2;
+    
+    @Column(name="TAX3" )
+    private Double tax3;
+    
     @Column(name="APPLICATION_ID", length=50)
     private String     applicationId ;
 
@@ -330,63 +342,15 @@ private static final long serialVersionUID = 1L;
     @Column(name="CLASS_ID", length=1)
     private String     classId ;
 
-    @Column(name="AGE_ABOVE_SIXTY_FIVE", length=1)
-    private String     ageAboveSixtyFive ;
-
-    @Column(name="BED_ROOM")
-    private Short      bedRoom ;
-
-    @Column(name="EXISTING_MEDICAL_CONDITION", length=1)
-    private String     existingMedicalCondition ;
-
-    @Column(name="MEDICAL_TRAVEL_CLAIMS", length=1)
-    private String     medicalTravelClaims ;
-
-    @Column(name="REISSUED_POLICY_NO", length=25)
-    private String     reissuedPolicyNo ;
-
-    @Column(name="REISSUED_QUOTE_NO")
-    private Long       reissuedQuoteNo ;
-
-    @Column(name="AIRMILES_NO", length=25)
-    private String     airmilesNo ;
-
-    @Column(name="INSURANCE_DETAILS", length=70)
-    private String     insuranceDetails ;
-
+   
     @Column(name="COVER_NOTE_NUMBER")
     private BigDecimal coverNoteNumber ;
-
-    @Column(name="SCHEME_ID")
-    private Integer    schemeId ;
-
-    @Column(name="CONTENT_TYPE_ID")
-    private Integer    contentTypeId ;
-
-    @Column(name="BTOC", length=25)
-    private String     btoc ;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="POLICY_DATE")
-    private Date       policyDate ;
-
-    @Column(name="CSH_ID_TYP_CODE")
-    private Short      cshIdTypCode ;
-
-    @Column(name="FLEET_INT_STATUS", length=10)
-    private String     fleetIntStatus ;
-
-    @Column(name="FLEET_NO", length=25)
-    private String     fleetNo ;
 
     @Column(name="INGSERIAL_NUMBER", length=20)
     private String     ingserialNumber ;
 
     @Column(name="CHQ_INV_NO", length=10)
     private String     chqInvNo ;
-
-    @Column(name="TRAN_ID")
-    private Double     tranId ;
 
     @Column(name="OWNNERDRIVER_YN", length=1)
     private String     ownnerdriverYn ;
@@ -398,17 +362,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="RENEWAL_DATE_YN", length=1)
     private String     renewalDateYn ;
 
-    @Column(name="OTHERSYN", length=5)
-    private String     othersyn ;
-
     @Column(name="VEHICLE_NO")
     private Integer    vehicleNo ;
-
-    @Column(name="OTHER_POLICY_NO", length=80)
-    private String     otherPolicyNo ;
-
-    @Column(name="LANG", length=200)
-    private String     lang ;
 
     @Column(name="MIN_PREMIUM_YN", length=10)
     private String     minPremiumYn ;
@@ -436,18 +391,6 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="INSURED_BY", length=25)
     private String     insuredBy ;
-
-    @Column(name="GENDER", length=10)
-    private String     gender ;
-
-    @Column(name="MOBILE", length=20)
-    private String     mobile ;
-
-    @Column(name="EMAIL", length=200)
-    private String     email ;
-
-    @Column(name="CKEY")
-    private Double     ckey ;
 
     @Column(name="INTEGRATION_STATUS", length=20)
     private String     integrationStatus ;
@@ -551,9 +494,6 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="ADD_CONDITION", length=1000)
     private String     addCondition ;
-
-    @Column(name="USER_MAIL", length=500)
-    private String     userMail ;
 
     @Column(name="ORANGE_CARDURL", length=1000)
     private String     orangeCardurl ;

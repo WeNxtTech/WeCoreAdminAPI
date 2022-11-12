@@ -177,7 +177,15 @@ private static final long serialVersionUID = 1L;
     @Column(name="STATUS", length=20)
     private String     status;
 
-
+    @Column(name="TAX1")
+    private Double tax1;
+    
+    @Column(name="TAX2")
+    private Double tax2;
+    
+    @Column(name="TAX3")
+    private Double tax3;
+    
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

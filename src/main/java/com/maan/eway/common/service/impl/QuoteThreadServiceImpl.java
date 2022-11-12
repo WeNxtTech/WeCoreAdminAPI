@@ -120,16 +120,12 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
             for (Integer vehId :  vehicleIds ) {
             	threadCount = threadCount +  2 ;
             	QuoteThreadReq request2 = new QuoteThreadReq();
-            	request2.setAcExecutiveId(request.getAcExecutiveId());
-            	request2.setAgencyCode(request.getAgencyCode());
-            	request2.setApplicationId(request.getApplicationId());
-            	request2.setBrokerCode(request.getBrokerCode());
             	request2.setCustomerId(request.getCustomerId());
-            	request2.setLoginId(request.getLoginId());
             	request2.setProductId(request.getProductId());
             	request2.setQuoteNo(request.getQuoteNo());
             	request2.setRequestReferenceNo(request.getRequestReferenceNo());
             	request2.setVehicleIdsList(request.getVehicleIdsList());
+            	request2.setCreatedBy(request.getCreatedBy());
             	request2.setVehicleId(vehId); 
             	QuoteThreadCall motorSave = new QuoteThreadCall("MotorSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo  , homeRepo);
 	            queue.add(motorSave);
@@ -283,75 +279,14 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
             
             String customerId = "C-" + idf.format(new Date()) + random ;
             String quoteNo  = "Q"+ idf.format(new Date()) + random ;
-            LoginMaster loginData  = loginRepo.findByLoginId(req.getCreatedBy());
             QuoteThreadReq request = new QuoteThreadReq();
             request.setCustomerId(customerId);
             request.setQuoteNo(quoteNo);
             request.setRequestReferenceNo(req.getRequestReferenceNo());
             request.setVehicleIdsList(req.getVehicleIdsList());
             request.setProductId(req.getProductId());
+            request.setCreatedBy(req.getCreatedBy());
             
-			if (loginData.getUserType().equalsIgnoreCase("Issuer")) {
-				if (StringUtils.isBlank(req.getBrokerLoginId())) {
-					errors.add(new Error("01", "Broker Login Id", "Please Select Belonging Broker"));
-					commonRes.setCommonResponse(null);
-					commonRes.setIsError(true);
-					commonRes.setErrorMessage(errors);
-					commonRes.setMessage("Failed");
-					return commonRes;
-				} else {
-					LoginMaster findBrokerData = loginRepo.findByLoginId(req.getBrokerLoginId());
-					if (findBrokerData.getSubUserType().equalsIgnoreCase("bank")) {
-
-						if (StringUtils.isBlank(req.getAcExecutiveId())) {
-							errors.add(new Error("01", "Ac Executive Id",
-									"Please Select Ac Executive Id For Bank Broker"));
-							commonRes.setCommonResponse(null);
-							commonRes.setIsError(true);
-							commonRes.setErrorMessage(errors);
-							commonRes.setMessage("Failed");
-						} else {
-							request.setLoginId(findBrokerData.getLoginId());
-							request.setApplicationId(loginData.getLoginId());
-							request.setAgencyCode(findBrokerData.getAgencyCode());
-							request.setBrokerCode(findBrokerData.getOaCode());
-							request.setAcExecutiveId(req.getAcExecutiveId());
-						}
-
-					} else {
-						request.setLoginId(findBrokerData.getLoginId());
-						request.setApplicationId(loginData.getLoginId());
-						request.setAgencyCode(findBrokerData.getAgencyCode());
-						request.setBrokerCode(findBrokerData.getOaCode());
-						request.setAcExecutiveId("1");
-					}
-				}
-			} else {
-				if (loginData.getSubUserType().equalsIgnoreCase("bank")) {
-
-					if (StringUtils.isBlank(req.getAcExecutiveId())) {
-						errors.add(new Error("01", "Ac Executive Id", "Please Select Ac Executive Id For Bank Broker"));
-						commonRes.setCommonResponse(null);
-						commonRes.setIsError(true);
-						commonRes.setErrorMessage(errors);
-						commonRes.setMessage("Failed");
-					} else {
-						request.setLoginId(loginData.getLoginId());
-						request.setApplicationId("01");
-						request.setAgencyCode(loginData.getAgencyCode());
-						request.setBrokerCode(loginData.getOaCode());
-						request.setAcExecutiveId("1");
-					}
-
-				} else {
-					request.setLoginId(loginData.getLoginId());
-					request.setApplicationId("01");
-					request.setAgencyCode(loginData.getAgencyCode());
-					request.setBrokerCode(loginData.getOaCode());
-					request.setAcExecutiveId("1");
-				}
-
-			}
 			commonRes.setCommonResponse(request);
 			commonRes.setIsError(false);
 			commonRes.setErrorMessage(null);

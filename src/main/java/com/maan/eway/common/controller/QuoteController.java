@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.req.NewQuoteReq;
+import com.maan.eway.common.req.ViewQuoteReq;
+import com.maan.eway.common.req.ViewQuoteRes;
 import com.maan.eway.common.service.QuoteService;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.service.PrintReqService;
@@ -26,7 +28,7 @@ public class QuoteController {
 	private  QuoteService entityService ;
 	
 	@PostMapping("/newquote")
-	@ApiOperation(value = "This method is Insert Cover Details")
+	@ApiOperation(value = "This method is New Quote ")
 	public ResponseEntity<CommonRes> generateNewQuote(@RequestBody NewQuoteReq req) {
 
 		reqPrinter.reqPrint(req);
@@ -41,4 +43,26 @@ public class QuoteController {
 		
 
 	}
+	
+	@PostMapping("/viewquotedetails")
+	@ApiOperation(value = "This method is Get Quote Details")
+	public ResponseEntity<CommonRes> viewQuoteDetails(@RequestBody ViewQuoteReq req) {
+		CommonRes commonRes = new  CommonRes() ;
+		reqPrinter.reqPrint(req);
+		
+		// Save
+		ViewQuoteRes res = entityService.viewQuoteDetails(req);
+		commonRes.setCommonResponse(res);
+		commonRes.setIsError(false);
+		commonRes.setErrorMessage(null);
+		commonRes.setMessage("Success");
+		
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(commonRes, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+		
+
+	} 
 }

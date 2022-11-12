@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.maan.eway.common.req.NewQuoteReq;
+import com.maan.eway.common.req.ViewQuoteReq;
+import com.maan.eway.common.req.ViewQuoteRes;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.common.service.QuoteService;
 import com.maan.eway.common.service.QuoteThreadService;
@@ -25,6 +27,12 @@ public class QuoteServiceImpl implements QuoteService {
 			CommonRes	res = otSer.call_OT_Insert(req);
 			return res ;
 			
+	}
+
+	@Override
+	public ViewQuoteRes viewQuoteDetails(ViewQuoteReq req) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

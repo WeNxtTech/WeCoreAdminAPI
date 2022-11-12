@@ -18,14 +18,6 @@ public class NewQuoteReq {
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 	
-	@JsonProperty("BrokerCode")
-	private String brokerCode;
-	@JsonProperty("BrokerLoginId")
-	private String brokerLoginId;
-	
-	@JsonProperty("AcExecutiveId")
-	private String acExecutiveId;
-	
 	@JsonProperty("ProductId")
 	private String productId;
 }

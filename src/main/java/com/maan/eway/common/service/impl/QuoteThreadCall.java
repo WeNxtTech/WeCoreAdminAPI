@@ -161,9 +161,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 			PersonalInfo personalInfo = new PersonalInfo();
 			dozerMapper.map(custData, personalInfo);
 			personalInfo.setCustomerId(request.getCustomerId());
-			personalInfo.setEntryDate(new Date());		
-			personalInfo.setCreatedBy(request.getLoginId());
-			;
+			personalInfo.setEntryDate(new Date());
+			personalInfo.setCreatedBy(request.getCreatedBy());
 			perInfoRepo.saveAndFlush(personalInfo);
 			
 			log.error("Save Personal Info is ---> " + json.toJson(personalInfo));
@@ -233,7 +232,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			MotorDataDetails motorData  = new MotorDataDetails();
 			dozerMapper.map(eserMotors, motorData);
 			motorData.setEntryDate(new Date());	
-			motorData.setCreatedBy(request.getLoginId());
+			motorData.setCreatedBy(request.getCreatedBy());
 			motorData.setQuoteNo(request.getQuoteNo());
 			motorData.setCustomerId(request.getCustomerId());
 			
@@ -333,10 +332,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 					CoverDetails coverData  = new CoverDetails();
 					dozerMapper.map(cov, coverData);
 					coverData.setEntryDate(new Date());	
-					coverData.setCreatedBy(request.getLoginId());
 					coverData.setQuoteNo(request.getQuoteNo());
 					coverData.setIsSelected(cov.getIsSelected().equalsIgnoreCase("N") ? "Y" :cov.getIsSelected());
-					
+					coverData.setCreatedBy(request.getCreatedBy());
 					coverRepo.saveAndFlush(coverData);	
 					log.error("Save Cover Info is ---> " + json.toJson(coverData));
 					
@@ -416,12 +414,12 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setSectionId(Integer.valueOf(motorData.getSectionId()));
 		//	home.setProposalNo("");
 			home.setAmendId(0);
-			home.setLoginId(request.getLoginId());
-			home.setApplicationId(request.getApplicationId());
+			home.setLoginId(motorData.getLoginId());
+			home.setApplicationId(motorData.getApplicationId());
 			home.setApplicationNo(0L);
-			home.setAgencyCode(Integer.valueOf(request.getAgencyCode()));
-			home.setAcExecutiveId(Long.valueOf(request.getAcExecutiveId()));
-			home.setBrokerCode(request.getBrokerCode());
+			home.setAgencyCode(Integer.valueOf(motorData.getAgencyCode()));
+			home.setAcExecutiveId(motorData.getAcExecutiveId()==null?null : Long.valueOf(motorData.getAcExecutiveId()));
+			home.setBrokerCode(motorData.getBrokerCode());
 			home.setEffectiveDate(motorData.getPolicyStartDate());
 			home.setExpiryDate(motorData.getPolicyEndDate());
 			home.setStatus("Y");

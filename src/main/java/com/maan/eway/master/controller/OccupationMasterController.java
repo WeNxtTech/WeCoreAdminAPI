@@ -182,7 +182,7 @@ public class OccupationMasterController {
 		}
 		
 		// Occupation Master Drop Down Type
-		@GetMapping("/dropdown/acexecutives")
+		@PostMapping("/dropdown/acexecutives")
 		@ApiOperation(value = "This method is get Occupation Master Drop Down")
 
 		public ResponseEntity<CommonRes> getAcExecutivesDropdown(@RequestBody AcExecutiveDropDownReq req) {

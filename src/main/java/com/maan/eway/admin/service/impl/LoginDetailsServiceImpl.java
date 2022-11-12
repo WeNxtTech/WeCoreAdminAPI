@@ -1433,6 +1433,7 @@ this.repository = repo;
 				res.setBrokerName(data.getUserName());
 				res.setCompanyId(data.getCompanyId());
 				res.setSubUserType(data.getSubUserType());
+				res.setLoginId(data.getLoginId());
 				resList.add(res);
 			}
 			
@@ -1539,6 +1540,7 @@ this.repository = repo;
 				res.setBrokerName(data.getUserName());
 				res.setCompanyId(data.getCompanyId());
 				res.setSubUserType(data.getSubUserType());
+				res.setLoginId(data.getLoginId());
 				resList.add(res);
 			}
 			

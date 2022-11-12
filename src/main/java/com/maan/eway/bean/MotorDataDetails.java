@@ -387,7 +387,25 @@ private static final long serialVersionUID = 1L;
     @Column(name="CITY_LIMIT", length=20)
     private String     cityLimit ;
 
+    @Column(name="SAVED_FROM")
+    private String     savedFrom ;
+    
+    
+    @Column(name="AC_EXECUTIVE_ID")
+    private String     acExecutiveId ;
+    
+    @Column(name="APPLICATION_ID")
+    private String     applicationId ;
 
+    @Column(name="LOGIN_ID")
+    private String     loginId ;
+
+    @Column(name="BROKER_CODE")
+    private String     brokerCode ;
+    
+    @Column(name="SUB_USER_TYPE")
+    private String     subUserType ;
+    
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

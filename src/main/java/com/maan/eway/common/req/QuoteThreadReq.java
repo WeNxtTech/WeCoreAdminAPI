@@ -21,25 +21,12 @@ public class QuoteThreadReq {
 	 
 	 @JsonProperty("ProductId")
 	 private String    productId ;
-	
-	 @JsonProperty("LoginId")
-	 private String loginId ;
-	 
-	 @JsonProperty("ApplicationId")
-	 private String applicationId ;
-	 
-	 @JsonProperty("BrokerCode")
-	 private String brokerCode ;
-	 
-	 @JsonProperty("AcExecutiveId")
-	 private String acExecutiveId ;
-	 
-	@JsonProperty("AgencyCode")
-	private String agencyCode ;
-	
+		
 	@JsonProperty("VehicleId")
 	private Integer vehicleId ;
 
+	@JsonProperty("CreatedBy")
+	private String createdBy;
 	
 	@JsonProperty("Vehicles")
 	private List<VehicleIdsReq> VehicleIdsList;

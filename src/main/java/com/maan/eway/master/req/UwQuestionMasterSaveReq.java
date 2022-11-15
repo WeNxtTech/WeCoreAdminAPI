@@ -21,12 +21,6 @@ public class UwQuestionMasterSaveReq implements Serializable {
 	@JsonProperty("ProductId")
     private String    productId ;
     
-	@JsonProperty("SectionId")
-    private String    sectionId ;
-    
-	@JsonProperty("CoverId")
-    private String    coverId ;
-
 	@JsonProperty("UwQuestionId")
     private String   uwQuestionId ;
     
@@ -43,5 +37,8 @@ public class UwQuestionMasterSaveReq implements Serializable {
 
 	@JsonProperty("Remarks")
 	private String remarks;
+	
+	@JsonProperty("Status")
+	private String status;
 
 }

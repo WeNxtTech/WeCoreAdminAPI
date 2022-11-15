@@ -157,7 +157,6 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			saveData.setUwQuestionDesc(req.getUwQuestionDesc());
 			saveData.setEffectiveDateStart(req.getEffectiveDateStart());
 			saveData.setEffectiveDateEnd(endDate);
-			saveData.setStatus("Y");
 			saveData.setEntryDate(new Date());
 			saveData.setAmendId(amendId);
 			uwRepo.saveAndFlush(saveData);
@@ -201,20 +200,15 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("uwQuestionId"), b.get("uwQuestionId"));
 			Predicate a2 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-			Predicate a3 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-			Predicate a4 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
-			Predicate a5 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			Predicate a6 = cb.equal(ocpm1.get("amendId"), b.get("amendId"));
-
-			effectiveDate.where(a1,a2,a3,a4,a5,a6);
+			Predicate a3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+		
+			effectiveDate.where(a1,a2,a3);
 
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("productId"),req.getProductId());
-			Predicate n3 = cb.equal(b.get("sectionId"),req.getSectionId());
-			Predicate n4 = cb.equal(b.get("coverId"),req.getCoverId());
-			Predicate n5 = cb.equal(b.get("companyId"),req.getCompanyId());
+			Predicate n3 = cb.equal(b.get("companyId"),req.getCompanyId());
 
-			query.where(n1,n2,n3,n4,n5);
+			query.where(n1,n2,n3);
 			// Get Result
 			TypedQuery<Long> result = em.createQuery(query);
 			list = result.getResultList();
@@ -255,12 +249,10 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			Root<UWQuestionsMaster> ocpm1 = effectiveDate.from(UWQuestionsMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-			Predicate a2 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-			Predicate a3 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
-			Predicate a4 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			Predicate a5 = cb.equal(ocpm1.get("uwQuestionId"), b.get("uwQuestionId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("uwQuestionId"), b.get("uwQuestionId"));
 
-			effectiveDate.where(a1,a2,a3,a4,a5);
+			effectiveDate.where(a1,a2,a3);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -269,11 +261,9 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("productId"),req.getProductId());
-			Predicate n3 = cb.equal(b.get("sectionId"),req.getSectionId());
-			Predicate n4 = cb.equal(b.get("coverId"),req.getCoverId());
-			Predicate n5 = cb.equal(b.get("companyId"),req.getCompanyId());
+			Predicate n3 = cb.equal(b.get("companyId"),req.getCompanyId());
 
-			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+			query.where(n1,n2,n3).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<UWQuestionsMaster> result = em.createQuery(query);
@@ -325,11 +315,9 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("uwQuestionId"), b.get("uwQuestionId"));
 			Predicate a2 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-			Predicate a3 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-			Predicate a4 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
-			Predicate a5 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			
-			effectiveDate.where(a1,a2,a3,a4,a5);
+			effectiveDate.where(a1,a2,a3);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -339,11 +327,9 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("status"), "Y");
 			Predicate n3 = cb.equal(b.get("productId"),req.getProductId());
-			Predicate n4 = cb.equal(b.get("sectionId"),req.getSectionId());
-			Predicate n5 = cb.equal(b.get("coverId"),req.getCoverId());
-			Predicate n6 = cb.equal(b.get("companyId"),req.getCompanyId());
+			Predicate n4 = cb.equal(b.get("companyId"),req.getCompanyId());
 			
-			query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);
+			query.where(n1,n2,n3,n4).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<UWQuestionsMaster> result = em.createQuery(query);
@@ -394,11 +380,9 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("uwQuestionId"), ocpm1.get("uwQuestionId"));
 			javax.persistence.criteria.Predicate a2 = cb.equal(c.get("productId"), ocpm1.get("productId"));
-			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("sectionId"), ocpm1.get("sectionId"));
-			javax.persistence.criteria.Predicate a4 = cb.equal(c.get("coverId"), ocpm1.get("coverId"));
-			javax.persistence.criteria.Predicate a5 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
 
-			effectiveDate.where(a1,a2,a3,a4,a5);
+			effectiveDate.where(a1,a2,a3);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -409,12 +393,10 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("uwQuestionId"), req.getUwQuestionId());
 			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("productId"), req.getProductId());
-			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("sectionId"),req.getSectionId());
-			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("coverId"),req.getCoverId());
-			javax.persistence.criteria.Predicate n6 = cb.equal(c.get("companyId"), req.getCompanyId());
+			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("companyId"), req.getCompanyId());
 
 
-			query.where(n1, n2,n3,n4,n5,n6).orderBy(orderList);
+			query.where(n1, n2,n3,n4).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<UWQuestionsMaster> result = em.createQuery(query);
@@ -465,10 +447,9 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"),effectiveDate);
 			Predicate n2 = cb.equal(b.get("uwQuestionId"),req.getUwQuestionId());
 			Predicate n3 = cb.equal(b.get("productId"),req.getProductId());
-			Predicate n4 = cb.equal(b.get("sectionId"),req.getSectionId());
-			Predicate n5 = cb.equal(b.get("coverId"),req.getCoverId());
+			Predicate n4 = cb.equal(b.get("companyId"),req.getCompanyId());
 			
-			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+			query.where(n1,n2,n3,n4).orderBy(orderList);
 			// Get Result 
 			TypedQuery<UWQuestionsMaster> result = em.createQuery(query);
 			list = result.getResultList();
@@ -488,11 +469,10 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 				Predicate n6 = cb.equal(pm.get("uwQuestionId"), req.getUwQuestionId());
 				Predicate n7 = cb.greaterThanOrEqualTo(pm.get("effectiveDateStart"),today);
 				Predicate n8 = cb.equal(pm.get("productId"),req.getProductId());
-				Predicate n9 = cb.equal(pm.get("sectionId"),req.getSectionId());
-				Predicate n10 = cb.equal(pm.get("coverId"),req.getCoverId());
+				Predicate n9 = cb.equal(pm.get("companyId"),req.getCompanyId());
+
 				
-				
-				delete.where(n6,n7,n8,n9,n10);
+				delete.where(n6,n7,n8,n9);
 				em.createQuery(delete).executeUpdate();
 				// Insert Update Record
 				updateRecord.setStatus(req.getStatus());
@@ -548,10 +528,8 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			Predicate a1 = cb.equal(c.get("uwQuestionId"),ocpm1.get("uwQuestionId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a3 = cb.equal(c.get("productId"),ocpm1.get("productId"));
-			Predicate a4 = cb.equal(c.get("sectionId"),ocpm1.get("sectionId"));
-			Predicate a5 = cb.equal(c.get("coverId"),ocpm1.get("coverId"));
 
-			effectiveDate.where(a1,a2,a3,a4,a5);
+			effectiveDate.where(a1,a2,a3);
 			// Effective Date End Max Filter
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 			Root<UWQuestionsMaster> ocpm2 = effectiveDate2.from(UWQuestionsMaster.class);
@@ -559,21 +537,17 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			Predicate a6 = cb.equal(c.get("uwQuestionId"),ocpm2.get("uwQuestionId"));
 			Predicate a7 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a8 = cb.equal(c.get("productId"),ocpm2.get("productId"));
-			Predicate a9 = cb.equal(c.get("sectionId"),ocpm2.get("sectionId"));
-			Predicate a10 = cb.equal(c.get("coverId"),ocpm2.get("coverId"));
-
-			effectiveDate2.where(a6,a7,a8,a9,a10);
+			
+			effectiveDate2.where(a6,a7,a8);
 			// Where
 			// Where
 			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"), req.getCompanyId());
 			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("productId"), req.getProductId());
-			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("sectionId"), req.getSectionId());
-			javax.persistence.criteria.Predicate n6 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
-			javax.persistence.criteria.Predicate n7 = cb.equal(c.get("coverId"), req.getCoverId());
+			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 
-			query.where(n1, n2, n3, n4, n5,n6,n7).orderBy(orderList);
+			query.where(n1, n2, n3, n4, n5).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<UWQuestionsMaster> result = em.createQuery(query);

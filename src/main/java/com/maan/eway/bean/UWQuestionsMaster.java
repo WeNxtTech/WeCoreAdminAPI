@@ -59,13 +59,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="PRODUCT_ID", nullable=false)
     private Integer  productId;
     
-    @Id
-    @Column(name="SECTION_ID", nullable=false)
-    private Integer   sectionId;
-    
-    @Id
-    @Column(name="COVER_ID", nullable=false)
-    private Integer   coverId;
     
     @Id
     @Column(name="UW_QUESTION_ID", nullable=false)

@@ -19,12 +19,6 @@ public class UwQuestionMasterRes implements Serializable {
 	@JsonProperty("ProductId")
     private String    productId ;
     
-	@JsonProperty("SectionId")
-    private String    sectionId ;
-    
-	@JsonProperty("CoverId")
-    private String    coverId ;
-
 	@JsonProperty("UwQuestionId")
     private String   uwQuestionId ;
     

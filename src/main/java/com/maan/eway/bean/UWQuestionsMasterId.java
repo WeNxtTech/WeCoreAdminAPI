@@ -33,8 +33,6 @@ public class UWQuestionsMasterId implements Serializable {
     
     private String     companyId ;
     private Integer  productId;
-    private Integer    sectionId ;
-    private Integer   coverId;
     private Integer  uwQuestionId;
     private Date       effectiveDateStart ;
     private Date       effectiveDateEnd ;

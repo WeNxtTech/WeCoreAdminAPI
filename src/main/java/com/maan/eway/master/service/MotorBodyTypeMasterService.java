@@ -28,7 +28,7 @@ public interface MotorBodyTypeMasterService {
 
 	SuccessRes changeStatusOfBodyType(BodyTypeChangeStatusReq req);
 
-	List<DropDownRes> getBodyTypeMasterDropdown(BodyTypeDropDownReq req);
+	//List<DropDownRes> getBodyTypeMasterDropdown(BodyTypeDropDownReq req);
 
 	List<DropDownRes> getInduvidualBodyTypeMasterDropdown();
 

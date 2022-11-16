@@ -144,7 +144,7 @@ public class MotorColorMasterController {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
 		}
-  
+  /*
 		// Color Master Drop Down Type
 		@GetMapping("/dropdown/color")
 		@ApiOperation(value = "This method is get Color Master Drop Down")
@@ -168,7 +168,7 @@ public class MotorColorMasterController {
 
 		}
 		
-
+*/
 		@PostMapping("/color/changestatus")
 		@ApiOperation(value = "This method is get Color Change Status")
 		public ResponseEntity<CommonRes> changeStatusOfColor(@RequestBody ColorChangeStatusReq req) {

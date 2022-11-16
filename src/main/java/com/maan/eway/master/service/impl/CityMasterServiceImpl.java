@@ -481,7 +481,7 @@ public class CityMasterServiceImpl implements CityMasterService {
 		}
 		return errorList;
 	}
-
+/*
 	@Override
 	public List<DropDownRes> getCityMasterDropdown(CityMasterDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
@@ -560,7 +560,7 @@ public class CityMasterServiceImpl implements CityMasterService {
 		}
 		return resList;
 	}
-
+*/
 //************************************************GET ACTIVE CITY******************************************\\
 	@Override
 	public List<CityMasterRes> getActiveCityDetails(CityMasterGetAllReq req) {

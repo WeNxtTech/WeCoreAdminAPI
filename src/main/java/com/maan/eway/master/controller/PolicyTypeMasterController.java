@@ -124,7 +124,7 @@ public class PolicyTypeMasterController {
 		}
 	}
 	
-	
+/*	
 	// Policy Type Master Drop Down Type
 	@GetMapping("/dropdown/policytype")
 	@ApiOperation(value = "This method is get Policy Type Master Drop Down")
@@ -148,5 +148,5 @@ public class PolicyTypeMasterController {
 
 	}
 
-
+*/
 }

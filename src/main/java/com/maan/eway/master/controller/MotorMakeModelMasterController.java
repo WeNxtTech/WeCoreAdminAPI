@@ -140,7 +140,7 @@ public class MotorMakeModelMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	
+	/*
 	@GetMapping("/dropdown/motormakemodel/{makeid}")
 	@ApiOperation(value = "This method is get Motor Make Master Drop Down")
 
@@ -162,5 +162,5 @@ public class MotorMakeModelMasterController {
 		}
 
 	}
-
+*/
 }

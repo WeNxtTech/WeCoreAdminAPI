@@ -474,7 +474,6 @@ public class CompanyStateMasterServiceImpl implements CompanyStateMasterService 
 		}
 		return res;
 	}
-
 //**********************************************************DROPDOWN********************************************************************\\
 	@Override
 	public List<DropDownRes> getCompanyStateMasterDropdown(CompanyStateMasterDropDownReq req) {

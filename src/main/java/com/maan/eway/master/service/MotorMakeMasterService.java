@@ -23,7 +23,7 @@ public interface MotorMakeMasterService {
 
 	List<MotorMakeGetRes> getactiveMotorMake(MotorMakeGetAllReq req);
 
-	List<DropDownRes> getMotorMakeDropdown();
+//	List<DropDownRes> getMotorMakeDropdown();
 
 	SuccessRes changeStatusOfMotorMake(MotorMakeChangeStatusReq req);
 

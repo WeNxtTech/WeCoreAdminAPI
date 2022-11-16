@@ -490,7 +490,7 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 		}
 		return res;
 	}
-
+/*
 //**********************************************************DROPDOWN********************************************************************\\
 	@Override
 	public List<DropDownRes> getCountryMasterDropdown() {
@@ -562,7 +562,7 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 		}
 		return resList;
 	}
-
+*/
 //************************************************GET ACTIVE COUNTRY******************************************\\
 	@Override
 	public List<CountryMasterRes> getActiveCountryDetails(CountryMasterGetAllReq req) {

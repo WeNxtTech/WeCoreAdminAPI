@@ -124,7 +124,7 @@ public class ExchangeMasterController {
 		}
 	}
 
-	// Exchange Master Drop Down Type
+	/*// Exchange Master Drop Down Type
 	@GetMapping("/dropdown/exchange")
 	@ApiOperation(value = "This method is get Exchange Master Drop Down")
 
@@ -146,7 +146,7 @@ public class ExchangeMasterController {
 		}
 
 	}
-
+*/
 	@PostMapping("/exchange/changestatus")
 	@ApiOperation(value = "This method is get Exchange Change Status")
 	public ResponseEntity<CommonRes> changeStatusOfExchange(@RequestBody ExchangeChangeStatusReq req) {

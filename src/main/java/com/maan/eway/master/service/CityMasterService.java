@@ -38,7 +38,7 @@ public interface CityMasterService  {
 
 	List<Error> validateDropdownGet(CityMasterDropDownReq req);
 
-	List<DropDownRes> getCityMasterDropdown(CityMasterDropDownReq req);
+	//List<DropDownRes> getCityMasterDropdown(CityMasterDropDownReq req);
 
 	SuccessRes changeStatusOfCity(CityChangeStatusReq req);
 

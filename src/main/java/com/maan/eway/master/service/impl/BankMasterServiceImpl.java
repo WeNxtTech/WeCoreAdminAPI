@@ -421,7 +421,7 @@ public BankMasterRes getByBankCode(BankMasterGetReq req) {
 	}
 	return res;
 }
-
+/*
 //**********************************************************DROPDOWN********************************************************************\\
 @Override
 public List<DropDownRes> getBankMasterDropdown() {
@@ -482,7 +482,7 @@ public List<DropDownRes> getBankMasterDropdown() {
 	}
 	return resList;
 }
-
+*/
 //************************************************GET ACTIVE BANK******************************************\\
 @Override
 public List<BankMasterRes> getActiveBankDetails(BankMasterGetAllReq req) {

@@ -33,7 +33,7 @@ import java.util.List;
 */
 public interface CurrencyMasterService  {
 
-	List<CuurencyDropDownRes> getCurrencyMasterDropdown( CurrencyDropDownReq req );
+	//List<CuurencyDropDownRes> getCurrencyMasterDropdown( CurrencyDropDownReq req );
 
 	CurrencyMasterRes getByCurrencyId(CurrencyMasterGetReq req);
 

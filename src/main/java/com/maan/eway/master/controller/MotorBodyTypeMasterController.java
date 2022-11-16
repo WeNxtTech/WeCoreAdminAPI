@@ -144,7 +144,7 @@ public class MotorBodyTypeMasterController {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
 		}
-
+/*
 		// Body Type Master Drop Down Type
 		@PostMapping("/dropdown/bodytype")
 		@ApiOperation(value = "This method is get Body Type Drop Down")
@@ -167,7 +167,7 @@ public class MotorBodyTypeMasterController {
 			}
 
 		}
-		
+	*/	
 		// Body Type Master Drop Down Type
 		@GetMapping("/dropdown/induvidual/bodytype")
 		@ApiOperation(value = "This method is get Body Type Drop Down")

@@ -142,7 +142,7 @@ public class CurrencyMasterController {
 		}
 	}
 		
-		// Currency Master Drop Down Type
+/*		// Currency Master Drop Down Type
 		@PostMapping("/dropdown/currency")
 		@ApiOperation(value = "This method is get Currency Master Drop Down")
 
@@ -170,5 +170,5 @@ public class CurrencyMasterController {
 		}
 
 	}
-
+*/
 }

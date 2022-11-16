@@ -162,7 +162,7 @@ public class InsuranceCompanyMasterController {
 		}
 	}
 		
-		// Insurance Company Master Drop Down Type
+	// Insurance Company Master Drop Down Type
 		@PostMapping("/dropdown/company")
 		@ApiOperation(value = "This method is get Company Master Drop Down")
 
@@ -184,7 +184,7 @@ public class InsuranceCompanyMasterController {
 			}
 
 		}
-		
+
 		@PostMapping("/company/changestatus")
 		@ApiOperation(value = "This method is get Company Change Status")
 		public ResponseEntity<CommonRes> changeStatusOfCompany(@RequestBody CompanyChangeStatusReq req) {

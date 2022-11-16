@@ -151,7 +151,7 @@ public class CountryMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-		
+/*		
 		// Country Master Drop Down Type
 		@GetMapping("/dropdown/country")
 		@ApiOperation(value = "This method is get Country Master Drop Down")
@@ -174,7 +174,7 @@ public class CountryMasterController {
 			}
 
 		}
-		
+		*/
 
 		@PostMapping("/country/changestatus")
 		@ApiOperation(value = "This method is get Country Change Status")

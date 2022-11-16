@@ -42,7 +42,7 @@ public interface CountryMasterService  {
 
 	CountryMasterRes getByCountryId(CountryMasterGetReq req);
 
-	List<DropDownRes> getCountryMasterDropdown();
+	//List<DropDownRes> getCountryMasterDropdown();
 
 	SuccessRes changeStatusOfCountry(CountryChangeStatusReq req);
 

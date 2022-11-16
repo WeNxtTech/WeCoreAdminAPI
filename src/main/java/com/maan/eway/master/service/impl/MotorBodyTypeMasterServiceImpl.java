@@ -421,7 +421,7 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 		}
 		return resList;
 	}
-
+/*
 	@Override
 	public List<DropDownRes> getBodyTypeMasterDropdown(BodyTypeDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
@@ -486,7 +486,7 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 				}
 			return resList;
 		}
-
+*/
 
 	@Override
 	public SuccessRes changeStatusOfBodyType(BodyTypeChangeStatusReq req) {

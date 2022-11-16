@@ -410,7 +410,7 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 		}
 		return resList;
 	}
-
+/*
 	@Override
 	public List<DropDownRes> getMotorMakeDropdown() {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
@@ -474,7 +474,7 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 				}
 			return resList;
 		}
-
+*/
 	@Override
 	public SuccessRes changeStatusOfMotorMake(MotorMakeChangeStatusReq req) {
 		SuccessRes res = new SuccessRes();

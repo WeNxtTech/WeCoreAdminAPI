@@ -490,7 +490,7 @@ public CurrencyMasterRes getByCurrencyId(CurrencyMasterGetReq req) {
 	}
 	return res;
 }
-
+/*
 //**********************************************************DROPDOWN********************************************************************\\
 @Override
 public List<CuurencyDropDownRes> getCurrencyMasterDropdown( CurrencyDropDownReq req ) {
@@ -595,7 +595,7 @@ public List<CuurencyDropDownRes> getCurrencyMasterDropdown( CurrencyDropDownReq 
 	}
 	return resList;
 }
-
+*/
 //************************************************GET ACTIVE CURRENCY******************************************\\
 @Override
 public List<CurrencyMasterRes> getActiveCurrencyDetails(CurrencyMasterGetAllReq req) {

@@ -23,6 +23,6 @@ public interface MotorMakeModelMasterService {
 
 	List<MotorColorGetRes> getactiveMakeModel(MotorMakeModelGetAllReq req);
 
-	List<DropDownRes> getMotorMakeModelDropdown( String makeId );
+	//List<DropDownRes> getMotorMakeModelDropdown( String makeId );
 
 }

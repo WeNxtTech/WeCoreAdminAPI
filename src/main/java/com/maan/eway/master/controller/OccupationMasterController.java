@@ -157,7 +157,7 @@ public class OccupationMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-		
+	/*	
 		// Occupation Master Drop Down Type
 		@GetMapping("/dropdown/occupation")
 		@ApiOperation(value = "This method is get Occupation Master Drop Down")
@@ -180,6 +180,7 @@ public class OccupationMasterController {
 			}
 
 		}
+
 		
 		// Occupation Master Drop Down Type
 		@PostMapping("/dropdown/acexecutives")
@@ -203,6 +204,9 @@ public class OccupationMasterController {
 			}
 
 		}
+
+		*/
+
 
 		@PostMapping("/occupation/changestatus")
 		@ApiOperation(value = "This method is get Occupation Change Status")

@@ -23,7 +23,7 @@ public interface MotorColorMasterService {
 
 	List<MotorColorGetRes> getactiveMotorColor(MotorColorGetAllReq req);
 
-	List<DropDownRes> getColorMasterDropdown();
+	//List<DropDownRes> getColorMasterDropdown();
 
 	SuccessRes changeStatusOfColor(ColorChangeStatusReq req);
 

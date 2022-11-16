@@ -452,7 +452,7 @@ public class StateMasterServiceImpl implements StateMasterService {
 		}
 		return res;
 	}
-
+/*
 //**********************************************************DROPDOWN********************************************************************\\
 	@Override
 	public List<DropDownRes> getStateMasterDropdown(StateMasterDropDownReq req) {
@@ -534,7 +534,7 @@ public class StateMasterServiceImpl implements StateMasterService {
 		}
 		return resList;
 	}
-
+*/
 //************************************************GET ACTIVE STATE******************************************\\
 	@Override
 	public List<StateMasterRes> getActiveStateDetails(StateMasterGetAllReq req) {

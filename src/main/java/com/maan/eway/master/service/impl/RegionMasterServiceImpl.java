@@ -503,7 +503,7 @@ private Logger log=LogManager.getLogger(RegionMasterServiceImpl.class);
 		}
 		return res;
 	}
-	
+	/*
 	//**********************************************************DROPDOWN********************************************************************\\
 	@Override
 	public List<DropDownRes> getRegionMasterDropdown(RegionMasterDropDownReq req) {
@@ -582,7 +582,7 @@ private Logger log=LogManager.getLogger(RegionMasterServiceImpl.class);
 		}
 		return resList;
 	}
-	
+	*/
 	//************************************************GET ACTIVE REGION******************************************\\
 	@Override
 	public List<RegionMasterRes> getActiveRegionDetails(RegionMasterGetAllReq req) {

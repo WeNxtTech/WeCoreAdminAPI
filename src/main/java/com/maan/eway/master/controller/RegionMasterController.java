@@ -151,7 +151,7 @@ public class RegionMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-		
+		/*
 		// Region Master Drop Down Type
 		@PostMapping("/dropdown/region")
 		@ApiOperation(value = "This method is get Region Master Drop Down")
@@ -174,7 +174,7 @@ public class RegionMasterController {
 			}
 
 		}
-		
+		*/
 		@PostMapping("/region/changestatus")
 		@ApiOperation(value = "This method is get Company Product Master Drop Down")
 		public ResponseEntity<CommonRes> changeStatusOfRegion(@RequestBody RegionChangeStatusReq req) {

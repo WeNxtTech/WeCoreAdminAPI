@@ -35,7 +35,7 @@ public interface RegionMasterService  {
 
 	RegionMasterRes getByRegionCode(RegionMasterGetReq req);
 
-	List<DropDownRes> getRegionMasterDropdown(RegionMasterDropDownReq req);
+	//List<DropDownRes> getRegionMasterDropdown(RegionMasterDropDownReq req);
 
 	SuccessRes changeStatusOfRegion(RegionChangeStatusReq req);
 

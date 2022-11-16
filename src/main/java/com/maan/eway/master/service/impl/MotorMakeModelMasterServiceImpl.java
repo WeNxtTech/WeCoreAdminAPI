@@ -79,7 +79,7 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+/*
 	@Override
 	public List<DropDownRes> getMotorMakeModelDropdown( String makeId ) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
@@ -146,6 +146,6 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 				}
 			return resList;
 		}
-
+*/
 
 }

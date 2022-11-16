@@ -490,7 +490,7 @@ public OccupationMasterRes getByOccupationId(OccupationMasterGetReq req) {
 	}
 	return res;
 }
-
+/*
 @Override
 public List<DropDownRes> getOccupationMasterDropdown() {
 List<DropDownRes> resList = new ArrayList<DropDownRes>();
@@ -554,7 +554,7 @@ try {
 		}
 	return resList;
 }
-	
+	*/
 @Override
 public SuccessRes changeStatusOfOccupation(OccupationChangeStatusReq req) {
 	SuccessRes res = new SuccessRes();

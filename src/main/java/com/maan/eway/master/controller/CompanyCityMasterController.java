@@ -269,7 +269,7 @@ public class CompanyCityMasterController {
 
 			}
 		}
-		
+	
 		@PostMapping("/companycity/changestatus")
 		@ApiOperation(value = "This method is get Company City Change Status")
 		public ResponseEntity<CommonRes> changeStatusOfCity(@RequestBody CompanyCityChangeStatusReq req) {

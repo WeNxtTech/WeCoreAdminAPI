@@ -23,7 +23,7 @@ public interface ExchangeMasterService {
 
 	List<ExchangeMasterGetRes> getActiveExchange(ExchangeMasterGetallReq req);
 
-	List<DropDownRes> getExchangeMasterDropdown();
+	//List<DropDownRes> getExchangeMasterDropdown();
 
 	SuccessRes changeStatusOfExchange(ExchangeChangeStatusReq req);
 

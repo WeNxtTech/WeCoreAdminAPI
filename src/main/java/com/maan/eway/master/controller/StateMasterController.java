@@ -152,7 +152,7 @@ public class StateMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-		
+	/*	
 		// State Master Drop Down Type
 		@PostMapping("/dropdown/state")
 		@ApiOperation(value = "This method is get State Master Drop Down")
@@ -175,6 +175,7 @@ public class StateMasterController {
 			}
 
 		}
+*/
 		//Change Status
 		@PostMapping("/state/changestatus")
 		@ApiOperation(value = "This method is get State Master Status Change")

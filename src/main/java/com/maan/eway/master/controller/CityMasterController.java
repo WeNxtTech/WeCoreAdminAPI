@@ -152,7 +152,7 @@ public class CityMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-		
+		/*
 		// City Master Drop Down Type
 		@PostMapping("/dropdown/city")
 		@ApiOperation(value = "This method is get City Master Drop Down")
@@ -187,6 +187,7 @@ public class CityMasterController {
 
 			}
 		}
+		*/
 		@PostMapping("/city/changestatus")
 		@ApiOperation(value = "This method is get City Change Status")
 		public ResponseEntity<CommonRes> changeStatusOfCity(@RequestBody CityChangeStatusReq req) {

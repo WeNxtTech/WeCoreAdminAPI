@@ -423,7 +423,7 @@ public class MotorColorMasterServiceImpl implements MotorColorMasterService {
 		}
 		return resList;
 	}
-
+/*
 	@Override
 	public List<DropDownRes> getColorMasterDropdown() {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
@@ -487,7 +487,7 @@ public class MotorColorMasterServiceImpl implements MotorColorMasterService {
 				}
 			return resList;
 		}
-
+*/
 	@Override
 	public SuccessRes changeStatusOfColor(ColorChangeStatusReq req) {
 		SuccessRes res = new SuccessRes();

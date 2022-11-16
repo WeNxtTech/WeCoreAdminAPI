@@ -457,7 +457,7 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 		}
 		return resList;
 	}
-
+/*
 	@Override
 	public List<DropDownRes> getExchangeMasterDropdown() {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
@@ -519,7 +519,7 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 		}
 		return resList;
 	}
-
+*/
 	@Override
 	public SuccessRes changeStatusOfExchange(ExchangeChangeStatusReq req) {
 		SuccessRes res = new SuccessRes();

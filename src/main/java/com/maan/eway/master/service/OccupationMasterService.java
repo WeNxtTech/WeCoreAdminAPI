@@ -47,7 +47,7 @@ public interface OccupationMasterService  {
 
 	List<OccupationMasterRes> getActiveOccupation(OccupationMasterGetAllReq req);
 
-	List<DropDownRes> getOccupationMasterDropdown();
+	//List<DropDownRes> getOccupationMasterDropdown();
 
 	SuccessRes changeStatusOfOccupation(OccupationChangeStatusReq req);
 

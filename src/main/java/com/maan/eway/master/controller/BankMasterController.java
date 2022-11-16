@@ -152,7 +152,7 @@ public class BankMasterController {
 		}
 	}
 		
-		// Bank Master Drop Down Type
+/*		// Bank Master Drop Down Type
 		@GetMapping("/dropdown/bankmaster")
 		@ApiOperation(value = "This method is get Bank Master Drop Down")
 
@@ -174,7 +174,7 @@ public class BankMasterController {
 			}
 
 		}
-
+*/
 /*
 	private static final String ENTITY_TITLE = "BankMaster";
 

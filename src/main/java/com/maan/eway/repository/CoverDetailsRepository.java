@@ -13,6 +13,7 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.maan.eway.bean.CoverDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,5 +30,7 @@ import com.maan.eway.bean.CoverDetailsId;
  
  
 public interface CoverDetailsRepository  extends JpaRepository<CoverDetails,CoverDetailsId > , JpaSpecificationExecutor<CoverDetails> {
+
+	List<CoverDetails> findByQuoteNoOrderByVehicleIdAsc(String quoteNo);
 
 }

@@ -30,4 +30,6 @@ import com.maan.eway.bean.PersonalInfoId;
  
 public interface PersonalInfoRepository  extends JpaRepository<PersonalInfo,PersonalInfoId > , JpaSpecificationExecutor<PersonalInfo> {
 
+	PersonalInfo findByCustomerId(String customerId);
+
 }

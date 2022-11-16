@@ -133,7 +133,7 @@ public Long getContentDetailsCount(String customerId) {
 
 		// Select
 		query.select( cb.countDistinct( r.get("requestReferenceNo")  ) );
-
+		
 		// Order By
 	//	List<Order> orderList = new ArrayList<Order>();
 	//	orderList.add(cb.asc(b.get("branchName")));

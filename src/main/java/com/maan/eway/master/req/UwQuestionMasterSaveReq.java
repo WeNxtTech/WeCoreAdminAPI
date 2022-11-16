@@ -27,6 +27,9 @@ public class UwQuestionMasterSaveReq implements Serializable {
 	@JsonProperty("UwQuestionDesc")
     private String   uwQuestionDesc ;
     
+	@JsonProperty("QuestionType")
+    private String   questionType ;
+    
 	@JsonFormat(pattern ="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;

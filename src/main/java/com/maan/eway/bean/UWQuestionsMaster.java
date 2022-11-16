@@ -80,6 +80,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="UW_QUESTION_DESC", length=100)
     private String   uwQuestionDesc;
 
+    @Column(name="QUESTION_TYPE", length=100)
+    private String   questionType;
+    
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ENTRY_DATE")
     private Date       entryDate ;

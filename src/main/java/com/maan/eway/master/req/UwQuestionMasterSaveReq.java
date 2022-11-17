@@ -44,4 +44,11 @@ public class UwQuestionMasterSaveReq implements Serializable {
 	@JsonProperty("Status")
 	private String status;
 
+	@JsonProperty("MandatoryYn")
+	private String mandatoryYn;
+
+	@JsonProperty("DataType")
+	private String dataType;
+
+	
 }

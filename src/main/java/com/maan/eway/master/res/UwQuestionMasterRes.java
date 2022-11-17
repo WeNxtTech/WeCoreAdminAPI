@@ -51,4 +51,10 @@ public class UwQuestionMasterRes implements Serializable {
 	private String remarks;
 
 
+	@JsonProperty("MandatoryYn")
+	private String mandatoryYn;
+
+	@JsonProperty("DataType")
+	private String dataType;
+
 }

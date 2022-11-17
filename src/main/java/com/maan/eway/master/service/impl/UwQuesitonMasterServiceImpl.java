@@ -117,6 +117,22 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 				error.add(new Error("07", "Status", " Status Y or N"));
 			}
 
+			if (StringUtils.isBlank(req.getMandatoryYn())) {
+				error.add(new Error("08", "MandatoryYn", "Please Enter MandatoryYn"));
+			} else if (req.getMandatoryYn().length() > 1) {
+				error.add(new Error("08", "MandatoryYn", " MandatoryYn 1 Character Only"));
+			} else if (!("Y".equals(req.getMandatoryYn()) || "N".equals(req.getMandatoryYn()))) {
+				error.add(new Error("08", "MandatoryYn", " MandatoryYn Y or N"));
+			}
+			if(req.getQuestionType().equalsIgnoreCase("02")) {
+			if (StringUtils.isBlank(req.getDataType())) {
+				error.add(new Error("09", "DataType", "Please Enter DataType"));
+				}
+			 else if (req.getDataType().length() > 20) {
+					error.add(new Error("09", "DataType", "Please Enter DataType within 20 Characters Only"));
+				}
+			}
+			
 		} catch (Exception e) {
 
 			log.error(e);
@@ -224,6 +240,9 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			saveData.setEntryDate(new Date());
 			saveData.setAmendId(amendId);
 			saveData.setQuestionType(req.getQuestionType());
+			saveData.setDataType(req.getDataType());
+			saveData.setMandatoryYn(req.getMandatoryYn());
+			saveData.setStatus("Y");
 			uwRepo.saveAndFlush(saveData);
 
 			if (list.size() > 0) {

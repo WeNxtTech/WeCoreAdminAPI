@@ -95,7 +95,13 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="REMARKS", length=100)
     private String     remarks ;
-    
+
+    @Column(name="MANDATORY_YN", length=2)
+    private String  mandatoryYn;
+
+    @Column(name="DATA_TYPE", length=100)
+    private String    dataType ;
+
 }
 
 

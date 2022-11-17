@@ -103,7 +103,7 @@ public class UwQuestionsDetailsController {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
 
-		UwQuestionsDetailsRes res = uwService.getUwQuestionsDetails(req);
+		List<UwQuestionsDetailsRes> res = uwService.getUwQuestionsDetails(req);
 		
 			data.setCommonResponse(res);
 			data.setIsError(false);

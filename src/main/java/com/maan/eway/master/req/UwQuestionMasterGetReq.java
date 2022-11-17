@@ -23,12 +23,6 @@ public class UwQuestionMasterGetReq implements Serializable {
 	@JsonProperty("ProductId")
 	private String productId;
 
-	@JsonProperty("SectionId")
-	private String sectionId;
-
-	@JsonProperty("CoverId")
-	private String coverId;
-
 	@JsonProperty("InsuranceId")
 	private String companyId;
 

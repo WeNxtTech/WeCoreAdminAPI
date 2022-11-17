@@ -167,13 +167,17 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 	}
 
 	@Override
-	public UwQuestionsDetailsRes getUwQuestionsDetails(UwQuestionsDetailsGetReq req) {
-		UwQuestionsDetailsRes res = new UwQuestionsDetailsRes();
+	public List<UwQuestionsDetailsRes> getUwQuestionsDetails(UwQuestionsDetailsGetReq req) {
+		List<UwQuestionsDetailsRes> resList = new ArrayList<UwQuestionsDetailsRes>();
 		
 		try {
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
-		UwQuestionsDetails data = uwRepo.findByCompanyIdAndProductIdAndRequestReferenceNoAndVehicleIdAndUwQuestionId(req.getCompanyId(),Integer.valueOf(req.getProductId()),req.getRequestReferenceNo(),Integer.valueOf(req.getVehicleId()),Integer.valueOf(req.getUwQuestionId()));
-		res=dozerMapper.map(data,UwQuestionsDetailsRes.class);
+		List<UwQuestionsDetails> datas = uwRepo.findByCompanyIdAndProductIdAndRequestReferenceNoAndVehicleId(req.getCompanyId(),Integer.valueOf(req.getProductId()),req.getRequestReferenceNo(),Integer.valueOf(req.getVehicleId()));
+		for(UwQuestionsDetails data : datas) {
+			UwQuestionsDetailsRes res = new UwQuestionsDetailsRes();
+			res=dozerMapper.map(data,UwQuestionsDetailsRes.class);
+			resList.add(res);
+		}
 		}
 		catch(Exception e)
 		{
@@ -181,7 +185,7 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 		log.info("Exception is --->" + e.getMessage());
 		return null;
 	}
-	return res;
+	return resList;
 }
 
 	

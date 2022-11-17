@@ -23,7 +23,7 @@ public interface UwQuestionsDetailsService  {
 
 	SuccessRes saveUwQuestions(List<UwQuestionsDetailsSaveReq> req);
 
-	UwQuestionsDetailsRes getUwQuestionsDetails(UwQuestionsDetailsGetReq req);
+	List<UwQuestionsDetailsRes> getUwQuestionsDetails(UwQuestionsDetailsGetReq req);
 
 	
 

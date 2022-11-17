@@ -71,13 +71,19 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			if (StringUtils.isBlank(req.getProductId())) {
 				error.add(new Error("02", "ProductId", "Please Enter ProductId"));
 			}
-			if (req.getUwQuestionDesc().length() > 100) {
+			if (StringUtils.isBlank(req.getUwQuestionDesc())) {
+				error.add(new Error("03", "UwQuestionDesc", "Please Enter UwQuestionDesc"));
+			} else if (req.getUwQuestionDesc().length() > 100) {
 				error.add(new Error("03", "UwQuestionDesc", "Please Enter UwQuestionDesc within 100 Characters"));
 			}
-			if (req.getQuestionType().length() > 100) {
+			if (StringUtils.isBlank(req.getQuestionType())) {
+				error.add(new Error("04", "QuestionType", "Please Enter QuestionType"));
+			}
+			else if (req.getQuestionType().length() > 100) {
 				error.add(new Error("04", "QuestionType", "Please Enter QuestionType within 100 Characters"));
 			}
-			if (req.getRemarks().length() > 100) {
+			
+			if (StringUtils.isNotBlank(req.getRemarks()) && req.getRemarks().length() > 100) {
 				error.add(new Error("05", "Remarks", "Please Enter Remarks within 100 Characters"));
 			}
 			// Date Validation
@@ -201,7 +207,6 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 						String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
 
 						if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime))
-							;
 						{
 							amendId = list.get(0).getAmendId() + 1;
 						}
@@ -304,25 +309,24 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			query.select(b);
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<UWQuestionsMaster> ocpm1 = effectiveDate.from(UWQuestionsMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<UWQuestionsMaster> ocpm1 = amendId.from(UWQuestionsMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("uwQuestionId"), b.get("uwQuestionId"));
-
-			effectiveDate.where(a1, a2, a3);
+			amendId.where(a1, a2, a3);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("uwQuestionId")));
 
 			// Where
-			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
 			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
 
-			query.where(n1, n2, n3).orderBy(orderList);
+			query.where(n1,n2, n3).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<UWQuestionsMaster> result = em.createQuery(query);
@@ -369,21 +373,21 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			query.select(b);
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<UWQuestionsMaster> ocpm1 = effectiveDate.from(UWQuestionsMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<UWQuestionsMaster> ocpm1 = amendId.from(UWQuestionsMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("uwQuestionId"), b.get("uwQuestionId"));
 			Predicate a2 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 
-			effectiveDate.where(a1, a2, a3);
+			amendId.where(a1, a2, a3);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("uwQuestionId")));
 
 			// Where
-			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("status"), "Y");
 			Predicate n3 = cb.equal(b.get("productId"), req.getProductId());
 			Predicate n4 = cb.equal(b.get("companyId"), req.getCompanyId());
@@ -444,7 +448,7 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(c.get("effectiveDateStart")));
+			orderList.add(cb.desc(c.get("amendId")));
 
 			// Where
 

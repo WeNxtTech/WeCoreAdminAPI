@@ -26,7 +26,7 @@ public class QuoteController {
 	
 	@Autowired
 	private  QuoteService entityService ;
-	
+/*	
 	@PostMapping("/newquote")
 	@ApiOperation(value = "This method is New Quote ")
 	public ResponseEntity<CommonRes> generateNewQuote(@RequestBody NewQuoteReq req) {
@@ -64,5 +64,5 @@ public class QuoteController {
 		}
 		
 
-	} 
+	} */
 }

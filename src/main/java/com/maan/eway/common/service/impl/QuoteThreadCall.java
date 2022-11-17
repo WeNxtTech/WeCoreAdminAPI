@@ -1,16 +1,12 @@
 package com.maan.eway.common.service.impl;
 
-import static org.junit.Assume.assumeFalse;
-
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -24,7 +20,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
-import org.hibernate.annotations.Synchronize;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.CoverDetails;
@@ -33,9 +28,6 @@ import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.MotorDataDetails;
-import com.maan.eway.bean.MsCommonDetails;
-import com.maan.eway.bean.MsCustomerDetails;
-import com.maan.eway.bean.MsVehicleDetails;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.common.req.CoverIdsReq;
 import com.maan.eway.common.req.QuoteThreadReq;
@@ -53,7 +45,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.Synchronized;
 
 @NoArgsConstructor
 @AllArgsConstructor

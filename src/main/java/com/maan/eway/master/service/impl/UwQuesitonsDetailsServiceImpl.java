@@ -68,13 +68,13 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 			if (StringUtils.isBlank(req.getProductId())) {
 				error.add(new Error("02", "ProductId", "Please Enter ProductId"+row));
 			}
-			if (req.getUwQuestionDesc().length() > 100) {
+			if (StringUtils.isNotBlank(req.getUwQuestionDesc()) &&req.getUwQuestionDesc().length() > 100) {
 				error.add(new Error("03", "UwQuestionDesc", "Please Enter UwQuestionDesc within 100 Characters"+row));
 			}
-			if (req.getQuestionType().length() > 100) {
+			if (StringUtils.isNotBlank(req.getQuestionType()) &&req.getQuestionType().length() > 100) {
 				error.add(new Error("04", "QuestionType", "Please Enter QuestionType within 100 Characters"+row));
 			}
-			if (req.getRemarks().length() > 100) {
+			if (StringUtils.isNotBlank(req.getRemarks()) && req.getRemarks().length() > 100) {
 				error.add(new Error("05", "Remarks", "Please Enter Remarks within 100 Characters"+row));
 			}
 			if (StringUtils.isBlank(req.getRequestReferenceNo())) {
@@ -89,13 +89,13 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 			if (StringUtils.isBlank(req.getUwQuestionId())) {
 				error.add(new Error("08", "UwQuestionId", "Please Enter UwQuestionId"+row));
 			}
-			if (req.getValue().length() > 100) {
+			if (StringUtils.isNotBlank(req.getValue()) &&req.getValue().length() > 100) {
 				error.add(new Error("09", "Value", "Please Enter Value within 100 Characters"+row));
 			}
-			if (req.getCreatedBy().length() > 100) {
+			if (StringUtils.isNotBlank(req.getCreatedBy()) &&req.getCreatedBy().length() > 100) {
 				error.add(new Error("10", "CreatedBy", "Please Enter CreatedBy within 100 Characters"+row));
 			}
-			if (req.getUpdatedBy().length() > 100) {
+			if (StringUtils.isNotBlank(req.getUpdatedBy()) &&req.getUpdatedBy().length() > 100) {
 				error.add(new Error("11", "UpdatedBy", "Please Enter UpdatedBy within 100 Characters"+row));
 			}
 					
@@ -134,7 +134,8 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 			uwRepo.delete(saveData);	
 			saveData = dozerMapper.map(data,UwQuestionsDetails.class);
 			saveData.setEntryDate(da.get().getEntryDate());		
-			saveData.setStatus(da.get().getStatus());		
+			saveData.setStatus(da.get().getStatus());
+			saveData.setUpdatedDate(new Date());			
 			res.setResponse("Updated Successfully");
 
 			saveData1 = dozerMapper.map(data,UwQuestionsDetailsArch.class);

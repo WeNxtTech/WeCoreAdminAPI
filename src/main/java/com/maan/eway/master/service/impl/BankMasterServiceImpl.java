@@ -169,12 +169,12 @@ public SuccessRes insertBank(BankMasterSaveReq req) {
 	try {
 
 		Calendar cal = new GregorianCalendar();
-		cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
+		cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
 		Date startDate = cal.getTime() ;
 		Date today = new Date();
-		cal.setTime(req.getEffectiveDate());   cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
+		cal.setTime(req.getEffectiveDateStart());   cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
 		Date oldEndDate = cal.getTime() ;
-		cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
+		cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
 		Date effDate = cal.getTime();
 	
 		Date endDate = sdformat.parse("12/12/2050");
@@ -284,10 +284,10 @@ public List<Error> validateBankDetails(BankMasterSaveReq req) {
 		Date today =  new Date(); 
 		cal.setTime(today); cal.add(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 50);
 		today = cal.getTime();
-		if(req.getEffectiveDate() == null || StringUtils.isBlank(req.getEffectiveDate().toString())) {
+		if(req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
 			errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start"));
 
-		} else if (req.getEffectiveDate().before(today)) {
+		} else if (req.getEffectiveDateStart().before(today)) {
 			errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
 		}
 		if (StringUtils.isBlank(req.getStatus())) {
@@ -298,6 +298,12 @@ public List<Error> validateBankDetails(BankMasterSaveReq req) {
 			errorList.add(new Error("05", "Status", "Enter Status Y or N Only"));
 		}
 	
+		if (StringUtils.isBlank(req.getCompanyId())) {
+			errorList.add(new Error("05", "InsuranceId", "Please Enter InsuranceId"));
+		} 
+		if (StringUtils.isBlank(req.getBranchCode())) {
+			errorList.add(new Error("05", "BranchCode", "Please Enter BranchCode"));
+		} 
 
 	} catch (Exception e) {
 		log.error(e);

@@ -49,14 +49,26 @@ public class OccupationMaster implements Serializable {
 	// --- ENTITY PRIMARY KEY
 	@Id
 	@Column(name = "OCCUPATION_ID", nullable = false, length = 20)
-	private String occupationId;
+	private Integer occupationId;
 
 	@Id
+	@Column(name = "COMPANY_ID", nullable = false, length = 20)
+	private String companyId;
+
+	@Id
+	@Column(name = "BRANCH_CODE", nullable = false, length = 20)
+	private String branchCode;
+
+	@Id
+	@Column(name = "AMEND_ID", nullable = false, length = 20)
+	private Integer amendId;
+
+
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "EFFECTIVE_DATE_START", nullable = false)
 	private Date effectiveDateStart;
 
-	@Id
+
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "EFFECTIVE_DATE_END", nullable = false)
 	private Date effectiveDateEnd;
@@ -74,12 +86,13 @@ public class OccupationMaster implements Serializable {
 	@Column(name = "REGULATORY_CODE", length = 20)
 	private String regulatoryCode;
 
-	@Column(name = "AMEND_ID")
-	private Integer amendId;
-
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "ENTRY_DATE")
 	private Date entryDate;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "UPDATED_DATE")
+	private Date updatedDate;
 
 	@Column(name = "STATUS", length = 1)
 	private String status;
@@ -87,7 +100,12 @@ public class OccupationMaster implements Serializable {
 	@Column(name = "REMARKS", length = 100)
 	private String remarks;
 
+	@Column(name = "UPDATED_BY", length = 100)
+	private String updatedBy;
+	
 	@Column(name = "CREATED_BY", length = 100)
 	private String createdBy;
+	
+	
 
 }

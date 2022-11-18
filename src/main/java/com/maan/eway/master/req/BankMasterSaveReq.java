@@ -17,10 +17,17 @@ public class BankMasterSaveReq implements Serializable {
 
 	@JsonProperty("BankCode")
     private String     bankCode     ;
-    
-	@JsonFormat(pattern ="dd/MM/yyyy")
-	@JsonProperty("EffectiveDate")
-	private Date effectiveDate;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
+
+	@JsonProperty("InsuranceId")
+    private String     companyId;
+
+	@JsonProperty("BranchCode")
+    private String     branchCode;
+
 
 	@JsonProperty("BankShortName")
     private String     bankShortName ;

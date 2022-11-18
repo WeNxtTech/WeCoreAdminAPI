@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -98,8 +97,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="LIMIT_OF_INDEMINITY_SUMINSURED")
     private Double     limitOfIndeminitySuminsured ;
 
-    @Column(name="CONTENT_SUMISURED")
-    private Double     contentSumisured ;
+    @Column(name="CONTENT_SUMINSURED")
+    private Double     contentSuminsured ;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ENTRY_DATE")

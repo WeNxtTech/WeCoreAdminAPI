@@ -9,9 +9,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -407,7 +411,7 @@ public List<OccupationMasterRes> getallOccupation(OccupationMasterGetAllReq req)
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(b.get("occupationName")));
+		orderList.add(cb.asc(b.get("branchCode")));
 
 		// Where
 		Predicate n1 = cb.equal(b.get("amendId"), amendId);
@@ -420,7 +424,8 @@ public List<OccupationMasterRes> getallOccupation(OccupationMasterGetAllReq req)
 		// Get Result
 		TypedQuery<OccupationMaster> result = em.createQuery(query);
 		list = result.getResultList();
-
+		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getOccupationId()))).collect(Collectors.toList());
+		list.sort(Comparator.comparing(OccupationMaster :: getOccupationName ));
 		// Map
 		for (OccupationMaster data : list) {
 			OccupationMasterRes res = new OccupationMasterRes();
@@ -441,6 +446,10 @@ public List<OccupationMasterRes> getallOccupation(OccupationMasterGetAllReq req)
 }
 
 
+private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
+    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+}
 @Override
 public List<OccupationMasterRes> getActiveOccupation(OccupationMasterGetAllReq req) {
 	List<OccupationMasterRes> resList = new ArrayList<OccupationMasterRes>();
@@ -470,7 +479,7 @@ public List<OccupationMasterRes> getActiveOccupation(OccupationMasterGetAllReq r
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(b.get("occupationName")));
+		orderList.add(cb.asc(b.get("branchCode")));
 
 		// Where
 		Predicate n1 = cb.equal(b.get("amendId"), amendId);
@@ -484,7 +493,8 @@ public List<OccupationMasterRes> getActiveOccupation(OccupationMasterGetAllReq r
 		// Get Result
 		TypedQuery<OccupationMaster> result = em.createQuery(query);
 		list = result.getResultList();
-
+		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getOccupationId()))).collect(Collectors.toList());
+		list.sort(Comparator.comparing(OccupationMaster :: getOccupationName ));
 		// Map
 		for (OccupationMaster data : list) {
 			OccupationMasterRes res = new OccupationMasterRes();
@@ -541,7 +551,7 @@ public OccupationMasterRes getByOccupationId(OccupationMasterGetReq req) {
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(b.get("occupationName")));
+		orderList.add(cb.asc(b.get("branchCode")));
 
 		// Where
 		Predicate n1 = cb.equal(b.get("amendId"), amendId);
@@ -556,7 +566,8 @@ public OccupationMasterRes getByOccupationId(OccupationMasterGetReq req) {
 		TypedQuery<OccupationMaster> result = em.createQuery(query);
 
 		list = result.getResultList();
-
+		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getOccupationId()))).collect(Collectors.toList());
+		list.sort(Comparator.comparing(OccupationMaster :: getOccupationName ));
 		res = mapper.map(list.get(0), OccupationMasterRes.class);
 		res.setOccupationId(list.get(0).getOccupationId().toString());
 		res.setEntryDate(list.get(0).getEntryDate());
@@ -662,7 +673,7 @@ public SuccessRes changeStatusOfOccupation(OccupationChangeStatusReq req) {
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(b.get("occupationId")));
+		orderList.add(cb.asc(b.get("branchCode")));
 
 		// Where
 		Predicate n1 = cb.equal(b.get("amendId"), amendId);

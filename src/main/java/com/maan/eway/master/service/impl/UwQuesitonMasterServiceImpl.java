@@ -119,8 +119,8 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 				error.add(new Error("07", "Status", "Please Enter Status"));
 			} else if (req.getStatus().length() > 1) {
 				error.add(new Error("07", "Status", " Status 1 Character Only"));
-			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()))) {
-				error.add(new Error("07", "Status", " Status Y or N"));
+			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus())|| "R".equals(req.getStatus()))) {
+				error.add(new Error("07", "Status", " Plese Enter Status"));
 			}
 
 			if (StringUtils.isBlank(req.getMandatoryYn())) {

@@ -21,6 +21,10 @@ public class UwQuestionMasterSaveReq implements Serializable {
 	@JsonProperty("ProductId")
     private String    productId ;
     
+	@JsonProperty("BranchCode")
+    private String    branchCode ;
+    
+	
 	@JsonProperty("UwQuestionId")
     private String   uwQuestionId ;
     
@@ -49,6 +53,20 @@ public class UwQuestionMasterSaveReq implements Serializable {
 
 	@JsonProperty("DataType")
 	private String dataType;
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+	
+	@JsonProperty("UpdatedBy")
+	private String updatedBy;
+	
+	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("UpdatedDate")
+	private Date updatedDate;
 
+	@JsonProperty("CoreAppCode")
+	private String coreAppCode;
+	
+	@JsonProperty("RegulatoryCode")
+	private String regulatoryCode;
 	
 }

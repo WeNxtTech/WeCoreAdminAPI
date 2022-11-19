@@ -36,10 +36,7 @@ public class UwQuestionMasterRes implements Serializable {
 	@JsonProperty("EffectiveDateEnd")
 	private Date effectiveDateEnd;
 
-	@JsonFormat(pattern ="dd/MM/yyyy")
-	@JsonProperty("EntryDate")
-	private Date entryDate;
-
+	
 	
 	@JsonProperty("Status")
     private String     status ;
@@ -56,5 +53,24 @@ public class UwQuestionMasterRes implements Serializable {
 
 	@JsonProperty("DataType")
 	private String dataType;
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+	
+	@JsonProperty("UpdatedBy")
+	private String updatedBy;
+	
+	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("UpdatedDate")
+	private Date updatedDate;
+
+	@JsonProperty("CoreAppCode")
+	private String coreAppCode;
+	
+	@JsonProperty("RegulatoryCode")
+	private String regulatoryCode;
+	
+	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("EntryDate")
+	private Date entryDate;
 
 }

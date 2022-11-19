@@ -58,21 +58,26 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="PRODUCT_ID", nullable=false)
     private Integer  productId;
-    
-    
+
+    @Id
+    @Column(name="AMEND_ID", nullable=false)
+    private Integer     amendId ;
+
     @Id
     @Column(name="UW_QUESTION_ID", nullable=false)
     private Integer  uwQuestionId;
     
-    
     @Id
+	@Column(name="BRANCH_CODE",length=20, nullable=false)
+	private String branchCode;
+	
+    
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EFFECTIVE_DATE_START", nullable=false)
+    @Column(name="EFFECTIVE_DATE_START")
     private Date       effectiveDateStart ;
 
-    @Id
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EFFECTIVE_DATE_END", nullable=false)
+    @Column(name="EFFECTIVE_DATE_END")
     private Date       effectiveDateEnd ;
 
     
@@ -90,9 +95,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="STATUS", length=2)
     private String     status ;
 
-    @Column(name="AMEND_ID")
-    private Integer     amendId ;
-
+    
     @Column(name="REMARKS", length=100)
     private String     remarks ;
 
@@ -102,6 +105,23 @@ private static final long serialVersionUID = 1L;
     @Column(name="DATA_TYPE", length=100)
     private String    dataType ;
 
+    @Column(name="CREATED_BY",length=100)
+	private String createdBy;
+	
+	@Column(name="UPDATED_BY",length=100)
+	private String updatedBy;
+	
+	@Column(name="CORE_APP_CODE",length=20)
+	private String coreAppCode;
+	
+	@Column(name="REGULATORY_CODE",length=20)
+	private String regulatoryCode;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="UPDATED_DATE")
+	private Date updatedDate;
+	
+	
 }
 
 

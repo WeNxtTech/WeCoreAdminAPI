@@ -32,10 +32,16 @@ public class UWQuestionsMasterId implements Serializable {
     //--- ENTITY KEY ATTRIBUTES 
     
     private String     companyId ;
+
     private Integer  productId;
+
+    private Integer     amendId ;
+
     private Integer  uwQuestionId;
-    private Date       effectiveDateStart ;
-    private Date       effectiveDateEnd ;
+    
+    private String branchCode;
+	
+    
     
      
 }

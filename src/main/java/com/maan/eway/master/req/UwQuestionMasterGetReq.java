@@ -16,16 +16,15 @@ public class UwQuestionMasterGetReq implements Serializable {
 	@JsonProperty("UwQuestionId")
 	private String uwQuestionId;
 
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDateStart")
-	private Date effectiveDateStart;
-
 	@JsonProperty("ProductId")
 	private String productId;
-
+    
 	@JsonProperty("InsuranceId")
 	private String companyId;
-
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
+	
 	
 
 }

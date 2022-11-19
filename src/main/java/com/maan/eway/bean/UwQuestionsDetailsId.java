@@ -25,6 +25,7 @@ public class UwQuestionsDetailsId implements Serializable {
 	private String requestReferenceNo;
 	private Integer vehicleId;
 	private Integer uwQuestionId;
+    private  String branchCode ;
 
 
 

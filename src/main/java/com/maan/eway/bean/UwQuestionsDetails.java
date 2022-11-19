@@ -53,6 +53,11 @@ private static final long serialVersionUID = 1L;
     private Integer    productId ;
 
     @Id
+    @Column(name="BRANCH_CODE",length=20, nullable=false)
+    private  String branchCode ;
+
+    
+    @Id
     @Column(name="REQUEST_REFERENCE_NO", nullable=false, length=20)
     private String     requestReferenceNo ;
 

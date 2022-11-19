@@ -29,4 +29,8 @@ public class UwQuestionsDetailsGetReq implements Serializable {
 	
 	@JsonProperty("UwQuestionId")
     private String   uwQuestionId ;
-    }
+
+	@JsonProperty("BranchCode")
+    private String    branchCode;
+   
+}

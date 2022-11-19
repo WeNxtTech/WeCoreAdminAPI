@@ -98,8 +98,13 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 			if (StringUtils.isNotBlank(req.getUpdatedBy()) &&req.getUpdatedBy().length() > 100) {
 				error.add(new Error("11", "UpdatedBy", "Please Enter UpdatedBy within 100 Characters"+row));
 			}
-					
-			
+			if (StringUtils.isBlank(req.getBranchCode())) {
+				error.add(new Error("12", "BranchCode", "Please Enter BranchCode"+row));
+			}
+			else if (req.getBranchCode().length() > 20) {
+				error.add(new Error("12", "BranchCode", "Please Enter BranchCode within 20 Characters"+row));
+			}
+				
 			}
 		} catch (Exception e) {
 
@@ -126,6 +131,7 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 			id.setRequestReferenceNo(data.getRequestReferenceNo());
 			id.setUwQuestionId(Integer.valueOf(data.getUwQuestionId()));
 			id.setVehicleId(Integer.valueOf(data.getVehicleId()));
+			id.setBranchCode(data.getBranchCode());
 			UwQuestionsDetails saveData = new UwQuestionsDetails();
 			UwQuestionsDetailsArch saveData1 = new UwQuestionsDetailsArch();
 			

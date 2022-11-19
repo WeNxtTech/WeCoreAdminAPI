@@ -21,6 +21,9 @@ public class UwQuestionsDetailsRes implements Serializable {
 	@JsonProperty("ProductId")
     private String    productId ;
     
+
+	@JsonProperty("BranchCode")
+    private String    branchCode ;
 	@JsonProperty("RequestReferenceNo")
     private String    requestReferenceNo ;   
 	

@@ -2,10 +2,15 @@ package com.maan.eway.master.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -30,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.gson.Gson;
 import com.maan.eway.bean.MotorMakeMaster;
 import com.maan.eway.bean.UWQuestionsMaster;
+import com.maan.eway.bean.WarrantyMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.UwQuestionChangeStatusReq;
 import com.maan.eway.master.req.UwQuestionMasterGetReq;
@@ -352,7 +358,9 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			list = result.getResultList();
-
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getUwQuestionId()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(UWQuestionsMaster :: getUwQuestionDesc ));
+			
 			// Map
 			for (UWQuestionsMaster data : list) {
 				UwQuestionMasterRes res = new UwQuestionMasterRes();
@@ -370,7 +378,10 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 		}
 		return resList;
 	}
-
+	private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
+	    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+	}
 	@Override
 	public List<UwQuestionMasterRes> getActiveUwQuestions(UwQuestionsMasterGetAllReq req) {
 		List<UwQuestionMasterRes> resList = new ArrayList<UwQuestionMasterRes>();
@@ -418,7 +429,9 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			list = result.getResultList();
-
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getUwQuestionId()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(UWQuestionsMaster :: getUwQuestionDesc ));
+			
 			// Map
 			for (UWQuestionsMaster data : list) {
 				UwQuestionMasterRes res = new UwQuestionMasterRes();

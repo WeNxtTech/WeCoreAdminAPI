@@ -255,6 +255,7 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 				// Update Old Record
 				UWQuestionsMaster lastRecord = list.get(0);
 				lastRecord.setEffectiveDateEnd(oldEndDate);
+				lastRecord.setStatus(req.getStatus());
 				uwRepo.saveAndFlush(lastRecord);
 			}
 

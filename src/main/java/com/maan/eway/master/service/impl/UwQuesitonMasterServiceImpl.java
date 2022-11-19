@@ -248,7 +248,7 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			saveData.setQuestionType(req.getQuestionType());
 			saveData.setDataType(req.getDataType());
 			saveData.setMandatoryYn(req.getMandatoryYn());
-			saveData.setStatus("Y");
+			saveData.setStatus(req.getStatus());
 			uwRepo.saveAndFlush(saveData);
 
 			if (list.size() > 0) {

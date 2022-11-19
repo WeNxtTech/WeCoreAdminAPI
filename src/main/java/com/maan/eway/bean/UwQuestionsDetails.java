@@ -95,6 +95,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="UPDATED_DATE")
     private Date    updatedDate ;
 	
-	
+    @Column(name="IS_REFERRAL", length=5)
+    private String    isReferral;
+
 
 }

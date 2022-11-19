@@ -62,11 +62,11 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="PRODUCT_ID", nullable=false)
     private Integer    productId ;
-
+    
     @Id
     @Column(name="VEHICLE_ID", nullable=false)
     private Integer    vehicleId ;
-    
+
     @Id
     @Column(name="SECTION_ID", nullable=false)
     private Integer    sectionId ;
@@ -82,12 +82,16 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="SUB_COVER_ID", nullable=false)
     private Integer    subCoverId ;
+    
+    @Id
+    @Column(name="TAX_ID")
+    private Integer taxId;
+   
 
     @Id
     @Column(name="DISC_LOAD_ID", nullable=false)
     private Integer    discLoadId ;
 
-    
     @Column(name="CD_REFNO", nullable=false)
     private String       cdRefno ;
 
@@ -121,7 +125,7 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="RATE")
     private Double     rate ;
-
+    
     @Column(name="CURRENCY")
     private String currency ;
 
@@ -177,14 +181,33 @@ private static final long serialVersionUID = 1L;
     @Column(name="STATUS", length=20)
     private String     status;
 
-    @Column(name="TAX1")
-    private Double tax1;
+
+    @Column(name="TAX_RATE")
+    private Double taxRate;
     
-    @Column(name="TAX2")
-    private Double tax2;
+    @Column(name="TAX_AMOUNT")
+    private Double taxAmount;
     
-    @Column(name="TAX3")
-    private Double tax3;
+    @Column(name="TAX_DESC")
+    private String taxDesc;
+    
+    @Column(name="TAX_CALC_TYPE")
+    private String taxCalcType;
+    
+    @Column(name="IS_TAX_EXTEMPTED")
+    private String isTaxExtempted ;
+    
+    @Column(name="TAX_EXEMPT_TYPE")
+    private String taxExtemptType;
+    
+    @Column(name="TAX_EXEMPT_CODE")
+    private String taxExemptCode;
+    
+    @Column(name="Is_REFERRAL", length=5)
+    private String     isReferral ;
+
+    @Column(name="referral_description", length=1000)
+    private String     referralDescription ;
     
     //--- ENTITY LINKS ( RELATIONSHIP )
 

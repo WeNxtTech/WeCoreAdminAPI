@@ -215,8 +215,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 			// Update Eservice Motor
 			eserMotors.setActualPremiumFc(premiumFc);
 			eserMotors.setActualPremiumLc(premiumLc);
-			eserMotors.setOverAllPremiumFc(overAllPremiumFc);
-			eserMotors.setOverAllPremiumLc(overAllPremiumLc);
+			eserMotors.setOverallPremiumFc(overAllPremiumFc);
+			eserMotors.setOverallPremiumLc(overAllPremiumLc);
 			eserMotRepo.saveAndFlush(eserMotors);
 			
 			// Save Motro Details

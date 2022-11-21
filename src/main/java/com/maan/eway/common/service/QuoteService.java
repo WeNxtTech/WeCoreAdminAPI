@@ -8,8 +8,8 @@ import com.maan.eway.res.CommonRes;
 
 public interface QuoteService {
 
-	CommonRes generateNewQuote(NewQuoteReq req);
+//	CommonRes generateNewQuote(NewQuoteReq req);
 
-	ViewQuoteRes viewQuoteDetails(ViewQuoteReq req);
+//	ViewQuoteRes viewQuoteDetails(ViewQuoteReq req);
 
 }

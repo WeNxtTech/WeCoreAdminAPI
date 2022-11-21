@@ -1047,7 +1047,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				errorList.add(new Error("08", "Status", "Please Enter Status"));
 			} else if (req.getStatus().length() > 1) {
 				errorList.add(new Error("08", "Status", "Enter Status in 1 Character Only"));
-			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()))) {
+			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus())) || "R".equals(req.getStatus())) {
 				errorList.add(new Error("08", "Status", "Enter Status Y or N Only"));
 			}
 			if (StringUtils.isBlank(req.getRegulatoryCode())) {

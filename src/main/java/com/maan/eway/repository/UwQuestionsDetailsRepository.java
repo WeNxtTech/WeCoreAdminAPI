@@ -7,7 +7,9 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import com.maan.eway.bean.UwQuestionsDetails;
 import com.maan.eway.bean.UwQuestionsDetailsId;
-public interface UwQuestionsDetailsRepository  extends JpaRepository<UwQuestionsDetails,UwQuestionsDetailsId > , JpaSpecificationExecutor<UwQuestionsDetails> {
+
+
+public interface UwQuestionsDetailsRepository  extends JpaRepository<UwQuestionsDetails,UwQuestionsDetailsId> , JpaSpecificationExecutor<UwQuestionsDetails> {
 
 
 	List<UwQuestionsDetails> findByCompanyIdAndProductIdAndRequestReferenceNoAndVehicleId(String companyId, Integer valueOf,

@@ -2,6 +2,9 @@ package com.maan.eway.bean;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
+import javax.persistence.Id;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,7 +29,7 @@ public class UwQuestionsDetailsId implements Serializable {
 	private Integer vehicleId;
 	private Integer uwQuestionId;
     private  String branchCode ;
-
+   
 
 
      

@@ -14,6 +14,8 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+import com.maan.eway.bean.CompanyProductMaster.CompanyProductMasterBuilder;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,10 +33,15 @@ import lombok.ToString;
 * @author Telosys Tools Generator
 *
 */
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 @Entity
 @DynamicInsert
 @DynamicUpdate
-@Data
+@Builder
 @IdClass(UwQuestionsDetailsId.class)
 @Table(name="uw_questions_details")
 

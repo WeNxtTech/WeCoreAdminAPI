@@ -49,7 +49,7 @@ public class FactorRateRequestDetailsId implements Serializable {
     
     private Integer    taxId ;
     
-    private Integer taxId;
+    
  
    
     

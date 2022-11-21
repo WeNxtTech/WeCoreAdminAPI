@@ -54,7 +54,7 @@ private static final long serialVersionUID = 1L;
     //--- ENTITY PRIMARY KEY 
     @Id
     @Column(name="ARCH_ID", nullable=false, length=10)
-    private String     archId ;
+    private Integer     archId ;
 
     @Id
     @Column(name="COMPANY_ID", nullable=false, length=20)

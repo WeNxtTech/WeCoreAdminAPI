@@ -556,8 +556,8 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 						// Amount 
 						ofsSave.setBaseRate(StringUtils.isBlank(data.getBaseRate())? 0D : Double.valueOf(data.getBaseRate()));
 						ofsSave.setMinimumPremium(StringUtils.isBlank(data.getMinimumPremium())? 0D : Double.valueOf(data.getMinimumPremium()));
-						ofsSave.setStartSumInsured(StringUtils.isBlank(data.getSumInsuredEnd())? 0D : Double.valueOf(data.getSumInsuredEnd()));
-						ofsSave.setEndSumInsured(StringUtils.isBlank(data.getSumInsuredStart())? 0D : Double.valueOf(data.getSumInsuredStart()));
+						ofsSave.setStartSuminsured(StringUtils.isBlank(data.getSumInsuredEnd())? 0D : Double.valueOf(data.getSumInsuredEnd()));
+						ofsSave.setEndSuminsured(StringUtils.isBlank(data.getSumInsuredStart())? 0D : Double.valueOf(data.getSumInsuredStart()));
 						
 						ofsRepo.saveAndFlush(ofsSave);
 					}
@@ -852,8 +852,8 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 					dataRes.setCalcType(data.getCalcType() );
 					dataRes.setCalcTypeDesc(data.getCalcTypeDesc() );
 					dataRes.setMinimumPremium(data.getMinimumPremium() ==null ?"" : df.format(data.getMinimumPremium()) );
-					dataRes.setSumInsuredStart(data.getStartSumInsured() ==null ?"" : df.format(data.getStartSumInsured()) );
-					dataRes.setSumInsuredEnd(data.getEndSumInsured() ==null ?"" : df.format(data.getEndSumInsured()) );
+					dataRes.setSumInsuredStart(data.getStartSuminsured() ==null ?"" : df.format(data.getStartSuminsured()) );
+					dataRes.setSumInsuredEnd(data.getEndSuminsured() ==null ?"" : df.format(data.getEndSuminsured()) );
 					dataRes.setCoverageSubId(String.valueOf(data.getCoveragesSubId()));
 					
 					gridDetails.add(dataRes);

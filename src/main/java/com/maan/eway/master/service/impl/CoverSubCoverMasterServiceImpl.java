@@ -306,8 +306,8 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			// Get Result
 			TypedQuery<SectionCoverMaster> result = em.createQuery(query);
 			list = result.getResultList();
-			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCoverId()))).collect(Collectors.toList());
-			list.sort(Comparator.comparing(SectionCoverMaster :: getCoverName ));
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getSubCoverId()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(SectionCoverMaster :: getSubCoverName ));
 			// Map
 			for (SectionCoverMaster data : list) {
 				CoverSubCoverGetRes res = new CoverSubCoverGetRes();
@@ -372,7 +372,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("coverId")));
+			orderList.add(cb.asc(b.get("subCoverId")));
 
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);

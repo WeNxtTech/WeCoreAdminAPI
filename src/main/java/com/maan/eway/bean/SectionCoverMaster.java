@@ -188,15 +188,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="IS_SELECTED_YN", length=20)
     private String     isSelectedYn ;
 
-    @Column(name="UPDAATED_BY", length=20)
-    private String     updaatedBy ;
+    @Column(name="UPDATED_BY", length=20)
+    private String     updatedBy ;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="UPDATED_DATE")
     private Date       updatedDate ;
-
-
-    //--- ENTITY LINKS ( RELATIONSHIP )
 
 
 }

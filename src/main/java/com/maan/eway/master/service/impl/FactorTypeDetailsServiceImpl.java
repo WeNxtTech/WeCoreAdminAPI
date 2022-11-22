@@ -7,6 +7,7 @@ package com.maan.eway.master.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -14,6 +15,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -41,6 +43,7 @@ import com.maan.eway.bean.CompanyStateMaster;
 import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.FactorTypeDetails;
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.FactorTypeDetailsSaveReq;
@@ -331,20 +334,14 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 		try {
 			List<ListItemValue> range = listRepo.findByItemTypeAndStatus("RANGE" , "Y");
 			List<ListItemValue> discrete = listRepo.findByItemTypeAndStatus("DISCRETE" , "Y");
-			Integer amendId = 0 ;
-			Calendar cal = new GregorianCalendar();
-			cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
-			Date startDate = cal.getTime() ;
-			Date today = new Date();
-			cal.setTime(req.getEffectiveDateStart());   cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
-			cal.set(Calendar.SECOND, today.getSeconds());
-			Date oldEndDate = cal.getTime() ;
-			cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
-			cal.set(Calendar.SECOND, today.getSeconds());
-			Date effDate = cal.getTime();
-			Date endDate = req.getEffectiveDateEnd();
-			cal.setTime(req.getEffectiveDateEnd());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 50) ;
-			endDate = cal.getTime() ;
+			Integer amendId=0;
+			Date startDate = req.getEffectiveDateStart() ;
+			String end = "31/12/2050";
+			Date endDate = sdformat.parse(end);
+			long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
+			Date entryDate = null ;
+			String createdBy = "" ;
 			
 			String factorTypeId ="";
 			
@@ -374,17 +371,17 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 					// Select
 					query.select(b);
 
-					// Effective Date Max Filter
-					Subquery<Long> effectiveDate = query.subquery(Long.class);
-					Root<FactorTypeDetails> ocpm1 = effectiveDate.from(FactorTypeDetails.class);
-					effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+					// Amend Id Max Filter
+					Subquery<Long> amend = query.subquery(Long.class);
+					Root<FactorTypeDetails> ocpm1 = amend.from(FactorTypeDetails.class);
+					amend.select(cb.max(ocpm1.get("amendId")));
 					Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 					Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 					Predicate a3 = cb.equal(ocpm1.get("factorTypeId"), b.get("factorTypeId"));
-					Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , startDate);
-					effectiveDate.where(a1,a2,a3,a4);
+					Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("amendId") , amend);
+					amend.where(a1,a2,a3,a4);
 			
-					Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+					Predicate n1 = cb.equal(b.get("amendId"),amend);
 					Predicate n2 = cb.equal(b.get("productId"), req.getProductId() );	
 					Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId() );		
 					Predicate n4 = cb.equal(b.get("factorTypeId"), req.getFactorTypeId());
@@ -426,7 +423,7 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 				saveData.setRatingFieldId(Integer.valueOf(data.getRatingFieldId()));
 				saveData.setFactorTypeName(req.getFactorTypeName());
 				saveData.setRemarks(req.getRemarks());
-				saveData.setEffectiveDateStart(effDate);
+				saveData.setEffectiveDateStart(req.getEffectiveDateStart());
 				saveData.setEffectiveDateEnd(endDate);
 				saveData.setEntryDate(new Date());
 				saveData.setAmendId(amendId);
@@ -544,18 +541,8 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 
 		try {
-			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
-			Calendar cal = new GregorianCalendar(); 
-			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 1);
-			today   = cal.getTime();
-			
+		
 			List<FactorTypeDetails> list = new ArrayList<FactorTypeDetails>();
-			//Pagination
-			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
-	
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<FactorTypeDetails> query = cb.createQuery(FactorTypeDetails.class);
@@ -566,22 +553,24 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 			// Select
 			query.select(b);
 	
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<FactorTypeDetails> ocpm1 = effectiveDate.from(FactorTypeDetails.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			// Amend Id Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<FactorTypeDetails> ocpm1 = amendId.from(FactorTypeDetails.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("factorTypeId"), b.get("factorTypeId"));
-			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			effectiveDate.where(a1,a2,a3,a4);
+			Predicate a4 = cb.equal(ocpm1.get("ratingFieldId"), b.get("ratingFieldId"));
+			
+		//	Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			amendId.where(a1,a2,a3,a4);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(b.get("effectiveDateStart")));
+			orderList.add(cb.desc(b.get("ratingFieldId")));
 			
 			// Where
-			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
 			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
 			
@@ -589,9 +578,10 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 	
 			// Get Result
 			TypedQuery<FactorTypeDetails> result = em.createQuery(query);
-			result.setFirstResult(limit * offset);
-			result.setMaxResults(offset);
 			list = result.getResultList();
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getFactorTypeId()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(FactorTypeDetails :: getFactorTypeName ));
+
 			Map<Integer, List<FactorTypeDetails>>  groupByFactorTypeId = list.stream() .collect(Collectors.groupingBy(w ->   w.getFactorTypeId())) ;
 			
 			// Map
@@ -619,7 +609,10 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 		}
 		return resList;
 	}
-	
+	private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
+	    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+	}	
 	
 	@Override
 	public List<FactorTypeGetAllRes> getActiveFactocTypes(FactorTypeGetAllReq req) {
@@ -627,18 +620,9 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 
 		try {
-			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
-			Calendar cal = new GregorianCalendar(); 
-			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 1);
-			today   = cal.getTime();
 			
 			List<FactorTypeDetails> list = new ArrayList<FactorTypeDetails>();
-			//Pagination
-			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
-	
+			
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<FactorTypeDetails> query = cb.createQuery(FactorTypeDetails.class);
@@ -650,21 +634,21 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 			query.select(b);
 	
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<FactorTypeDetails> ocpm1 = effectiveDate.from(FactorTypeDetails.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<FactorTypeDetails> ocpm1 = amendId.from(FactorTypeDetails.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("factorTypeId"), b.get("factorTypeId"));
-			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			effectiveDate.where(a1,a2,a3,a4);
+			Predicate a4 = cb.equal(ocpm1.get("ratingFieldId"), b.get("ratingFieldId"));
+			amendId.where(a1,a2,a3,a4);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(b.get("effectiveDateStart")));
+			orderList.add(cb.desc(b.get("factorTypeId")));
 			
 			// Where
-			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
 			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
 			Predicate n4 = cb.equal(b.get("status"), "Y");
@@ -672,10 +656,10 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 	
 			// Get Result
 			TypedQuery<FactorTypeDetails> result = em.createQuery(query);
-			result.setFirstResult(limit * offset);
-			result.setMaxResults(offset);
 			list = result.getResultList();
-			
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getFactorTypeId()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(FactorTypeDetails :: getFactorTypeName ));
+
 			Map<Integer, List<FactorTypeDetails>>  groupByFactorTypeId = list.stream() .collect(Collectors.groupingBy(w ->   w.getFactorTypeId())) ;
 			
 			// Map

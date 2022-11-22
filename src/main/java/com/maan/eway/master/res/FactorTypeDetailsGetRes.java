@@ -45,6 +45,12 @@ public class FactorTypeDetailsGetRes {
     private String    amendId      ; 
 	@JsonProperty("CreatedBy")
     private String     createdBy    ;
+	@JsonProperty("UpdatedBy")
+    private String     updatedBy    ;
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("UpdatedDate")
+    private Date     updatedDate    ;
+	
 	@JsonProperty("Status")
     private String     status ;
 	@JsonProperty("RatingFieldDetails")

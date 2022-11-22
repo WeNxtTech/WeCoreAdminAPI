@@ -43,4 +43,13 @@ public class FactorTypeGetAllRes {
 	
 	@JsonProperty("Status")
     private String     status ;
+	
+
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("UpdatedDate")
+    private Date       updatedDate ;
+	
+	@JsonProperty("UpdatedBy")
+    private String     updatedBy    ;
+	
 }

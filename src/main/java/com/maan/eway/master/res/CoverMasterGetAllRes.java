@@ -35,6 +35,10 @@ public class CoverMasterGetAllRes {
 	@JsonProperty("CreatedBy")
 	private String createdBy; 
 	
+	@JsonProperty("UpdatedBy")
+	private String updatedBy; 
+	
+	
 	@JsonProperty("ToolTip")
 	private String toolTip;  
 
@@ -45,6 +49,10 @@ public class CoverMasterGetAllRes {
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EntryDate")
 	private Date entryDate;
+	
+	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("UpdatedDate")
+	private Date updatedDate;
 	
 	// Rating Master Insert 
 	@JsonProperty("CoverageType")

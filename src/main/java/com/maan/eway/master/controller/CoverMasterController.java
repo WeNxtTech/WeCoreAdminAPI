@@ -85,14 +85,14 @@ public class CoverMasterController {
 		
 		//  Get All Cover Master
 		
-		@PostMapping("/getallcoverdetails")
+		@GetMapping("/getallcoverdetails")
 		@ApiOperation("This method is getall Cover Details")
-		public ResponseEntity<CommonRes> getallCoverDetails(@RequestBody CoverMasterGetAllReq req)
+		public ResponseEntity<CommonRes> getallCoverDetails()
 		{
 			CommonRes data = new CommonRes();
-			reqPrinter.reqPrint(req);
 			
-			List<CoverMasterGetAllRes> res = coverService.getallCoverDetails(req);
+			
+			List<CoverMasterGetAllRes> res = coverService.getallCoverDetails();
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);
@@ -108,14 +108,13 @@ public class CoverMasterController {
 		
 	//  Get Active Cover Master
 		
-			@PostMapping("/getactivecover")
+			@GetMapping("/getactivecover")
 			@ApiOperation("This method is get Active Cover Details")
-			public ResponseEntity<CommonRes> getActiveCoverDetails(@RequestBody CoverMasterGetAllReq req)
+			public ResponseEntity<CommonRes> getActiveCoverDetails()
 			{
 				CommonRes data = new CommonRes();
-				reqPrinter.reqPrint(req);
 				
-				List<CoverMasterGetAllRes> res = coverService.getActiveCoverDetails(req);
+				List<CoverMasterGetAllRes> res = coverService.getActiveCoverDetails();
 				data.setCommonResponse(res);
 				data.setErrorMessage(Collections.emptyList());
 				data.setIsError(false);

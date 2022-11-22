@@ -64,8 +64,15 @@ public class CoverMasterSaveReq implements Serializable {
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateEnd")
 	private Date effectiveDateEnd;
-	
-	
+
+	@JsonProperty("UpdatedBy")
+	private String updatedBy; 
+
+
+	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("UpdatedDate")
+	private Date updatedDate;
+
 	// Rating Master Insert 
 	@JsonProperty("CoverageType")
 	private String coverageType;

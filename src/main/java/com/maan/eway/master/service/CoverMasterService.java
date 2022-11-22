@@ -25,9 +25,9 @@ public interface CoverMasterService  {
 
 	SuccessRes insertCover(CoverMasterSaveReq req);
 
-	List<CoverMasterGetAllRes> getallCoverDetails(CoverMasterGetAllReq req);
+	List<CoverMasterGetAllRes> getallCoverDetails();
 
-	List<CoverMasterGetAllRes> getActiveCoverDetails(CoverMasterGetAllReq req);
+	List<CoverMasterGetAllRes> getActiveCoverDetails();
 
 	CoverMasterRes getByCoverId(CoverMasterGetReq req);
 

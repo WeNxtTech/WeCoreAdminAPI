@@ -7,10 +7,15 @@ package com.maan.eway.master.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -25,6 +30,7 @@ import javax.persistence.criteria.Subquery;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dozer.DozerBeanMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,11 +38,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.BankMaster;
+import com.maan.eway.bean.ExclusionMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.BankChangeStatusReq;
 import com.maan.eway.master.req.BankMasterGetAllReq;
 import com.maan.eway.master.req.BankMasterGetReq;
 import com.maan.eway.master.req.BankMasterSaveReq;
 import com.maan.eway.master.res.BankMasterRes;
+import com.maan.eway.master.res.ExclusionMasterRes;
 import com.maan.eway.master.service.BankMasterService;
 import com.maan.eway.repository.BankMasterRepository;
 import com.maan.eway.res.DropDownRes;
@@ -53,7 +62,7 @@ public class BankMasterServiceImpl implements BankMasterService {
 private EntityManager em;
 
 @Autowired
-private BankMasterRepository bankRepo;
+private BankMasterRepository repo;
 
 @Autowired
 private BasicValidationService bankValidateService;
@@ -61,198 +70,151 @@ private BasicValidationService bankValidateService;
 Gson json = new Gson();
 
 private Logger log=LogManager.getLogger(BankMasterServiceImpl.class);
-/*
-public BankMasterServiceImpl(BankMasterRepository repo) {
-this.repository = repo;
-}
-
-  */
-/* @Override
-    public BankMaster create(BankMaster d) {
-
-       BankMaster entity;
-
-        try {
-            entity = repository.save(d);
-
-        } catch (Exception ex) {
-			log.error(ex);
-            return null;
-        }
-        return entity;
-    }
-
-    
-    @Override
-    public BankMaster update(BankMaster d) {
-        BankMaster c;
-
-        try {
-            c = repository.saveAndFlush(d);
-
-        } catch (Exception ex) {
-			log.error(ex);
-            return null;
-        }
-        return c;
-    }
-
-/*
-    @Override
-    public BankMaster getOne(long id) {
-        BankMaster t;
-
-        try {
-            t = repository.findById(id).orElse(null);
-
-        } catch (Exception ex) {
-			log.error(ex);
-            return null;
-        }
-        return t;
-    }
-
-*/
-  /*  @Override
-    public List<BankMaster> getAll() {
-        List<BankMaster> lst;
-
-        try {
-            lst = repository.findAll();
-
-        } catch (Exception ex) {
-        	
-			log.error(ex);
-            return Collections.emptyList();
-        }
-        return lst;
-    }
-
-
-    @Override
-    public long getTotal() {
-        long total;
-
-        try {
-            total = repository.count();
-        } catch (Exception ex) {
-            log.error(ex);
-			return 0;
-        }
-        return total;
-    }
-
-/*
-    @Override
-    public boolean delete(long id) {
-        try {
-            repository.deleteById(id);
-            return true;
-
-        } catch (Exception ex) {
-			log.error(ex);
-            return false;
-        }
-    }
-
- */
 
 //************************************************INSERT/UPDATE BANK DETAILS******************************************************\\
 @Transactional
 @Override
 public SuccessRes insertBank(BankMasterSaveReq req) {
-    SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/YYYY");
+	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	SuccessRes res = new SuccessRes();
 	BankMaster saveData = new BankMaster();
-	List<BankMaster> list = new ArrayList<BankMaster>();
-	
+	List<BankMaster> list  = new ArrayList<BankMaster>();
+	DozerBeanMapper dozerMapper = new DozerBeanMapper();
 	try {
-
-		Calendar cal = new GregorianCalendar();
-		cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
-		Date startDate = cal.getTime() ;
-		Date today = new Date();
-		cal.setTime(req.getEffectiveDateStart());   cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
-		Date oldEndDate = cal.getTime() ;
-		cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
-		Date effDate = cal.getTime();
-	
-		Date endDate = sdformat.parse("12/12/2050");
-		
-		if (StringUtils.isBlank(req.getBankCode())) {
-				// Save
-				saveData.setBankCode(req.getBankShortName());
-				saveData.setBankShortName(req.getBankShortName());
-				res.setResponse("Saved Successfully ");
-				res.setSuccessId(req.getBankShortName());
-
-			} else {
-				// Update
-				// Get Less than Equal Today Record 
-				// Criteria
-				CriteriaBuilder cb = em.getCriteriaBuilder();
-				CriteriaQuery<BankMaster> query = cb.createQuery(BankMaster.class);
-
-				// Find All
-				Root<BankMaster> b = query.from(BankMaster.class);
-
-				// Select
-				query.select(b);
-
-				// Effective Date Max Filter
-				Subquery<Long> effectiveDate = query.subquery(Long.class);
-				Root<BankMaster> ocpm1 = effectiveDate.from(BankMaster.class);
-				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-				Predicate a1 = cb.equal(ocpm1.get("bankCode"), b.get("bankCode"));
-				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , startDate);
-				effectiveDate.where(a1,a2);
-
-				// Order By
-			//	List<Order> orderList = new ArrayList<Order>();
-			//	orderList.add(cb.asc(b.get("branchName")));
-				
-				// Where
-				Predicate n1 = cb.equal(b.get("status"), "Y");
-				Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-				Predicate n3 =  cb.equal(b.get("bankCode"), req.getBankCode() );
-
-				query.where(n1, n2, n3);//.orderBy(orderList);
-
-				// Get Result
-				TypedQuery<BankMaster> result = em.createQuery(query);
-				list = result.getResultList();
-				
-				if( list.size() > 0) {
-					bankRepo.delete(list.get(0));
-				} 
-				saveData.setBankCode(req.getBankCode());
-				saveData.setBankShortName(req.getBankShortName());
-				res.setResponse("Updated Successfully ");
-				res.setSuccessId(req.getBankShortName());
-
+		Integer amendId = 0;
+		Date StartDate = req.getEffectiveDateStart();
+		String end = "31/12/2050";
+		Date endDate = sdf.parse(end);
+		long MILLS_IN_A_DAY = 1000*60*60*24;
+		Date oldEndDate = new Date(req.getEffectiveDateStart().getTime()- MILLS_IN_A_DAY);
+		Date entryDate = null;
+		String createdBy ="";
+		Integer bankCode = 0;
+		if(StringUtils.isBlank(req.getBankCode())) {
+			Integer totalCount = getMasterTableCount(req.getCompanyId(),req.getBranchCode());
+			bankCode = totalCount+1;
+			entryDate = new Date();
+			createdBy = req.getCreatedBy();
+			res.setResponse("Saved Successfully");
+			res.setSuccessId(bankCode.toString());
+		}
+		else {
+			bankCode = Integer.valueOf(req.getBankCode());
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<BankMaster> query = cb.createQuery(BankMaster.class);
+			//Findall
+			Root<BankMaster> b = query.from(BankMaster.class);
+			//select
+			query.select(b);
+			//Orderby
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("effectiveDateStart")));
+			//Where
+			Predicate n1 = cb.equal(b.get("bankCode"),req.getBankCode());
+			Predicate n2 = cb.equal(b.get("companyId"),req.getCompanyId());
+			Predicate n3 = cb.equal(b.get("branchCode"),req.getBranchCode());
+			
+			query.where(n1,n2,n3).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<BankMaster> result = em.createQuery(query);
+			int limit=0, offset=2;
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			list = result.getResultList();
+			if(list.size()>0) {
+				Date beforeOneDay = new Date(new Date().getTime()- MILLS_IN_A_DAY);
+				if(list.get(0).getEffectiveDateStart().before(beforeOneDay)) {
+					amendId = list.get(0).getAmendId()+1;
+					entryDate = new Date();
+					createdBy = req.getCreatedBy();
+					BankMaster lastRecord = list.get(0);
+					lastRecord.setEffectiveDateEnd(oldEndDate);
+					repo.saveAndFlush(lastRecord);
+				}
+				else {
+					amendId = list.get(0).getAmendId();
+					entryDate = list.get(0).getEntryDate();
+					createdBy = list.get(0).getCreatedBy();
+					saveData = list.get(0);
+					if(list.size()>1) {
+						BankMaster lastRecord = list.get(1);	
+						lastRecord.setEffectiveDateEnd(oldEndDate);
+						repo.saveAndFlush(lastRecord);
+					}
+				}
 			}
-			saveData.setBankFullName(req.getBankFullName());
-			saveData.setEffectiveDateStart(effDate);
-			saveData.setEffectiveDateEnd(endDate);
-			saveData.setStatus(req.getStatus());
-			saveData.setEntryDate(new Date());
-			bankRepo.saveAndFlush(saveData);
-			
-			if(list.size() > 0 ) {
-				// Update Old Record
-				BankMaster lastRecord = list.get(0) ;
-				lastRecord.setEffectiveDateEnd(oldEndDate);
-				bankRepo.saveAndFlush(lastRecord);
-			}
-			
-			log.info("Saved Details is ---> " + json.toJson(saveData));
-			
-} catch (Exception e) {
+			res.setResponse("Updated Successfully");
+			res.setSuccessId(bankCode.toString());
+		}
+		dozerMapper.map(req, saveData);
+		saveData.setBankCode(bankCode.toString());
+		saveData.setEffectiveDateStart(StartDate);
+		saveData.setEffectiveDateEnd(endDate);
+		saveData.setCreatedBy(createdBy);
+		saveData.setEntryDate(entryDate);
+		saveData.setUpdatedBy(req.getCreatedBy());
+		saveData.setUpdatedDate(new Date());
+		saveData.setAmendId(amendId);
+		repo.saveAndFlush(saveData);	
+		log.info("Saved Details is --> " + json.toJson(saveData));	
+		}
+	catch(Exception e) {
 		e.printStackTrace();
-		log.info("Exception is --->" + e.getMessage());
+		log.info("Exception is --> " + e.getMessage());
 		return null;
 	}
 	return res;
+	}
+	
+
+public Integer getMasterTableCount(String companyId, String branchCode)	{
+
+	Integer data =0;
+	try {
+		List<BankMaster> list = new ArrayList<BankMaster>();
+		// Find Latest Record
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<BankMaster> query = cb.createQuery(BankMaster.class);
+		//Find all
+		Root<BankMaster> b = query.from(BankMaster.class);
+		// Select
+		query.select(b);
+		// Effective Date Max Filter
+		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Root<BankMaster> ocpm1 = effectiveDate.from(BankMaster.class);
+		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		Predicate a1 = cb.equal(ocpm1.get("bankCode"),b.get("bankCode"));
+		Predicate a2 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
+		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+		effectiveDate.where(a1,a2,a3);
+	
+		//OrderBy
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.desc(b.get("bankCode")));
+		
+		Predicate n1 = cb.equal(b.get("effectiveDateStart"),effectiveDate);
+		Predicate n2 = cb.equal(b.get("companyId"),companyId);
+		Predicate n3 = cb.equal(b.get("branchCode"), branchCode);
+		Predicate n4 = cb.equal(b.get("branchCode"), "99999");
+		Predicate n5 = cb.or(n3,n4);
+		query.where(n1,n2,n5).orderBy(orderList);
+		
+		
+		
+		// Get Result
+		TypedQuery<BankMaster> result = em.createQuery(query);
+		int limit = 0 , offset = 1 ;
+		result.setFirstResult(limit * offset);
+		result.setMaxResults(offset);
+		list = result.getResultList();
+		data = list.size() > 0 ? Integer.valueOf(list.get(0).getBankCode()) : 0 ;
+	}
+	catch(Exception e) {
+		e.printStackTrace();
+		log.info(e.getMessage());
+	}
+	return data;
 }
 
 
@@ -262,67 +224,93 @@ public List<Error> validateBankDetails(BankMasterSaveReq req) {
 	List<Error> errorList = new ArrayList<Error>();
 
 	try {
-	
-		if (StringUtils.isBlank(req.getBankShortName()) ) {
-			errorList.add(new Error("02", "BankShortName", "Please Select Bank Short Name "));
-		}else if (req.getBankShortName().length() > 20){
-			errorList.add(new Error("02","BankShortName", "Please Enter Bank Short Name within 20 Characters")); 
-		}else if (StringUtils.isBlank(req.getBankCode())) {
-			Long bankCount = bankRepo.countByBankShortNameOrderByEntryDateDesc(req.getBankShortName());
-			if (bankCount > 0 ) {
-				errorList.add(new Error("01", "BankCode", "This BankCode Alrady Exist "));
-			}
-		}
-
-		if (StringUtils.isBlank(req.getBankFullName()) ) {
-			errorList.add(new Error("03", "BankFullName", "Please Select Bank Full Name "));
+		if (StringUtils.isBlank(req.getBankFullName())) {
+			errorList.add(new Error("02", "BankFullName", "Please Select BankFullName"));
 		}else if (req.getBankFullName().length() > 100){
-			errorList.add(new Error("03","BankFullName", "Please Enter Bank Full Name within 100 Characters")); 
+			errorList.add(new Error("02","BankFullName", "Please Enter BankFullName 100 Characters")); 
+		}else if (StringUtils.isBlank(req.getBankCode()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())) {
+			List<BankMaster> BankList = getBankFullNameExistDetails(req.getBankFullName() , req.getCompanyId() , req.getBranchCode());
+			if (BankList.size()>0 ) {
+				errorList.add(new Error("01", "BankFullName", "This BankFullName Already Exist "));
+			}
+		}else if (StringUtils.isNotBlank(req.getBankCode()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())) {
+			List<BankMaster> BankList = getBankFullNameExistDetails(req.getBankFullName() , req.getCompanyId() , req.getBranchCode());
+			
+			if (BankList.size()>0 &&  (! req.getBankCode().equalsIgnoreCase(BankList.get(0).getBankCode().toString())) ) {
+				errorList.add(new Error("01", "BankFullName", "This BankFullName Already Exist "));
+			}
+			
 		}
+		
+		
+		if (StringUtils.isBlank(req.getCompanyId())) {
+			errorList.add(new Error("02", "CompanyId", "Please Enter CompanyId"));
+		}
+		
+		if (StringUtils.isBlank(req.getBranchCode())) {
+			errorList.add(new Error("02", "BranchCode", "Please Select BranchCode"));
+		}
+		if (StringUtils.isBlank(req.getBankShortName())) {
+			errorList.add(new Error("03", "BankShortName", "Please Select BankShortName"));
+		}else if (req.getBankShortName().length() > 20){
+			errorList.add(new Error("03","BankShortName", "Please Enter BankShortName 100 Characters")); 
+		} 
+		
+		if (StringUtils.isBlank(req.getRemarks())) {
+			errorList.add(new Error("04", "Remarks", "Please Select Remarks "));
+		}else if (req.getRemarks().length() > 100){
+			errorList.add(new Error("04","Remarks", "Please Enter Remarks within 100 Characters")); 
+		}
+		
 		// Date Validation 
-		Calendar cal = new GregorianCalendar();  
-		Date today =  new Date(); 
-		cal.setTime(today); cal.add(Calendar.DAY_OF_MONTH, -1); cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 50);
+		Calendar cal = new GregorianCalendar();
+		Date today = new Date();
+		cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);;
 		today = cal.getTime();
-		if(req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
-			errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start"));
+		if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
+			errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start"));
 
 		} else if (req.getEffectiveDateStart().before(today)) {
-			errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
 		}
+		//Status Validation
 		if (StringUtils.isBlank(req.getStatus())) {
-			errorList.add(new Error("05", "Status", "Please Enter Status"));
+			errorList.add(new Error("06", "Status", "Please Enter Status"));
 		} else if (req.getStatus().length() > 1) {
-			errorList.add(new Error("05", "Status", "Enter Status in 1 Character Only"));
-		}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()))) {
-			errorList.add(new Error("05", "Status", "Enter Status Y or N Only"));
+			errorList.add(new Error("06", "Status", "Enter Status in 1 Character Only"));
+		}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()) || "R".equals(req.getStatus()))) {
+			errorList.add(new Error("06", "Status", "Enter Status in Y or N or R Only"));
 		}
-	
-		if (StringUtils.isBlank(req.getCompanyId())) {
-			errorList.add(new Error("05", "InsuranceId", "Please Enter InsuranceId"));
-		} 
-		if (StringUtils.isBlank(req.getBranchCode())) {
-			errorList.add(new Error("05", "BranchCode", "Please Enter BranchCode"));
-		} 
 
+		if (StringUtils.isBlank(req.getCoreAppCode())) {
+			errorList.add(new Error("07", "CoreAppCode", "Please Select CoreAppCode"));
+		}else if (req.getCoreAppCode().length() > 20){
+			errorList.add(new Error("07","CoreAppCode", "Please Enter CoreAppCode within 20 Characters")); 
+		}
+		if (StringUtils.isBlank(req.getRegulatoryCode())) {
+			errorList.add(new Error("08", "RegulatoryCode", "Please Select RegulatoryCode"));
+		}else if (req.getRegulatoryCode().length() > 20){
+			errorList.add(new Error("08","RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters")); 
+		}
+		if (StringUtils.isBlank(req.getCreatedBy())) {
+			errorList.add(new Error("09", "CreatedBy", "Please Select CreatedBy"));
+		}else if (req.getCreatedBy().length() > 100){
+			errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
+		}		
+	
 	} catch (Exception e) {
 		log.error(e);
 		e.printStackTrace();
 	}
 	return errorList;
 }
-///*********************************************************************GET ALL******************************************************\\
-@Override
-public List<BankMasterRes> getallBankDetails(BankMasterGetAllReq req) {
-	List<BankMasterRes> resList = new ArrayList<BankMasterRes>();
-	ModelMapper mapper = new ModelMapper();
+
+
+
+public List<BankMaster> getBankFullNameExistDetails(String BankFullName , String InsuranceId , String branchCode) {
+	List<BankMaster> list = new ArrayList<BankMaster>();
 	try {
-		List<BankMaster> bankList = new ArrayList<BankMaster>();
-		//Pagination
-		
-		int limit=StringUtils.isBlank(req.getLimit())?0:Integer.valueOf(req.getLimit());
-		int offset=StringUtils.isBlank(req.getOffset())?0:Integer.valueOf(req.getOffset());
-		
+		Date today = new Date();
 		// Find Latest Record
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<BankMaster> query = cb.createQuery(BankMaster.class);
@@ -334,33 +322,95 @@ public List<BankMasterRes> getallBankDetails(BankMasterGetAllReq req) {
 		query.select(b);
 
 		// Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
-		Root<BankMaster> ocpm1 = effectiveDate.from(BankMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		Subquery<Long> amendId = query.subquery(Long.class);
+		Root<BankMaster> ocpm1 = amendId.from(BankMaster.class);
+		amendId.select(cb.max(ocpm1.get("amendId")));
+		Predicate a1 = cb.equal(ocpm1.get("bankCode"), b.get("bankCOde"));
+		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+		Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+		Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+		Predicate a5 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateEnd"), today);
+		amendId.where(a1,a2,a3,a4,a5);
+
+		Predicate n1 = cb.equal(b.get("amendId"), amendId);
+		Predicate n2 = cb.equal(cb.lower( b.get("bankFullName")), BankFullName.toLowerCase());
+		Predicate n3 = cb.equal(b.get("companyId"),InsuranceId);
+		Predicate n4 = cb.equal(b.get("branchCode"), branchCode);
+		Predicate n5 = cb.equal(b.get("branchCode"), "99999");
+		Predicate n6 = cb.or(n4,n5);
+		query.where(n1,n2,n3,n6);
+		
+		// Get Result
+		TypedQuery<BankMaster> result = em.createQuery(query);
+		list = result.getResultList();		
+	
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info(e.getMessage());
+
+	}
+	return list;
+}
+
+
+
+
+
+
+
+///*********************************************************************GET ALL******************************************************\\
+@Override
+public List<BankMasterRes> getallBankDetails(BankMasterGetAllReq req) {
+	List<BankMasterRes> resList = new ArrayList<BankMasterRes>();
+	DozerBeanMapper mapper = new DozerBeanMapper();
+	try {
+		List<BankMaster> list = new ArrayList<BankMaster>();
+	
+		// Find Latest Record
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<BankMaster> query = cb.createQuery(BankMaster.class);
+
+		// Find All
+		Root<BankMaster> b = query.from(BankMaster.class);
+
+		// Select
+		query.select(b);
+
+		// Amend ID Max Filter
+		Subquery<Long> amendId = query.subquery(Long.class);
+		Root<BankMaster> ocpm1 = amendId.from(BankMaster.class);
+		amendId.select(cb.max(ocpm1.get("amendId")));
 		Predicate a1 = cb.equal(ocpm1.get("bankCode"), b.get("bankCode"));
-		effectiveDate.where(a1);
+		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+
+		amendId.where(a1, a2,a3);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(b.get("bankFullName")));
-		
+		orderList.add(cb.asc(b.get("branchCode")));
+
 		// Where
-		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-
-		query.where(n1).orderBy(orderList);
-
+		Predicate n1 = cb.equal(b.get("amendId"), amendId);
+		Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
+		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
+		Predicate n4 = cb.equal(b.get("branchCode"), "99999");
+		Predicate n5 = cb.or(n3,n4);
+		query.where(n1,n2,n5).orderBy(orderList);
+		
 		// Get Result
 		TypedQuery<BankMaster> result = em.createQuery(query);
-		result.setFirstResult(limit * offset);
-		result.setMaxResults(offset);
-		bankList = result.getResultList();
+		list = result.getResultList();
+		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getBankCode()))).collect(Collectors.toList());
+		list.sort(Comparator.comparing(BankMaster :: getBankFullName ));
 		
 		// Map
-		for (BankMaster data : bankList) {
+		for (BankMaster data : list) {
 			BankMasterRes res = new BankMasterRes();
 
 			res = mapper.map(data, BankMasterRes.class);
-			mapper.getConfiguration().setAmbiguityIgnored(true);
+			res.setCoreAppCode(data.getCoreAppCode());
+
 			resList.add(res);
 		}
 
@@ -372,55 +422,72 @@ public List<BankMasterRes> getallBankDetails(BankMasterGetAllReq req) {
 	}
 	return resList;
 }
-
+private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
+    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+}
 ///*********************************************************************GET BY ID******************************************************\\
 @Override
 public BankMasterRes getByBankCode(BankMasterGetReq req) {
 	BankMasterRes res = new BankMasterRes();
-	ModelMapper mapper = new ModelMapper();
-	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-
+	DozerBeanMapper mapper = new DozerBeanMapper();
 	try {
-		// Criteria
+		Date today = new Date();
+		Calendar cal = new GregorianCalendar();
+		cal.setTime(today);
+		cal.set(Calendar.HOUR_OF_DAY, 23);
+		cal.set(Calendar.MINUTE, 1);
+		today = cal.getTime();
+
+		List<BankMaster> list = new ArrayList<BankMaster>();
+	
+		// Find Latest Record
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<BankMaster> query = cb.createQuery(BankMaster.class);
-		List<BankMaster> list = new ArrayList<BankMaster>();
-		
+
 		// Find All
-		Root<BankMaster>    c = query.from(BankMaster.class);		
-		
+		Root<BankMaster> b = query.from(BankMaster.class);
+
 		// Select
-		query.select(c );
-		
-		// Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
-		Root<BankMaster> ocpm1 = effectiveDate.from(BankMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-		javax.persistence.criteria.Predicate a1 = cb.equal(c.get("bankCode"),ocpm1.get("bankCode") );
-		effectiveDate.where(a1);
-		
-		
-		
+		query.select(b);
+
+		// Amend ID Max Filter
+		Subquery<Long> amendId = query.subquery(Long.class);
+		Root<BankMaster> ocpm1 = amendId.from(BankMaster.class);
+		amendId.select(cb.max(ocpm1.get("amendId")));
+		Predicate a1 = cb.equal(ocpm1.get("bankCode"), b.get("bankCode"));
+		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+
+		amendId.where(a1, a2,a3);
+
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(c.get("effectiveDateStart")));
-		
-	    // Where	
-	
-		javax.persistence.criteria.Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate);		
-		javax.persistence.criteria.Predicate n2 = cb.equal(c.get("bankCode"),req.getBankCode()) ;
+		orderList.add(cb.asc(b.get("branchCode")));
 
-
-		query.where(n1 ,n2).orderBy(orderList);
+		// Where
+		Predicate n1 = cb.equal(b.get("amendId"), amendId);
+		Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
+		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
+		Predicate n4 = cb.equal(b.get("bankCode"), req.getBankCode());
+		Predicate n6 = cb.equal(b.get("branchCode"), "99999");
+		Predicate n7 = cb.or(n3,n6);
+		query.where(n1,n2,n4,n7).orderBy(orderList);
 		
 		// Get Result
-		TypedQuery<BankMaster> result = em.createQuery(query);			
-		list =  result.getResultList();  
-		res = mapper.map(list.get(0) , BankMasterRes.class);
+		TypedQuery<BankMaster> result = em.createQuery(query);
+
+		list = result.getResultList();
+		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getBankCode()))).collect(Collectors.toList());
+		list.sort(Comparator.comparing(BankMaster :: getBankFullName ));
+		
+		res = mapper.map(list.get(0), BankMasterRes.class);
+		res.setBankCode(list.get(0).getBankCode().toString());
 		res.setEntryDate(list.get(0).getEntryDate());
 		res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
 		res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
-	} catch (Exception e) {
+		res.setCoreAppCode(list.get(0).getCoreAppCode());
+		} catch (Exception e) {
 		e.printStackTrace();
 		log.info("Exception is ---> " + e.getMessage());
 		return null;
@@ -493,14 +560,10 @@ public List<DropDownRes> getBankMasterDropdown() {
 @Override
 public List<BankMasterRes> getActiveBankDetails(BankMasterGetAllReq req) {
 	List<BankMasterRes> resList = new ArrayList<BankMasterRes>();
-	ModelMapper mapper = new ModelMapper();
+	DozerBeanMapper mapper = new DozerBeanMapper();
 	try {
-		List<BankMaster> bankList = new ArrayList<BankMaster>();
-
-		//Pagination
-		int limit=StringUtils.isBlank(req.getLimit())?0:Integer.valueOf(req.getLimit());
-		int offset=StringUtils.isBlank(req.getOffset())?0:Integer.valueOf(req.getOffset());
-		
+		List<BankMaster> list = new ArrayList<BankMaster>();
+	
 		// Find Latest Record
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<BankMaster> query = cb.createQuery(BankMaster.class);
@@ -511,35 +574,42 @@ public List<BankMasterRes> getActiveBankDetails(BankMasterGetAllReq req) {
 		// Select
 		query.select(b);
 
-		// Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
-		Root<BankMaster> ocpm1 = effectiveDate.from(BankMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		// Amend ID Max Filter
+		Subquery<Long> amendId = query.subquery(Long.class);
+		Root<BankMaster> ocpm1 = amendId.from(BankMaster.class);
+		amendId.select(cb.max(ocpm1.get("amendId")));
 		Predicate a1 = cb.equal(ocpm1.get("bankCode"), b.get("bankCode"));
-		effectiveDate.where(a1);
+		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+
+		amendId.where(a1, a2,a3);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(b.get("bankFullName")));
+		orderList.add(cb.asc(b.get("branchCode")));
 
 		// Where
-		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-		Predicate n2 = cb.equal(b.get("status"), "Y");
-
-		query.where(n1,n2).orderBy(orderList);
-
+		Predicate n1 = cb.equal(b.get("amendId"), amendId);
+		Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
+		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
+		Predicate n4 = cb.equal(b.get("status"), "Y");
+		Predicate n5 = cb.equal(b.get("branchCode"), "99999");
+		Predicate n6 = cb.or(n3,n5);
+		query.where(n1,n2,n4,n6).orderBy(orderList);
+		
 		// Get Result
 		TypedQuery<BankMaster> result = em.createQuery(query);
-		result.setFirstResult(limit * offset);
-		result.setMaxResults(offset);
-		bankList = result.getResultList();
-
+		list = result.getResultList();
+		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getBankCode()))).collect(Collectors.toList());
+		list.sort(Comparator.comparing(BankMaster :: getBankFullName ));
+		
 		// Map
-		for (BankMaster data : bankList) {
+		for (BankMaster data : list) {
 			BankMasterRes res = new BankMasterRes();
 
 			res = mapper.map(data, BankMasterRes.class);
-			mapper.getConfiguration().setAmbiguityIgnored(true);
+			res.setCoreAppCode(data.getCoreAppCode());
+
 			resList.add(res);
 		}
 
@@ -551,6 +621,75 @@ public List<BankMasterRes> getActiveBankDetails(BankMasterGetAllReq req) {
 	}
 	return resList;
 }
+
+
+@Override
+public SuccessRes changeStatusOfBank(BankChangeStatusReq req) {
+	SuccessRes res = new SuccessRes();
+	DozerBeanMapper dozerMapper = new DozerBeanMapper();
+	try {
+		List<BankMaster> list = new ArrayList<BankMaster>();
+		
+		// Find Latest Record
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<BankMaster> query = cb.createQuery(BankMaster.class);
+		// Find all
+		Root<BankMaster> b = query.from(BankMaster.class);
+		//Select
+		query.select(b);
+
+		// Amend ID Max Filter
+		Subquery<Long> amendId = query.subquery(Long.class);
+		Root<BankMaster> ocpm1 = amendId.from(BankMaster.class);
+		amendId.select(cb.max(ocpm1.get("amendId")));
+		Predicate a1 = cb.equal(ocpm1.get("bankCode"), b.get("bankCode"));
+		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+
+		amendId.where(a1, a2,a3);
+
+		// Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.asc(b.get("branchCode")));
+
+		// Where
+		Predicate n1 = cb.equal(b.get("amendId"), amendId);
+		Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
+		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
+		Predicate n4 = cb.equal(b.get("bankCode"), req.getBankCode());
+		Predicate n5 = cb.equal(b.get("branchCode"), "99999");
+		Predicate n6 = cb.or(n3,n5);
+		
+		query.where(n1,n2,n4,n6).orderBy(orderList);
+		
+		// Get Result 
+		TypedQuery<BankMaster> result = em.createQuery(query);
+		list = result.getResultList();
+		BankMaster updateRecord = list.get(0);
+		if(  req.getBranchCode().equalsIgnoreCase(updateRecord.getBranchCode())) {
+			updateRecord.setStatus(req.getStatus());
+			repo.save(updateRecord);
+		} else {
+			BankMaster saveNew = new BankMaster();
+			dozerMapper.map(updateRecord,saveNew);
+			saveNew.setBranchCode(req.getBranchCode());
+			saveNew.setStatus(req.getStatus());
+			repo.save(saveNew);
+		}
+	
+		// Perform Update
+		res.setResponse("Status Changed");
+		res.setSuccessId(req.getBankCode());
+	}
+	catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is --> " + e.getMessage());
+		return null;
+		}
+	return res;
+}
+
+
 
 
 

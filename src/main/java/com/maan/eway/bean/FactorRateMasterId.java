@@ -47,7 +47,8 @@ public class FactorRateMasterId implements Serializable {
     
     private Integer    subCoverId ;
     
-    private Integer    amendId ;
+   
+    private Integer   amendId;
     
      
 }

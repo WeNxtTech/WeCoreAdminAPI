@@ -8,6 +8,7 @@ package com.maan.eway.master.service.impl;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -15,6 +16,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -43,6 +45,7 @@ import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.FactorRateMaster;
 import com.maan.eway.bean.FactorTypeDetails;
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.error.Error;
@@ -59,6 +62,7 @@ import com.maan.eway.master.res.FactorRateCoverRes;
 import com.maan.eway.master.res.FactorRateGetAllRes;
 import com.maan.eway.master.res.FactorRateSubCoverRes;
 import com.maan.eway.master.res.FactorRateViewRes;
+import com.maan.eway.master.res.OccupationMasterRes;
 import com.maan.eway.master.service.FactorRateMasterService;
 import com.maan.eway.master.service.MasterCommonValidationService;
 import com.maan.eway.repository.FactorRateMasterRepository;
@@ -1239,21 +1243,14 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		
 		try {
-			Integer amendId = 0 ;
-			Calendar cal = new GregorianCalendar();
-			cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
-			Date startDate = cal.getTime() ;
-			Date today = new Date();
-			cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
-			cal.set(Calendar.SECOND, today.getSeconds());
-			
-			Date oldEndDate = cal.getTime() ;
-			cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
-			cal.set(Calendar.SECOND, today.getSeconds());
-			Date effDate = cal.getTime();
-			Date endDate = req.getEffectiveDateEnd();
-			cal.setTime(req.getEffectiveDateEnd());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 50) ;
-			endDate = cal.getTime() ;
+			Integer amendId=0;
+			Date startDate = req.getEffectiveDateStart() ;
+			String end = "31/12/2050";
+			Date endDate = sdformat.parse(end);
+			long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
+			Date entryDate = null ;
+			String createdBy = "" ;
 			
 			String factorTypeId ="";
 		
@@ -1270,9 +1267,9 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 			query.select(b);
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<FactorRateMaster> ocpm1 = effectiveDate.from(FactorRateMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Subquery<Long> amend = query.subquery(Long.class);
+			Root<FactorRateMaster> ocpm1 = amend.from(FactorRateMaster.class);
+			amend.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("factorTypeId"), b.get("factorTypeId"));
@@ -1282,9 +1279,9 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 			Predicate a7 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
 			Predicate a8 = cb.equal(ocpm1.get("sNo"), b.get("sNo"));
 			Predicate a9 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , startDate);
-			effectiveDate.where(a1,a2,a3,a4,a5,a6,a7,a8,a9);
+			amend.where(a1,a2,a3,a4,a5,a6,a7,a8,a9);
 	
-			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n1 = cb.equal(b.get("amendId"), amend);
 			Predicate n2 = cb.equal(b.get("productId"), req.getProductId() );	
 			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId() );		
 			Predicate n4 = cb.equal(b.get("factorTypeId"), req.getFactorTypeId());
@@ -1326,10 +1323,11 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					repository.delete(fac);
 				}
 					
-			} 
+			
+			
 			List<ListItemValue> calcTypes = listRepo.findByItemTypeAndStatus("CALCULATION_TYPE" , "Y");
-			cal.setTime(today);  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 50) ;
-			today = cal.getTime();
+		//	cal.setTime(today);  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 50) ;
+		//	today = cal.getTime();
 			
 			// COver SubCoverDetails
 			List<SectionCoverMaster> coverlist = new ArrayList<SectionCoverMaster>();
@@ -1350,8 +1348,8 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				Predicate a11 = cb2.equal(ocpm2.get("sectionId"), b2.get("sectionId"));
 				Predicate a12 = cb2.equal(ocpm2.get("productId"), b2.get("productId"));
 				Predicate a13 = cb2.equal(ocpm2.get("companyId"), b2.get("companyId"));
-				Predicate a14 = cb2.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"), today);
-				effectiveDate2.where(a10,a11,a12,a13,a14);
+			//	Predicate a14 = cb2.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"), today);
+				effectiveDate2.where(a10,a11,a12,a13);
 	
 				// Select
 				query2.select(b2);
@@ -1402,7 +1400,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				effectiveDate2.select(cb2.max(ocpm2.get("effectiveDateStart")));
 				Predicate a12 = cb2.equal(ocpm2.get("productId"), b2.get("productId"));
 				Predicate a13 = cb2.equal(ocpm2.get("companyId"), b2.get("companyId"));
-				Predicate a14 = cb2.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"), today);
+				Predicate a14 = cb2.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"),req.getEffectiveDateStart());
 				Predicate a15 = cb2.equal(ocpm2.get("factorTypeId"), b2.get("factorTypeId"));
 				effectiveDate2.where(a12,a13,a14,a15);
 	
@@ -1433,7 +1431,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				FactorRateMaster saveData = new FactorRateMaster();
 				saveData = dozerMapper.map(req, FactorRateMaster.class );
 				saveData.setFactorTypeId(Integer.valueOf(factorTypeId));
-				saveData.setEffectiveDateStart(effDate);
+				saveData.setEffectiveDateStart(req.getEffectiveDateStart());
 				saveData.setEffectiveDateEnd(endDate);
 				saveData.setEntryDate(new Date());
 				saveData.setSubCoverId(req.getSubCoverYn().equalsIgnoreCase("Y") ? Integer.valueOf(req.getSubCoverId()) : Integer.valueOf(req.getCoverId()) );
@@ -1486,8 +1484,12 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 						}
 					 repository.saveAndFlush(updateRecord);
 				}
-			}			
-		} catch (Exception e) {
+			}	
+				
+			}
+		}
+		
+		catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
 			return null;
@@ -1499,48 +1501,37 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 	@Override
 	public List<FactorRateGetAllRes> getallFactorRates(FactorRateGetAllReq req) {
 		List<FactorRateGetAllRes> resList = new ArrayList<FactorRateGetAllRes>();
-		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
-
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
-			Calendar cal = new GregorianCalendar(); 
-			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 1);
-			today   = cal.getTime();
-			
 			List<FactorRateMaster> list = new ArrayList<FactorRateMaster>();
-			//Pagination
-			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
-	
+		
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<FactorRateMaster> query = cb.createQuery(FactorRateMaster.class);
-	
+
 			// Find All
 			Root<FactorRateMaster> b = query.from(FactorRateMaster.class);
-	
+
 			// Select
 			query.select(b);
-	
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<FactorRateMaster> ocpm1 = effectiveDate.from(FactorRateMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+
+			// Amend ID Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<FactorRateMaster> ocpm1 = amendId.from(FactorRateMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			Predicate a3 = cb.equal(ocpm1.get("factorTypeId"), b.get("factorTypeId"));
-			Predicate a4 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-			Predicate a5 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
+			Predicate a3 = cb.equal(ocpm1.get("factorTypeId"),b.get("factorTypeId"));
+			Predicate a4 = cb.equal(ocpm1.get("sectionId"),b.get("sectionId"));
+			Predicate a5 = cb.equal(ocpm1.get("coverId"),b.get("coverId"));
 			Predicate a6 = cb.equal(ocpm1.get("agencyCode"), b.get("agencyCode"));
 			Predicate a7 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
 			Predicate a8 = cb.equal(ocpm1.get("sNo"), b.get("sNo"));
-			Predicate a9 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , today);
-			Predicate a10 = cb.equal(ocpm1.get("subCoverId"), req.getSubCoverId());
-			effectiveDate.where(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10);
+			Predicate a9 = cb.equal(ocpm1.get("subCoverId"), req.getSubCoverId());
 	
-			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			amendId.where(a1,a2,a3,a4,a5,a6,a7,a8,a9);
+
+			Predicate n1 = cb.equal(b.get("amendId"),amendId);
 			Predicate n2 = cb.equal(b.get("productId"), req.getProductId() );	
 			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId() );		
 			Predicate n4 = cb.equal(b.get("sectionId"), req.getSectionId());
@@ -1556,23 +1547,21 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(b.get("effectiveDateStart")));
+			orderList.add(cb.asc(b.get("sNo")));
 			
 			if(StringUtils.isBlank(req.getAgencyCode()) && StringUtils.isBlank(req.getBranchCode()) ) {
 				n7 = cb.equal(b.get("agencyCode"), "99999");
 				n8 = cb.equal(b.get("branchCode"), "99999");
-				query.where(n1, n2, n3,n4,n5,n6,n7,n8).orderBy(orderList);
+				query.where( n2, n3,n4,n5,n6,n7,n8).orderBy(orderList);
 				
 			} else {
 				n7 = cb.equal(b.get("agencyCode"), req.getAgencyCode());
 				n8 = cb.equal(b.get("branchCode"), req.getBranchCode());
-				query.where(n1, n2, n3,n4,n5,n6,n7,n8).orderBy(orderList);
+				query.where( n2, n3,n4,n5,n6,n7,n8).orderBy(orderList);
 			}	
 	
 			// Get Result
 			TypedQuery<FactorRateMaster> result = em.createQuery(query);
-			result.setFirstResult(limit * offset);
-			result.setMaxResults(offset);
 			list = result.getResultList();
 			Map<Integer, List<FactorRateMaster>>  groupByFactorTypeId = list.stream() .collect(Collectors.groupingBy(w ->   w.getFactorTypeId())) ;
 			
@@ -1602,51 +1591,45 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 		return resList;
 	}
 
+	private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
+	    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+	}
+
 	@Override
 	public List<FactorRateGetAllRes> getActiveFactocRates(FactorRateGetAllReq req) {
 		List<FactorRateGetAllRes> resList = new ArrayList<FactorRateGetAllRes>();
-		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
-
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
-			Calendar cal = new GregorianCalendar(); 
-			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 1);
-			today   = cal.getTime();
-			
 			List<FactorRateMaster> list = new ArrayList<FactorRateMaster>();
-			//Pagination
-			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
-	
+		
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<FactorRateMaster> query = cb.createQuery(FactorRateMaster.class);
-	
+
 			// Find All
 			Root<FactorRateMaster> b = query.from(FactorRateMaster.class);
-	
+
 			// Select
 			query.select(b);
-	
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<FactorRateMaster> ocpm1 = effectiveDate.from(FactorRateMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+
+			// Amend ID Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<FactorRateMaster> ocpm1 = amendId.from(FactorRateMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			Predicate a3 = cb.equal(ocpm1.get("factorTypeId"), b.get("factorTypeId"));
-			Predicate a4 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-			Predicate a5 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
-			Predicate a6 = cb.equal(ocpm1.get("agencyCode"), b.get("agencyCode"));
-			Predicate a7 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+			Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+			Predicate a4 = cb.equal(ocpm1.get("factorTypeId"), b.get("factorTypeId"));
+			Predicate a5 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
+			Predicate a6 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
+			Predicate a7 = cb.equal(ocpm1.get("agencyCode"), b.get("agencyCode"));
 			Predicate a8 = cb.equal(ocpm1.get("sNo"), b.get("sNo"));
-			Predicate a9 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , today);
-			Predicate a10 = cb.equal(ocpm1.get("subCoverId"), req.getSubCoverId());
-			effectiveDate.where(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10);
-	
-			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate a9 = cb.equal(ocpm1.get("subCoverId"), req.getSubCoverId());
+
+			amendId.where(a1, a2,a3,a4,a5,a6,a7,a8,a9);
+
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("productId"), req.getProductId() );	
 			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId() );		
 			Predicate n4 = cb.equal(b.get("sectionId"), req.getSectionId());
@@ -1664,7 +1647,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(b.get("effectiveDateStart")));
+			orderList.add(cb.desc(b.get("sNo")));
 			
 			if(StringUtils.isBlank(req.getAgencyCode()) && StringUtils.isBlank(req.getBranchCode()) ) {
 				n7 = cb.equal(b.get("agencyCode"), "99999");
@@ -1680,8 +1663,6 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 	
 			// Get Result
 			TypedQuery<FactorRateMaster> result = em.createQuery(query);
-			result.setFirstResult(limit * offset);
-			result.setMaxResults(offset);
 			list = result.getResultList();
 			Map<Integer, List<FactorRateMaster>>  groupByFactorTypeId = list.stream() .collect(Collectors.groupingBy(w ->   w.getFactorTypeId())) ;
 			
@@ -1714,47 +1695,47 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 	@Override
 	public FactorRateGetRes getByFactorRateId(FactorRateGetReq req) {
 		FactorRateGetRes res = new FactorRateGetRes();
-		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		String pattern = "#####0.00";
 		DecimalFormat df = new DecimalFormat(pattern);
-		
+
 		try {
-			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
-			Calendar cal = new GregorianCalendar(); 
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
 			cal.set(Calendar.MINUTE, 1);
-			today   = cal.getTime();
-			
+			today = cal.getTime();
+
 			List<FactorRateMaster> list = new ArrayList<FactorRateMaster>();
-			
+		
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<FactorRateMaster> query = cb.createQuery(FactorRateMaster.class);
-	
+
 			// Find All
 			Root<FactorRateMaster> b = query.from(FactorRateMaster.class);
-	
+
 			// Select
 			query.select(b);
-	
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<FactorRateMaster> ocpm1 = effectiveDate.from(FactorRateMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+
+			// Amend ID Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<FactorRateMaster> ocpm1 = amendId.from(FactorRateMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			Predicate a3 = cb.equal(ocpm1.get("factorTypeId"), b.get("factorTypeId"));
-			Predicate a4 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-			Predicate a5 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
-			Predicate a6 = cb.equal(ocpm1.get("agencyCode"), b.get("agencyCode"));
-			Predicate a7 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+			Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+			Predicate a4 = cb.equal(ocpm1.get("factorTypeId"), b.get("factorTypeId"));
+			Predicate a5 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
+			Predicate a6 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
+			Predicate a7 = cb.equal(ocpm1.get("agencyCode"), b.get("agencyCode"));
 			Predicate a8 = cb.equal(ocpm1.get("sNo"), b.get("sNo"));
 			Predicate a9 = cb.equal(ocpm1.get("subCoverId"), b.get("subCoverId"));
-			Predicate a10 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , today);
-			effectiveDate.where(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10);
-	
-			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+
+			amendId.where(a1, a2,a3,a4,a5,a6,a7,a8,a9);
+
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("productId"), req.getProductId() );	
 			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId() );		
 			Predicate n4 = cb.equal(b.get("sectionId"), req.getSectionId());
@@ -1821,149 +1802,80 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 		}
 		return res;
 	}
-
 	@Override
 	public SuccessRes changeStatusOfFactorRate(FactorRateUpdateStatusReq req) {
 		SuccessRes res = new SuccessRes();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
-			Calendar cal = new GregorianCalendar(); 
-			
-			FactorRateMaster updateRecord  = new FactorRateMaster();
-			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 1);
-			today   = cal.getTime();
-			
 			List<FactorRateMaster> list = new ArrayList<FactorRateMaster>();
+			
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<FactorRateMaster> query = cb.createQuery(FactorRateMaster.class);
-	
-			// Find All
+			// Find all
 			Root<FactorRateMaster> b = query.from(FactorRateMaster.class);
-	
-			// Select
+			//Select
 			query.select(b);
-	
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<FactorRateMaster> ocpm1 = effectiveDate.from(FactorRateMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+
+			// Amend ID Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<FactorRateMaster> ocpm1 = amendId.from(FactorRateMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("factorTypeId"), b.get("factorTypeId"));
-			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			Predicate a3 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-			Predicate a4 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			Predicate a5 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-			Predicate a6 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
-			Predicate a7 = cb.equal(ocpm1.get("agencyCode"), b.get("agencyCode"));
-			Predicate a8 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
-			effectiveDate.where(a1,a2,a3,a4,a5,a6,a7,a8);
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+			Predicate a4 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a5 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a6 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
+			Predicate a7 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
+			Predicate a8 = cb.equal(ocpm1.get("agencyCode"), b.get("agencyCode"));
 	
+			amendId.where(a1, a2,a3,a4,a5,a6,a7,a8);
+
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(b.get("effectiveDateStart")));
-	
+			orderList.add(cb.asc(b.get("branchCode")));
+
 			// Where
-			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			Predicate n2 = cb.equal(b.get("factorTypeId"), req.getFactorTypeId() );
-			Predicate n3 = cb.equal(b.get("productId"), req.getProductId());
-			Predicate n4 = cb.equal(b.get("companyId"),req.getCompanyId());
-			Predicate n5 = cb.equal(b.get("sectionId"), req.getSectionId() );
-			Predicate n6 = cb.equal(b.get("coverId"), req.getCoverId());
-			Predicate n7 = null;
-			Predicate n8 = null;
-			Predicate n9 = null;
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
+			Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
+			Predicate n4 = cb.equal(b.get("factorTypeId"), req.getFactorTypeId());
+			Predicate n5 = cb.equal(b.get("branchCode"), "99999");
+			Predicate n6 = cb.or(n3,n5);
+			Predicate n7 = cb.equal(b.get("productId"), req.getProductId());
+			Predicate n8 = cb.equal(b.get("sectionId"), req.getSectionId() );
+			Predicate n9 = cb.equal(b.get("coverId"), req.getCoverId());
+	
+			query.where(n1,n2,n4,n6,n7,n8,n9).orderBy(orderList);
 			
-			if (StringUtils.isBlank(req.getSubCoverId()) ) {
-				n7 =  cb.equal(b.get("subCoverId"), req.getCoverId()); 
-			} else {
-				n7 =  cb.equal(b.get("subCoverId"), req.getSubCoverId()); 
-			}
-			
-			if(StringUtils.isBlank(req.getAgencyCode()) && StringUtils.isBlank(req.getBranchCode()) ) {
-				n8 = cb.equal(b.get("agencyCode"), "99999");
-				n9 = cb.equal(b.get("branchCode"), "99999");
-				query.where(n1, n2, n3,n4,n5,n6,n7,n8,n9).orderBy(orderList);
-				
-			} else {
-				n8 = cb.equal(b.get("agencyCode"), req.getAgencyCode());
-				n9 = cb.equal(b.get("branchCode"), req.getBranchCode());
-				query.where(n1, n2, n3,n4,n5,n6,n7,n8,n9).orderBy(orderList);
-			}	
-			
-			// Get Result
+			// Get Result 
 			TypedQuery<FactorRateMaster> result = em.createQuery(query);
 			list = result.getResultList();
-			
-			if (req.getStatus().equalsIgnoreCase("N") )	{
-					// Delete Old Records
-					cal.setTime(today);
-					cal.set(Calendar.HOUR_OF_DAY, 23);
-					cal.set(Calendar.MINUTE, 1);
-					today   = cal.getTime();
-					
-					// create update
-					CriteriaBuilder cb2 = em.getCriteriaBuilder();
-					CriteriaDelete<FactorRateMaster> delete = cb.createCriteriaDelete(FactorRateMaster.class);
-					Root<FactorRateMaster> pm = delete.from(FactorRateMaster.class);
-				
-					// Where	
-					Predicate n10 = cb2.equal(pm.get("factorTypeId"), req.getFactorTypeId());
-					Predicate n11 = cb2.greaterThanOrEqualTo(pm.get("effectiveDateStart"), today);
-					Predicate n12 = cb2.equal(pm.get("productId"), req.getProductId());
-					Predicate n13 = cb2.equal(pm.get("companyId"),req.getCompanyId());
-					Predicate n14 = cb2.equal(pm.get("sectionId"), req.getSectionId());
-					Predicate n15 = cb2.equal(pm.get("coverId"), req.getCoverId());
-					Predicate n16 = null;
-					Predicate n17 = null;
-					Predicate n18 = null;
-					
-					if (StringUtils.isBlank(req.getSubCoverId()) ) {
-						n16 =  cb.equal(b.get("subCoverId"), req.getCoverId()); 
-					} else {
-						n16 =  cb.equal(b.get("subCoverId"), req.getSubCoverId()); 
-					}
-					
-					if(StringUtils.isBlank(req.getAgencyCode()) && StringUtils.isBlank(req.getBranchCode()) ) {
-						n17 = cb.equal(b.get("agencyCode"), "99999");
-						n18 = cb.equal(b.get("branchCode"), "99999");
-						
-					} else {
-						n17 = cb.equal(b.get("agencyCode"), req.getAgencyCode());
-						n18 = cb.equal(b.get("branchCode"), req.getBranchCode());
-					}	
-					
-					delete.where(n10, n11, n12,n13,n14,n15,n16,n17,n18);	
-					em.createQuery(delete).executeUpdate();
-					// Insert Updated Record
-					for (FactorRateMaster data : list ) {
-						updateRecord = data ; 
-						updateRecord.setStatus(req.getStatus());
-						repository.saveAndFlush(updateRecord);	
-					}
-					
-				
-			} else if (req.getStatus().equalsIgnoreCase("Y") ) {
-				// Insert Updated Record
-				for (FactorRateMaster data : list ) {
-					updateRecord = data ; 
-					updateRecord.setStatus(req.getStatus());
-					repository.saveAndFlush(updateRecord);	
-				}
-				
+			FactorRateMaster updateRecord = list.get(0);
+			if(  req.getBranchCode().equalsIgnoreCase(updateRecord.getBranchCode())) {
+				updateRecord.setStatus(req.getStatus());
+				repository.save(updateRecord);
+			} else {
+				FactorRateMaster saveNew = new FactorRateMaster();
+				dozerMapper.map(updateRecord,saveNew);
+				saveNew.setBranchCode(req.getBranchCode());
+				saveNew.setStatus(req.getStatus());
+				repository.save(saveNew);
 			}
-			// perform update
-			
+		
+			// Perform Update
 			res.setResponse("Status Changed");
 			res.setSuccessId(req.getFactorTypeId());
-		} catch(Exception e ) {
-			e.printStackTrace();
-			log.info("Exception is ---> " + e.getMessage());
-			return null;
 		}
+		catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --> " + e.getMessage());
+			return null;
+			}
 		return res;
 	}
+
 
 	@Override
 	public  List<FactorRateCoverRes> viewFactorRateDetails(FactorRateViewReq req) {

@@ -18,4 +18,8 @@ public class CompanyProductDropDownRes {
 	
 	@JsonProperty("ProductIconName")
 	private String productIconName;
+	
+	@JsonProperty("Status")
+	private String status;
+	
 }

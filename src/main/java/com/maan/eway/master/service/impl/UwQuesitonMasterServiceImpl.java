@@ -75,12 +75,12 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			}else if (req.getUwQuestionDesc().length() > 100){
 				errorList.add(new Error("02","UwQuestionDesc", "Please Enter UwQuestionDesc 100 Characters")); 
 			}else if (StringUtils.isBlank(req.getUwQuestionId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())) {
-				List<UWQuestionsMaster> UwQuestionList = getUwQuestionDescExistDetails(req.getUwQuestionDesc() , req.getCompanyId() , req.getBranchCode(), req.getProductId());
+				List<UWQuestionsMaster> UwQuestionList = getUwQuestionDescExistDetails(req.getUwQuestionDesc() , req.getCompanyId() , req.getBranchCode(), req.getProductId(),req.getStatus());
 				if (UwQuestionList.size()>0 ) {
 					errorList.add(new Error("01", "UwQuestionDesc", "This UwQuestionDesc Already Exist "));
 				}
 			}else if (StringUtils.isNotBlank(req.getUwQuestionId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())) {
-				List<UWQuestionsMaster> UwQuestionList = getUwQuestionDescExistDetails(req.getUwQuestionDesc() , req.getCompanyId() , req.getBranchCode(),req.getProductId());
+				List<UWQuestionsMaster> UwQuestionList = getUwQuestionDescExistDetails(req.getUwQuestionDesc() , req.getCompanyId() , req.getBranchCode(),req.getProductId(),req.getStatus());
 				
 				if (UwQuestionList.size()>0 &&  (! req.getUwQuestionId().equalsIgnoreCase(UwQuestionList.get(0).getUwQuestionId().toString())) ) {
 					errorList.add(new Error("01", "UwQuestionDesc", "This UwQuestionDesc Already Exist "));
@@ -154,7 +154,7 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 		}
 		return errorList;
 	}
-	public List<UWQuestionsMaster> getUwQuestionDescExistDetails(String UWQuestionDesc , String InsuranceId , String branchCode, String productId) {
+	public List<UWQuestionsMaster> getUwQuestionDescExistDetails(String UWQuestionDesc , String InsuranceId , String branchCode, String productId, String Status) {
 		List<UWQuestionsMaster> list = new ArrayList<UWQuestionsMaster>();
 		try {
 			Date today = new Date();

@@ -48,4 +48,19 @@ public class FactorRateGetAllRes {
 
     @JsonProperty("CreatedBy")
     private String     createdBy ;
+    
+
+    @JsonProperty("UpdatedBy")
+    private String     updatedBy ;
+
+    @JsonProperty("CoreAppCode")
+    private String   coreAppCode;
+
+    @JsonProperty("RegulatoryCode")
+    private String   regulatoryCode;
+
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    @JsonProperty("UpdateDate")
+    private Date      updatedDate;
+    
 }

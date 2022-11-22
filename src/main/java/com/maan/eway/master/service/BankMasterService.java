@@ -5,6 +5,7 @@
 */
 package com.maan.eway.master.service;
 
+import com.maan.eway.master.req.BankChangeStatusReq;
 import com.maan.eway.master.req.BankMasterGetAllReq;
 import com.maan.eway.master.req.BankMasterGetReq;
 import com.maan.eway.master.req.BankMasterSaveReq;
@@ -39,6 +40,8 @@ BankMasterRes getByBankCode(BankMasterGetReq req);
 //List<DropDownRes> getBankMasterDropdown();
 
 List<BankMasterRes> getActiveBankDetails(BankMasterGetAllReq req);
+
+SuccessRes changeStatusOfBank(BankChangeStatusReq req);
 
 
 

@@ -109,6 +109,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="ENTRY_DATE")
     private Date       entryDate ;
 
+    
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="EFFECTIVE_DATE_START", nullable=false)
     private Date       effectiveDateStart ;
@@ -168,6 +169,15 @@ private static final long serialVersionUID = 1L;
     @Column(name="PARAM_12", length=100)
     private String     param12 ;
 
+        
+    @Column(name="UPDATED_BY", length=100)
+    private String     updatedBy ;
+   
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="UPDATED_DATE")
+    private Date updatedDate ;
+ 
+        
     @Column(name="RATE")
     private Double     rate ;
 
@@ -186,17 +196,10 @@ private static final long serialVersionUID = 1L;
     @Column(name="CORE_APP_CODE", length=20)
     private String     coreAppCode ;
 
-    @Column(name="UPDATED_BY", length=100)
-    private String     updatedBy ;
+   
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="UPDATED_DATE")
-    private Date       updatedDate ;
-
-
-    //--- ENTITY LINKS ( RELATIONSHIP )
-
-
+    
+ 
 }
 
 

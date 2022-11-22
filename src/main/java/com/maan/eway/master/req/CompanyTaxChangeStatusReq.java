@@ -18,6 +18,8 @@ public class CompanyTaxChangeStatusReq {
 	 
 	 @JsonProperty("InsuranceId")
 	 private String companyId;
+	 @JsonProperty("BranchCode")
+	 private String branchCode;
 	 
 
 	 @JsonFormat(pattern = "dd/MM/yyyy")

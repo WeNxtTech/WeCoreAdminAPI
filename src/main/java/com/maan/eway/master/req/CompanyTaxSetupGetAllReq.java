@@ -17,15 +17,7 @@ public class CompanyTaxSetupGetAllReq implements Serializable {
     private String productId;
 	@JsonProperty("InsuranceId")
     private String     companyId     ;
-    @JsonProperty("Limit")
-    private String limit;
-    
-    @JsonProperty("Offset")
-    private String offset;
-    
-    @JsonFormat(pattern ="dd/MM/yyyy")
-    @JsonProperty("EffectiveDateStart")
-    private Date effectiveDateStart;
-    
+	@JsonProperty("BranchCode")
+    private String     branchCode     ;
 
 }

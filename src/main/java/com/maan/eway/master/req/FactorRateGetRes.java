@@ -43,12 +43,28 @@ public class FactorRateGetRes {
     @JsonFormat(pattern = "dd/MM/yyyy")
     @JsonProperty("EffectiveDateEnd")
     private Date       effectiveDateEnd ;
+
+
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    @JsonProperty("UpdatedDate")
+    private Date   updatedDate;
+
     
     @JsonProperty("Status")
     private String     status ;
 
     @JsonProperty("CreatedBy")
     private String     createdBy ;
+    
+    @JsonProperty("UpdatedBy")
+    private String     updatedBy ;
+    
+    @JsonProperty("CoreAppCode")
+    private String   coreAppCode ;
+    
+    @JsonProperty("RegulatoryCode")
+    private String   regulatoryCode ;
+    
     
     @JsonProperty("FactorParams")
     private List<FactorParamsInsert>     factorParams;

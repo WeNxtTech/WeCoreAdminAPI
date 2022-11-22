@@ -21,9 +21,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.BankChangeStatusReq;
 import com.maan.eway.master.req.BankMasterGetAllReq;
 import com.maan.eway.master.req.BankMasterGetReq;
 import com.maan.eway.master.req.BankMasterSaveReq;
+import com.maan.eway.master.req.ExclusionChangeStatusReq;
 import com.maan.eway.master.res.BankMasterRes;
 import com.maan.eway.master.service.BankMasterService;
 import com.maan.eway.res.CommonRes;
@@ -151,6 +153,29 @@ public class BankMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
+		
+		// Change Status
+		@PostMapping("/bank/changestatus")
+		@ApiOperation(value = "This method is Bank Change Status")
+		public ResponseEntity<CommonRes> changeStatusOfBank(@RequestBody BankChangeStatusReq req) {
+
+			CommonRes data = new CommonRes();
+			// Change Status
+			SuccessRes res = bankService.changeStatusOfBank(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+
+		}
+		
+		
 		
 /*		// Bank Master Drop Down Type
 		@GetMapping("/dropdown/bankmaster")

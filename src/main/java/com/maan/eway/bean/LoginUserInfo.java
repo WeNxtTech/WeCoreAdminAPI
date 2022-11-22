@@ -59,7 +59,7 @@ private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name="OA_CODE", nullable=false)
-    private Integer    oaCode ;
+    private String    oaCode ;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="AGENCY_CODE", length=20)

@@ -40,7 +40,5 @@ public interface AdminDropDownService {
 
 	List<DropDownRes> getBusinessType();
 
-	List<DropDownRes> getProductCategory();
-
 
 }

@@ -14,4 +14,6 @@ public class SubUserTypeDropDownRes {
 	
 	@JsonProperty("DisplayName")
 	private String displayName;
+	@JsonProperty("Status")
+	private String status;
 }

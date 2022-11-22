@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -68,6 +67,9 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="AGENCY_CODE", nullable=false)
     private Integer    agencyCode ;
+
+    @Column(name="ADMIN_LOGIN_ID", nullable=false)
+    private String    adminLoginId ;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="CUSTOMER_ID", nullable=false)

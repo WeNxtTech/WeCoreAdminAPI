@@ -353,23 +353,6 @@ public class AdminDropDownController {
 		}
 
 	}
-	@GetMapping("/productCategory")
-	@ApiOperation(value = "This method is to ProductCategory  Drop Down")
-	public ResponseEntity<CommonRes> getProductCategory() {
-		CommonRes data = new CommonRes();
-
-		// Save
 		List<DropDownRes> res = dropDownService.getProductCategory();
-		data.setCommonResponse(res);
-		data.setIsError(false);
-		data.setErrorMessage(Collections.emptyList());
-		data.setMessage("Success");
 
-		if (res != null) {
-			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-		}
-
-	}
 }

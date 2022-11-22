@@ -353,6 +353,5 @@ public class AdminDropDownController {
 		}
 
 	}
-		List<DropDownRes> res = dropDownService.getProductCategory();
 
 }

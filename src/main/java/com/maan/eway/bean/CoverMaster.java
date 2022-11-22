@@ -61,11 +61,14 @@ private static final long serialVersionUID = 1L;
     private Integer    subCoverId ;
 
     @Id
+    @Column(name="AMEND_ID", nullable=false)
+    private Integer    amendId ;
+
+    
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="EFFECTIVE_DATE_START", nullable=false)
     private Date       effectiveDateStart ;
 
-    @Id
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="EFFECTIVE_DATE_END", nullable=false)
     private Date       effectiveDateEnd ;
@@ -114,9 +117,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="CALC_TYPE", length=1)
     private String     calcType ;
 
-    @Column(name="AMEND_ID")
-    private Integer    amendId ;
-
+    
     @Column(name="CALC_TYPE_DESC", length=100)
     private String     calcTypeDesc ;
 

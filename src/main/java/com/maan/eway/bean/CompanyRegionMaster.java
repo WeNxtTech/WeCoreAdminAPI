@@ -65,11 +65,14 @@ private static final long serialVersionUID = 1L;
     private String     countryId ;
 
     @Id
+    @Column(name="AMEND_ID", nullable=false)
+    private Integer    amendId ;
+
+    
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="EFFECTIVE_DATE_START", nullable=false)
     private Date       effectiveDateStart ;
 
-    @Id
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="EFFECTIVE_DATE_END", nullable=false)
     private Date       effectiveDateEnd ;
@@ -91,9 +94,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="CORE_APP_CODE", nullable=false, length=20)
     private String     coreAppCode ;
 
-    @Column(name="AMEND_ID", nullable=false)
-    private Integer    amendId ;
-
+    
     @Column(name="REMARKS", length=100)
     private String     remarks ;
 
@@ -104,8 +105,12 @@ private static final long serialVersionUID = 1L;
     private String     regulatoryCode ;
 
 
-    //--- ENTITY LINKS ( RELATIONSHIP )
+    @Column(name="UPDATED_BY", length=50)
+    private String     updatedBy ;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="UPDATED_DATE")
+    private Date       updatedDate ;
 
 }
 

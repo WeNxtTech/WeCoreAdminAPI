@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -61,9 +60,8 @@ private static final long serialVersionUID = 1L;
     private String     stateShortCode ;
 
     @Id
-    @Column(name="COUNTRY_ID", nullable=false)
-    private Integer    countryId ;
-
+    @Column(name="COUNTRY_ID", nullable=false, length=20)
+    private String     countryId ;
     @Id
     @Column(name="REGION_CODE", nullable=false, length=20)
     private String     regionCode ;

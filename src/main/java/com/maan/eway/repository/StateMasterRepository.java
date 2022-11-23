@@ -34,8 +34,6 @@ public interface StateMasterRepository  extends JpaRepository<StateMaster,StateM
 
 	Long countByStateNameOrderByEntryDateDesc(String stateName);
 
-	Long countByStateIdAndCountryIdAndStatusAndEffectiveDateStartLessThanEqual(Integer valueOf, String valueOf2,
-			String string, Date today);
 
 
 

@@ -22,4 +22,5 @@ public class CompanyStateMultiInsertReq {
 
 		@JsonProperty("CreatedBy")
 		private String createdBy;
-}
+		
+		}

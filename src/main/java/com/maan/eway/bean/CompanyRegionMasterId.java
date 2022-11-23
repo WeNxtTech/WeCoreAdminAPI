@@ -36,9 +36,7 @@ public class CompanyRegionMasterId implements Serializable {
     
     private String     countryId ;
     
-    private Date       effectiveDateStart ;
-    
-    private Date       effectiveDateEnd ;
-    
+       private Integer    amendId ;
+
      
 }

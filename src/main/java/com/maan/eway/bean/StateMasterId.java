@@ -34,7 +34,7 @@ public class StateMasterId implements Serializable {
     
     private String     stateShortCode ;
     
-    private Integer    countryId ;
+    private String     countryId ;
     
     private String     regionCode ;
     

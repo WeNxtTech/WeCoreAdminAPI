@@ -705,15 +705,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			} else if (req.getEffectiveDateStart().before(today)) {
 				errorList
 						.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
-			} else if (req.getEffectiveDateEnd() == null) {
-				errorList.add(new Error("10", "EffectiveDateEnd", "Please Enter Effective Date End "));
-
-			} else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart())
-					|| req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
-				errorList.add(new Error("10", "EffectiveDateStart",
-						"Please Enter Effective Date End  is After Effective Date Start"));
-			}
-
+			} 
 			if (StringUtils.isBlank(req.getCoreAppCode())) {
 				errorList.add(new Error("04", "Core App Code", "Please Enter Core App Code"));
 			} else if (req.getCoreAppCode().length() > 20) {
@@ -733,7 +725,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 				errorList.add(new Error("08", "Status", "Please Enter Status"));
 			} else if (req.getStatus().length() > 1) {
 				errorList.add(new Error("08", "Status", "Enter Status in 1 Character Only"));
-			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()))) {
+			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()) || "R".equals(req.getStatus()))) {
 				errorList.add(new Error("08", "Status", "Enter Status Y or N Only"));
 			}
 			if (StringUtils.isBlank(req.getRegulatoryCode())) {

@@ -113,12 +113,8 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 	
 			} else if (req.getEffectiveDateStart().before(today)) {
 				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
-			} else if (req.getEffectiveDateEnd() == null ) {
-				errorList.add(new Error("04", "EffectiveDateEnd", "Please Enter Effective Date End "));
-	
-			} else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart()) || req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
-				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date End  is After Effective Date Start"));
 			} 
+			
 			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
 				errorList.add(new Error("05", "Status", "Please Enter Status"));
@@ -501,637 +497,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					duplicateParams.add(dupParams);
 						
 				
-					/*
-					// Param 1 & Param 2 Validation
-					if ( param1==true  ) {
-						if( StringUtils.isBlank(data.getParam1())  ) 
-							errorList.add(new Error("01", param1Name, "Please Enter " +  param1Name + " in Row No : " + row  ));
-						else if(! data.getParam1().matches("[0-9.]+")) 
-							errorList.add(new Error("01",param1Name, "Please Enter Valid "  + param1Name + " Value in Row No : " + row ));	
-						else {
-							// Duplicate Range Checking 
-							List<RangeParamsReq> filterRange = param1to2Values.stream().filter(o -> o.getParamStartValue() <= Double.valueOf(data.getParam1()) &&  Double.valueOf(data.getParam1()) <= o.getParamEndValue() ).collect(Collectors.toList()) ;
-							if(filterRange.size()>0 ) {
-								if ( param9==true && param10==false && param11==false && param12==false   ) {
-									if( StringUtils.isNotBlank(data.getParam9())) {
-										List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-										if ( filter9Discrete.size()>0 ) {
-											errorList.add(new Error("01",param1Name,param1Name+ " Duplicate  Range Setup AvDouble.valueOf(ailable In Row No : " + row ));	
-										}
-									}	
-								} 
-								if ( param9==true && param10==true && param11==false && param12==false   ) {
-									if( StringUtils.isNotBlank(data.getParam9()) &&  StringUtils.isNotBlank(data.getParam10())) {
-										List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-										List<String> filter10Discrete = discrete10Values.stream().filter( o -> o.equals(data.getParam10())).collect(Collectors.toList()) ;
-										
-										if ( filter9Discrete.size()>0 && filter10Discrete.size()>0 ) {
-											errorList.add(new Error("01",param1Name,param1Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-										} else {
-											discrete9Values.add( data.getParam9());	
-											discrete10Values.add( data.getParam10());	
-										}
-									}	
-								}
-								if ( param9==true && param10==true && param11==true && param12==false   ) {
-									if( StringUtils.isNotBlank(data.getParam9()) &&  StringUtils.isNotBlank(data.getParam10())  &&  StringUtils.isNotBlank(data.getParam11())) {
-										List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-										List<String> filter10Discrete = discrete10Values.stream().filter( o -> o.equals(data.getParam10())).collect(Collectors.toList()) ;
-										List<String> filter11Discrete = discrete11Values.stream().filter( o -> o.equals(data.getParam11())).collect(Collectors.toList()) ;
-										
-										if ( filter9Discrete.size()>0 && filter10Discrete.size()>0 && filter11Discrete.size()>0 ) {
-											errorList.add(new Error("01",param1Name,param1Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-										} else {
-											discrete9Values.add( data.getParam9());	
-											discrete10Values.add( data.getParam10());	
-											discrete11Values.add( data.getParam11());	
-										}
-									}	
-								}
-								if ( param9==true && param10==true && param11==true && param12==true   ) {
-									if( StringUtils.isNotBlank(data.getParam9()) &&  StringUtils.isNotBlank(data.getParam10()) &&  StringUtils.isNotBlank(data.getParam11()) &&  StringUtils.isNotBlank(data.getParam12())) {
-										List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-										List<String> filter10Discrete = discrete10Values.stream().filter( o -> o.equals(data.getParam10())).collect(Collectors.toList()) ;
-										List<String> filter11Discrete = discrete11Values.stream().filter( o -> o.equals(data.getParam11())).collect(Collectors.toList()) ;
-										List<String> filter12Discrete = discrete12Values.stream().filter( o -> o.equals(data.getParam12())).collect(Collectors.toList()) ;
-										
-										if ( filter9Discrete.size()>0 && filter10Discrete.size()>0 && filter11Discrete.size()>0 && filter12Discrete.size()>0 ) {
-											errorList.add(new Error("01",param1Name,param1Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-										} else {
-											discrete9Values.add( data.getParam9());	
-											discrete10Values.add( data.getParam10());	
-											discrete11Values.add( data.getParam11());	
-											discrete12Values.add( data.getParam12());	
-										}
-									}	
-								}
-							} 
-						}
-					}
-					if ( param2==true  ) {
-						if( StringUtils.isBlank(data.getParam2())  ) 
-							errorList.add(new Error("02", param2Name, "Please Enter " +  param2Name + "in Row No : " + row  ));
-						else if(! data.getParam2().matches("[0-9.]+")) 
-							errorList.add(new Error("02",param2Name, "Please Enter Valid "  + param2Name + " Value in Row No : " + row ));
-						else if ( param1==true &&  StringUtils.isNotBlank(data.getParam1()) &&  data.getParam1().matches("[0-9.]+") ) {
-							if( Double.valueOf(data.getParam1()) >  Double.valueOf(data.getParam2()) ) 
-								errorList.add(new Error("02", param2Name,  param1Name + " Greater Than  " + param2Name + " Not Allowed in Row No : " + row  ));
-						}
-						if( data.getParam1().matches("[0-9.]+")  && data.getParam2().matches("[0-9.]+")  ){
-								// Duplicate Range Checking
-								List<RangeParamsReq> filterRange = param1to2Values.stream().filter( o -> o.getParamStartValue() <= Double.valueOf(data.getParam2()) &&  Double.valueOf(data.getParam2()) <= o.getParamEndValue() ).collect(Collectors.toList()) ;
-								if(filterRange.size()>0 ) {
-									if ( param9==true && param10==false && param11==false && param12==false   ) {
-										if( StringUtils.isNotBlank(data.getParam9())) {
-											List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-											if ( filter9Discrete.size()>0 ) {
-												errorList.add(new Error("01",param2Name,param2Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-											} else {
-												discrete9Values.add( data.getParam9());	
-											}
-										}	
-									} 
-									if ( param9==true && param10==true && param11==false && param12==false   ) {
-										if( StringUtils.isNotBlank(data.getParam9()) &&  StringUtils.isNotBlank(data.getParam10())) {
-											List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-											List<String> filter10Discrete = discrete10Values.stream().filter( o -> o.equals(data.getParam10())).collect(Collectors.toList()) ;
-											
-											if ( filter9Discrete.size()>0 && filter10Discrete.size()>0 ) {
-												errorList.add(new Error("01",param2Name,param2Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-											} else {
-												discrete9Values.add( data.getParam9());	
-												discrete10Values.add( data.getParam10());	
-											}
-										}	
-									}
-									if ( param9==true && param10==true && param11==true && param12==false   ) {
-										if( StringUtils.isNotBlank(data.getParam9()) &&  StringUtils.isNotBlank(data.getParam10())  &&  StringUtils.isNotBlank(data.getParam11())) {
-											List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-											List<String> filter10Discrete = discrete10Values.stream().filter( o -> o.equals(data.getParam10())).collect(Collectors.toList()) ;
-											List<String> filter11Discrete = discrete11Values.stream().filter( o -> o.equals(data.getParam11())).collect(Collectors.toList()) ;
-											
-											if ( filter9Discrete.size()>0 && filter10Discrete.size()>0 && filter11Discrete.size()>0 ) {
-												errorList.add(new Error("01",param2Name,param2Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-											} else {
-												discrete9Values.add( data.getParam9());	
-												discrete10Values.add( data.getParam10());	
-												discrete11Values.add( data.getParam11());	
-											}
-										}	
-									}
-									if ( param9==true && param10==true && param11==true && param12==true   ) {
-										if( StringUtils.isNotBlank(data.getParam9()) &&  StringUtils.isNotBlank(data.getParam10()) &&  StringUtils.isNotBlank(data.getParam11()) &&  StringUtils.isNotBlank(data.getParam12())) {
-											List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-											List<String> filter10Discrete = discrete10Values.stream().filter( o -> o.equals(data.getParam10())).collect(Collectors.toList()) ;
-											List<String> filter11Discrete = discrete11Values.stream().filter( o -> o.equals(data.getParam11())).collect(Collectors.toList()) ;
-											List<String> filter12Discrete = discrete12Values.stream().filter( o -> o.equals(data.getParam12())).collect(Collectors.toList()) ;
-											
-											if ( filter9Discrete.size()>0 && filter10Discrete.size()>0 && filter11Discrete.size()>0 && filter12Discrete.size()>0 ) {
-												errorList.add(new Error("01",param2Name,param2Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-											} else {
-												discrete9Values.add( data.getParam9());	
-												discrete10Values.add( data.getParam10());	
-												discrete11Values.add( data.getParam11());	
-												discrete12Values.add( data.getParam12());	
-											}
-										}	
-									}
-								} else {
-									RangeParamsReq param1To2Value = new RangeParamsReq();
-									param1To2Value.setParamStartValue(Double.valueOf( data.getParam1()));
-									param1To2Value.setParamEndValue(Double.valueOf( data.getParam2()));
-									param1to2Values.add(param1To2Value);
-								}
-							}
-					}
 					
-					// Param 3 & Param 4 Validation
-					if ( param3==true  ) {
-						if( StringUtils.isBlank(data.getParam3())  ) 
-							errorList.add(new Error("03", param3Name, "Please Enter " +  param3Name + "in Row No : " + row  ));
-						else if(! data.getParam3().matches("[0-9.]+")) 
-							errorList.add(new Error("03",param3Name, "Please Enter Valid "  + param3Name + " Value in Row No : " + row ));	
-						else {
-							// Duplicate Range Checking
-							List<RangeParamsReq> filterRange = param3To4Values.stream().filter( o -> o.getParamStartValue() <= Double.valueOf(data.getParam3()) &&  Double.valueOf(data.getParam3()) <= o.getParamEndValue() ).collect(Collectors.toList()) ;
-							if(filterRange.size()>0 ) {
-								if ( param9==true && param10==false && param11==false && param12==false   ) {
-									if( StringUtils.isNotBlank(data.getParam9())) {
-										List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-										if ( filter9Discrete.size()>0 ) {
-											errorList.add(new Error("01",param3Name,param3Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-										}
-									}	
-								} 
-								if ( param9==true && param10==true && param11==false && param12==false   ) {
-									if( StringUtils.isNotBlank(data.getParam9()) &&  StringUtils.isNotBlank(data.getParam10())) {
-										List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-										List<String> filter10Discrete = discrete10Values.stream().filter( o -> o.equals(data.getParam10())).collect(Collectors.toList()) ;
-										
-										if ( filter9Discrete.size()>0 && filter10Discrete.size()>0 ) {
-											errorList.add(new Error("01",param3Name,param3Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-										} else {
-											discrete9Values.add( data.getParam9());	
-											discrete10Values.add( data.getParam10());	
-										}
-									}	
-								}
-								if ( param9==true && param10==true && param11==true && param12==false   ) {
-									if( StringUtils.isNotBlank(data.getParam9()) &&  StringUtils.isNotBlank(data.getParam10())  &&  StringUtils.isNotBlank(data.getParam11())) {
-										List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-										List<String> filter10Discrete = discrete10Values.stream().filter( o -> o.equals(data.getParam10())).collect(Collectors.toList()) ;
-										List<String> filter11Discrete = discrete11Values.stream().filter( o -> o.equals(data.getParam11())).collect(Collectors.toList()) ;
-										
-										if ( filter9Discrete.size()>0 && filter10Discrete.size()>0 && filter11Discrete.size()>0 ) {
-											errorList.add(new Error("01",param3Name,param3Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-										} else {
-											discrete9Values.add( data.getParam9());	
-											discrete10Values.add( data.getParam10());	
-											discrete11Values.add( data.getParam11());	
-										}
-									}	
-								}
-								if ( param9==true && param10==true && param11==true && param12==true   ) {
-									if( StringUtils.isNotBlank(data.getParam9()) &&  StringUtils.isNotBlank(data.getParam10()) &&  StringUtils.isNotBlank(data.getParam11()) &&  StringUtils.isNotBlank(data.getParam12())) {
-										List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-										List<String> filter10Discrete = discrete10Values.stream().filter( o -> o.equals(data.getParam10())).collect(Collectors.toList()) ;
-										List<String> filter11Discrete = discrete11Values.stream().filter( o -> o.equals(data.getParam11())).collect(Collectors.toList()) ;
-										List<String> filter12Discrete = discrete12Values.stream().filter( o -> o.equals(data.getParam12())).collect(Collectors.toList()) ;
-										
-										if ( filter9Discrete.size()>0 && filter10Discrete.size()>0 && filter11Discrete.size()>0 && filter12Discrete.size()>0 ) {
-											errorList.add(new Error("01",param3Name,param3Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-										} else {
-											discrete9Values.add( data.getParam9());	
-											discrete10Values.add( data.getParam10());	
-											discrete11Values.add( data.getParam11());	
-											discrete12Values.add( data.getParam12());	
-										}
-									}	
-								}
-							}
-						}
-					}
-					if ( param4==true  ) {
-						if( StringUtils.isBlank(data.getParam4())  ) 
-							errorList.add(new Error("04", param4Name, "Please Enter " +  param4Name + "in Row No : " + row  ));
-						else if(! data.getParam4().matches("[0-9.]+")) 
-							errorList.add(new Error("04",param4Name, "Please Enter Valid "  + param4Name + " Value in Row No : " + row ));
-						else if ( param3==true &&  StringUtils.isNotBlank(data.getParam3()) &&  data.getParam3().matches("[0-9.]+") ) {
-							if( Double.valueOf(data.getParam3()) >  Double.valueOf(data.getParam4()) ) 
-								errorList.add(new Error("04", param4Name,  param3Name + " Greater Than  " + param4Name + " Not Allowed in Row No : " + row  ));
-						}
-						if(data.getParam3().matches("[0-9.]+") && data.getParam4().matches("[0-9.]+")  ){
-								// Duplicate Range Checking
-								List<RangeParamsReq> filterRange = param3To4Values.stream().filter( o -> o.getParamStartValue() <= Double.valueOf(data.getParam4()) &&  Double.valueOf(data.getParam4()) <= o.getParamEndValue() ).collect(Collectors.toList()) ;
-								if(filterRange.size()>0 ) {
-									if ( param9==true && param10==false && param11==false && param12==false   ) {
-										if( StringUtils.isNotBlank(data.getParam9())) {
-											List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-											if ( filter9Discrete.size()>0 ) {
-												errorList.add(new Error("01",param4Name,param4Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-											} else {
-												discrete9Values.add( data.getParam9());	
-											}
-										}	
-									} 
-									if ( param9==true && param10==true && param11==false && param12==false   ) {
-										if( StringUtils.isNotBlank(data.getParam9()) &&  StringUtils.isNotBlank(data.getParam10())) {
-											List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-											List<String> filter10Discrete = discrete10Values.stream().filter( o -> o.equals(data.getParam10())).collect(Collectors.toList()) ;
-											
-											if ( filter9Discrete.size()>0 && filter10Discrete.size()>0 ) {
-												errorList.add(new Error("01",param4Name,param4Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-											} else {
-												discrete9Values.add( data.getParam9());	
-												discrete10Values.add( data.getParam10());	
-											}
-										}	
-									}
-									if ( param9==true && param10==true && param11==true && param12==false   ) {
-										if( StringUtils.isNotBlank(data.getParam9()) &&  StringUtils.isNotBlank(data.getParam10())  &&  StringUtils.isNotBlank(data.getParam11())) {
-											List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-											List<String> filter10Discrete = discrete10Values.stream().filter( o -> o.equals(data.getParam10())).collect(Collectors.toList()) ;
-											List<String> filter11Discrete = discrete11Values.stream().filter( o -> o.equals(data.getParam11())).collect(Collectors.toList()) ;
-											
-											if ( filter9Discrete.size()>0 && filter10Discrete.size()>0 && filter11Discrete.size()>0 ) {
-												errorList.add(new Error("01",param4Name,param4Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-											} else {
-												discrete9Values.add( data.getParam9());	
-												discrete10Values.add( data.getParam10());	
-												discrete11Values.add( data.getParam11());	
-											}
-										}	
-									}
-									if ( param9==true && param10==true && param11==true && param12==true   ) {
-										if( StringUtils.isNotBlank(data.getParam9()) &&  StringUtils.isNotBlank(data.getParam10()) &&  StringUtils.isNotBlank(data.getParam11()) &&  StringUtils.isNotBlank(data.getParam12())) {
-											List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-											List<String> filter10Discrete = discrete10Values.stream().filter( o -> o.equals(data.getParam10())).collect(Collectors.toList()) ;
-											List<String> filter11Discrete = discrete11Values.stream().filter( o -> o.equals(data.getParam11())).collect(Collectors.toList()) ;
-											List<String> filter12Discrete = discrete12Values.stream().filter( o -> o.equals(data.getParam12())).collect(Collectors.toList()) ;
-											
-											if ( filter9Discrete.size()>0 && filter10Discrete.size()>0 && filter11Discrete.size()>0 && filter12Discrete.size()>0 ) {
-												errorList.add(new Error("01",param4Name,param4Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-											} else {
-												discrete9Values.add( data.getParam9());	
-												discrete10Values.add( data.getParam10());	
-												discrete11Values.add( data.getParam11());	
-												discrete12Values.add( data.getParam12());	
-											}
-										}	
-									}
-								} else {
-									RangeParamsReq param3To4Value = new RangeParamsReq();
-									param3To4Value.setParamStartValue(Double.valueOf( data.getParam3()));
-									param3To4Value.setParamEndValue(Double.valueOf( data.getParam4()));
-									param3To4Values.add(param3To4Value);
-								}
-							}
-					}
-					
-					// Param 5 & Param 6 Validation
-					if ( param5==true  ) {
-						if( StringUtils.isBlank(data.getParam5())  ) 
-							errorList.add(new Error("05", param5Name, "Please Enter " +  param5Name + "in Row No : " + row  ));
-						else if(! data.getParam5().matches("[0-9.]+")) 
-							errorList.add(new Error("05",param5Name, "Please Enter Valid "  + param5Name + " Value in Row No : " + row ));	
-						else {
-							// Duplicate Range Checking
-							List<RangeParamsReq> filterRange = param5To6Values.stream().filter( o -> o.getParamStartValue() <= Double.valueOf(data.getParam5()) &&  Double.valueOf(data.getParam5()) <= o.getParamEndValue() ).collect(Collectors.toList()) ;
-							if(filterRange.size()>0 ) {
-								if ( param9==true && param10==false && param11==false && param12==false   ) {
-									if( StringUtils.isNotBlank(data.getParam9())) {
-										List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-										if ( filter9Discrete.size()>0 ) {
-											errorList.add(new Error("01",param5Name,param5Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-										}
-									}	
-								} 
-								if ( param9==true && param10==true && param11==false && param12==false   ) {
-									if( StringUtils.isNotBlank(data.getParam9()) &&  StringUtils.isNotBlank(data.getParam10())) {
-										List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-										List<String> filter10Discrete = discrete10Values.stream().filter( o -> o.equals(data.getParam10())).collect(Collectors.toList()) ;
-										
-										if ( filter9Discrete.size()>0 && filter10Discrete.size()>0 ) {
-											errorList.add(new Error("01",param5Name,param5Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-										} else {
-											discrete9Values.add( data.getParam9());	
-											discrete10Values.add( data.getParam10());	
-										}
-									}	
-								}
-								if ( param9==true && param10==true && param11==true && param12==false   ) {
-									if( StringUtils.isNotBlank(data.getParam9()) &&  StringUtils.isNotBlank(data.getParam10())  &&  StringUtils.isNotBlank(data.getParam11())) {
-										List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-										List<String> filter10Discrete = discrete10Values.stream().filter( o -> o.equals(data.getParam10())).collect(Collectors.toList()) ;
-										List<String> filter11Discrete = discrete11Values.stream().filter( o -> o.equals(data.getParam11())).collect(Collectors.toList()) ;
-										
-										if ( filter9Discrete.size()>0 && filter10Discrete.size()>0 && filter11Discrete.size()>0 ) {
-											errorList.add(new Error("01",param4Name,param4Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-										} else {
-											discrete9Values.add( data.getParam9());	
-											discrete10Values.add( data.getParam10());	
-											discrete11Values.add( data.getParam11());	
-										}
-									}	
-								}
-								if ( param9==true && param10==true && param11==true && param12==true   ) {
-									if( StringUtils.isNotBlank(data.getParam9()) &&  StringUtils.isNotBlank(data.getParam10()) &&  StringUtils.isNotBlank(data.getParam11()) &&  StringUtils.isNotBlank(data.getParam12())) {
-										List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-										List<String> filter10Discrete = discrete10Values.stream().filter( o -> o.equals(data.getParam10())).collect(Collectors.toList()) ;
-										List<String> filter11Discrete = discrete11Values.stream().filter( o -> o.equals(data.getParam11())).collect(Collectors.toList()) ;
-										List<String> filter12Discrete = discrete12Values.stream().filter( o -> o.equals(data.getParam12())).collect(Collectors.toList()) ;
-										
-										if ( filter9Discrete.size()>0 && filter10Discrete.size()>0 && filter11Discrete.size()>0 && filter12Discrete.size()>0 ) {
-											errorList.add(new Error("01",param5Name,param5Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-										} else {
-											discrete9Values.add( data.getParam9());	
-											discrete10Values.add( data.getParam10());	
-											discrete11Values.add( data.getParam11());	
-											discrete12Values.add( data.getParam12());	
-										}
-									}	
-								}
-							}
-						}
-					}
-					if ( param6==true  ) {
-						if( StringUtils.isBlank(data.getParam6())  ) 
-							errorList.add(new Error("06", param6Name, "Please Enter " +  param6Name + "in Row No : " + row  ));
-						else if(! data.getParam6().matches("[0-9.]+")) 
-							errorList.add(new Error("06",param6Name, "Please Enter Valid "  + param6Name + " Value in Row No : " + row ));
-						else if ( param5==true &&  StringUtils.isNotBlank(data.getParam5()) &&  data.getParam5().matches("[0-9.]+") ) {
-							if( Double.valueOf(data.getParam5()) >  Double.valueOf(data.getParam6()) ) 
-								errorList.add(new Error("06", param6Name,  param5Name + " Greater Than  " + param6Name + " Not Allowed in Row No : " + row  ));
-						}
-						if( data.getParam5().matches("[0-9.]+") && data.getParam6().matches("[0-9.]+")  ){
-							// Duplicate Range Checking
-								List<RangeParamsReq> filterRange = param5To6Values.stream().filter( o -> o.getParamStartValue() <= Double.valueOf(data.getParam6()) &&  Double.valueOf(data.getParam6()) <= o.getParamEndValue() ).collect(Collectors.toList()) ;
-								if(filterRange.size()>0 ) {
-									if ( param9==true && param10==false && param11==false && param12==false   ) {
-										if( StringUtils.isNotBlank(data.getParam9())) {
-											List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-											if ( filter9Discrete.size()>0 ) {
-												errorList.add(new Error("01",param6Name,param6Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-											} else {
-												discrete9Values.add( data.getParam9());	
-											}
-										}	
-									} 
-									if ( param9==true && param10==true && param11==false && param12==false   ) {
-										if( StringUtils.isNotBlank(data.getParam9()) &&  StringUtils.isNotBlank(data.getParam10())) {
-											List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-											List<String> filter10Discrete = discrete10Values.stream().filter( o -> o.equals(data.getParam10())).collect(Collectors.toList()) ;
-											
-											if ( filter9Discrete.size()>0 && filter10Discrete.size()>0 ) {
-												errorList.add(new Error("01",param6Name,param6Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-											} else {
-												discrete9Values.add( data.getParam9());	
-												discrete10Values.add( data.getParam10());	
-											}
-										}	
-									}
-									if ( param9==true && param10==true && param11==true && param12==false   ) {
-										if( StringUtils.isNotBlank(data.getParam9()) &&  StringUtils.isNotBlank(data.getParam10())  &&  StringUtils.isNotBlank(data.getParam11())) {
-											List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-											List<String> filter10Discrete = discrete10Values.stream().filter( o -> o.equals(data.getParam10())).collect(Collectors.toList()) ;
-											List<String> filter11Discrete = discrete11Values.stream().filter( o -> o.equals(data.getParam11())).collect(Collectors.toList()) ;
-											
-											if ( filter9Discrete.size()>0 && filter10Discrete.size()>0 && filter11Discrete.size()>0 ) {
-												errorList.add(new Error("01",param6Name,param6Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-											} else {
-												discrete9Values.add( data.getParam9());	
-												discrete10Values.add( data.getParam10());	
-												discrete11Values.add( data.getParam11());	
-											}
-										}	
-									}
-									if ( param9==true && param10==true && param11==true && param12==true   ) {
-										if( StringUtils.isNotBlank(data.getParam9()) &&  StringUtils.isNotBlank(data.getParam10()) &&  StringUtils.isNotBlank(data.getParam11()) &&  StringUtils.isNotBlank(data.getParam12())) {
-											List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-											List<String> filter10Discrete = discrete10Values.stream().filter( o -> o.equals(data.getParam10())).collect(Collectors.toList()) ;
-											List<String> filter11Discrete = discrete11Values.stream().filter( o -> o.equals(data.getParam11())).collect(Collectors.toList()) ;
-											List<String> filter12Discrete = discrete12Values.stream().filter( o -> o.equals(data.getParam12())).collect(Collectors.toList()) ;
-											
-											if ( filter9Discrete.size()>0 && filter10Discrete.size()>0 && filter11Discrete.size()>0 && filter12Discrete.size()>0 ) {
-												errorList.add(new Error("01",param6Name,param6Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-											} else {
-												discrete9Values.add( data.getParam9());	
-												discrete10Values.add( data.getParam10());	
-												discrete11Values.add( data.getParam11());	
-												discrete12Values.add( data.getParam12());	
-											}
-										}	
-									}
-								} else {
-									RangeParamsReq param5To6Value = new RangeParamsReq();
-									param5To6Value.setParamStartValue(Double.valueOf( data.getParam5()));
-									param5To6Value.setParamEndValue(Double.valueOf( data.getParam6()));
-									param5To6Values.add(param5To6Value);
-								}
-							}
-			
-					}
-					// Param 7 & Param 8 Validation
-					if ( param7==true  ) {
-						if( StringUtils.isBlank(data.getParam7())  ) 
-							errorList.add(new Error("07", param7Name, "Please Enter " +  param7Name + "in Row No : " + row  ));
-						else if(! data.getParam7().matches("[0-9.]+")) 
-							errorList.add(new Error("07",param7Name, "Please Enter Valid "  + param7Name + " Value in Row No : " + row ));	
-						else {
-							// Duplicate Range Checking
-							List<RangeParamsReq> filterRange = param7To8Values.stream().filter( o -> o.getParamStartValue() <= Double.valueOf(data.getParam7()) &&  Double.valueOf(data.getParam8()) <= o.getParamEndValue() ).collect(Collectors.toList()) ;
-							if(filterRange.size()>0 ) {
-								if ( param9==true && param10==false && param11==false && param12==false   ) {
-									if( StringUtils.isNotBlank(data.getParam9())) {
-										List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-										if ( filter9Discrete.size()>0 ) {
-											errorList.add(new Error("01",param7Name,param7Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-										}
-									}	
-								} 
-								if ( param9==true && param10==true && param11==false && param12==false   ) {
-									if( StringUtils.isNotBlank(data.getParam9()) &&  StringUtils.isNotBlank(data.getParam10())) {
-										List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-										List<String> filter10Discrete = discrete10Values.stream().filter( o -> o.equals(data.getParam10())).collect(Collectors.toList()) ;
-										
-										if ( filter9Discrete.size()>0 && filter10Discrete.size()>0 ) {
-											errorList.add(new Error("01",param7Name,param7Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-										} else {
-											discrete9Values.add( data.getParam9());	
-											discrete10Values.add( data.getParam10());	
-										}
-									}	
-								}
-								if ( param9==true && param10==true && param11==true && param12==false   ) {
-									if( StringUtils.isNotBlank(data.getParam9()) &&  StringUtils.isNotBlank(data.getParam10())  &&  StringUtils.isNotBlank(data.getParam11())) {
-										List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-										List<String> filter10Discrete = discrete10Values.stream().filter( o -> o.equals(data.getParam10())).collect(Collectors.toList()) ;
-										List<String> filter11Discrete = discrete11Values.stream().filter( o -> o.equals(data.getParam11())).collect(Collectors.toList()) ;
-										
-										if ( filter9Discrete.size()>0 && filter10Discrete.size()>0 && filter11Discrete.size()>0 ) {
-											errorList.add(new Error("01",param7Name,param7Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-										} else {
-											discrete9Values.add( data.getParam9());	
-											discrete10Values.add( data.getParam10());	
-											discrete11Values.add( data.getParam11());	
-										}
-									}	
-								}
-								if ( param9==true && param10==true && param11==true && param12==true   ) {
-									if( StringUtils.isNotBlank(data.getParam9()) &&  StringUtils.isNotBlank(data.getParam10()) &&  StringUtils.isNotBlank(data.getParam11()) &&  StringUtils.isNotBlank(data.getParam12())) {
-										List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-										List<String> filter10Discrete = discrete10Values.stream().filter( o -> o.equals(data.getParam10())).collect(Collectors.toList()) ;
-										List<String> filter11Discrete = discrete11Values.stream().filter( o -> o.equals(data.getParam11())).collect(Collectors.toList()) ;
-										List<String> filter12Discrete = discrete12Values.stream().filter( o -> o.equals(data.getParam12())).collect(Collectors.toList()) ;
-										
-										if ( filter9Discrete.size()>0 && filter10Discrete.size()>0 && filter11Discrete.size()>0 && filter12Discrete.size()>0 ) {
-											errorList.add(new Error("01",param7Name,param7Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-										} else {
-											discrete9Values.add( data.getParam9());	
-											discrete10Values.add( data.getParam10());	
-											discrete11Values.add( data.getParam11());	
-											discrete12Values.add( data.getParam12());	
-										}
-									}	
-								}
-							}
-						}
-					}
-					if ( param8==true  ) {
-						if( StringUtils.isBlank(data.getParam8())  ) 
-							errorList.add(new Error("08", param8Name, "Please Enter " +  param8Name + "in Row No : " + row  ));
-						else if(! data.getParam8().matches("[0-9.]+")) 
-							errorList.add(new Error("08",param8Name, "Please Enter Valid "  + param8Name + " Value in Row No : " + row ));
-						else if ( param7==true &&  StringUtils.isNotBlank(data.getParam7()) &&  data.getParam7().matches("[0-9.]+") ) {
-							if( Double.valueOf(data.getParam7()) >  Double.valueOf(data.getParam8()) ) 
-								errorList.add(new Error("08", param8Name,  param7Name + " Greater Than  " + param8Name + " Not Allowed in Row No : " + row  ));
-						}
-						if(data.getParam7().matches("[0-9.]+")  && data.getParam8().matches("[0-9.]+")  ){
-								// Duplicate Range Checking
-								List<RangeParamsReq> filterRange = param7To8Values.stream().filter( o -> o.getParamStartValue() <= Double.valueOf(data.getParam8()) &&  Double.valueOf(data.getParam8()) <= o.getParamEndValue() ).collect(Collectors.toList()) ;
-								if(filterRange.size()>0 ) {
-									if ( param9==true && param10==false && param11==false && param12==false   ) {
-										if( StringUtils.isNotBlank(data.getParam9())) {
-											List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-											if ( filter9Discrete.size()>0 ) {
-												errorList.add(new Error("01",param8Name,param8Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-											} else {
-												discrete9Values.add( data.getParam9());	
-											}
-										}	
-									} 
-									if ( param9==true && param10==true && param11==false && param12==false   ) {
-										if( StringUtils.isNotBlank(data.getParam9()) &&  StringUtils.isNotBlank(data.getParam10())) {
-											List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-											List<String> filter10Discrete = discrete10Values.stream().filter( o -> o.equals(data.getParam10())).collect(Collectors.toList()) ;
-											
-											if ( filter9Discrete.size()>0 && filter10Discrete.size()>0 ) {
-												errorList.add(new Error("01",param8Name,param8Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-											} else {
-												discrete9Values.add( data.getParam9());	
-												discrete10Values.add( data.getParam10());	
-											}
-										}	
-									}
-									if ( param9==true && param10==true && param11==true && param12==false   ) {
-										if( StringUtils.isNotBlank(data.getParam9()) &&  StringUtils.isNotBlank(data.getParam10())  &&  StringUtils.isNotBlank(data.getParam11())) {
-											List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-											List<String> filter10Discrete = discrete10Values.stream().filter( o -> o.equals(data.getParam10())).collect(Collectors.toList()) ;
-											List<String> filter11Discrete = discrete11Values.stream().filter( o -> o.equals(data.getParam11())).collect(Collectors.toList()) ;
-											
-											if ( filter9Discrete.size()>0 && filter10Discrete.size()>0 && filter11Discrete.size()>0 ) {
-												errorList.add(new Error("01",param8Name,param8Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-											} else {
-												discrete9Values.add( data.getParam9());	
-												discrete10Values.add( data.getParam10());	
-												discrete11Values.add( data.getParam11());	
-											}
-										}	
-									}
-									if ( param9==true && param10==true && param11==true && param12==true   ) {
-										if( StringUtils.isNotBlank(data.getParam9()) &&  StringUtils.isNotBlank(data.getParam10()) &&  StringUtils.isNotBlank(data.getParam11()) &&  StringUtils.isNotBlank(data.getParam12())) {
-											List<String> filter9Discrete = discrete9Values.stream().filter( o -> o.equals(data.getParam9())).collect(Collectors.toList()) ;
-											List<String> filter10Discrete = discrete10Values.stream().filter( o -> o.equals(data.getParam10())).collect(Collectors.toList()) ;
-											List<String> filter11Discrete = discrete11Values.stream().filter( o -> o.equals(data.getParam11())).collect(Collectors.toList()) ;
-											List<String> filter12Discrete = discrete12Values.stream().filter( o -> o.equals(data.getParam12())).collect(Collectors.toList()) ;
-											
-											if ( filter9Discrete.size()>0 && filter10Discrete.size()>0 && filter11Discrete.size()>0 && filter12Discrete.size()>0 ) {
-												errorList.add(new Error("01",param8Name,param8Name+ " Duplicate  Range Setup Available In Row No : " + row ));	
-											} else {
-												discrete9Values.add( data.getParam9());	
-												discrete10Values.add( data.getParam10());	
-												discrete11Values.add( data.getParam11());	
-												discrete12Values.add( data.getParam12());	
-											}
-										}	
-									}
-								} else {
-									RangeParamsReq param7To8Value = new RangeParamsReq();
-									param7To8Value.setParamStartValue(Double.valueOf( data.getParam7()));
-									param7To8Value.setParamEndValue(Double.valueOf( data.getParam8()));
-									param7To8Values.add(param7To8Value);
-								}
-							}
-					}
-				
-					// Param 9 - 12 Validation
-					if ( param9==true  ) {
-						if( StringUtils.isBlank(data.getParam9())  ) 
-							errorList.add(new Error("09", param9Name, "Please Enter " +  param9Name + "in Row No : " + row  ));
-						else if(! data.getParam9().matches("[0-9.]+")) 
-							errorList.add(new Error("09",param9Name, "Please Enter Valid "  + param9Name + " Value in Row No : " + row ));	
-					}
-					if ( param10==true  ) {
-						if( StringUtils.isBlank(data.getParam10())  ) 
-							errorList.add(new Error("10", param10Name, "Please Enter " +  param10Name + "in Row No : " + row  ));
-						else if(! data.getParam10().matches("[0-9.]+")) 
-							errorList.add(new Error("10",param10Name, "Please Enter Valid "  + param10Name + " Value in Row No : " + row ));	
-					}
-					if ( param11==true  ) {
-						if( StringUtils.isBlank(data.getParam11())  ) 
-							errorList.add(new Error("11", param11Name, "Please Enter " +  param11Name + "in Row No : " + row  ));
-						else if(! data.getParam11().matches("[0-9.]+")) 
-							errorList.add(new Error("11",param11Name, "Please Enter Valid "  + param11Name + " Value in Row No : " + row ));	
-					}
-					if ( param12==true  ) {
-						if( StringUtils.isBlank(data.getParam12())  ) 
-							errorList.add(new Error("12", param12Name, "Please Enter " +  param12Name + "in Row No : " + row  ));
-						else if(! data.getParam12().matches("[0-9.]+")) 
-							errorList.add(new Error("12",param12Name, "Please Enter Valid "  + param12Name + " Value in Row No : " + row ));	
-					}
-					
-					if( row ==1 ) {
-						if ( param9==true && param10==false && param11==false && param12==false   ) {
-							if( StringUtils.isNotBlank(data.getParam9())) {
-								
-									discrete9Values.add( data.getParam9());	
-								
-							}	
-						} 
-						if ( param9==true && param10==true && param11==false && param12==false   ) {
-							if( StringUtils.isNotBlank(data.getParam9()) &&  StringUtils.isNotBlank(data.getParam10())) {
-								
-									discrete9Values.add( data.getParam9());	
-									discrete10Values.add( data.getParam10());		
-							}	
-						}
-						if ( param9==true && param10==true && param11==true && param12==false   ) {
-							if( StringUtils.isNotBlank(data.getParam9()) &&  StringUtils.isNotBlank(data.getParam10())  &&  StringUtils.isNotBlank(data.getParam11())) {
-									discrete9Values.add( data.getParam9());	
-									discrete10Values.add( data.getParam10());	
-									discrete11Values.add( data.getParam11());			
-							}	
-						}
-						if ( param9==true && param10==true && param11==true && param12==true   ) {
-							if( StringUtils.isNotBlank(data.getParam9()) &&  StringUtils.isNotBlank(data.getParam10()) &&  StringUtils.isNotBlank(data.getParam11()) &&  StringUtils.isNotBlank(data.getParam12())) {
-									discrete9Values.add( data.getParam9());	
-									discrete10Values.add( data.getParam10());	
-									discrete11Values.add( data.getParam11());	
-									discrete12Values.add( data.getParam12());	
-								
-							}	
-						}
-					}*/
 					
 					// Other Range Validation
 					
@@ -1165,8 +531,8 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 							errorList.add(new Error("05", "Status", "Please Enter Status In Row No : " + row ));
 						} else if (data.getStatus().length() > 1) {
 							errorList.add(new Error("05", "Status", "Enter Status 1 Character Only In Row No : " + row ));
-						} else if(!("Y".equals(data.getStatus())||"N".equals(data.getStatus()))) {
-							errorList.add(new Error("05", "Status", "Enter Status Y or N Only In Row No : " + row ));
+						} else if(!("Y".equals(data.getStatus())||"N".equals(data.getStatus())||"R".equals(data.getStatus()))) {
+							errorList.add(new Error("05", "Status", "Please Enter Status  In Row No : " + row ));
 						}
 					}
 				/*	if (StringUtils.isBlank(data.getRegulatoryCode())) {
@@ -1254,80 +620,11 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 			
 			String factorTypeId ="";
 		
-			// Criteria
-			factorTypeId =req.getFactorTypeId();
-			
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<FactorRateMaster> query = cb.createQuery(FactorRateMaster.class);
-
-			// Find All
-			Root<FactorRateMaster> b = query.from(FactorRateMaster.class);
-
-			// Select
-			query.select(b);
-
-			// Effective Date Max Filter
-			Subquery<Long> amend = query.subquery(Long.class);
-			Root<FactorRateMaster> ocpm1 = amend.from(FactorRateMaster.class);
-			amend.select(cb.max(ocpm1.get("amendId")));
-			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			Predicate a3 = cb.equal(ocpm1.get("factorTypeId"), b.get("factorTypeId"));
-			Predicate a4 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-			Predicate a5 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
-			Predicate a6 = cb.equal(ocpm1.get("agencyCode"), b.get("agencyCode"));
-			Predicate a7 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
-			Predicate a8 = cb.equal(ocpm1.get("sNo"), b.get("sNo"));
-			Predicate a9 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , startDate);
-			amend.where(a1,a2,a3,a4,a5,a6,a7,a8,a9);
-	
-			Predicate n1 = cb.equal(b.get("amendId"), amend);
-			Predicate n2 = cb.equal(b.get("productId"), req.getProductId() );	
-			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId() );		
-			Predicate n4 = cb.equal(b.get("factorTypeId"), req.getFactorTypeId());
-			Predicate n5 = cb.equal(b.get("sectionId"), req.getSectionId());
-			Predicate n6 = cb.equal(b.get("coverId"), req.getCoverId());
-			
-			// Order By
-			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(b.get("effectiveDateStart")));
-			
-			if(StringUtils.isBlank(req.getAgencyCode()) && StringUtils.isBlank(req.getBranchCode()) ) {
-				Predicate n7 = cb.equal(b.get("agencyCode"), "99999");
-				Predicate n8 = cb.equal(b.get("branchCode"), "99999");
-				query.where(n1, n2, n3,n4,n5,n6,n7,n8).orderBy(orderList);
-				
-			} else {
-				Predicate n7 = cb.equal(b.get("agencyCode"), req.getAgencyCode());
-				Predicate n8 = cb.equal(b.get("branchCode"), req.getBranchCode());
-				query.where(n1, n2, n3,n4,n5,n6,n7,n8).orderBy(orderList);
-			}		
-
-			// Get Result
-			TypedQuery<FactorRateMaster> result = em.createQuery(query);
-			list = result.getResultList();
-			
-			if( list.size() > 0) {
-				// Amend ID
-				if( list.get(0).getEffectiveDateStart().before(startDate)   ) {
-					String startDatewithoutTime = sdformat.format(startDate) ;
-					String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart()) ;
-					
-					if(startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime) ) {
-						amendId = list.get(0).getAmendId() + 1 ;
-					}
-				}
-				
-				for (FactorRateMaster fac : list ) {
-					// Delete Old Records
-					repository.delete(fac);
-				}
-					
-			
-			
-			List<ListItemValue> calcTypes = listRepo.findByItemTypeAndStatus("CALCULATION_TYPE" , "Y");
-		//	cal.setTime(today);  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 50) ;
-		//	today = cal.getTime();
+			factorTypeId = req.getFactorTypeId() ;
+			entryDate = new Date();
+			createdBy = req.getCreatedBy();
+			res.setResponse("Updated Successfully");
+			res.setSuccessId(factorTypeId);
 			
 			// COver SubCoverDetails
 			List<SectionCoverMaster> coverlist = new ArrayList<SectionCoverMaster>();
@@ -1426,9 +723,67 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				factorTypes  = result2.getResultList();
 			}
 			
+			List<ListItemValue> calcTypes = listRepo.findByItemTypeAndStatus("CALCULATION_TYPE" , "Y");
+		//	cal.setTime(today);  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 50) ;
+		//	today = cal.getTime();
+			
 			for ( FactorParamsInsert data :  req.getFactorParams() ) {
-				// Save New Records
 				FactorRateMaster saveData = new FactorRateMaster();
+				
+				// FInd Old Record
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<FactorRateMaster> query = cb.createQuery(FactorRateMaster.class);
+				//Find all
+				Root<FactorRateMaster> b = query.from(FactorRateMaster.class);
+				//Select 
+				query.select(b);
+//				
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.desc(b.get("effectiveDateStart")));
+				
+				// Where
+				Predicate n2 = cb.equal(b.get("factorTypeId"), factorTypeId);
+				Predicate n5 = cb.equal(b.get("sNo"),data.getSno());
+				Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
+				Predicate n4 = cb.equal(b.get("branchCode"), req.getBranchCode());
+				
+				query.where(n2,n3,n4,n5).orderBy(orderList);
+				
+				// Get Result 
+				TypedQuery<FactorRateMaster> result = em.createQuery(query);
+				int limit = 0 , offset = 2 ;
+				result.setFirstResult(limit * offset);
+				result.setMaxResults(offset);
+				list = result.getResultList();
+				
+				if(list.size()>0) {
+					Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+				
+					if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
+						amendId = list.get(0).getAmendId() + 1 ;
+						entryDate = new Date() ;
+						createdBy = req.getCreatedBy();
+						FactorRateMaster lastRecord = list.get(0);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							repository.saveAndFlush(lastRecord);
+						
+					} else {
+						amendId = list.get(0).getAmendId() ;
+						entryDate = list.get(0).getEntryDate() ;
+						createdBy = list.get(0).getCreatedBy();
+						saveData = list.get(0) ;
+						if (list.size()>1 ) {
+							FactorRateMaster lastRecord = list.get(1);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							repository.saveAndFlush(lastRecord);
+						}
+					
+				    }
+				}
+				
+				// Save New Records
+				
 				saveData = dozerMapper.map(req, FactorRateMaster.class );
 				saveData.setFactorTypeId(Integer.valueOf(factorTypeId));
 				saveData.setEffectiveDateStart(req.getEffectiveDateStart());
@@ -1466,37 +821,66 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				saveData.setRegulatoryCode(data.getRegulatoryCode());
 				repository.saveAndFlush(saveData);
 				log.info("Saved Details is ---> " + json.toJson(saveData));
-			}
-			
-			res.setResponse("Factor Types Added Successfully ");
-			res.setSuccessId(factorTypeId );
-
-			if(list.size() > 0 ) {
-				// Update Old Record
-				for (FactorRateMaster data :  list) {
-					FactorRateMaster updateRecord = data ;
-					 updateRecord.setEffectiveDateEnd(oldEndDate);
-					 String startDatewithoutTime = sdformat.format(startDate);
-						String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
-
-						if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
-							updateRecord.setStatus("N");	
-						}
-					 repository.saveAndFlush(updateRecord);
-				}
-			}	
 				
 			}
-		}
-		
-		catch (Exception e) {
-			e.printStackTrace();
-			log.info("Exception is --->" + e.getMessage());
-			return null;
-		}
-		return res;
+			
+		} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is --->" + e.getMessage());
+		return null;
+	}
+	return res;
 	}
 	
+
+public Integer getMasterTableCount(String companyId , String branchCode) {
+	Integer data =0;
+	try {
+		List<FactorRateMaster> list = new ArrayList<FactorRateMaster>();
+		// Find Latest Record
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<FactorRateMaster> query = cb.createQuery(FactorRateMaster.class);
+	// Find all
+		Root<FactorRateMaster> b = query.from(FactorRateMaster.class);
+		//Select 
+		query.select(b);
+
+		//Effective Date Max Filter
+		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Root<FactorRateMaster> ocpm1 = effectiveDate.from(FactorRateMaster.class);
+		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		Predicate a1 = cb.equal(ocpm1.get("factorTypeId"), b.get("factorTypeId"));
+		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+		Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+		effectiveDate.where(a1,a2,a3);
+		
+		// Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.desc(b.get("factorTypeId")));
+		
+		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+		Predicate n2 = cb.equal(b.get("companyId"), companyId);
+		Predicate n3 = cb.equal(b.get("branchCode"), branchCode);
+		Predicate n4 = cb.equal(b.get("branchCode"), "99999");
+		Predicate n5 = cb.or(n3,n4);
+		query.where(n1,n2,n5).orderBy(orderList);
+		
+		
+		
+		// Get Result
+		TypedQuery<FactorRateMaster> result = em.createQuery(query);
+		int limit = 0 , offset = 1 ;
+		result.setFirstResult(limit * offset);
+		result.setMaxResults(offset);
+		list = result.getResultList();
+		data = list.size() > 0 ? list.get(0).getFactorTypeId() : 0 ;
+	}
+	catch(Exception e) {
+		e.printStackTrace();
+		log.info(e.getMessage());
+	}
+	return data;
+}
 
 	@Override
 	public List<FactorRateGetAllRes> getallFactorRates(FactorRateGetAllReq req) {

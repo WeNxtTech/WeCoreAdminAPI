@@ -41,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.gson.Gson;
 import com.maan.eway.bean.CompanyStateMaster;
 import com.maan.eway.bean.CoverMaster;
+import com.maan.eway.bean.FactorRateMaster;
 import com.maan.eway.bean.FactorTypeDetails;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.OccupationMaster;
@@ -362,62 +363,66 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 					// Criteria
 					factorTypeId =req.getFactorTypeId();
 					
-					CriteriaBuilder cb = em.getCriteriaBuilder();
-					CriteriaQuery<FactorTypeDetails> query = cb.createQuery(FactorTypeDetails.class);
-
-					// Find All
-					Root<FactorTypeDetails> b = query.from(FactorTypeDetails.class);
-
-					// Select
-					query.select(b);
-
-					// Amend Id Max Filter
-					Subquery<Long> amend = query.subquery(Long.class);
-					Root<FactorTypeDetails> ocpm1 = amend.from(FactorTypeDetails.class);
-					amend.select(cb.max(ocpm1.get("amendId")));
-					Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-					Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-					Predicate a3 = cb.equal(ocpm1.get("factorTypeId"), b.get("factorTypeId"));
-					Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("amendId") , amend);
-					amend.where(a1,a2,a3,a4);
-			
-					Predicate n1 = cb.equal(b.get("amendId"),amend);
-					Predicate n2 = cb.equal(b.get("productId"), req.getProductId() );	
-					Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId() );		
-					Predicate n4 = cb.equal(b.get("factorTypeId"), req.getFactorTypeId());
-				
-					// Order By
-					List<Order> orderList = new ArrayList<Order>();
-					orderList.add(cb.desc(b.get("effectiveDateStart")));
-					
-					query.where(n1, n2, n3,n4).orderBy(orderList);
-
-					// Get Result
-					TypedQuery<FactorTypeDetails> result = em.createQuery(query);
-					list = result.getResultList();
 			}
 			
-			if( list.size() > 0) {
-				// Amend ID
-				if( list.get(0).getEffectiveDateStart().before(startDate)   ) {
-					String startDatewithoutTime = sdformat.format(startDate) ;
-					String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart()) ;
 					
-					if(startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime) ) {
-						amendId = list.get(0).getAmendId() + 1 ;
-					}
-				}
-				
-				for (FactorTypeDetails fac : list ) {
-					// Delete Old Records
-					repository.delete(fac);
-				}
-					
-			} 
 			
 			for ( RatingFieldDetails data :  req.getRatingFieldDetails() ) {
-				// Save New Records
 				FactorTypeDetails saveData = new FactorTypeDetails();
+				
+				// FInd Old Record
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<FactorTypeDetails> query = cb.createQuery(FactorTypeDetails.class);
+				//Find all
+				Root<FactorTypeDetails> b = query.from(FactorTypeDetails.class);
+				//Select 
+				query.select(b);
+//				
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.desc(b.get("effectiveDateStart")));
+				
+				// Where
+				Predicate n1 = cb.equal(b.get("factorTypeId"), factorTypeId);
+				Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
+				Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
+				
+				query.where(n2,n3,n1).orderBy(orderList);
+				
+				// Get Result 
+				TypedQuery<FactorTypeDetails> result = em.createQuery(query);
+				int limit = 0 , offset = 2 ;
+				result.setFirstResult(limit * offset);
+				result.setMaxResults(offset);
+				list = result.getResultList();
+				
+				if(list.size()>0) {
+					Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+				
+					if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
+						amendId = list.get(0).getAmendId() + 1 ;
+						entryDate = new Date() ;
+						createdBy = req.getCreatedBy();
+						FactorTypeDetails lastRecord = list.get(0);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							repository.saveAndFlush(lastRecord);
+						
+					} else {
+						amendId = list.get(0).getAmendId() ;
+						entryDate = list.get(0).getEntryDate() ;
+						createdBy = list.get(0).getCreatedBy();
+						saveData = list.get(0) ;
+						if (list.size()>1 ) {
+							FactorTypeDetails lastRecord = list.get(1);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							repository.saveAndFlush(lastRecord);
+						}
+					
+				    }
+				}
+				
+				
+				// Save New Records
 				saveData = dozerMapper.map(req, FactorTypeDetails.class );
 				saveData.setFactorTypeId(Integer.valueOf(factorTypeId));
 				saveData.setRatingFieldId(Integer.valueOf(data.getRatingFieldId()));
@@ -430,7 +435,9 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 				saveData.setRangeYn(data.getRangeYn());
 				saveData.setColumnsId(Integer.valueOf(data.getColumnsId()));
 				saveData.setStatus(StringUtils.isBlank(data.getStatus()) ? req.getStatus()  : data.getStatus());
-				
+				saveData.setAmendId(amendId);
+				saveData.setStatus(req.getStatus().equalsIgnoreCase("P")?"P" : data.getStatus());		
+
 				if( data.getRangeYn().equalsIgnoreCase("Y") ) {
 					saveData.setRangeFromColumn(range.stream().filter( o -> o.getItemCode().equalsIgnoreCase(data.getColumnsId()) ).collect(Collectors.toList()).get(0).getParam1() );
 					saveData.setRangeToColumn(range.stream().filter( o -> o.getItemCode().equalsIgnoreCase(data.getColumnsId()) ).collect(Collectors.toList()).get(0).getParam2() );
@@ -447,20 +454,7 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 			res.setResponse("Factor Types Added Successfully ");
 			res.setSuccessId(factorTypeId );
 
-			if(list.size() > 0 ) {
-				// Update Old Record
-				for (FactorTypeDetails data :  list) {
-					 FactorTypeDetails updateRecord = data ;
-					 updateRecord.setEffectiveDateEnd(oldEndDate);
-					 String startDatewithoutTime = sdformat.format(startDate);
-					 String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
-
-					 if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
-						updateRecord.setStatus("N");	
-					 }
-					 repository.saveAndFlush(updateRecord);
-				}
-			}			
+				
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());

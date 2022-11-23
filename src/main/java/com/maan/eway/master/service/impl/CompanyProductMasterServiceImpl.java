@@ -786,9 +786,8 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			} else if (req.getEffectiveDateStart().before(today)) {
 				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date  "));
 			
-			} else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart()) || req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
-				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date End  is After Effective Date Start  "));
-			} else if (StringUtils.isBlank(req.getCompanyId())) {
+			} 
+			else if (StringUtils.isBlank(req.getCompanyId())) {
 				errorList.add(new Error("08", "InsuranceId", "Please Enter InsuranceId  "));
 			} else if (req.getCompanyId().length() > 20) {
 				errorList.add(new Error("11", "InsuranceId", "Please Enter InsuranceId within 20 Characters  "));
@@ -812,8 +811,8 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 				errorList.add(new Error("05", "Status", "Please Enter Status  "));
 			} else if (req.getStatus().length() > 1) {
 				errorList.add(new Error("05", "Status", "Enter Status 1 Character Only "));
-			}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()))) {
-				errorList.add(new Error("05", "Status", "Enter Status Y or N Only  "));
+			}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus())||"R".equals(req.getStatus()))) {
+				errorList.add(new Error("05", "Status", "Please Enter Status "));
 			}
 			
 			if (StringUtils.isBlank(req.getPaymentYn())) {

@@ -252,15 +252,7 @@ public SuccessRes insertOccupation(OccupationMasterSaveReq req) {
 			Root<OccupationMaster> b = query.from(OccupationMaster.class);
 			//Select 
 			query.select(b);
-//			//Effective Date Max Filter
-//			Subquery<Long> effectiveDate = query.subquery(Long.class);
-//			Root<OccupationMaster> ocpm1 = effectiveDate.from(OccupationMaster.class);
-//			effectiveDate.select(ocpm1.get("effectiveDateStart"));
-//			Predicate a1 = cb.equal(ocpm1.get("occupationId"), b.get("occupationId"));
-//			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"),startDate);
 //			
-//			effectiveDate.where(a1,a2);
-			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.desc(b.get("effectiveDateStart")));

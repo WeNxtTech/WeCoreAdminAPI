@@ -375,7 +375,7 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 				saveData.setCoverName(req.getCoverName());
 				res.setResponse("Saved Successfully ");
 				res.setSuccessId(coverId);
-				subcoverId = coverId ;
+				subcoverId = "0" ;
 				
 			} else {
 				// Update
@@ -454,7 +454,6 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 					
 				} else {
 					CoverMaster saveCover = new CoverMaster() ;
-					subcoverId = coverId ;
 					saveCover.setCoverId(Integer.valueOf(coverId)) ;
 					saveCover.setSubCoverId(Integer.valueOf(subcoverId)) ;
 					saveCover.setCoverName(req.getCoverName());

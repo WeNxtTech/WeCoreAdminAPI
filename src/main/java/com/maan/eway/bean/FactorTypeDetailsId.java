@@ -40,5 +40,6 @@ public class FactorTypeDetailsId implements Serializable {
     
     private Integer    amendId ;
 
-     
+    private String     branchCode ;
+
 }

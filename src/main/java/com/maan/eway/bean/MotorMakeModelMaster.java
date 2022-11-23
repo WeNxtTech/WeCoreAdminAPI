@@ -191,5 +191,8 @@ public class MotorMakeModelMaster implements Serializable {
 
 	@Column(name="ROP_BODYID")
 	private Integer ropBodyid;
+	
+    @Column(name="REGULATORY_CODE", nullable=false, length=20)
+    private String     regulatoryCode ;
 
 }

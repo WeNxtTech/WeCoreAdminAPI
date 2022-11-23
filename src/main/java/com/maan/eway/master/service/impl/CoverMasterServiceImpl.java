@@ -505,7 +505,6 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 					Integer coverageSubId = 0 ; 
 					for (OfsGridSaveReq data :  req.getGridDetails() ) {
 						CoverOfsGridMaster  ofsSave = new CoverOfsGridMaster();
-						subcoverId = coverId ;
 						coverageSubId  = coverageSubId  + 1 ;
 						ofsSave.setCreatedBy(req.getCreatedBy());
 						ofsSave.setCoverId(Integer.valueOf(coverId));

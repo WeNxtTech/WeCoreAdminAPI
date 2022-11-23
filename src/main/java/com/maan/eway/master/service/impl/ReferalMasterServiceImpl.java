@@ -9,9 +9,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -43,6 +46,7 @@ import com.maan.eway.master.res.ReferalMasterRes;
 import com.maan.eway.master.service.ReferalMasterService;
 import com.maan.eway.auth.token.passwordEnc;
 import com.maan.eway.bean.BranchMaster;
+import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.ReferalMaster;
 import com.maan.eway.error.Error;
@@ -81,31 +85,27 @@ public SuccessRes insertReferal(ReferalMasterSaveReq req) {
 	 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 	
 	try {
-		Calendar cal = new GregorianCalendar();
-		cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
-		Date startDate = cal.getTime() ;
-		Date today = new Date();
-		cal.setTime(req.getEffectiveDateStart());   cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
-		cal.set(Calendar.SECOND, today.getSeconds());
-		Date oldEndDate = cal.getTime() ;
-		cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
-		cal.set(Calendar.SECOND, today.getSeconds());
-		Date effDate = cal.getTime();
-		Date endDate = req.getEffectiveDateEnd();
-		cal.setTime(req.getEffectiveDateEnd());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 50) ;
-		endDate = cal.getTime() ;
-		
+		Integer amendId=0;
+		Date startDate = req.getEffectiveDateStart() ;
+		String end = "31/12/2050";
+		Date endDate = sdformat.parse(end);
+		long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+		Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
+		Date entryDate = null ;
+		String createdBy = "" ;
 		
 		String referalId="";
-		Integer amendId=0;
+		
 		
 		if (StringUtils.isBlank(req.getReferalId().toString())) {
 				// Save
 			   // Integer totalCount = repo.count();
-				Long totalCount=getMasterTableCount();			
-				referalId = Long.valueOf(totalCount + 1).toString();
+				Integer totalCount=getMasterTableCount();			
+				referalId = Integer.valueOf(totalCount + 1).toString();
 				saveData.setReferalId(Integer.valueOf(referalId));
 				saveData.setReferalName(req.getReferalName());
+				entryDate = new Date();
+				createdBy = req.getCreatedBy();
 				res.setResponse("Saved Successfully ");
 				res.setSuccessId(referalId);
 
@@ -123,41 +123,56 @@ public SuccessRes insertReferal(ReferalMasterSaveReq req) {
 				// Select
 				query.select(b);
 
-				// Effective Date Max Filter
-				Subquery<Long> effectiveDate = query.subquery(Long.class);
-				Root<ReferalMaster> ocpm1 = effectiveDate.from(ReferalMaster.class);
-				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-				Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
-				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , startDate);
-				effectiveDate.where(a1,a2);
+//				// Effective Date Max Filter
+//				Subquery<Long> effectiveDate = query.subquery(Long.class);
+//				Root<ReferalMaster> ocpm1 = effectiveDate.from(ReferalMaster.class);
+//				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+//				Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
+//				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , startDate);
+//				effectiveDate.where(a1,a2);
 
 				// Order By
-			//	List<Order> orderList = new ArrayList<Order>();
-			//	orderList.add(cb.asc(b.get("branchName")));
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.desc(b.get("effectiveDateStart")));
 				
 				// Where
 				Predicate n1 = cb.equal(b.get("status"), "Y");
-				Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			//	Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 				Predicate n3 =  cb.equal(b.get("referalId"), req.getReferalId() );
 
-				query.where(n1, n2, n3);//.orderBy(orderList);
+				query.where(n1, n3).orderBy(orderList);
 
 				// Get Result
 				TypedQuery<ReferalMaster> result = em.createQuery(query);
+				int limit = 0 , offset = 2 ;
+				result.setFirstResult(limit * offset);
+				result.setMaxResults(offset);
 				list = result.getResultList();
 				
-				if( list.size() > 0) {
-					repo.delete(list.get(0));
-					// Amend Id
-					if( list.get(0).getEffectiveDateStart().before(startDate)   ) {
-						String startDatewithoutTime = sdformat.format(startDate) ;
-						String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart()) ;
+				if(list.size()>0) {
+					Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+				
+					if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
+						amendId = list.get(0).getAmendId() + 1 ;
+						entryDate = new Date() ;
+						createdBy = req.getCreatedBy();
+						ReferalMaster lastRecord = list.get(0);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							repo.saveAndFlush(lastRecord);
 						
-						if(startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime) ) {
-							amendId = list.get(0).getAmendId() + 1 ;
+					} else {
+						amendId = list.get(0).getAmendId() ;
+						entryDate = list.get(0).getEntryDate() ;
+						createdBy = list.get(0).getCreatedBy();
+						saveData = list.get(0) ;
+						if (list.size()>1 ) {
+							ReferalMaster lastRecord = list.get(1);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							repo.saveAndFlush(lastRecord);
 						}
-					}
-				} 
+					
+				    }
+				}
 				res.setResponse("Updated Successfully ");
 				res.setSuccessId(referalId);
 			}
@@ -165,25 +180,15 @@ public SuccessRes insertReferal(ReferalMasterSaveReq req) {
 		    dozerMapper.map(req, saveData );
 			saveData.setReferalId(Integer.valueOf(referalId));
 			saveData.setReferalName(req.getReferalName());
-			saveData.setEffectiveDateStart(effDate);
+			saveData.setEffectiveDateStart(startDate);
 			saveData.setEffectiveDateEnd(endDate);
+			saveData.setCreatedBy(createdBy);
 			saveData.setStatus(req.getStatus());
-			saveData.setEntryDate(new Date());
+			saveData.setEntryDate(entryDate);
+			saveData.setUpdatedDate(new Date());
+			saveData.setUpdatedBy(req.getCreatedBy());
 			saveData.setAmendId(amendId);
 			repo.saveAndFlush(saveData);
-			
-			if(list.size() > 0 ) {
-				// Update Old Record
-				ReferalMaster lastRecord = list.get(0) ;
-				lastRecord.setEffectiveDateEnd(oldEndDate);
-				String startDatewithoutTime = sdformat.format(startDate);
-				String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
-
-				if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
-					lastRecord.setStatus("N");	
-				}
-				repo.saveAndFlush(lastRecord);
-			}
 			
 			log.info("Saved Details is ---> " + json.toJson(saveData));
 			
@@ -195,21 +200,21 @@ public SuccessRes insertReferal(ReferalMasterSaveReq req) {
 	return res;
 }
 //Referral Count
-public Long getMasterTableCount() {
+public Integer getMasterTableCount() {
 
-	Long data = 0L;
+	Integer data = 0;
 	try {
 
-		List<Long> list = new ArrayList<Long>();
+		List<ReferalMaster> list = new ArrayList<ReferalMaster>();
 		// Find Latest Record
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> query = cb.createQuery(Long.class);
+		CriteriaQuery<ReferalMaster> query = cb.createQuery(ReferalMaster.class);
 
 		// Find All
 		Root<ReferalMaster> b = query.from(ReferalMaster.class);
 
 		// Select
-		query.multiselect(cb.count(b));
+		query.select(b);
 
 		// Effective Date Max Filter
 		Subquery<Long> effectiveDate = query.subquery(Long.class);
@@ -219,15 +224,21 @@ public Long getMasterTableCount() {
 		
 		effectiveDate.where(a1);
 
+		// Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.desc(b.get("referalId")));
+					
+		
 		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 	
-		query.where(n1);
+		query.where(n1).orderBy(orderList);
 		// Get Result
-		TypedQuery<Long> result = em.createQuery(query);
+		TypedQuery<ReferalMaster> result = em.createQuery(query);
+		int limit = 0 , offset = 1 ;
+		result.setFirstResult(limit * offset);
+		result.setMaxResults(offset);
 		list = result.getResultList();
-
-		data = list.get(0);
-
+		data = list.size() > 0 ? list.get(0).getReferalId() : 0 ;
 	} catch (Exception e) {
 		e.printStackTrace();
 		log.info(e.getMessage());
@@ -276,11 +287,6 @@ public List<Error> validateReferalDetails(ReferalMasterSaveReq req) {
 
 		} else if (req.getEffectiveDateStart().before(today)) {
 			errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
-		} else if (req.getEffectiveDateEnd() == null ) {
-			errorList.add(new Error("04", "EffectiveDateEnd", "Please Enter Effective Date End "));
-
-		} else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart()) || req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
-			errorList.add(new Error("04", "EffectiveDateEnd", "Please Enter Effective Date End  is After Effective Date End"));
 		} 
 		//Status Validation
 		if (StringUtils.isBlank(req.getStatus())) {
@@ -339,14 +345,14 @@ try {
 	// Select
 	query.select(b);
 
-	// Effective Date Max Filter
-	Subquery<Long> effectiveDate = query.subquery(Long.class);
-	Root<ReferalMaster> ocpm1 = effectiveDate.from(ReferalMaster.class);
-	effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+	// Amend Id Max Filter
+	Subquery<Long> amendId = query.subquery(Long.class);
+	Root<ReferalMaster> ocpm1 = amendId.from(ReferalMaster.class);
+	amendId.select(cb.max(ocpm1.get("amendId")));
 	Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
-	effectiveDate.where(a1);
+	amendId.where(a1);
 
-	Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+	Predicate n1 = cb.equal(b.get("amendId"), amendId);
 	Predicate n2 = cb.equal(b.get("referalName"), referalName );	
 	query.where(n1,n2);
 	// Get Result
@@ -361,6 +367,10 @@ try {
 return list;
 }
 
+private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
+    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+}
 
 
 
@@ -376,10 +386,7 @@ public List<ReferalMasterRes> getallReferalDetails(ReferalMasterGetAllReq req) {
 		today   = cal.getTime();
 		
 		List<ReferalMaster> list = new ArrayList<ReferalMaster>();
-		//Pagination
-		int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-		int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
-
+		
 		// Find Latest Record
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ReferalMaster> query = cb.createQuery(ReferalMaster.class);
@@ -390,28 +397,27 @@ public List<ReferalMasterRes> getallReferalDetails(ReferalMasterGetAllReq req) {
 		// Select
 		query.select(b);
 
-		// Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
-		Root<ReferalMaster> ocpm1 = effectiveDate.from(ReferalMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		// Amend ID Max Filter
+		Subquery<Long> amendId = query.subquery(Long.class);
+		Root<ReferalMaster> ocpm1 = amendId.from(ReferalMaster.class);
+		amendId.select(cb.max(ocpm1.get("amendId")));
 		Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
 		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-		effectiveDate.where(a1,a2);
+		amendId.where(a1,a2);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
 		orderList.add(cb.asc(b.get("referalName")));
 		
 		// Where
-		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+		Predicate n1 = cb.equal(b.get("amendId"), amendId);
 		query.where(n1).orderBy(orderList);
 
 		// Get Result
 		TypedQuery<ReferalMaster> result = em.createQuery(query);
-		result.setFirstResult(limit * offset);
-		result.setMaxResults(offset);
 		list = result.getResultList();
-		
+		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getReferalId()))).collect(Collectors.toList());
+		list.sort(Comparator.comparing(ReferalMaster :: getReferalName ));
 		// Map
 		for (ReferalMaster data : list) {
 			ReferalMasterRes res = new ReferalMasterRes();
@@ -453,13 +459,13 @@ public ReferalMasterRes getByReferalId(ReferalMasterGetReq req) {
 		// Select
 		query.select(c );
 		
-		// Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
-		Root<ReferalMaster> ocpm1 = effectiveDate.from(ReferalMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		// Amend ID Max Filter
+		Subquery<Long> amendId = query.subquery(Long.class);
+		Root<ReferalMaster> ocpm1 = amendId.from(ReferalMaster.class);
+		amendId.select(cb.max(ocpm1.get("amendId")));
 		javax.persistence.criteria.Predicate a1 = cb.equal(c.get("referalId"),ocpm1.get("referalId") );
 		javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(c.get("effectiveDateStart"),today );
-		effectiveDate.where(a1,a2);
+		amendId.where(a1,a2);
 		
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -467,13 +473,16 @@ public ReferalMasterRes getByReferalId(ReferalMasterGetReq req) {
 		
 	    // Where	
 	
-		javax.persistence.criteria.Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate);		
+		javax.persistence.criteria.Predicate n1 = cb.equal(c.get("amendId"), amendId);		
 		javax.persistence.criteria.Predicate n2 = cb.equal(c.get("referalId"),req.getReferalId()) ;
 		query.where(n1 ,n2).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<ReferalMaster> result = em.createQuery(query);			
 		list =  result.getResultList();  
+		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getReferalId()))).collect(Collectors.toList());
+		list.sort(Comparator.comparing(ReferalMaster :: getReferalName ));
+		
 		res = dozerMapper.map(list.get(0) , ReferalMasterRes.class);
 		res.setReferalId(list.get(0).getReferalId().toString());
 		res.setEntryDate(list.get(0).getEntryDate());
@@ -560,10 +569,6 @@ public List<ReferalMasterRes> getActiveReferalDetails(ReferalMasterGetAllReq req
 		today   = cal.getTime();
 		
 		List<ReferalMaster> list = new ArrayList<ReferalMaster>();
-
-		//Pagination
-		int limit=StringUtils.isBlank(req.getLimit())?0:Integer.valueOf(req.getLimit());
-		int offset=StringUtils.isBlank(req.getOffset())?100:Integer.valueOf(req.getOffset());
 		
 		// Find Latest Record
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -575,29 +580,29 @@ public List<ReferalMasterRes> getActiveReferalDetails(ReferalMasterGetAllReq req
 		// Select
 		query.select(b);
 
-		// Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
-		Root<ReferalMaster> ocpm1 = effectiveDate.from(ReferalMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		// Amend ID Max Filter
+		Subquery<Long> amendId = query.subquery(Long.class);
+		Root<ReferalMaster> ocpm1 = amendId.from(ReferalMaster.class);
+		amendId.select(cb.max(ocpm1.get("amendId")));
 		Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
 		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
-		effectiveDate.where(a1);
+		amendId.where(a1);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
 		orderList.add(cb.asc(b.get("referalName")));
 
 		// Where
-		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+		Predicate n1 = cb.equal(b.get("amendId"), amendId);
 		Predicate n2 = cb.equal(b.get("status"), "Y");
 		query.where(n1,n2).orderBy(orderList);
 
 		// Get Result
 		TypedQuery<ReferalMaster> result = em.createQuery(query);
-		result.setFirstResult(limit * offset);
-		result.setMaxResults(offset);
 		list = result.getResultList();
-
+		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getReferalId()))).collect(Collectors.toList());
+		list.sort(Comparator.comparing(ReferalMaster :: getReferalName ));
+		
 		// Map
 		for (ReferalMaster data : list) {
 			ReferalMasterRes res = new ReferalMasterRes();
@@ -637,20 +642,20 @@ public SuccessRes changeStatusOfReferal(ReferalMasterChangeStatusReq req) {
 		// Select
 		query.select(b);
 
-		// Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
-		Root<ReferalMaster> ocpm1 = effectiveDate.from(ReferalMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		// Amend ID Max Filter
+		Subquery<Long> amendId = query.subquery(Long.class);
+		Root<ReferalMaster> ocpm1 = amendId.from(ReferalMaster.class);
+		amendId.select(cb.max(ocpm1.get("amendId")));
 		Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
 		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-		effectiveDate.where(a1,a2);
+		amendId.where(a1, a2);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
 		orderList.add(cb.desc(b.get("effectiveDateStart")));
 
 		// Where
-		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+		Predicate n1 = cb.equal(b.get("amendId"), amendId);
 		Predicate n2 = cb.equal(b.get("referalId"), req.getReferalId() );
 
 		query.where(n1,n2).orderBy(orderList);

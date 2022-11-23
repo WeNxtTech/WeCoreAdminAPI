@@ -25,16 +25,10 @@ public class ReferalMasterSaveReq implements Serializable {
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
-	
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDateEnd")
-	private Date effectiveDateEnd;
+
 
 	@JsonProperty("RegulatoryCode")
 	private String regulatoryCode;
-
-	@JsonProperty("AmendId")
-	private Integer amendId;
 
 	@JsonProperty("Remarks")
 	private String remarks;
@@ -44,7 +38,7 @@ public class ReferalMasterSaveReq implements Serializable {
 	
 	@JsonProperty("CreatedBy")
 	private String createdBy;
-
+	
 	@JsonProperty("MotorYn")
 	private String motorYn;
 	

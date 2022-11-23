@@ -433,8 +433,7 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 						// Update New Record 
 						CoverMaster saveCover = new CoverMaster() ;
 						saveCover.setCoverId(Integer.valueOf(coverId));
-						subcoverId = coverId ;
-						saveCover.setSubCoverId(0);						
+						saveCover.setSubCoverId(Integer.valueOf(subcoverId));						
 						saveCover.setCoverName(req.getCoverName());
 						saveCover.setRegulatoryCode(req.getRegulatoryCode());
 						saveCover.setCoverDesc(req.getCoverDesc());

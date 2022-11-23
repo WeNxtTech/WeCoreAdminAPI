@@ -9,9 +9,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -47,6 +50,7 @@ import com.maan.eway.master.req.CompanyBranchGetReq;
 import com.maan.eway.master.req.CompanyBranchReq;
 import com.maan.eway.master.req.RegionMasterGetReq;
 import com.maan.eway.master.res.BranchMasterRes;
+import com.maan.eway.master.res.OccupationMasterRes;
 import com.maan.eway.master.res.RegionMasterRes;
 import com.maan.eway.master.service.BranchMasterService;
 import com.maan.eway.auth.dto.LoginBranchDetailsRes;
@@ -56,6 +60,7 @@ import com.maan.eway.bean.CompanyCityMaster;
 import com.maan.eway.bean.CompanyRegionMaster;
 import com.maan.eway.bean.CompanyStateMaster;
 import com.maan.eway.bean.CountryMaster;
+import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.bean.RegionMaster;
 import com.maan.eway.bean.StateMaster;
 import com.maan.eway.error.Error;
@@ -94,31 +99,24 @@ public SuccessRes insertBranch(BranchMasterSaveReq req) {
 	DozerBeanMapper mapper = new DozerBeanMapper();
 	try {
 		Integer amendId = 0 ;
-		Calendar cal = new GregorianCalendar();
-		cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
-		Date startDate = cal.getTime() ;
-		Date today = new Date();
-		cal.setTime(req.getEffectiveDateStart());   cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
-		Date oldEndDate = cal.getTime() ;
-		cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
-		Date effDate = cal.getTime();
-		Date endDate = req.getEffectiveDateEnd();
-		String branchCode="";
-		
+		Integer branchCode;
+		Date startDate = req.getEffectiveDateStart() ;
+		String end = "31/12/2050";
+		Date endDate = sdformat.parse(end);
+		long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+		Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
+		Date entryDate = null ;
+		String createdBy = "" ;
 		if (StringUtils.isBlank(req.getBranchCode())) {
 				// Save
-			//	Long totalCount = branchRepo.count();
-				Long totalCount=getMasterTableCount();
-				if(totalCount>=9) {
-				branchCode = Long.valueOf(totalCount + 1).toString();
-				}else {
-					branchCode ="0"+ Long.valueOf(totalCount + 1);
-				}
+				Integer totalCount=getMasterTableCount(req);
+				branchCode =  totalCount+1 ;
+				entryDate = new Date();
+				createdBy = req.getCreatedBy();
+				res.setResponse("Saved Successfully");
+				res.setSuccessId(branchCode.toString());
 				saveData.setBranchCode(branchCode.toString());
 				saveData.setBranchName(req.getBranchName());
-				res.setResponse("Saved Successfully ");
-				res.setSuccessId(branchCode);
-				
 			} else {
 				// Update
 				// Get Less than Equal Today Record 
@@ -132,44 +130,54 @@ public SuccessRes insertBranch(BranchMasterSaveReq req) {
 				// Select
 				query.select(b);
 
-				// Effective Date Max Filter
-				Subquery<Long> effectiveDate = query.subquery(Long.class);
-				Root<BranchMaster> ocpm1 = effectiveDate.from(BranchMaster.class);
-				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-				Predicate a1 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
-				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , startDate);
-				effectiveDate.where(a1,a2);
-
 				// Order By
-			//	List<Order> orderList = new ArrayList<Order>();
-			//	orderList.add(cb.asc(b.get("branchName")));
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.desc(b.get("effectiveDateStart")));
 				
-				// Where
-				Predicate n1 = cb.equal(b.get("status"), "Y");
-				Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-				Predicate n3 =  cb.equal(b.get("branchCode"), req.getBranchCode() );
+				Predicate n1 = cb.equal(b.get("companyId"), req.getCompanyId());
+				Predicate n2 = cb.equal(b.get("branchCode"), req.getBranchCode());
+			
+				query.where(n1,n2).orderBy(orderList);
 
-				query.where(n1, n2, n3);//.orderBy(orderList);
-
-				// Get Result
+				// Get Result 
 				TypedQuery<BranchMaster> result = em.createQuery(query);
+				int limit = 0 , offset = 2 ;
+				result.setFirstResult(limit * offset);
+				result.setMaxResults(offset);
 				list = result.getResultList();
 				
-				if( list.size() > 0) {
-					branchRepo.delete(list.get(0));
-					amendId = list.get(0).getAmendId() + 1 ;
-				} 
-				saveData.setBranchCode(req.getBranchCode());
-				saveData.setBranchName(req.getBranchName());
-				res.setResponse("Updated Successfully ");
-				res.setSuccessId( req.getBranchCode() );
-
+				if(list.size()>0) {
+					Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+				
+					if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
+						amendId = list.get(0).getAmendId() + 1 ;
+						entryDate = new Date() ;
+						createdBy = req.getCreatedBy();
+						BranchMaster lastRecord = list.get(0);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							branchRepo.saveAndFlush(lastRecord);
+						
+					} else {
+						amendId = list.get(0).getAmendId() ;
+						entryDate = list.get(0).getEntryDate() ;
+						createdBy = list.get(0).getCreatedBy();
+						saveData = list.get(0) ;
+						if (list.size()>1 ) {
+							BranchMaster lastRecord = list.get(1);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							branchRepo.saveAndFlush(lastRecord);
+						}
+					
+				    }
+				}
+				res.setResponse("Updated Successfully");
+				res.setSuccessId(req.getBranchCode().toString());
 			}
-		
+				
 			mapper.map(req, saveData);
 			saveData.setRegionCode(req.getRegionCode());
 			saveData.setCompanyId(req.getCompanyId());
-			saveData.setEffectiveDateStart(effDate);
+			saveData.setEffectiveDateStart(req.getEffectiveDateStart());
 			saveData.setEffectiveDateEnd(endDate);
 			saveData.setStatus(req.getStatus());
 			
@@ -181,6 +189,9 @@ public SuccessRes insertBranch(BranchMasterSaveReq req) {
 			saveData.setCityName(cityName);
 			saveData.setEntryDate(new Date());
 			saveData.setAmendId(amendId);
+			saveData.setUpdatedDate(new Date());
+			saveData.setUpdatedBy(req.getCreatedBy());
+
 			branchRepo.saveAndFlush(saveData);
 			
 			if(list.size() > 0 ) {
@@ -387,19 +398,13 @@ public List<Error> validateBranchDetails(BranchMasterSaveReq req) {
 
 		} else if (req.getEffectiveDateStart().before(today)) {
 			errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
-		} else if (req.getEffectiveDateEnd() == null ) {
-			errorList.add(new Error("04", "EffectiveDateEnd", "Please Enter Effective Date End "));
-
-		} else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart()) || req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
-			errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date End  is After Effective Date Start"));
 		} 
-
 		if (StringUtils.isBlank(req.getStatus())) {
 			errorList.add(new Error("05", "Status", "Please Enter Status"));
 		} else if (req.getStatus().length() > 1) {
 			errorList.add(new Error("05", "Status", "Enter Status in 1 Character Only"));
-		}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()))) {
-			errorList.add(new Error("05", "Status", "Enter Status Y or N Only"));
+		}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus())||"R".equals(req.getStatus()))) {
+			errorList.add(new Error("05", "Status", "Please Enter Status"));
 		}
 		if (StringUtils.isBlank(req.getCompanyId()) || req.getCompanyId() == null) {
 			errorList.add(new Error("06", "CompanyId", "Please Select Company Id  "));
@@ -507,62 +512,12 @@ public List<BranchMaster> getCoreAppCodeExistDetails(String companyId, String br
 }
 
 
-public Long getMasterTableCount() {
+public Integer getMasterTableCount(BranchMasterSaveReq req) {
 
-	Long data = 0L;
+	Integer data = 0;
 	try {
 
-		List<Long> list = new ArrayList<Long>();
-		// Find Latest Record
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> query = cb.createQuery(Long.class);
-
-		// Find All
-		Root<BranchMaster> b = query.from(BranchMaster.class);
-
-		// Select
-		query.multiselect(cb.count(b));
-
-		// Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
-		Root<BranchMaster> ocpm1 = effectiveDate.from(BranchMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-		Predicate a1 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
-		effectiveDate.where(a1);
-
-		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-		query.where(n1);
-		// Get Result
-		TypedQuery<Long> result = em.createQuery(query);
-		list = result.getResultList();
-
-		data = list.get(0);
-
-	} catch (Exception e) {
-		e.printStackTrace();
-		log.info(e.getMessage());
-
-	}
-	return data;
-}
-
-///*********************************************************************GET ALL******************************************************\\
-@Override
-public List<BranchMasterRes> getallBranchDetails(BranchMasterGetAllReq req) {
-	List<BranchMasterRes> resList = new ArrayList<BranchMasterRes>();
-	DozerBeanMapper dozerMapper = new DozerBeanMapper(); 
-	try {
-		Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
-		Calendar cal = new GregorianCalendar(); 
-		cal.setTime(today);
-		cal.set(Calendar.HOUR_OF_DAY, 23);
-		cal.set(Calendar.MINUTE, 1);
-		today   = cal.getTime();
-		List<BranchMaster> branchList = new ArrayList<BranchMaster>();
-		
-		//Pagination
-		int limit=StringUtils.isBlank(req.getLimit())?0:Integer.valueOf(req.getLimit());
-		int offset=StringUtils.isBlank(req.getOffset())?0:Integer.valueOf(req.getOffset());
+		List<BranchMaster> list = new ArrayList<BranchMaster>();
 		// Find Latest Record
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<BranchMaster> query = cb.createQuery(BranchMaster.class);
@@ -578,31 +533,82 @@ public List<BranchMasterRes> getallBranchDetails(BranchMasterGetAllReq req) {
 		Root<BranchMaster> ocpm1 = effectiveDate.from(BranchMaster.class);
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+		effectiveDate.where(a1);
+
+		
+		// Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.desc(b.get("branchCode")));
+		
+		
+		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
+		Predicate n4 = cb.equal(b.get("branchCode"), "99999");
+		Predicate n5 = cb.or(n3,n4);
+		query.where(n1,n3,n5).orderBy(orderList);
+		
+		// Get Result
+		TypedQuery<BranchMaster> result = em.createQuery(query);
+		int limit = 0 , offset = 1 ;
+		result.setFirstResult(limit * offset);
+		result.setMaxResults(offset);
+		list = result.getResultList();
+		data = list.size() > 0 ?Integer.valueOf(list.get(0).getBranchCode()) : 0 ;
+		}
+			catch(Exception e) {
+				e.printStackTrace();
+				log.info(e.getMessage());
+			}
+			return data;
+		}
+
+
+///*********************************************************************GET ALL******************************************************\\
+@Override
+public List<BranchMasterRes> getallBranchDetails(BranchMasterGetAllReq req) {
+	List<BranchMasterRes> resList = new ArrayList<BranchMasterRes>();
+	DozerBeanMapper dozerMapper = new DozerBeanMapper(); 
+	try {
+		List<BranchMaster> list = new ArrayList<BranchMaster>();
+		// Find Latest Record
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<BranchMaster> query = cb.createQuery(BranchMaster.class);
+
+		// Find All
+		Root<BranchMaster> b = query.from(BranchMaster.class);
+
+		// Select
+		query.select(b);
+
+		// Amend ID Max Filter
+		Subquery<Long> amendId = query.subquery(Long.class);
+		Root<BranchMaster> ocpm1 = amendId.from(BranchMaster.class);
+		amendId.select(cb.max(ocpm1.get("amendId")));
+		Predicate a1 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-		Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-		effectiveDate.where(a1,a2,a4);
+		amendId.where(a1,a2);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
 		orderList.add(cb.asc(b.get("branchName")));
 		
 		// Where
-		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-		Predicate n2 = cb.equal(b.get("companyId"),req.getInsuranceId());
+		Predicate n1 = cb.equal(b.get("amendId"),amendId);
+		Predicate n2 = cb.equal(b.get("companyId"),req.getInsuranceId());		
 		query.where(n1,n2).orderBy(orderList);
 
 		// Get Result
 		TypedQuery<BranchMaster> result = em.createQuery(query);
-		result.setFirstResult(limit * offset);
-		result.setMaxResults(offset);
-		branchList = result.getResultList();
-		
+		list = result.getResultList();
+		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getBranchCode()))).collect(Collectors.toList());
+		list.sort(Comparator.comparing(BranchMaster :: getBranchName ));
 		// Map
-		for (BranchMaster data : branchList) {
+		for (BranchMaster data : list) {
 			BranchMasterRes res = new BranchMasterRes();
 
 			res = dozerMapper.map(data, BranchMasterRes.class);
-			
+			res.setCoreAppCode(data.getCoreAppCode());
+
 			resList.add(res);
 		}
 
@@ -615,20 +621,29 @@ public List<BranchMasterRes> getallBranchDetails(BranchMasterGetAllReq req) {
 	return resList;
 }
 
+
+private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
+    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+}	
+		
+		
+
+
 ///*********************************************************************GET BY ID******************************************************\\
 @Override
 public BranchMasterRes getByBranchCode(BranchMasterGetReq req) {
 	BranchMasterRes res = new BranchMasterRes();
-	ModelMapper mapper = new ModelMapper();
+	DozerBeanMapper mapper = new DozerBeanMapper();
 	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
 	try {
-		Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
-		Calendar cal = new GregorianCalendar(); 
+		Date today = new Date();
+		Calendar cal = new GregorianCalendar();
 		cal.setTime(today);
 		cal.set(Calendar.HOUR_OF_DAY, 23);
 		cal.set(Calendar.MINUTE, 1);
-		today   = cal.getTime();
+		today = cal.getTime();
 		// Criteria
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<BranchMaster> query = cb.createQuery(BranchMaster.class);
@@ -640,31 +655,31 @@ public BranchMasterRes getByBranchCode(BranchMasterGetReq req) {
 		// Select
 		query.select(c );
 		
-		// Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
-		Root<BranchMaster> ocpm1 = effectiveDate.from(BranchMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-		javax.persistence.criteria.Predicate a1 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode") );
+		// amendId Max Filter
+		Subquery<Long> amendId = query.subquery(Long.class);
+		Root<BranchMaster> ocpm1 = amendId.from(BranchMaster.class);
+		amendId.select(cb.max(ocpm1.get("amendId")));
+		Predicate a1 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode") );
 		Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
-		Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 		
-		effectiveDate.where(a1,a2,a4);
+		amendId.where(a1,a2);
 		
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(c.get("entryDate")));
+		orderList.add(cb.asc(c.get("branchCode")));
 		
-	    // Where	
-	
-		javax.persistence.criteria.Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate);		
-		javax.persistence.criteria.Predicate n2 = cb.equal(c.get("branchCode"),req.getBranchCode()) ;
-
-
-		query.where(n1 ,n2).orderBy(orderList);
+		// Where
+		Predicate n1 = cb.equal(c.get("amendId"), amendId);
+		Predicate n3 = cb.equal(c.get("branchCode"), req.getBranchCode());
+		Predicate n6 = cb.equal(c.get("branchCode"), "99999");
+		Predicate n7 = cb.or(n3,n6);
+		query.where(n1,n7).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<BranchMaster> result = em.createQuery(query);			
 		list =  result.getResultList();  
+		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getBranchCode()))).collect(Collectors.toList());
+		list.sort(Comparator.comparing(BranchMaster :: getBranchName ));
 		res = mapper.map(list.get(0) , BranchMasterRes.class);
 		res.setEntryDate(list.get(0).getEntryDate());
 		res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
@@ -757,21 +772,11 @@ public List<DropDownRes> getBranchMasterDropdown(CompanyBranchGetReq req) {
 @Override
 public List<BranchMasterRes> getActiveBranchDetails(BranchMasterGetAllReq req) {
 	List<BranchMasterRes> resList = new ArrayList<BranchMasterRes>();
-	ModelMapper mapper = new ModelMapper();
+	DozerBeanMapper mapper = new DozerBeanMapper();
 	try {
 		 
-			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
-			Calendar cal = new GregorianCalendar(); 
-			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 1);
-			today   = cal.getTime();
-				
-		List<BranchMaster> branchList = new ArrayList<BranchMaster>();
-
-		//Pagination
-		int limit = StringUtils.isBlank(req.getLimit())?0:Integer.valueOf(req.getLimit());
-		int offset = StringUtils.isBlank(req.getOffset())?100:Integer.valueOf(req.getOffset());
+			
+		List<BranchMaster> list = new ArrayList<BranchMaster>();
 		
 		// Find Latest Record
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -783,37 +788,36 @@ public List<BranchMasterRes> getActiveBranchDetails(BranchMasterGetAllReq req) {
 		// Select
 		query.select(b);
 
-		// Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
-		Root<BranchMaster> ocpm1 = effectiveDate.from(BranchMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		// AmendId Max Filter
+		Subquery<Long> amendId = query.subquery(Long.class);
+		Root<BranchMaster> ocpm1 = amendId.from(BranchMaster.class);
+		amendId.select(cb.max(ocpm1.get("amendId")));
 		Predicate a1 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
-		Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 		
-		effectiveDate.where(a1,a4);
+		amendId.where(a1);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(b.get("branchName")));
+		orderList.add(cb.asc(b.get("branchCode")));
 
 		// Where
-		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+		Predicate n1 = cb.equal(b.get("amendId"),amendId);
 		Predicate n2 = cb.equal(b.get("status"), "Y");
-
+	
 		query.where(n1, n2).orderBy(orderList);
 
 		// Get Result
 		TypedQuery<BranchMaster> result = em.createQuery(query);
-		result.setFirstResult(limit * offset);
-		result.setMaxResults(offset);
-		branchList = result.getResultList();
-
+		list = result.getResultList();
+		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getBranchCode()))).collect(Collectors.toList());
+		list.sort(Comparator.comparing(BranchMaster :: getBranchName ));
 		// Map
-		for (BranchMaster data : branchList) {
+		for (BranchMaster data : list) {
 			BranchMasterRes res = new BranchMasterRes();
 
 			res = mapper.map(data, BranchMasterRes.class);
-			mapper.getConfiguration().setAmbiguityIgnored(true);
+			res.setCoreAppCode(data.getCoreAppCode());
+
 			resList.add(res);
 		}
 
@@ -956,15 +960,9 @@ public List<DropDownRes> getCompanyBranchMasterDropdown(CompanyBranchReq req) {
 @Override
 public SuccessRes changeStatusOfBranch(BranchChangeStatusReq req) {
 	SuccessRes res = new SuccessRes();
+	DozerBeanMapper dozerMapper = new DozerBeanMapper();
+
 	try {
-		Date today  = new Date();
-		Calendar cal = new GregorianCalendar(); 
-		
-		BranchMaster updateRecord  = new BranchMaster();
-		cal.setTime(today);
-		cal.set(Calendar.HOUR_OF_DAY, 23);
-		cal.set(Calendar.MINUTE, 1);
-		today   = cal.getTime();
 		
 		List<BranchMaster> list = new ArrayList<BranchMaster>();
 		// Find Latest Record
@@ -977,66 +975,48 @@ public SuccessRes changeStatusOfBranch(BranchChangeStatusReq req) {
 		// Select
 		query.select(b);
 
-		// Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
-		Root<BranchMaster> ocpm1 = effectiveDate.from(BranchMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		// AmendId Max Filter
+		Subquery<Long> amendId = query.subquery(Long.class);
+		Root<BranchMaster> ocpm1 = amendId.from(BranchMaster.class);
+		amendId.select(cb.max(ocpm1.get("amendId")));
 		Predicate a1 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
-		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-		effectiveDate.where(a1,a2);
+		amendId.where(a1);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.desc(b.get("effectiveDateStart")));
+		orderList.add(cb.desc(b.get("branchCode")));
 
 		// Where
-		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+		Predicate n1 = cb.equal(b.get("amendId"),amendId);
 		Predicate n2 = cb.equal(b.get("branchCode"), req.getBranchCode() );
 		Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
 		
 		query.where(n1,n2,n3).orderBy(orderList);
 
-		// Get Result
+		// Get Result 
 		TypedQuery<BranchMaster> result = em.createQuery(query);
 		list = result.getResultList();
-		updateRecord = list.get(0) ;
-			
-		if (req.getStatus().equalsIgnoreCase("N") )	{
-				// Delete Old Records
-				cal.setTime(today);
-				cal.set(Calendar.HOUR_OF_DAY, 23);
-				cal.set(Calendar.MINUTE, 30);
-				today   = cal.getTime();
-				
-				// create update
-				CriteriaDelete<BranchMaster> delete = cb.createCriteriaDelete(BranchMaster.class);
-				Root<BranchMaster> pm = delete.from(BranchMaster.class);
-				
-				 // Where	
-				javax.persistence.criteria.Predicate n4 = cb.equal(pm.get("branchCode"), req.getBranchCode());
-				javax.persistence.criteria.Predicate n5 = cb.greaterThanOrEqualTo(pm.get("effectiveDateStart"), today);
-				javax.persistence.criteria.Predicate n6 = cb.equal(pm.get("companyId"), req.getCompanyId());
-				
-				delete.where(n4,n5,n6);	
-				em.createQuery(delete).executeUpdate();
-				// Insert Updated Record
-				updateRecord.setStatus(req.getStatus());
-				branchRepo.save(updateRecord);
-			
-		} else if (req.getStatus().equalsIgnoreCase("Y") ) {
-			// Insert Updated Record
+		BranchMaster updateRecord = list.get(0);
+		if(  req.getBranchCode().equalsIgnoreCase(updateRecord.getBranchCode())) {
 			updateRecord.setStatus(req.getStatus());
 			branchRepo.save(updateRecord);
+		} else {
+			BranchMaster saveNew = new BranchMaster();
+			dozerMapper.map(updateRecord,saveNew);
+			saveNew.setBranchCode(req.getBranchCode());
+			saveNew.setStatus(req.getStatus());
+			branchRepo.save(saveNew);
 		}
-		// perform update
-		
+	
+		// Perform Update
 		res.setResponse("Status Changed");
 		res.setSuccessId(req.getBranchCode());
-	} catch(Exception e ) {
-		e.printStackTrace();
-		log.info("Exception is ---> " + e.getMessage());
-		return null;
 	}
+	catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is --> " + e.getMessage());
+		return null;
+		}
 	return res;
 }
 

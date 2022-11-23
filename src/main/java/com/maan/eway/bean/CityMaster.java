@@ -66,7 +66,7 @@ private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name="COUNTRY_ID", nullable=false)
-    private Integer    countryId ;
+    private String    countryId ;
 
     @Id
     @Column(name="AMEND_ID", nullable=false)

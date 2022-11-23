@@ -57,16 +57,6 @@ private static final long serialVersionUID = 1L;
     private Integer    cityId ;
 
     @Id
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EFFECTIVE_DATE_END", nullable=false)
-    private Date       effectiveDateEnd ;
-
-    @Id
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EFFECTIVE_DATE_START", nullable=false)
-    private Date       effectiveDateStart ;
-
-    @Id
     @Column(name="STATE_ID", nullable=false, length=20)
     private String     stateId ;
 
@@ -82,9 +72,20 @@ private static final long serialVersionUID = 1L;
     @Column(name="COMPANY_ID", nullable=false, length=20)
     private String     companyId ;
 
-    //--- ENTITY DATA FIELDS 
+    @Id
     @Column(name="AMEND_ID", nullable=false)
     private Integer    amendId ;
+
+    //--- ENTITY DATA FIELDS 
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EFFECTIVE_DATE_END", nullable=false)
+    private Date       effectiveDateEnd ;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EFFECTIVE_DATE_START", nullable=false)
+    private Date       effectiveDateStart ;
+
 
     @Column(name="CITY_NAME", length=100)
     private String     cityName ;
@@ -108,9 +109,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="REGULATORY_CODE", nullable=false, length=20)
     private String     regulatoryCode ;
 
+    @Temporal(TemporalType.DATE)
+    @Column(name="UPDATED_DATE")
+    private Date      updatedDate;
 
-    //--- ENTITY LINKS ( RELATIONSHIP )
-
+    @Column(name="UPDATED_BY", length=100)
+    private String     updatedBy ;
 
 }
 

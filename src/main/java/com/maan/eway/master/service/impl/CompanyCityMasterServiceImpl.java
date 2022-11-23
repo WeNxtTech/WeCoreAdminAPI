@@ -9,9 +9,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -121,14 +124,7 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 			} else if (req.getEffectiveDateStart().before(today)) {
 				errorList
 						.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
-			} else if (req.getEffectiveDateEnd() == null) {
-				errorList.add(new Error("04", "EffectiveDateEnd", "Please Enter Effective Date End "));
-
-			} else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart())
-					|| req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
-				errorList.add(new Error("04", "EffectiveDateStart",
-						"Please Enter Effective Date End  is After Effective Date Start"));
-			} else if (StringUtils.isBlank(req.getCountryId()) || req.getCountryId() == null) {
+			}  else if (StringUtils.isBlank(req.getCountryId()) || req.getCountryId() == null) {
 				errorList.add(new Error("03", "CountryId", "Please Select Country Id "));
 			} else if (StringUtils.isBlank(req.getStateId()) || req.getStateId() == null) {
 				errorList.add(new Error("06", "StateId", "Please Select State Id "));
@@ -153,8 +149,8 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 				errorList.add(new Error("05", "Status", "Please Enter Status"));
 			} else if (req.getStatus().length() > 1) {
 				errorList.add(new Error("05", "Status", "Status 1 Character Only"));
-			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()))) {
-				errorList.add(new Error("05", "Status", "Enter Status Y or N Only"));
+			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()) || "R".equals(req.getStatus()))) {
+				errorList.add(new Error("05", "Status", "Please Enter Status"));
 			}
 
 			if (StringUtils.isBlank(req.getCreatedBy())) {
@@ -242,34 +238,17 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 
 		try {
-			Integer amendId = 0;
-			Calendar cal = new GregorianCalendar();
-			cal.setTime(req.getEffectiveDateStart());
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 59);
-			Date startDate = cal.getTime();
-			Date today = new Date();
-			cal.setTime(req.getEffectiveDateStart());
-			cal.set(Calendar.HOUR_OF_DAY, today.getHours());
-			cal.set(Calendar.MINUTE, today.getMinutes());
-			Date oldEndDate = cal.getTime();
-			cal.setTime(req.getEffectiveDateStart());
-			cal.set(Calendar.HOUR_OF_DAY, today.getHours());
-			cal.set(Calendar.MINUTE, today.getMinutes());
-			Date effDate = cal.getTime();
-			Date endDate = req.getEffectiveDateEnd();
-
+			Date startDate = req.getEffectiveDateStart() ;
+			String end = "31/12/2050";
+			Date endDate = sdformat.parse(end);
+			long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
+			Date entryDate = null ;
+			String createdBy = "" ;
+			Integer amendId=0;
 			String cityId = "";
 
-			if (StringUtils.isBlank(req.getCityId().toString())) {
-				// Save
-				// Long totalCount = repo.count();
-				Long totalCount = getMasterTableCount();
-				cityId = Long.valueOf(totalCount + 1).toString();
-				res.setResponse("Saved Successfully ");
-				res.setSuccessId(cityId);
-
-			} else {
+			
 				// Update
 				// Get Less than Equal Today Record
 				// Criteria
@@ -283,76 +262,67 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 				// Select
 				query.select(b);
 
-				// Effective Date Max Filter
-				Subquery<Long> effectiveDate = query.subquery(Long.class);
-				Root<CompanyCityMaster> ocpm1 = effectiveDate.from(CompanyCityMaster.class);
-				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-				Predicate a1 = cb.equal(ocpm1.get("cityId"), b.get("cityId"));
-				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
-				Predicate a3 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
-				Predicate a4 = cb.equal(ocpm1.get("regionId"), b.get("regionId"));
-				Predicate a5 = cb.equal(ocpm1.get("stateId"), b.get("stateId"));
-				Predicate a6 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-
-				effectiveDate.where(a1, a2, a3, a4, a5, a6);
-
 				// Order By
-				// List<Order> orderList = new ArrayList<Order>();
-				// orderList.add(cb.asc(b.get("branchName")));
-
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.asc(b.get("effectiveDateStart")));
+				
 				// Where
 				Predicate n1 = cb.equal(b.get("status"), "Y");
-				Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			//	Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 				Predicate n3 = cb.equal(b.get("cityId"), req.getCityId());
 				Predicate n4 = cb.equal(b.get("countryId"), req.getCountryId());
 				Predicate n6 = cb.equal(b.get("stateId"), req.getStateId());
 				Predicate n7 = cb.equal(b.get("companyId"), req.getCompanyId());
 
-				query.where(n1, n2, n3, n4, n6, n7);// .orderBy(orderList);
+				query.where(n1, n3, n4, n6, n7);// .orderBy(orderList);
 
 				// Get Result
 				TypedQuery<CompanyCityMaster> result = em.createQuery(query);
+				int limit = 0 , offset = 2 ;
+				result.setFirstResult(limit * offset);
+				result.setMaxResults(offset);
 				list = result.getResultList();
-
+				
 				if (list.size() > 0) {
-					repo.delete(list.get(0));
-					// Amend ID
-					if (list.get(0).getEffectiveDateStart().before(startDate)) {
-						String startDatewithoutTime = sdformat.format(startDate);
-						String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
-
-						if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
-							amendId = list.get(0).getAmendId() + 1;
+					Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+					
+					if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
+						amendId = list.get(0).getAmendId() + 1 ;
+						entryDate = new Date() ;
+						createdBy = req.getCreatedBy();
+						CompanyCityMaster lastRecord = list.get(0);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							repo.saveAndFlush(lastRecord);
+						
+					} else {
+						amendId = list.get(0).getAmendId() ;
+						entryDate = list.get(0).getEntryDate() ;
+						createdBy = list.get(0).getCreatedBy();
+						saveData = list.get(0) ;
+						if (list.size()>1 ) {
+							CompanyCityMaster lastRecord = list.get(1);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							repo.saveAndFlush(lastRecord);
 						}
-					}
+					
+				    }
 				}
 				res.setResponse("Updated Successfully ");
-				res.setSuccessId(cityId);
-
-			}
+				res.setSuccessId(req.getCityId());
 
 			dozerMapper.map(req, saveData);
 			saveData.setCityId(Integer.valueOf(cityId));
 			saveData.setCityName(req.getCityName());
-			saveData.setEffectiveDateStart(effDate);
+			saveData.setEffectiveDateStart(req.getEffectiveDateStart());
 			saveData.setEffectiveDateEnd(endDate);
 			saveData.setStatus(req.getStatus());
 			saveData.setEntryDate(new Date());
 			saveData.setAmendId(amendId);
+			saveData.setStatus(req.getStatus());
+			saveData.setUpdatedBy(req.getCreatedBy());
+			saveData.setUpdatedDate(new Date());
+			saveData.setRegionId(req.getRegionId());	
 			repo.saveAndFlush(saveData);
-
-			if (list.size() > 0) {
-				// Update Old Record
-				CompanyCityMaster lastRecord = list.get(0);
-				lastRecord.setEffectiveDateEnd(oldEndDate);
-				String startDatewithoutTime = sdformat.format(startDate);
-				String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
-
-				if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
-					lastRecord.setStatus("N");	
-				}
-				repo.saveAndFlush(lastRecord);
-			}
 
 			log.info("Saved Details is ---> " + json.toJson(saveData));
 
@@ -411,19 +381,9 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 		List<CompanyCityMasterRes> resList = new ArrayList<CompanyCityMasterRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
-			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
-			Calendar cal = new GregorianCalendar();
-
-			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 1);
-			today = cal.getTime();
-
+			
 			List<CompanyCityMaster> list = new ArrayList<CompanyCityMaster>();
-			// Pagination
-			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
-
+			
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<CompanyCityMaster> query = cb.createQuery(CompanyCityMaster.class);
@@ -434,37 +394,38 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 			// Select
 			query.select(b);
 
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<CompanyCityMaster> ocpm1 = effectiveDate.from(CompanyCityMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			// amendId Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<CompanyCityMaster> ocpm1 = amendId.from(CompanyCityMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("cityId"), b.get("cityId"));
 			Predicate a2 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
 			Predicate a3 = cb.equal(ocpm1.get("regionId"), b.get("regionId"));
 			Predicate a4 = cb.equal(ocpm1.get("stateId"), b.get("stateId"));
-			Predicate a5 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			Predicate a6 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a5 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 
-			effectiveDate.where(a1, a2, a3, a4, a5, a6);
+			amendId.where(a1, a2, a3, a4, a5);
 
+			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("cityName")));
 
 			// Where
-			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			Predicate n2 = cb.equal(b.get("countryId"), req.getCountryId());
-			Predicate n4 = cb.equal(b.get("stateId"), req.getStateId());
-			Predicate n5 = cb.equal(b.get("companyId"), req.getCompanyId());
+		Predicate n1 = cb.equal(b.get("amendId"), amendId);
+		//Predicate n2 = cb.equal(b.get("status"), "Y");
+		Predicate n3 = cb.equal(b.get("countryId"), req.getCountryId());
+		Predicate n5 = cb.equal(b.get("stateId"), req.getStateId());
+		Predicate n6 = cb.equal(b.get("companyId"), req.getCompanyId());
 
-			query.where(n1, n2, n4, n5).orderBy(orderList);
+			query.where(n1, n3, n5, n6).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CompanyCityMaster> result = em.createQuery(query);
-			result.setFirstResult(limit * offset);
-			result.setMaxResults(offset);
 			list = result.getResultList();
-
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCityId()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(CompanyCityMaster :: getCityName ));
+			
 			// Map
 			for (CompanyCityMaster data : list) {
 				CompanyCityMasterRes res = new CompanyCityMasterRes();
@@ -482,25 +443,19 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 		}
 		return resList;
 	}
-
+	private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
+	    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+	}
 	@Override
 	public List<CompanyCityMasterRes> getActiveCityDetails(CompanyCityMasterGetAllReq req) {
 		List<CompanyCityMasterRes> resList = new ArrayList<CompanyCityMasterRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
-			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
-			Calendar cal = new GregorianCalendar();
-			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 1);
-			today = cal.getTime();
-
+			
 			List<CompanyCityMaster> list = new ArrayList<CompanyCityMaster>();
 
-			// Pagination
-			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 10 : Integer.valueOf(req.getOffset());
-
+			
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<CompanyCityMaster> query = cb.createQuery(CompanyCityMaster.class);
@@ -511,24 +466,24 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 			// Select
 			query.select(b);
 
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<CompanyCityMaster> ocpm1 = effectiveDate.from(CompanyCityMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			// amendId Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<CompanyCityMaster> ocpm1 = amendId.from(CompanyCityMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("cityId"), b.get("cityId"));
 			Predicate a2 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
 			Predicate a3 = cb.equal(ocpm1.get("regionId"), b.get("regionId"));
 			Predicate a4 = cb.equal(ocpm1.get("stateId"), b.get("stateId"));
 			Predicate a5 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 
-			effectiveDate.where(a1, a2, a3, a4, a5);
+			amendId.where(a1, a2, a3, a4, a5);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("cityName")));
 
 			// Where
-			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("status"), "Y");
 			Predicate n3 = cb.equal(b.get("countryId"), req.getCountryId());
 			Predicate n5 = cb.equal(b.get("stateId"), req.getStateId());
@@ -538,10 +493,10 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 
 			// Get Result
 			TypedQuery<CompanyCityMaster> result = em.createQuery(query);
-			result.setFirstResult(limit * offset);
-			result.setMaxResults(offset);
 			list = result.getResultList();
-
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCityName()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(CompanyCityMaster :: getCityName ));
+		
 			// Map
 			for (CompanyCityMaster data : list) {
 				CompanyCityMasterRes res = new CompanyCityMasterRes();
@@ -567,12 +522,13 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
 		try {
-			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
+			Date today = new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
 			cal.set(Calendar.MINUTE, 1);
 			today = cal.getTime();
+			
 
 			// Criteria
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -585,36 +541,40 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 			// Select
 			query.select(c);
 
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<CompanyCityMaster> ocpm1 = effectiveDate.from(CompanyCityMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			// amendId Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<CompanyCityMaster> ocpm1 = amendId.from(CompanyCityMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
 			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("cityId"), ocpm1.get("cityId"));
 			Predicate a2 = cb.equal(c.get("countryId"), ocpm1.get("countryId"));
 			Predicate a3 = cb.equal(c.get("regionId"), ocpm1.get("regionId"));
 			Predicate a4 = cb.equal(c.get("stateId"), ocpm1.get("stateId"));
-			Predicate a5 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			//Predicate a5 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a6 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
 
-			effectiveDate.where(a1, a2, a3, a4, a5, a6);
+			amendId.where(a1, a2, a3, a4, a6);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(c.get("effectiveDateStart")));
+			orderList.add(cb.asc(c.get("cityName")));
 
 			// Where
 
-			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("amendId"), amendId);
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("cityId"), req.getCityId());
 			Predicate n3 = cb.equal(c.get("countryId"), req.getCountryId());
 			Predicate n5 = cb.equal(c.get("stateId"), req.getStateId());
 			Predicate n6 = cb.equal(c.get("companyId"), req.getCompanyId());
+			Predicate n7 = cb.equal(c.get("status"), "Y");
 
-			query.where(n1, n2, n3, n5, n6).orderBy(orderList);
+			query.where(n1, n2, n3, n5, n6,n7).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CompanyCityMaster> result = em.createQuery(query);
 			list = result.getResultList();
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCityId()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(CompanyCityMaster :: getCityName ));
+			
 			res = mapper.map(list.get(0), CompanyCityMasterRes.class);
 			res.setCityId(list.get(0).getCityId().toString());
 			res.setEntryDate(list.get(0).getEntryDate());
@@ -732,15 +692,7 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 	public SuccessRes changeStatusOfCity(CompanyCityChangeStatusReq req) {
 		SuccessRes res = new SuccessRes();
 		try {
-			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
-			Calendar cal = new GregorianCalendar();
-
-			CompanyCityMaster updateRecord = new CompanyCityMaster();
-			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 1);
-			today = cal.getTime();
-
+			
 			List<CompanyCityMaster> list = new ArrayList<CompanyCityMaster>();
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -752,22 +704,22 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 			// Select
 			query.select(b);
 
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<CompanyCityMaster> ocpm1 = effectiveDate.from(CompanyCityMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			// amendId Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<CompanyCityMaster> ocpm1 = amendId.from(CompanyCityMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("cityId"), b.get("cityId"));
-			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			//Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("amendId"), amendId);
 			Predicate a3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 
-			effectiveDate.where(a1, a2, a3);
+			amendId.where(a1, a3);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(b.get("effectiveDateStart")));
+			orderList.add(cb.desc(b.get("cityId")));
 
 			// Where
-			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("cityId"), req.getCityId());
 			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
 
@@ -776,37 +728,10 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 			// Get Result
 			TypedQuery<CompanyCityMaster> result = em.createQuery(query);
 			list = result.getResultList();
-			updateRecord = list.get(0);
-
-			if (req.getStatus().equalsIgnoreCase("N")) {
-				// Delete Old Records
-				cal.setTime(today);
-				cal.set(Calendar.HOUR_OF_DAY, 23);
-				cal.set(Calendar.MINUTE, 30);
-				today = cal.getTime();
-
-				// create update
-				CriteriaDelete<CompanyCityMaster> delete = cb.createCriteriaDelete(CompanyCityMaster.class);
-				Root<CompanyCityMaster> pm = delete.from(CompanyCityMaster.class);
-
-				// Where
-				javax.persistence.criteria.Predicate n4 = cb.equal(pm.get("cityId"), req.getCityId());
-				javax.persistence.criteria.Predicate n5 = cb.greaterThanOrEqualTo(pm.get("effectiveDateStart"), today);
-				javax.persistence.criteria.Predicate n6 = cb.equal(pm.get("companyId"), req.getCompanyId());
-
-				delete.where(n4, n5, n6);
-				em.createQuery(delete).executeUpdate();
-				// Insert Updated Record
+			CompanyCityMaster updateRecord = list.get(0);
 				updateRecord.setStatus(req.getStatus());
 				repo.save(updateRecord);
-
-			} else if (req.getStatus().equalsIgnoreCase("Y")) {
-				// Insert Updated Record
-				updateRecord.setStatus(req.getStatus());
-				repo.save(updateRecord);
-			}
-			// perform update
-
+		
 			res.setResponse("Status Changed");
 			res.setSuccessId(req.getCityId());
 		} catch (Exception e) {
@@ -1088,6 +1013,7 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 				saveData.setEntryDate(new Date());
 				saveData.setAmendId(amendId);
 				saveData.setCoreAppCode("99999");
+				saveData.setCreatedBy(req.getCreatedBy());
 				repo.saveAndFlush(saveData);
 
 				log.info("Saved Details is ---> " + json.toJson(saveData));

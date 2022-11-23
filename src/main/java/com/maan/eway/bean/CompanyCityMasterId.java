@@ -32,10 +32,8 @@ public class CompanyCityMasterId implements Serializable {
     //--- ENTITY KEY ATTRIBUTES 
     private Integer    cityId ;
     
-    private Date       effectiveDateEnd ;
-    
-    private Date       effectiveDateStart ;
-    
+    private Integer    amendId ;
+
     private String     stateId ;
     
     private String     countryId ;

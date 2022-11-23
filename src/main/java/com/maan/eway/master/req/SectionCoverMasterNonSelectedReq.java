@@ -22,11 +22,11 @@ public class SectionCoverMasterNonSelectedReq implements Serializable {
     private String sectionId;
   
 
-    @JsonProperty("Limit")
-    private String limit;
-    
-    @JsonProperty("Offset")
-    private String offset;
+	/*
+	 * @JsonProperty("Limit") private String limit;
+	 * 
+	 * @JsonProperty("Offset") private String offset;
+	 */
     
     @JsonFormat(pattern ="dd/MM/yyyy")
     @JsonProperty("EffectiveDateStart")

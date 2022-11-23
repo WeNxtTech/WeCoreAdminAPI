@@ -54,9 +54,9 @@ public class SectionCoverUpdateReq {
 	@JsonProperty("SubCoverYn")
 	private String subCoverYn;
 	
-	@JsonFormat(pattern="dd/MM/yyyy")
-	@JsonProperty("EffectiveDateEnd")
-	private Date effectiveDateEnd;
+//	@JsonFormat(pattern="dd/MM/yyyy")
+//	@JsonProperty("EffectiveDateEnd")
+//	private Date effectiveDateEnd;
 	
 	
 	// Rating Master Insert 

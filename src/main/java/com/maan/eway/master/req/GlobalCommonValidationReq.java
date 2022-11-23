@@ -15,9 +15,9 @@ public class GlobalCommonValidationReq {
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
 	
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDateEnd")
-	private Date effectiveDateEnd;
+//	@JsonFormat(pattern = "dd/MM/yyyy")
+//	@JsonProperty("EffectiveDateEnd")
+//	private Date effectiveDateEnd;
 
 	@JsonProperty("Status")
 	private String status;

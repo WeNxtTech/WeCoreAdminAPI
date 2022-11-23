@@ -17,15 +17,20 @@ public class ProductSectionMasterReq {
     private String    sectionId    ;
 
 	@JsonProperty("InsuranceId")
-	private String companyId;
+	private String insuranceId;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
 
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
 	
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDateEnd")
-	private Date effectiveDateEnd;
+	/*
+	 * @JsonFormat(pattern = "dd/MM/yyyy")
+	 * 
+	 * @JsonProperty("EffectiveDateEnd") private Date effectiveDateEnd;
+	 */
 
 	@JsonProperty("SectionName")
 	private String sectionName;

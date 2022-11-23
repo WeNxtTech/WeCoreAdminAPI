@@ -14,11 +14,12 @@ public class RatingFieldMasterGetAllReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @JsonProperty("Limit")
-    private String limit;
-    
-    @JsonProperty("Offset")
-    private String offset;
+//    @JsonProperty("Limit")
+//    private String limit;
+//    
+//    @JsonProperty("Offset")
+//    private String offset;
+
     
     @JsonProperty("ProductId")
     private String productId;

@@ -7,10 +7,15 @@ package com.maan.eway.master.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -32,6 +37,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.CoverMaster;
+import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.bean.OneTimeTableDetails;
 import com.maan.eway.bean.RatingFieldMaster;
 import com.maan.eway.error.Error;
@@ -87,13 +94,6 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 			} else if (req.getEffectiveDateStart().before(today)) {
 				errorList
 						.add(new Error("01", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
-			} else if (req.getEffectiveDateEnd() == null) {
-				errorList.add(new Error("02", "EffectiveDateEnd", "Please Enter Effective Date End "));
-
-			} else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart())
-					|| req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
-				errorList.add(new Error("02", "EffectiveDateEnd",
-						"Please Enter Effective Date End  is After Effective Date Start"));
 			}
 			// Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
@@ -114,7 +114,7 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 					errorList.add(new Error("04", "RatingField", "This RatingField Already Exist "));
 				}
 			}else  {
-				List<RatingFieldMaster> factorList =  getFactorNameExistDetails(req.getRatingField(),req.getProductId() );
+				List<RatingFieldMaster> factorList =  getFactorNameExistDetails(req.getRatingField(),req.getProductId());
 				if (factorList.size()>0 &&  (! req.getRatingId().equalsIgnoreCase(factorList.get(0).getRatingId().toString())) ) {
 					errorList.add(new Error("04", "RatingField", "This RatingField Already Exist "));
 				}
@@ -148,6 +148,8 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 			} else if (req.getRemarks().length() > 100) {
 				errorList.add(new Error("10", "Product Id", "Please Enter Product Id within 100 Characters"));
 			}
+			
+			
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
@@ -157,34 +159,31 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 
 	@Override
 	public SuccessRes insertfactortype(RatingFieldsMasterSaveReq req) {
-		SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/yyyy");
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		SuccessRes res = new SuccessRes();
 		RatingFieldMaster saveData = new RatingFieldMaster();
 		List<RatingFieldMaster> list = new ArrayList<RatingFieldMaster>();
 		DozerBeanMapper dozermapper = new DozerBeanMapper();
 		try {
-			Integer amendId = 0;
-			Calendar cal = new GregorianCalendar();
-			cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
-			Date startDate = cal.getTime() ;
-			Date today = new Date();
-			cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
-			cal.set(Calendar.SECOND, today.getSeconds());
-			Date oldEndDate = cal.getTime() ;
-			cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
-			cal.set(Calendar.SECOND, today.getSeconds());
-			Date effDate = cal.getTime();
-			Date endDate = req.getEffectiveDateEnd();
-			cal.setTime(req.getEffectiveDateEnd());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 50) ;
-			endDate = cal.getTime() ;
-
+			Integer amendId=0;
+			Date startDate = req.getEffectiveDateStart() ;
+			String end = "31/12/2050";
+			Date endDate = sdf.parse(end);
+			long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
+			Date entryDate = null ;
+			String createdBy = "" ;
 			String factorId = "";
+			
 			OneTimeTableDetails tablename = oneTimeRepo.findByItemTypeAndItemCode("ONE_TIME_TABLE",req.getInputTable());
 			OneTimeTableDetails columnname = oneTimeRepo.findByItemTypeAndItemCode(tablename.getItemValue(),req.getInputColumn());
 			if (StringUtils.isBlank(req.getRatingId())) {
 				// Save
 				Long totalCount = getMasterTableCount(req.getProductId());
 				factorId = Long.valueOf(totalCount + 1).toString();
+				entryDate = new Date();
+				createdBy = req.getCreatedBy();
+				
 				res.setResponse("Saved Successfully");
 				res.setSuccessId(factorId);
 			} else {
@@ -196,61 +195,68 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 				Root<RatingFieldMaster> b = query.from(RatingFieldMaster.class);
 				// Select
 				query.select(b);
-				// Effective Date Max Filter
-				Subquery<Long> effectiveDate = query.subquery(Long.class);
-				Root<RatingFieldMaster> ocpm1 = effectiveDate.from(RatingFieldMaster.class);
-				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-				Predicate a1 = cb.equal(ocpm1.get("ratingId"), b.get("ratingId"));
-				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
-				Predicate a3 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-				effectiveDate.where(a1, a2, a3);
+//				// Effective Date Max Filter
+//				Subquery<Long> effectiveDate = query.subquery(Long.class);
+//				Root<RatingFieldMaster> ocpm1 = effectiveDate.from(RatingFieldMaster.class);
+//				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+//				Predicate a1 = cb.equal(ocpm1.get("ratingId"), b.get("ratingId"));
+//				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
+//				Predicate a3 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+//				effectiveDate.where(a1, a2, a3);
 
 				// Where
 				Predicate n1 = cb.equal(b.get("status"), "Y");
-				Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+				//Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 				Predicate n3 = cb.equal(b.get("ratingId"), req.getRatingId());
 				Predicate n4 = cb.equal(b.get("productId"), req.getProductId());
-
-				query.where(n1, n2, n3, n4);
+				
+				query.where(n1, n3, n4);
 				// Get Result
 				TypedQuery<RatingFieldMaster> result = em.createQuery(query);
+				int limit = 0 , offset = 2 ;
+				result.setFirstResult(limit * offset);
+				result.setMaxResults(offset);
 				list = result.getResultList();
-				if (list.size() > 0) {
-					factorRepo.delete(list.get(0));
-					// Amend Id
-					if (list.get(0).getEffectiveDateStart().before(startDate)) {
-						String startDatewithoutTime = sdformat.format(startDate);
-						String oldDateWithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
-						if (startDatewithoutTime.equalsIgnoreCase(oldDateWithoutTime)) {
-							amendId = list.get(0).getAmendId() + 1;
+				if(list.size()>0) {
+					Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+				
+					if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
+						amendId = list.get(0).getAmendId() + 1 ;
+						entryDate = new Date() ;
+						createdBy = req.getCreatedBy();
+						RatingFieldMaster lastRecord = list.get(0);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							factorRepo.saveAndFlush(lastRecord);
+						
+					} else {
+						amendId = list.get(0).getAmendId() ;
+						entryDate = list.get(0).getEntryDate() ;
+						createdBy = list.get(0).getCreatedBy();
+						saveData = list.get(0) ;
+						if (list.size()>1 ) {
+							RatingFieldMaster lastRecord = list.get(1);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							factorRepo.saveAndFlush(lastRecord);
 						}
-					}
+					
+				    }
 				}
 				res.setResponse("Updated Successfully");
 				res.setSuccessId(factorId);
 			}
 			dozermapper.map(req, saveData);
 			saveData.setRatingId(Integer.valueOf(factorId));
-			saveData.setEffectiveDateStart(effDate);
+			saveData.setEffectiveDateStart(startDate);
 			saveData.setEffectiveDateEnd(endDate);
-			saveData.setEntryDate(new Date());
+			saveData.setEntryDate(entryDate);
+			saveData.setCreatedBy(createdBy);
+			saveData.setUpdatedDate(new Date());
+			saveData.setUpdatedBy(req.getCreatedBy());
 			saveData.setAmendId(amendId);
+			saveData.setStatus(req.getStatus());
 			saveData.setInputTableName(tablename.getItemValue());			
 			saveData.setInputColumnName(columnname.getItemValue());
 			factorRepo.saveAndFlush(saveData);
-
-			if (list.size() > 0) {
-				// Update Old Record
-				RatingFieldMaster lastRecord = list.get(0);
-				lastRecord.setEffectiveDateEnd(oldEndDate);
-				String startDatewithoutTime = sdformat.format(startDate);
-				String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
-
-				if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
-					lastRecord.setStatus("N");	
-				}
-				factorRepo.saveAndFlush(lastRecord);
-			}
 			log.info("Saved Details is --> " + json.toJson(saveData));
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -278,11 +284,10 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("ratingId"), b.get("ratingId"));
 			Predicate a2 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-
 			effectiveDate.where(a1, a2);
+			
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("productId"), productId);
-
 			query.where(n1, n2);
 			// Get Result
 			TypedQuery<Long> result = em.createQuery(query);
@@ -311,14 +316,14 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 				query.select(b);
 
 				// Effective Date Max Filter
-				Subquery<Long> effectiveDate = query.subquery(Long.class);
-				Root<RatingFieldMaster> ocpm1 = effectiveDate.from(RatingFieldMaster.class);
-				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+				Subquery<Long> amendId = query.subquery(Long.class);
+				Root<RatingFieldMaster> ocpm1 = amendId.from(RatingFieldMaster.class);
+				amendId.select(cb.max(ocpm1.get("effectiveDateStart")));
 				Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 				Predicate a2 = cb.equal(ocpm1.get("ratingId"),b.get("ratingId"));
-				effectiveDate.where(a1,a2);
+				amendId.where(a1,a2);
 
-				Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+				Predicate n1 = cb.equal(b.get("amendId"), amendId);
 				Predicate n2 = cb.equal(b.get("ratingField"), factorName);
 				Predicate n3 = cb.equal(b.get("productId"),productId);
 				query.where(n1, n2,n3);
@@ -348,36 +353,39 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 			today = cal.getTime();
 			List<RatingFieldMaster> list = new ArrayList<RatingFieldMaster>();
 			// Pagination
-			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
-			// Find Latest Record
+//			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+//			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+//			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<RatingFieldMaster> query = cb.createQuery(RatingFieldMaster.class);
 			// Find all
 			Root<RatingFieldMaster> b = query.from(RatingFieldMaster.class);
 			// Select
 			query.select(b);
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<RatingFieldMaster> ocpm1 = effectiveDate.from(RatingFieldMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			//AmendId Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<RatingFieldMaster> ocpm1 = amendId.from(RatingFieldMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a2 = cb.equal(ocpm1.get("ratingId"), b.get("ratingId"));
 			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			effectiveDate.where(a1, a2,a3);
+			
+			amendId.where(a1, a2,a3);
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("ratingField")));
 			// Where
-			 Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			 Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
-
+			
 			query.where(n1,n2).orderBy(orderList);
 			// Get Result
 			TypedQuery<RatingFieldMaster> result = em.createQuery(query);
-			result.setFirstResult(limit * offset);
-			result.setMaxResults(offset);
+	
 			list = result.getResultList();
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getRatingId()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(RatingFieldMaster :: getRatingField ));
+			
 
 			// Map
 			for (RatingFieldMaster data : list) {
@@ -396,7 +404,10 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 		}
 		return resList;
 	}
-
+	private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
+	    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+	}
 	@Override
 	public List<RatingFieldsMasterGetRes> getActiveFactorType(RatingFieldMasterGetAllReq req) {
 		List<RatingFieldsMasterGetRes> resList = new ArrayList<RatingFieldsMasterGetRes>();
@@ -410,38 +421,42 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 			today = cal.getTime();
 			List<RatingFieldMaster> list = new ArrayList<RatingFieldMaster>();
 			// Pagination
-			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
-			// Find Latest Record
+//			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+//			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+//			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<RatingFieldMaster> query = cb.createQuery(RatingFieldMaster.class);
 			// Find all
 			Root<RatingFieldMaster> b = query.from(RatingFieldMaster.class);
 			// Select
 			query.select(b);
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<RatingFieldMaster> ocpm1 = effectiveDate.from(RatingFieldMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			// Amend ID  Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<RatingFieldMaster> ocpm1 = amendId.from(RatingFieldMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a2 = cb.equal(ocpm1.get("ratingId"), b.get("ratingId"));
 			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			effectiveDate.where(a1, a2,a3);
+		
+			amendId.where(a1, a2,a3);
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("ratingField")));
 			// Where
-			 Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			 Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
 			Predicate n3 = cb.equal(b.get("status"), "Y");
-
+			
 			query.where(n1,n2, n3).orderBy(orderList);
 			// Get Result
 			TypedQuery<RatingFieldMaster> result = em.createQuery(query);
-			result.setFirstResult(limit * offset);
-			result.setMaxResults(offset);
+//			result.setFirstResult(limit * offset);
+//			result.setMaxResults(offset);
 			list = result.getResultList();
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getRatingField()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(RatingFieldMaster :: getRatingField ));
 
+			
 			// Map
 			for (RatingFieldMaster data : list) {
 				RatingFieldsMasterGetRes res = new RatingFieldsMasterGetRes();
@@ -478,25 +493,30 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 			Root<RatingFieldMaster> b = query.from(RatingFieldMaster.class);
 			// Select
 			query.select(b);
-						// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<RatingFieldMaster> ocpm1 = effectiveDate.from(RatingFieldMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			
+			//Amend ID Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<RatingFieldMaster> ocpm1 = amendId.from(RatingFieldMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a2 = cb.equal(ocpm1.get("ratingId"), b.get("ratingId"));			
 			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			effectiveDate.where(a1, a2,a3);
+		
+			amendId.where(a1, a2,a3);
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("effectiveDateStart")));
+			orderList.add(cb.asc(b.get("ratingField")));
 			// Where
-			javax.persistence.criteria.Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			javax.persistence.criteria.Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			javax.persistence.criteria.Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
-			Predicate n3 = cb.equal(b.get("ratingId"), req.getRatingId());		
+			Predicate n3 = cb.equal(b.get("ratingId"), req.getRatingId());	
 			query.where(n1, n2,n3).orderBy(orderList);
 			// Get Result
 			TypedQuery<RatingFieldMaster> result = em.createQuery(query);
 			list = result.getResultList();
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getRatingId()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(RatingFieldMaster :: getRatingField ));
+		
 			res = mapper.map(list.get(0), RatingFieldsMasterGetRes.class);
 			res.setRatingId(list.get(0).getRatingId().toString());
 			res.setEntryDate(list.get(0).getEntryDate());
@@ -515,6 +535,7 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 	@Override
 	public SuccessRes changeStatusOfFactorType(RatingFieldsMasterChangeStatusReq req) {
 		SuccessRes res = new SuccessRes();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
 			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
@@ -536,31 +557,30 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 			// Select
 			query.select(b);
 
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<RatingFieldMaster> ocpm1 = effectiveDate.from(RatingFieldMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			// Amend ID Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<RatingFieldMaster> ocpm1 = amendId.from(RatingFieldMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a3 = cb.equal(ocpm1.get("ratingId"), b.get("ratingId"));
-			effectiveDate.where(a1, a2,a3);
+			amendId.where(a1, a2,a3);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(b.get("effectiveDateStart")));
+			orderList.add(cb.asc(b.get("ratingField")));
 
 			// Where
-			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("ratingId"), req.getRatingId());
 			Predicate n3 = cb.equal(b.get("productId"),req.getProductId());
-
 			query.where(n1, n2,n3).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<RatingFieldMaster> result = em.createQuery(query);
 			list = result.getResultList();
 			updateRecord = list.get(0);
-
+			
 			if (req.getStatus().equalsIgnoreCase("N")) {
 				// Delete Old Records
 				cal.setTime(today);
@@ -582,10 +602,14 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 				updateRecord.setStatus(req.getStatus());
 				factorRepo.save(updateRecord);
 
-			} else if (req.getStatus().equalsIgnoreCase("Y")) {
+			} else if (req.getStatus().equalsIgnoreCase("Y") ) {
 				// Insert Updated Record
-				updateRecord.setStatus(req.getStatus());
-				factorRepo.save(updateRecord);
+				for (RatingFieldMaster data : list ) {
+					updateRecord = data ; 
+					updateRecord.setStatus(req.getStatus());
+					factorRepo.saveAndFlush(updateRecord);	
+				}
+				
 			}
 			// perform update
 

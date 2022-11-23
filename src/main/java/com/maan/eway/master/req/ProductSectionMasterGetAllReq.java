@@ -11,23 +11,26 @@ import lombok.Data;
 @Data
 public class ProductSectionMasterGetAllReq implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    @JsonProperty("ProductId")
-    private String productId;
-    
-    @JsonProperty("InsuranceId")
-    private String insuranceId;
-    
-    @JsonProperty("Limit")
-    private String limit;
-    
-    @JsonProperty("Offset")
-    private String offset;
-    
-    @JsonFormat(pattern ="dd/MM/yyyy")
-    @JsonProperty("EffectiveDateStart")
-    private Date effectiveDateStart;
+	@JsonProperty("ProductId")
+	private String productId;
 
-  
+	@JsonProperty("InsuranceId")
+	private String insuranceId;
+
+	@JsonProperty("BranchCode")
+	private String branchCode;
+
+	/*
+	 * @JsonProperty("Limit") private String limit;
+	 * 
+	 * @JsonProperty("Offset") private String offset;
+	 */
+	  
+	  @JsonFormat(pattern ="dd/MM/yyyy")
+	  @JsonProperty("EffectiveDateStart")
+	  private Date effectiveDateStart;
+	  
+	 
 }

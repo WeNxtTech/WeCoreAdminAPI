@@ -12,11 +12,11 @@ import lombok.Data;
 public class PolicyTypeMasterGetAllReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
+	
+@JsonProperty("InsuranceId")
+private String insuranceId;
 
-    @JsonProperty("Limit")
-    private String limit;
-    
-    @JsonProperty("Offset")
-    private String offset;
+@JsonProperty("BranchCode")
+private String branchCode;
    
    }

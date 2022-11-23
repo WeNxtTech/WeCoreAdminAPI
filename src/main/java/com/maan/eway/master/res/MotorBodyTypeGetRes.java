@@ -24,6 +24,12 @@ public class MotorBodyTypeGetRes {
 	@JsonProperty("BodyNameEn")
 	private String bodyNameEn;
 	
+	@JsonProperty("InsuranceId")
+	private String insuranceId;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
+	
 	@JsonFormat(pattern="dd/MM/YYYY")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
@@ -31,7 +37,6 @@ public class MotorBodyTypeGetRes {
 	@JsonFormat(pattern="dd/MM/YYYY")
 	@JsonProperty("EffectiveDateEnd")
 	private Date effectiveDateEnd;
-
 	
 	@JsonProperty("AmendId")
 	private Integer amendId;
@@ -50,11 +55,19 @@ public class MotorBodyTypeGetRes {
 	private Integer seatingCapacity;
 
 	@JsonProperty("Tonnage")
-	private Integer tonnage;
-		  
+	private Integer tonnage;	  
 
 	@JsonProperty("Cylinders")
 	private Integer cylinders;
-		    
+	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("UpdatedDate")
+	private Date updatedDate;
+	
+	@JsonProperty("UpdatedBy")
+	private String updatedBy;
 
 }

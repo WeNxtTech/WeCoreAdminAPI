@@ -15,7 +15,7 @@ public class RatingFieldsMasterSaveReq implements Serializable {
 
 	@JsonProperty("RatingId")
 	private String ratingId;
-
+	
 	@JsonProperty("RatingField")
 	private String ratingField;
 
@@ -34,11 +34,11 @@ public class RatingFieldsMasterSaveReq implements Serializable {
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
-
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDateEnd")
-	private Date effectiveDateEnd;
-	
+//
+//	@JsonFormat(pattern = "dd/MM/yyyy")
+//	@JsonProperty("EffectiveDateEnd")
+//	private Date effectiveDateEnd;
+//	
 	@JsonProperty("Remarks")
 	private String remarks;
 	

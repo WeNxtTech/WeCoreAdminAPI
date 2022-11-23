@@ -29,21 +29,29 @@ public class PolicyTypeMaster {
 	private Integer policyTypeId;
 	
 	@Id
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="EFFECTIVE_DATE_START",nullable=false)
-	private Date effectiveDateStart;
+	@Column(name="AMEND_ID")
+	private Integer amendId;
 	
 	@Id
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="EFFECTIVE_DATE_END",nullable=false)
-	private Date effectiveDateEnd;
+    @Column(name="COMPANY_ID", nullable=false, length=100)
+    private String     companyId ;
+
+    @Id
+    @Column(name="BRANCH_CODE", nullable=false, length=100)
+    private String     branchCode ;
+
 	
 	@Column(name="POLICY_TYPE_NAME",length=100,nullable=false)
 	private String policyTypeName;
 	
-	@Column(name="AMEND_ID")
-	private Integer amendId;
-	
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EFFECTIVE_DATE_START", nullable=false)
+    private Date       effectiveDateStart ;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EFFECTIVE_DATE_END", nullable=false)
+    private Date       effectiveDateEnd ;
+
 	@Temporal(TemporalType.DATE)
 	@Column(name="ENTRY_DATE")
 	private Date entryDate;
@@ -54,6 +62,15 @@ public class PolicyTypeMaster {
 	@Column(name="STATUS",length=1)
 	private String status;
 	
+    @Column(name="CREATED_BY", length=100)
+    private String     createdBy ;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="UPDATED_DATE")
+    private Date       updatedDate ;
+
+    @Column(name="UPDATED_BY", length=20)
+    private String     updatedBy ;
 	
 	
 }

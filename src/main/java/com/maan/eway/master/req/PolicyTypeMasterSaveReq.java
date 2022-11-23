@@ -15,15 +15,24 @@ public class PolicyTypeMasterSaveReq {
 	
 	@JsonProperty("PolicyTypeName")
 	private String policyTypeName;
+	
+	@JsonProperty("InsuranceId")
+	private String insuranceId;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
 	 
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
 	 
-	@JsonFormat(pattern="dd/MM/yyyy")
-	@JsonProperty("EffectiveDateEnd")
-	private Date effectiveDateEnd;
-	 
 	@JsonProperty("Remarks")
 	private String remarks;
+	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+	
+	@JsonProperty("Status")
+	private String status;
+	
 }

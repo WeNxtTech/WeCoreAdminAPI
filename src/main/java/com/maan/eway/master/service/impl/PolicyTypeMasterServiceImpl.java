@@ -2,10 +2,15 @@ package com.maan.eway.master.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -28,6 +33,8 @@ import org.springframework.stereotype.Service;
 import com.google.gson.Gson;
 import com.maan.eway.bean.ExchangeMaster;
 import com.maan.eway.bean.OccupationMaster;
+import com.maan.eway.bean.PolicyTypeMaster;
+import com.maan.eway.bean.PolicyTypeMaster;
 import com.maan.eway.bean.PolicyTypeMaster;
 import com.maan.eway.common.service.impl.DropDownServiceImpl;
 import com.maan.eway.error.Error;
@@ -64,7 +71,19 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 				error.add(new Error("01", "Policy Type Name", "Please Enter Policy Type Name "));
 			} else if (req.getPolicyTypeName().length() > 100) {
 				error.add(new Error("01", "Policy Type Name", "Please Enter Policy Type Name within 100 Characters"));
-			} 
+			} else if (StringUtils.isBlank(req.getPolicyTypeId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
+				List<PolicyTypeMaster> policyList = getPolicyTypeNameExistDetails(req.getPolicyTypeName() , req.getInsuranceId() , req.getBranchCode());
+				if (policyList.size()>0 ) {
+					error.add(new Error("01", "PolicyTypeName", "This Policy Name Already Exist "));
+				}
+			}else if (StringUtils.isNotBlank(req.getPolicyTypeId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
+				List<PolicyTypeMaster> policyList = getPolicyTypeNameExistDetails(req.getPolicyTypeName() , req.getInsuranceId() , req.getBranchCode());
+				
+				if (policyList.size()>0 &&  (! req.getPolicyTypeId().equalsIgnoreCase(policyList.get(0).getPolicyTypeId().toString())) ) {
+					error.add(new Error("01", "PolicyTypeName", "This Policy Name Already Exist "));
+				}
+				
+			}
 			// Date Validation
 			Calendar cal = new GregorianCalendar();
 			Date today = new Date();
@@ -79,15 +98,7 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 			} else if (req.getEffectiveDateStart().before(today)) {
 				error
 						.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
-			} else if (req.getEffectiveDateEnd() == null) {
-				error.add(new Error("03", "EffectiveDateEnd", "Please Enter Effective Date End "));
-
-			} else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart())
-					|| req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
-				error.add(new Error("03", "EffectiveDateStart",
-						"Please Enter Effective Date End  is After Effective Date Start"));
-
-		}
+			} 
 			if (req.getRemarks().length() > 100) {
 				error.add(new Error("04", "Remarks", "Please Enter Remarks within 100 Characters"));
 			} 	
@@ -99,6 +110,50 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 		}
 		return error;
 	}
+	public List<PolicyTypeMaster> getPolicyTypeNameExistDetails(String PolicyTypeName , String InsuranceId , String branchCode) {
+		List<PolicyTypeMaster> list = new ArrayList<PolicyTypeMaster>();
+		try {
+			Date today = new Date();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<PolicyTypeMaster> query = cb.createQuery(PolicyTypeMaster.class);
+
+			// Find All
+			Root<PolicyTypeMaster> b = query.from(PolicyTypeMaster.class);
+
+			// Select
+			query.select(b);
+
+			// Effective Date Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<PolicyTypeMaster> ocpm1 = amendId.from(PolicyTypeMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("policyTypeId"), b.get("policyTypeId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a5 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateEnd"), today);
+			amendId.where(a1,a2,a3,a4,a5);
+
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n2 = cb.equal(cb.lower( b.get("policyTypeName")), PolicyTypeName.toLowerCase());
+			Predicate n3 = cb.equal(b.get("companyId"),InsuranceId);
+			Predicate n4 = cb.equal(b.get("branchCode"), branchCode);
+			Predicate n5 = cb.equal(b.get("branchCode"), "99999");
+			Predicate n6 = cb.or(n4,n5);
+			query.where(n1,n2,n3,n6);
+			
+			// Get Result
+			TypedQuery<PolicyTypeMaster> result = em.createQuery(query);
+			list = result.getResultList();		
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+
+		}
+		return list;
+	}
 
 	@Override
 	public SuccessRes insertPolicyType(PolicyTypeMasterSaveReq req) {
@@ -108,28 +163,23 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 	List<PolicyTypeMaster> list = new ArrayList<PolicyTypeMaster>();
 	DozerBeanMapper dozermapper = new DozerBeanMapper();
 	try {
-	Calendar cal = new GregorianCalendar();
-	cal.setTime(req.getEffectiveDateStart());
-	cal.set(Calendar.HOUR_OF_DAY, 23);
-	cal.set(Calendar.MINUTE, 59);
-	Date startDate = cal.getTime();
-	Date today = new Date();
-	cal.setTime(req.getEffectiveDateStart());
-	cal.set(Calendar.HOUR_OF_DAY,today.getHours());
-	cal.set(Calendar.MINUTE, today.getMinutes());
-	Date oldEndDate = cal.getTime();
-	cal.setTime(req.getEffectiveDateStart());
-	cal.set(Calendar.HOUR_OF_DAY, today.getHours());
-	cal.set(Calendar.MINUTE, today.getMinutes());
-	Date effDate = cal.getTime();
-	Date endDate = req.getEffectiveDateEnd();
-	String policyId="";
-	Integer amendId = 0;
+		Integer amendId=0;
+		Date startDate = req.getEffectiveDateStart() ;
+		String end = "31/12/2050";
+		Date endDate = sdformat.parse(end);
+		long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+		Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
+		Date entryDate = null ;
+		String createdBy = "" ;
+		String policyId="";
+	
 
 	if(StringUtils.isBlank(req.getPolicyTypeId())) {
 		//save
-		Long totalCount = getMasterTableCount();
-		policyId = Long.valueOf(totalCount+1).toString();
+		Integer totalCount = getMasterTableCount( req.getInsuranceId() , req.getBranchCode());
+		policyId = Integer.valueOf(totalCount+1).toString();
+		entryDate = new Date();
+		createdBy = req.getCreatedBy();
 		res.setResponse("Saved Successfully");
 		res.setSuccessId(policyId);
 		}
@@ -142,61 +192,66 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 		Root<PolicyTypeMaster> b = query.from(PolicyTypeMaster.class);
 		//Select
 		query.select(b);
-		//Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
-		Root<PolicyTypeMaster> ocpm1 = effectiveDate.from(PolicyTypeMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-		Predicate a1 = cb.equal(ocpm1.get("policyTypeId"), b.get("policyTypeId"));
-		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
-		effectiveDate.where(a1,a2);
-		//where
+//		//Effective Date Max Filter
+//		Subquery<Long> effectiveDate = query.subquery(Long.class);
+//		Root<PolicyTypeMaster> ocpm1 = effectiveDate.from(PolicyTypeMaster.class);
+//		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+//		Predicate a1 = cb.equal(ocpm1.get("policyTypeId"), b.get("policyTypeId"));
+//		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
+//		effectiveDate.where(a1,a2);
+//		//where
 		Predicate n1 = cb.equal(b.get("status"),"Y");
-		Predicate n2 = cb.equal(b.get("effectiveDateStart"),effectiveDate);
-		Predicate n3 = cb.equal(b.get("policyTypeId"),req.getPolicyTypeId());
-		query.where(n1,n2,n3);
+		//Predicate n2 = cb.equal(b.get("effectiveDateStart"),effectiveDate);
+		Predicate n2 = cb.equal(b.get("policyTypeId"),req.getPolicyTypeId());
+		Predicate n3 = cb.equal(b.get("companyId"), req.getInsuranceId());
+		Predicate n4 = cb.equal(b.get("branchCode"), req.getBranchCode());
+		
+		query.where(n1,n2,n3,n4);
 		// Get Result
 		TypedQuery<PolicyTypeMaster> result = em.createQuery(query);
+		int limit = 0 , offset = 2 ;
+		result.setFirstResult(limit * offset);
+		result.setMaxResults(offset);
 		list = result.getResultList();
+		
 		if(list.size()>0) {
-			repo.delete(list.get(0));
-			// Amend Id
-
-			if (list.get(0).getEffectiveDateStart().before(startDate)) {
-				String startDatewithoutTime = sdformat.format(startDate);
-				String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
-
-				if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime))
-					
-				{
-					amendId = list.get(0).getAmendId() + 1;
+			Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+		
+			if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
+				amendId = list.get(0).getAmendId() + 1 ;
+				entryDate = new Date() ;
+				createdBy = req.getCreatedBy();
+					PolicyTypeMaster lastRecord = list.get(0);
+					lastRecord.setEffectiveDateEnd(oldEndDate);
+					repo.saveAndFlush(lastRecord);
+				
+			} else {
+				amendId = list.get(0).getAmendId() ;
+				entryDate = list.get(0).getEntryDate() ;
+				createdBy = list.get(0).getCreatedBy();
+				saveData = list.get(0) ;
+				if (list.size()>1 ) {
+					PolicyTypeMaster lastRecord = list.get(1);
+					lastRecord.setEffectiveDateEnd(oldEndDate);
+					repo.saveAndFlush(lastRecord);
 				}
-			}
-
+			
+		    }
 		}
-		res.setResponse("Updated Successfully");
+			res.setResponse("Updated Successfully");
 		res.setSuccessId(policyId);		
 	}
 	dozermapper.map(req,saveData);
-	saveData.setAmendId(amendId);
-	saveData.setEffectiveDateStart(endDate);
-	saveData.setEffectiveDateStart(req.getEffectiveDateStart());
-	saveData.setStatus("Y");
-	saveData.setEntryDate(new Date());
-	saveData.setPolicyTypeId(Integer.valueOf(policyId));
+	saveData.setEffectiveDateStart(startDate);
+	saveData.setEffectiveDateEnd(endDate);
+	saveData.setCreatedBy(createdBy);
+	saveData.setStatus(req.getStatus());
+	saveData.setCompanyId(req.getInsuranceId());
+	saveData.setEntryDate(entryDate);
+	saveData.setUpdatedDate(new Date());
+	saveData.setUpdatedBy(req.getCreatedBy());
+	saveData.setAmendId(amendId);saveData.setPolicyTypeId(Integer.valueOf(policyId));
 	repo.saveAndFlush(saveData);
-	if(list.size()>0) {
-		// Update Old Record
-		PolicyTypeMaster lastRecord = list.get(0);
-		lastRecord.setEffectiveDateEnd(oldEndDate);
-		String startDatewithoutTime = sdformat.format(startDate);
-		String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
-
-		if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
-			lastRecord.setStatus("N");
-		}
-
-		repo.saveAndFlush(lastRecord);;
-	}
 	log.info("Saved Details is --->"+ json.toJson(saveData));
 	}
 	catch(Exception e) {
@@ -207,30 +262,46 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 	return res;
 	}
 	
-	public Long getMasterTableCount() {
-		Long data =0L;
+	public Integer getMasterTableCount(String companyId , String branchCode) {
+		Integer data =0;
 		try {
-			List<Long> list = new ArrayList<Long>();
+			List<PolicyTypeMaster> list = new ArrayList<PolicyTypeMaster>();
 			// Find Latest Record 
 			CriteriaBuilder cb= em.getCriteriaBuilder();
-		CriteriaQuery<Long>	query = cb.createQuery(Long.class);
+		CriteriaQuery<PolicyTypeMaster>	query = cb.createQuery(PolicyTypeMaster.class);
 		//Find All
 		Root<PolicyTypeMaster> b = query.from(PolicyTypeMaster.class);
 		//Select
-		query.multiselect(cb.count(b));
+		query.select(b);
 		// Effective Date Max Filter
 		Subquery<Long> effectiveDate = query.subquery(Long.class);
 		Root<PolicyTypeMaster> ocpm1 = effectiveDate.from(PolicyTypeMaster.class);
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(ocpm1.get("policyTypeId"),b.get("policyTypeId"));
-		effectiveDate.where(a1);
+		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+		Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+		
+		effectiveDate.where(a1,a2,a3);
+
+		// Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.desc(b.get("policyTypeId")));
+		
 		Predicate n1 = cb.equal(b.get("effectiveDateStart"),effectiveDate);
+		Predicate n2 = cb.equal(b.get("companyId"), companyId);
+		Predicate n3 = cb.equal(b.get("branchCode"), branchCode);
+		Predicate n4 = cb.equal(b.get("branchCode"), "99999");
+		Predicate n5 = cb.or(n3,n4);
+		query.where(n1,n2,n5).orderBy(orderList);
+		
 		query.where(n1);
 		// Get Result
-		TypedQuery<Long> result = em.createQuery(query);
+		TypedQuery<PolicyTypeMaster> result = em.createQuery(query);
+		int limit = 0 , offset = 1 ;
+		result.setFirstResult(limit * offset);
+		result.setMaxResults(offset);
 		list = result.getResultList();
-		data = list.get(0);
-		}
+		data = list.size() > 0 ? list.get(0).getPolicyTypeId() : 0 ;}
 		catch(Exception e) {
 			e.printStackTrace();
 			log.info("Log Details"+ e.getMessage());
@@ -262,23 +333,31 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 
 			// Select
 			query.select(b);
-
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<PolicyTypeMaster> ocpm1 = effectiveDate.from(PolicyTypeMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			// Amend ID Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<PolicyTypeMaster> ocpm1 = amendId.from(PolicyTypeMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("policyTypeId"), b.get("policyTypeId"));
-			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 
-			effectiveDate.where(a1, a2);
+			query.where(a1, a2,a3,a4);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("policyTypeId")));
+			orderList.add(cb.asc(b.get("branchCode")));
 
 			// Where
-			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			Predicate n2 = cb.equal(b.get("policyTypeId"), req.getPolicyTypeId());
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
+			Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
+			Predicate n4 = cb.equal(b.get("policyTypeId"), req.getPolicyTypeId());
+			Predicate n6 = cb.equal(b.get("branchCode"), "99999");
+			Predicate n7 = cb.or(n3,n6);
+			query.where(n1,n2,n4,n7).orderBy(orderList);
+			
+			
 
 			query.where(n1, n2).orderBy(orderList);
 
@@ -286,7 +365,9 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 			TypedQuery<PolicyTypeMaster> result = em.createQuery(query);
 
 			list = result.getResultList();
-
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getPolicyTypeId()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(PolicyTypeMaster :: getPolicyTypeName ));
+			
 			res = mapper.map(list.get(0), PolicyTypeMasterGetRes.class);
 			res.setPolicyTypeId(list.get(0).getPolicyTypeId().toString());
 			res.setEntryDate(list.get(0).getEntryDate());
@@ -300,6 +381,11 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 		return res;
 	}
 
+
+	private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
+	    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+	}
 
 	@Override
 	public List<PolicyTypeMasterGetRes> getallPolicyType(PolicyTypeMasterGetAllReq req) {
@@ -315,9 +401,7 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 
 			List<PolicyTypeMaster> list = new ArrayList<PolicyTypeMaster>();
 			// Pagination
-			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
-
+			
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<PolicyTypeMaster> query = cb.createQuery(PolicyTypeMaster.class);
@@ -329,29 +413,36 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 			query.select(b);
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<PolicyTypeMaster> ocpm1 = effectiveDate.from(PolicyTypeMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<PolicyTypeMaster> ocpm1 = amendId.from(PolicyTypeMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("policyTypeId"), b.get("policyTypeId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a4 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
 
-			effectiveDate.where(a1, a2);
+			amendId.where(a1, a2,a3,a4);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("policyTypeId")));
+			orderList.add(cb.asc(b.get("branchCode")));
 
 			// Where
-			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
+			Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
+			Predicate n4 = cb.equal(b.get("branchCode"), "99999");
+			Predicate n5 = cb.or(n3,n4);
+			query.where(n1,n2,n5).orderBy(orderList);
+			
 			query.where(n1).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<PolicyTypeMaster> result = em.createQuery(query);
-			result.setFirstResult(limit * offset);
-			result.setMaxResults(offset);
 			list = result.getResultList();
-
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getPolicyTypeId()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(PolicyTypeMaster :: getPolicyTypeName ));
+			
 			// Map
 			for (PolicyTypeMaster data : list) {
 				PolicyTypeMasterGetRes res = new PolicyTypeMasterGetRes();
@@ -383,10 +474,7 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 			today = cal.getTime();
 
 			List<PolicyTypeMaster> list = new ArrayList<PolicyTypeMaster>();
-			// Pagination
-			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
-
+			
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<PolicyTypeMaster> query = cb.createQuery(PolicyTypeMaster.class);
@@ -398,28 +486,35 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 			query.select(b);
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<PolicyTypeMaster> ocpm1 = effectiveDate.from(PolicyTypeMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<PolicyTypeMaster> ocpm1 = amendId.from(PolicyTypeMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("policyTypeId"), b.get("policyTypeId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a4 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
 
-			effectiveDate.where(a1, a2);
+			amendId.where(a1, a2,a3,a4);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("policyTypeId")));
+			orderList.add(cb.asc(b.get("branchCode")));
 
 			// Where
-			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			Predicate n2 = cb.equal(b.get("status"), "Y");
-
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
+			Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
+			Predicate n4 = cb.equal(b.get("status"), "Y");
+			Predicate n5 = cb.equal(b.get("branchCode"), "99999");
+			Predicate n6 = cb.or(n3,n5);
+			query.where(n1,n2,n4,n6).orderBy(orderList);
+			
 			query.where(n1,n2).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<PolicyTypeMaster> result = em.createQuery(query);
-			result.setFirstResult(limit * offset);
-			result.setMaxResults(offset);
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getPolicyTypeId()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(PolicyTypeMaster :: getPolicyTypeName ));
 			list = result.getResultList();
 
 			// Map

@@ -52,7 +52,7 @@ private static final long serialVersionUID = 1L;
     //--- ENTITY PRIMARY KEY 
     @Id
     @Column(name="ITEM_ID", nullable=false)
-    private Double     itemId ;
+    private Integer     itemId ;
     
     @Id
     @Column(name="AMEND_ID", nullable=false)
@@ -97,6 +97,25 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="REMARKS", length=100)
     private String     remarks ;
+    
+    @Column(name="CREATED_BY", length=100)
+    private String     createdBy ;
+    
+    @Column(name="UPDATED_BY", length=100)
+    private String     updatedBy ;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EFFECTIVE_DATE_START", nullable=false)
+    private Date       effectiveDateStart ;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EFFECTIVE_DATE_END", nullable=false)
+    private Date       effectiveDateEnd ;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="UPDATED_DATE", nullable=false)
+    private Date       updatedDate;
+    
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

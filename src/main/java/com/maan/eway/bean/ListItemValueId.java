@@ -30,7 +30,7 @@ public class ListItemValueId implements Serializable {
     private static final long serialVersionUID = 1L;
 
     //--- ENTITY KEY ATTRIBUTES 
-    private Double     itemId ;
+    private Integer     itemId ;
 
     private Integer     amendId;
     

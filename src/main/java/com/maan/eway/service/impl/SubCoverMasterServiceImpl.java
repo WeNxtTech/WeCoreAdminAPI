@@ -8,7 +8,9 @@ package com.maan.eway.service.impl;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -37,6 +39,7 @@ import com.google.gson.Gson;
 import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.CoverOfsGridMaster;
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.error.Error;
@@ -128,12 +131,14 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 
 		} else if (req.getEffectiveDateStart().before(today)) {
 			errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
-		} else if (req.getEffectiveDateEnd() == null ) {
-			errorList.add(new Error("10", "EffectiveDateEnd", "Please Enter Effective Date End "));
-
-		} else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart()) || req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
-			errorList.add(new Error("10", "EffectiveDateStart", "Please Enter Effective Date End  is After Effective Date Start"));
-		} 
+		}
+		
+//		else if (req.getEffectiveDateEnd() == null ) {
+//			errorList.add(new Error("10", "EffectiveDateEnd", "Please Enter Effective Date End "));
+//
+//		} else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart()) || req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
+//			errorList.add(new Error("10", "EffectiveDateStart", "Please Enter Effective Date End  is After Effective Date Start"));
+//		} 
 		
 		
 		if (req.getRemarks().length() > 100) {
@@ -296,101 +301,140 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 		@Override
 		public SuccessRes insertSubCover(SubCoverMasterSaveReq req) {
 			SuccessRes res = new SuccessRes();
-			SimpleDateFormat sdformat = new SimpleDateFormat();
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+			List<CoverMaster> list = new ArrayList<CoverMaster>();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper(); 
 			try {
 				List<ListItemValue> calcTypes = listRepo.findByItemTypeAndStatus("CALCULATION_TYPE" , "Y");
 				List<ListItemValue> coverageTypes = listRepo.findByItemTypeAndStatus("COVERAGE_TYPE" , "Y");
 				List<ListItemValue> taxExcemptionType = listRepo.findByItemTypeAndStatus("TAX_EXEMPTION_TYPE" , "Y");
 				
-				Integer amendId = 0 ;
-				Calendar cal = new GregorianCalendar();
-				cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
-				Date startDate = cal.getTime() ;
-				Date today = new Date();
-				cal.setTime(req.getEffectiveDateStart());   cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
-				cal.set(Calendar.SECOND, today.getSeconds());
-				Date oldEndDate = cal.getTime() ;
-				cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
-				cal.set(Calendar.SECOND, today.getSeconds());
-				Date effDate = cal.getTime();
-				Date endDate = req.getEffectiveDateEnd();
-				cal.setTime(req.getEffectiveDateEnd());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 50) ;
-				endDate = cal.getTime() ;
+				Integer amendId=0;
+				Date startDate = req.getEffectiveDateStart() ;
+				String end = "31/12/2050";
+				Date endDate = sdf.parse(end);
+				long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+				Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
+				Date entryDate = null ;
+				String createdBy = "" ;
 				
-				String coverId=StringUtils.isBlank(req.getCoverId()) ?"" :req.getCoverId() ;
-				String subcoverId=StringUtils.isBlank(req.getSubCoverId()) ?"" :req.getSubCoverId() ;
+				CoverMaster coverDetails = new CoverMaster(); 
+				
+				{// Cover Details
+					CriteriaBuilder cb = em.getCriteriaBuilder();
+					CriteriaQuery<CoverMaster> query = cb.createQuery(CoverMaster.class);
+					//Find all
+					Root<CoverMaster> b = query.from(CoverMaster.class);
+					//Select 
+					query.select(b);
+//					
+					// Order By
+					List<Order> orderList = new ArrayList<Order>();
+					orderList.add(cb.desc(b.get("effectiveDateStart")));
+					
+					// Where
+				//	Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+					Predicate n2 = cb.equal(b.get("coverId"), req.getCoverId());
+					Predicate n3 = cb.equal(b.get("subCoverId"),"0");
+					
+					
+					query.where(n2,n3).orderBy(orderList);
+					
+					// Get Result 
+					TypedQuery<CoverMaster> result = em.createQuery(query);
+					int limit = 0 , offset = 2 ;
+					result.setFirstResult(limit * offset);
+					result.setMaxResults(offset);
+					List<CoverMaster> coverlist = result.getResultList();
+					coverDetails = coverlist.get(0);
+					
+				}
+				
+				Integer subcoverId=0 ;
+				String coverId = req.getCoverId();
+				
 				CoverMaster saveData = new CoverMaster();
-				List<CoverMaster> list = new ArrayList<CoverMaster>();
-				
-				// Criteria
-				CriteriaBuilder cb = em.getCriteriaBuilder();
-				CriteriaQuery<CoverMaster> query = cb.createQuery(CoverMaster.class);
-	
-				// Find All
-				Root<CoverMaster> b = query.from(CoverMaster.class);
-	
-				// Select
-				query.select(b);
-	
-				// Effective Date Max Filter
-				Subquery<Long> effectiveDate = query.subquery(Long.class);
-				Root<CoverMaster> ocpm1 = effectiveDate.from(CoverMaster.class);
-				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-				Predicate a1 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
-				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
-				effectiveDate.where(a1, a2);
-	
-				// Where
-				Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-				Predicate n3 = cb.equal(b.get("coverId"), req.getCoverId());
-				if( StringUtils.isBlank(subcoverId)  ) {
+				if( StringUtils.isBlank(req.getSubCoverId())  ) {
 						
 					Long totalCount = getSubCoverMasterTableCount( req.getCoverId());
-					subcoverId = String.valueOf(totalCount + 100);
-				} 
-				query.where(n2, n3);
-				// Get Result
-				TypedQuery<CoverMaster> result = em.createQuery(query);
-				list = result.getResultList();
-	
-				if(list.size() == 1  && list.get(0).getCoverId()==   list.get(0).getSubCoverId() ) {
-					repo.delete(list.get(0));
-				}
-				
-				if(list.size() > 0   ) {
-					// Cover Details 
-					saveData.setCoverId(list.get(0).getCoverId());
-					saveData.setCoverName(list.get(0).getCoverName());
-					saveData.setCoverDesc(list.get(0).getCoverDesc());
-					saveData.setRatingId(list.get(0).getCoverId());	
-					saveData.setToolTip(list.get(0).getToolTip());
-					saveData.setRemarks(list.get(0).getRemarks());
-					saveData.setIsSelectedYn(list.get(0).getIsSelectedYn());
-					;
-					// Amend ID
-					if (list.get(0).getEffectiveDateStart().before(startDate)) {
-						String startDatewithoutTime = sdformat.format(startDate);
-						String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
-
-						if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
-							amendId = list.get(0).getAmendId() + 1;
-						}
+					subcoverId = Integer.valueOf(String.valueOf(totalCount+1001)) ;
+					entryDate = new Date();
+					createdBy = req.getCreatedBy();
+					res.setResponse("Saved Successfully");
+					res.setSuccessId(subcoverId.toString());
+					
+				} else {
+					// Update
+					subcoverId = Integer.valueOf(req.getSubCoverId());
+					CriteriaBuilder cb = em.getCriteriaBuilder();
+					CriteriaQuery<CoverMaster> query = cb.createQuery(CoverMaster.class);
+					//Find all
+					Root<CoverMaster> b = query.from(CoverMaster.class);
+					//Select 
+					query.select(b);
+//					
+					// Order By
+					List<Order> orderList = new ArrayList<Order>();
+					orderList.add(cb.desc(b.get("effectiveDateStart")));
+					
+					// Where
+				//	Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+					Predicate n2 = cb.equal(b.get("coverId"), req.getCoverId());
+					Predicate n3 = cb.equal(b.get("subCoverId"), req.getSubCoverId());
+					
+					
+					query.where(n2,n3).orderBy(orderList);
+					
+					// Get Result 
+					TypedQuery<CoverMaster> result = em.createQuery(query);
+					int limit = 0 , offset = 2 ;
+					result.setFirstResult(limit * offset);
+					result.setMaxResults(offset);
+					list = result.getResultList();
+					
+					if(list.size()>0) {
+						Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+					
+						if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
+							amendId = list.get(0).getAmendId() + 1 ;
+							entryDate = new Date() ;
+							createdBy = req.getCreatedBy();
+								CoverMaster lastRecord = list.get(0);
+								lastRecord.setEffectiveDateEnd(oldEndDate);
+								repo.saveAndFlush(lastRecord);
+							
+						} else {
+							amendId = list.get(0).getAmendId() ;
+							entryDate = list.get(0).getEntryDate() ;
+							createdBy = list.get(0).getCreatedBy();
+							saveData = list.get(0) ;
+							if (list.size()>1 ) {
+								CoverMaster lastRecord = list.get(1);
+								lastRecord.setEffectiveDateEnd(oldEndDate);
+								repo.saveAndFlush(lastRecord);
+							}
+						
+					    }
 					}
+					res.setResponse("Updated Successfully");
+					res.setSuccessId(subcoverId.toString());
 				}
-				
-				res.setResponse("Sub Cover Added Successfully ");
-				res.setSuccessId(subcoverId);
 					
 				dozerMapper.map(req, saveData);
-				saveData.setSubCoverId(Integer.valueOf(subcoverId));
-				saveData.setEffectiveDateStart(effDate);
+				saveData.setSubCoverId(subcoverId);
+				saveData.setEffectiveDateStart(startDate);
+				saveData.setCoverName(coverDetails.getCoverName());
+				saveData.setCoverDesc(coverDetails.getCoverDesc());
 				saveData.setEffectiveDateEnd(endDate);
-				saveData.setEntryDate(new Date());
+				saveData.setCreatedBy(createdBy);
+				saveData.setStatus(req.getStatus());
+				saveData.setEntryDate(entryDate);
+				saveData.setUpdatedDate(new Date());
+				saveData.setUpdatedBy(req.getCreatedBy());
 				saveData.setAmendId(amendId);
+				saveData.setCoreAppCode(req.getCoreAppCode());
 				saveData.setSubCoverYn("Y");
-				saveData.setRemarks(req.getRemarks());
-
+				
 				// Amount Details
 				if(req.getCalcType().equalsIgnoreCase("F")  ) {
 					
@@ -469,20 +513,6 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 
 			saveData.setDependentCoverYn(StringUtils.isNotBlank(req.getDependentCoverYn()) ? req.getDependentCoverYn() : "N" );
 			repo.saveAndFlush(saveData);
-			
-			if (list.size() == 1 && list.get(0).getCoverId() ==   list.get(0).getSubCoverId() ) {
-				// Update Old Record
-				CoverMaster lastRecord = list.get(0);
-				lastRecord.setEffectiveDateEnd(oldEndDate);
-				String startDatewithoutTime = sdformat.format(startDate);
-				String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
-
-				if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
-					lastRecord.setStatus("N");	
-				}
-				repo.saveAndFlush(lastRecord);
-		
-			}
 			log.info("Saved Details is ---> " + json.toJson(saveData));
 					
 		} catch (Exception e) {
@@ -519,7 +549,8 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 
 		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 		Predicate n2 = cb.equal(b.get("coverId") , coverId);
-		query.where(n1,n2);
+		Predicate n3 = cb.notEqual(b.get("subCoverId") , "0");
+		query.where(n1,n2,n3);
 		// Get Result
 		TypedQuery<Long> result = em.createQuery(query);
 		list = result.getResultList();
@@ -583,18 +614,8 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 	List<SubCoverMasterGetAllRes> resList = new ArrayList<SubCoverMasterGetAllRes>();
 	DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 	try {
-		Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
-		Calendar cal = new GregorianCalendar(); 
-		cal.setTime(today);
-		cal.set(Calendar.HOUR_OF_DAY, 23);
-		cal.set(Calendar.MINUTE, 1);
-		today   = cal.getTime();
-		
 		List<CoverMaster> coverList = new ArrayList<CoverMaster>();
-		//Pagination
-		int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-		int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
-
+		
 		// Find Latest Record
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CoverMaster> query = cb.createQuery(CoverMaster.class);
@@ -606,28 +627,25 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 		query.select(b);
 
 		// Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
-		Root<CoverMaster> ocpm1 = effectiveDate.from(CoverMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		Subquery<Long> amendId = query.subquery(Long.class);
+		Root<CoverMaster> ocpm1 = amendId.from(CoverMaster.class);
+		amendId.select(cb.max(ocpm1.get("amendId")));
 		Predicate a1 = cb.equal(ocpm1.get("subCoverId"), b.get("subCoverId"));
-		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
-		Predicate a3 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
-		effectiveDate.where(a1,a2,a3);
+		Predicate a2 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
+		amendId.where(a1,a2);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
 		orderList.add(cb.asc(b.get("subCoverName")));
 		
 		// Where
-		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+		Predicate n1 = cb.equal(b.get("amendId"), amendId);
 		Predicate n2 = cb.equal(b.get("coverId"), req.getCoverId());
-		Predicate n3 = cb.notEqual(b.get("subCoverId"), req.getCoverId());
+		Predicate n3 = cb.notEqual(b.get("subCoverId"),"0");
 		query.where(n1,n2,n3).orderBy(orderList);
 
 		// Get Result
 		TypedQuery<CoverMaster> result = em.createQuery(query);
-		result.setFirstResult(limit * offset);
-		result.setMaxResults(offset);
 		coverList = result.getResultList();
 		
 		// Map
@@ -656,14 +674,6 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 		DecimalFormat df = new DecimalFormat(pattern);
 		
 	try {
-		Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
-		Calendar cal = new GregorianCalendar(); 
-		cal.setTime(today);
-		cal.set(Calendar.HOUR_OF_DAY, 23);
-		cal.set(Calendar.MINUTE, 1);
-		today   = cal.getTime();
-		
-		List<CoverMaster> list = new ArrayList<CoverMaster>();
 		// Find Latest Record
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CoverMaster> query = cb.createQuery(CoverMaster.class);
@@ -675,28 +685,27 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 		query.select(b);
 
 		// Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
-		Root<CoverMaster> ocpm1 = effectiveDate.from(CoverMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		Subquery<Long> amendId = query.subquery(Long.class);
+		Root<CoverMaster> ocpm1 = amendId.from(CoverMaster.class);
+		amendId.select(cb.max(ocpm1.get("amendId")));
 		Predicate a1 = cb.equal(ocpm1.get("subCoverId"), b.get("subCoverId"));
-		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-		Predicate a3 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
-		effectiveDate.where(a1,a2,a3);
+		Predicate a2 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
+		amendId.where(a1,a2);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.desc(b.get("effectiveDateStart")));
-
+		orderList.add(cb.asc(b.get("subCoverName")));
+		
 		// Where
-		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-		Predicate n2 = cb.equal(b.get("subCoverId"), req.getSubCoverId() );
-		Predicate n3 = cb.equal(b.get("coverId"), req.getCoverId());
-		Predicate n4 = cb.notEqual(b.get("subCoverId"), req.getCoverId());
-		query.where(n1,n2,n3,n4).orderBy(orderList);
+		Predicate n1 = cb.equal(b.get("amendId"), amendId);
+		Predicate n2 = cb.equal(b.get("coverId"), req.getCoverId());
+		Predicate n3 = cb.equal(b.get("subCoverId"),req.getSubCoverId());
+		query.where(n1,n2,n3).orderBy(orderList);
 
 		// Get Result
 		TypedQuery<CoverMaster> result = em.createQuery(query);
-		list = result.getResultList();
+		List<CoverMaster> list = result.getResultList();
+					
 		res = dozerMapper.map(list.get(0) , SubCoverMasterGetRes.class);
 		res.setSubCoverId(String.valueOf(list.get(0).getSubCoverId()));
 		res.setEntryDate(list.get(0).getEntryDate());
@@ -742,148 +751,99 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 		List<SubCoverMasterGetAllRes> resList = new ArrayList<SubCoverMasterGetAllRes>();
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
-			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
-			Calendar cal = new GregorianCalendar(); 
-			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 1);
-			today   = cal.getTime();
-			
-			List<CoverMaster> list = new ArrayList<CoverMaster>();
-			//Pagination
-			int limit=StringUtils.isBlank(req.getLimit())?0:Integer.valueOf(req.getLimit());
-			int offset=StringUtils.isBlank(req.getOffset())?100:Integer.valueOf(req.getOffset());
+			List<CoverMaster> coverList = new ArrayList<CoverMaster>();
 			
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<CoverMaster> query = cb.createQuery(CoverMaster.class);
-	
+
 			// Find All
 			Root<CoverMaster> b = query.from(CoverMaster.class);
-	
+
 			// Select
 			query.select(b);
-	
+
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<CoverMaster> ocpm1 = effectiveDate.from(CoverMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<CoverMaster> ocpm1 = amendId.from(CoverMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("subCoverId"), b.get("subCoverId"));
-			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			Predicate a3 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
-			effectiveDate.where(a1,a2,a3);
-	
+			Predicate a2 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
+			amendId.where(a1,a2);
+
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("subCoverName")));
-	
+			
 			// Where
-			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			Predicate n2 = cb.equal(b.get("status"), "Y");
-			Predicate n3 = cb.equal(b.get("coverId"), req.getCoverId());
-			Predicate n4 = cb.notEqual(b.get("subCoverId"), req.getCoverId());
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n2 = cb.equal(b.get("coverId"), req.getCoverId());
+			Predicate n3 = cb.notEqual(b.get("subCoverId"),"0");
+			Predicate n4 = cb.equal(b.get("status"),"Y");
 			query.where(n1,n2,n3,n4).orderBy(orderList);
-	
+
 			// Get Result
 			TypedQuery<CoverMaster> result = em.createQuery(query);
-			result.setFirstResult(limit * offset);
-			result.setMaxResults(offset);
-			list = result.getResultList();
-	
+			coverList = result.getResultList();
+			
 			// Map
-			for (CoverMaster data : list) {
+			for (CoverMaster data : coverList) {
 				SubCoverMasterGetAllRes res = new SubCoverMasterGetAllRes();
-	
 				res = dozerMapper.map(data, SubCoverMasterGetAllRes.class);
 				resList.add(res);
 			}
-	
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info(e.getMessage());
 			return null;
-	
+
 		}
 		return resList;
-	}
+		}
 	
 	@Override
 	public SuccessRes changeStatusOfSubCover(SubCoverChangeStatusReq req) {
 		SuccessRes res = new SuccessRes();
 		try {
-			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
-			Calendar cal = new GregorianCalendar(); 
-			
-			CoverMaster updateRecord  = new CoverMaster();
-			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 1);
-			today   = cal.getTime();
-			
 			List<CoverMaster> list = new ArrayList<CoverMaster>();
+			
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<CoverMaster> query = cb.createQuery(CoverMaster.class);
-	
-			// Find All
+			// Find all
 			Root<CoverMaster> b = query.from(CoverMaster.class);
-	
-			// Select
+			//Select
 			query.select(b);
-	
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<CoverMaster> ocpm1 = effectiveDate.from(CoverMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			Predicate a1 = cb.equal(ocpm1.get("subCoverId"), b.get("subCoverId"));
-			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			Predicate a3 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
-			effectiveDate.where(a1,a2,a3);
-	
+
+			// Amend ID Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<CoverMaster> ocpm1 = amendId.from(CoverMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
+			Predicate a2 = cb.equal(ocpm1.get("subCoverId"), b.get("subCoverId"));
+			
+			amendId.where(a1, a2);
+
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(b.get("effectiveDateStart")));
-	
+			orderList.add(cb.asc(b.get("subCoverId")));
+
 			// Where
-			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			Predicate n2 = cb.equal(b.get("subCoverId"), req.getSubCoverId() );
-			Predicate n3 = cb.equal(b.get("coverId"), req.getCoverId() );
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n2 = cb.equal(b.get("coverId"),req.getCoverId());
+			Predicate n3 = cb.equal(b.get("subCoverId"), req.getSubCoverId());
+			
 			query.where(n1,n2,n3).orderBy(orderList);
-	
-			// Get Result
+			
+			// Get Result 
 			TypedQuery<CoverMaster> result = em.createQuery(query);
 			list = result.getResultList();
-			updateRecord = list.get(0) ;
-				
-			if (req.getStatus().equalsIgnoreCase("N") )	{
-					// Delete Old Records
-					cal.setTime(today);
-					cal.set(Calendar.HOUR_OF_DAY, 23);
-					cal.set(Calendar.MINUTE, 1);
-					today   = cal.getTime();
-					
-					// create update
-					CriteriaDelete<CoverMaster> delete = cb.createCriteriaDelete(CoverMaster.class);
-					Root<CoverMaster> pm = delete.from(CoverMaster.class);
-					 // Where	
-					javax.persistence.criteria.Predicate n4 = cb.equal(pm.get("coverId"), req.getCoverId());
-					javax.persistence.criteria.Predicate n5 = cb.greaterThanOrEqualTo(pm.get("effectiveDateStart"), today);
-					Predicate n6 = cb.equal(pm.get("subCoverId"),req.getSubCoverId());
-					delete.where(n4,n5,n6);	
-					em.createQuery(delete).executeUpdate();
-					
-					// Insert Updated Record
-					
-						updateRecord = list.get(0) ; 
-						updateRecord.setStatus(req.getStatus());
-						repo.saveAndFlush(updateRecord);	
-					
-			} else if (req.getStatus().equalsIgnoreCase("Y") ) {
-				// Insert Updated Record
-					updateRecord = list.get(0) ;  
-					updateRecord.setStatus(req.getStatus());
-					repo.saveAndFlush(updateRecord);	
-			}
+			CoverMaster updateRecord = list.get(0);
+			
+			updateRecord.setStatus(req.getStatus());
+			repo.save(updateRecord);
+			
 			
 			res.setResponse("Status Changed");
 			res.setSuccessId(req.getSubCoverId());

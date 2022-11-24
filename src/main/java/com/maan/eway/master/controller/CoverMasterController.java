@@ -191,7 +191,7 @@ public class CoverMasterController {
 
 		}
 		
-		@GetMapping("/dropdown/discountcovers")
+		@PostMapping("/dropdown/discountcovers")
 		@ApiOperation(value = "This method is get Section Cover Master Drop Down")
 
 		public ResponseEntity<CommonRes> getCoverMasterDropdown(@RequestBody DiscountCoverReq req ) {

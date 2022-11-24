@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CurrencyDropDownReq;
+import com.maan.eway.master.req.CurrencyMasterChangeStatusReq;
 import com.maan.eway.master.req.CurrencyMasterGetAllReq;
 import com.maan.eway.master.req.CurrencyMasterGetReq;
 import com.maan.eway.master.req.CurrencyMasterSaveReq;
@@ -142,6 +143,27 @@ public class CurrencyMasterController {
 		}
 	}
 		
+	@PostMapping("/changestatuscurrencydetails")
+	@ApiOperation("This method is change Status Currency Details")
+	public ResponseEntity<CommonRes>changeStatusCurrencyDetails(@RequestBody CurrencyMasterChangeStatusReq req) {
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+
+		SuccessRes res = currencyService.changeStatusCurrencyDetails(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	
+	
 /*		// Currency Master Drop Down Type
 		@PostMapping("/dropdown/currency")
 		@ApiOperation(value = "This method is get Currency Master Drop Down")

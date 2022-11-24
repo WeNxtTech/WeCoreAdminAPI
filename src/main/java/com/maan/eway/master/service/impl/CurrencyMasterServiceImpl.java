@@ -9,9 +9,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -36,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.maan.eway.master.req.CurrencyDropDownReq;
+import com.maan.eway.master.req.CurrencyMasterChangeStatusReq;
 import com.maan.eway.master.req.CurrencyMasterGetAllReq;
 import com.maan.eway.master.req.CurrencyMasterGetReq;
 import com.maan.eway.master.req.CurrencyMasterSaveReq;
@@ -44,6 +48,7 @@ import com.maan.eway.master.service.CurrencyMasterService;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.CurrencyMaster;
 import com.maan.eway.bean.ExchangeMaster;
+import com.maan.eway.bean.CurrencyMaster;
 import com.maan.eway.bean.StateMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.CurrencyMasterRepository;
@@ -82,16 +87,14 @@ public SuccessRes insertCurrency(CurrencyMasterSaveReq req) {
 	 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 	
 	try {
-		Calendar cal = new GregorianCalendar();
-		cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
-		Date startDate = cal.getTime() ;
-		Date today = new Date();
-		cal.setTime(req.getEffectiveDate());   cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
-		Date oldEndDate = cal.getTime() ;
-		cal.setTime(req.getEffectiveDate());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
-		Date effDate = cal.getTime();
-		Date endDate = sdformat.parse("12/12/2050");
-			
+		Integer amendId=0;
+		Date startDate = req.getEffectiveDateStart() ;
+		String end = "31/12/2050";
+		Date endDate = sdformat.parse(end);
+		long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+		Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
+		Date entryDate = null ;
+		String createdBy = "" ;
 		String currencyId="";
 		
 		if (StringUtils.isBlank(req.getCurrencyId())) {
@@ -99,7 +102,7 @@ public SuccessRes insertCurrency(CurrencyMasterSaveReq req) {
 			   	//Long totalCount = repo.count();
 				currencyId = req.getCurrencyShortCode();
 				res.setResponse("Saved Successfully ");
-				res.setSuccessId(currencyId.toString());
+				res.setSuccessId(currencyId);
 
 			} else {
 				// Update
@@ -114,52 +117,66 @@ public SuccessRes insertCurrency(CurrencyMasterSaveReq req) {
 
 				// Select
 				query.select(b);
-
-				// Effective Date Max Filter
-				Subquery<Long> effectiveDate = query.subquery(Long.class);
-				Root<CurrencyMaster> ocpm1 = effectiveDate.from(CurrencyMaster.class);
-				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-				Predicate a1 = cb.equal(ocpm1.get("currencyId"), b.get("currencyId"));
-				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , startDate);
-				effectiveDate.where(a1,a2);
-
 				// Order By
-			//	List<Order> orderList = new ArrayList<Order>();
-			//	orderList.add(cb.asc(b.get("branchName")));
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.desc(b.get("effectiveDateStart")));
+				
 				
 				// Where
 				Predicate n1 = cb.equal(b.get("status"), "Y");
-				Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+				Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
 				Predicate n3 =  cb.equal(b.get("currencyId"), req.getCurrencyId() );
 
-				query.where(n1, n2, n3);//.orderBy(orderList);
+				query.where(n1, n2, n3).orderBy(orderList);
 
 				// Get Result
 				TypedQuery<CurrencyMaster> result = em.createQuery(query);
+				int limit = 0 , offset = 2 ;
+				result.setFirstResult(limit * offset);
+				result.setMaxResults(offset);
 				list = result.getResultList();
+					
+				if(list.size()>0) {
+					Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
 				
-				if( list.size() > 0) {
-					repo.delete(list.get(0));
-				} 
+					if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
+						amendId = list.get(0).getAmendId() + 1 ;
+						entryDate = new Date() ;
+						createdBy = req.getCreatedBy();
+							CurrencyMaster lastRecord = list.get(0);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							repo.saveAndFlush(lastRecord);
+						
+					} else {
+						amendId = list.get(0).getAmendId() ;
+						entryDate = list.get(0).getEntryDate() ;
+						createdBy = list.get(0).getCreatedBy();
+						saveData = list.get(0) ;
+						if (list.size()>1 ) {
+							CurrencyMaster lastRecord = list.get(1);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							repo.saveAndFlush(lastRecord);
+						}
+					
+				    }
+				}
 				res.setResponse("Updated Successfully ");
-				res.setSuccessId(currencyId.toString());
+				res.setSuccessId(currencyId);
 			}
 		
 		    dozerMapper.map(req, saveData );
 			saveData.setCurrencyId(currencyId);
 			saveData.setCurrencyName(req.getCurrencyName());
-			saveData.setEffectiveDateStart(effDate);
+			saveData.setEffectiveDateStart(req.getEffectiveDateStart());
 			saveData.setEffectiveDateEnd(endDate);
 			saveData.setStatus(req.getStatus());
 			saveData.setEntryDate(new Date());
+			saveData.setUpdatedDate(new Date());
+			saveData.setUpdatedBy(req.getCreatedBy());
+			saveData.setAmendId(amendId);
+			saveData.setCoreAppCode(req.getCoreAppCode());
+			saveData.setCurrencyShortCode(req.getCurrencyShortCode());
 			repo.saveAndFlush(saveData);
-			
-			if(list.size() > 0 ) {
-				// Update Old Record
-				CurrencyMaster lastRecord = list.get(0) ;
-				lastRecord.setEffectiveDateEnd(oldEndDate);
-				repo.saveAndFlush(lastRecord);
-			}
 			
 			log.info("Saved Details is ---> " + json.toJson(saveData));
 			
@@ -189,10 +206,10 @@ public List<Error> validateCurrencyDetails(CurrencyMasterSaveReq req) {
 		Date today = new Date();
 		cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
 		today = cal.getTime();
-		if (req.getEffectiveDate() == null || StringUtils.isBlank(req.getEffectiveDate().toString())) {
+		if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
 			errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start"));
 
-		} else if (req.getEffectiveDate().before(today)) {
+		} else if (req.getEffectiveDateStart().before(today)) {
 			errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
 		}
 		//Status Validation
@@ -200,8 +217,8 @@ public List<Error> validateCurrencyDetails(CurrencyMasterSaveReq req) {
 			errorList.add(new Error("05", "Status", "Please Enter Status"));
 		} else if (req.getStatus().length() > 1) {
 			errorList.add(new Error("05", "Status", "Enter Status in 1 Character Only"));
-		}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()))) {
-			errorList.add(new Error("05", "Status", "Enter Status in Y or N Only"));
+		}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus())||"R".equals(req.getStatus()))) {
+			errorList.add(new Error("05", "Status", "Please Enter Status"));
 		}
 
 		if (StringUtils.isBlank(req.getCurrencyShortCode())) {
@@ -380,10 +397,7 @@ public List<CurrencyMasterRes> getallCurrencyDetails(CurrencyMasterGetAllReq req
 	ModelMapper mapper = new ModelMapper();
 	try {
 		List<CurrencyMaster> list = new ArrayList<CurrencyMaster>();
-		//Pagination
-		int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-		int offset = StringUtils.isBlank(req.getOffset()) ? 0 : Integer.valueOf(req.getOffset());
-
+	
 		// Find Latest Record
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CurrencyMaster> query = cb.createQuery(CurrencyMaster.class);
@@ -394,27 +408,31 @@ public List<CurrencyMasterRes> getallCurrencyDetails(CurrencyMasterGetAllReq req
 		// Select
 		query.select(b);
 
-		// Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
-		Root<CurrencyMaster> ocpm1 = effectiveDate.from(CurrencyMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		//AmendId Max Filter
+		Subquery<Long> amendId = query.subquery(Long.class);
+		Root<CurrencyMaster> ocpm1 = amendId.from(CurrencyMaster.class);
+		amendId.select(cb.max(ocpm1.get("amendId")));
 		Predicate a1 = cb.equal(ocpm1.get("currencyId"), b.get("currencyId"));
-		effectiveDate.where(a1);
+		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+
+		amendId.where(a1,a2);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(b.get("currencyName")));
+		orderList.add(cb.asc(b.get("companyId")));
 		
 		// Where
-		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-
-		query.where(n1).orderBy(orderList);
+		Predicate n1 = cb.equal(b.get("amendId"), amendId);
+		Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
+		Predicate n3 = cb.equal(b.get("companyId"), "99999");
+		Predicate n4 = cb.or(n2,n3);
+		query.where(n1,n2,n4).orderBy(orderList);
 
 		// Get Result
 		TypedQuery<CurrencyMaster> result = em.createQuery(query);
-		result.setFirstResult(limit * offset);
-		result.setMaxResults(offset);
 		list = result.getResultList();
+		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCurrencyId()))).collect(Collectors.toList());
+		list.sort(Comparator.comparing(CurrencyMaster :: getCurrencyName ));
 		
 		// Map
 		for (CurrencyMaster data : list) {
@@ -434,7 +452,10 @@ public List<CurrencyMasterRes> getallCurrencyDetails(CurrencyMasterGetAllReq req
 	}
 	return resList;
 }
-
+private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
+    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+}
 ///*********************************************************************GET BY ID******************************************************\\
 @Override
 public CurrencyMasterRes getByCurrencyId(CurrencyMasterGetReq req) {
@@ -443,6 +464,13 @@ public CurrencyMasterRes getByCurrencyId(CurrencyMasterGetReq req) {
 	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
 	try {
+		Date today = new Date();
+		Calendar cal = new GregorianCalendar();
+		cal.setTime(today);
+		cal.set(Calendar.HOUR_OF_DAY, 23);
+		cal.set(Calendar.MINUTE, 1);
+		today = cal.getTime();
+
 		// Criteria
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CurrencyMaster> query = cb.createQuery(CurrencyMaster.class);
@@ -454,36 +482,42 @@ public CurrencyMasterRes getByCurrencyId(CurrencyMasterGetReq req) {
 		// Select
 		query.select(c );
 		
-		// Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
-		Root<CurrencyMaster> ocpm1 = effectiveDate.from(CurrencyMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-		javax.persistence.criteria.Predicate a1 = cb.equal(c.get("currencyId"),ocpm1.get("currencyId") );
-		effectiveDate.where(a1);
+		// amendId Max Filter
+		Subquery<Long>amendId = query.subquery(Long.class);
+		Root<CurrencyMaster> ocpm1 = amendId.from(CurrencyMaster.class);
+		amendId.select(cb.max(ocpm1.get("amendId")));
+		Predicate a1 = cb.equal(c.get("currencyId"),ocpm1.get("currencyId") );
+		Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+
+		amendId.where(a1,a2);
 		
-		
+	
 		
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(c.get("effectiveDateStart")));
+		orderList.add(cb.asc(c.get("companyId")));
 		
 	    // Where	
 	
-		javax.persistence.criteria.Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate);		
+		javax.persistence.criteria.Predicate n1 = cb.equal(c.get("amendId"), amendId);		
 		javax.persistence.criteria.Predicate n2 = cb.equal(c.get("currencyId"),req.getCurrencyId()) ;
-
-
-		query.where(n1 ,n2).orderBy(orderList);
+		Predicate n3 = cb.equal(c.get("companyId"), req.getCompanyId());
+		Predicate n4 = cb.equal(c.get("companyId"), "99999");
+		Predicate n5 = cb.or(n3,n4);
+		query.where(n1,n2,n5).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<CurrencyMaster> result = em.createQuery(query);			
-		list =  result.getResultList();  
+		list = result.getResultList();
+		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCurrencyId()))).collect(Collectors.toList());
+		list.sort(Comparator.comparing(CurrencyMaster :: getCurrencyName ));
 		res = mapper.map(list.get(0) , CurrencyMasterRes.class);
 		res.setCurrencyId(list.get(0).getCurrencyId().toString());
 		res.setEntryDate(list.get(0).getEntryDate());
 		res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
 		res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
-	} catch (Exception e) {
+		res.setCompanyId(list.get(0).getCompanyId());
+		} catch (Exception e) {
 		e.printStackTrace();
 		log.info("Exception is ---> " + e.getMessage());
 		return null;
@@ -603,11 +637,7 @@ public List<CurrencyMasterRes> getActiveCurrencyDetails(CurrencyMasterGetAllReq 
 	ModelMapper mapper = new ModelMapper();
 	try {
 		List<CurrencyMaster> list = new ArrayList<CurrencyMaster>();
-
-		//Pagination
-		int limit=StringUtils.isBlank(req.getLimit())?0:Integer.valueOf(req.getLimit());
-		int offset=StringUtils.isBlank(req.getOffset())?10:Integer.valueOf(req.getOffset());
-		
+	
 		// Find Latest Record
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CurrencyMaster> query = cb.createQuery(CurrencyMaster.class);
@@ -618,29 +648,34 @@ public List<CurrencyMasterRes> getActiveCurrencyDetails(CurrencyMasterGetAllReq 
 		// Select
 		query.select(b);
 
-		// Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
-		Root<CurrencyMaster> ocpm1 = effectiveDate.from(CurrencyMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		//AmendId Max Filter
+		Subquery<Long> amendId = query.subquery(Long.class);
+		Root<CurrencyMaster> ocpm1 = amendId.from(CurrencyMaster.class);
+		amendId.select(cb.max(ocpm1.get("amendId")));
 		Predicate a1 = cb.equal(ocpm1.get("currencyId"), b.get("currencyId"));
-		effectiveDate.where(a1);
+		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+
+		amendId.where(a1,a2);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(b.get("currencyName")));
-
+		orderList.add(cb.asc(b.get("companyId")));
+		
 		// Where
-		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-		Predicate n2 = cb.equal(b.get("status"), "Y");
+		Predicate n1 = cb.equal(b.get("amendId"), amendId);
+		Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
+		Predicate n3 = cb.equal(b.get("companyId"), "99999");
+		Predicate n4 = cb.or(n2,n3);
+		Predicate n5 = cb.equal(b.get("status"), "Y");
 
-		query.where(n1,n2).orderBy(orderList);
+		query.where(n1,n2,n4,n5).orderBy(orderList);
 
 		// Get Result
 		TypedQuery<CurrencyMaster> result = em.createQuery(query);
-		result.setFirstResult(limit * offset);
-		result.setMaxResults(offset);
 		list = result.getResultList();
-
+		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCurrencyId()))).collect(Collectors.toList());
+		list.sort(Comparator.comparing(CurrencyMaster :: getCurrencyName ));
+		
 		// Map
 		for (CurrencyMaster data : list) {
 			CurrencyMasterRes res = new CurrencyMasterRes();
@@ -651,6 +686,8 @@ public List<CurrencyMasterRes> getActiveCurrencyDetails(CurrencyMasterGetAllReq 
 			resList.add(res);
 		}
 
+
+
 	} catch (Exception e) {
 		e.printStackTrace();
 		log.info(e.getMessage());
@@ -658,6 +695,72 @@ public List<CurrencyMasterRes> getActiveCurrencyDetails(CurrencyMasterGetAllReq 
 
 	}
 	return resList;
+}
+
+
+@Override
+public SuccessRes changeStatusCurrencyDetails(CurrencyMasterChangeStatusReq req) {
+	SuccessRes res = new SuccessRes();
+	DozerBeanMapper dozerMapper = new DozerBeanMapper();
+	try {
+		List<CurrencyMaster> list = new ArrayList<CurrencyMaster>();
+		
+		// Find Latest Record
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<CurrencyMaster> query = cb.createQuery(CurrencyMaster.class);
+		// Find all
+		Root<CurrencyMaster> b = query.from(CurrencyMaster.class);
+		//Select
+		query.select(b);
+
+		// Amend ID Max Filter
+		Subquery<Long> amendId = query.subquery(Long.class);
+		Root<CurrencyMaster> ocpm1 = amendId.from(CurrencyMaster.class);
+		amendId.select(cb.max(ocpm1.get("amendId")));
+		Predicate a1 = cb.equal(ocpm1.get("currencyId"), b.get("currencyId"));
+		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+
+		amendId.where(a1, a2);
+
+		// Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.asc(b.get("companyId")));
+
+		// Where
+		Predicate n1 = cb.equal(b.get("amendId"), amendId);
+		Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
+		Predicate n4 = cb.equal(b.get("currencyId"), req.getCurrencyId());
+		Predicate n5 = cb.equal(b.get("currencyId"), "99999");
+		Predicate n6 = cb.or(n2,n5);
+		
+		query.where(n1,n4,n6).orderBy(orderList);
+		
+		// Get Result 
+		TypedQuery<CurrencyMaster> result = em.createQuery(query);
+		list = result.getResultList();
+		CurrencyMaster updateRecord = list.get(0);
+		if(  req.getCompanyId().equalsIgnoreCase(updateRecord.getCompanyId())) {
+			updateRecord.setStatus(req.getStatus());
+			repo.save(updateRecord);
+		} else {
+			CurrencyMaster saveNew = new CurrencyMaster();
+			dozerMapper.map(updateRecord,saveNew);
+			saveNew.setCompanyId(req.getCompanyId());
+			saveNew.setStatus(req.getStatus());
+			repo.save(saveNew);
+		}
+	
+		// Perform Update
+		res.setResponse("Status Changed");
+		res.setSuccessId(req.getCurrencyId());
+	}
+	catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is --> " + e.getMessage());
+		return null;
+		}
+	return res;
+
 }
 
 }

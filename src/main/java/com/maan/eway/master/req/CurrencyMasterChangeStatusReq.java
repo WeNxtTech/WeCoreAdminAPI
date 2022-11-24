@@ -9,18 +9,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class CurrencyMasterGetAllReq implements Serializable {
+public class CurrencyMasterChangeStatusReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @JsonProperty("Limit")
-    private String limit;
-    
-    @JsonProperty("Offset")
-    private String offset;
-   
-    @JsonProperty("InsuranceId")
-    private String companyId;
-   
+	@JsonProperty("CurrencyId")
+    private String     currencyId     ;
 
+	@JsonProperty("InsuranceId")
+    private String     companyId     ;
+    
+	@JsonProperty("Status")
+    private String    status    ;
+    
 }

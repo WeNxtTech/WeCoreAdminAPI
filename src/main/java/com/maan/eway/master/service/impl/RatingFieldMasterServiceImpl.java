@@ -179,8 +179,8 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 			OneTimeTableDetails columnname = oneTimeRepo.findByItemTypeAndItemCode(tablename.getItemValue(),req.getInputColumn());
 			if (StringUtils.isBlank(req.getRatingId())) {
 				// Save
-				Long totalCount = getMasterTableCount(req.getProductId());
-				factorId = Long.valueOf(totalCount + 1).toString();
+				Integer totalCount = getMasterTableCount(req.getProductId());
+				factorId = Integer.valueOf(totalCount + 1).toString();
 				entryDate = new Date();
 				createdBy = req.getCreatedBy();
 				
@@ -266,18 +266,18 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 		return res;
 	}
 
-	public Long getMasterTableCount(String productId) {
-		Long data = 0L;
+	public Integer getMasterTableCount(String productId) {
+		Integer data = 0;
 		try {
-			List<Long> list = new ArrayList<Long>();
+			List<RatingFieldMaster> list = new ArrayList<RatingFieldMaster>();
 			// Find Latest Record
 
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<Long> query = cb.createQuery(Long.class);
+			CriteriaQuery<RatingFieldMaster> query = cb.createQuery(RatingFieldMaster.class);
 			// Find All
 			Root<RatingFieldMaster> b = query.from(RatingFieldMaster.class);
 			// Select
-			query.multiselect(cb.count(b));
+			query.select(b);
 			// Effective Date Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
 			Root<RatingFieldMaster> ocpm1 = effectiveDate.from(RatingFieldMaster.class);
@@ -286,13 +286,20 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 			Predicate a2 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			effectiveDate.where(a1, a2);
 			
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("ratingId")));
+						
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("productId"), productId);
-			query.where(n1, n2);
+			query.where(n1, n2).orderBy(orderList);
 			// Get Result
-			TypedQuery<Long> result = em.createQuery(query);
+			TypedQuery<RatingFieldMaster> result = em.createQuery(query);
+			int limit = 0 , offset = 1 ;
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
 			list = result.getResultList();
-			data = list.get(0);
+			data = list.size() > 0 ? list.get(0).getRatingId() : 0 ;
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info(e.getMessage());
@@ -686,6 +693,7 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getRatingId().toString());
 				res.setCodeDesc(data.getRatingField());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {

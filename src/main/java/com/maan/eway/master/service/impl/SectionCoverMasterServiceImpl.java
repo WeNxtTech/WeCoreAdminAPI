@@ -839,6 +839,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				DropDownRes res = new DropDownRes();
 				res.setCode(coverData.getCoverId().toString());
 				res.setCodeDesc(coverData.getCoverName());
+				res.setStatus(coverData.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {

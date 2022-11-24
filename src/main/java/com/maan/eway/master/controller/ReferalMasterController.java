@@ -87,14 +87,13 @@ public class ReferalMasterController {
 		
 		//  Get All Referal Master
 		
-		@PostMapping("/getallreferaldetails")
+		@GetMapping("/getallreferaldetails")
 		@ApiOperation("This method is getall Referal Details")
-		public ResponseEntity<CommonRes> getallReferalDetails(@RequestBody ReferalMasterGetAllReq req)
+		public ResponseEntity<CommonRes> getallReferalDetails()
 		{
 			CommonRes data = new CommonRes();
-			reqPrinter.reqPrint(req);
 			
-			List<ReferalMasterRes> res = referalService.getallReferalDetails(req);
+			List<ReferalMasterRes> res = referalService.getallReferalDetails();
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);
@@ -110,14 +109,14 @@ public class ReferalMasterController {
 		
 	//  Get Active Referral Master
 		
-			@PostMapping("/getactivereferal")
+			@GetMapping("/getactivereferal")
 			@ApiOperation("This method is get Active Referal Details")
-			public ResponseEntity<CommonRes> getActiveReferalDetails(@RequestBody ReferalMasterGetAllReq req)
+			public ResponseEntity<CommonRes> getActiveReferalDetails()
 			{
 				CommonRes data = new CommonRes();
-				reqPrinter.reqPrint(req);
 				
-				List<ReferalMasterRes> res = referalService.getActiveReferalDetails(req);
+				
+				List<ReferalMasterRes> res = referalService.getActiveReferalDetails();
 				data.setCommonResponse(res);
 				data.setErrorMessage(Collections.emptyList());
 				data.setIsError(false);

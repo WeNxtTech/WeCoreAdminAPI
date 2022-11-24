@@ -376,11 +376,11 @@ private static <T> java.util.function.Predicate<T> distinctByKey(java.util.funct
 
 ///*********************************************************************GET ALL******************************************************\\
 @Override
-public List<ReferalMasterRes> getallReferalDetails(ReferalMasterGetAllReq req) {
+public List<ReferalMasterRes> getallReferalDetails() {
 	List<ReferalMasterRes> resList = new ArrayList<ReferalMasterRes>();
 	 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 	try {
-		Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
+		Date today  = new Date();
 		Calendar cal = new GregorianCalendar(); 
 		cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 30);
 		today   = cal.getTime();
@@ -558,12 +558,12 @@ public List<DropDownRes> getReferalMasterDropdown() {
 */
 //************************************************GET ACTIVE REFERAL******************************************\\
 @Override
-public List<ReferalMasterRes> getActiveReferalDetails(ReferalMasterGetAllReq req) {
+public List<ReferalMasterRes> getActiveReferalDetails() {
 	List<ReferalMasterRes> resList = new ArrayList<ReferalMasterRes>();
 	 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 	try {
 		
-		Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
+		Date today  =  new Date();
 		Calendar cal = new GregorianCalendar(); 
 		cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 30);
 		today   = cal.getTime();

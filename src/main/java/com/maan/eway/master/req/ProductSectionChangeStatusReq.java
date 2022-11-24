@@ -16,11 +16,11 @@ public class ProductSectionChangeStatusReq {
 	@JsonProperty("SectionId")
 	private String sectionId;
 
+//	@JsonProperty("ProductId")
+//	private String productId;
+
 	@JsonProperty("Status")
 	private String status;
-
-	@JsonProperty("BranchCode")
-	private String branchCode;
 
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")

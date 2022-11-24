@@ -12,9 +12,9 @@ public class ProductSectionsGetReq {
 
 	@JsonProperty("InsuranceId")
 	private String insuranceId;
-
-	@JsonProperty("BranchCode")
-	private String branchCode;
+//
+//	@JsonProperty("BranchCode")
+//	private String branchCode;
 	
 	@JsonProperty("SectionId")
 	private String sectionId;

@@ -352,21 +352,20 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			Predicate a2 = cb.equal(b.get("productId"), ocpm1.get("productId"));
 			Predicate a3 = cb.equal(b.get("companyId"), ocpm1.get("companyId"));
 			Predicate a4 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"), today);
-			Predicate a5 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
-			amendId.where(a1, a2, a3, a4, a5);
+			amendId.where(a1, a2, a3, a4);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("branchCode")));
+			orderList.add(cb.asc(b.get("sectionName")));
 			
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
-			Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
-			Predicate n4 = cb.equal(b.get("branchCode"), "99999");
-			Predicate n5 = cb.or(n3,n4);
-			Predicate n6 = cb.equal(b.get("companyId"), req.getInsuranceId());
-			query.where(n1,n2,n5,n6).orderBy(orderList);
+//			Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
+//			Predicate n4 = cb.equal(b.get("branchCode"), "99999");
+//			Predicate n5 = cb.or(n3,n4);
+		Predicate n6 = cb.equal(b.get("companyId"), req.getInsuranceId());
+			query.where(n1,n2,n6).orderBy(orderList);
 	
 			// Get Result
 			TypedQuery<ProductSectionMaster> result = em.createQuery(query);
@@ -425,14 +424,14 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			javax.persistence.criteria.Predicate a2 = cb.equal(c.get("productId"),ocpm1.get("productId") ) ;
 			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("companyId"),ocpm1.get("companyId") ) ;
 			javax.persistence.criteria.Predicate a4 = cb.lessThanOrEqualTo(c.get("effectiveDateStart"),today ) ;
-			Predicate a5 = cb.equal(ocpm1.get("branchCode"),c.get("branchCode"));
-			amendId.where(a1,a2,a3,a4,a5);
+			//Predicate a5 = cb.equal(ocpm1.get("branchCode"),c.get("branchCode"));
+			amendId.where(a1,a2,a3,a4);
 			
 			
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(c.get("branchCode")));
+			orderList.add(cb.asc(c.get("sectionName")));
 			
 		    // Where	
 		
@@ -440,10 +439,10 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("sectionId"),req.getSectionId()) ;
 			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("productId"),req.getProductId()) ;
 			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("companyId"),req.getInsuranceId()) ;
-			Predicate n5 = cb.equal(c.get("branchCode"), "99999");
-			Predicate n6 = cb.equal(c.get("branchCode"), req.getBranchCode());
-			Predicate n7 = cb.or(n5,n6);
-			query.where(n1 ,n2,n3,n4,n7).orderBy(orderList);
+//			Predicate n5 = cb.equal(c.get("branchCode"), "99999");
+//			Predicate n6 = cb.equal(c.get("branchCode"), req.getBranchCode());
+//			Predicate n7 = cb.or(n5,n6);
+			query.where(n1 ,n2,n3,n4).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<ProductSectionMaster> result = em.createQuery(query);			
@@ -501,22 +500,22 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			Predicate a2 = cb.equal(b.get("productId"), ocpm1.get("productId"));
 			Predicate a3 = cb.equal(b.get("companyId"), ocpm1.get("companyId"));
 			Predicate a4 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"), today);
-			Predicate a5 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
-			amendId.where(a1,a2,a3,a4,a5);
+		
+			amendId.where(a1,a2,a3,a4);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("branchCode")));
+			orderList.add(cb.asc(b.get("sectionName")));
 			
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
 			Predicate n3 = cb.equal(b.get("companyId"), req.getInsuranceId());
-			Predicate n4 = cb.equal(b.get("branchCode"), req.getBranchCode());
-			Predicate n5 = cb.equal(b.get("branchCode"), "99999");
-			Predicate n6 = cb.or(n4,n5);
+	//		Predicate n4 = cb.equal(b.get("branchCode"), req.getBranchCode());
+//			Predicate n5 = cb.equal(b.get("branchCode"), "99999");
+//			Predicate n6 = cb.or(n4,n5);
 			Predicate n7 = cb.equal(b.get("status"), "Y");
-			query.where(n1,n2,n3,n6,n7).orderBy(orderList);
+			query.where(n1,n2,n3,n7).orderBy(orderList);
 			
 	
 			// Get Result
@@ -577,21 +576,21 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
-			effectiveDate.where(a1,a2,a3);
+			//Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+			effectiveDate.where(a1,a2);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("branchCode")));
+			orderList.add(cb.asc(b.get("sectionName")));
 	
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("status"), "Y");
-			Predicate n5 = cb.equal(b.get("branchCode"), "99999");
-			Predicate n6 = cb.equal(b.get("branchCode"), req.getBranchCode());
-			Predicate n7 = cb.or(n5,n6);
+//			Predicate n5 = cb.equal(b.get("branchCode"), "99999");
+//			Predicate n6 = cb.equal(b.get("branchCode"), req.getBranchCode());
+//			Predicate n7 = cb.or(n5,n6);
 	
-			query.where(n1,n2,n7).orderBy(orderList);
+			query.where(n1,n2).orderBy(orderList);
 	
 			// Get Result
 			TypedQuery<ProductSectionMaster> result = em.createQuery(query);
@@ -650,12 +649,12 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
 			Predicate a2 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"),today);
-			Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
-			amendId.where(a1,a2,a3);
+			
+			amendId.where(a1,a2);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("branchCode")));
+			orderList.add(cb.asc(b.get("sectionName")));
 			
 			// Product Section Effective Date Max Filter
 			Subquery<Long> section = query.subquery(Long.class);
@@ -693,13 +692,13 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			Predicate n3 = e0.in(section).not();
 			Predicate n4 = cb.equal(b.get("effectiveDateEnd"), effectiveDate5);
 			Predicate n5 = cb.equal(b.get("status"), "Y");
-			Predicate n6 = cb.equal(b.get("companyId"), req.getInsuranceId());
-			Predicate n7 = cb.equal(b.get("branchCode"), req.getBranchCode());
+			//Predicate n6 = cb.equal(b.get("companyId"), req.getInsuranceId());
+			//Predicate n7 = cb.equal(b.get("branchCode"), req.getBranchCode());
 			
-			Predicate n8 = cb.equal(b.get("branchCode"), "99999");
-			Predicate n9 = cb.or(n7,n8);
+			//Predicate n8 = cb.equal(b.get("branchCode"), "99999");
+			//Predicate n9 = cb.or(n7,n8);
 			
-			query.where(n1,n3,n4,n5,n6,n9).orderBy(orderList);
+			query.where(n1,n3,n4,n5).orderBy(orderList);
 	
 			// Get Result
 			TypedQuery<SectionMaster> result = em.createQuery(query);
@@ -791,6 +790,7 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getSectionId().toString());
 				res.setCodeDesc(data.getSectionName());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}		
 		} catch (Exception e) {
@@ -827,41 +827,54 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			//Amend ID Max Filter
 			Subquery<Long> amendId = query.subquery(Long.class);
 			Root<ProductSectionMaster> ocpm1 = amendId.from(ProductSectionMaster.class);
-			amendId.select(cb.max(ocpm1.get("effectiveDateStart")));
+			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
-			amendId.where(a1,a2,a3);
+			
+			amendId.where(a1,a2);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("branchCode")));
+			orderList.add(cb.asc(b.get("sectionName")));
 	
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("sectionId"), req.getSectionId() );
 			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId() );
-			Predicate n5 = cb.equal(b.get("branchCode"), "99999");
-			Predicate n6 = cb.equal(b.get("branchCode"), req.getBranchCode());
-			Predicate n7 = cb.or(n5,n6);
-			query.where(n1,n2,n3,n7).orderBy(orderList);
+//			Predicate n5 = cb.equal(b.get("branchCode"), "99999");
+//			Predicate n6 = cb.equal(b.get("branchCode"), req.getBranchCode());
+//			Predicate n7 = cb.or(n5,n6);
+			query.where(n1,n2,n3).orderBy(orderList);
 	
 			// Get Result
 			TypedQuery<ProductSectionMaster> result = em.createQuery(query);
 			list = result.getResultList();
 				
 			ProductSectionMaster updateRecord = list.get(0);
-			if(  req.getBranchCode().equalsIgnoreCase(updateRecord.getBranchCode())) {
+			if (req.getStatus().equalsIgnoreCase("N") )	{
+				// Delete Old Records
+				cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 30);
+				today   = cal.getTime();
+				
+				// create update
+				CriteriaDelete<SectionMaster> delete = cb.createCriteriaDelete(SectionMaster.class);
+				Root<SectionMaster> pm = delete.from(SectionMaster.class);
+				
+				 // Where	
+			//	javax.persistence.criteria.Predicate n4 = cb.equal(pm.get("productId"), req.getProductId());
+				javax.persistence.criteria.Predicate n5 = cb.equal(pm.get("sectionId"), req.getSectionId());
+				javax.persistence.criteria.Predicate n6 = cb.greaterThanOrEqualTo(pm.get("effectiveDateStart"), today);
+				delete.where(n5,n6);	
+				em.createQuery(delete).executeUpdate();
+				// Insert Updated Record
 				updateRecord.setStatus(req.getStatus());
 				repo.save(updateRecord);
-			} else {
-				ProductSectionMaster saveNew = new ProductSectionMaster();
-				dozerMapper.map(updateRecord,saveNew);
-				saveNew.setBranchCode(req.getBranchCode());
-				saveNew.setStatus(req.getStatus());
-				repo.save(saveNew);
-			}
-		
+			
+		} else if (req.getStatus().equalsIgnoreCase("Y") ) {
+			// Insert Updated Record
+			updateRecord.setStatus(req.getStatus());
+			repo.save(updateRecord);
+		}
 			// perform update
 			
 			res.setResponse("Status Changed");

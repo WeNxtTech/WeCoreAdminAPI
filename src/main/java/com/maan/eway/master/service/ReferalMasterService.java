@@ -32,9 +32,9 @@ public interface ReferalMasterService  {
 
 	SuccessRes insertReferal(ReferalMasterSaveReq req);
 
-	List<ReferalMasterRes> getallReferalDetails(ReferalMasterGetAllReq req);
+	List<ReferalMasterRes> getallReferalDetails();
 
-	List<ReferalMasterRes> getActiveReferalDetails(ReferalMasterGetAllReq req);
+	List<ReferalMasterRes> getActiveReferalDetails();
 
 	ReferalMasterRes getByReferalId(ReferalMasterGetReq req);
 

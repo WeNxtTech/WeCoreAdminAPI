@@ -19,8 +19,7 @@ public class ProductSectionMasterGetAllReq implements Serializable {
 	@JsonProperty("InsuranceId")
 	private String insuranceId;
 
-	@JsonProperty("BranchCode")
-	private String branchCode;
+
 
 	/*
 	 * @JsonProperty("Limit") private String limit;

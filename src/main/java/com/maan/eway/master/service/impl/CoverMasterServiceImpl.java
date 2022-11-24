@@ -405,7 +405,7 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 				Predicate n3 = cb.equal(b.get("coverId"), req.getCoverId());
 				Predicate n4 = cb.equal(b.get("subCoverId"),"0");
 				
-				query.where(n1, n2, n3);
+				query.where(n1, n2, n3,n4);
 				
 				// Get Result
 				TypedQuery<CoverMaster> result = em.createQuery(query);
@@ -413,165 +413,132 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 				result.setFirstResult(limit * offset);
 				result.setMaxResults(offset);
 				list = result.getResultList();
+				
+				if(list.size()>0) {
+					Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+				
+					if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
+						amendId = list.get(0).getAmendId() + 1 ;
+						entryDate = new Date() ;
+						createdBy = req.getCreatedBy();
+							CoverMaster lastRecord = list.get(0);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							repo.saveAndFlush(lastRecord);
+						
+					} else {
+						amendId = list.get(0).getAmendId() ;
+						entryDate = list.get(0).getEntryDate() ;
+						createdBy = list.get(0).getCreatedBy();
+						saveData = list.get(0) ;
+						if (list.size()>1 ) {
+							CoverMaster lastRecord = list.get(1);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							repo.saveAndFlush(lastRecord);
+						}
+					
+				    }
+				}
+				res.setResponse("Updated Successfully");
+				res.setSuccessId(subcoverId.toString());
 		
 			}
 				
-			if(subCoverYn.equalsIgnoreCase("Y")   ) {
-					
-				if (list.size() > 0) {
-					Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
-
-						// Amend ID
-					amendId = list.get(0).getAmendId() + 1 ;
-					entryDate = new Date() ;
-					createdBy = req.getCreatedBy();
-					CoverMaster lastRecord = list.get(0);
-						lastRecord.setEffectiveDateEnd(oldEndDate);
-						repo.saveAndFlush(lastRecord);
-												
-						}
-						// Update New Record 
-						CoverMaster saveCover = new CoverMaster() ;
-						saveCover.setCoverId(Integer.valueOf(coverId));
-						saveCover.setSubCoverId(Integer.valueOf(subcoverId));						
-						saveCover.setCoverName(req.getCoverName());
-						saveCover.setRegulatoryCode(req.getRegulatoryCode());
-						saveCover.setCoverDesc(req.getCoverDesc());
-						saveCover.setCreatedBy(req.getCreatedBy());
-						saveCover.setEffectiveDateStart(req.getEffectiveDateStart());
-						saveCover.setEffectiveDateEnd(endDate);
-						saveCover.setToolTip(req.getToolTip());
-						saveCover.setEntryDate(new Date());
-						saveCover.setAmendId(amendId);
-						saveCover.setStatus(req.getStatus());
-						saveCover.setRemarks(req.getRemarks());
-						saveCover.setSubCoverYn(req.getSubCoverYn());
-						saveCover.setDependentCoverYn(StringUtils.isNotBlank(req.getDependentCoverYn()) ? req.getDependentCoverYn() : "N" );
-						repo.saveAndFlush(saveCover);
-						log.info("Saved Details is ---> " + json.toJson(saveCover));
-					
-					
-				} else {
-					CoverMaster saveCover = new CoverMaster() ;
-					saveCover.setCoverId(Integer.valueOf(coverId)) ;
-					saveCover.setSubCoverId(Integer.valueOf(subcoverId)) ;
-					saveCover.setCoverName(req.getCoverName());
-					saveCover.setRegulatoryCode(req.getRegulatoryCode());
-					saveCover.setCoverDesc(req.getCoverDesc());
-					saveCover.setToolTip(req.getToolTip());
-					saveCover.setCreatedBy(req.getCreatedBy());
-					saveCover.setEffectiveDateStart(req.getEffectiveDateStart());
-					saveCover.setEffectiveDateEnd(endDate);
-					saveCover.setEntryDate(new Date());
-					saveCover.setAmendId(amendId);
-					saveCover.setStatus(req.getStatus());
-					saveCover.setRemarks(req.getRemarks());
-					saveCover.setSubCoverYn(req.getSubCoverYn());
-					saveCover.setDependentCoverYn(StringUtils.isNotBlank(req.getDependentCoverYn()) ? req.getDependentCoverYn() : "N" );
-					repo.saveAndFlush(saveCover);
-					
+			
+			
+			dozerMapper.map(req, saveData);
+			saveData.setCoverId(Integer.valueOf(coverId)) ;
+			saveData.setSubCoverId(Integer.valueOf(subcoverId)) ;
+			saveData.setCoverName(req.getCoverName());
+			saveData.setEffectiveDateEnd(endDate);
+			saveData.setCreatedBy(createdBy);
+			saveData.setStatus(req.getStatus());
+			saveData.setEntryDate(entryDate);
+			saveData.setUpdatedDate(new Date());
+			saveData.setUpdatedBy(req.getCreatedBy());
+			saveData.setAmendId(amendId);
+			saveData.setCoreAppCode("");
+			saveData.setSubCoverYn("Y");
+			saveData.setDependentCoverYn(StringUtils.isNotBlank(req.getDependentCoverYn()) ? req.getDependentCoverYn() : "N" );
+			repo.saveAndFlush(saveData);
+			
+			// Amount Details
+			if(req.getCalcType().equalsIgnoreCase("F")  ) {
 				
-					
-			} 
-				// Amount Details
-				if(req.getCalcType().equalsIgnoreCase("F")  ) {
-					
-					saveData.setFactorTypeId(req.getFactorTypeId()==null ?null : Integer.valueOf(req.getFactorTypeId()));
-				} else if(req.getCalcType().equalsIgnoreCase("D")  ) {
-					
-					saveData.setDiscountCoverId(req.getDiscountCoverId()==null ?null : Integer.valueOf(req.getDiscountCoverId()));
-				}  else if(req.getCalcType().equalsIgnoreCase("P")  ) {
+				saveData.setFactorTypeId(req.getFactorTypeId()==null ?null : Integer.valueOf(req.getFactorTypeId()));
+			} else if(req.getCalcType().equalsIgnoreCase("D")  ) {
+				
+				saveData.setDiscountCoverId(req.getDiscountCoverId()==null ?null : Integer.valueOf(req.getDiscountCoverId()));
+			}  else if(req.getCalcType().equalsIgnoreCase("P")  ) {
+				
+				// Amount 
+				saveData.setBaseRate(StringUtils.isBlank(req.getBaseRate())? 0D : Double.valueOf(req.getBaseRate()));
+				saveData.setMinPremium(StringUtils.isBlank(req.getMinimumPremium())? 0D : Double.valueOf(req.getMinimumPremium()));
+				saveData.setMaxSuminsured(StringUtils.isBlank(req.getSumInsuredEnd())? 0D : Double.valueOf(req.getSumInsuredEnd()));
+			//	saveData.setMinSuminsured(StringUtils.isBlank(req.getSumInsuredStart())? 0D : Double.valueOf(req.getSumInsuredStart()));
+				
+			}  else if (req.getCalcType().equalsIgnoreCase("G")  ) {
+			
+				// Delete Old Ofs Records
+				List<CoverOfsGridMaster> ofsGrids   = ofsRepo.findByCoverIdAndSubCoverIdOrderByCoveragesSubIdAsc(Integer.valueOf(coverId) ,Integer.valueOf(subcoverId) ); 
+				if( ofsGrids.size() > 0  ) {
+					ofsRepo.deleteAll(ofsGrids);
+				}
+				
+				saveData.setBaseRate(0D );
+				saveData.setMinPremium(0D );
+				saveData.setMaxSuminsured( 0D );
+				saveData.setMinSuminsured( 0D );
+				
+				// Ofs Grid Insert 
+				Integer coverageSubId = 0 ; 
+				for (OfsGridSaveReq data :  req.getGridDetails() ) {
+					CoverOfsGridMaster  ofsSave = new CoverOfsGridMaster();
+					coverageSubId  = coverageSubId  + 1 ;
+					ofsSave.setCreatedBy(req.getCreatedBy());
+					ofsSave.setCoverId(Integer.valueOf(coverId));
+					ofsSave.setSubCoverId(Integer.valueOf(subcoverId));
+					ofsSave.setCoveragesSubId(coverageSubId );
+					ofsSave.setCreatedBy(req.getCreatedBy());
+					ofsSave.setEntryDate(new Date());
+					ofsSave.setStatus(req.getStatus());
+					ofsSave.setCalcType(req.getCalcType());
+					ofsSave.setCalcTypeDesc(calcTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(data.getCalcType()) ).collect(Collectors.toList()).get(0).getItemValue());
 					
 					// Amount 
-					saveData.setBaseRate(StringUtils.isBlank(req.getBaseRate())? 0D : Double.valueOf(req.getBaseRate()));
-					saveData.setMinPremium(StringUtils.isBlank(req.getMinimumPremium())? 0D : Double.valueOf(req.getMinimumPremium()));
-					saveData.setMaxSuminsured(StringUtils.isBlank(req.getSumInsuredEnd())? 0D : Double.valueOf(req.getSumInsuredEnd()));
-				//	saveData.setMinSuminsured(StringUtils.isBlank(req.getSumInsuredStart())? 0D : Double.valueOf(req.getSumInsuredStart()));
+					ofsSave.setBaseRate(StringUtils.isBlank(data.getBaseRate())? 0D : Double.valueOf(data.getBaseRate()));
+					ofsSave.setMinimumPremium(StringUtils.isBlank(data.getMinimumPremium())? 0D : Double.valueOf(data.getMinimumPremium()));
+					ofsSave.setStartSuminsured(StringUtils.isBlank(data.getSumInsuredEnd())? 0D : Double.valueOf(data.getSumInsuredEnd()));
+					ofsSave.setEndSuminsured(StringUtils.isBlank(data.getSumInsuredStart())? 0D : Double.valueOf(data.getSumInsuredStart()));
 					
-				}  else if (req.getCalcType().equalsIgnoreCase("G")  ) {
-				
-					// Delete Old Ofs Records
-					List<CoverOfsGridMaster> ofsGrids   = ofsRepo.findByCoverIdAndSubCoverIdOrderByCoveragesSubIdAsc(Integer.valueOf(coverId) ,Integer.valueOf(subcoverId) ); 
-					if( ofsGrids.size() > 0  ) {
-						ofsRepo.deleteAll(ofsGrids);
-					}
-					
-					saveData.setBaseRate(0D );
-					saveData.setMinPremium(0D );
-					saveData.setMaxSuminsured( 0D );
-					saveData.setMinSuminsured( 0D );
-					
-					// Ofs Grid Insert 
-					Integer coverageSubId = 0 ; 
-					for (OfsGridSaveReq data :  req.getGridDetails() ) {
-						CoverOfsGridMaster  ofsSave = new CoverOfsGridMaster();
-						coverageSubId  = coverageSubId  + 1 ;
-						ofsSave.setCreatedBy(req.getCreatedBy());
-						ofsSave.setCoverId(Integer.valueOf(coverId));
-						ofsSave.setSubCoverId(Integer.valueOf(subcoverId));
-						ofsSave.setCoveragesSubId(coverageSubId );
-						ofsSave.setCreatedBy(req.getCreatedBy());
-						ofsSave.setEntryDate(new Date());
-						ofsSave.setStatus(req.getStatus());
-						ofsSave.setCalcType(req.getCalcType());
-						ofsSave.setCalcTypeDesc(calcTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(data.getCalcType()) ).collect(Collectors.toList()).get(0).getItemValue());
-						
-						// Amount 
-						ofsSave.setBaseRate(StringUtils.isBlank(data.getBaseRate())? 0D : Double.valueOf(data.getBaseRate()));
-						ofsSave.setMinimumPremium(StringUtils.isBlank(data.getMinimumPremium())? 0D : Double.valueOf(data.getMinimumPremium()));
-						ofsSave.setStartSuminsured(StringUtils.isBlank(data.getSumInsuredEnd())? 0D : Double.valueOf(data.getSumInsuredEnd()));
-						ofsSave.setEndSuminsured(StringUtils.isBlank(data.getSumInsuredStart())? 0D : Double.valueOf(data.getSumInsuredStart()));
-						
-						ofsRepo.saveAndFlush(ofsSave);
-					}
-					
-				} else {
-					
-					saveData.setBaseRate(StringUtils.isBlank(req.getBaseRate())? 0D : Double.valueOf(req.getBaseRate()));
-					saveData.setMinPremium(StringUtils.isBlank(req.getMinimumPremium())? 0D : Double.valueOf(req.getMinimumPremium()));
-					saveData.setMaxSuminsured(StringUtils.isBlank(req.getSumInsuredEnd())? 0D : Double.valueOf(req.getSumInsuredEnd()));	
-				
-				
-				saveData.setCoverageLimit(StringUtils.isBlank(req.getCoverageLimit())? 0D : Double.valueOf(req.getCoverageLimit()));
-				saveData.setExcess(StringUtils.isBlank(req.getExcess())? 0D : Double.valueOf(req.getExcess()));
-				saveData.setCalcTypeDesc(calcTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getCalcType()) ).collect(Collectors.toList()).get(0).getItemValue());
-				saveData.setCoverageTypeDesc(coverageTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getCoverageType()) ).collect(Collectors.toList()).get(0).getItemValue());
-				if(  req.getIsTaxExcempted().equalsIgnoreCase("Y") ) {
-					saveData.setTaxExcemptionReference(req.getTaxExcemptionReference());
-					saveData.setTaxExcemptionType(req.getTaxExcemptionType());
-					saveData.setTaxExcemptionTypeDesc(taxExcemptionType.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getTaxExcemptionType()) ).collect(Collectors.toList()).get(0).getItemValue());
-					saveData.setTaxAmount(null);
-					saveData.setTaxCode(null);
-				} else if(req.getIsTaxExcempted().equalsIgnoreCase("N")  ) {
-					saveData.setTaxExcemptionReference(null);
-					saveData.setTaxExcemptionType(null);
-					saveData.setTaxExcemptionTypeDesc(null);
-					saveData.setTaxAmount(req.getTaxAmount()==null ? 0D : Double.valueOf(req.getTaxAmount()));
-					saveData.setTaxCode(req.getTaxCode());
+					ofsRepo.saveAndFlush(ofsSave);
 				}
-				repo.saveAndFlush(saveData);
-				}
-				if (list.size() > 0 ) {
-					// Update Old Record
-					for ( CoverMaster data :  list) {
-						CoverMaster lastRecord = data;
-						lastRecord.setEffectiveDateEnd(oldEndDate);
-						lastRecord.setSubCoverYn(subCoverYn);
-						String startDatewithoutTime = sdformat.format(startDate);
-						String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
-
-						if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
-							lastRecord.setStatus("N");	
-						}
-						repo.saveAndFlush(lastRecord);
-						log.info("Saved Details is ---> " + json.toJson(saveData));
-					}
-					
 				
-			}	
-			res.setResponse("Updated Successfully ");
-			res.setSuccessId(coverId);
+			} else {
+				
+				saveData.setBaseRate(StringUtils.isBlank(req.getBaseRate())? 0D : Double.valueOf(req.getBaseRate()));
+				saveData.setMinPremium(StringUtils.isBlank(req.getMinimumPremium())? 0D : Double.valueOf(req.getMinimumPremium()));
+				saveData.setMaxSuminsured(StringUtils.isBlank(req.getSumInsuredEnd())? 0D : Double.valueOf(req.getSumInsuredEnd()));	
 			
+			
+			saveData.setCoverageLimit(StringUtils.isBlank(req.getCoverageLimit())? 0D : Double.valueOf(req.getCoverageLimit()));
+			saveData.setExcess(StringUtils.isBlank(req.getExcess())? 0D : Double.valueOf(req.getExcess()));
+			saveData.setCalcTypeDesc(calcTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getCalcType()) ).collect(Collectors.toList()).get(0).getItemValue());
+			saveData.setCoverageTypeDesc(coverageTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getCoverageType()) ).collect(Collectors.toList()).get(0).getItemValue());
+			if(  req.getIsTaxExcempted().equalsIgnoreCase("Y") ) {
+				saveData.setTaxExcemptionReference(req.getTaxExcemptionReference());
+				saveData.setTaxExcemptionType(req.getTaxExcemptionType());
+				saveData.setTaxExcemptionTypeDesc(taxExcemptionType.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getTaxExcemptionType()) ).collect(Collectors.toList()).get(0).getItemValue());
+				saveData.setTaxAmount(null);
+				saveData.setTaxCode(null);
+			} else if(req.getIsTaxExcempted().equalsIgnoreCase("N")  ) {
+				saveData.setTaxExcemptionReference(null);
+				saveData.setTaxExcemptionType(null);
+				saveData.setTaxExcemptionTypeDesc(null);
+				saveData.setTaxAmount(req.getTaxAmount()==null ? 0D : Double.valueOf(req.getTaxAmount()));
+				saveData.setTaxCode(req.getTaxCode());
+			}	
+		}
+			repo.saveAndFlush(saveData);	
 						
 	} catch (Exception e) {
 			e.printStackTrace();

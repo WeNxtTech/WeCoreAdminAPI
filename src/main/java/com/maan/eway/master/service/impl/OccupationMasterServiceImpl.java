@@ -92,7 +92,7 @@ public List<Error> validateOccupation(OccupationMasterSaveReq req) {
 	try {
 	
 		if (StringUtils.isBlank(req.getOccupationName())) {
-			errorList.add(new Error("02", "OccupationName", "Please Select OccupationName"));
+			errorList.add(new Error("02", "OccupationName", "Please Enter OccupationName"));
 		}else if (req.getOccupationName().length() > 100){
 			errorList.add(new Error("02","OccupationName", "Please Enter OccupationName 100 Characters")); 
 		}else if (StringUtils.isBlank(req.getOccupationId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {

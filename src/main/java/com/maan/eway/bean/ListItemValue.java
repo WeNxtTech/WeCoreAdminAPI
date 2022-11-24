@@ -14,7 +14,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -42,6 +41,7 @@ import javax.persistence.*;
 @DynamicInsert
 @DynamicUpdate
 @Builder
+@IdClass(ListItemValueId.class)
 @Table(name="list_item_value")
 
 
@@ -53,6 +53,18 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="ITEM_ID", nullable=false)
     private Double     itemId ;
+    
+    @Id
+    @Column(name="AMEND_ID", nullable=false)
+    private Integer     amendId;
+    
+    @Id
+    @Column(name="COMPANY_ID", nullable=false)
+    private String companyId ;
+    
+    @Id
+    @Column(name="BRANCH_CODE", nullable=false)
+    private String branchCode ;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="ITEM_TYPE", length=300)
@@ -77,13 +89,14 @@ private static final long serialVersionUID = 1L;
     @Column(name="STATUS", length=30)
     private String     status ;
 
-    @Column(name="COMPANY_ID", length=100)
-    private String     companyId ;
+    @Column(name="CORE_APP_CODE", length=20)
+    private String     coreAppCode ;
 
-    @Column(name="BRANCH_CODE", length=100)
-    private String     branchCode ;
+    @Column(name="REGULATORY_CODE", length=20)
+    private String     regulatoryCode ;
 
-
+    @Column(name="REMARKS", length=100)
+    private String     remarks ;
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

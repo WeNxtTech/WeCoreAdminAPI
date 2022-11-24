@@ -104,7 +104,7 @@ private static final long serialVersionUID = 1L;
     private String     regulatoryCode ;
 
 
-    @Column(name="UPDATED_BY", nullable=false, length=100)
+    @Column(name="UPDATED_BY", length=100)
     private String     updatedBy ;
 
     @Temporal(TemporalType.TIMESTAMP)

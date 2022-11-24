@@ -171,7 +171,7 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 			saveData.setUpdatedBy(req.getCreatedBy());
 			saveData.setUpdatedDate(new Date());
 			saveData.setTiraCode(req.getRegulatoryCode());
-		
+			saveData.setCoreAppCode(req.getCoreAppCode());
 			repo.saveAndFlush(saveData);
 
 			log.info("Saved Details is ---> " + json.toJson(saveData));

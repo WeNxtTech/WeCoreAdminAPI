@@ -27,9 +27,9 @@ public interface SectionMasterService  {
 
 	SuccessRes insertSection(SectionMasterSaveReq req);
 
-	List<SectionMasterRes> getallSectionDetails(SectionMasterGetAllReq req);
+	List<SectionMasterRes> getallSectionDetails();
 
-	List<SectionMasterRes> getActiveSectionDetails(SectionMasterGetAllReq req);
+	List<SectionMasterRes> getActiveSectionDetails();
 
 	List<ProductSectionGetRes> getProductSections(ProductSectionsGetReq req);
 

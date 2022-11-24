@@ -358,11 +358,11 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 	
 	///*********************************************************************GET ALL******************************************************\\
 	@Override
-	public List<SectionMasterRes> getallSectionDetails(SectionMasterGetAllReq req) {
+	public List<SectionMasterRes> getallSectionDetails() {
 		List<SectionMasterRes> resList = new ArrayList<SectionMasterRes>();
 		 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
-			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
+			Date today  =  new Date();
 			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 30);
@@ -496,11 +496,11 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 	
 	//************************************************GET ACTIVE SECTION******************************************\\
 	@Override
-	public List<SectionMasterRes> getActiveSectionDetails(SectionMasterGetAllReq req) {
+	public List<SectionMasterRes> getActiveSectionDetails() {
 		List<SectionMasterRes> resList = new ArrayList<SectionMasterRes>();
 		 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
-			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
+			Date today  =  new Date();
 			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 30);
 			today   = cal.getTime();

@@ -88,14 +88,14 @@ public class SectionMasterController {
 		
 		//  Get All Section Master
 		
-		@PostMapping("/getallsectiondetails")
+		@GetMapping("/getallsectiondetails")
 		@ApiOperation("This method is getall Section Details")
-		public ResponseEntity<CommonRes> getallSectionDetails(@RequestBody SectionMasterGetAllReq req)
+		public ResponseEntity<CommonRes> getallSectionDetails()
 		{
 			CommonRes data = new CommonRes();
-			reqPrinter.reqPrint(req);
 			
-			List<SectionMasterRes> res = sectionService.getallSectionDetails(req);
+			
+			List<SectionMasterRes> res = sectionService.getallSectionDetails();
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);
@@ -111,14 +111,14 @@ public class SectionMasterController {
 		
 	//  Get Active Section Master
 		
-			@PostMapping("/getactivesection")
+			@GetMapping("/getactivesection")
 			@ApiOperation("This method is get Active Section Details")
-			public ResponseEntity<CommonRes> getActiveSectionDetails(@RequestBody SectionMasterGetAllReq req)
+			public ResponseEntity<CommonRes> getActiveSectionDetails()
 			{
 				CommonRes data = new CommonRes();
-				reqPrinter.reqPrint(req);
 				
-				List<SectionMasterRes> res = sectionService.getActiveSectionDetails(req);
+				
+				List<SectionMasterRes> res = sectionService.getActiveSectionDetails();
 				data.setCommonResponse(res);
 				data.setErrorMessage(Collections.emptyList());
 				data.setIsError(false);

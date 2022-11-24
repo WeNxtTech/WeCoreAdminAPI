@@ -522,12 +522,12 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			
 			saveData.setCoverageLimit(StringUtils.isBlank(req.getCoverageLimit())? 0D : Double.valueOf(req.getCoverageLimit()));
 			saveData.setExcess(StringUtils.isBlank(req.getExcess())? 0D : Double.valueOf(req.getExcess()));
-			saveData.setCalcTypeDesc(calcTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getCalcType()) ).collect(Collectors.toList()).get(0).getItemValue());
-			saveData.setCoverageTypeDesc(coverageTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getCoverageType()) ).collect(Collectors.toList()).get(0).getItemValue());
+			saveData.setCalcTypeDesc(StringUtils.isBlank(req.getCalcType())?"":  calcTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getCalcType()) ).collect(Collectors.toList()).get(0).getItemValue());
+			saveData.setCoverageTypeDesc(StringUtils.isBlank(req.getCoverageType())?"":coverageTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getCoverageType()) ).collect(Collectors.toList()).get(0).getItemValue());
 			if(  req.getIsTaxExcempted().equalsIgnoreCase("Y") ) {
 				saveData.setTaxExcemptionReference(req.getTaxExcemptionReference());
 				saveData.setTaxExcemptionType(req.getTaxExcemptionType());
-				saveData.setTaxExcemptionTypeDesc(taxExcemptionType.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getTaxExcemptionType()) ).collect(Collectors.toList()).get(0).getItemValue());
+				saveData.setTaxExcemptionTypeDesc(StringUtils.isBlank(req.getTaxExcemptionType())?"":taxExcemptionType.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getTaxExcemptionType()) ).collect(Collectors.toList()).get(0).getItemValue());
 				saveData.setTaxAmount(null);
 				saveData.setTaxCode(null);
 			} else if(req.getIsTaxExcempted().equalsIgnoreCase("N")  ) {

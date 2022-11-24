@@ -37,6 +37,7 @@ public class CompanyProductMasterId implements Serializable {
  //   private Date       effectiveDateStart ;
     
  //   private Date       effectiveDateEnd ;
-    
+    private Integer    amendId ;
+
      
 }

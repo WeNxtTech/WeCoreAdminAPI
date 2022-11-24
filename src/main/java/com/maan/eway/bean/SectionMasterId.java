@@ -32,9 +32,7 @@ public class SectionMasterId implements Serializable {
     //--- ENTITY KEY ATTRIBUTES 
     private Integer    sectionId ;
     
-    private Date       effectiveDateStart ;
-    
-    private Date       effectiveDateEnd ;
+    private Integer    amendId ;
     
      
 }

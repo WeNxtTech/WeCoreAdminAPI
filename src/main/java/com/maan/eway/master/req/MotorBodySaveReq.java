@@ -41,6 +41,9 @@ public class MotorBodySaveReq {
 	private String status;
 	@JsonProperty("CreatedBy")
 	private String createdBy;
+
+	@JsonProperty("RegulatoryCode")
+	private String regulatoryCode;
 }                                      
   
    

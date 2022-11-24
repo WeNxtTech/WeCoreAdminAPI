@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -61,15 +60,8 @@ private static final long serialVersionUID = 1L;
     private String     countryId ;
 
     @Id
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EFFECTIVE_DATE_START", nullable=false)
-    private Date       effectiveDateStart ;
-
-    @Id
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EFFECTIVE_DATE_END", nullable=false)
-    private Date       effectiveDateEnd ;
-
+    @Column(name="AMEND_ID", nullable=false)
+    private Integer    amendId ;
     //--- ENTITY DATA FIELDS 
     @Column(name="REGION_NAME", length=100)
     private String     regionName ;
@@ -87,8 +79,13 @@ private static final long serialVersionUID = 1L;
     @Column(name="CORE_APP_CODE", length=20)
     private String     coreAppCode ;
 
-    @Column(name="AMEND_ID", nullable=false)
-    private Integer    amendId ;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EFFECTIVE_DATE_START", nullable=false)
+    private Date       effectiveDateStart ;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EFFECTIVE_DATE_END", nullable=false)
+    private Date       effectiveDateEnd ;
 
     @Column(name="REMARKS", length=100)
     private String     remarks ;
@@ -96,13 +93,18 @@ private static final long serialVersionUID = 1L;
     @Column(name="CREATED_BY", nullable=false, length=50)
     private String     createdBy ;
 
-    @Column(name="TIRA_CODE", nullable=false, length=20)
+    @Column(name="TIRA_CODE",  length=20)
     private String     tiraCode ;
 
     @Column(name="REGULATORY_CODE", nullable=false, length=20)
     private String     regulatoryCode ;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="UPDATED_DATE")
+    private Date       updatedDate ;
 
+    @Column(name="UPDATED_BY", length=20)
+    private String     updatedBy ;
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

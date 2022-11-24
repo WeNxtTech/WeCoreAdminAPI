@@ -93,6 +93,9 @@ public class MotorBodyTypeMaster implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "UPDATED_DATE")
 	private Date updatedDate;
+
+    @Column(name="REGULATORY_CODE",  length=20)
+    private String     regulatoryCode ;
 	
 	
 }

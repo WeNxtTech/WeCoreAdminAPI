@@ -13,11 +13,11 @@ public class ProductMasterGetAllReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
     
-    @JsonProperty("Limit")
-    private String limit;
-    
-    @JsonProperty("Offset")
-    private String offset;
+//    @JsonProperty("Limit")
+//    private String limit;
+//    
+//    @JsonProperty("Offset")
+//    private String offset;
     
     @JsonFormat(pattern ="dd/MM/yyyy")
     @JsonProperty("EffectiveDateStart")

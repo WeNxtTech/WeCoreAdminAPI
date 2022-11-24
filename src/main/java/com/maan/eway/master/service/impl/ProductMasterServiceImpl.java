@@ -394,10 +394,10 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			today   = cal.getTime();
 			
 			List<ProductMaster> list = new ArrayList<ProductMaster>();
-			//Pagination
-			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
-	
+//			//Pagination
+//			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+//			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+//	
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<ProductMaster> query = cb.createQuery(ProductMaster.class);
@@ -426,8 +426,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 	
 			// Get Result
 			TypedQuery<ProductMaster> result = em.createQuery(query);
-			result.setFirstResult(limit * offset);
-			result.setMaxResults(offset);
+	
 			list = result.getResultList();
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getProductId()))).collect(Collectors.toList());
 			list.sort(Comparator.comparing(ProductMaster :: getProductName ));
@@ -604,9 +603,6 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			
 			List<ProductMaster> list = new ArrayList<ProductMaster>();
 	
-			//Pagination
-			int limit=StringUtils.isBlank(req.getLimit())?0:Integer.valueOf(req.getLimit());
-			int offset=StringUtils.isBlank(req.getOffset())?10:Integer.valueOf(req.getOffset());
 			
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -638,8 +634,6 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 	
 			// Get Result
 			TypedQuery<ProductMaster> result = em.createQuery(query);
-			result.setFirstResult(limit * offset);
-			result.setMaxResults(offset);
 			list = result.getResultList();
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getProductId()))).collect(Collectors.toList());
 			list.sort(Comparator.comparing(ProductMaster :: getProductName ));

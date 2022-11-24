@@ -45,6 +45,10 @@ public class MotorMakeSaveReq {
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
+	
+
+	@JsonProperty("RegulatoryCode")
+	private String regulatoryCode;
 
 
 

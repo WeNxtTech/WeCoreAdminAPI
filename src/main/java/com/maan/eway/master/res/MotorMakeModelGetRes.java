@@ -25,6 +25,12 @@ public class MotorMakeModelGetRes {
 	@JsonProperty("BodyId")
 	private String bodyId;
 	
+	@JsonProperty("BranchCode")
+	private String branchCode;
+	
+	@JsonProperty("InsuranceId")
+	private String companyId;
+	
 
 	@JsonProperty("VehicleModelCode")
 	private String vehicleModelCode;
@@ -121,7 +127,7 @@ public class MotorMakeModelGetRes {
 	private String BatchId;
 	
 	@JsonProperty("EntryMode")
-	private Date entryMode;
+	private String entryMode;
 	
 	@JsonProperty("UploadedBy")
 	private String uploadedBy;
@@ -147,9 +153,11 @@ public class MotorMakeModelGetRes {
 	@JsonProperty("NetRate")
 	private String netRate;
 
+	@JsonFormat(pattern = "dd/MM/yyyy" )
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
 	
+	@JsonFormat(pattern = "dd/MM/yyyy" )
 	@JsonProperty("EffectiveDateEnd")
 	private Date effectiveDateEnd;
 	
@@ -165,6 +173,7 @@ public class MotorMakeModelGetRes {
 	private String ropBodyid;
 
 	
+	@JsonFormat(pattern = "dd/MM/yyyy" )
 	@JsonProperty("EntryDate")
 	private Date entryDate;
 		

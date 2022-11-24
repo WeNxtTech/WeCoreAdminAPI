@@ -13,17 +13,8 @@ public class SubCoverMasterGetAllReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
  
-    @JsonProperty("Limit")
-    private String limit;
-    
-    @JsonProperty("Offset")
-    private String offset;
-    
+   
     @JsonProperty("CoverId")
     private String coverId;
    
-    @JsonFormat(pattern ="dd/MM/yyyy")
-    @JsonProperty("EffectiveDateStart")
-    private Date effectiveDateStart;
-
 }

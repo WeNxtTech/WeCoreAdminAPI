@@ -99,7 +99,7 @@ public SuccessRes insertBranch(BranchMasterSaveReq req) {
 	DozerBeanMapper mapper = new DozerBeanMapper();
 	try {
 		Integer amendId = 0 ;
-		Integer branchCode;
+		String branchCode = "";
 		Date startDate = req.getEffectiveDateStart() ;
 		String end = "31/12/2050";
 		Date endDate = sdformat.parse(end);
@@ -109,15 +109,24 @@ public SuccessRes insertBranch(BranchMasterSaveReq req) {
 		String createdBy = "" ;
 		if (StringUtils.isBlank(req.getBranchCode())) {
 				// Save
-				Integer totalCount=getMasterTableCount(req);
-				branchCode =  totalCount+1 ;
+				Integer totalCount=getMasterTableCount();
+				if(totalCount<=9) {
+					branchCode = "0"+ totalCount+1 ;
+							
+				}
+				else {
+					Integer total = totalCount+1;
+					branchCode =  total.toString();
+					
+				}
 				entryDate = new Date();
 				createdBy = req.getCreatedBy();
 				res.setResponse("Saved Successfully");
-				res.setSuccessId(branchCode.toString());
-				saveData.setBranchCode(branchCode.toString());
-				saveData.setBranchName(req.getBranchName());
-			} else {
+				res.setSuccessId(branchCode);
+				}
+		else {
+			branchCode = req.getBranchCode();
+
 				// Update
 				// Get Less than Equal Today Record 
 				// Criteria
@@ -136,7 +145,7 @@ public SuccessRes insertBranch(BranchMasterSaveReq req) {
 				
 				Predicate n1 = cb.equal(b.get("companyId"), req.getCompanyId());
 				Predicate n2 = cb.equal(b.get("branchCode"), req.getBranchCode());
-			
+
 				query.where(n1,n2).orderBy(orderList);
 
 				// Get Result 
@@ -180,6 +189,11 @@ public SuccessRes insertBranch(BranchMasterSaveReq req) {
 			saveData.setEffectiveDateStart(req.getEffectiveDateStart());
 			saveData.setEffectiveDateEnd(endDate);
 			saveData.setStatus(req.getStatus());
+			saveData.setCreatedBy(createdBy);
+			saveData.setEntryDate(entryDate);
+			saveData.setUpdatedBy(req.getCreatedBy());
+			saveData.setUpdatedDate(new Date());
+			saveData.setAmendId(amendId);
 			
 			String countryCode = getCountryCode(req.getRegionCode());
 			List<Tuple> stateCity =   getStateAndCityName(countryCode ,  req.getStateCode() , req.getCityCode() ) ;
@@ -187,19 +201,8 @@ public SuccessRes insertBranch(BranchMasterSaveReq req) {
 			String cityName       =   stateCity.get(0).get("stateName") == null ? "" :  stateCity.get(0).get("stateName").toString() ;
 			saveData.setStateName(stateName);
 			saveData.setCityName(cityName);
-			saveData.setEntryDate(new Date());
-			saveData.setAmendId(amendId);
-			saveData.setUpdatedDate(new Date());
-			saveData.setUpdatedBy(req.getCreatedBy());
-
-			branchRepo.saveAndFlush(saveData);
 			
-			if(list.size() > 0 ) {
-				// Update Old Record
-				BranchMaster lastRecord = list.get(0) ;
-				lastRecord.setEffectiveDateEnd(oldEndDate);
-				branchRepo.saveAndFlush(lastRecord);
-			}
+			branchRepo.saveAndFlush(saveData);
 			
 			log.info("Saved Details is ---> " + json.toJson(saveData));
 			
@@ -415,12 +418,12 @@ public List<Error> validateBranchDetails(BranchMasterSaveReq req) {
 			errorList.add(new Error("07","Core App Code", "Please Enter CoreAppCode within 20 Characters")); 
 		}
 		else if (StringUtils.isBlank(req.getCoreAppCode())) {
-			List<BranchMaster> coreAppCode = getCoreAppCodeExistDetails(req.getCompanyId() , null);
+			List<BranchMaster> coreAppCode = getCoreAppCodeExistDetails(req.getCompanyId() , null,req.getCoreAppCode());
 			if (coreAppCode.size()>0 ) {
 				errorList.add(new Error("07", "CoreAppCode", "This core App Code  Already Exist "));
 			}
 		}else  {
-			List<BranchMaster> coreAppCode =  getCoreAppCodeExistDetails(req.getCompanyId(),req.getBranchCode() );
+			List<BranchMaster> coreAppCode =  getCoreAppCodeExistDetails(req.getCompanyId(),req.getBranchCode(),req.getCoreAppCode());
 			if (coreAppCode.size()>0 &&  (! req.getBranchCode().equalsIgnoreCase(coreAppCode.get(0).getBranchCode().toString())) ) {
 				errorList.add(new Error("08", "Core App Code", "This core App Code Already Exist "));
 			}
@@ -469,7 +472,7 @@ public List<Error> validateBranchDetails(BranchMasterSaveReq req) {
 }
 
 
-public List<BranchMaster> getCoreAppCodeExistDetails(String companyId, String branchCode ) {
+public List<BranchMaster> getCoreAppCodeExistDetails(String companyId, String branchCode, String coreAppCode ) {
 	List<BranchMaster> list = new ArrayList<BranchMaster>();
 	try {
 		// Find Latest Record
@@ -491,12 +494,14 @@ public List<BranchMaster> getCoreAppCodeExistDetails(String companyId, String br
 		effectiveDate.where(a1);
 
 		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-		Predicate n2 = cb.equal(b.get("companyId"),companyId);	
+		Predicate n2 = cb.equal(b.get("companyId"),companyId);
+		Predicate n4 = cb.equal(b.get("coreAppCode"),coreAppCode);
+		
 		if( StringUtils.isBlank(branchCode)) {
-			query.where(n1,n2);	
+			query.where(n1,n2,n4);	
 		} else {
 			Predicate n3 = cb.equal(b.get("branchCode"),branchCode);
-			query.where(n1,n2,n3);
+			query.where(n1,n2,n3,n4);
 		}
 		
 		// Get Result
@@ -512,7 +517,7 @@ public List<BranchMaster> getCoreAppCodeExistDetails(String companyId, String br
 }
 
 
-public Integer getMasterTableCount(BranchMasterSaveReq req) {
+public Integer getMasterTableCount() {
 
 	Integer data = 0;
 	try {
@@ -533,8 +538,8 @@ public Integer getMasterTableCount(BranchMasterSaveReq req) {
 		Root<BranchMaster> ocpm1 = effectiveDate.from(BranchMaster.class);
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
-		effectiveDate.where(a1);
 
+		effectiveDate.where(a1);
 		
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -542,10 +547,7 @@ public Integer getMasterTableCount(BranchMasterSaveReq req) {
 		
 		
 		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
-		Predicate n4 = cb.equal(b.get("branchCode"), "99999");
-		Predicate n5 = cb.or(n3,n4);
-		query.where(n1,n3,n5).orderBy(orderList);
+		query.where(n1).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<BranchMaster> result = em.createQuery(query);
@@ -586,15 +588,17 @@ public List<BranchMasterRes> getallBranchDetails(BranchMasterGetAllReq req) {
 		amendId.select(cb.max(ocpm1.get("amendId")));
 		Predicate a1 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+
 		amendId.where(a1,a2);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(b.get("branchName")));
+		orderList.add(cb.asc(b.get("branchCode")));
 		
 		// Where
 		Predicate n1 = cb.equal(b.get("amendId"),amendId);
-		Predicate n2 = cb.equal(b.get("companyId"),req.getInsuranceId());		
+		Predicate n2 = cb.equal(b.get("companyId"),req.getCompanyId());
+		
 		query.where(n1,n2).orderBy(orderList);
 
 		// Get Result
@@ -660,9 +664,8 @@ public BranchMasterRes getByBranchCode(BranchMasterGetReq req) {
 		Root<BranchMaster> ocpm1 = amendId.from(BranchMaster.class);
 		amendId.select(cb.max(ocpm1.get("amendId")));
 		Predicate a1 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode") );
-		Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
 		
-		amendId.where(a1,a2);
+		amendId.where(a1);
 		
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -670,10 +673,8 @@ public BranchMasterRes getByBranchCode(BranchMasterGetReq req) {
 		
 		// Where
 		Predicate n1 = cb.equal(c.get("amendId"), amendId);
-		Predicate n3 = cb.equal(c.get("branchCode"), req.getBranchCode());
-		Predicate n6 = cb.equal(c.get("branchCode"), "99999");
-		Predicate n7 = cb.or(n3,n6);
-		query.where(n1,n7).orderBy(orderList);
+		Predicate n4 = cb.equal(c.get("branchCode"), req.getBranchCode());
+		query.where(n1,n4).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<BranchMaster> result = em.createQuery(query);			
@@ -772,12 +773,9 @@ public List<DropDownRes> getBranchMasterDropdown(CompanyBranchGetReq req) {
 @Override
 public List<BranchMasterRes> getActiveBranchDetails(BranchMasterGetAllReq req) {
 	List<BranchMasterRes> resList = new ArrayList<BranchMasterRes>();
-	DozerBeanMapper mapper = new DozerBeanMapper();
+	DozerBeanMapper dozerMapper = new DozerBeanMapper(); 
 	try {
-		 
-			
 		List<BranchMaster> list = new ArrayList<BranchMaster>();
-		
 		// Find Latest Record
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<BranchMaster> query = cb.createQuery(BranchMaster.class);
@@ -788,23 +786,25 @@ public List<BranchMasterRes> getActiveBranchDetails(BranchMasterGetAllReq req) {
 		// Select
 		query.select(b);
 
-		// AmendId Max Filter
+		// Amend ID Max Filter
 		Subquery<Long> amendId = query.subquery(Long.class);
 		Root<BranchMaster> ocpm1 = amendId.from(BranchMaster.class);
 		amendId.select(cb.max(ocpm1.get("amendId")));
 		Predicate a1 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
-		
-		amendId.where(a1);
+		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+
+		amendId.where(a1,a2);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
 		orderList.add(cb.asc(b.get("branchCode")));
-
+		
 		// Where
 		Predicate n1 = cb.equal(b.get("amendId"),amendId);
-		Predicate n2 = cb.equal(b.get("status"), "Y");
-	
-		query.where(n1, n2).orderBy(orderList);
+		Predicate n2 = cb.equal(b.get("companyId"),req.getCompanyId());
+		Predicate n3 = cb.equal(b.get("status"), "Y");
+
+		query.where(n1,n2,n3).orderBy(orderList);
 
 		// Get Result
 		TypedQuery<BranchMaster> result = em.createQuery(query);
@@ -815,7 +815,7 @@ public List<BranchMasterRes> getActiveBranchDetails(BranchMasterGetAllReq req) {
 		for (BranchMaster data : list) {
 			BranchMasterRes res = new BranchMasterRes();
 
-			res = mapper.map(data, BranchMasterRes.class);
+			res = dozerMapper.map(data, BranchMasterRes.class);
 			res.setCoreAppCode(data.getCoreAppCode());
 
 			resList.add(res);

@@ -45,7 +45,7 @@ public interface StateMasterService  {
 
 	StateMasterRes getByStateId(StateMasterGetReq req);
 
-	//List<DropDownRes> getStateMasterDropdown(StateMasterDropDownReq req);
+	List<DropDownRes> getStateMasterDropdown(StateMasterDropDownReq req);
 
 	SuccessRes changeStatusOfStateMaster(StateMasterChangeStatusReq req);
 

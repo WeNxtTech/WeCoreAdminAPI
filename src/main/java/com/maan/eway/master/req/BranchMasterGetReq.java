@@ -20,4 +20,5 @@ public class BranchMasterGetReq implements Serializable {
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart ;
     
-}
+	
+	}

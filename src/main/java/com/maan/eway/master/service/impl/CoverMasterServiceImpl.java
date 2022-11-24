@@ -439,7 +439,7 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 				    }
 				}
 				res.setResponse("Updated Successfully");
-				res.setSuccessId(subcoverId.toString());
+				res.setSuccessId(coverId.toString());
 		
 			}
 				

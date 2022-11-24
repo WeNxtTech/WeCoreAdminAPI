@@ -87,14 +87,12 @@ public class CountryMasterController {
 		
 		//  Get All Country Master
 		
-		@PostMapping("/getallcountrydetails")
+		@GetMapping("/getallcountrydetails")
 		@ApiOperation("This method is getall Country Details")
-		public ResponseEntity<CommonRes> getallCountryDetails(@RequestBody CountryMasterGetAllReq req)
+		public ResponseEntity<CommonRes> getallCountryDetails()
 		{
-			CommonRes data = new CommonRes();
-			reqPrinter.reqPrint(req);
-			
-			List<CountryMasterRes> res = countryService.getallCountryDetails(req);
+			CommonRes data = new CommonRes();	
+			List<CountryMasterRes> res = countryService.getallCountryDetails();
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);
@@ -108,16 +106,15 @@ public class CountryMasterController {
 			}
 		}
 		
-	//  Get Active Referral Master
+	//  Get Active Country Master
 		
-			@PostMapping("/getactivecountry")
+			@GetMapping("/getactivecountry")
 			@ApiOperation("This method is get Active Country Details")
-			public ResponseEntity<CommonRes> getActiveCountryDetails(@RequestBody CountryMasterGetAllReq req)
+			public ResponseEntity<CommonRes> getActiveCountryDetails()
 			{
 				CommonRes data = new CommonRes();
-				reqPrinter.reqPrint(req);
 				
-				List<CountryMasterRes> res = countryService.getActiveCountryDetails(req);
+				List<CountryMasterRes> res = countryService.getActiveCountryDetails();
 				data.setCommonResponse(res);
 				data.setErrorMessage(Collections.emptyList());
 				data.setIsError(false);

@@ -362,7 +362,7 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			
 
 			String coverId=StringUtils.isBlank(req.getCoverId()) ?"" :req.getCoverId() ;
-			String subcoverId = "";
+			String subcoverId = "0";
 			String subCoverYn = req.getSubCoverYn() ;
 			CoverMaster saveData = new CoverMaster();
 			List<CoverMaster> list = new ArrayList<CoverMaster>();

@@ -317,7 +317,7 @@ public class CityMasterServiceImpl implements CityMasterService {
 			// Select
 			query.select(b);
 		
-			// Effective Date Max Filter
+			// amendId Max Filter
 			Subquery<Long> amendId = query.subquery(Long.class);
 			Root<CityMaster> ocpm1 = amendId.from(CityMaster.class);
 			amendId.select(cb.max(ocpm1.get("amendId")));

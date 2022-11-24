@@ -36,9 +36,9 @@ public interface CountryMasterService  {
 
 	SuccessRes insertCountry(CountryMasterSaveReq req);
 
-	List<CountryMasterRes> getallCountryDetails(CountryMasterGetAllReq req);
+	List<CountryMasterRes> getallCountryDetails();
 
-	List<CountryMasterRes> getActiveCountryDetails(CountryMasterGetAllReq req);
+	List<CountryMasterRes> getActiveCountryDetails();
 
 	CountryMasterRes getByCountryId(CountryMasterGetReq req);
 

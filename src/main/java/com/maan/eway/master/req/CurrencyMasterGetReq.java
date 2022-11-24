@@ -15,5 +15,8 @@ public class CurrencyMasterGetReq implements Serializable {
 
 	@JsonProperty("CurrencyId")
     private String     currencyId     ;
+
+	@JsonProperty("InsuranceId")
+    private String     companyId     ;
     
 }

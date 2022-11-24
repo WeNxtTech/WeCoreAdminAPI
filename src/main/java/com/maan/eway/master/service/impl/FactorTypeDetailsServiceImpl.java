@@ -379,9 +379,9 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 				// Where
 				Predicate n1 = cb.equal(b.get("factorTypeId"), factorTypeId);
 				Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
-				Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
+			//	Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
 				
-				query.where(n2,n3,n1).orderBy(orderList);
+				query.where(n2,n1).orderBy(orderList);
 				
 				// Get Result 
 				TypedQuery<FactorTypeDetails> result = em.createQuery(query);

@@ -992,7 +992,7 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 				Date endDate = sdf.parse(end);
 				long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
 				Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
-				Date entryDate = null ;
+				Date entryDate = new Date(); ;
 				String createdBy = "" ;
 				String sectionId="";
 		
@@ -1025,10 +1025,9 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 				//Predicate n1 = cb.equal(b.get("status"), "Y");
 				//Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 				Predicate n1 = cb.equal(b.get("companyId"), req.getInsuranceId());
-				Predicate n2 = cb.equal(b.get("branchCode"), req.getBranchCode());
 				Predicate n3 =  cb.equal(b.get("sectionId"), req.getSectionId() );
 
-				query.where(n1, n2, n3);//.orderBy(orderList);
+				query.where(n1, n3);//.orderBy(orderList);
 
 				// Get Result
 				TypedQuery<ProductSectionMaster> result = em.createQuery(query);

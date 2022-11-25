@@ -6,24 +6,21 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.error.Error;
 import com.maan.eway.master.req.ExchangeChangeStatusReq;
 import com.maan.eway.master.req.ExchangeMasterGetReq;
 import com.maan.eway.master.req.ExchangeMasterGetallReq;
 import com.maan.eway.master.req.ExchangeMasterSaveReq;
-import com.maan.eway.master.req.OccupationChangeStatusReq;
 import com.maan.eway.master.res.ExchangeMasterGetRes;
 import com.maan.eway.master.service.ExchangeMasterService;
 import com.maan.eway.res.CommonRes;
-import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
-import com.maan.eway.error.Error;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

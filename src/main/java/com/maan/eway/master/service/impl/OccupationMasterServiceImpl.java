@@ -95,6 +95,18 @@ public List<Error> validateOccupation(OccupationMasterSaveReq req) {
 			errorList.add(new Error("02", "OccupationName", "Please Enter OccupationName"));
 		}else if (req.getOccupationName().length() > 100){
 			errorList.add(new Error("02","OccupationName", "Please Enter OccupationName 100 Characters")); 
+		}else if (StringUtils.isBlank(req.getOccupationId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
+			List<OccupationMaster> OccupationList = getOccupationNameExistDetails(req.getOccupationName() , req.getInsuranceId() , req.getBranchCode());
+			if (OccupationList.size()>0 ) {
+				errorList.add(new Error("01", "OccupationName", "This Occupation Name Already Exist "));
+			}
+		}else if (StringUtils.isNotBlank(req.getOccupationId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
+			List<OccupationMaster> OccupationList = getOccupationNameExistDetails(req.getOccupationName() , req.getInsuranceId() , req.getBranchCode());
+			
+			if (OccupationList.size()>0 &&  (! req.getOccupationId().equalsIgnoreCase(OccupationList.get(0).getOccupationId().toString())) ) {
+				errorList.add(new Error("01", "OccupationName", "This Occupation Name Already Exist "));
+			}
+			
 		}
 		
 		

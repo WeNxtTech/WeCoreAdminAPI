@@ -34,10 +34,7 @@ public class CompanyTaxSetupSaveReq implements Serializable {
     private Date       effectiveDateStart ;
 
     
-    @JsonFormat(pattern = "dd/MM/yyyy")
-    @JsonProperty("EffectiveDateEnd")
-    private Date       effectiveDateEnd ;
-    
+   
     //--- ENTITY DATA FIELDS 
  
     @JsonProperty("CreatedBy")

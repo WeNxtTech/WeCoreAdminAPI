@@ -21,7 +21,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
+
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
@@ -51,23 +51,16 @@ import com.maan.eway.master.req.CompanyCityMasterGetReq;
 import com.maan.eway.master.req.CompanyCityMasterMultiInsertSaveReq;
 import com.maan.eway.master.req.CompanyCityMasterSaveReq;
 import com.maan.eway.master.req.CompanyCityNonSelectedReq;
-import com.maan.eway.master.req.CompanyRegionMultiInsertSaveReq;
-import com.maan.eway.master.res.CityMasterRes;
+
 import com.maan.eway.master.res.CompanyCityMasterRes;
-import com.maan.eway.master.res.CompanyStateMasterRes;
-import com.maan.eway.master.res.RegionMasterRes;
-import com.maan.eway.master.service.CityMasterService;
+
 import com.maan.eway.master.service.CompanyCityMasterService;
-import com.maan.eway.bean.BranchMaster;
+
 import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.CompanyCityMaster;
-import com.maan.eway.bean.CompanyRegionMaster;
-import com.maan.eway.bean.CompanyStateMaster;
-import com.maan.eway.bean.CountryMaster;
-import com.maan.eway.bean.RegionMaster;
-import com.maan.eway.bean.StateMaster;
+
 import com.maan.eway.error.Error;
-import com.maan.eway.repository.CityMasterRepository;
+
 import com.maan.eway.repository.CompanyCityMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;

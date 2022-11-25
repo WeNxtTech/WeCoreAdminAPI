@@ -6,11 +6,6 @@ package com.maan.eway.master.controller;
 */
 
 import com.maan.eway.error.Error;
-import com.maan.eway.master.req.CityChangeStatusReq;
-import com.maan.eway.master.req.CityMasterDropDownReq;
-import com.maan.eway.master.req.CityMasterGetAllReq;
-import com.maan.eway.master.req.CityMasterGetReq;
-import com.maan.eway.master.req.CityMasterSaveReq;
 import com.maan.eway.master.req.CompanyCityChangeStatusReq;
 import com.maan.eway.master.req.CompanyCityMasterDropDownReq;
 import com.maan.eway.master.req.CompanyCityMasterGetAllReq;
@@ -18,15 +13,11 @@ import com.maan.eway.master.req.CompanyCityMasterGetReq;
 import com.maan.eway.master.req.CompanyCityMasterMultiInsertSaveReq;
 import com.maan.eway.master.req.CompanyCityMasterSaveReq;
 import com.maan.eway.master.req.CompanyCityNonSelectedReq;
-import com.maan.eway.master.req.CompanyStateMasterChangeStatusReq;
-import com.maan.eway.master.req.CompanyStateNonSelectedReq;
-import com.maan.eway.master.req.CountryChangeStatusReq;
-import com.maan.eway.master.res.CityMasterRes;
+
 import com.maan.eway.master.res.CompanyCityMasterRes;
-import com.maan.eway.master.res.CompanyStateMasterRes;
-import com.maan.eway.master.service.CityMasterService;
+
 import com.maan.eway.master.service.CompanyCityMasterService;
-import com.maan.eway.bean.CityMaster;
+
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
@@ -38,8 +29,6 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

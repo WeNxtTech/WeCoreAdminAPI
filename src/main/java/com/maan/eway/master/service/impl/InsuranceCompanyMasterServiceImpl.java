@@ -479,7 +479,7 @@ this.repository = repo;
 						createdBy = req.getCreatedBy();
 						InsuranceCompanyMaster lastRecord = list.get(0);
 							lastRecord.setEffectiveDateEnd(oldEndDate);
-							repository.saveAndFlush(lastRecord);
+					//		repository.saveAndFlush(lastRecord);
 						
 					} else {
 						amendId = list.get(0).getAmendId() ;
@@ -489,7 +489,7 @@ this.repository = repo;
 						if (list.size()>1 ) {
 							InsuranceCompanyMaster lastRecord = list.get(1);
 							lastRecord.setEffectiveDateEnd(oldEndDate);
-							repository.saveAndFlush(lastRecord);
+						//	repository.saveAndFlush(lastRecord);
 						}
 					
 				    }

@@ -411,7 +411,7 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			//Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
-			Predicate n3 = cb.equal(b.get("companyId"), req.getBranchCode());
+			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
 			Predicate n4 = cb.equal(b.get("companyId"), "99999");
 			Predicate n5 = cb.or(n3,n4);
 			Predicate n6 = cb.equal(b.get("productId"), req.getProductId());
@@ -478,7 +478,10 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
 			Predicate n3 = cb.equal(b.get("productId"), req.getProductId());
 			Predicate n4 = cb.equal(b.get("status"), "Y");
-			query.where(n1,n2,n3,n4).orderBy(orderList);
+			Predicate n5 = cb.equal(b.get("companyId"), "99999");
+			Predicate n6 = cb.or(n2,n5);
+		
+			query.where(n1,n3,n4,n6).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CompanyTaxSetup> result = em.createQuery(query);
@@ -545,12 +548,11 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 		
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
-		//	Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
+			Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
 			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
-			Predicate n4 = cb.equal(b.get("taxId"), req.getTaxId());
 			Predicate n6 = cb.equal(b.get("companyId"), "99999");
 			Predicate n7 = cb.or(n3,n6);
-			query.where(n1,n4,n7).orderBy(orderList);
+			query.where(n1,n7,n2).orderBy(orderList);
 			
 
 			// Get Result

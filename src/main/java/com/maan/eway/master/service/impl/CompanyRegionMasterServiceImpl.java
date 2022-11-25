@@ -461,8 +461,9 @@ public class CompanyRegionMasterServiceImpl implements CompanyRegionMasterServic
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("companyId"), req.getCompanyId());
+			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("countryId"), req.getCountryId());
 
-			query.where(n1, n2, n3, n4).orderBy(orderList);
+			query.where(n1, n2, n3, n4,n5).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CompanyRegionMaster> result = em.createQuery(query);

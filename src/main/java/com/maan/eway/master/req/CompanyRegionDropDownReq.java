@@ -10,4 +10,7 @@ public class CompanyRegionDropDownReq {
 	@JsonProperty("InsuranceId")
     private String companyId;
 	
+	@JsonProperty("CountryId")
+    private String countryId;
+	
 }

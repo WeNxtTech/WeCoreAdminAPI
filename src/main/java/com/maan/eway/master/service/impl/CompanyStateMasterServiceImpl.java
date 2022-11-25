@@ -507,8 +507,9 @@ public class CompanyStateMasterServiceImpl implements CompanyStateMasterService 
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("companyId"), req.getCompanyId());
-		
-			query.where(n1,n2,n3,n4).orderBy(orderList);
+			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("countryId"), req.getCountryId());
+			
+			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<CompanyStateMaster> result = em.createQuery(query);			

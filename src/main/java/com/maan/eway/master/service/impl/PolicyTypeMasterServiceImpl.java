@@ -31,17 +31,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
-import com.maan.eway.bean.ExchangeMaster;
-import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.bean.PolicyTypeMaster;
-import com.maan.eway.bean.PolicyTypeMaster;
-import com.maan.eway.bean.PolicyTypeMaster;
-import com.maan.eway.common.service.impl.DropDownServiceImpl;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.PolicyTypeMasterGetAllReq;
 import com.maan.eway.master.req.PolicyTypeMasterGetReq;
 import com.maan.eway.master.req.PolicyTypeMasterSaveReq;
-import com.maan.eway.master.res.ExchangeMasterGetRes;
 import com.maan.eway.master.res.PolicyTypeMasterGetRes;
 import com.maan.eway.master.service.PolicyTypeMasterService;
 import com.maan.eway.repository.PolicyTypeMasterRepository;
@@ -57,8 +51,6 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 	@PersistenceContext
 	private EntityManager em;
 	
-	@Autowired
-	private DropDownServiceImpl dropdownservice;
 	
 	Gson json = new Gson();
 	

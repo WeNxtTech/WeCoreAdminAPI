@@ -12,13 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.maan.eway.common.service.DropDownService;
-import com.maan.eway.master.req.CityDropDownReq;
 import com.maan.eway.master.req.ColumnNameDropDownlReq;
-import com.maan.eway.master.req.RegionDropDownReq;
-import com.maan.eway.master.req.StateDropDownReq;
 import com.maan.eway.master.service.OneTimeTableDetailsService;
-import com.maan.eway.req.SubUserTypeReq;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
 

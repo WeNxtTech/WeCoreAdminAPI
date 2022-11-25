@@ -1,18 +1,13 @@
-package com.maan.eway.req;
+package com.maan.eway.common.req;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
 
 @Data
-public class SubUserTypeReq {
+public class LovDropDownReq {
 
-	@JsonProperty("UserType")
-	private String userType ;
-	
-	@JsonProperty("LoginId")
-	private String loginId ;
-	
 	@JsonProperty("InsuranceId")
 	private String insuranceId;
 	@JsonProperty("BranchCode")

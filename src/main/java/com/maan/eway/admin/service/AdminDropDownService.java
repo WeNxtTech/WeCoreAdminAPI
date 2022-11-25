@@ -2,45 +2,29 @@ package com.maan.eway.admin.service;
 
 import java.util.List;
 
+import com.maan.eway.common.req.LovDropDownReq;
 import com.maan.eway.req.SubUserTypeReq;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SubUserTypeDropDownRes;
 
 public interface AdminDropDownService {
 
-	List<DropDownRes> getgender();
-
-	List<DropDownRes> getUserType();
+	List<DropDownRes> getUserType(LovDropDownReq req);
 
 	List<SubUserTypeDropDownRes> getSubUserType(SubUserTypeReq req);
 
-	List<DropDownRes> getConstMaterial();
+	List<DropDownRes> getProductIcons(LovDropDownReq req);
 
-	List<DropDownRes> getOutbuildingConst();
+	List<DropDownRes> getCalcTypes(LovDropDownReq req);
 
-	List<DropDownRes> getAboutBuilding();
+	List<DropDownRes> getCoverageTypes(LovDropDownReq req);
 
-	List<DropDownRes> getStateExtent();
+	List<DropDownRes> getRangeParams(LovDropDownReq req);
 
-	List<DropDownRes> getContentName();
+	List<DropDownRes> getDiscreteParams(LovDropDownReq req);
 
-	List<DropDownRes> getPropertyName();
 	
-	List<DropDownRes> getProductIcons();
-
-	List<DropDownRes> getCalcTypes();
-
-	List<DropDownRes> getCoverageTypes();
-
-	List<DropDownRes> getRangeParams();
-
-	List<DropDownRes> getDiscreteParams();
-
-	List<DropDownRes> getMobileCodes();
-
-	List<DropDownRes> getBusinessType();
-
-	List<DropDownRes> getProductCategory();
+	List<DropDownRes> getProductCategory(LovDropDownReq req);
 
 
 }

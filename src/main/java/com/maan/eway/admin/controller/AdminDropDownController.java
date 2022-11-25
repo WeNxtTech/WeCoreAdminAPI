@@ -6,14 +6,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.admin.service.AdminDropDownService;
-import com.maan.eway.common.service.DropDownService;
+import com.maan.eway.common.req.LovDropDownReq;
 import com.maan.eway.req.SubUserTypeReq;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
@@ -32,55 +32,14 @@ public class AdminDropDownController {
 	private  AdminDropDownService dropDownService;
 	
 
-	// Gender
-
-	@GetMapping("/gender")
-	@ApiOperation(value = "This method is to Gender Types Drop Down")
-	public ResponseEntity<CommonRes> getgender() {
-		CommonRes data = new CommonRes();
-
-		// Save
-		List<DropDownRes> res = dropDownService.getgender();
-		data.setCommonResponse(res);
-		data.setIsError(false);
-		data.setErrorMessage(Collections.emptyList());
-		data.setMessage("Success");
-
-		if (res != null) {
-			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-		}
-
-	}
 	
-	@GetMapping("/mobilecodes")
-	@ApiOperation(value = "This method is to Gender Types Drop Down")
-	public ResponseEntity<CommonRes> getMobileCodes() {
-		CommonRes data = new CommonRes();
-
-		// Save
-		List<DropDownRes> res = dropDownService.getMobileCodes();
-		data.setCommonResponse(res);
-		data.setIsError(false);
-		data.setErrorMessage(Collections.emptyList());
-		data.setMessage("Success");
-
-		if (res != null) {
-			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-		}
-
-	}
-	
-	@GetMapping("/usertype")
+	@PostMapping("/usertype")
 	@ApiOperation(value = "This method is to UserType  Drop Down")
-	public ResponseEntity<CommonRes> getUserType() {
+	public ResponseEntity<CommonRes> getUserType(@RequestBody LovDropDownReq req) {
 		CommonRes data = new CommonRes();
 
 		// Save
-		List<DropDownRes> res = dropDownService.getUserType();
+		List<DropDownRes> res = dropDownService.getUserType(req);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());
@@ -113,133 +72,15 @@ public class AdminDropDownController {
 		}
 
 	}
-	@GetMapping("/constmaterial")
-	@ApiOperation(value = "This method is to ConstMaterial Drop Down")
-	public ResponseEntity<CommonRes> getConstMaterial() {
-		CommonRes data = new CommonRes();
-
-		// Save
-		List<DropDownRes> res = dropDownService.getConstMaterial();
-		data.setCommonResponse(res);
-		data.setIsError(false);
-		data.setErrorMessage(Collections.emptyList());
-		data.setMessage("Success");
-
-		if (res != null) {
-			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-		}
-
-	}
-	
-	@GetMapping("/outbuildingconst")
-	@ApiOperation(value = "This method is to OutbuildingConst  Drop Down")
-	public ResponseEntity<CommonRes> getOutbuildingConst() {
-		CommonRes data = new CommonRes();
-
-		// Save
-		List<DropDownRes> res = dropDownService.getOutbuildingConst();
-		data.setCommonResponse(res);
-		data.setIsError(false);
-		data.setErrorMessage(Collections.emptyList());
-		data.setMessage("Success");
-
-		if (res != null) {
-			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-		}
-
-	}
-	@GetMapping("/aboutbuilding")
-	@ApiOperation(value = "This method is to AboutBuilding  Drop Down")
-	public ResponseEntity<CommonRes> getAboutBuilding() {
-		CommonRes data = new CommonRes();
-
-		// Save
-		List<DropDownRes> res = dropDownService.getAboutBuilding();
-		data.setCommonResponse(res);
-		data.setIsError(false);
-		data.setErrorMessage(Collections.emptyList());
-		data.setMessage("Success");
-
-		if (res != null) {
-			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-		}
-
-	}
-	
-	@GetMapping("/stateextent")
-	@ApiOperation(value = "This method is to StateExtent Drop Down")
-	public ResponseEntity<CommonRes> getStateExtent() {
-		CommonRes data = new CommonRes();
-
-		// Save
-		List<DropDownRes> res = dropDownService.getStateExtent();
-		data.setCommonResponse(res);
-		data.setIsError(false);
-		data.setErrorMessage(Collections.emptyList());
-		data.setMessage("Success");
-
-		if (res != null) {
-			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-		}
-
-	}
-	
-	@GetMapping("/contentname")
-	@ApiOperation(value = "This method is to Content Name Drop Down")
-	public ResponseEntity<CommonRes> getContentName() {
-		CommonRes data = new CommonRes();
-
-		// Save
-		List<DropDownRes> res = dropDownService.getContentName();
-		data.setCommonResponse(res);
-		data.setIsError(false);
-		data.setErrorMessage(Collections.emptyList());
-		data.setMessage("Success");
-
-		if (res != null) {
-			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-		}
-
-	}
 	
 	
-	@GetMapping("/propertyname")
-	@ApiOperation(value = "This method is to Property Name Drop Down")
-	public ResponseEntity<CommonRes> getPropertyName() {
-		CommonRes data = new CommonRes();
-
-		// Save
-		List<DropDownRes> res = dropDownService.getPropertyName();
-		data.setCommonResponse(res);
-		data.setIsError(false);
-		data.setErrorMessage(Collections.emptyList());
-		data.setMessage("Success");
-
-		if (res != null) {
-			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-		}
-
-	}
-	
-	@GetMapping("/producticons")
+	@PostMapping("/producticons")
 	@ApiOperation(value = "This method is to UserType  Drop Down")
-	public ResponseEntity<CommonRes> getProductIcons() {
+	public ResponseEntity<CommonRes> getProductIcons(@RequestBody LovDropDownReq req) {
 		CommonRes data = new CommonRes();
 
 		// Save
-		List<DropDownRes> res = dropDownService.getProductIcons();
+		List<DropDownRes> res = dropDownService.getProductIcons(req);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());
@@ -253,13 +94,13 @@ public class AdminDropDownController {
 
 	}
 	
-	@GetMapping("/calctypes")
+	@PostMapping("/calctypes")
 	@ApiOperation(value = "This method is to CalcType  Drop Down")
-	public ResponseEntity<CommonRes> getCalcTypes() {
+	public ResponseEntity<CommonRes> getCalcTypes(@RequestBody LovDropDownReq req) {
 		CommonRes data = new CommonRes();
 
 		// Save
-		List<DropDownRes> res = dropDownService.getCalcTypes();
+		List<DropDownRes> res = dropDownService.getCalcTypes(req);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());
@@ -273,13 +114,13 @@ public class AdminDropDownController {
 
 	}
 	
-	@GetMapping("/coveragetypes")
+	@PostMapping("/coveragetypes")
 	@ApiOperation(value = "This method is to CoverageType  Drop Down")
-	public ResponseEntity<CommonRes> getCoverageTypes() {
+	public ResponseEntity<CommonRes> getCoverageTypes(@RequestBody LovDropDownReq req) {
 		CommonRes data = new CommonRes();
 
 		// Save
-		List<DropDownRes> res = dropDownService.getCoverageTypes();
+		List<DropDownRes> res = dropDownService.getCoverageTypes(req);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());
@@ -293,13 +134,13 @@ public class AdminDropDownController {
 
 	}
 	
-	@GetMapping("/rangeparams")
+	@PostMapping("/rangeparams")
 	@ApiOperation(value = "This method is to CoverageType  Drop Down")
-	public ResponseEntity<CommonRes> getRangeParams() {
+	public ResponseEntity<CommonRes> getRangeParams(@RequestBody LovDropDownReq req) {
 		CommonRes data = new CommonRes();
 
 		// Save
-		List<DropDownRes> res = dropDownService.getRangeParams();
+		List<DropDownRes> res = dropDownService.getRangeParams(req);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());
@@ -314,13 +155,13 @@ public class AdminDropDownController {
 	}
 	
 	
-	@GetMapping("/discreteparams")
+	@PostMapping("/discreteparams")
 	@ApiOperation(value = "This method is to CoverageType  Drop Down")
-	public ResponseEntity<CommonRes> getDiscreteParams() {
+	public ResponseEntity<CommonRes> getDiscreteParams(@RequestBody LovDropDownReq req) {
 		CommonRes data = new CommonRes();
 
 		// Save
-		List<DropDownRes> res = dropDownService.getDiscreteParams();
+		List<DropDownRes> res = dropDownService.getDiscreteParams(req);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());
@@ -334,32 +175,14 @@ public class AdminDropDownController {
 
 	}
 	
-	@GetMapping("/businesstype")
-	@ApiOperation(value = "This method is to Business Type  Drop Down")
-	public ResponseEntity<CommonRes> getBusinessType() {
-		CommonRes data = new CommonRes();
 
-		// Save
-		List<DropDownRes> res = dropDownService.getBusinessType();
-		data.setCommonResponse(res);
-		data.setIsError(false);
-		data.setErrorMessage(Collections.emptyList());
-		data.setMessage("Success");
-
-		if (res != null) {
-			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-		}
-
-	}
-	@GetMapping("/productcategory")
+	@PostMapping("/productcategory")
 	@ApiOperation(value = "This method is to Product Category  Drop Down")
-	public ResponseEntity<CommonRes> getProductCategory() {
+	public ResponseEntity<CommonRes> getProductCategory(@RequestBody LovDropDownReq req) {
 		CommonRes data = new CommonRes();
 
 		// Save
-		List<DropDownRes> res = dropDownService.getProductCategory();
+		List<DropDownRes> res = dropDownService.getProductCategory(req);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());

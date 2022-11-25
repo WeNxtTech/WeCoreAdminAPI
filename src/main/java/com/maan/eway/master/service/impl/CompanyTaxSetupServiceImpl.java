@@ -290,7 +290,7 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 				saveData.setAmendId(amendId);
 				saveData.setCreatedBy(request.getCreatedBy());
 				
-				saveData.setCalcTypeDesc(calcTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getCalcType()) ).collect(Collectors.toList()).get(0).getItemValue());
+				saveData.setCalcTypeDesc(StringUtils.isBlank(req.getCalcType())?"":calcTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getCalcType()) ).collect(Collectors.toList()).get(0).getItemValue());
 				companyRepo.saveAndFlush(saveData);
 				
 				res.setResponse("Saved Successfully ");

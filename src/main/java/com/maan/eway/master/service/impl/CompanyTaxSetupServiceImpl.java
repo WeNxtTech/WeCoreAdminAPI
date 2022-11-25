@@ -196,7 +196,6 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 	public SuccessRes insertCompanyTax(CompanyTaxSetupSaveReq request) {
 		SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/YYYY");
 		SuccessRes res = new SuccessRes();
-		CompanyTaxSetup saveData = new CompanyTaxSetup();
 		List<CompanyTaxSetup> list = new ArrayList<CompanyTaxSetup>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
@@ -212,6 +211,8 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 			List<ListItemValue> calcTypes = listRepo.findByItemTypeAndStatus("CALCULATION_TYPE" , "Y");
 			
 			for (TaxMultiInsertReq  req  : request.getCompanyTaxDetails()) {
+				CompanyTaxSetup saveData = new CompanyTaxSetup();
+				
 				// Update
 				// Get Less than Equal Today Record 
 				// Criteria
@@ -294,21 +295,10 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 				
 				res.setResponse("Saved Successfully ");
 				res.setSuccessId(req.getTaxId().toString());
-				if(list.size() > 0 ) {
-					// Update Old Record
-					CompanyTaxSetup lastRecord = list.get(0) ;
-					lastRecord.setEffectiveDateEnd(oldEndDate);
-					String startDatewithoutTime = sdformat.format(startDate);
-					String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
-
-					if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
-						lastRecord.setStatus("N");	
-					}
-					companyRepo.saveAndFlush(lastRecord);
-				}
 				
+				log.info("Saved Details is ---> " + json.toJson(saveData));	
 			}
-			log.info("Saved Details is ---> " + json.toJson(saveData));
+			
 				
 	} catch (Exception e) {
 			e.printStackTrace();

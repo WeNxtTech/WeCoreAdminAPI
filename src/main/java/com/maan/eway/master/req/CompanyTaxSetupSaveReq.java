@@ -28,10 +28,7 @@ public class CompanyTaxSetupSaveReq implements Serializable {
     @JsonProperty("InsuranceId")
     private String     companyId;
     
-    @JsonProperty("BranchCode")
-    private String     branchCode;
-    
-    
+        
     @JsonFormat(pattern = "dd/MM/yyyy")
     @JsonProperty("EffectiveDateStart")
     private Date       effectiveDateStart ;

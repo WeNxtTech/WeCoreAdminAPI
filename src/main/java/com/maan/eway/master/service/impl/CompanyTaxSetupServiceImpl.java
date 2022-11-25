@@ -288,7 +288,6 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 				saveData.setStatus(req.getStatus());
 				saveData.setAmendId(amendId);
 				saveData.setCreatedBy(request.getCreatedBy());
-				saveData.setBranchCode(request.getBranchCode());
 				
 				saveData.setCalcTypeDesc(calcTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getCalcType()) ).collect(Collectors.toList()).get(0).getItemValue());
 				companyRepo.saveAndFlush(saveData);
@@ -320,7 +319,7 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 	}
 
 
-	public Integer getCompanyTaxTableCount(String companyId , String productId , String branchCode) {
+	public Integer getCompanyTaxTableCount(String companyId , String productId ) {
 
 		Integer data =0;
 	try {
@@ -340,21 +339,20 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(ocpm1.get("taxId"), b.get("taxId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-		Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
-		Predicate a4 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+		Predicate a3 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 		
-		effectiveDate.where(a1,a2,a3,a4);
+		effectiveDate.where(a1,a2,a3);
 		
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
 		orderList.add(cb.desc(b.get("taxId")));
 		
 		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-		Predicate n2 = cb.equal(b.get("companyId"), companyId);
-		Predicate n3 = cb.equal(b.get("branchCode"), branchCode);
-		Predicate n4 = cb.equal(b.get("branchCode"), "99999");
+		//Predicate n2 = cb.equal(b.get("companyId"), companyId);
+		Predicate n3 = cb.equal(b.get("companyId"), companyId);
+		Predicate n4 = cb.equal(b.get("companyId"), "99999");
 		Predicate n5 = cb.or(n3,n4);
-		query.where(n1,n2,n5).orderBy(orderList);
+		query.where(n1,n5).orderBy(orderList);
 		
 		
 		
@@ -398,27 +396,27 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("taxId"), b.get("taxId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+			//Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
 			Predicate a4 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 
-			amendId.where(a1, a2,a3,a4);
+			amendId.where(a1, a2,a4);
 			
 			
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("branchCode")));
+			orderList.add(cb.asc(b.get("companyId")));
 			
 		
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
-			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
-			Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
-			Predicate n4 = cb.equal(b.get("branchCode"), "99999");
+			//Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
+			Predicate n3 = cb.equal(b.get("companyId"), req.getBranchCode());
+			Predicate n4 = cb.equal(b.get("companyId"), "99999");
 			Predicate n5 = cb.or(n3,n4);
 			Predicate n6 = cb.equal(b.get("productId"), req.getProductId());
 
-			query.where(n1,n2,n5,n6).orderBy(orderList);
+			query.where(n1,n5,n6).orderBy(orderList);
 			
 			
 			
@@ -468,13 +466,12 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 			Predicate a1 = cb.equal(ocpm1.get("taxId"), b.get("taxId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-			Predicate a4 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
 
-			effectiveDate.where(a1,a2,a3,a4);
+			effectiveDate.where(a1,a2,a3);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("branchCode")));
+			orderList.add(cb.asc(b.get("companyId")));
 			
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
@@ -538,23 +535,22 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 			Predicate a1 = cb.equal(ocpm1.get("taxId"), b.get("taxId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("productId"),b.get("productId"));
-			Predicate a4 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
 
-			amendId.where(a1, a2,a3,a4);
+			amendId.where(a1, a2,a3);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("branchCode")));
+			orderList.add(cb.asc(b.get("companyId")));
 			
 		
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
-			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
-			Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
+		//	Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
+			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
 			Predicate n4 = cb.equal(b.get("taxId"), req.getTaxId());
-			Predicate n6 = cb.equal(b.get("branchCode"), "99999");
+			Predicate n6 = cb.equal(b.get("companyId"), "99999");
 			Predicate n7 = cb.or(n3,n6);
-			query.where(n1,n2,n4,n7).orderBy(orderList);
+			query.where(n1,n4,n7).orderBy(orderList);
 			
 
 			// Get Result
@@ -612,38 +608,38 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("taxId"), b.get("taxId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+			//Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
 			Predicate a4 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			
-			amendId.where(a1, a2,a3,a4);
+			amendId.where(a1, a2,a4);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(b.get("branchCode")));
+			orderList.add(cb.desc(b.get("companyId")));
 	
 	
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
-			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
-			Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
+			//Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
+			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
 			Predicate n4 = cb.equal(b.get("taxId"), req.getTaxId());
-			Predicate n5 = cb.equal(b.get("branchCode"), "99999");
+			Predicate n5 = cb.equal(b.get("companyId"), "99999");
 			Predicate n6 = cb.or(n3,n5);
 			Predicate n7 = cb.equal(b.get("productId"), req.getProductId() );
 					
-			query.where(n1,n2,n4,n6,n7).orderBy(orderList);
+			query.where(n1,n4,n6,n7).orderBy(orderList);
 	
 			// Get Result 
 			TypedQuery<CompanyTaxSetup> result = em.createQuery(query);
 			list = result.getResultList();
 			CompanyTaxSetup updateRecord = list.get(0);
-			if(  req.getBranchCode().equalsIgnoreCase(updateRecord.getBranchCode())) {
+			if(  req.getCompanyId().equalsIgnoreCase(updateRecord.getCompanyId())) {
 				updateRecord.setStatus(req.getStatus());
 				companyRepo.save(updateRecord);
 			} else {
 				CompanyTaxSetup saveNew = new CompanyTaxSetup();
 				dozerMapper.map(updateRecord,saveNew);
-				saveNew.setBranchCode(req.getBranchCode());
+				saveNew.setCompanyId(req.getCompanyId());
 				saveNew.setStatus(req.getStatus());
 				companyRepo.save(saveNew);
 			}

@@ -300,8 +300,9 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			Predicate n3 = cb.equal(b.get("productId"), req.getProductId());
 			Predicate n4 = cb.equal(b.get("sectionId"), req.getSectionId());
 			Predicate n5 = cb.equal(b.get("coverId"), req.getCoverId());
+			Predicate n6 = cb.notEqual(b.get("subCoverId"), "0");
 
-			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<SectionCoverMaster> result = em.createQuery(query);
@@ -573,8 +574,9 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			Predicate n4 = cb.equal(b.get("status"), "Y");
 			Predicate n5 = cb.equal(b.get("sectionId"),req.getSectionId());
 			Predicate n6 = cb.equal(b.get("coverId"),req.getCoverId());
+			Predicate n7 = cb.notEqual(b.get("subCoverId"), "0");
 
-			query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n5,n6,n7).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<SectionCoverMaster> result = em.createQuery(query);

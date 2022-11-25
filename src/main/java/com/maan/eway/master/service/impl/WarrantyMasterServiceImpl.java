@@ -43,7 +43,6 @@ import com.maan.eway.master.req.WarrantyMasterGetReq;
 import com.maan.eway.master.req.WarrantyMasterGetallReq;
 import com.maan.eway.master.req.WarrantyMasterSaveReq;
 import com.maan.eway.master.res.ExclusionMasterRes;
-import com.maan.eway.master.res.OccupationMasterRes;
 import com.maan.eway.master.res.WarrantyMasterRes;
 import com.maan.eway.master.service.ExclusionMasterService;
 import com.maan.eway.master.service.WarrantyMasterService;

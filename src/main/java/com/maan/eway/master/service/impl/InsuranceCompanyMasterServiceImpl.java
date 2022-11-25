@@ -50,7 +50,6 @@ import com.maan.eway.master.req.InsuranceCompanyMasterGetAllReq;
 import com.maan.eway.master.req.InsuranceCompanyMasterGetReq;
 import com.maan.eway.master.req.InsuranceCompanyMasterSaveReq;
 import com.maan.eway.master.res.InsuranceCompanyMasterRes;
-import com.maan.eway.master.res.OccupationMasterRes;
 import com.maan.eway.master.service.InsuranceCompanyMasterService;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 import com.maan.eway.res.DropDownRes;

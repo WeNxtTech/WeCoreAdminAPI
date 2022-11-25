@@ -52,7 +52,6 @@ import com.maan.eway.master.req.CompanyProductMasterGetReq;
 import com.maan.eway.master.req.CompanyProductMasterSaveReq;
 import com.maan.eway.master.req.CompanyProductMultiInsertReq;
 import com.maan.eway.master.res.CompanyProductMasterRes;
-import com.maan.eway.master.res.OccupationMasterRes;
 import com.maan.eway.master.res.ProductMasterRes;
 import com.maan.eway.master.service.CompanyProductMasterService;
 import com.maan.eway.notif.req.MailFramingReq;

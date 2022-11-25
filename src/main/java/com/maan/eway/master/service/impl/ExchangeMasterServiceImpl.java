@@ -43,7 +43,6 @@ import com.maan.eway.master.req.ExchangeMasterGetallReq;
 import com.maan.eway.master.req.ExchangeMasterSaveReq;
 import com.maan.eway.master.res.CityMasterRes;
 import com.maan.eway.master.res.ExchangeMasterGetRes;
-import com.maan.eway.master.res.OccupationMasterRes;
 import com.maan.eway.master.service.ExchangeMasterService;
 import com.maan.eway.repository.ExchangeMasterRepository;
 import com.maan.eway.res.DropDownRes;

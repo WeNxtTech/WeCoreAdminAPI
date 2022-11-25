@@ -57,7 +57,6 @@ import com.maan.eway.master.req.OfsGridSaveReq;
 import com.maan.eway.master.req.SubCoverDropDownReq;
 import com.maan.eway.master.req.SubCoverUpdatedReq;
 import com.maan.eway.master.res.CoverSubCoverGetRes;
-import com.maan.eway.master.res.OccupationMasterRes;
 import com.maan.eway.master.res.SubCoverMasterGetRes;
 import com.maan.eway.master.service.CoverSubCoverMasterService;
 import com.maan.eway.repository.CoverOfsGridMasterRepository;

@@ -48,21 +48,19 @@ import com.maan.eway.master.req.BranchMasterGetReq;
 import com.maan.eway.master.req.BranchMasterSaveReq;
 import com.maan.eway.master.req.CompanyBranchGetReq;
 import com.maan.eway.master.req.CompanyBranchReq;
-import com.maan.eway.master.req.RegionMasterGetReq;
+
 import com.maan.eway.master.res.BranchMasterRes;
-import com.maan.eway.master.res.OccupationMasterRes;
-import com.maan.eway.master.res.RegionMasterRes;
+
+
 import com.maan.eway.master.service.BranchMasterService;
 import com.maan.eway.auth.dto.LoginBranchDetailsRes;
 import com.maan.eway.bean.BranchMaster;
-import com.maan.eway.bean.CityMaster;
+
 import com.maan.eway.bean.CompanyCityMaster;
 import com.maan.eway.bean.CompanyRegionMaster;
 import com.maan.eway.bean.CompanyStateMaster;
 import com.maan.eway.bean.CountryMaster;
-import com.maan.eway.bean.OccupationMaster;
-import com.maan.eway.bean.RegionMaster;
-import com.maan.eway.bean.StateMaster;
+
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.BranchMasterRepository;
 import com.maan.eway.res.DropDownRes;

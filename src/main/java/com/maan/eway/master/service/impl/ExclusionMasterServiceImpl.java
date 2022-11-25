@@ -38,7 +38,7 @@ import com.maan.eway.master.req.ExclusionMasterGetReq;
 import com.maan.eway.master.req.ExclusionMasterGetallReq;
 import com.maan.eway.master.req.ExclusionMasterSaveReq;
 import com.maan.eway.master.res.ExclusionMasterRes;
-import com.maan.eway.master.res.OccupationMasterRes;
+
 import com.maan.eway.master.service.ExclusionMasterService;
 import com.maan.eway.repository.ExclusionMasterRepository;
 import com.maan.eway.res.SuccessRes;

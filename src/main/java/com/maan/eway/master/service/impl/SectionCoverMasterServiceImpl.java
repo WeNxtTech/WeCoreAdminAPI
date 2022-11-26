@@ -1343,8 +1343,8 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 //			effectiveDate.where(a1, a2, a3,a4,a5,a6);
 //
 			// Order By
-			// List<Order> orderList = new ArrayList<Order>();
-			// orderList.add(cb.asc(b.get("branchName")));
+			 List<Order> orderList = new ArrayList<Order>();
+			 orderList.add(cb.asc(b.get("effectiveDateStart")));
 
 			// Where
 			Predicate n1 = cb.equal(b.get("status"), "Y");
@@ -1355,9 +1355,9 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate n7 = cb.equal(b.get("companyId"),req.getCompanyId());
 			if(subCoverYn.equalsIgnoreCase("Y")     ) {
 				Predicate n4 = cb.equal(b.get("subCoverYn"), subCoverYn);
-				query.where(n1, n3,n4,n5,n6,n7);
+				query.where(n1, n3,n4,n5,n6,n7).orderBy(orderList);
 			} else {
-				query.where(n1, n3,n5,n6,n7);
+				query.where(n1, n3,n5,n6,n7).orderBy(orderList);
 			}
 
 			// Get Result

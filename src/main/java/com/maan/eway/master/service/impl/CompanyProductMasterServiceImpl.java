@@ -532,10 +532,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			Date todayEnd = cal.getTime();
 			
 			List<ProductMaster> list = new ArrayList<ProductMaster>();
-			//Pagination
-			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
-	
+		
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<ProductMaster> query = cb.createQuery(ProductMaster.class);
@@ -595,8 +592,6 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 	
 			// Get Result
 			TypedQuery<ProductMaster> result = em.createQuery(query);
-			result.setFirstResult(limit * offset);
-			result.setMaxResults(offset);
 			list = result.getResultList();
 			
 			// Map

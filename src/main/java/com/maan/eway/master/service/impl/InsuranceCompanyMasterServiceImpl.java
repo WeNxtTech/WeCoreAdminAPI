@@ -508,6 +508,7 @@ this.repository = repo;
 			saveData.setUpdatedDate(new Date());
 			saveData.setUpdatedBy(req.getCreatedBy());
 			saveData.setAmendId(amendId);
+			saveData.setCurrencyId(req.getCurrencyId());
 			repository.saveAndFlush(saveData);
 
 			

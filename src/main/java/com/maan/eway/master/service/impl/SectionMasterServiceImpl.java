@@ -362,13 +362,6 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 		List<SectionMasterRes> resList = new ArrayList<SectionMasterRes>();
 		 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
-			Date today  =  new Date();
-			Calendar cal = new GregorianCalendar(); 
-			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 30);
-			today   = cal.getTime();
-			cal.set(Calendar.HOUR_OF_DAY, 1);cal.set(Calendar.MINUTE, 1);
-			Date todayEnd = cal.getTime();
 			
 			List<SectionMaster> sectionList = new ArrayList<SectionMaster>();
 			
@@ -387,34 +380,24 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			Root<SectionMaster> ocpm1 = effectiveDate.from(SectionMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			effectiveDate.where(a1,a2);
+			effectiveDate.where(a1);
 			
-			
-			// Effective Date End
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
-			Root<SectionMaster> ocpm2 = effectiveDate2.from(SectionMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
-			javax.persistence.criteria.Predicate a3 = cb.equal(b.get("sectionId"), ocpm2.get("sectionId"));
-			javax.persistence.criteria.Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-			effectiveDate2.where(a3, a4);
-
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("sectionName")));
+			orderList.add(cb.desc(b.get("effectiveDateStart")));
 			
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			Predicate n2 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
 			
-			query.where(n1,n2).orderBy(orderList);
+			query.where(n1).orderBy(orderList);
 	
 			// Get Result
 			TypedQuery<SectionMaster> result = em.createQuery(query);
 		
 			sectionList = result.getResultList();
-			
+			sectionList = sectionList.stream().filter(distinctByKey(o -> Arrays.asList(o.getSectionId()))).collect(Collectors.toList());
+			sectionList.sort(Comparator.comparing(SectionMaster :: getSectionName ));
 			// Map
 			for (SectionMaster data : sectionList) {
 				SectionMasterRes res = new SectionMasterRes();
@@ -442,10 +425,6 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	
 		try {
-			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
-			Calendar cal = new GregorianCalendar(); 
-			cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 30);
-			today   = cal.getTime();
 			
 			// Criteria
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -463,14 +442,13 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			Root<SectionMaster> ocpm1 = amendId.from(SectionMaster.class);
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("sectionId"),ocpm1.get("sectionId") );
-			javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(c.get("effectiveDateStart"),today );
-			amendId.where(a1,a2);
+			amendId.where(a1);
 			
 			
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(c.get("effectiveDateStart")));
+			orderList.add(cb.desc(c.get("effectiveDateStart")));
 			
 		    // Where	
 		
@@ -500,11 +478,7 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 		List<SectionMasterRes> resList = new ArrayList<SectionMasterRes>();
 		 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
-			Date today  =  new Date();
-			Calendar cal = new GregorianCalendar(); 
-			cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 30);
-			today   = cal.getTime();
-			
+		
 			List<SectionMaster> list = new ArrayList<SectionMaster>();
 	
 			
@@ -523,12 +497,11 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			Root<SectionMaster> ocpm1 = amendId.from(SectionMaster.class);
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
-			amendId.where(a1,a2);
+			amendId.where(a1);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("sectionName")));
+			orderList.add(cb.desc(b.get("effectiveDateStart")));
 	
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);

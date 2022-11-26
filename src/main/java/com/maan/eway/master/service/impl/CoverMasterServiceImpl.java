@@ -457,7 +457,7 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			saveData.setUpdatedBy(req.getCreatedBy());
 			saveData.setAmendId(amendId);
 			saveData.setCoreAppCode("");
-			saveData.setSubCoverYn("Y");
+			saveData.setSubCoverYn(req.getSubCoverYn());
 			saveData.setDependentCoverYn(StringUtils.isNotBlank(req.getDependentCoverYn()) ? req.getDependentCoverYn() : "N" );
 			repo.saveAndFlush(saveData);
 			
@@ -524,13 +524,13 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			saveData.setExcess(StringUtils.isBlank(req.getExcess())? 0D : Double.valueOf(req.getExcess()));
 			saveData.setCalcTypeDesc(StringUtils.isBlank(req.getCalcType())?"":  calcTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getCalcType()) ).collect(Collectors.toList()).get(0).getItemValue());
 			saveData.setCoverageTypeDesc(StringUtils.isBlank(req.getCoverageType())?"":coverageTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getCoverageType()) ).collect(Collectors.toList()).get(0).getItemValue());
-			if(  req.getIsTaxExcempted().equalsIgnoreCase("Y") ) {
+			if( StringUtils.isNotBlank(req.getIsTaxExcempted()) &&  req.getIsTaxExcempted().equalsIgnoreCase("Y") ) {
 				saveData.setTaxExcemptionReference(req.getTaxExcemptionReference());
 				saveData.setTaxExcemptionType(req.getTaxExcemptionType());
 				saveData.setTaxExcemptionTypeDesc(StringUtils.isBlank(req.getTaxExcemptionType())?"":taxExcemptionType.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getTaxExcemptionType()) ).collect(Collectors.toList()).get(0).getItemValue());
 				saveData.setTaxAmount(null);
 				saveData.setTaxCode(null);
-			} else if(req.getIsTaxExcempted().equalsIgnoreCase("N")  ) {
+			} else if(StringUtils.isNotBlank(req.getIsTaxExcempted()) &&  req.getIsTaxExcempted().equalsIgnoreCase("N")  ) {
 				saveData.setTaxExcemptionReference(null);
 				saveData.setTaxExcemptionType(null);
 				saveData.setTaxExcemptionTypeDesc(null);
@@ -587,7 +587,8 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			orderList.add(cb.desc(b.get("coverId")));
 			
 			Predicate n1 = cb.equal(b.get("coverId"), cover);
-			query.where(n1).orderBy(orderList);
+			Predicate n2 =  cb.equal(b.get("subCoverId"), "0" );  
+			query.where(n1,n2).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<Tuple> result = em.createQuery(query);
@@ -638,7 +639,8 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 
 			// Where
 			Predicate n1 =  cb.equal(b.get("amendId"), amendId );  
-			query.where(n1).orderBy(orderList);
+			Predicate n2 =  cb.equal(b.get("subCoverId"), "0" );  
+			query.where(n1,n2).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<CoverMaster> result = em.createQuery(query);
@@ -708,7 +710,8 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("coverId"), req.getCoverId());
-			query.where(n1,n2).orderBy(orderList);
+			Predicate n3 =  cb.equal(b.get("subCoverId"), "0" );  
+			query.where(n1,n2,n3).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CoverMaster> result = em.createQuery(query);
@@ -786,8 +789,8 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			// Where
 			Predicate n1 =  cb.equal(b.get("amendId"), amendId );  
 			Predicate n2 = cb.equal(b.get("status"), "Y");
-
-			query.where(n1,n2).orderBy(orderList);
+			Predicate n3 =  cb.equal(b.get("subCoverId"), "0" );  
+			query.where(n1,n2,n3).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<CoverMaster> result = em.createQuery(query);
@@ -842,8 +845,8 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"),amendId);
 			Predicate n2 = cb.equal(b.get("coverId"), req.getCoverId() );
-	
-			query.where(n1,n2).orderBy(orderList);
+			Predicate n3 =  cb.equal(b.get("subCoverId"), "0" );  
+			query.where(n1,n2,n3).orderBy(orderList);
 	
 			// Get Result
 			TypedQuery<CoverMaster> result = em.createQuery(query);
@@ -921,7 +924,8 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("subCoverYn"), "Y");
-			query.where(n1, n2,n3,n4).orderBy(orderList);
+			Predicate n5 =  cb.equal(c.get("subCoverId"), "0" );  
+			query.where(n1, n2,n3,n4,n5).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CoverMaster> result = em.createQuery(query);
@@ -992,11 +996,13 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n5 =  cb.equal(c.get("subCoverId"), "0" );  
 			if(StringUtils.isNotBlank(req.getCoverId()) ) {
 				javax.persistence.criteria.Predicate n4 = cb.notEqual(c.get("coverId"), req.getCoverId());
-				query.where(n1, n2,n3,n4).orderBy(orderList);
+				
+				query.where(n1, n2,n3,n4,n5).orderBy(orderList);
 			} else {
-				query.where(n1, n2,n3).orderBy(orderList);
+				query.where(n1, n2,n3,n5).orderBy(orderList);
 			}
 			
 			

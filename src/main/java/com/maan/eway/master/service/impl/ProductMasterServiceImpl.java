@@ -412,7 +412,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("productName")));
+			orderList.add(cb.desc(b.get("amendId")));
 			
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
@@ -618,7 +618,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("productName")));
+			orderList.add(cb.desc(b.get("effectiveDateStart")));
 	
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);

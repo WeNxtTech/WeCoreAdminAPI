@@ -5,24 +5,14 @@
 */
 package com.maan.eway.master.service;
 
-import com.maan.eway.master.req.BankMasterGetAllReq;
-import com.maan.eway.master.req.BankMasterGetReq;
-import com.maan.eway.master.req.BankMasterSaveReq;
+import java.util.List;
+
+import com.maan.eway.error.Error;
 import com.maan.eway.master.req.ReferalMasterChangeStatusReq;
-import com.maan.eway.master.req.ReferalMasterGetAllReq;
 import com.maan.eway.master.req.ReferalMasterGetReq;
 import com.maan.eway.master.req.ReferalMasterSaveReq;
-import com.maan.eway.master.req.RegionMasterGetAllReq;
-import com.maan.eway.master.req.RegionMasterGetReq;
-import com.maan.eway.master.req.RegionMasterSaveReq;
-import com.maan.eway.master.res.BankMasterRes;
 import com.maan.eway.master.res.ReferalMasterRes;
-import com.maan.eway.master.res.RegionMasterRes;
-import com.maan.eway.error.Error;
-import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
-
-import java.util.List;
 /**
 * <h2>BankMasterServiceimpl</h2>
 */

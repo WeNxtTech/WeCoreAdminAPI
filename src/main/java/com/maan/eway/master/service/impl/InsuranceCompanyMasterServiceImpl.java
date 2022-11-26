@@ -181,13 +181,13 @@ this.repository = repo;
 			
 			
 			
-			
+			/*
 			if (StringUtils.isBlank(req.getCompanyLogo())) {
 				errors.add(new Error("02", "CompanyLogo", "Please Enter CompanyLogo Url"));
 			} else if (req.getCompanyLogo().length() > 100) {
 				errors.add(new Error("02", "CompanyLogo", "CompanyLogo Url under 100 Characters only allowed"));
 			}
-			
+			*/
 			if (StringUtils.isBlank(req.getCompanyEmail())) {
 				errors.add(new Error("03", "Company Email", "Please Enter Company Email"));
 			} else if (req.getCompanyEmail().length() > 200) {
@@ -201,11 +201,13 @@ this.repository = repo;
 			} else if (req.getCreatedBy().length() > 100) {
 				errors.add(new Error("03", "CreatedBy", "CreatedBy under 100 Characters only allowed"));
 			}
+			/*
 			if (StringUtils.isBlank(req.getCompanyLogo())) {
 				errors.add(new Error("04", "Company Logo", "Please Enter Company Logo"));
 			} else if (req.getCompanyLogo().length() > 200) {
 				errors.add(new Error("04", "Company Logo", "Company Logo under 200 Characters only allowed"));
 			}
+			*/
 		// Date Validation
 		Calendar cal = new GregorianCalendar();
 		Date today = new Date();
@@ -256,13 +258,13 @@ this.repository = repo;
 		} else if (req.getCompanyPhone().length() > 200) {
 			errors.add(new Error("06", "Company Phone", "Company Phone under 200 Characters only allowed"));
 		}
-
+		/*
 		if (StringUtils.isBlank(req.getRegards())) {
 			errors.add(new Error("07", "Regards", "Please Enter Company Regards"));
 		} else if (req.getRegards().length() > 100) {
 			errors.add(new Error("07", "Regards", "Company Regards under 200 Characters only allowed"));
 		}
-
+		*/
 		if (StringUtils.isBlank(req.getRemarks())) {
 			errors.add(new Error("08", "Remark", "Please Enter Insurance Company Remark"));
 		} else if (req.getRemarks().length() > 100) {

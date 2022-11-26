@@ -452,7 +452,7 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			saveData.setEffectiveDateEnd(endDate);
 			saveData.setCreatedBy(createdBy);
 			saveData.setStatus(req.getStatus());
-			saveData.setEntryDate(entryDate);
+			saveData.setEntryDate(new Date());
 			saveData.setUpdatedDate(new Date());
 			saveData.setUpdatedBy(req.getCreatedBy());
 			saveData.setAmendId(amendId);

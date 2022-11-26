@@ -53,10 +53,7 @@ import com.maan.eway.bean.CountryMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.error.Error;
-import com.maan.eway.master.req.BranchChangeStatusReq;
-import com.maan.eway.master.req.BranchMasterGetAllReq;
-import com.maan.eway.master.req.BranchMasterGetReq;
-import com.maan.eway.master.req.BranchMasterSaveReq;
+
 import com.maan.eway.master.req.CompanyBranchGetReq;
 import com.maan.eway.master.req.CompanyBranchReq;
 import com.maan.eway.master.req.CompanyTaxChangeStatusReq;
@@ -64,7 +61,7 @@ import com.maan.eway.master.req.CompanyTaxSetupGetAllReq;
 import com.maan.eway.master.req.CompanyTaxSetupGetReq;
 import com.maan.eway.master.req.CompanyTaxSetupSaveReq;
 import com.maan.eway.master.req.TaxMultiInsertReq;
-import com.maan.eway.master.res.BranchMasterRes;
+
 import com.maan.eway.master.res.CompanyTaxGetRes;
 import com.maan.eway.master.service.CompanyTaxSetupService;
 import com.maan.eway.repository.BranchMasterRepository;

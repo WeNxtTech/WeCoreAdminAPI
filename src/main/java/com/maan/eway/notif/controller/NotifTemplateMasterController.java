@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.bean.NotifTemplateMaster;
 import com.maan.eway.error.Error;
-import com.maan.eway.master.req.BranchMasterSaveReq;
+
 import com.maan.eway.notif.req.MailMasterGetReq;
 import com.maan.eway.notif.req.NotifTemplateMasterGetReq;
 import com.maan.eway.notif.req.NotifTemplateMasterReq;

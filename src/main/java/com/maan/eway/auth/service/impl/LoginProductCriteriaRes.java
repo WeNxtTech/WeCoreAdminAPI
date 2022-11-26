@@ -1,4 +1,4 @@
-package com.maan.eway.admin.res;
+package com.maan.eway.auth.service.impl;
 
 import java.util.Date;
 

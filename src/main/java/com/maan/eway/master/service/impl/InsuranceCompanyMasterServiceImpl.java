@@ -433,7 +433,7 @@ this.repository = repo;
 				// Save
 				//Long totalCount = repository.count();
 				Long totalCount =getMasterTableCount();
-				insId =Long.valueOf(totalCount + 100001);
+				insId =Long.valueOf(totalCount + 1);
 				saveData.setCompanyId(insId.toString());
 				res.setResponse("Saved Successfully ");
 				res.setSuccessId(insId.toString());

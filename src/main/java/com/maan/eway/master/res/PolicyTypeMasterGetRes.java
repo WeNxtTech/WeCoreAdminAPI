@@ -23,7 +23,9 @@ public class PolicyTypeMasterGetRes {
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateEnd")
 	private Date effectiveDateEnd;
-	 
+
+	@JsonProperty("ProductId")
+	private String productId;
 	@JsonProperty("Remarks")
 	private String remarks;
 

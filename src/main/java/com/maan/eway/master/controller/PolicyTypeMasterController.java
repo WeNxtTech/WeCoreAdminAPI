@@ -124,17 +124,17 @@ public class PolicyTypeMasterController {
 		}
 	}
 	
-/*	
+	
 	// Policy Type Master Drop Down Type
-	@GetMapping("/dropdown/policytype")
+	@PostMapping("/dropdown/policytype")
 	@ApiOperation(value = "This method is get Policy Type Master Drop Down")
 
-	public ResponseEntity<CommonRes> getPolicyTypeMasterDropdown() {
+	public ResponseEntity<CommonRes> getPolicyTypeMasterDropdown(@RequestBody PolicyTypeMasterGetAllReq req ) {
 
 		CommonRes data = new CommonRes();
 
 		// Save
-		List<DropDownRes> res = service.getPolicyTypeMasterDropdown();
+		List<DropDownRes> res = service.getPolicyTypeMasterDropdown(req);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());
@@ -148,5 +148,5 @@ public class PolicyTypeMasterController {
 
 	}
 
-*/
+
 }

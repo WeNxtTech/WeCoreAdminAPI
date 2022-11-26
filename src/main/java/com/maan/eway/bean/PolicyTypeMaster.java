@@ -21,7 +21,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @IdClass(PolicyTypeMasterId.class)
-@Table(name="motor_policytype_master")
+@Table(name="policy_type_master")
 public class PolicyTypeMaster {
 
 	@Id
@@ -37,10 +37,9 @@ public class PolicyTypeMaster {
     private String     companyId ;
 
     @Id
-    @Column(name="BRANCH_CODE", nullable=false, length=100)
-    private String     branchCode ;
-
-	
+    @Column(name="PRODUCT_ID", nullable=false, length=100)
+    private Integer     productId;
+    
 	@Column(name="POLICY_TYPE_NAME",length=100,nullable=false)
 	private String policyTypeName;
 	

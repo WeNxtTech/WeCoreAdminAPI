@@ -63,18 +63,22 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 				error.add(new Error("01", "Policy Type Name", "Please Enter Policy Type Name "));
 			} else if (req.getPolicyTypeName().length() > 100) {
 				error.add(new Error("01", "Policy Type Name", "Please Enter Policy Type Name within 100 Characters"));
-			} else if (StringUtils.isBlank(req.getPolicyTypeId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
-				List<PolicyTypeMaster> policyList = getPolicyTypeNameExistDetails(req.getPolicyTypeName() , req.getInsuranceId() , req.getBranchCode());
+			} else if (StringUtils.isBlank(req.getPolicyTypeId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getProductId())) {
+				List<PolicyTypeMaster> policyList = getPolicyTypeNameExistDetails(req.getPolicyTypeName() , req.getInsuranceId() , req.getProductId());
 				if (policyList.size()>0 ) {
 					error.add(new Error("01", "PolicyTypeName", "This Policy Name Already Exist "));
 				}
-			}else if (StringUtils.isNotBlank(req.getPolicyTypeId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
-				List<PolicyTypeMaster> policyList = getPolicyTypeNameExistDetails(req.getPolicyTypeName() , req.getInsuranceId() , req.getBranchCode());
+			}else if (StringUtils.isNotBlank(req.getPolicyTypeId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getProductId())) {
+				List<PolicyTypeMaster> policyList = getPolicyTypeNameExistDetails(req.getPolicyTypeName() , req.getInsuranceId() , req.getProductId());
 				
 				if (policyList.size()>0 &&  (! req.getPolicyTypeId().equalsIgnoreCase(policyList.get(0).getPolicyTypeId().toString())) ) {
 					error.add(new Error("01", "PolicyTypeName", "This Policy Name Already Exist "));
 				}
 				
+			}
+			
+			if (StringUtils.isBlank(req.getProductId())) {
+				error.add(new Error("01", "Product ID", "Please Select Product ID"));
 			}
 			// Date Validation
 			Calendar cal = new GregorianCalendar();
@@ -102,7 +106,7 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 		}
 		return error;
 	}
-	public List<PolicyTypeMaster> getPolicyTypeNameExistDetails(String PolicyTypeName , String InsuranceId , String branchCode) {
+	public List<PolicyTypeMaster> getPolicyTypeNameExistDetails(String PolicyTypeName , String InsuranceId , String productId  ) {
 		List<PolicyTypeMaster> list = new ArrayList<PolicyTypeMaster>();
 		try {
 			Date today = new Date();
@@ -122,18 +126,15 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("policyTypeId"), b.get("policyTypeId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
 			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a5 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateEnd"), today);
-			amendId.where(a1,a2,a3,a4,a5);
+			amendId.where(a1,a2,a4,a5);
 
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(cb.lower( b.get("policyTypeName")), PolicyTypeName.toLowerCase());
 			Predicate n3 = cb.equal(b.get("companyId"),InsuranceId);
-			Predicate n4 = cb.equal(b.get("branchCode"), branchCode);
-			Predicate n5 = cb.equal(b.get("branchCode"), "99999");
-			Predicate n6 = cb.or(n4,n5);
-			query.where(n1,n2,n3,n6);
+			Predicate n4 = cb.equal(b.get("productId"),productId);
+			query.where(n1,n2,n3,n4);
 			
 			// Get Result
 			TypedQuery<PolicyTypeMaster> result = em.createQuery(query);
@@ -168,7 +169,7 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 
 	if(StringUtils.isBlank(req.getPolicyTypeId())) {
 		//save
-		Integer totalCount = getMasterTableCount( req.getInsuranceId() , req.getBranchCode());
+		Integer totalCount = getMasterTableCount( req.getInsuranceId() , req.getProductId());
 		policyId = Integer.valueOf(totalCount+1).toString();
 		entryDate = new Date();
 		createdBy = req.getCreatedBy();
@@ -191,14 +192,17 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 //		Predicate a1 = cb.equal(ocpm1.get("policyTypeId"), b.get("policyTypeId"));
 //		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
 //		effectiveDate.where(a1,a2);
+		// Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.desc(b.get("effectiveDateStart")));
 //		//where
 		Predicate n1 = cb.equal(b.get("status"),"Y");
 		//Predicate n2 = cb.equal(b.get("effectiveDateStart"),effectiveDate);
 		Predicate n2 = cb.equal(b.get("policyTypeId"),req.getPolicyTypeId());
 		Predicate n3 = cb.equal(b.get("companyId"), req.getInsuranceId());
-		Predicate n4 = cb.equal(b.get("branchCode"), req.getBranchCode());
+		Predicate n4 = cb.equal(b.get("productId"), req.getProductId());
 		
-		query.where(n1,n2,n3,n4);
+		query.where(n1,n2,n3,n4).orderBy(orderList);
 		// Get Result
 		TypedQuery<PolicyTypeMaster> result = em.createQuery(query);
 		int limit = 0 , offset = 2 ;
@@ -254,7 +258,7 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 	return res;
 	}
 	
-	public Integer getMasterTableCount(String companyId , String branchCode) {
+	public Integer getMasterTableCount(String companyId , String productId) {
 		Integer data =0;
 		try {
 			List<PolicyTypeMaster> list = new ArrayList<PolicyTypeMaster>();
@@ -271,7 +275,7 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(ocpm1.get("policyTypeId"),b.get("policyTypeId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-		Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+		Predicate a3 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 		
 		effectiveDate.where(a1,a2,a3);
 
@@ -281,12 +285,10 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 		
 		Predicate n1 = cb.equal(b.get("effectiveDateStart"),effectiveDate);
 		Predicate n2 = cb.equal(b.get("companyId"), companyId);
-		Predicate n3 = cb.equal(b.get("branchCode"), branchCode);
-		Predicate n4 = cb.equal(b.get("branchCode"), "99999");
-		Predicate n5 = cb.or(n3,n4);
-		query.where(n1,n2,n5).orderBy(orderList);
+		Predicate n3 = cb.equal(b.get("productId"), productId);
 		
-		query.where(n1);
+		query.where(n1,n2,n3).orderBy(orderList);
+	
 		// Get Result
 		TypedQuery<PolicyTypeMaster> result = em.createQuery(query);
 		int limit = 0 , offset = 1 ;
@@ -331,28 +333,23 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("policyTypeId"), b.get("policyTypeId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+			Predicate a3 = cb.equal(ocpm1.get("productId"),b.get("productId"));
 			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 
 			query.where(a1, a2,a3,a4);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("branchCode")));
+			orderList.add(cb.asc(b.get("policyTypeId")));
 
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
-			Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
+			Predicate n3 = cb.equal(b.get("productId"), req.getProductId());
 			Predicate n4 = cb.equal(b.get("policyTypeId"), req.getPolicyTypeId());
-			Predicate n6 = cb.equal(b.get("branchCode"), "99999");
-			Predicate n7 = cb.or(n3,n6);
-			query.where(n1,n2,n4,n7).orderBy(orderList);
 			
+			query.where(n1,n2,n4,n3).orderBy(orderList);
 			
-
-			query.where(n1, n2).orderBy(orderList);
-
 			// Get Result
 			TypedQuery<PolicyTypeMaster> result = em.createQuery(query);
 
@@ -384,13 +381,7 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 		List<PolicyTypeMasterGetRes> resList = new ArrayList<PolicyTypeMasterGetRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
-			Date today = new Date();
-			Calendar cal = new GregorianCalendar();
-			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 1);
-			today = cal.getTime();
-
+		
 			List<PolicyTypeMaster> list = new ArrayList<PolicyTypeMaster>();
 			// Pagination
 			
@@ -409,26 +400,22 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 			Root<PolicyTypeMaster> ocpm1 = amendId.from(PolicyTypeMaster.class);
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("policyTypeId"), b.get("policyTypeId"));
-			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			Predicate a4 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+			Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
 
-			amendId.where(a1, a2,a3,a4);
+			amendId.where(a1,a3,a4);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("branchCode")));
+			orderList.add(cb.asc(b.get("policyTypeId")));
 
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
-			Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
-			Predicate n4 = cb.equal(b.get("branchCode"), "99999");
-			Predicate n5 = cb.or(n3,n4);
-			query.where(n1,n2,n5).orderBy(orderList);
+			Predicate n3 = cb.equal(b.get("productId"), req.getProductId());
+		
+			query.where(n1,n2,n3).orderBy(orderList);
 			
-			query.where(n1).orderBy(orderList);
-
 			// Get Result
 			TypedQuery<PolicyTypeMaster> result = em.createQuery(query);
 			list = result.getResultList();
@@ -458,13 +445,7 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 		List<PolicyTypeMasterGetRes> resList = new ArrayList<PolicyTypeMasterGetRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
-			Date today = new Date();
-			Calendar cal = new GregorianCalendar();
-			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 1);
-			today = cal.getTime();
-
+			
 			List<PolicyTypeMaster> list = new ArrayList<PolicyTypeMaster>();
 			
 			// Find Latest Record
@@ -482,27 +463,23 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 			Root<PolicyTypeMaster> ocpm1 = amendId.from(PolicyTypeMaster.class);
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("policyTypeId"), b.get("policyTypeId"));
-			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			Predicate a4 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+			Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
 
-			amendId.where(a1, a2,a3,a4);
+			amendId.where(a1,a3,a4);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("branchCode")));
+			orderList.add(cb.asc(b.get("policyTypeId")));
 
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
-			Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
+			Predicate n3 = cb.equal(b.get("productId"), req.getProductId());
 			Predicate n4 = cb.equal(b.get("status"), "Y");
-			Predicate n5 = cb.equal(b.get("branchCode"), "99999");
-			Predicate n6 = cb.or(n3,n5);
-			query.where(n1,n2,n4,n6).orderBy(orderList);
+		
+			query.where(n1,n2,n3,n4).orderBy(orderList);
 			
-			query.where(n1,n2).orderBy(orderList);
-
 			// Get Result
 			TypedQuery<PolicyTypeMaster> result = em.createQuery(query);
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getPolicyTypeId()))).collect(Collectors.toList());
@@ -528,7 +505,7 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 	}
 
 	@Override
-	public List<DropDownRes> getPolicyTypeMasterDropdown() {
+	public List<DropDownRes> getPolicyTypeMasterDropdown( PolicyTypeMasterGetAllReq req ) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 			Date today = new Date();
@@ -571,7 +548,9 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 			Predicate n1 = cb.equal(c.get("status"),"Y");
 			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
-			query.where(n1,n2,n3).orderBy(orderList);
+			Predicate n4 = cb.equal(c.get("companyId"),req.getInsuranceId());
+			Predicate n5 = cb.equal(c.get("productId"),req.getProductId());
+			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
 			// Get Result
 			TypedQuery<PolicyTypeMaster> result = em.createQuery(query);
 			list = result.getResultList();
@@ -580,6 +559,7 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getPolicyTypeId().toString());
 				res.setCodeDesc(data.getPolicyTypeName());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		}

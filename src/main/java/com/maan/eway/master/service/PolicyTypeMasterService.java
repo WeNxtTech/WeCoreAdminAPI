@@ -22,6 +22,6 @@ public interface PolicyTypeMasterService {
 
 	List<PolicyTypeMasterGetRes> getallactivePolicyType(PolicyTypeMasterGetAllReq req);
 
-	List<DropDownRes> getPolicyTypeMasterDropdown();
+	List<DropDownRes> getPolicyTypeMasterDropdown( PolicyTypeMasterGetAllReq req );
 
 }

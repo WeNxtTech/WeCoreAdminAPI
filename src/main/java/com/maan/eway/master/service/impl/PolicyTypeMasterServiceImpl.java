@@ -103,7 +103,7 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 			}
 			 if (req.getStatus().length() > 1) {
 				 error.add(new Error("03", "Status", "Status 1 Character Only"));
-				} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus())|| "R".equals(req.getStatus()))) {
+				} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus())|| "R".equals(req.getStatus())||"Y".equals(req.getStatus()))) {
 					error.add(new Error("03", "Status", "Enter Status Y or N or R Only"));
 				}
 		}

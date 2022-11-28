@@ -493,7 +493,7 @@ public ReferalMasterRes getByReferalId(ReferalMasterGetReq req) {
 	return res;
 }
 
-/*//**********************************************************DROPDOWN********************************************************************\\
+//**********************************************************DROPDOWN********************************************************************\\
 @Override
 public List<DropDownRes> getReferalMasterDropdown() {
 	List<DropDownRes> resList = new ArrayList<DropDownRes>();
@@ -544,6 +544,7 @@ public List<DropDownRes> getReferalMasterDropdown() {
 			DropDownRes res = new DropDownRes();
 			res.setCode(data.getReferalId().toString());
 			res.setCodeDesc(data.getReferalName());
+			res.setStatus(data.getStatus());
 			resList.add(res);
 		}		
 	} catch (Exception e) {
@@ -553,7 +554,7 @@ public List<DropDownRes> getReferalMasterDropdown() {
 	}
 	return resList;
 }
-*/
+
 //************************************************GET ACTIVE REFERAL******************************************\\
 @Override
 public List<ReferalMasterRes> getActiveReferalDetails() {
@@ -583,7 +584,7 @@ public List<ReferalMasterRes> getActiveReferalDetails() {
 		Root<ReferalMaster> ocpm1 = amendId.from(ReferalMaster.class);
 		amendId.select(cb.max(ocpm1.get("amendId")));
 		Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
-		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
+		//Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
 		amendId.where(a1);
 
 		// Order By

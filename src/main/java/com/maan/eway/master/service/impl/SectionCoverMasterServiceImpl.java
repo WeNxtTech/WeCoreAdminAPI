@@ -370,17 +370,17 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Root<SectionCoverMaster> ocpm1 = amendId.from(SectionCoverMaster.class);
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
-			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
+			//Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
 			Predicate a3 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
 			Predicate a4 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a5 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			amendId.where(a1,a2,a3,a4,a5);
+			amendId.where(a1,a3,a4,a5);
 			
 			// Select
 			query.select(b.get("coverId") ).distinct(true);
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("coverName")));
+			orderList.add(cb.desc(b.get("effectiveDateStart")));
 
 			// Where
 			Predicate n1 =  cb.equal(b.get("amendId"), amendId );  
@@ -493,15 +493,15 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate a8 = cb2.equal(ocpm2.get("sectionId"), b2.get("sectionId"));
 			Predicate a9 = cb2.equal(ocpm2.get("productId"), b2.get("productId"));
 			Predicate a10 = cb2.equal(ocpm2.get("companyId"), b2.get("companyId"));
-			Predicate a11 = cb2.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"), today);
-			amendId.where(a7,a8,a9,a10,a11);
+			//Predicate a11 = cb2.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"), today);
+			amendId.where(a7,a8,a9,a10);
 
 			// Select
 			query2.select(b2);
 
 			// Order By
 			List<Order> orderList2 = new ArrayList<Order>();
-			orderList2.add(cb2.asc(b2.get("coverName")));
+			orderList2.add(cb2.desc(b2.get("effectiveDateStart")));
 
 			//In 
 			Expression<String>e0=b2.get("coverId");
@@ -599,7 +599,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			query.select(b.get("coverId") ).distinct(true);
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("coverName")));
+			orderList.add(cb.desc(b.get("effectiveDateStart")));
 
 			// Where
 			Predicate n1 =  cb.equal(b.get("amendId"), amendId );  
@@ -638,7 +638,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 
 			// Order By
 			List<Order> orderList2 = new ArrayList<Order>();
-			orderList2.add(cb2.asc(b2.get("coverName")));
+			orderList.add(cb.desc(b.get("effectiveDateStart")));
 
 			//In 
 			Expression<String>e0=b2.get("coverId");
@@ -707,12 +707,12 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Root<CoverMaster> ocpm1 = amendId.from(CoverMaster.class);
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
-			Predicate a3 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"), today);
-			amendId.where(a1,a3);
+		//	Predicate a3 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"), today);
+			amendId.where(a1);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("coverName")));
+			orderList.add(cb.desc(b.get("effectiveDateStart")));
 
 			// Section Cover Effective Date Max Filter
 			Subquery<Long> cover = query.subquery(Long.class);
@@ -883,8 +883,8 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate a2 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
 			Predicate a3 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
 			Predicate a4 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			Predicate a5 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			amendId.where(a1,a2,a3,a4,a5);
+			//Predicate a5 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			amendId.where(a1,a2,a3,a4);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();

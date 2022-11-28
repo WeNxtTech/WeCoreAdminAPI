@@ -172,7 +172,7 @@ public class ReferalMasterController {
 
 		}
 		
-/*		// Referal Master Drop Down Type
+		// Referral Master Drop Down Type
 		@GetMapping("/dropdown/referal")
 		@ApiOperation(value = "This method is get Referal Master Drop Down")
 
@@ -194,6 +194,6 @@ public class ReferalMasterController {
 			}
 
 		}
-	*/	
+	
 
 }

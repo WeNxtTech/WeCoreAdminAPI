@@ -12,6 +12,7 @@ import com.maan.eway.master.req.ReferalMasterChangeStatusReq;
 import com.maan.eway.master.req.ReferalMasterGetReq;
 import com.maan.eway.master.req.ReferalMasterSaveReq;
 import com.maan.eway.master.res.ReferalMasterRes;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 /**
 * <h2>BankMasterServiceimpl</h2>
@@ -30,7 +31,9 @@ public interface ReferalMasterService  {
 
 	SuccessRes changeStatusOfReferal(ReferalMasterChangeStatusReq req);
 
-	//List<DropDownRes> getReferalMasterDropdown();
+	List<DropDownRes> getReferalMasterDropdown();
+
+
 
 	
 

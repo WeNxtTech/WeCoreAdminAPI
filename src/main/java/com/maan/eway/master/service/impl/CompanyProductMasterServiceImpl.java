@@ -269,9 +269,12 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 				res.setResponse("Updated Successfully ");
 				res.setSuccessId(productId);
 					
-				
+				ListItemValue data = listRepo.findByItemTypeAndItemCodeOrderByItemCodeAsc("PRODUCT_ICONS",productId);
+
 			    dozerMapper.map(list.get(0) , saveData );
+
 				saveData.setProductId(Integer.valueOf(productId));
+				saveData.setProductIconName(data.getItemValue());
 				saveData.setCompanyId(req.getCompanyId());
 				saveData.setCreatedBy(req.getCreatedBy());
 				saveData.setEffectiveDateStart(effDate);
@@ -980,6 +983,8 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 				res.setSuccessId(productId.toString());
 			
 			dozerMapper.map(req, saveData);
+			ListItemValue data = listRepo.findByItemTypeAndItemCodeOrderByItemCodeAsc("PRODUCT_ICONS",productId.toString());
+
 			saveData.setProductId(productId);
 			saveData.setEffectiveDateStart(startDate);
 			saveData.setEffectiveDateEnd(endDate);
@@ -989,6 +994,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			saveData.setEntryDate(entryDate);
 			saveData.setAmendId(amendId);
 			saveData.setCoreAppCode(req.getCoreAppCode());
+			saveData.setProductIconName(data.getItemValue());
 			repo.saveAndFlush(saveData);
 			log.info("Saved Details is --> " + json.toJson(saveData));
 			

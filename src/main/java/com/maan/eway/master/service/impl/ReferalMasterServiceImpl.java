@@ -382,10 +382,6 @@ public List<ReferalMasterRes> getallReferalDetails() {
 	List<ReferalMasterRes> resList = new ArrayList<ReferalMasterRes>();
 	 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 	try {
-		Date today  = new Date();
-		Calendar cal = new GregorianCalendar(); 
-		cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 30);
-		today   = cal.getTime();
 		
 		List<ReferalMaster> list = new ArrayList<ReferalMaster>();
 		
@@ -404,12 +400,12 @@ public List<ReferalMasterRes> getallReferalDetails() {
 		Root<ReferalMaster> ocpm1 = amendId.from(ReferalMaster.class);
 		amendId.select(cb.max(ocpm1.get("amendId")));
 		Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
-		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-		amendId.where(a1,a2);
+
+		amendId.where(a1);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(b.get("referalName")));
+		orderList.add(cb.desc(b.get("effectiveDateStart")));
 		
 		// Where
 		Predicate n1 = cb.equal(b.get("amendId"), amendId);
@@ -445,7 +441,7 @@ public ReferalMasterRes getByReferalId(ReferalMasterGetReq req) {
 	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
 	try {
-		Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
+		Date today  =  new Date();
 		Calendar cal = new GregorianCalendar(); 
 		cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 30);
 		today   = cal.getTime();
@@ -466,12 +462,12 @@ public ReferalMasterRes getByReferalId(ReferalMasterGetReq req) {
 		Root<ReferalMaster> ocpm1 = amendId.from(ReferalMaster.class);
 		amendId.select(cb.max(ocpm1.get("amendId")));
 		javax.persistence.criteria.Predicate a1 = cb.equal(c.get("referalId"),ocpm1.get("referalId") );
-		javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(c.get("effectiveDateStart"),today );
-		amendId.where(a1,a2);
+	//	javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(c.get("effectiveDateStart"),today );
+		amendId.where(a1);
 		
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(c.get("effectiveDateStart")));
+		orderList.add(cb.desc(c.get("effectiveDateStart")));
 		
 	    // Where	
 	
@@ -592,7 +588,7 @@ public List<ReferalMasterRes> getActiveReferalDetails() {
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(b.get("referalName")));
+		orderList.add(cb.desc(b.get("effectiveDateStart")));
 
 		// Where
 		Predicate n1 = cb.equal(b.get("amendId"), amendId);

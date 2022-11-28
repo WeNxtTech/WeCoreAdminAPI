@@ -15,8 +15,5 @@ public class ReferalMasterGetReq implements Serializable {
 
 	@JsonProperty("ReferalId")
     private String     referalId  ;
-	
-	@JsonFormat(pattern ="dd/MM/yyyy")
-	@JsonProperty("EffectiveDateStart")
-	private Date effectiveDateStart;
+
 }

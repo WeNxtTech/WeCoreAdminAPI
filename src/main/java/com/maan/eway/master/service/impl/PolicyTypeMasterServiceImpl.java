@@ -544,14 +544,18 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("policyTypeId"),ocpm1.get("policyTypeId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			effectiveDate.where(a1,a2);
+			Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
+			Predicate a7 = cb.equal(c.get("productId"),ocpm1.get("productId"));
+			effectiveDate.where(a1,a2,a5,a7);
 			// Effective Date End Max Filter
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 			Root<PolicyTypeMaster> ocpm2 = effectiveDate2.from(PolicyTypeMaster.class);
 			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
 			Predicate a3 = cb.equal(c.get("policyTypeId"),ocpm2.get("policyTypeId"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-			effectiveDate2.where(a3,a4);
+			Predicate a6 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
+			Predicate a8 = cb.equal(c.get("productId"),ocpm2.get("productId"));
+			effectiveDate2.where(a3,a4,a6,a8);
 			// Where
 			Predicate n1 = cb.equal(c.get("status"),"Y");
 			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);

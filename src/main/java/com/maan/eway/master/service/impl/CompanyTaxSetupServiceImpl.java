@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -545,12 +546,12 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 			// Get Result
 			TypedQuery<CompanyTaxSetup> result = em.createQuery(query);
 			list = result.getResultList();
-			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getTaxId()))).collect(Collectors.toList());
-			list.sort(Comparator.comparing(CompanyTaxSetup :: getTaxName ));
 			
 			if(list.size()>0)
 			{
-			
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getTaxId()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(CompanyTaxSetup :: getTaxName ));
+				
 			// Map
 			res = dozerMapper.map(list.get(0) , CompanyTaxGetRes.class);
 			
@@ -569,7 +570,7 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 			else {
 				// Map
 				
-				List<TaxMultiInsertReq> taxDetails = new ArrayList<TaxMultiInsertReq>();
+				List<TaxMultiInsertReq> taxDetails = Collections.<TaxMultiInsertReq>emptyList();
 					
 				res.setCompanyTaxDetails(taxDetails);
 			}

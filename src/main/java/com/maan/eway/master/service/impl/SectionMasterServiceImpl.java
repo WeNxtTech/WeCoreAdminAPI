@@ -249,9 +249,6 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 	
 					// Get Result
 					TypedQuery<SectionMaster> result = em.createQuery(query);
-					list = result.getResultList();
-				
-					
 					int limit = 0 , offset = 2 ;
 					result.setFirstResult(limit * offset);
 					result.setMaxResults(offset);

@@ -49,6 +49,7 @@ import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.ReferalMaster;
+import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.ReferalMasterRepository;
 import com.maan.eway.res.DropDownRes;
@@ -173,6 +174,7 @@ public SuccessRes insertReferal(ReferalMasterSaveReq req) {
 					
 				    }
 				}
+			
 				res.setResponse("Updated Successfully ");
 				res.setSuccessId(referalId);
 			}

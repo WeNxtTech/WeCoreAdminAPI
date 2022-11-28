@@ -1614,22 +1614,22 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("productId"), req.getProductId());
 			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("sectionId"), req.getSectionId());
 			javax.persistence.criteria.Predicate n6 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			javax.persistence.criteria.Predicate n8 = cb.equal(c.get("subCoverId"), "0");
 			if(StringUtils.isNotBlank(req.getCoverId()) ) {
 				javax.persistence.criteria.Predicate n7 = cb.notEqual(c.get("coverId"), req.getCoverId());
-				query.where(n1, n2, n3, n4, n5,n6,n7).orderBy(orderList);
+				query.where(n1, n2, n3, n4, n5,n6,n7,n8).orderBy(orderList);
 			} else {
-				query.where(n1, n2, n3, n4, n5,n6).orderBy(orderList);
+				query.where(n1, n2, n3, n4, n5,n6,n8).orderBy(orderList);
 			}
 			
 
 			// Get Result
 			TypedQuery<SectionCoverMaster> result = em.createQuery(query);
 			list = result.getResultList();
-			Map<Integer, List<SectionCoverMaster>>  groupByCoverId = list.stream() .collect(Collectors.groupingBy(w ->   w.getCoverId())) ;
+			list.sort(Comparator.comparing(SectionCoverMaster :: getCoverName ));
 			
 			// Map
-			for (Integer  data : groupByCoverId.keySet()) {
-				SectionCoverMaster  coverData = groupByCoverId.get(data).get(0);
+			for (SectionCoverMaster  coverData :list) {
 				// Response
 				DropDownRes res = new DropDownRes();
 				res.setCode(coverData.getCoverId().toString());

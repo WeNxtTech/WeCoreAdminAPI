@@ -765,7 +765,7 @@ public class CompanyRegionMasterServiceImpl implements CompanyRegionMasterServic
 				errorList.add(new Error("05", "Status", "Please Enter Status in  Row No : " + row));
 			} else if (req.getStatus().length() > 1) {
 				errorList.add(new Error("05", "Status", "Enter Status 1 Character Only in  Row No : " + row));
-			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus())|| "R".equals(req.getStatus()))) {
+			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus())|| "R".equals(req.getStatus()) || "P".equals(req.getStatus()))) {
 				errorList.add(new Error("05", "Status", "Please Enter Status  in  Row No : " + row));
 			}
 

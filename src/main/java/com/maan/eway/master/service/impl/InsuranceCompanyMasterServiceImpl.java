@@ -275,7 +275,7 @@ this.repository = repo;
 			errors.add(new Error("09", "Status", "Please Enter Status"));
 		} else if (req.getStatus().length() > 1) {
 			errors.add(new Error("09", "Status", "Insurance Company Status 1 Character Only"));
-		} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus())|| "R".equals(req.getStatus()))) {
+		} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus())|| "R".equals(req.getStatus()) || "P".equals(req.getStatus()))) {
 			errors.add(new Error("09", "Status", "Please Enter Status"));
 		}
 

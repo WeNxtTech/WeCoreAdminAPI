@@ -281,29 +281,7 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 				repo.saveAndFlush(saveData);
 				
 				log.info("Saved Details is ---> " + json.toJson(saveData));
-				
-				// Thread to Trigger Mail
-				InsuranceCompanyMaster companyData = insrepo.findByCompanyId(req.getCompanyId());
-				LoginMaster loginData = loginRepo.findByLoginId(req.getCreatedBy());
-				List<String> ccMails = new ArrayList<String>();
-				ccMails.add(companyData.getCompanyEmail());
-				List<String> toMails = new ArrayList<String>();
-				toMails.add(companyData.getCompanyEmail());
-				Map<String, Object> keys = new HashMap<String, Object>();
-				keys.put("PRODUCT_ID", req.getProductId()==null ? ""  :req.getProductId());				
-				keys.put("SECTION_ID", sectionId==null ? ""  : sectionId.toString());
-				// Set Mail Request
-				MailFramingReq mailFrameReq = new MailFramingReq();
-				mailFrameReq.setInsId(req.getCompanyId().toString());
-				mailFrameReq.setNotifTemplateId("SECTION");
-				mailFrameReq.setKeys(keys);
-				mailFrameReq.setMailCc(ccMails);
-				mailFrameReq.setMailTo(toMails);
-				mailFrameReq.setMailRegards(companyData.getRegards());
-				mailFrameReq.setStatus(res.getResponse());
-			
-				log.info("{Mail Pushed Successfully. Section Id is --->}"+ sectionId);
-				mailThreadService.threadToSendMail(mailFrameReq);
+//				
 			}
 			
 				

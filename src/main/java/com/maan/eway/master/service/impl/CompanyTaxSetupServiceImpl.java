@@ -548,6 +548,9 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getTaxId()))).collect(Collectors.toList());
 			list.sort(Comparator.comparing(CompanyTaxSetup :: getTaxName ));
 			
+			if(list.size()>0)
+			{
+			
 			// Map
 			res = dozerMapper.map(list.get(0) , CompanyTaxGetRes.class);
 			
@@ -562,7 +565,16 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 				 taxDetails.add(tax);
 			}
 			res.setCompanyTaxDetails(taxDetails);
-		} catch (Exception e) {
+		}
+			else {
+				// Map
+				
+				List<TaxMultiInsertReq> taxDetails = new ArrayList<TaxMultiInsertReq>();
+					
+				res.setCompanyTaxDetails(taxDetails);
+			}
+		}
+			catch (Exception e) {
 			e.printStackTrace();
 			log.info(e.getMessage());
 			return null;

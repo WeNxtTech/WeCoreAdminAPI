@@ -379,9 +379,9 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 				// Where
 				Predicate n1 = cb.equal(b.get("factorTypeId"), factorTypeId);
 				Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
-			//	Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
+				Predicate n3 = cb.equal(b.get("ratingFieldId"), data.getRatingFieldId());
 				
-				query.where(n2,n1).orderBy(orderList);
+				query.where(n2,n1,n3).orderBy(orderList);
 				
 				// Get Result 
 				TypedQuery<FactorTypeDetails> result = em.createQuery(query);
@@ -431,7 +431,7 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 				saveData.setStatus(StringUtils.isBlank(data.getStatus()) ? req.getStatus()  : data.getStatus());
 				saveData.setAmendId(amendId);
 				saveData.setStatus(req.getStatus().equalsIgnoreCase("P")?"P" : data.getStatus());		
-
+					
 				if( data.getRangeYn().equalsIgnoreCase("Y") ) {
 					saveData.setRangeFromColumn(range.stream().filter( o -> o.getItemCode().equalsIgnoreCase(data.getColumnsId()) ).collect(Collectors.toList()).get(0).getParam1() );
 					saveData.setRangeToColumn(range.stream().filter( o -> o.getItemCode().equalsIgnoreCase(data.getColumnsId()) ).collect(Collectors.toList()).get(0).getParam2() );

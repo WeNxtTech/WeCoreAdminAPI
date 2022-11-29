@@ -30,4 +30,8 @@ import com.maan.eway.bean.DropdownTableDetailsId;
  
 public interface DropdownTableDetailsRepository  extends JpaRepository<DropdownTableDetails,DropdownTableDetailsId > , JpaSpecificationExecutor<DropdownTableDetails> {
 
+
+
+	
+
 }

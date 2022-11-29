@@ -7,7 +7,13 @@ package com.maan.eway.master.service;
 
 
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.ConstantTableChangeStatusReq;
+import com.maan.eway.master.req.ConstantTableDetailsGetAllReq;
+import com.maan.eway.master.req.ConstantTableDetailsGetReq;
 import com.maan.eway.master.req.ConstantTableDetailsSaveReq;
+import com.maan.eway.master.req.LovDropDownReq;
+import com.maan.eway.master.res.ConstantTableDetailsRes;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 
 import java.util.List;
@@ -19,5 +25,15 @@ public interface ConstantTableDetailsService  {
 	List<Error> validateConstantTableDetails(ConstantTableDetailsSaveReq req);
 
 	SuccessRes insertConstantTableDetails(ConstantTableDetailsSaveReq req);
+
+	List<ConstantTableDetailsRes> getallConstantTableDetails(ConstantTableDetailsGetAllReq req);
+
+	List<ConstantTableDetailsRes> getActiveConstantTableDetails(ConstantTableDetailsGetAllReq req);
+
+	ConstantTableDetailsRes getByConstantTableDetailsId(ConstantTableDetailsGetReq req);
+
+	SuccessRes changeStatusOfConstantTableDetails(ConstantTableChangeStatusReq req);
+
+	List<DropDownRes> tableType(LovDropDownReq req);
 
 	}

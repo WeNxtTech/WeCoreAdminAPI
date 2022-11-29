@@ -40,9 +40,7 @@ public class DropdownTableDetailsId implements Serializable {
     
     private Integer    productId ;
     
-    private Date       effectiveDateStart ;
-    
-    private Date       effectiveDateEnd ;
+    private Integer    amendId ;
     
      
 }

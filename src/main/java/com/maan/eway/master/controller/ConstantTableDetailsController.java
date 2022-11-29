@@ -6,12 +6,16 @@ package com.maan.eway.master.controller;
 */
 
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.ConstantTableChangeStatusReq;
+import com.maan.eway.master.req.ConstantTableDetailsGetAllReq;
+import com.maan.eway.master.req.ConstantTableDetailsGetReq;
 import com.maan.eway.master.req.ConstantTableDetailsSaveReq;
-
+import com.maan.eway.master.req.LovDropDownReq;
+import com.maan.eway.master.res.ConstantTableDetailsRes;
 import com.maan.eway.master.service.ConstantTableDetailsService;
 
 import com.maan.eway.res.CommonRes;
-
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
@@ -35,7 +39,7 @@ import java.util.List;
 */
 @RestController
 @Api(tags = "MASTER : ConstantTableDetails Master ", description = "API's")
-@RequestMapping("/master")
+@RequestMapping("/api")
 public class ConstantTableDetailsController {
 
 	@Autowired
@@ -79,16 +83,16 @@ public class ConstantTableDetailsController {
 
 		}
 		
-	/*	//  Get All ConstantTableDetails Master
+		//  Get All ConstantTableDetails Master
 		
 		@PostMapping("/getallconstanttabledetails")
 		@ApiOperation("This method is getall ConstantTableDetails")
-		public ResponseEntity<CommonRes> getallConstantTableDetails(@RequestBody ConstantTableDetailsMasterGetAllReq req)
+		public ResponseEntity<CommonRes> getallConstantTableDetails(@RequestBody ConstantTableDetailsGetAllReq req)
 		{
 			CommonRes data = new CommonRes();
 			reqPrinter.reqPrint(req);
 			
-			List<ConstantTableDetailsMasterRes> res =service.getallConstantTableDetails(req);
+			List<ConstantTableDetailsRes> res =service.getallConstantTableDetails(req);
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);
@@ -106,12 +110,12 @@ public class ConstantTableDetailsController {
 		
 			@PostMapping("/getactiveconstanttabledetails")
 			@ApiOperation("This method is get Active ConstantTableDetails")
-			public ResponseEntity<CommonRes> getActiveConstantTableDetails(@RequestBody ConstantTableDetailsMasterGetAllReq req)
+			public ResponseEntity<CommonRes> getActiveConstantTableDetails(@RequestBody ConstantTableDetailsGetAllReq req)
 			{
 				CommonRes data = new CommonRes();
 				reqPrinter.reqPrint(req);
 				
-				List<ConstantTableDetailsMasterRes> res = service.getActiveConstantTableDetails(req);
+				List<ConstantTableDetailsRes> res = service.getActiveConstantTableDetails(req);
 				data.setCommonResponse(res);
 				data.setErrorMessage(Collections.emptyList());
 				data.setIsError(false);
@@ -129,10 +133,10 @@ public class ConstantTableDetailsController {
 		
 		@PostMapping("/getbyconstanttabledetailsid")
 		@ApiOperation("This Method is to get by ConstantTableDetails id")
-		public ResponseEntity<CommonRes> getByConstantTableDetailsId(@RequestBody ConstantTableDetailsMasterGetReq req)
+		public ResponseEntity<CommonRes> getByConstantTableDetailsId(@RequestBody ConstantTableDetailsGetReq req)
 		{
 		CommonRes data = new CommonRes();
-		ConstantTableDetailsMasterRes res = service.getByConstantTableDetailsId(req);
+		ConstantTableDetailsRes res = service.getByConstantTableDetailsId(req);
 		data.setCommonResponse(res);
 		data.setErrorMessage(Collections.emptyList());
 		data.setIsError(false);
@@ -145,17 +149,14 @@ public class ConstantTableDetailsController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	/*	
+
 		// ConstantTableDetails Master Drop Down Type
-		@GetMapping("/dropdown/constanttabledetails")
-		@ApiOperation(value = "This method is get ConstantTableDetails Master Drop Down")
-
-		public ResponseEntity<CommonRes> getConstantTableDetailsMasterDropdown() {
-
+		@PostMapping("/dropdown/tabletype")
+		@ApiOperation(value = "This method is to Table Type Drop Down")
+		public ResponseEntity<CommonRes> tableType(@RequestBody LovDropDownReq req) {
 			CommonRes data = new CommonRes();
 
-			// Save
-			List<DropDownRes> res = service.getConstantTableDetailsMasterDropdown();
+			List<DropDownRes> res = service.tableType(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());
@@ -167,38 +168,12 @@ public class ConstantTableDetailsController {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
 
-		}
+		}		
 
-		
-		// ConstantTableDetails Master Drop Down Type
-		@PostMapping("/dropdown/acexecutives")
-		@ApiOperation(value = "This method is get ConstantTableDetails Master Drop Down")
 
-		public ResponseEntity<CommonRes> getAcExecutivesDropdown(@RequestBody AcExecutiveDropDownReq req) {
-
-			CommonRes data = new CommonRes();
-
-			// Save
-			List<DropDownRes> res = service.getAcExecutivesDropdown(req);
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
-
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
-
-		}
-
-		*/
-
-/*
 		@PostMapping("/constanttabledetails/changestatus")
 		@ApiOperation(value = "This method is get ConstantTableDetails Change Status")
-		public ResponseEntity<CommonRes> changeStatusOfConstantTableDetails(@RequestBody ConstantTableDetailsChangeStatusReq req) {
+		public ResponseEntity<CommonRes> changeStatusOfConstantTableDetails(@RequestBody ConstantTableChangeStatusReq req) {
 
 			CommonRes data = new CommonRes();
 			// Change Status
@@ -216,6 +191,6 @@ public class ConstantTableDetailsController {
 
 		}
 	
-	*/	
+
 
 }

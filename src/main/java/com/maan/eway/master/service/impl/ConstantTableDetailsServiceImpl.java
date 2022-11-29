@@ -7,12 +7,15 @@ package com.maan.eway.master.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -34,21 +37,28 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-
-
-
+import com.maan.eway.master.req.ConstantTableChangeStatusReq;
+import com.maan.eway.master.req.ConstantTableDetailsGetAllReq;
+import com.maan.eway.master.req.ConstantTableDetailsGetReq;
 import com.maan.eway.master.req.ConstantTableDetailsSaveReq;
-
-
-
+import com.maan.eway.master.req.DropdownTableDetailsSaveReq;
+import com.maan.eway.master.req.LovDropDownReq;
+import com.maan.eway.master.req.OfsGridSaveReq;
+import com.maan.eway.master.req.SectionCoverMasterSaveReq;
+import com.maan.eway.master.res.ConstantTableDetailsRes;
 import com.maan.eway.master.service.ConstantTableDetailsService;
 
 import com.maan.eway.bean.ConstantTableDetails;
-
+import com.maan.eway.bean.CoverMaster;
+import com.maan.eway.bean.CoverOfsGridMaster;
+import com.maan.eway.bean.DropdownTableDetails;
+import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.SectionCoverOfsGridMaster;
 import com.maan.eway.error.Error;
 
 import com.maan.eway.repository.ConstantTableDetailsRepository;
-
+import com.maan.eway.repository.DropdownTableDetailsRepository;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 
 /**
@@ -64,6 +74,9 @@ private EntityManager em;
 @Autowired
 private ConstantTableDetailsRepository repo;
 
+@Autowired
+private DropdownTableDetailsRepository dropdowntableRepo;
+
 Gson json = new Gson();
 
 private Logger log=LogManager.getLogger(ConstantTableDetailsServiceImpl.class);
@@ -78,13 +91,16 @@ public List<Error> validateConstantTableDetails(ConstantTableDetailsSaveReq req)
 			errorList.add(new Error("02", "ProductId", "Please Enter ProductId"));
 		}else if (req.getProductId().length() > 20){
 			errorList.add(new Error("02","ProductId", "Please Enter ProductId 20 Characters")); 
-		}else if (StringUtils.isBlank(req.getInsuranceId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
-			List<ConstantTableDetails> ConstantTableDetailsList = getConstantTableDetailsNameExistDetails(req.getItemId() , req.getInsuranceId() , req.getBranchCode());
+		}if (StringUtils.isBlank(req.getTableName())) {
+			errorList.add(new Error("02", "TableName", "Please Enter TableName"));
+		}
+		else if (StringUtils.isBlank(req.getItemId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
+			List<ConstantTableDetails> ConstantTableDetailsList = getConstantTableNameExistDetails(req.getTableName() , req.getInsuranceId() , req.getBranchCode());
 			if (ConstantTableDetailsList.size()>0 ) {
-				errorList.add(new Error("01", "ConstantTableDetailsName", "This ConstantTableDetails Name Already Exist "));
+				errorList.add(new Error("01", "TableName", "This ConstantTableDetails Name Already Exist "));
 			}
 		}else if (StringUtils.isNotBlank(req.getItemId().toString()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
-			List<ConstantTableDetails> ConstantTableDetailsList = getConstantTableDetailsNameExistDetails(req.getItemId() , req.getInsuranceId() , req.getBranchCode());
+			List<ConstantTableDetails> ConstantTableDetailsList = getConstantTableNameExistDetails(req.getTableName() , req.getInsuranceId() , req.getBranchCode());
 			
 			if (ConstantTableDetailsList.size()>0 &&  (! req.getItemId().toString().equalsIgnoreCase(ConstantTableDetailsList.get(0).getItemId().toString())) ) {
 				errorList.add(new Error("01", "ConstantTableDetailsName", "This ConstantTableDetails Name Already Exist "));
@@ -92,19 +108,12 @@ public List<Error> validateConstantTableDetails(ConstantTableDetailsSaveReq req)
 			
 		}
 		
-		
 		if (StringUtils.isBlank(req.getInsuranceId())) {
 			errorList.add(new Error("02", "InsuranceId", "Please Enter InsuranceId"));
 		}
 		
 		if (StringUtils.isBlank(req.getBranchCode())) {
 			errorList.add(new Error("03", "BranchCode", "Please Enter BranchCode"));
-		}
-		
-		if (StringUtils.isBlank(req.getKeyName())) {
-			errorList.add(new Error("04", "KeyName", "Please Enter KeyName "));
-		}else if (req.getKeyName().length() > 100){
-			errorList.add(new Error("04","KeyName", "Please Enter KeyName within 100 Characters")); 
 		}
 		
 		// Date Validation 
@@ -127,11 +136,7 @@ public List<Error> validateConstantTableDetails(ConstantTableDetailsSaveReq req)
 			errorList.add(new Error("06", "Status", "Enter Status in Y or N or R Only"));
 		}
 
-		if (StringUtils.isBlank(req.getKeyTable())) {
-			errorList.add(new Error("07", "KeyTable", "Please Select KeyTable"));
-		}else if (req.getKeyTable().length() > 200){
-			errorList.add(new Error("07","KeyTable", "Please Enter KeyTable within 20 Characters")); 
-		}
+		
 		if (StringUtils.isBlank(req.getRequestYn())) {
 			errorList.add(new Error("08", "RequestYn", "Please Select RequestYn"));
 		}else if (req.getRequestYn().length() > 2){
@@ -145,6 +150,48 @@ public List<Error> validateConstantTableDetails(ConstantTableDetailsSaveReq req)
 		}else if (req.getCreatedBy().length() > 100){
 			errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
 		}
+
+		if (StringUtils.isBlank(req.getTableType())) {
+			errorList.add(new Error("10", "TableType", "Please Select TableType"));
+		} else if (req.getTableType().length() > 100) {
+			errorList.add(new Error("10", "TableType", "Please Enter Table Type within 100 Characters"));
+		}else if (req.getTableType().equalsIgnoreCase("Master Table")) {
+			if (StringUtils.isBlank(req.getApiName())) {
+				errorList.add(new Error("10", "ApiName", "Please Enter  ApiName "));
+			} else if (req.getApiName().length() > 200) {
+				errorList.add(new Error("10", "ApiName", "Please Enter ApiName within 100 Characters"));
+			} else if (StringUtils.isBlank(req.getApiUrl())) {
+				errorList.add(new Error("10", "ApiUrl", "Please Enter ApiUrl "));
+			} else if (req.getApiUrl().length() > 200) {
+				errorList.add(new Error("10", "ApiUrl", "Please Enter ApiUrl within 100 Characters"));
+			}else if (StringUtils.isBlank(req.getKeyTable())) {
+				errorList.add(new Error("07", "KeyTable", "Please Select KeyTable"));
+			}else if (req.getKeyTable().length() > 200){
+				errorList.add(new Error("07","KeyTable", "Please Enter KeyTable within 20 Characters")); 
+			}else 	if (StringUtils.isBlank(req.getKeyName())) {
+				errorList.add(new Error("04", "KeyName", "Please Enter KeyName "));
+			}else if (req.getKeyName().length() > 100){
+				errorList.add(new Error("04","KeyName", "Please Enter KeyName within 100 Characters")); 
+			}
+		}
+		if (req.getRequestYn().equalsIgnoreCase("Y")) {
+			Long row = 0L;
+			for (DropdownTableDetailsSaveReq data : req.getDropdownTableDetailsSaveReq()) {
+				row = row + 1;
+
+				if (StringUtils.isBlank(data.getRequestColumn())) {
+					errorList.add(new Error("01", "RequestColumn", "Please Enter Request Column in Row No : " + row));
+				}
+				if (StringUtils.isBlank(data.getRequestJsonKey())) {
+					errorList
+							.add(new Error("01", "RequestJsonKey", "Please Enter Request Json Key in Row No : " + row));
+				}
+				if (StringUtils.isBlank(data.getRequestTable())) {
+					errorList.add(new Error("01", "RequestTable", "Please Enter Request Table in Row No : " + row));
+				}
+
+			}
+		}
 	} catch (Exception e) {
 		log.error(e);
 		e.printStackTrace();
@@ -152,7 +199,7 @@ public List<Error> validateConstantTableDetails(ConstantTableDetailsSaveReq req)
 	return errorList;
 }
 
-public List<ConstantTableDetails> getConstantTableDetailsNameExistDetails(String occupationName , String InsuranceId , String branchCode) {
+public List<ConstantTableDetails> getConstantTableNameExistDetails(String tableName , String InsuranceId , String branchCode) {
 	List<ConstantTableDetails> list = new ArrayList<ConstantTableDetails>();
 	try {
 		Date today = new Date();
@@ -178,7 +225,7 @@ public List<ConstantTableDetails> getConstantTableDetailsNameExistDetails(String
 		amendId.where(a1,a2,a3,a4,a5);
 
 		Predicate n1 = cb.equal(b.get("amendId"), amendId);
-		Predicate n2 = cb.equal(cb.lower( b.get("itemId")), occupationName.toLowerCase());
+		Predicate n2 = cb.equal(cb.lower( b.get("tableName")), tableName.toLowerCase());
 		Predicate n3 = cb.equal(b.get("companyId"),InsuranceId);
 		Predicate n4 = cb.equal(b.get("branchCode"), branchCode);
 		Predicate n5 = cb.equal(b.get("branchCode"), "99999");
@@ -233,21 +280,12 @@ public SuccessRes insertConstantTableDetails(ConstantTableDetailsSaveReq req) {
 			Root<ConstantTableDetails> b = query.from(ConstantTableDetails.class);
 			//Select 
 			query.select(b);
-//			//Effective Date Max Filter
-//			Subquery<Long> effectiveDate = query.subquery(Long.class);
-//			Root<ConstantTableDetails> ocpm1 = effectiveDate.from(ConstantTableDetails.class);
-//			effectiveDate.select(ocpm1.get("effectiveDateStart"));
-//			Predicate a1 = cb.equal(ocpm1.get("occupationId"), b.get("occupationId"));
-//			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"),startDate);
-//			
-//			effectiveDate.where(a1,a2);
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.desc(b.get("effectiveDateStart")));
 			
 			// Where
-		//	Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("itemId"), req.getItemId());
 			Predicate n3 = cb.equal(b.get("companyId"), req.getInsuranceId());
 			Predicate n4 = cb.equal(b.get("branchCode"), req.getBranchCode());
@@ -292,17 +330,43 @@ public SuccessRes insertConstantTableDetails(ConstantTableDetailsSaveReq req) {
 		saveData.setItemId(itemId);
 		saveData.setEffectiveDateStart(startDate);
 		saveData.setEffectiveDateEnd(endDate);
-		saveData.setCreatedBy(createdBy);
+		saveData.setEntryDate(entryDate);
+		saveData.setAmendId(amendId);
 		saveData.setStatus(req.getStatus());
 		saveData.setCompanyId(req.getInsuranceId());
 		saveData.setEntryDate(entryDate);
-		saveData.setCreatedBy(req.getCreatedBy());
-		saveData.setAmendId(amendId);
+		saveData.setCreatedBy(createdBy);
+		saveData.setUpdatedDate(new Date());
+		saveData.setUpdatedBy(req.getCreatedBy());
 
 		repo.saveAndFlush(saveData);
 		log.info("Saved Details is --> " + json.toJson(saveData));
 		
+		Integer requestId = 0;
+		if (req.getRequestYn().equalsIgnoreCase("Y")) {
+			for (DropdownTableDetailsSaveReq data : req.getDropdownTableDetailsSaveReq()) {
+				DropdownTableDetails dropDownDetailsSave = new DropdownTableDetails();
+				requestId = requestId + 1;
+				dozerMapper.map(data, dropDownDetailsSave);
+				dropDownDetailsSave.setRequestId(requestId);
+				dropDownDetailsSave.setItemId(itemId);
+				dropDownDetailsSave.setEffectiveDateStart(startDate);
+				dropDownDetailsSave.setEffectiveDateEnd(endDate);
+				dropDownDetailsSave.setEntryDate(entryDate);
+				dropDownDetailsSave.setAmendId(0);
+				dropDownDetailsSave.setStatus(req.getStatus());
+				dropDownDetailsSave.setCompanyId(req.getInsuranceId());
+				dropDownDetailsSave.setBranchCode(req.getBranchCode());
+				dropDownDetailsSave.setProductId(Integer.valueOf(req.getProductId()));
+				dropDownDetailsSave.setEntryDate(entryDate);
+				dropDownDetailsSave.setCreatedBy(createdBy);
+				dropDownDetailsSave.setUpdatedDate(new Date());
+				dropDownDetailsSave.setUpdatedBy(req.getCreatedBy());
+				dropdowntableRepo.saveAndFlush(dropDownDetailsSave);
+				log.info("Saved Details is --> " + json.toJson(dropDownDetailsSave));
+			}
 		}
+	}
 	catch (Exception e) {
 		e.printStackTrace();
 		log.info("Exception is --> "+ e.getMessage());
@@ -361,7 +425,7 @@ public SuccessRes insertConstantTableDetails(ConstantTableDetailsSaveReq req) {
 		return data;
 	}
 
-/*
+
 @Override
 public List<ConstantTableDetailsRes> getallConstantTableDetails(ConstantTableDetailsGetAllReq req) {
 	List<ConstantTableDetailsRes> resList = new ArrayList<ConstantTableDetailsRes>();
@@ -383,7 +447,7 @@ public List<ConstantTableDetailsRes> getallConstantTableDetails(ConstantTableDet
 		Subquery<Long> amendId = query.subquery(Long.class);
 		Root<ConstantTableDetails> ocpm1 = amendId.from(ConstantTableDetails.class);
 		amendId.select(cb.max(ocpm1.get("amendId")));
-		Predicate a1 = cb.equal(ocpm1.get("occupationId"), b.get("occupationId"));
+		Predicate a1 = cb.equal(ocpm1.get("itemId"), b.get("itemId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
 
@@ -391,7 +455,7 @@ public List<ConstantTableDetailsRes> getallConstantTableDetails(ConstantTableDet
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(b.get("occupationName")));
+		orderList.add(cb.asc(b.get("branchCode")));
 
 		// Where
 		Predicate n1 = cb.equal(b.get("amendId"), amendId);
@@ -410,8 +474,6 @@ public List<ConstantTableDetailsRes> getallConstantTableDetails(ConstantTableDet
 			ConstantTableDetailsRes res = new ConstantTableDetailsRes();
 
 			res = mapper.map(data, ConstantTableDetailsRes.class);
-			res.setCoreAppCode(data.getCoreAppcode());
-
 			resList.add(res);
 		}
 
@@ -424,7 +486,7 @@ public List<ConstantTableDetailsRes> getallConstantTableDetails(ConstantTableDet
 	return resList;
 }
 
-/*
+
 @Override
 public List<ConstantTableDetailsRes> getActiveConstantTableDetails(ConstantTableDetailsGetAllReq req) {
 	List<ConstantTableDetailsRes> resList = new ArrayList<ConstantTableDetailsRes>();
@@ -446,7 +508,7 @@ public List<ConstantTableDetailsRes> getActiveConstantTableDetails(ConstantTable
 		Subquery<Long> amendId = query.subquery(Long.class);
 		Root<ConstantTableDetails> ocpm1 = amendId.from(ConstantTableDetails.class);
 		amendId.select(cb.max(ocpm1.get("amendId")));
-		Predicate a1 = cb.equal(ocpm1.get("occupationId"), b.get("occupationId"));
+		Predicate a1 = cb.equal(ocpm1.get("itemId"), b.get("itemId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
 
@@ -454,7 +516,7 @@ public List<ConstantTableDetailsRes> getActiveConstantTableDetails(ConstantTable
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(b.get("occupationName")));
+		orderList.add(cb.asc(b.get("branchCode")));
 
 		// Where
 		Predicate n1 = cb.equal(b.get("amendId"), amendId);
@@ -474,8 +536,6 @@ public List<ConstantTableDetailsRes> getActiveConstantTableDetails(ConstantTable
 			ConstantTableDetailsRes res = new ConstantTableDetailsRes();
 
 			res = mapper.map(data, ConstantTableDetailsRes.class);
-			res.setCoreAppCode(data.getCoreAppcode());
-
 			resList.add(res);
 		}
 
@@ -517,7 +577,7 @@ public ConstantTableDetailsRes getByConstantTableDetailsId(ConstantTableDetailsG
 		Subquery<Long> amendId = query.subquery(Long.class);
 		Root<ConstantTableDetails> ocpm1 = amendId.from(ConstantTableDetails.class);
 		amendId.select(cb.max(ocpm1.get("amendId")));
-		Predicate a1 = cb.equal(ocpm1.get("occupationId"), b.get("occupationId"));
+		Predicate a1 = cb.equal(ocpm1.get("itemId"), b.get("itemId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
 
@@ -525,13 +585,13 @@ public ConstantTableDetailsRes getByConstantTableDetailsId(ConstantTableDetailsG
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(b.get("occupationName")));
+		orderList.add(cb.asc(b.get("branchCode")));
 
 		// Where
 		Predicate n1 = cb.equal(b.get("amendId"), amendId);
 		Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
 		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
-		Predicate n4 = cb.equal(b.get("occupationId"), req.getConstantTableDetailsId());
+		Predicate n4 = cb.equal(b.get("itemId"), req.getItemId());
 		Predicate n6 = cb.equal(b.get("branchCode"), "99999");
 		Predicate n7 = cb.or(n3,n6);
 		query.where(n1,n2,n4,n7).orderBy(orderList);
@@ -542,11 +602,11 @@ public ConstantTableDetailsRes getByConstantTableDetailsId(ConstantTableDetailsG
 		list = result.getResultList();
 
 		res = mapper.map(list.get(0), ConstantTableDetailsRes.class);
-		res.setConstantTableDetailsId(list.get(0).getConstantTableDetailsId().toString());
+		res.setItemId(list.get(0).getItemId().toString());
 		res.setEntryDate(list.get(0).getEntryDate());
 		res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
 		res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
-		res.setCoreAppCode(list.get(0).getCoreAppcode());
+		
 		} catch (Exception e) {
 		e.printStackTrace();
 		log.info("Exception is ---> " + e.getMessage());
@@ -554,74 +614,96 @@ public ConstantTableDetailsRes getByConstantTableDetailsId(ConstantTableDetailsG
 	}
 	return res;
 }
-/*
 @Override
-public List<DropDownRes> getConstantTableDetailsDropdown() {
-List<DropDownRes> resList = new ArrayList<DropDownRes>();
-try {
-	Date today = new Date();
-	Calendar cal = new GregorianCalendar();
-	cal.setTime(today);
-	cal.set(Calendar.HOUR_OF_DAY, 23);;
-	cal.set(Calendar.MINUTE, 1);
-	today = cal.getTime();
-	cal.set(Calendar.HOUR_OF_DAY, 1);
-	cal.set(Calendar.MINUTE, 1);
-	Date todayEnd = cal.getTime();
-	
-	// Criteria
-	CriteriaBuilder cb = em.getCriteriaBuilder();
-	CriteriaQuery<ConstantTableDetails> query=  cb.createQuery(ConstantTableDetails.class);
-	List<ConstantTableDetails> list = new ArrayList<ConstantTableDetails>();
-	// Find All
-	Root<ConstantTableDetails> c = query.from(ConstantTableDetails.class);
-	//Select
-	query.select(c);
-	// Order By
-	List<Order> orderList = new ArrayList<Order>();
-	orderList.add(cb.asc(c.get("occupationName")));
-	
-	// Effective Date Start Max Filter
-	Subquery<Long> effectiveDate = query.subquery(Long.class);
-	Root<ConstantTableDetails> ocpm1 = effectiveDate.from(ConstantTableDetails.class);
-	effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-	Predicate a1 = cb.equal(c.get("occupationId"),ocpm1.get("occupationId"));
-	Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-	effectiveDate.where(a1,a2);
-	// Effective Date End Max Filter
-	Subquery<Long> effectiveDate2 = query.subquery(Long.class);
-	Root<ConstantTableDetails> ocpm2 = effectiveDate2.from(ConstantTableDetails.class);
-	effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
-	Predicate a3 = cb.equal(c.get("occupationId"),ocpm2.get("occupationId"));
-	Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-	effectiveDate2.where(a3,a4);
-	// Where
-	Predicate n1 = cb.equal(c.get("status"),"Y");
-	Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
-	Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
-	query.where(n1,n2,n3).orderBy(orderList);
-	// Get Result
-	TypedQuery<ConstantTableDetails> result = em.createQuery(query);
-	list = result.getResultList();
-	for (ConstantTableDetails data : list) {
-		// Response 
-		DropDownRes res = new DropDownRes();
-		res.setCode(data.getConstantTableDetailsId());
-		res.setCodeDesc(data.getConstantTableDetailsName());
-		resList.add(res);
-	}
-}
-	catch(Exception e) {
-		e.printStackTrace();
-		log.info("Exception is --->"+e.getMessage());
-		return null;
+public List<DropDownRes> tableType(LovDropDownReq req) {
+	List<DropDownRes> resList = new ArrayList<DropDownRes>();
+	try {
+		String itemType = "CONSTANT_DETAILS_TABLE" ;
+		List<ListItemValue> getList  = getListItem(req , itemType);
+		for (ListItemValue data : getList) {
+			DropDownRes res = new DropDownRes();
+			res.setCode(data.getItemCode());
+			res.setCodeDesc(data.getItemValue());
+			res.setStatus(data.getStatus());
+			resList.add(res);
 		}
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is ---> " + e.getMessage());
+		return null;
+	}
 	return resList;
 }
-	*/
-/*
+public synchronized List<ListItemValue> getListItem(LovDropDownReq req , String itemType) {
+	List<ListItemValue> list = new ArrayList<ListItemValue>();
+	try {
+		Date today = new Date();
+		Calendar cal = new GregorianCalendar();
+		cal.setTime(today);
+		today = cal.getTime();
+		Date todayEnd = cal.getTime();
+		
+		// Criteria
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ListItemValue> query=  cb.createQuery(ListItemValue.class);
+		// Find All
+		Root<ListItemValue> c = query.from(ListItemValue.class);
+		
+		//Select
+		query.select(c);
+		// Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.asc(c.get("branchCode")));
+		
+		
+		// Effective Date Start Max Filter
+		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
+		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
+		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+		effectiveDate.where(a1,a2);
+		// Effective Date End Max Filter
+		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+		Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
+		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+		Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
+		Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+		effectiveDate2.where(a3,a4);
+					
+		// Where
+		Predicate n1 = cb.equal(c.get("status"),"Y");
+		Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
+		Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
+		Predicate n4 = cb.equal(c.get("companyId"), req.getInsuranceId());
+		Predicate n5 = cb.equal(c.get("companyId"), "99999");
+		Predicate n6 = cb.equal(c.get("branchCode"), req.getBranchCode());
+		Predicate n7 = cb.equal(c.get("branchCode"), "99999");
+		Predicate n8 = cb.or(n4,n5);
+		Predicate n9 = cb.or(n6,n7);
+		Predicate n10 = cb.equal(c.get("itemType"),itemType);
+		query.where(n1,n2,n3,n8,n9,n10).orderBy(orderList);
+		// Get Result
+		TypedQuery<ListItemValue> result = em.createQuery(query);
+		list = result.getResultList();
+		
+		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getItemCode()))).collect(Collectors.toList());
+		list.sort(Comparator.comparing(ListItemValue :: getItemValue));
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is ---> " + e.getMessage());
+		return null;
+	}
+	return list ;
+}
+
+private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
+    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+}
+
 @Override
-public SuccessRes changeStatusOfConstantTableDetails(ConstantTableDetailsChangeStatusReq req) {
+public SuccessRes changeStatusOfConstantTableDetails(ConstantTableChangeStatusReq req) {
 	SuccessRes res = new SuccessRes();
 	DozerBeanMapper dozerMapper = new DozerBeanMapper();
 	try {
@@ -639,7 +721,7 @@ public SuccessRes changeStatusOfConstantTableDetails(ConstantTableDetailsChangeS
 		Subquery<Long> amendId = query.subquery(Long.class);
 		Root<ConstantTableDetails> ocpm1 = amendId.from(ConstantTableDetails.class);
 		amendId.select(cb.max(ocpm1.get("amendId")));
-		Predicate a1 = cb.equal(ocpm1.get("occupationId"), b.get("occupationId"));
+		Predicate a1 = cb.equal(ocpm1.get("itemId"), b.get("itemId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
 
@@ -647,13 +729,13 @@ public SuccessRes changeStatusOfConstantTableDetails(ConstantTableDetailsChangeS
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(b.get("occupationId")));
+		orderList.add(cb.asc(b.get("itemId")));
 
 		// Where
 		Predicate n1 = cb.equal(b.get("amendId"), amendId);
-		Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
+		Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
 		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
-		Predicate n4 = cb.equal(b.get("occupationId"), req.getConstantTableDetailsId());
+		Predicate n4 = cb.equal(b.get("itemId"), req.getItemId());
 		Predicate n5 = cb.equal(b.get("branchCode"), "99999");
 		Predicate n6 = cb.or(n3,n5);
 		
@@ -676,7 +758,7 @@ public SuccessRes changeStatusOfConstantTableDetails(ConstantTableDetailsChangeS
 	
 		// Perform Update
 		res.setResponse("Status Changed");
-		res.setSuccessId(req.getConstantTableDetailsId());
+		res.setSuccessId(req.getItemId());
 	}
 	catch (Exception e) {
 		e.printStackTrace();
@@ -687,70 +769,5 @@ public SuccessRes changeStatusOfConstantTableDetails(ConstantTableDetailsChangeS
 }
 
 
-@Override
-public List<DropDownRes> getAcExecutivesDropdown(AcExecutiveDropDownReq req) {
-	List<DropDownRes> resList = new ArrayList<DropDownRes>();
-	try {
-		Date today = new Date();
-		Calendar cal = new GregorianCalendar();
-		cal.setTime(today);
-		cal.set(Calendar.HOUR_OF_DAY, 23);;
-		cal.set(Calendar.MINUTE, 1);
-		today = cal.getTime();
-		cal.set(Calendar.HOUR_OF_DAY, 1);
-		cal.set(Calendar.MINUTE, 1);
-		Date todayEnd = cal.getTime();
-		
-		// Criteria
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<AcExecutiveMaster> query=  cb.createQuery(AcExecutiveMaster.class);
-		List<AcExecutiveMaster> list = new ArrayList<AcExecutiveMaster>();
-		// Find All
-		Root<AcExecutiveMaster> c = query.from(AcExecutiveMaster.class);
-		//Select
-		query.select(c);
-		// Order By
-		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.desc(c.get("effectiveDateStart")));
-		
-		// Effective Date Start Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
-		Root<AcExecutiveMaster> ocpm1 = effectiveDate.from(AcExecutiveMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-		Predicate a1 = cb.equal(c.get("acExecutiveId"),ocpm1.get("acExecutiveId"));
-		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-		effectiveDate.where(a1,a2);
-		// Effective Date End Max Filter
-		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
-		Root<AcExecutiveMaster> ocpm2 = effectiveDate2.from(AcExecutiveMaster.class);
-		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
-		Predicate a3 = cb.equal(c.get("acExecutiveId"),ocpm2.get("acExecutiveId"));
-		Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-		effectiveDate2.where(a3,a4);
-		// Where
-		Predicate n1 = cb.equal(c.get("status"),"Y");
-		Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
-		Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
-		Predicate n4 = cb.equal(c.get("oaCode"),req.getOaCode());
-		Predicate n5 = cb.notEqual(c.get("acExecutiveId"),"1");
-		query.where(n1,n2,n3,n4,n5).orderBy(orderList);
-		// Get Result
-		TypedQuery<AcExecutiveMaster> result = em.createQuery(query);
-		list = result.getResultList();
-		for (AcExecutiveMaster data : list) {
-			// Response 
-			DropDownRes res = new DropDownRes();
-			res.setCode(data.getAcExecutiveId().toString());
-			res.setCodeDesc(data.getAcExecutiveName());
-			resList.add(res);
-		}
-	}
-		catch(Exception e) {
-			e.printStackTrace();
-			log.info("Exception is --->"+e.getMessage());
-			return null;
-			}
-		return resList;
-	}
-*/
+
 }

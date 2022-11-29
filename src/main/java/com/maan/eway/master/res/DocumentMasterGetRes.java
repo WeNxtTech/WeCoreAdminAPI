@@ -57,5 +57,16 @@ public class DocumentMasterGetRes implements Serializable {
 	@JsonProperty("EntryDate")
     private Date       entryDate    ;
 	
+	@JsonProperty("CoreAppCode")
+	private String coreAppCode;
 	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("UpdatedDate")
+    private Date       updatedDate    ;
+	
+
+	@JsonProperty("UpdatedBy")
+	private String updatedBy;
+
+
 }

@@ -104,13 +104,13 @@ public class DocumentMasterController {
 		
 		//  Get All Section Master
 		
-		@PostMapping("/getalldocuments")
+		@GetMapping("/getalldocuments")
 		@ApiOperation("This method is getall Documents")
-		public ResponseEntity<CommonRes> getallDocuments(@RequestBody DocumentMasterGetAllReq req)
+		public ResponseEntity<CommonRes> getallDocuments()
 		{
 			CommonRes data = new CommonRes();
 			
-			List<DocumentMasterGetRes> res =documentservice.getallDocuments(req);
+			List<DocumentMasterGetRes> res =documentservice.getallDocuments();
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);
@@ -147,12 +147,12 @@ public class DocumentMasterController {
 		
 		// Get By Active Status
 		
-		@PostMapping("/getactivedocument")
+		@GetMapping("/getactivedocument")
 		@ApiOperation("This Method is to Get Active Documents")
-		public ResponseEntity<CommonRes> getActiveDocument(@RequestBody DocumentMasterGetAllReq req)
+		public ResponseEntity<CommonRes> getActiveDocument()
 		{
 			CommonRes data = new CommonRes();
-			List<DocumentMasterGetRes> res = documentservice.getActiveDocument(req);
+			List<DocumentMasterGetRes> res = documentservice.getActiveDocument();
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);

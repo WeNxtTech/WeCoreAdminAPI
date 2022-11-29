@@ -41,9 +41,12 @@ public class DocumentMasterSaveReq {
 	@JsonProperty("Status")
 	private String status;
 
-
+	@JsonProperty("CoreAppCode")
+	private String coreAppCode;
+	
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateEnd")
 	private Date effectiveDateEnd;
+
 
 }

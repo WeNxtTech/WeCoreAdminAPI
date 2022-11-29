@@ -7,10 +7,15 @@ package com.maan.eway.master.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -32,7 +37,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.CurrencyMaster;
 import com.maan.eway.bean.DocumentMaster;
+import com.maan.eway.bean.ExchangeMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.DocumentChangeStatusReq;
@@ -70,32 +77,27 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 	@Override
 	public SuccessRes insertDocument(DocumentMasterSaveReq req) {
 		SuccessRes res = new SuccessRes();
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/yyyy");
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		DocumentMaster saveData = new DocumentMaster();
 		List<DocumentMaster> list = new ArrayList<DocumentMaster>();
 
 		try {
-			Integer amendId = 0 ;
-			Calendar cal = new GregorianCalendar();
-			cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
-			Date startDate = cal.getTime() ;
-			Date today = new Date();
-			cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
-			cal.set(Calendar.SECOND, today.getSeconds());
-			Date oldEndDate = cal.getTime() ;
-			cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
-			cal.set(Calendar.SECOND, today.getSeconds());
-			Date effDate = cal.getTime();
-			Date endDate = req.getEffectiveDateEnd();
-			cal.setTime(req.getEffectiveDateEnd());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 50) ;
-			endDate = cal.getTime() ;
-			
+			Integer amendId=0;
+			Date startDate = req.getEffectiveDateStart() ;
+			String end = "31/12/2050";
+			Date endDate = sdformat.parse(end);
+			long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
+			Date entryDate = null ;
+			String createdBy = "" ;	
 			String documentId = "";
 			
 			if (StringUtils.isBlank(req.getDocumentId())) {
 				Long totalcount = getDocumentMastertablecount();
-				documentId = Long.valueOf(totalcount + 101).toString();
+				
+					documentId = Long.valueOf(totalcount +1).toString();					
+				
 				saveData.setDocumentId(Integer.valueOf(documentId));
 				res.setSuccessId(documentId);
 				res.setResponse("Saved Successful");
@@ -107,41 +109,45 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 				Root<DocumentMaster> b = query.from(DocumentMaster.class);
 				// Select
 				query.select(b);
-				// Effective Date Max Filter
-				Subquery<Long> effectiveDate = query.subquery(Long.class);
-				Root<DocumentMaster> ocpm1 = effectiveDate.from(DocumentMaster.class);
-				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-				Predicate a1 = cb.equal(ocpm1.get("documentId"), b.get("documentId"));
-				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
-				effectiveDate.where(a1, a2);
-
+				
 				// Order By
-				// List<Order> orderList = new ArrayList<Order>();
-				// orderList.add(cb.asc(b.get("branchName")));
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.desc(b.get("effectiveDateStart")));
+				
+				Predicate n1 =  cb.equal(b.get("documentId"), req.getDocumentId() );
 
-				// Where
-				Predicate n1 = cb.equal(b.get("status"), "Y");
-				Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-				Predicate n3 = cb.equal(b.get("documentId"), req.getDocumentId());
-
-				query.where(n1, n2, n3);// .orderBy(orderList);
+				query.where( n1).orderBy(orderList);
 
 				// Get Result
 				TypedQuery<DocumentMaster> result = em.createQuery(query);
+				int limit = 0 , offset = 2 ;
+				result.setFirstResult(limit * offset);
+				result.setMaxResults(offset);
 				list = result.getResultList();
-
-				if (list.size() > 0) {
-					repo.delete(list.get(0));
-					// Amend ID
-					if (list.get(0).getEffectiveDateStart().before(startDate)) {
-						String startDatewithoutTime = sdf.format(startDate);
-						String oldDatewithoutTime = sdf.format(list.get(0).getEffectiveDateStart());
-
-						if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
-							amendId = list.get(0).getAmendId() + 1;
+			
+				if(list.size()>0) {
+					Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+				
+					if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
+						amendId = list.get(0).getAmendId() + 1 ;
+						entryDate = new Date() ;
+						createdBy = req.getCreatedBy();
+						DocumentMaster lastRecord = list.get(0);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							repo.saveAndFlush(lastRecord);
+						
+					} else {
+						amendId = list.get(0).getAmendId() ;
+						entryDate = list.get(0).getEntryDate() ;
+						createdBy = list.get(0).getCreatedBy();
+						saveData = list.get(0) ;
+						if (list.size()>1 ) {
+							DocumentMaster lastRecord = list.get(1);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							repo.saveAndFlush(lastRecord);
 						}
-					}
-
+					
+				    }
 				}
 				res.setResponse("Updated Successfully ");
 				res.setSuccessId(documentId);
@@ -149,29 +155,17 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 
 			mapper.map(req, saveData);
 			saveData.setDocumentId(Integer.valueOf(documentId));
-			saveData.setEffectiveDateStart(effDate);
+			saveData.setEffectiveDateStart(startDate);
 			saveData.setEffectiveDateEnd(endDate);
-			saveData.setStatus("Y");
+			saveData.setStatus(req.getStatus());
 			saveData.setEntryDate(new Date());
 			saveData.setAmendId(amendId);
-			
+			saveData.setUpdatedBy(req.getCreatedBy());
+			saveData.setUpdatedDate(new Date());
 			ListItemValue document = dropdownrepo.findByItemTypeAndItemCodeAndStatus("DOCUMENT_APPLICABLE", req.getDocApplicableId() ,"Y");
 			saveData.setDocApplicable(document.getItemValue());
 			repo.saveAndFlush(saveData);
-
-			if (list.size() > 0) {
-				// Update Old Record
-				DocumentMaster lastRecord = list.get(0);
-				lastRecord.setEffectiveDateEnd(oldEndDate);
-				String startDatewithoutTime = sdf.format(startDate);
-				String oldDatewithoutTime = sdf.format(list.get(0).getEffectiveDateStart());
-
-				if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
-					lastRecord.setStatus("N");	
-				}
-				repo.saveAndFlush(lastRecord);
-			}
-
+			
 			log.info("Saved Details is ---> " + json.toJson(saveData));
 
 		} catch (Exception e) {
@@ -193,18 +187,19 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 			Root<DocumentMaster> b = query.from(DocumentMaster.class);
 			// Select
 			query.multiselect(cb.count(b));
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<DocumentMaster> ocpm1 = effectiveDate.from(DocumentMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			// AmendId Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<DocumentMaster> ocpm1 = amendId.from(DocumentMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("documentId"), b.get("documentId"));
-			effectiveDate.where(a1);
+			amendId.where(a1);
 
-			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			query.where(n1);
 			// Get Result
 			TypedQuery<Long> result = em.createQuery(query);
 			list = result.getResultList();
+			
 			data = list.get(0);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -219,15 +214,14 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 		DocumentMasterGetRes res = new DocumentMasterGetRes();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
-			// Criteria
-			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
-			Calendar cal = new GregorianCalendar(); 
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
 			cal.set(Calendar.MINUTE, 1);
-			today   = cal.getTime();
-			
+			today = cal.getTime();
 			CriteriaBuilder cb = em.getCriteriaBuilder();
+			
 			CriteriaQuery<DocumentMaster> query = cb.createQuery(DocumentMaster.class);
 			List<DocumentMaster> list = new ArrayList<DocumentMaster>();
 			// Find All
@@ -235,26 +229,28 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 			// Select
 			query.select(c);
 
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<DocumentMaster> ocpm1 = effectiveDate.from(DocumentMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			// amendId Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<DocumentMaster> ocpm1 = amendId.from(DocumentMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
 			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("documentId"), ocpm1.get("documentId"));
-			javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
-			effectiveDate.where(a1,a2);
+			amendId.where(a1);
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(c.get("effectiveDateStart")));
+			orderList.add(cb.asc(c.get("documentId")));
 
 			// Where
 
-			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("amendId"), amendId);
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("documentId"), req.getDocumentId());
 			query.where(n1, n2).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<DocumentMaster> result = em.createQuery(query);
 			list = result.getResultList();
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getDocumentId()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(DocumentMaster :: getDocumentName ));
+			
 			res = mapper.map(list.get(0), DocumentMasterGetRes.class);
 			res.setDocumentId(list.get(0).getDocumentId().toString());
 			res.setEntryDate(list.get(0).getEntryDate());
@@ -268,24 +264,19 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 		}
 		return res;
 	}
-
+	private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
+	    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+	}
+	
 	@Override
-	public List<DocumentMasterGetRes> getallDocuments(DocumentMasterGetAllReq req) {
+	public List<DocumentMasterGetRes> getallDocuments() {
 		List<DocumentMasterGetRes> resList = new ArrayList<DocumentMasterGetRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
-			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
-			Calendar cal = new GregorianCalendar(); 
-			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 1);
-			today   = cal.getTime();
 			
-			List<DocumentMaster> documentlist = new ArrayList<DocumentMaster>();
-			// Pagination
-			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
-
+			List<DocumentMaster> list = new ArrayList<DocumentMaster>();
+			
 			// Find Last Record
 
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -294,32 +285,30 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 			Root<DocumentMaster> b = query.from(DocumentMaster.class);
 			// Select
 			query.select(b);
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<DocumentMaster> ocpm1 = effectiveDate.from(DocumentMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			//amendId Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<DocumentMaster> ocpm1 = amendId.from(DocumentMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("documentId"), b.get("documentId"));
-			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
-			effectiveDate.where(a1,a2);
+			amendId.where(a1);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("docApplicable")));
-			orderList.add(cb.asc(b.get("documentName")));
+			orderList.add(cb.asc(b.get("documentId")));
 			// Where
 
-			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 
 			query.where(n1).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<DocumentMaster> result = em.createQuery(query);
-			result.setFirstResult(limit * offset);
-			result.setMaxResults(offset);
-			documentlist = result.getResultList();
+			list = result.getResultList();
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getDocumentId()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(DocumentMaster :: getDocumentName ));
 
 			// Map
-			for (DocumentMaster data : documentlist) {
+			for (DocumentMaster data : list) {
 				DocumentMasterGetRes res = new DocumentMasterGetRes();
 
 				res = mapper.map(data, DocumentMasterGetRes.class);
@@ -337,68 +326,59 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 	}
 
 	@Override
-	public List<DocumentMasterGetRes> getActiveDocument(DocumentMasterGetAllReq req) {
+	public List<DocumentMasterGetRes> getActiveDocument() {
 		List<DocumentMasterGetRes> resList = new ArrayList<DocumentMasterGetRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
-			List<DocumentMaster> list = new ArrayList<DocumentMaster>();
-			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
-			Calendar cal = new GregorianCalendar(); 
-			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 1);
-			today   = cal.getTime();
 			
-			// Pagination
-			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+			List<DocumentMaster> list = new ArrayList<DocumentMaster>();
+			
 			// Find Last Record
+
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<DocumentMaster> query = cb.createQuery(DocumentMaster.class);
 			// Find all
 			Root<DocumentMaster> b = query.from(DocumentMaster.class);
-			// select
+			// Select
 			query.select(b);
-
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<DocumentMaster> ocpm1 = effectiveDate.from(DocumentMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			//amendId Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<DocumentMaster> ocpm1 = amendId.from(DocumentMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("documentId"), b.get("documentId"));
-			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
-			effectiveDate.where(a1,a2);
-			
+			amendId.where(a1);
+
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("docApplicable")));
-			orderList.add(cb.asc(b.get("documentName")));
+			orderList.add(cb.asc(b.get("documentId")));
 			// Where
-			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("status"), "Y");
 
-			query.where(n1, n2).orderBy(orderList);
+			query.where(n1,n2).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<DocumentMaster> result = em.createQuery(query);
-			result.setFirstResult(limit * offset);
-			result.setMaxResults(offset);
 			list = result.getResultList();
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getDocumentId()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(DocumentMaster :: getDocumentName ));
 
 			// Map
 			for (DocumentMaster data : list) {
 				DocumentMasterGetRes res = new DocumentMasterGetRes();
-
 				res = mapper.map(data, DocumentMasterGetRes.class);
-				res.setDocumentId(data.getDocumentId().toString());
 				resList.add(res);
 			}
-		} catch (Exception e) {
+
+		}
+
+		catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details", e.getMessage());
 			return null;
 		}
 		return resList;
-
 	}
 
 	@Override
@@ -445,7 +425,7 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 			} else if (req.getStatus().length() > 1) {
 				errorList.add(new Error("04", "Status", "Enter Status in 1 Character Only"));
 			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()) || "P".equals(req.getStatus()) || "R".equals(req.getStatus()))) {
-				errorList.add(new Error("04", "Status", "Enter Status Y or N Only"));
+				errorList.add(new Error("04", "Status", "Please Enter Status "));
 			}
 			if (req.getRemarks().length() > 100) {
 				errorList.add(new Error("05", "Remarks", "Please Enter Remarks within 100 Characters"));
@@ -460,11 +440,6 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 	
 			} else if (req.getEffectiveDateStart().before(today)) {
 				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
-			} else if (req.getEffectiveDateEnd() == null ) {
-				errorList.add(new Error("04", "EffectiveDateEnd", "Please Enter Effective Date End "));
-	
-			} else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart()) || req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
-				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date End  is After Effective Date Start"));
 			} 
 			if (StringUtils.isBlank(req.getRegulatoryCode())) {
 				errorList.add(new Error("07", "RegulatoryCode", "Please Enter RegulatoryCode"));
@@ -476,6 +451,22 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 			} else if (req.getCreatedBy().length() > 100) {
 				errorList.add(new Error("09", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
 			}
+			else if (StringUtils.isBlank(req.getCoreAppCode())) {
+				errorList.add(new Error("02", "CoreAppCode", "Please Enter getCoreAppCode"));
+			} else if (req.getCoreAppCode().length() > 20) {
+				errorList.add(new Error("02", "CoreAppCode", "getCoreAppCode under 20 Characters only allowed"));
+			}else if (req.getCoreAppCode().equalsIgnoreCase("99999")&&   StringUtils.isBlank(req.getDocumentId())) {
+				List<DocumentMaster> CompanyList = getCoreAppCodeExistDetails(req.getCoreAppCode() , req.getEffectiveDateStart() , req.getEffectiveDateEnd()  );
+				if (CompanyList.size()>0 ) {
+					errorList.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
+				}
+			}else  {
+				List<DocumentMaster> CompanyList =  getCoreAppCodeExistDetails(req.getCoreAppCode()  , req.getEffectiveDateStart() , req.getEffectiveDateEnd() );
+				if (CompanyList.size()>0 &&  (! req.getDocumentId().equalsIgnoreCase(CompanyList.get(0).getDocumentId().toString())) ) {
+					errorList.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
+				}
+				
+			}
 
 		} catch (Exception e) {
 			log.error(e);
@@ -483,7 +474,62 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 		}
 		return errorList;
 	}
+	private List<DocumentMaster> getCoreAppCodeExistDetails(String coreAppCode , Date effStartDate , Date effEndDate ) {
+		List<DocumentMaster> list = new ArrayList<DocumentMaster>();
+		try {
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(effStartDate);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			effStartDate   = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			effEndDate = cal.getTime() ;
+			
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<DocumentMaster> query = cb.createQuery(DocumentMaster.class);
 	
+			// Find All
+			Root<DocumentMaster> b = query.from(DocumentMaster.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<DocumentMaster> ocpm1 = effectiveDate.from(DocumentMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("documentId"), b.get("documentId"));
+			Predicate a2 = cb.equal(ocpm1.get("coreAppCode"), b.get("coreAppCode"));
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), effStartDate );
+			effectiveDate.where(a1,a2,a3);
+			
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<DocumentMaster> ocpm2 = effectiveDate2.from(DocumentMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(ocpm2.get("documentId"), b.get("documentId"));
+			Predicate a5 = cb.equal(ocpm2.get("coreAppCode"), b.get("coreAppCode"));
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), effEndDate );
+			effectiveDate2.where(a4,a5,a6);
+	
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n3 = cb.equal(b.get("coreAppCode"), coreAppCode );	
+			query.where(n1,n2,n3);
+			// Get Result
+			TypedQuery<DocumentMaster> result = em.createQuery(query);
+			list = result.getResultList();		
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+	
+		}
+		return list;
+	}
 	public List<DocumentMaster> getDocumentNameExistDetails(String documentName) {
 		List<DocumentMaster> list = new ArrayList<DocumentMaster>();
 		try {
@@ -531,6 +577,7 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -545,16 +592,9 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 	@Override
 	public SuccessRes changeStatusOfDocument(DocumentChangeStatusReq req) {
 		SuccessRes res = new SuccessRes();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+
 		try {
-			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
-			Calendar cal = new GregorianCalendar(); 
-			
-			DocumentMaster updateRecord  = new DocumentMaster();
-			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 1);
-			today   = cal.getTime();
-			
 			List<DocumentMaster> list = new ArrayList<DocumentMaster>();
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -566,20 +606,19 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 			// Select
 			query.select(b);
 	
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<DocumentMaster> ocpm1 = effectiveDate.from(DocumentMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			// amendId Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<DocumentMaster> ocpm1 = amendId.from(DocumentMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("documentId"), b.get("documentId"));
-			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			effectiveDate.where(a1,a2);
+			amendId.where(a1);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.desc(b.get("effectiveDateStart")));
 	
 			// Where
-			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("documentId"), req.getDocumentId() );
 	
 			query.where(n1,n2).orderBy(orderList);
@@ -587,33 +626,18 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 			// Get Result
 			TypedQuery<DocumentMaster> result = em.createQuery(query);
 			list = result.getResultList();
-			updateRecord = list.get(0) ;
-				
-			if (req.getStatus().equalsIgnoreCase("N") )	{
-					// Delete Old Records
-					cal.setTime(today);
-					cal.set(Calendar.HOUR_OF_DAY, 23);
-					cal.set(Calendar.MINUTE, 30);
-					today   = cal.getTime();
-					
-					// create update
-					CriteriaDelete<DocumentMaster> delete = cb.createCriteriaDelete(DocumentMaster.class);
-					Root<DocumentMaster> pm = delete.from(DocumentMaster.class);
-					
-					 // Where	
-					javax.persistence.criteria.Predicate n3 = cb.equal(pm.get("documentId"), req.getDocumentId());
-					javax.persistence.criteria.Predicate n4 = cb.greaterThanOrEqualTo(pm.get("effectiveDateStart"), today);
-					delete.where(n3,n4);	
-					em.createQuery(delete).executeUpdate();
-					// Insert Updated Record
-					updateRecord.setStatus(req.getStatus());
-					repo.save(updateRecord);
-				
-			} else if (req.getStatus().equalsIgnoreCase("Y") ) {
-				// Insert Updated Record
+			DocumentMaster updateRecord = list.get(0) ;
+			if(  req.getDocumentId().equalsIgnoreCase(updateRecord.getDocumentId().toString())) {
 				updateRecord.setStatus(req.getStatus());
 				repo.save(updateRecord);
-			}
+			} else {
+			DocumentMaster saveNew = new DocumentMaster();
+			dozerMapper.map(updateRecord,saveNew);
+			saveNew.setDocumentId(Integer.valueOf(req.getDocumentId()));
+			saveNew.setStatus(req.getStatus());
+			repo.save(saveNew);
+		}
+	
 			// perform update
 			
 			res.setResponse("Status Changed");

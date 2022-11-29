@@ -22,9 +22,9 @@ public interface DocumentMasterService  {
 
 	DocumentMasterGetRes getByDocumentId(DocumentMasterGetReq req);
 
-	List<DocumentMasterGetRes> getallDocuments(DocumentMasterGetAllReq req);
+	List<DocumentMasterGetRes> getallDocuments();
 
-	List<DocumentMasterGetRes> getActiveDocument(DocumentMasterGetAllReq req);
+	List<DocumentMasterGetRes> getActiveDocument();
 
 	List<Error> validateDocument(DocumentMasterSaveReq req);
 

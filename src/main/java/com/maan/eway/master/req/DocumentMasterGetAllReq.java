@@ -9,12 +9,6 @@ import lombok.Data;
 
 @Data
 public class DocumentMasterGetAllReq {
-
-	@JsonProperty("Limit")
-	private String limit;
-
-	@JsonProperty("Offset")
-	private String offset;
 	
 	@JsonProperty("InsuranceId")
 	private String companyId;

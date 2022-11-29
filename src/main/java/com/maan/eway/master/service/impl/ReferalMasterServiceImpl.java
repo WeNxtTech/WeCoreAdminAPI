@@ -38,6 +38,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.req.ReferalMasterChangeStatusReq;
 import com.maan.eway.master.req.ReferalMasterGetAllReq;
 import com.maan.eway.master.req.ReferalMasterGetReq;
@@ -46,11 +47,13 @@ import com.maan.eway.master.res.ReferalMasterRes;
 import com.maan.eway.master.service.ReferalMasterService;
 import com.maan.eway.auth.token.passwordEnc;
 import com.maan.eway.bean.BranchMaster;
+import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.ReferalMaster;
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.ReferalMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
@@ -67,7 +70,8 @@ private EntityManager em;
 
 @Autowired
 private ReferalMasterRepository repo;
-
+@Autowired
+private ListItemValueRepository listRepo;
 @Autowired
 private BasicValidationService basicvalidateService;
 
@@ -699,6 +703,26 @@ public SuccessRes changeStatusOfReferal(ReferalMasterChangeStatusReq req) {
 		return null;
 	}
 	return res;
+}
+@Override
+public List<DropDownRes> referralType( ) {
+	List<DropDownRes> resList = new ArrayList<DropDownRes>();
+	try {
+		List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("REFERRAL_TYPE", "Y");
+	
+		for (ListItemValue data : getList) {
+			DropDownRes res = new DropDownRes();
+			res.setCode(data.getItemCode());
+			res.setCodeDesc(data.getItemValue());
+			res.setStatus(data.getStatus());
+			resList.add(res);
+		}
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is ---> " + e.getMessage());
+		return null;
+	}
+	return resList;
 }
 
 }

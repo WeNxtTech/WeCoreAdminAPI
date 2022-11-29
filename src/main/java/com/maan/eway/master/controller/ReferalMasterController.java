@@ -6,6 +6,7 @@ package com.maan.eway.master.controller;
 */
 
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.req.ProductSectionChangeStatusReq;
 import com.maan.eway.master.req.ReferalMasterChangeStatusReq;
 import com.maan.eway.master.req.ReferalMasterGetAllReq;
@@ -194,6 +195,23 @@ public class ReferalMasterController {
 			}
 
 		}
-	
+		@GetMapping("/dropdown/referraltype")
+		@ApiOperation(value = "This method is to Referral Type Drop Down")
+		public ResponseEntity<CommonRes> referralType() {
+			CommonRes data = new CommonRes();
+
+			List<DropDownRes> res = referalService.referralType();
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+
+		}
 
 }

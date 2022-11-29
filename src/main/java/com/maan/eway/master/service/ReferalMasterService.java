@@ -33,6 +33,8 @@ public interface ReferalMasterService  {
 
 	List<DropDownRes> getReferalMasterDropdown();
 
+	List<DropDownRes> referralType();
+
 
 
 	

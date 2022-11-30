@@ -254,9 +254,9 @@ this.repository = repo;
 		}
 
 		if (StringUtils.isBlank(req.getCompanyPhone())) {
-			errors.add(new Error("06", "Company Phone", "Please Enter Company Phone"));
+			errors.add(new Error("06", "Mobile Number", "Please Enter Mobile Number"));
 		} else if (req.getCompanyPhone().length() > 200) {
-			errors.add(new Error("06", "Company Phone", "Company Phone under 200 Characters only allowed"));
+			errors.add(new Error("06", "Mobile Number", "Company Phone under 200 Characters only allowed"));
 		}
 		/*
 		if (StringUtils.isBlank(req.getRegards())) {
@@ -291,6 +291,12 @@ this.repository = repo;
 			errors.add(new Error("11", "RegulatoryCode", "Please Enter RegulatoryCode"));
 		}else if (req.getRegulatoryCode().length() > 20) {
 			errors.add(new Error("11", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters"));
+		}
+		if (StringUtils.isBlank(req.getCurrencyId())) {
+			errors.add(new Error("12", "CurrencyId", "Please Enter CurrencyId"));
+		}
+		else if (req.getCurrencyId().length() > 20) {
+			errors.add(new Error("12", "CurrencyId", "Please Enter CurrencyId within 20 Characters"));
 		}
 		} catch (Exception e) {
 			e.printStackTrace();

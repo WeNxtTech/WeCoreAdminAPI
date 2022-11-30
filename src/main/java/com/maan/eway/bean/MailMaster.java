@@ -111,8 +111,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="SMTP_PORT")
     private Double     smtpPort ;
 
-
-
     @Column(name="UPDATED_BY", length=100)
     private String     updatedBy ;
 

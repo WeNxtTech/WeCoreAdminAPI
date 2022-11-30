@@ -424,7 +424,9 @@ public class MailMasterServiceImpl implements MailMasterService {
 			saveData.setEffectiveDateEnd(endDate);
 			saveData.setEntryDate(new Date());
 			saveData.setAmendId(amendId);
-			saveData.setAmendId(amendId);
+			saveData.setCreatedBy(req.getCreatedBy());
+			saveData.setUpdatedBy(req.getCreatedBy());
+			saveData.setUpdatedDate(new Date());
 			mailRepo.saveAndFlush(saveData);
 		
 			/*

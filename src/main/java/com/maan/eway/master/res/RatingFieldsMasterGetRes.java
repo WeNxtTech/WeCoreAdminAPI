@@ -59,4 +59,10 @@ public class RatingFieldsMasterGetRes {
 	@JsonProperty("InputColumnName")
 	private String inputColumnName;
 	
+	@JsonProperty("MasterYn")
+	private String masterYn;
+	
+	@JsonProperty("ApiUrl")
+	private String apiUrl;
+	
 }

@@ -15,6 +15,9 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.Table;
 
 import lombok.*;
@@ -196,7 +199,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="CORE_APP_CODE", length=20)
     private String     coreAppCode ;
 
-   
+    @Column(name="MASTER_YN", length=20)
+    private String     masterYn;
+    
+    @Column(name="API_URL", length=20)
+    private String     apiUrl;
+    
 
     
  

@@ -15,6 +15,7 @@ import com.maan.eway.master.req.RatingFieldsMasterGetReq;
 import com.maan.eway.master.req.RatingFieldsMasterSaveReq;
 import com.maan.eway.master.res.RatingFieldsMasterGetRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.RatingFieldDropDownRes;
 import com.maan.eway.res.SuccessRes;
 /**
 * <h2>BankMasterServiceimpl</h2>
@@ -33,7 +34,7 @@ public interface RatingFieldMasterService  {
 
 	SuccessRes changeStatusOfFactorType(RatingFieldsMasterChangeStatusReq req);
 
-	List<DropDownRes> getRatingFieldsDropdown(RatingDropDownReq req );
+	List<RatingFieldDropDownRes> getRatingFieldsDropdown(RatingDropDownReq req );
 
 
 

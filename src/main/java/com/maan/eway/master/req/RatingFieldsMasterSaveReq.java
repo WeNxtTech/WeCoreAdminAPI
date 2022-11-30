@@ -47,5 +47,11 @@ public class RatingFieldsMasterSaveReq implements Serializable {
 	
 	@JsonProperty("CreatedBy")
 	private String createdBy;
+	
+	@JsonProperty("MasterYn")
+	private String masterYn;
+	
+	@JsonProperty("ApiUrl")
+	private String apiUrl;
 
 }

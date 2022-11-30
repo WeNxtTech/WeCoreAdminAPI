@@ -111,6 +111,11 @@ private static final long serialVersionUID = 1L;
     @Column(name="UPDATED_DATE")
     private Date       updatedDate ;
 
+    @Column(name="MASTER_YN", length=20)
+    private String     masterYn ;
+
+    @Column(name="API_URL", length=20)
+    private String     apiUrl ;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 

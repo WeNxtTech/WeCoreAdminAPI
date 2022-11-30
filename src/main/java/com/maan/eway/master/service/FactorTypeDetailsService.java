@@ -20,6 +20,7 @@ import com.maan.eway.master.res.FactorRateGetAllRes;
 import com.maan.eway.master.res.FactorTypeDetailsGetRes;
 import com.maan.eway.master.res.FactorTypeGetAllRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.RatingFieldDropDownRes;
 import com.maan.eway.res.SuccessRes;
 
 import java.util.List;
@@ -42,7 +43,7 @@ public interface FactorTypeDetailsService  {
 
 	FactorTypeDetailsGetRes getByFactorTypeForRating(FactorTypeGetReq req);
 
-	List<DropDownRes> factorTypeDropDown(FactorTypeDropDownReq req);
+	List<RatingFieldDropDownRes> factorTypeDropDown(FactorTypeDropDownReq req);
 
 
 

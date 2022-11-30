@@ -63,6 +63,7 @@ import com.maan.eway.master.service.MasterCommonValidationService;
 import com.maan.eway.repository.FactorTypeDetailsRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.RatingFieldDropDownRes;
 import com.maan.eway.res.SuccessRes;
 /**
 * <h2>FactorTypeDetailsServiceimpl</h2>
@@ -431,7 +432,9 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 				saveData.setStatus(StringUtils.isBlank(data.getStatus()) ? req.getStatus()  : data.getStatus());
 				saveData.setAmendId(amendId);
 				saveData.setStatus(req.getStatus().equalsIgnoreCase("P")?"P" : data.getStatus());		
-					
+				saveData.setApiUrl(data.getApiUrl());
+				saveData.setMasterYn(data.getMasterYn());
+				
 				if( data.getRangeYn().equalsIgnoreCase("Y") ) {
 					saveData.setRangeFromColumn(range.stream().filter( o -> o.getItemCode().equalsIgnoreCase(data.getColumnsId()) ).collect(Collectors.toList()).get(0).getParam1() );
 					saveData.setRangeToColumn(range.stream().filter( o -> o.getItemCode().equalsIgnoreCase(data.getColumnsId()) ).collect(Collectors.toList()).get(0).getParam2() );
@@ -941,8 +944,8 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 
 
 		@Override
-		public List<DropDownRes> factorTypeDropDown(FactorTypeDropDownReq req) {
-		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		public List<RatingFieldDropDownRes> factorTypeDropDown(FactorTypeDropDownReq req) {
+		List<RatingFieldDropDownRes> resList = new ArrayList<RatingFieldDropDownRes>();
 		try {
 		Date today = new Date();
 		Calendar cal = new GregorianCalendar();
@@ -1003,9 +1006,12 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 		for (Integer data : groupByFactorType.keySet() ) {
 		// Response
 		FactorTypeDetails factor =  groupByFactorType.get(data).get(0);
-		DropDownRes res = new DropDownRes();
+		RatingFieldDropDownRes res = new RatingFieldDropDownRes();
 		res.setCode(factor.getFactorTypeId().toString());
 		res.setCodeDesc(factor.getFactorTypeName());
+		res.setStatus(factor.getStatus());
+		res.setMasterYn(factor.getMasterYn());
+		res.setApiUrl(factor.getApiUrl());
 		resList.add(res);
 		}
 		} catch (Exception e) {

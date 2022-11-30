@@ -52,6 +52,7 @@ import com.maan.eway.master.service.RatingFieldMasterService;
 import com.maan.eway.repository.OneTimeTableDetailsRepository;
 import com.maan.eway.repository.RatingFieldMasterRepository;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.RatingFieldDropDownRes;
 import com.maan.eway.res.SuccessRes;
 
 /**
@@ -102,6 +103,18 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 				errorList.add(new Error("03", "Status", "Status 1 Character Only"));
 			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()) || "P".equals(req.getStatus()) || "R".equals(req.getStatus()))) {
 				errorList.add(new Error("03", "Status", "Enter Status Y or N Only"));
+			}
+			
+			if (StringUtils.isBlank(req.getMasterYn())) {
+				errorList.add(new Error("03", "Master", "Please Select Master Yes/No"));
+			} else if (req.getMasterYn().length() > 1) {
+				errorList.add(new Error("03", "Master", "Master Yes/No 1 Character Only"));
+			} else if (!("Y".equals(req.getMasterYn()) || "N".equals(req.getMasterYn()) )) {
+				errorList.add(new Error("03", "Master", "Enter Master Y or N Only"));
+			} else if ("Y".equals(req.getMasterYn())) {
+				if (StringUtils.isBlank(req.getApiUrl())) {
+					errorList.add(new Error("03", "ApiUrl", "Please Enter ApiUrl"));
+				}
 			}
 			
 			if (StringUtils.isBlank(req.getRatingField())) {
@@ -256,6 +269,8 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 			saveData.setStatus(req.getStatus());
 			saveData.setInputTableName(tablename.getItemValue());			
 			saveData.setInputColumnName(columnname.getItemValue());
+			saveData.setMasterYn(req.getMasterYn());
+			saveData.setApiUrl(req.getApiUrl());
 			factorRepo.saveAndFlush(saveData);
 			log.info("Saved Details is --> " + json.toJson(saveData));
 		} catch (Exception e) {
@@ -633,8 +648,8 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 	
 	
 	@Override
-	public List<DropDownRes> getRatingFieldsDropdown(RatingDropDownReq req ) {
-		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+	public List<RatingFieldDropDownRes> getRatingFieldsDropdown(RatingDropDownReq req ) {
+		List<RatingFieldDropDownRes> resList = new ArrayList<RatingFieldDropDownRes>();
 		try {
 			Date today = new Date();
 			Calendar cal = new GregorianCalendar();
@@ -690,10 +705,12 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 		// Map
 			for (RatingFieldMaster  data : list) {
 				// Response
-				DropDownRes res = new DropDownRes();
+				RatingFieldDropDownRes res = new RatingFieldDropDownRes();
 				res.setCode(data.getRatingId().toString());
 				res.setCodeDesc(data.getRatingField());
 				res.setStatus(data.getStatus());
+				res.setMasterYn(data.getMasterYn());
+				res.setApiUrl(data.getApiUrl());
 				resList.add(res);
 			}
 		} catch (Exception e) {

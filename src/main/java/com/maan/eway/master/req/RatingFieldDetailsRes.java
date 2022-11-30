@@ -36,4 +36,10 @@ public class RatingFieldDetailsRes {
 	
 	@JsonProperty("DiscreteDisplayName")
     private String discreteDisplayName;
+	
+	@JsonProperty("MasterYn")
+	private String masterYn;
+	
+	@JsonProperty("ApiUrl")
+	private String apiUrl;
 }

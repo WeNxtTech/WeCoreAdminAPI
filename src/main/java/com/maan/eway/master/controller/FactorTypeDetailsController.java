@@ -35,6 +35,7 @@ import com.maan.eway.master.res.ProductMasterRes;
 import com.maan.eway.master.service.FactorTypeDetailsService;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.RatingFieldDropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
@@ -200,7 +201,7 @@ public class FactorTypeDetailsController {
 	@ApiOperation(value="This method is to get Factor Type dropdown")
 	public ResponseEntity<CommonRes> factorTypeDropDown(@RequestBody FactorTypeDropDownReq req){
 		CommonRes data = new CommonRes();
-		List<DropDownRes> res = entityService.factorTypeDropDown(req);
+		List<RatingFieldDropDownRes> res = entityService.factorTypeDropDown(req);
 		data.setCommonResponse(res);
 		data.setErrorMessage(Collections.emptyList());
 		data.setIsError(false);

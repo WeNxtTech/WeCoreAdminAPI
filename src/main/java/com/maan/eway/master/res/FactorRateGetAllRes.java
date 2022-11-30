@@ -63,4 +63,11 @@ public class FactorRateGetAllRes {
     @JsonProperty("UpdateDate")
     private Date      updatedDate;
     
+    
+    @JsonProperty("MasterYn" )
+    private String masterYn ;
+  
+    @JsonProperty("ApiUrl" )
+    private String apiUrl;
+    
 }

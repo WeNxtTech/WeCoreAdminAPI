@@ -258,6 +258,11 @@ this.repository = repo;
 		} else if (req.getCompanyPhone().length() > 200) {
 			errors.add(new Error("06", "Mobile Number", "Company Phone under 200 Characters only allowed"));
 		}
+		else if (!req.getCompanyPhone().matches("\\d+"))
+		{
+		errors.add(new Error("06", "Mobile Number", "Please Enter Mobile Number only in numbers"));
+		}
+
 		/*
 		if (StringUtils.isBlank(req.getRegards())) {
 			errors.add(new Error("07", "Regards", "Please Enter Company Regards"));

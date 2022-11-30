@@ -7,10 +7,15 @@ package com.maan.eway.notif.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -31,8 +36,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.DocumentMaster;
 import com.maan.eway.bean.MailMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.res.DocumentMasterGetRes;
 import com.maan.eway.notif.req.MailMasterGetReq;
 import com.maan.eway.notif.req.MailMasterSaveReq;
 import com.maan.eway.notif.res.MailMasterGetRes;
@@ -164,15 +171,7 @@ public class MailMasterServiceImpl implements MailMasterService {
 			} else if (req.getEffectiveDateStart().before(today)) {
 				errorList
 						.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
-			} else if (req.getEffectiveDateEnd() == null) {
-				errorList.add(new Error("03", "EffectiveDateEnd", "Please Enter Effective Date End "));
-
-			} else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart())
-					|| req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
-				errorList.add(new Error("03", "EffectiveDateEnd",
-						"Please Enter Effective Date End  is After Effective Date Start"));
-			}
-			// Status Validation
+			}			// Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
 				errorList.add(new Error("04", "Status", "Please Enter Status"));
 			} else if (req.getStatus().length() > 1) {
@@ -218,6 +217,18 @@ public class MailMasterServiceImpl implements MailMasterService {
 			} else if (req.getCoreAppCode().length() > 20) {
 				errorList.add(new Error("12", "Core App Code", "Please Enter CreatedBy within 20 Characters"));
 			}
+			else if (req.getCoreAppCode().equalsIgnoreCase("99999")&&   StringUtils.isBlank(req.getSNo())) {
+				List<MailMaster> CompanyList = getCoreAppCodeExistDetails(req.getCoreAppCode() , req.getEffectiveDateStart() , req.getEffectiveDateEnd()  );
+				if (CompanyList.size()>0 ) {
+					errorList.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
+				}
+			}else  {
+				List<MailMaster> CompanyList =  getCoreAppCodeExistDetails(req.getCoreAppCode()  , req.getEffectiveDateStart() , req.getEffectiveDateEnd() );
+				if (CompanyList.size()>0 &&  (! req.getSNo().equalsIgnoreCase(CompanyList.get(0).getSNo().toString())) ) {
+					errorList.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
+				}
+				
+			}
 			if (StringUtils.isBlank(req.getRegulatoryCode())) {
 				errorList.add(new Error("13", "RegulatoryCode", "Please Enter RegulatoryCode"));
 			} else if (req.getRegulatoryCode().length() > 20) {
@@ -230,6 +241,64 @@ public class MailMasterServiceImpl implements MailMasterService {
 		return errorList;
 	}
 
+	private List<MailMaster> getCoreAppCodeExistDetails(String coreAppCode , Date effStartDate , Date effEndDate ) {
+		List<MailMaster> list = new ArrayList<MailMaster>();
+		try {
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(effStartDate);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			effStartDate   = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			effEndDate = cal.getTime() ;
+			
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<MailMaster> query = cb.createQuery(MailMaster.class);
+	
+			// Find All
+			Root<MailMaster> b = query.from(MailMaster.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<MailMaster> ocpm1 = effectiveDate.from(MailMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("sNo"), b.get("sNo"));
+			Predicate a2 = cb.equal(ocpm1.get("coreAppCode"), b.get("coreAppCode"));
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), effStartDate );
+			effectiveDate.where(a1,a2,a3);
+			
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<MailMaster> ocpm2 = effectiveDate2.from(MailMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(ocpm2.get("sNo"), b.get("sNo"));
+			Predicate a5 = cb.equal(ocpm2.get("coreAppCode"), b.get("coreAppCode"));
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), effEndDate );
+			effectiveDate2.where(a4,a5,a6);
+	
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n3 = cb.equal(b.get("coreAppCode"), coreAppCode );	
+			query.where(n1,n2,n3);
+			// Get Result
+			TypedQuery<MailMaster> result = em.createQuery(query);
+			list = result.getResultList();		
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+	
+		}
+		return list;
+	}
+
+	
 	// Company Id Exist Details validation
 
 	private List<MailMaster> getCompanyIdExistDetails(String companyId) {
@@ -278,23 +347,14 @@ public class MailMasterServiceImpl implements MailMasterService {
 		DozerBeanMapper dozermapper = new DozerBeanMapper();
 		try {
 			Integer amendId = 0;
-			Calendar cal = new GregorianCalendar();
-			cal.setTime(req.getEffectiveDateStart());
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 59);
-			Date startDate = cal.getTime();
-			Date today = new Date();
-			cal.setTime(req.getEffectiveDateStart());
-			cal.set(Calendar.HOUR_OF_DAY, today.getHours());
-			cal.set(Calendar.MINUTE, today.getMinutes());
-			Date oldEndDate = cal.getTime();
-			cal.setTime(req.getEffectiveDateStart());
-			cal.set(Calendar.HOUR_OF_DAY, today.getHours());
-			cal.set(Calendar.MINUTE, today.getMinutes());
-			Date effDate = cal.getTime();
-			Date endDate = req.getEffectiveDateEnd();
-
+			Date startDate = req.getEffectiveDateStart() ;
+			String end = "31/12/2050";
+			Date endDate = sdformat.parse(end);
+			long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
+			Date entryDate = null ;
 			String sno = "";
+			String createdBy = "" ;	
 
 			if (StringUtils.isBlank(req.getSNo())) {
 				// Save
@@ -326,29 +386,47 @@ public class MailMasterServiceImpl implements MailMasterService {
 				query.where(n1, n2, n3);
 				// Get Result
 				TypedQuery<MailMaster> result = em.createQuery(query);
+				int limit = 0 , offset = 2 ;
+				result.setFirstResult(limit * offset);
+				result.setMaxResults(offset);
+			
 				list = result.getResultList();
 				if (list.size() > 0) {
-					mailRepo.delete(list.get(0));
-					// Amend Id
-					if (list.get(0).getEffectiveDateStart().before(startDate)) {
-						String startDatewithoutTime = sdformat.format(startDate);
-						String oldDateWithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
-						if (startDatewithoutTime.equalsIgnoreCase(oldDateWithoutTime)) {
-							amendId = list.get(0).getAmendId() + 1;
+					Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+					
+					if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
+						amendId = list.get(0).getAmendId() + 1 ;
+						entryDate = new Date() ;
+						createdBy = req.getCreatedBy();
+						MailMaster lastRecord = list.get(0);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							mailRepo.saveAndFlush(lastRecord);
+						
+					} else {
+						amendId = list.get(0).getAmendId() ;
+						entryDate = list.get(0).getEntryDate() ;
+						createdBy = list.get(0).getCreatedBy();
+						saveData = list.get(0) ;
+						if (list.size()>1 ) {
+							MailMaster lastRecord = list.get(1);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							mailRepo.saveAndFlush(lastRecord);
 						}
-					}
+					
+				    }
 				}
 				res.setResponse("Updated Successfully");
 				res.setSuccessId(sno);
 			}
 			dozermapper.map(req, saveData);
 			saveData.setSNo(Integer.valueOf(sno));
-			saveData.setEffectiveDateStart(effDate);
+			saveData.setEffectiveDateStart(req.getEffectiveDateStart());
 			saveData.setEffectiveDateEnd(endDate);
 			saveData.setEntryDate(new Date());
 			saveData.setAmendId(amendId);
 			mailRepo.saveAndFlush(saveData);
-
+		
+			/*
 			if (list.size() > 0) {
 				// Update Old Record
 				MailMaster lastRecord = list.get(0);
@@ -361,6 +439,7 @@ public class MailMasterServiceImpl implements MailMasterService {
 				}
 				mailRepo.saveAndFlush(lastRecord);
 			}
+			*/
 			log.info("Saved Details is --> " + json.toJson(saveData));
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -375,43 +454,53 @@ public class MailMasterServiceImpl implements MailMasterService {
 		MailMasterGetRes res = new MailMasterGetRes();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
-			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
+			Date today = new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
 			cal.set(Calendar.MINUTE, 1);
 			today = cal.getTime();
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			
 			List<MailMaster> list = new ArrayList<MailMaster>();
 			// Find Latest Record
-			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<MailMaster> query = cb.createQuery(MailMaster.class);
 			// Find all
 			Root<MailMaster> b = query.from(MailMaster.class);
 			// Select
 			query.select(b);
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<MailMaster> ocpm1 = effectiveDate.from(MailMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			Predicate a1 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			// amendId Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<MailMaster> ocpm1 = amendId.from(MailMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("sNo"),req.getSNo());
+			Predicate a2 = cb.equal(ocpm1.get("companyId"),req.getCompanyId());
+			Predicate a3 = cb.equal(ocpm1.get("branchCode"),req.getBranchCode());
 
-			effectiveDate.where(a1);
+			amendId.where(a1,a2,a3);
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("sNo")));
+			orderList.add(cb.asc(b.get("branchCode")));
+			
 			Predicate n1 = cb.equal(b.get("companyId"), req.getCompanyId());
 			Predicate n2 = cb.equal(b.get("sNo"), req.getSNo());
-
-			query.where(n1, n2).orderBy(orderList);
+			Predicate n3 = cb.equal(b.get("amendId"), amendId);
+			Predicate n4 = cb.equal(b.get("branchCode"), req.getBranchCode());
+			Predicate n5 = cb.equal(b.get("branchCode"), "99999");
+			Predicate n6 = cb.or(n4,n5);
+			
+			query.where(n1, n2,n3,n6).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<MailMaster> result = em.createQuery(query);
 			list = result.getResultList();
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getSNo()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(MailMaster :: getSNo ));
+			
 
 			// Map
 			for (MailMaster data : list) {
-
-				res = mapper.map(data, MailMasterGetRes.class);
+				res = mapper.map(list.get(0), MailMasterGetRes.class);
 				res.setSNo(data.getSNo().toString());
 			}
 
@@ -423,5 +512,8 @@ public class MailMasterServiceImpl implements MailMasterService {
 		}
 		return res;
 	}
-
+	private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
+	    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+	}
 }

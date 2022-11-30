@@ -16,6 +16,9 @@ public class CoverDocumentMasterUpdateReq {
 	@JsonProperty("DocumentDesc")
 	private String documentDesc;	
 
+	@JsonProperty("DocumentName")
+	private String documentName;
+
 
 	@JsonProperty("DocApplicableId")
 	private String docApplicableId;

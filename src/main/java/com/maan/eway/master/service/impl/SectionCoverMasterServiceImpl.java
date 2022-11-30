@@ -714,7 +714,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.desc(b.get("effectiveDateStart")));
 
-			// Section Cover Effective Date Max Filter
+			// Amend Id Date Max Filter
 			Subquery<Long> cover = query.subquery(Long.class);
 			Root<SectionCoverMaster> ps = cover.from(SectionCoverMaster.class);
 			Subquery<Long> amendId2 = query.subquery(Long.class);

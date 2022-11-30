@@ -39,10 +39,6 @@ public class CoverDocumentMasterId implements Serializable {
     private Integer    sectionId ;
     
     private String     coverId ;
-    
-    private Date       effectiveDateStart ;
-    
-    private Date       effectiveDateEnd ;
-    
-     
+    private Integer    amendId ;
+
 }

@@ -19,6 +19,10 @@ public class MailMasterSaveReq implements Serializable {
 	@JsonProperty("CompanyId")
 	private String companyId;
 
+	@JsonProperty("BranchCode")
+	private String branchCode;
+
+	
 	@JsonProperty("SmtpHost")
 	private String smtpHost;
 
@@ -57,4 +61,11 @@ public class MailMasterSaveReq implements Serializable {
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 
+	@JsonProperty("UpdatedBy")
+	private String updatedBy;
+
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("UpdatedDate")
+	private Date updatedDate;
+	
 }

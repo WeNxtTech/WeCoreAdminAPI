@@ -112,8 +112,13 @@ private static final long serialVersionUID = 1L;
     private Double     smtpPort ;
 
 
-    //--- ENTITY LINKS ( RELATIONSHIP )
 
+    @Column(name="UPDATED_BY", length=100)
+    private String     updatedBy ;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="UPDATED_DATE")
+    private Date       updatedDate ;
 
 }
 

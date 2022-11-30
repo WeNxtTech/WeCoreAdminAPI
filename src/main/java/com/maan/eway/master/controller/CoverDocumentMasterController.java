@@ -22,10 +22,12 @@ import com.maan.eway.master.req.CoverDocumentMasterGetAllReq;
 import com.maan.eway.master.req.CoverDocumentMasterGetReq;
 import com.maan.eway.master.req.CoverDocumentMasterSaveReq;
 import com.maan.eway.master.req.CoverDocumentMasterUpdateReq;
+import com.maan.eway.master.req.SectionCoverMasterGetReq;
 import com.maan.eway.master.res.CoverDocumentMasterGetRes;
 import com.maan.eway.master.res.DocumentMasterGetRes;
 import com.maan.eway.master.service.CoverDocumentMasterService;
 import com.maan.eway.res.CommonRes;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
@@ -206,4 +208,28 @@ public class CoverDocumentMasterController {
 
 	}
 
+	@PostMapping("/dropdown/coverdocument")
+	@ApiOperation(value = "This method is get cover Document Master Drop Down")
+
+	public ResponseEntity<CommonRes> getCoverDocumentMasterDropdown(@RequestBody CoverDocumentMasterGetReq req) {
+
+		CommonRes data = new CommonRes();
+
+		// Save
+		List<DropDownRes> res = documentservice.getCoverDocumentMasterDropdown(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
+	
+	
+	
 }

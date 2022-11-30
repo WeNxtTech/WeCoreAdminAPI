@@ -27,5 +27,5 @@ public class CoverDocumentMasterSaveReq {
 		
 	@JsonProperty("CreatedBy")
 	private String createdBy;
-
+	
 }

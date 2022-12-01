@@ -12,6 +12,7 @@ import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,7 +39,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.CompanyProductMaster;
+import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.common.req.LovDropDownReq;
 import com.maan.eway.error.Error;
@@ -50,6 +53,7 @@ import com.maan.eway.master.req.CompanyProductMultiInsertReq;
 import com.maan.eway.master.res.CompanyProductMasterRes;
 import com.maan.eway.master.res.ProductMasterRes;
 import com.maan.eway.master.service.CompanyProductMasterService;
+import com.maan.eway.notif.req.MailFramingReq;
 import com.maan.eway.notif.service.impl.MailThreadServiceImpl;
 import com.maan.eway.repository.CompanyProductMasterRepository;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
@@ -288,7 +292,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 				repo.saveAndFlush(saveData);
 				
 				log.info("Saved Details is ---> " + json.toJson(saveData));
-			/*
+			
 				// Thread To Trigger Mail
 				
 				InsuranceCompanyMaster companyData = insrepo.findByCompanyId(req.getCompanyId());
@@ -317,7 +321,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 				log.info("{ Mail Pushed SuccessFully . ProductId is ---> }" + productId  );
 				// mailFrameService.sendSms(mailReq);
 				mailThreadService.threadToSendMail(mailFrameReq);
-				*/
+				
 			}
 			
 				

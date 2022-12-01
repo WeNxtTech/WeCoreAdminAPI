@@ -680,7 +680,11 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			Date today = new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);;
+			cal.set(Calendar.MINUTE, 1);
 			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
 			Date todayEnd = cal.getTime();
 			
 			// Criteria
@@ -700,15 +704,18 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("productId"),ocpm1.get("productId"));
-			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			effectiveDate.where(a1,a2);
+			Predicate a2 = cb.equal(c.get("companyId"),c.get("companyId"));
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2,a3);
 			// Effective Date End Max Filter
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
 			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
-			Predicate a3 = cb.equal(c.get("productId"),ocpm2.get("productId"));
-			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-			effectiveDate2.where(a3,a4);
+			Predicate a4 = cb.equal(c.get("productId"),ocpm2.get("productId"));
+			Predicate a5 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a4,a5,a6);
+			
 			// Where
 			Predicate n1 = cb.equal(c.get("status"),"Y");
 			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);

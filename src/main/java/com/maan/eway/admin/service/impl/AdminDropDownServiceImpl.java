@@ -1,5 +1,6 @@
 package com.maan.eway.admin.service.impl;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -34,6 +35,7 @@ import com.maan.eway.common.req.LovDropDownReq;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.req.SubUserTypeReq;
+import com.maan.eway.res.ColummnDropRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SubUserTypeDropDownRes;
 
@@ -68,6 +70,73 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					res.setStatus(data.getStatus());
 					resList.add(res);
 				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Exception is ---> " + e.getMessage());
+				return null;
+			}
+			return resList;
+		}
+		
+		@Override
+		public List<ColummnDropRes> getTableDetails(LovDropDownReq req) {
+			List<ColummnDropRes> resList = new ArrayList<ColummnDropRes>();
+			try {
+				//String tableName = "Eservice_Customer_Details" ;
+				//List<String> removerUnderScore = new ArrayList<>(Arrays.asList(tableName.split("_")) ) ;
+				
+				/*Object entityName =null;
+				for (String ent : removerUnderScore) {
+					String lowerCase = ent.toLowerCase() ;
+					String firstLetterCaps =  lowerCase.substring(0, 1).toUpperCase() + lowerCase.substring(1) ;
+					entityName = entityName==null ? firstLetterCaps  :entityName +  firstLetterCaps ; 
+					
+				}*/
+				  
+			String entityName = "com.maan.eway.bean."+req.getTableName();//entityName + ".class" ;
+				 Class<?> forName = Class.forName(entityName);//forName(entityName);
+				
+
+			//	Class table = (Class) entityName ;
+				
+				Field[] members = forName.getDeclaredFields();
+				
+				        for(Field member:members){
+				        	if(! member.getName().equalsIgnoreCase("serialVersionUID") ) {
+				        		System.out.println(member.getName());
+				        		String output = member.getName().substring(0, 1).toUpperCase() + member.getName().substring(1);
+			        			String field =output.replaceAll("(.)([A-Z])", "$1_$2");
+			        			System.out.println(field);
+			        			String display =output.replaceAll("(.)([A-Z])", "$1 $2");
+				        			System.out.println(display);
+				        			ColummnDropRes res = new ColummnDropRes();
+				    				res.setColumnName(field);
+				    				res.setDispalyName(display);
+				    				res.setFieldName( member.getName());
+				    				resList.add(res);
+				        			    
+				        	//	customerReferenceNo
+				        	//	Customer Reference No
+				        	//	Customer_Reference_No
+				        	}
+//				            System.out.println(member.getClass().getSimpleName());
+//				            System.out.println(member.getClass().getCanonicalName());
+//				            System.out.println(member.getClass().getTypeName());
+//				            System.out.println(member.getClass().getComponentType());
+//				            System.out.println(member.getClass().getModifiers());
+//				            System.out.println(member.getClass().getAnnotations());
+				        }			
+				
+				
+			/*	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("FUEL_TYPE", "Y");
+
+				for (ListItemValue data : getList) {
+					DropDownRes res = new DropDownRes();
+					res.setCode(data.getItemCode());
+					res.setCodeDesc(data.getItemValue());
+					res.setStatus(data.getStatus());
+					resList.add(res);
+				} */
 			} catch (Exception e) {
 				e.printStackTrace();
 				log.info("Exception is ---> " + e.getMessage());

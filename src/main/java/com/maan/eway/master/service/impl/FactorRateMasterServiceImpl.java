@@ -663,7 +663,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				Predicate n14 = cb2.or(n12,n13);
 				Predicate n15 = null ; 
 				if( StringUtils.isBlank(req.getSubCoverId()) ) {
-					n15 = cb2.equal(b2.get("subCoverId"), req.getCoverId());
+					n15 = cb2.equal(b2.get("subCoverId"), "0");
 				} else {
 					n15 = cb2.equal(b2.get("subCoverId"), req.getSubCoverId());
 				}
@@ -744,8 +744,10 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				Predicate n5 = cb.equal(b.get("sNo"),data.getSno());
 				Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
 				Predicate n4 = cb.equal(b.get("branchCode"), req.getBranchCode());
+				Predicate n6 = cb.equal(b.get("branchCode"), "99999");
+				Predicate n7 = cb.or(n4,n6);
 				
-				query.where(n2,n3,n4,n5).orderBy(orderList);
+				query.where(n2,n3,n5,n7).orderBy(orderList);
 				
 				// Get Result 
 				TypedQuery<FactorRateMaster> result = em.createQuery(query);
@@ -786,7 +788,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				saveData.setEffectiveDateStart(req.getEffectiveDateStart());
 				saveData.setEffectiveDateEnd(endDate);
 				saveData.setEntryDate(new Date());
-				saveData.setSubCoverId(req.getSubCoverYn().equalsIgnoreCase("Y") ? Integer.valueOf(req.getSubCoverId()) : Integer.valueOf(req.getCoverId()) );
+				saveData.setSubCoverId(req.getSubCoverYn().equalsIgnoreCase("Y") ? Integer.valueOf(req.getSubCoverId()) : 0 );
 				saveData.setAmendId(amendId);
 				saveData.setStatus(req.getStatus().equalsIgnoreCase("P")?"P" : data.getStatus());		
 				saveData.setSNo(Integer.valueOf(data.getSno()));
@@ -921,7 +923,7 @@ public Integer getMasterTableCount(String companyId , String branchCode) {
 			Predicate n7 = null;
 			Predicate n8 = null;
 			if (StringUtils.isBlank(req.getSubCoverId()) ) {
-				n6 =  cb.equal(b.get("subCoverId"), req.getCoverId()); 
+				n6 =  cb.equal(b.get("subCoverId"),"0"); 
 			} else {
 				n6 =  cb.equal(b.get("subCoverId"), req.getSubCoverId()); 
 			}
@@ -933,12 +935,12 @@ public Integer getMasterTableCount(String companyId , String branchCode) {
 			if(StringUtils.isBlank(req.getAgencyCode()) && StringUtils.isBlank(req.getBranchCode()) ) {
 				n7 = cb.equal(b.get("agencyCode"), "99999");
 				n8 = cb.equal(b.get("branchCode"), "99999");
-				query.where( n2, n3,n4,n5,n6,n7,n8).orderBy(orderList);
+				query.where(n1, n2, n3,n4,n5,n6,n7,n8).orderBy(orderList);
 				
 			} else {
 				n7 = cb.equal(b.get("agencyCode"), req.getAgencyCode());
 				n8 = cb.equal(b.get("branchCode"), req.getBranchCode());
-				query.where( n2, n3,n4,n5,n6,n7,n8).orderBy(orderList);
+				query.where( n1, n2, n3,n4,n5,n6,n7,n8).orderBy(orderList);
 			}	
 	
 			// Get Result
@@ -1127,7 +1129,7 @@ public Integer getMasterTableCount(String companyId , String branchCode) {
 			Predicate n9 = null;
 			
 			if (StringUtils.isBlank(req.getSubCoverId()) ) {
-				n7 =  cb.equal(b.get("subCoverId"), req.getCoverId()); 
+				n7 =  cb.equal(b.get("subCoverId"), "0"); 
 			} else {
 				n7 =  cb.equal(b.get("subCoverId"), req.getSubCoverId()); 
 			}

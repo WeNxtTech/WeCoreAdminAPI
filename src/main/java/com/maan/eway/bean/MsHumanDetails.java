@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -91,7 +90,13 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="AGE")
     private Integer    age ;
+    
+    @Column(name="CURRENCY")
+    private String    currency ;
 
+    @Column(name="EXCHANGE_RATE")
+    private Double     exchangeRate ;
+    
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ENTRY_DATE")
     private Date       entryDate ;

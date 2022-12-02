@@ -48,7 +48,7 @@ public class CompanyCityMasterController {
 	
 	@Autowired
 	private  PrintReqService reqPrinter;
-	
+	/*
 	// save
 		@PostMapping("/updatecompanycity")
 		@ApiOperation(value = "This method is Insert Company City Details")
@@ -296,5 +296,5 @@ public class CompanyCityMasterController {
 					else {
 						return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
 					}
-				}
+				} */
 }

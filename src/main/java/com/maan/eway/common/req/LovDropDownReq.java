@@ -12,4 +12,6 @@ public class LovDropDownReq {
 	private String insuranceId;
 	@JsonProperty("BranchCode")
 	private String branchCode;
+	@JsonProperty("TableName")
+	private String tableName;
 }

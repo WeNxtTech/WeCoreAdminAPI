@@ -64,7 +64,7 @@ public class CompanyRegionMasterController {
 
 	@Autowired
 	private PrintReqService reqPrinter;
-
+/*
 	// save
 	@PostMapping("/insertcompanyregion")
 	@ApiOperation(value = "This method is Insert Company Region Details")
@@ -253,5 +253,5 @@ public class CompanyRegionMasterController {
 		} else {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
-	}
+	} */
 }

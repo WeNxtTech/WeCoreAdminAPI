@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.maan.eway.admin.service.AdminDropDownService;
 import com.maan.eway.common.req.LovDropDownReq;
 import com.maan.eway.req.SubUserTypeReq;
+import com.maan.eway.res.ColummnDropRes;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SubUserTypeDropDownRes;
@@ -31,7 +32,25 @@ public class AdminDropDownController {
 	@Autowired
 	private  AdminDropDownService dropDownService;
 	
+	@PostMapping("/gettabledetails")
+	@ApiOperation(value = "This method is to Table Details Drop Down")
+	public ResponseEntity<CommonRes> getTableDetails(@RequestBody LovDropDownReq req) {
+		CommonRes data = new CommonRes();
 
+		List<ColummnDropRes> res = dropDownService.getTableDetails(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
+	
 	
 	@PostMapping("/usertype")
 	@ApiOperation(value = "This method is to UserType  Drop Down")

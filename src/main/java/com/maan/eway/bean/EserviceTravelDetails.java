@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -90,7 +89,13 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="TERRORISM_COVER_YN", length=20)
     private String     terrorismCoverYn ;
+    
+    @Column(name="SECTION_ID", nullable=false, length=20)
+    private String     sectionId ;
 
+    @Column(name="PRODUCT_ID", nullable=false, length=20)
+    private String     productId ;
+    
     @Column(name="PLAN_TYPE_ID")
     private Integer    planTypeId ;
 
@@ -116,6 +121,12 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="AGE")
     private Integer    age ;
+    
+    @Column(name="CURRENCY")
+    private String    currency ;
+
+    @Column(name="EXCHANGE_RATE")
+    private Double     exchangeRate ;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="EFFECTIVE_DATE")

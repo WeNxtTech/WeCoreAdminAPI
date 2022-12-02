@@ -48,7 +48,7 @@ public class CompanyStateMasterController {
 	
 	@Autowired
 	private  PrintReqService reqPrinter;
-	
+	/*
 	// save
 	@PostMapping("/insertcompanystate")
 	@ApiOperation(value = "This method is Insert Company State Details")
@@ -251,6 +251,6 @@ public class CompanyStateMasterController {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
 
-		}	
+		}	*/
 
 }

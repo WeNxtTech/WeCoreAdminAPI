@@ -218,7 +218,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				
 				// Section COver Master Insert
 				for (CoverMaster data  : list) {
-					if(data.getSubCoverYn().equalsIgnoreCase("Y") && !(data.getCoverId().equals(data.getSubCoverId())) ) {  
+					if(data.getSubCoverYn().equalsIgnoreCase("Y")  ) {  
 						SectionCoverMaster secCover = new SectionCoverMaster();
 						
 						dozerMapper.map(data, secCover) ;
@@ -257,7 +257,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 							}
 						}
 						log.info("Saved Detail is  --->" + secCover );
-					} else if(data.getSubCoverYn().equalsIgnoreCase("N") && data.getCoverId().equals(data.getSubCoverId()) ) {
+					} else if(data.getSubCoverYn().equalsIgnoreCase("N") ) {
 						SectionCoverMaster secCover = new SectionCoverMaster();
 						
 						dozerMapper.map(data, secCover) ;
@@ -296,36 +296,6 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 						}
 						log.info("Saved Detail is  --->" + secCover );
 					}
-					
-					
-					// Thread To Trigger Mail
-					
-					InsuranceCompanyMaster companyData = insrepo.findByCompanyId(req.getCompanyId());
-					LoginMaster loginData = loginRepo.findByLoginId(req.getCreatedBy());
-
-					List<String> ccMails = new ArrayList<String>();
-					ccMails.add(companyData.getCompanyEmail());
-				//	ccMails.add(loginData.getUserMail());
-
-					List<String> toMails = new ArrayList<String>();
-					toMails.add(companyData.getCompanyEmail());
-
-					Map<String, Object> keys = new HashMap<String, Object>();
-					keys.put("COVER_ID", req.getCoverId() == null ? "" : req.getCoverId());
-
-					// Set Mail Request
-					MailFramingReq mailFrameReq = new MailFramingReq();
-					mailFrameReq.setInsId(req.getCompanyId().toString());
-					mailFrameReq.setNotifTemplateId("COVER");
-					mailFrameReq.setKeys(keys);
-					mailFrameReq.setMailCc(ccMails);
-					mailFrameReq.setMailTo(toMails);
-					mailFrameReq.setMailRegards(companyData.getRegards());
-					mailFrameReq.setStatus(res.getResponse());
-
-					log.info("{ Mail Pushed SuccessFully . CoverId is ---> }" + req.getCoverId() );
-					// mailFrameService.sendSms(mailReq);
-					mailThreadService.threadToSendMail(mailFrameReq);
 					
 				}
 				
@@ -1036,7 +1006,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				errorList.add(new Error("08", "Status", "Please Enter Status"));
 			} else if (req.getStatus().length() > 1) {
 				errorList.add(new Error("08", "Status", "Enter Status in 1 Character Only"));
-			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()) || "P".equals(req.getStatus())) || "R".equals(req.getStatus())) {
+			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()) || "P".equals(req.getStatus()) || "R".equals(req.getStatus()))) {
 				errorList.add(new Error("08", "Status", "Enter Status Y or N Only"));
 			}
 			if (StringUtils.isBlank(req.getRegulatoryCode())) {
@@ -1363,32 +1333,30 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			// Get Result
 			TypedQuery<SectionCoverMaster> result = em.createQuery(query);
 			list = result.getResultList();
-
-			if(subCoverYn.equalsIgnoreCase("Y")   ) {
-				
-				if (list.size() > 0) {
-					Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
-						if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
-							amendId = list.get(0).getAmendId() + 1 ;
-							entryDate = new Date() ;
-							createdBy = req.getCreatedBy();
-							SectionCoverMaster lastRecord = list.get(0);
-								lastRecord.setEffectiveDateEnd(oldEndDate);
-								repo.saveAndFlush(lastRecord);
-							
-						} else {
-							amendId = list.get(0).getAmendId() ;
-							entryDate = list.get(0).getEntryDate() ;
-							createdBy = list.get(0).getCreatedBy();
-							saveData = list.get(0) ;
-							if (list.size()>1 ) {
-								SectionCoverMaster lastRecord = list.get(1);
-								lastRecord.setEffectiveDateEnd(oldEndDate);
-								repo.saveAndFlush(lastRecord);
-							}
+			if (list.size() > 0) {
+				Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+					if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
+						amendId = list.get(0).getAmendId() + 1 ;
+						entryDate = new Date() ;
+						createdBy = req.getCreatedBy();
+						SectionCoverMaster lastRecord = list.get(0);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							repo.saveAndFlush(lastRecord);
 						
-					    }
-				}
+					} else {
+						amendId = list.get(0).getAmendId() ;
+						entryDate = list.get(0).getEntryDate() ;
+						createdBy = list.get(0).getCreatedBy();
+						saveData = list.get(0) ;
+						if (list.size()>1 ) {
+							SectionCoverMaster lastRecord = list.get(1);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							repo.saveAndFlush(lastRecord);
+						}
+					
+				    }
+			}
+			if(subCoverYn.equalsIgnoreCase("Y")   ) {
 			
 				// Update New Record
 				SectionCoverMaster saveCover = new SectionCoverMaster();
@@ -1418,12 +1386,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				log.info("Saved Details is ---> " + json.toJson(saveCover));
 
 			} else if( subCoverYn.equalsIgnoreCase("N") ) {
-				if( list.size() > 0  ) {
-					for ( SectionCoverMaster data :  list) {
-						repo.delete(data);
-						
-					}	
-				}
+			
 				
 				dozerMapper.map(req, saveData);
 				//subcoverId = coverId ;
@@ -1446,6 +1409,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				saveData.setCreatedBy(createdBy);
 				saveData.setUpdatedDate(new Date());
 				saveData.setUpdatedBy(req.getCreatedBy());
+				
 				// Amount Details
 				if(req.getCalcType().equalsIgnoreCase("F")  ) {
 					
@@ -1528,24 +1492,8 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 					saveData.setTaxCode(req.getTaxCode());
 				}
 				repo.saveAndFlush(saveData);
-				if (list.size() > 0 ) {
-					// Update Old Record
-					for ( SectionCoverMaster data :  list) {
-						SectionCoverMaster lastRecord = data;
-						lastRecord.setEffectiveDateEnd(oldEndDate);
-						lastRecord.setSubCoverYn(subCoverYn);
-						String startDatewithoutTime = sdf.format(startDate);
-						String oldDatewithoutTime = sdf.format(list.get(0).getEffectiveDateStart());
-
-						if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
-							lastRecord.setStatus("N");	
-						}
-						
-						repo.saveAndFlush(lastRecord);
-						log.info("Saved Details is ---> " + json.toJson(saveData));
-					}
-					
-				}
+				
+				log.info("Saved Details is ---> " + json.toJson(saveData));
 			}	
 			res.setResponse("Updated Successfully ");
 			res.setSuccessId(coverId);

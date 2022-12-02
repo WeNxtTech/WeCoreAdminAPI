@@ -476,9 +476,9 @@ public class MailMasterServiceImpl implements MailMasterService {
 			Subquery<Long> amendId = query.subquery(Long.class);
 			Root<MailMaster> ocpm1 = amendId.from(MailMaster.class);
 			amendId.select(cb.max(ocpm1.get("amendId")));
-			Predicate a1 = cb.equal(ocpm1.get("sNo"),req.getSNo());
-			Predicate a2 = cb.equal(ocpm1.get("companyId"),req.getCompanyId());
-			Predicate a3 = cb.equal(ocpm1.get("branchCode"),req.getBranchCode());
+			Predicate a1 = cb.equal(ocpm1.get("sNo"),b.get("sNo"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
 
 			amendId.where(a1,a2,a3);
 			// Order By

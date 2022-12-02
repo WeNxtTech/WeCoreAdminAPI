@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -46,6 +47,7 @@ import com.maan.eway.bean.FactorTypeDetails;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.bean.ProductMaster;
+import com.maan.eway.bean.RatingFieldMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.FactorTypeDetailsSaveReq;
 import com.maan.eway.master.req.FactorTypeDropDownReq;
@@ -330,7 +332,6 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 		try {
 			List<ListItemValue> range = listRepo.findByItemTypeAndStatus("RANGE" , "Y");
 			List<ListItemValue> discrete = listRepo.findByItemTypeAndStatus("DISCRETE" , "Y");
-			Integer amendId=0;
 			Date startDate = req.getEffectiveDateStart() ;
 			String end = "31/12/2050";
 			Date endDate = sdformat.parse(end);
@@ -359,63 +360,66 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 					factorTypeId =req.getFactorTypeId();
 					
 			}
+			FactorTypeDetails saveData = new FactorTypeDetails();
 			
+			// FInd Old Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<FactorTypeDetails> query = cb.createQuery(FactorTypeDetails.class);
+			//Find all
+			Root<FactorTypeDetails> b = query.from(FactorTypeDetails.class);
+			//Select 
+			query.select(b);
+//			
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("effectiveDateStart")));
+			
+			// Where
+			Predicate n1 = cb.equal(b.get("factorTypeId"), factorTypeId);
+			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
+//			Predicate n3 = cb.equal(b.get("ratingFieldId"), data.getRatingFieldId());
+			
+			query.where(n2,n1).orderBy(orderList);
+			
+			// Get Result 
+			TypedQuery<FactorTypeDetails> result = em.createQuery(query);
+			int limit = 0 , offset = 2 ;
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			list = result.getResultList();
+
 					
 			
 			for ( RatingFieldDetails data :  req.getRatingFieldDetails() ) {
-				FactorTypeDetails saveData = new FactorTypeDetails();
-				
-				// FInd Old Record
-				CriteriaBuilder cb = em.getCriteriaBuilder();
-				CriteriaQuery<FactorTypeDetails> query = cb.createQuery(FactorTypeDetails.class);
-				//Find all
-				Root<FactorTypeDetails> b = query.from(FactorTypeDetails.class);
-				//Select 
-				query.select(b);
-//				
-				// Order By
-				List<Order> orderList = new ArrayList<Order>();
-				orderList.add(cb.desc(b.get("effectiveDateStart")));
-				
-				// Where
-				Predicate n1 = cb.equal(b.get("factorTypeId"), factorTypeId);
-				Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
-				Predicate n3 = cb.equal(b.get("ratingFieldId"), data.getRatingFieldId());
-				
-				query.where(n2,n1,n3).orderBy(orderList);
-				
-				// Get Result 
-				TypedQuery<FactorTypeDetails> result = em.createQuery(query);
-				int limit = 0 , offset = 2 ;
-				result.setFirstResult(limit * offset);
-				result.setMaxResults(offset);
-				list = result.getResultList();
-				
+				Integer amendId=0;
+
 				if(list.size()>0) {
 					Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
-				
-					if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
-						amendId = list.get(0).getAmendId() + 1 ;
+					List<FactorTypeDetails> ratingFilter = list.stream().filter( o -> o.getRatingFieldId().toString().equalsIgnoreCase(data.getRatingFieldId().toString())).collect(Collectors.toList());
+					if(ratingFilter.size()>0) {
+					if ( ratingFilter.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
+						
+						amendId = ratingFilter.get(0).getAmendId() + 1 ;
 						entryDate = new Date() ;
 						createdBy = req.getCreatedBy();
-						FactorTypeDetails lastRecord = list.get(0);
+						FactorTypeDetails lastRecord = ratingFilter.get(0);
 							lastRecord.setEffectiveDateEnd(oldEndDate);
 							repository.saveAndFlush(lastRecord);
 						
 					} else {
-						amendId = list.get(0).getAmendId() ;
-						entryDate = list.get(0).getEntryDate() ;
-						createdBy = list.get(0).getCreatedBy();
-						saveData = list.get(0) ;
-						if (list.size()>1 ) {
-							FactorTypeDetails lastRecord = list.get(1);
+						amendId = ratingFilter.get(0).getAmendId() ;
+						entryDate = ratingFilter.get(0).getEntryDate() ;
+						createdBy = ratingFilter.get(0).getCreatedBy();
+						saveData = ratingFilter.get(0) ;
+						if (ratingFilter.size()>1 ) {
+							FactorTypeDetails lastRecord = ratingFilter.get(1);
 							lastRecord.setEffectiveDateEnd(oldEndDate);
 							repository.saveAndFlush(lastRecord);
 						}
 					
 				    }
-				}
-				
+					}
+				}			
 				
 				// Save New Records
 				saveData = dozerMapper.map(req, FactorTypeDetails.class );
@@ -447,7 +451,30 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 				
 				repository.saveAndFlush(saveData);
 				log.info("Saved Details is ---> " + json.toJson(saveData));
+				List<FactorTypeDetails> filterNonUpdatedData = list.stream().filter( o ->
+				 req.getRatingFieldDetails().stream().anyMatch( t -> 
+				 ! t.getRatingFieldId().equalsIgnoreCase(o.getRatingFieldId()
+						 .toString()))).collect(Collectors.toList());
+				
+				if( filterNonUpdatedData.size()>0) {
+					for (FactorTypeDetails old : filterNonUpdatedData ) {
+						Date yesterDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+						old.setEffectiveDateEnd(yesterDay);
+						
+					}
+				}
+//				List<TestSVM> results = listOne.stream().filter(one-> !listTwo.stream()
+//				          .anyMatch(two -> two.getSchool().equals(one.getSchool()))) 
+//				          .collect(Collectors.toList());
+//				
+//				
+				 boolean answer  = list.stream().noneMatch( o -> o.getRatingFieldId().toString().equalsIgnoreCase(data.getRatingFieldId().toString()));
+				 if(answer==true) {
+					 
+				 }
 			}
+		
+		
 			res.setResponse("Factor Types Added Successfully ");
 			res.setSuccessId(factorTypeId );
 

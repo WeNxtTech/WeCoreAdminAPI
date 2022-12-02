@@ -369,7 +369,15 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 			Root<FactorTypeDetails> b = query.from(FactorTypeDetails.class);
 			//Select 
 			query.select(b);
-//			
+//			// Effective Date Max Filter
+			Subquery<Long> maxAmendId = query.subquery(Long.class);
+			Root<FactorTypeDetails> ocpm1 = maxAmendId.from(FactorTypeDetails.class);
+			maxAmendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("factorTypeId"), b.get("factorTypeId"));
+			Predicate a4 = cb.equal(ocpm1.get("ratingFieldId"), b.get("ratingFieldId"));
+			maxAmendId.where(a1,a2,a3,a4);
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.desc(b.get("effectiveDateStart")));
@@ -377,15 +385,12 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 			// Where
 			Predicate n1 = cb.equal(b.get("factorTypeId"), factorTypeId);
 			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
-//			Predicate n3 = cb.equal(b.get("ratingFieldId"), data.getRatingFieldId());
+			Predicate n3 = cb.equal(b.get("amendId"), maxAmendId);
 			
-			query.where(n2,n1).orderBy(orderList);
+			query.where(n2,n1,n3).orderBy(orderList);
 			
 			// Get Result 
 			TypedQuery<FactorTypeDetails> result = em.createQuery(query);
-			int limit = 0 , offset = 2 ;
-			result.setFirstResult(limit * offset);
-			result.setMaxResults(offset);
 			list = result.getResultList();
 
 					
@@ -451,27 +456,21 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 				
 				repository.saveAndFlush(saveData);
 				log.info("Saved Details is ---> " + json.toJson(saveData));
-				List<FactorTypeDetails> filterNonUpdatedData = list.stream().filter( o ->
-				 req.getRatingFieldDetails().stream().noneMatch( t -> 
-				  t.getRatingFieldId().equalsIgnoreCase(o.getRatingFieldId()
-						 .toString()))).collect(Collectors.toList());
-				
-				if( filterNonUpdatedData.size()>0) {
-					for (FactorTypeDetails old : filterNonUpdatedData ) {
-						Date yesterDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
-						old.setEffectiveDateEnd(yesterDay);
-						repository.saveAndFlush(old);
-					}
-				}
-//				List<TestSVM> results = listOne.stream().filter(one-> !listTwo.stream()
-//				          .anyMatch(two -> two.getSchool().equals(one.getSchool()))) 
-//				          .collect(Collectors.toList());
-//				
-//				
 				
 			}
 		
-		
+			List<FactorTypeDetails> filterNonUpdatedData = list.stream().filter( o ->
+			 req.getRatingFieldDetails().stream().noneMatch( t -> 
+			  t.getRatingFieldId().equalsIgnoreCase(o.getRatingFieldId()
+					 .toString()))).collect(Collectors.toList());
+			
+			if( filterNonUpdatedData.size()>0) {
+				for (FactorTypeDetails old : filterNonUpdatedData ) {
+					Date yesterDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+					old.setEffectiveDateEnd(yesterDay);
+					repository.saveAndFlush(old);
+				}
+			}
 			res.setResponse("Factor Types Added Successfully ");
 			res.setSuccessId(factorTypeId );
 

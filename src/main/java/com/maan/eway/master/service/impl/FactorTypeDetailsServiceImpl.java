@@ -452,7 +452,7 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 				repository.saveAndFlush(saveData);
 				log.info("Saved Details is ---> " + json.toJson(saveData));
 				List<FactorTypeDetails> filterNonUpdatedData = list.stream().filter( o ->
-				 !req.getRatingFieldDetails().stream().anyMatch( t -> 
+				 req.getRatingFieldDetails().stream().noneMatch( t -> 
 				  t.getRatingFieldId().equalsIgnoreCase(o.getRatingFieldId()
 						 .toString()))).collect(Collectors.toList());
 				

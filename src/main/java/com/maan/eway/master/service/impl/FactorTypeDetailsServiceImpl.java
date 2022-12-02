@@ -452,8 +452,8 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 				repository.saveAndFlush(saveData);
 				log.info("Saved Details is ---> " + json.toJson(saveData));
 				List<FactorTypeDetails> filterNonUpdatedData = list.stream().filter( o ->
-				 req.getRatingFieldDetails().stream().anyMatch( t -> 
-				 ! t.getRatingFieldId().equalsIgnoreCase(o.getRatingFieldId()
+				 !req.getRatingFieldDetails().stream().anyMatch( t -> 
+				  t.getRatingFieldId().equalsIgnoreCase(o.getRatingFieldId()
 						 .toString()))).collect(Collectors.toList());
 				
 				if( filterNonUpdatedData.size()>0) {
@@ -468,10 +468,7 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 //				          .collect(Collectors.toList());
 //				
 //				
-				 boolean answer  = list.stream().noneMatch( o -> o.getRatingFieldId().toString().equalsIgnoreCase(data.getRatingFieldId().toString()));
-				 if(answer==true) {
-					 
-				 }
+				
 			}
 		
 		

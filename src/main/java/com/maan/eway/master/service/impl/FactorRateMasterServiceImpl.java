@@ -606,7 +606,6 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		
 		try {
-			Integer amendId=0;
 			Date startDate = req.getEffectiveDateStart() ;
 			String end = "31/12/2050";
 			Date endDate = sdformat.parse(end);
@@ -726,6 +725,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 			
 			for ( FactorParamsInsert data :  req.getFactorParams() ) {
 				FactorRateMaster saveData = new FactorRateMaster();
+				Integer amendId=0;
 				
 				// FInd Old Record
 				CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -745,9 +745,10 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
 				Predicate n4 = cb.equal(b.get("branchCode"), req.getBranchCode());
 				Predicate n6 = cb.equal(b.get("branchCode"), "99999");
+				Predicate n8 = cb.equal(b.get("productId"), req.getProductId());
 				Predicate n7 = cb.or(n4,n6);
 				
-				query.where(n2,n3,n5,n7).orderBy(orderList);
+				query.where(n2,n3,n5,n7,n8).orderBy(orderList);
 				
 				// Get Result 
 				TypedQuery<FactorRateMaster> result = em.createQuery(query);

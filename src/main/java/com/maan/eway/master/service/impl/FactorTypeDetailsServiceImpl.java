@@ -179,6 +179,7 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 					}
 					
 					if ( StringUtils.isBlank(data.getRatingFieldId())) {
+ 
 						errorList.add(new Error("03","RatingFieldId", "Please Enter RatingFieldId in Row No : " + row ));	
 					} else {
 						List<String> filterRatingIds =  ratingRatingIds.stream().filter( o -> o.equalsIgnoreCase(data.getRatingFieldId()) ).collect(Collectors.toList()); 

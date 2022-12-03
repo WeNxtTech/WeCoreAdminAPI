@@ -36,7 +36,10 @@ public class EwayFileUploadController {
 		try {
 			String fileName =FilenameUtils.getBaseName(file.getOriginalFilename());
 			String extension=FilenameUtils.getExtension(file.getOriginalFilename());
-			String filePath ="G:\\Eway\\FileUpload\\" +fileName+"_"+new Date().getSeconds()+"."+extension;		
+		//	String filePath ="G:\\Eway\\FileUpload\\" +fileName+"_"+new Date().getSeconds()+"."+extension;		
+			String filePath ="C:\\Users\\Developer\\Documents\\Received Files\\" +fileName+"_"+new Date().getSeconds()+"."+extension;
+			
+			
 			FileUploadInputRequest request =new FileUploadInputRequest();
 			if(StringUtils.isNotBlank(uploadReq)) {
 				ObjectMapper mapper =new ObjectMapper();

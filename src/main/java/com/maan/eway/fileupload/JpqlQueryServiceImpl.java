@@ -1,5 +1,6 @@
 package com.maan.eway.fileupload;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,8 +17,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.FactorRateMaster;
 import com.maan.eway.bean.FactorTypeDetails;
 import com.maan.eway.bean.SectionCoverMaster;
+import com.maan.eway.master.req.FactorRateSaveReq;
 
 @Component
 public class JpqlQueryServiceImpl {
@@ -39,7 +42,9 @@ public class JpqlQueryServiceImpl {
 		Map<String,Object> res =new HashMap<String,Object>();
 		String factorId ="";
 		try {
-			query =em.createQuery("select s from SectionCoverMaster s where s.companyId=:companyId and s.productId=:productId and s.coverId=:coverId and s.sectionId=:sectionId and s.subCoverId=:subCoverId");
+			query =em.createQuery("select s from SectionCoverMaster s where s.companyId=:companyId and s.productId=:productId and s.coverId=:coverId and s.sectionId=:sectionId and s.subCoverId=:subCoverId and sysdate() between effectiveDateStart and effectiveDateEnd and s.amendId=(SELECT MAX(amendId) FROM SectionCoverMaster WHERE"
+					+ " companyId=s.companyId AND productId=s.productId AND coverId=s.coverId AND "
+					+ " sectionId=s.sectionId AND subCoverId=s.subCoverId and sysdate() between effectiveDateStart and effectiveDateEnd )");
 			query.setParameter("companyId", req.getCompanyId());
 			query.setParameter("productId", Integer.valueOf(req.getProductId()));
 			query.setParameter("coverId", Integer.valueOf(req.getCoverId()));
@@ -49,7 +54,8 @@ public class JpqlQueryServiceImpl {
 			if(!CollectionUtils.isEmpty(sectionMaster)) {
 				factorId =StringUtils.isBlank(sectionMaster.get(0).getFactorTypeId().toString())?"":sectionMaster.get(0).getFactorTypeId().toString();
 				log.info("FactorTypeId : "+factorId);
-				query=em.createQuery("select f from FactorTypeDetails f where f.companyId=:companyId and f.productId=:productId and f.factorTypeId=:factorTypeId and sysdate() between effectiveDateStart and effectiveDateEnd order by columnsId desc");
+				query=em.createQuery("select f from FactorTypeDetails f where f.companyId=:companyId and f.productId=:productId and f.factorTypeId=:factorTypeId and sysdate() between effectiveDateStart and effectiveDateEnd"
+						+ " and f.amendId =(select max(amendId) from FactorTypeDetails where companyId=f.companyId and productId=f.productId and factorTypeId=f.factorTypeId and  sysdate() between effectiveDateStart and effectiveDateEnd ) order by columnsId desc");
 				query.setParameter("companyId", req.getCompanyId());
 				query.setParameter("productId", Integer.valueOf(req.getProductId()));
 				query.setParameter("factorTypeId", Integer.valueOf(factorId));
@@ -85,7 +91,7 @@ public class JpqlQueryServiceImpl {
 	public List<Object[][]> getFactorRateDetails(FileDownloadRequest req,String columns,String factorId){
 		List<Object[][]> object =null;
 		try {
-			query=em.createQuery("select " +columns+ " from FactorRateMaster where  companyId=:companyId "
+			query=em.createQuery("select " +columns+ ",rate,calcType,minPremium,regulatoryCode from FactorRateMaster where  companyId=:companyId "
 					+ "and productId=:productId and factorTypeId=:factorTypeId and coverId=:coverId and sectionId=:sectionId and agencyCode=:agencyCode and branchCode=:branchCode and"
 					+ " sysdate() between effectiveDateStart and effectiveDateEnd and subCoverId=:subCoverId");
 			
@@ -106,5 +112,74 @@ public class JpqlQueryServiceImpl {
 		return object;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public List<FactorTypeDetails> getFactorRateColumns(FileUploadInputRequest req,String factorTypeId){
+		List<FactorTypeDetails> list =null;
+		try {
+			query=em.createQuery("select f from FactorTypeDetails f where f.companyId=:companyId and f.productId=:productId and f.factorTypeId=:factorTypeId"
+					+ " and sysdate() between f.effectiveDateStart and f.effectiveDateEnd and f.amendId=(select max(amendId) from FactorTypeDetails where "
+					+ " companyId=f.companyId and productId=f.productId and factorTypeId=f.factorTypeId and ratingFieldId=f.ratingFieldId) order by f.columnsId desc");
+		
+			query.setParameter("companyId", req.getInsuranceId());
+			query.setParameter("productId", Integer.valueOf(req.getProductId()));
+			query.setParameter("factorTypeId", Integer.valueOf(factorTypeId));
+		 list=query.getResultList();
+		}catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+		}
+		return list;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<FactorRateMaster> getFactorRateMasterDet(FileUploadInputRequest req){
+		List<FactorRateMaster> list =null;
+		try {
+			
+			query =em.createQuery("select f  from FactorRateMaster f where f.companyId=:companyId and f.productId=:productId and f.coverId=:coverId and f.sectionId=:sectionId"
+					+ " and sysdate() between f.effectiveDateStart and f.effectiveDateEnd and f.subCoverId=:subCoverId and f.amendId=(select max(amendId) from FactorRateMaster where companyId=f.companyId and productId=f.productId"
+					+ " and coverId=f.coverId and sectionId=f.sectionId and sysdate() between effectiveDateStart and effectiveDateEnd and subCoverId=f.subCoverId)");
 
+			query.setParameter("companyId", req.getInsuranceId());
+			query.setParameter("productId", Integer.valueOf(req.getProductId()));
+			query.setParameter("coverId", Integer.valueOf(req.getCoverId()));
+			query.setParameter("sectionId", Integer.valueOf(req.getSectionId()));
+			query.setParameter("subCoverId", Integer.valueOf(req.getSubCoverId()));
+			list =query.getResultList();
+		}catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<SectionCoverMaster> getSectionCoverMaster(FileUploadInputRequest req) {
+		List<SectionCoverMaster> sectionMaster =null;
+		try {
+			query =em.createQuery("select s from SectionCoverMaster s where s.companyId=:companyId and s.productId=:productId and s.coverId=:coverId and s.sectionId=:sectionId and s.subCoverId=:subCoverId and sysdate() between effectiveDateStart and effectiveDateEnd and s.amendId=(SELECT MAX(amendId) FROM SectionCoverMaster WHERE"
+					+ " companyId=s.companyId AND productId=s.productId AND coverId=s.coverId AND "
+					+ " sectionId=s.sectionId AND subCoverId=s.subCoverId and sysdate() between effectiveDateStart and effectiveDateEnd )");
+			query.setParameter("companyId", req.getInsuranceId());
+			query.setParameter("productId", Integer.valueOf(req.getProductId()));
+			query.setParameter("coverId", Integer.valueOf(req.getCoverId()));
+			query.setParameter("sectionId", Integer.valueOf(req.getSectionId()));
+			query.setParameter("subCoverId", Integer.valueOf(req.getSubCoverId()));
+			sectionMaster=query.getResultList(); 
+			
+		}catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+		}
+		return sectionMaster;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }

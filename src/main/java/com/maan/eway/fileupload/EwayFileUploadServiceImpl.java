@@ -1,27 +1,48 @@
 package com.maan.eway.fileupload;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Base64Utils;
 import org.springframework.util.CollectionUtils;
 
 import com.google.gson.Gson;
-import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.bean.FactorRateMaster;
+import com.maan.eway.bean.FactorTypeDetails;
+import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.FactorParamsInsert;
+import com.maan.eway.master.req.FactorRateSaveReq;
+import com.maan.eway.master.service.FactorRateMasterService;
+import com.maan.eway.repository.FactorRateMasterRepository;
+import com.maan.eway.repository.ListItemValueRepository;
+import com.maan.eway.res.CommonRes;
+import com.maan.eway.res.SuccessRes;
 
 @Service
 public class EwayFileUploadServiceImpl implements EwayFileUploadService {
@@ -33,6 +54,18 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 	
 	@Autowired
 	private JpqlQueryServiceImpl queryService;
+	
+	@Autowired
+	private FactorRateMasterRepository repository;
+	
+	@Autowired
+	private FactorRateMasterService entityService;
+	
+	@Autowired
+	private ListItemValueRepository listRepo ;
+
+	@PersistenceContext
+	private EntityManager em;
 
 	@Override
 	public com.maan.eway.res.CommonRes download(FileDownloadRequest req)  {
@@ -44,14 +77,17 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 		try {
 			String agencyCode =StringUtils.isBlank(req.getAgencyCode())?"99999":req.getAgencyCode();
 			String branchCode=StringUtils.isBlank(req.getBranchCode())?"99999":req.getBranchCode();
+			String subCoverId=StringUtils.isBlank(req.getSubCoverId())?"0":req.getSubCoverId();
 			req.setAgencyCode(agencyCode);
 			req.setBranchCode(branchCode);
+			req.setSubCoverId(subCoverId);
 			Map<String,Object> object=queryService.getFactorXlColumns(req);
-			if(object.size()>0 && object!=null) {
+			if(object!=null) {
 				
 				String columns =object.get("QUERY_COLUMNS").toString();
 				String factorId =object.get("FACTOR_ID").toString();
-				String xlColumns =object.get("XL_COLUMNS").toString();
+				String defaultColumns =",Rate,CalcType,MinimumPremium,RegulatoryCode";
+				String xlColumns =object.get("XL_COLUMNS").toString()+defaultColumns;
 				List<Object[][]> obj =queryService.getFactorRateDetails(req, columns, factorId);
 				
 				if(!CollectionUtils.isEmpty(obj)) { 
@@ -77,6 +113,7 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 						Cell cell =row.createCell(i);
 						cell.setCellValue(headers[i]);
 						row.getCell(i).setCellStyle(cellStyle);
+						
 					}
 					
 					for(Object [] ob :obj) {
@@ -84,7 +121,10 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 						int col =0;
 						for(Object str : ob) {
 							Cell cell =row.createCell(col++);
-							cell.setCellValue(str==null?"":str.toString());
+								//cell.setCellValue(str==null?0:Long.valueOf(str.toString()));
+							
+								cell.setCellValue(str==null?"":str.toString());
+							
 						}
 						
 					}
@@ -114,5 +154,204 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 		}
 		return response;
 	}
+
+	@Override
+	public com.maan.eway.res.CommonRes upload(String filePath, FileUploadInputRequest request) {
+		com.maan.eway.res.CommonRes comRes = new com.maan.eway.res.CommonRes ();
+		String factorTypeId ="";Date effectiveDate=null;String remarks=""; String subCoverId="";String subCoverIdYn ="";
+		try {
+			FileInputStream excelFile = new FileInputStream(new File(filePath));
+            @SuppressWarnings("resource")
+			Workbook workbook = new XSSFWorkbook(excelFile);
+            Sheet worksheet = workbook.getSheetAt(0);
+            List<Map<String,Object>> dataList = new ArrayList<Map<String,Object>>();
+            List<Map<Object,Object>> resultList = new ArrayList<Map<Object,Object>>();
+
+            for(int i=1;i<worksheet.getPhysicalNumberOfRows() ;i++) {
+            	Row headers=worksheet.getRow(0);
+                Row row = worksheet.getRow(i);
+                Map<String,Object> object =new HashMap<String,Object>();
+	                for (int j=0;j<row.getPhysicalNumberOfCells();j++) {
+	                		
+	                	Cell cell =row.getCell(j);
+	                	
+	                		if( cell!=null && cell.getCellType()==CellType.STRING) {
+	                			
+	                			object.put(headers.getCell(j).getStringCellValue(), StringUtils.isBlank(cell.getStringCellValue())?"N/A":cell.getStringCellValue());
+	                		
+	                		}else  if (cell!=null && cell.getCellType()==CellType.NUMERIC ){
+	                			
+	                			object.put(headers.getCell(j).getStringCellValue(), String.valueOf(cell.getNumericCellValue()).equals("")?"N/A":String.valueOf(cell.getNumericCellValue()));
+
+	                		}else if(cell==null){
+	                			
+	                			object.put(headers.getCell(j).getStringCellValue(), "N/A");
+	                			System.out.println(headers.getCell(j).getStringCellValue());
+	                		}
+	                		
+	                	}
+	               
+	          dataList.add(object);
+            }
+            if(!CollectionUtils.isEmpty(dataList)) {
+            	
+            	List<SectionCoverMaster> sectionCov=queryService.getSectionCoverMaster(request);
+            	
+            	 factorTypeId = StringUtils.isBlank(sectionCov.get(0).getFactorTypeId().toString())?"":sectionCov.get(0).getFactorTypeId().toString();
+            	
+            	 effectiveDate =sectionCov.get(0).getEffectiveDateStart().toString()==null?null:sectionCov.get(0).getEffectiveDateStart();
+            	
+            	 remarks = StringUtils.isBlank(sectionCov.get(0).getRemarks())?"":sectionCov.get(0).getRemarks();
+            	            	            	
+            	List<FactorTypeDetails>	flist=queryService.getFactorRateColumns(request,factorTypeId);
+            	
+            	if(!CollectionUtils.isEmpty(flist)) {
+	            	Map<String,Object> dbkeys =new HashMap<String,Object>();
+	            	
+	            	for(int i=0;i<flist.size();i++) {
+	            		
+	            		FactorTypeDetails fac =flist.get(i);
+	            		
+	            		if(fac.getRangeYn().equalsIgnoreCase("Y")) {
+	            			String dbfrom =fac.getRangeFromColumn();
+	            			String dbto =fac.getRangeToColumn();
+	            			String fromdisplay =fac.getFromDisplayName();
+	            			String toDisplay =fac.getToDisplayName();
+	            			dbkeys.put(fromdisplay, dbfrom);
+	            			dbkeys.put(toDisplay, dbto);
+	            			
+	            		}else if(fac.getRangeYn().equalsIgnoreCase("N")) {
+	            			
+	            			dbkeys.put(fac.getDiscreteDisplayName(), fac.getDiscreteColumn());
+	            		}
+	            		
+	            	}
+	            	
+	            	for(int i =0;i<dataList.size();i++) {
+	            		
+	            		Map<String,Object> p =dataList.get(i);
+	            		
+	                	Map<Object,Object> result =new HashMap<Object,Object>();
+	
+	            		for (Entry<String, Object> xl:p.entrySet()) {
+	            			
+	            			for(Entry<String, Object> db:dbkeys.entrySet()) {
+	            				
+	            				if(xl.getKey().equalsIgnoreCase( db.getKey()) ) {
+	            					
+	            					result.put(db.getValue(), xl.getValue());
+	            					
+	            				}
+	            			}
+	            			
+	            			if(xl.getKey().equalsIgnoreCase("Rate")) {
+	            				result.put(xl.getKey().trim(), xl.getValue());
+	            			}
+	            			else if (xl.getKey().equalsIgnoreCase("Calctype")){
+	            				result.put(xl.getKey().trim(), xl.getValue());
+	            			}else if (xl.getKey().equalsIgnoreCase("RegulatoryCode")){
+	            				result.put(xl.getKey().trim(), xl.getValue());
+	            			}else if (xl.getKey().equalsIgnoreCase("MinimumPremium")){
+	            				result.put(xl.getKey().trim(), xl.getValue());
+	            			}
+	
+	            			
+	            		}
+	            		
+	            		resultList.add(result);
+	            		
+	            	}
+	                log.info("Response || "+json.toJson(resultList));
+	           
+	            DozerBeanMapper mapper =new DozerBeanMapper();
+	            List<FactorParamsInsert> factorParamsInserts = new ArrayList<FactorParamsInsert>();
+	            int sno =1;
+	            for(Map<Object,Object> datas:resultList) {            
+	            	 UploadFactorRequest data=  mapper.map(datas , UploadFactorRequest.class );
+	            	 
+	            	 FactorParamsInsert factor =mapper.map(data , FactorParamsInsert.class );
+	            	 
+	            	 factor.setMinimumPremium(datas.get("MinimumPremium")==null?"":datas.get("MinimumPremium").toString());
+	            	 factor.setRate(datas.get("Rate")==null?"":datas.get("Rate").toString());
+	            	 factor.setCalType(datas.get("CalcType")==null?"":datas.get("CalcType").toString());
+	            	 factor.setRegulatoryCode(datas.get("RegulatoryCode")==null?"":datas.get("RegulatoryCode").toString());
+	            	 factor.setSno(String.valueOf(sno));
+	            	 factor.setStatus("Y");
+	            	 factorParamsInserts.add(factor);
+	            	 
+	            	 sno++;
+	            }
+	     
+	            // frame FactorRateRequest
+	            log.info("Xl Data Response || "+json.toJson(factorParamsInserts));
+	            //SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+	            FactorRateSaveReq req = new FactorRateSaveReq();
+	            req.setAgencyCode(StringUtils.isBlank(request.getAgencyCode())?"":request.getAgencyCode());
+	            req.setBranchCode(StringUtils.isBlank(request.getBranchCode())?"":request.getBranchCode());
+	            req.setCompanyId(request.getInsuranceId());
+	            req.setProductId(request.getProductId());
+	            req.setCoverId(request.getCoverId());
+	            req.setSectionId(request.getSectionId());
+	            req.setSubCoverId(request.getSectionId());
+	            req.setEffectiveDateStart(effectiveDate);
+	            req.setFactorTypeId(factorTypeId);
+	            req.setRemarks(remarks);
+	            req.setSubCoverYn(request.getSubCoverId().equals("0")?"N":"Y");
+	            req.setSubCoverId(request.getSubCoverId());
+	            req.setCreatedBy(request.getCreatedBy());
+	            req.setStatus(request.getStatus());
+	            req.setFactorParams(factorParamsInserts);
+	            
+	            log.info("Factor Insert Request || "+json.toJson(req));
+	
+	           //entityService.insertFactorRateDetails(req);
+	            CommonRes data = new CommonRes();
+
+	    		List<Error> validation = entityService.validateFactorRateDetails(req);
+	    		// validation
+	    		if (validation != null && validation.size() != 0) {
+	    			data.setCommonResponse(null);
+	    			data.setIsError(true);
+	    			data.setErrorMessage(validation);
+	    			data.setMessage("Failed");
+	    			comRes.setErrorMessage(validation);
+	    			return comRes;
+
+	    		} else {
+
+	    			// Insert
+	    			SuccessRes res = entityService.insertFactorRateDetails(req);
+	    			data.setCommonResponse(res);
+	    			data.setIsError(false);
+	    			data.setMessage("Success");
+
+	    		}
+
+	            comRes.setMessage("Success");
+	            comRes.setIsError(false);
+	            comRes.setCommonResponse(json.toJson(req));
+            	}else {
+            		comRes.setMessage("No Record Found in FactorTypeDetails");
+            		return comRes;
+            	}
+           }else {
+        	   
+        	comRes.setMessage("No Record Found in Xl Sheet");
+       		return comRes;
+           }
+		}catch (Exception e) {
+			e.printStackTrace();
+			log.error(e);
+            comRes.setMessage("Failed");
+            comRes.setIsError(true);
+
+		}
+		return comRes;
+		
+		
+	}
+
+
+	
 
 }

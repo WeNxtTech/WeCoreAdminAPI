@@ -1,15 +1,20 @@
 package com.maan.eway.fileupload;
 
-import java.util.List;
+import java.io.File;
+import java.util.Date;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.maan.eway.common.res.CommonRes;
-import com.maan.eway.error.Error;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.maan.eway.master.req.FactorRateSaveReq;
 
 @RestController
 @RequestMapping("/file")
@@ -25,5 +30,23 @@ public class EwayFileUploadController {
 		return service.download(req);
 	}
 	
-
+	@PostMapping("/upload")
+	public com.maan.eway.res.CommonRes upload(@RequestParam("file") MultipartFile file,@RequestParam("uploadReq") String uploadReq  ){
+		com.maan.eway.res.CommonRes response = new com.maan.eway.res.CommonRes();
+		try {
+			String fileName =FilenameUtils.getBaseName(file.getOriginalFilename());
+			String extension=FilenameUtils.getExtension(file.getOriginalFilename());
+			String filePath ="G:\\Eway\\FileUpload\\" +fileName+"_"+new Date().getSeconds()+"."+extension;		
+			FileUploadInputRequest request =new FileUploadInputRequest();
+			if(StringUtils.isNotBlank(uploadReq)) {
+				ObjectMapper mapper =new ObjectMapper();
+				request =mapper.readValue(uploadReq, FileUploadInputRequest.class);
+			}
+			 file.transferTo( new File(filePath));
+			 response =service.upload(filePath,request) ;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return response;
+	}
 }

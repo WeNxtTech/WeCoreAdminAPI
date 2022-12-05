@@ -64,6 +64,10 @@ private static final long serialVersionUID = 1L;
     private String     companyId ;
 
     @Id
+    @Column(name="BROKER_BRANCH_CODE", length=20)
+    private String     brokerBranchCode ;
+
+    
     @Column(name="ATTACHED_BRANCH", nullable=false, length=200)
     private String     attachedBranch ;
 
@@ -123,13 +127,16 @@ private static final long serialVersionUID = 1L;
     private String     remarks ;
 
 
-    @Column(name="BROKER_BRANCH_CODE", length=20)
-    private String     brokerBranchCode ;
 
 
     @Column(name="BROKER_BRANCH_NAME", length=100)
     private String     brokerBranchName;
 
+    @Column(name="USER_TYPE", nullable=false, length=20)
+    private String     userType ;
+
+    @Column(name="SUB_USER_TYPE", nullable=false, length=20)
+    private String     subUserType ;
 
 }
 

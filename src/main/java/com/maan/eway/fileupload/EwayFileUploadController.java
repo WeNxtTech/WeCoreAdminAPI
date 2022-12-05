@@ -6,6 +6,7 @@ import java.util.Date;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,8 @@ import com.maan.eway.master.req.FactorRateSaveReq;
 @RequestMapping("/file")
 public class EwayFileUploadController {
 	
+	@Value("${rating.upload.path}")
+	private String ratingFilePath;
 	
 	@Autowired
 	private EwayFileUploadService service;
@@ -36,10 +39,7 @@ public class EwayFileUploadController {
 		try {
 			String fileName =FilenameUtils.getBaseName(file.getOriginalFilename());
 			String extension=FilenameUtils.getExtension(file.getOriginalFilename());
-		//	String filePath ="G:\\Eway\\FileUpload\\" +fileName+"_"+new Date().getSeconds()+"."+extension;		
-			String filePath ="C:\\Users\\Developer\\Documents\\Received Files\\" +fileName+"_"+new Date().getSeconds()+"."+extension;
-			
-			
+			String filePath =ratingFilePath +fileName+"_"+new Date().getSeconds()+"."+extension;		
 			FileUploadInputRequest request =new FileUploadInputRequest();
 			if(StringUtils.isNotBlank(uploadReq)) {
 				ObjectMapper mapper =new ObjectMapper();

@@ -77,7 +77,13 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="TRAVEL_COVER_DESC", length=250)
     private String     travelCoverDesc ;
+    
+    @Column(name="SECTION_ID", nullable=false, length=20)
+    private String     sectionId ;
 
+    @Column(name="PRODUCT_ID", nullable=false, length=20)
+    private String     productId ;
+    
     @Column(name="SOURCE_COUNTRY", length=50)
     private String     sourceCountry ;
 
@@ -89,16 +95,16 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="TERRORISM_COVER_YN", length=20)
     private String     terrorismCoverYn ;
-    
-    @Column(name="SECTION_ID", nullable=false, length=20)
-    private String     sectionId ;
 
-    @Column(name="PRODUCT_ID", nullable=false, length=20)
-    private String     productId ;
-    
     @Column(name="PLAN_TYPE_ID")
     private Integer    planTypeId ;
+    
+    @Column(name="CURRENCY")
+    private String    currency ;
 
+    @Column(name="EXCHANGE_RATE")
+    private Double     exchangeRate ;
+    
     @Column(name="PLAN_TYPE_DESC", length=50)
     private String     planTypeDesc ;
 
@@ -121,12 +127,6 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="AGE")
     private Integer    age ;
-    
-    @Column(name="CURRENCY")
-    private String    currency ;
-
-    @Column(name="EXCHANGE_RATE")
-    private Double     exchangeRate ;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="EFFECTIVE_DATE")
@@ -191,17 +191,14 @@ private static final long serialVersionUID = 1L;
     @Column(name="REJECT_REASON", length=100)
     private String     rejectReason ;
 
-    @Column(name="AGE_3_TO_18")
-    private Integer    age3To18 ;
+    @Column(name="AGE_GROUP_ID")
+    private Integer    ageGroupId ;
 
-    @Column(name="AGE_19_TO_65")
-    private Integer    age19To65 ;
+    @Column(name="AGE_GROUP_MEMBERS")
+    private Integer    ageGroupMembers ;
 
     @Column(name="REFERAL_REMARKS", length=100)
     private String     referalRemarks ;
-
-    @Column(name="AGE_66_TO_75")
-    private Integer    age66To75 ;
 
     @Column(name="BDM_CODE", length=20)
     private String     bdmCode ;
@@ -209,14 +206,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="SOURCE_TYPE", length=20)
     private String     sourceType ;
 
-    @Column(name="AGE_76_TO_80")
-    private Integer    age76To80 ;
-
     @Column(name="CUSTOMER_CODE", length=100)
     private String     customerCode ;
 
-    @Column(name="AGE_81_TO_110")
-    private Integer    age81To110 ;
 
 
     @Column(name="BROKER_BRANCH_CODE", length=20)

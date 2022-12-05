@@ -32,7 +32,6 @@ import org.springframework.util.Base64Utils;
 import org.springframework.util.CollectionUtils;
 
 import com.google.gson.Gson;
-import com.maan.eway.bean.FactorRateMaster;
 import com.maan.eway.bean.FactorTypeDetails;
 import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.error.Error;
@@ -121,12 +120,8 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 						int col =0;
 						for(Object str : ob) {
 							Cell cell =row.createCell(col++);
-								//cell.setCellValue(str==null?0:Long.valueOf(str.toString()));
-							
-								cell.setCellValue(str==null?"":str.toString());
-							
+							cell.setCellValue(str==null?"":str.toString());
 						}
-						
 					}
 					
 					ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -155,10 +150,29 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 		return response;
 	}
 
+	public String formatCellData(String input) {
+		String output="";
+		try {
+			if(input.matches("[0-9.]*")) {  
+				double number = Double.valueOf(input);
+				number = Math.round(number * 100);
+				number = number/100;
+				output=String.valueOf(number);
+			}else {
+				output=input;
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			log.error(e);
+		}
+		return output;
+	}
+
 	@Override
 	public com.maan.eway.res.CommonRes upload(String filePath, FileUploadInputRequest request) {
 		com.maan.eway.res.CommonRes comRes = new com.maan.eway.res.CommonRes ();
-		String factorTypeId ="";Date effectiveDate=null;String remarks=""; String subCoverId="";String subCoverIdYn ="";
+		List<Error> validation = new ArrayList<Error>();
+		String factorTypeId ="";Date effectiveDate=null;String remarks=""; 
 		try {
 			FileInputStream excelFile = new FileInputStream(new File(filePath));
             @SuppressWarnings("resource")
@@ -169,12 +183,20 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 
             for(int i=1;i<worksheet.getPhysicalNumberOfRows() ;i++) {
             	Row headers=worksheet.getRow(0);
+            	
+                int maxNumOfCells = worksheet.getRow(0).getLastCellNum(); // The the maximum number of columns
+
                 Row row = worksheet.getRow(i);
                 Map<String,Object> object =new HashMap<String,Object>();
-	                for (int j=0;j<row.getPhysicalNumberOfCells();j++) {
+                
+	                for (int j=0;j<maxNumOfCells;j++) {
 	                		
 	                	Cell cell =row.getCell(j);
-	                	
+	                               	
+	                		if(cell==null){
+                			
+	                			object.put(headers.getCell(j).getStringCellValue(), "");
+	                		}
 	                		if( cell!=null && cell.getCellType()==CellType.STRING) {
 	                			
 	                			object.put(headers.getCell(j).getStringCellValue(), StringUtils.isBlank(cell.getStringCellValue())?"N/A":cell.getStringCellValue());
@@ -183,19 +205,22 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 	                			
 	                			object.put(headers.getCell(j).getStringCellValue(), String.valueOf(cell.getNumericCellValue()).equals("")?"N/A":String.valueOf(cell.getNumericCellValue()));
 
-	                		}else if(cell==null){
-	                			
-	                			object.put(headers.getCell(j).getStringCellValue(), "N/A");
-	                			System.out.println(headers.getCell(j).getStringCellValue());
 	                		}
 	                		
-	                	}
+	                		log.info("Cells || "+cell+" || "+ headers.getCell(j));
+	                }
 	               
-	          dataList.add(object);
+	                dataList.add(object);
             }
             if(!CollectionUtils.isEmpty(dataList)) {
             	
-            	List<SectionCoverMaster> sectionCov=queryService.getSectionCoverMaster(request);
+            	List<SectionCoverMaster> sectionCov=queryService.getSectionCoverMaster(request); 
+            	
+            	if(CollectionUtils.isEmpty(sectionCov)) {
+            		validation.add(new Error("500", "SectionCoverMaster", "No records found in SectionCoverMaster "));
+            		comRes.setErrorMessage(validation);
+            		return comRes;
+            	}
             	
             	 factorTypeId = StringUtils.isBlank(sectionCov.get(0).getFactorTypeId().toString())?"":sectionCov.get(0).getFactorTypeId().toString();
             	
@@ -203,9 +228,16 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
             	
             	 remarks = StringUtils.isBlank(sectionCov.get(0).getRemarks())?"":sectionCov.get(0).getRemarks();
             	            	            	
-            	List<FactorTypeDetails>	flist=queryService.getFactorRateColumns(request,factorTypeId);
+            List<FactorTypeDetails>	flist=queryService.getFactorRateColumns(request,factorTypeId);
+            		
+            	if(CollectionUtils.isEmpty(flist)) {
+            		validation.add(new Error("500", "FactorTypeDetails", "No records found in FactorTypeDetails "));
+            		comRes.setErrorMessage(validation);
+            		return comRes;
+            	}
             	
             	if(!CollectionUtils.isEmpty(flist)) {
+            		
 	            	Map<String,Object> dbkeys =new HashMap<String,Object>();
 	            	
 	            	for(int i=0;i<flist.size();i++) {
@@ -226,7 +258,6 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 	            		}
 	            		
 	            	}
-	            	
 	            	for(int i =0;i<dataList.size();i++) {
 	            		
 	            		Map<String,Object> p =dataList.get(i);
@@ -239,34 +270,33 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 	            				
 	            				if(xl.getKey().equalsIgnoreCase( db.getKey()) ) {
 	            					
-	            					result.put(db.getValue(), xl.getValue());
+	            					result.put(db.getValue(), xl.getValue()==null?"":xl.getValue());
 	            					
 	            				}
 	            			}
 	            			
 	            			if(xl.getKey().equalsIgnoreCase("Rate")) {
-	            				result.put(xl.getKey().trim(), xl.getValue());
+	            				result.put(xl.getKey().trim(), xl.getValue()==null?"":xl.getValue());
 	            			}
 	            			else if (xl.getKey().equalsIgnoreCase("Calctype")){
-	            				result.put(xl.getKey().trim(), xl.getValue());
+	            				result.put(xl.getKey().trim(), xl.getValue()==null?"":xl.getValue());
 	            			}else if (xl.getKey().equalsIgnoreCase("RegulatoryCode")){
-	            				result.put(xl.getKey().trim(), xl.getValue());
+	            				result.put(xl.getKey().trim(), xl.getValue()==null?"":xl.getValue());
 	            			}else if (xl.getKey().equalsIgnoreCase("MinimumPremium")){
-	            				result.put(xl.getKey().trim(), xl.getValue());
-	            			}
-	
-	            			
+	            				result.put(xl.getKey().trim(), xl.getValue()==null?"":xl.getValue());
+	            			}	
 	            		}
 	            		
 	            		resultList.add(result);
 	            		
 	            	}
-	                log.info("Response || "+json.toJson(resultList));
+	            log.info("Response || "+json.toJson(resultList));
 	           
 	            DozerBeanMapper mapper =new DozerBeanMapper();
 	            List<FactorParamsInsert> factorParamsInserts = new ArrayList<FactorParamsInsert>();
 	            int sno =1;
-	            for(Map<Object,Object> datas:resultList) {            
+	            for(Map<Object,Object> datas:resultList) {   
+	            	
 	            	 UploadFactorRequest data=  mapper.map(datas , UploadFactorRequest.class );
 	            	 
 	            	 FactorParamsInsert factor =mapper.map(data , FactorParamsInsert.class );
@@ -284,7 +314,6 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 	     
 	            // frame FactorRateRequest
 	            log.info("Xl Data Response || "+json.toJson(factorParamsInserts));
-	            //SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	            FactorRateSaveReq req = new FactorRateSaveReq();
 	            req.setAgencyCode(StringUtils.isBlank(request.getAgencyCode())?"":request.getAgencyCode());
 	            req.setBranchCode(StringUtils.isBlank(request.getBranchCode())?"":request.getBranchCode());
@@ -296,7 +325,7 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 	            req.setEffectiveDateStart(effectiveDate);
 	            req.setFactorTypeId(factorTypeId);
 	            req.setRemarks(remarks);
-	            req.setSubCoverYn(request.getSubCoverId().equals("0")?"N":"Y");
+	            req.setSubCoverYn(StringUtils.isBlank(request.getSubCoverId())?"0":request.getSubCoverId().equals("0")?"N":"Y");
 	            req.setSubCoverId(request.getSubCoverId());
 	            req.setCreatedBy(request.getCreatedBy());
 	            req.setStatus(request.getStatus());
@@ -304,11 +333,10 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 	            
 	            log.info("Factor Insert Request || "+json.toJson(req));
 	
-	           //entityService.insertFactorRateDetails(req);
 	            CommonRes data = new CommonRes();
-
-	    		List<Error> validation = entityService.validateFactorRateDetails(req);
-	    		// validation
+	            
+	            validation= entityService.validateFactorRateDetails(req);
+	            
 	    		if (validation != null && validation.size() != 0) {
 	    			data.setCommonResponse(null);
 	    			data.setIsError(true);
@@ -318,8 +346,7 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 	    			return comRes;
 
 	    		} else {
-
-	    			// Insert
+	    			
 	    			SuccessRes res = entityService.insertFactorRateDetails(req);
 	    			data.setCommonResponse(res);
 	    			data.setIsError(false);
@@ -330,14 +357,17 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 	            comRes.setMessage("Success");
 	            comRes.setIsError(false);
 	            comRes.setCommonResponse(json.toJson(req));
+	            
             	}else {
             		comRes.setMessage("No Record Found in FactorTypeDetails");
             		return comRes;
             	}
+            	
            }else {
         	   
         	comRes.setMessage("No Record Found in Xl Sheet");
        		return comRes;
+       		
            }
 		}catch (Exception e) {
 			e.printStackTrace();

@@ -89,31 +89,31 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 				String xlColumns =object.get("XL_COLUMNS").toString()+defaultColumns;
 				List<Object[][]> obj =queryService.getFactorRateDetails(req, columns, factorId);
 				
-				if(!CollectionUtils.isEmpty(obj)) { 
 					
-					XSSFWorkbook workbook = new XSSFWorkbook();
-					XSSFSheet sheet =workbook.createSheet("FACTOR_RATE_DETAILS");
+				XSSFWorkbook workbook = new XSSFWorkbook();
+				XSSFSheet sheet =workbook.createSheet("FACTOR_RATE_DETAILS");
 					
-					XSSFCellStyle cellStyle =workbook.createCellStyle();
-					XSSFFont font = workbook.createFont();
+				XSSFCellStyle cellStyle =workbook.createCellStyle();
+				XSSFFont font = workbook.createFont();
 					
-					font.setBold(true);
-					font.setFontHeight(10);
-					font.setFontName("Arial");
-					cellStyle.setFont(font);
+				font.setBold(true);
+				font.setFontHeight(10);
+				font.setFontName("Arial");
+				cellStyle.setFont(font);
 					
-					String[] headers =xlColumns.split(",");
+				String[] headers =xlColumns.split(",");
 					
-					int rowNum = 1;
+				int rowNum = 1;
 					
-					Row row =sheet.createRow(0);
+				Row row =sheet.createRow(0);
 					
-					for (int i =0;i<headers.length;i++) {
-						Cell cell =row.createCell(i);
-						cell.setCellValue(headers[i]);
-						row.getCell(i).setCellStyle(cellStyle);
+				for (int i =0;i<headers.length;i++) {
+					Cell cell =row.createCell(i);
+					cell.setCellValue(headers[i]);
+					row.getCell(i).setCellStyle(cellStyle);
 						
-					}
+				}
+				if(!CollectionUtils.isEmpty(obj)) { 
 					
 					for(Object [] ob :obj) {
 						row =sheet.createRow(rowNum++);
@@ -123,7 +123,7 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 							cell.setCellValue(str==null?"":str.toString());
 						}
 					}
-					
+				}
 					ByteArrayOutputStream bos = new ByteArrayOutputStream();
 					workbook.write(bos);
 					workbook.close();
@@ -132,11 +132,7 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 					String base64 = Base64Utils.encodeToString(byteArry);
 					res.setFile(prefix+base64);
 					response.setCommonResponse(res);
-				}else {
-					errors.add(new Error("101", "FileDownload", "Records not Found.."));
-					response.setErrorMessage(errors);
-					return 	response;
-				}
+				
 				
 			}else {
 				errors.add(new Error("101", "FileDownload", "Excle header columns not found.."));
@@ -227,8 +223,9 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
             	 effectiveDate =sectionCov.get(0).getEffectiveDateStart().toString()==null?null:sectionCov.get(0).getEffectiveDateStart();
             	
             	 remarks = StringUtils.isBlank(sectionCov.get(0).getRemarks())?"":sectionCov.get(0).getRemarks();
-            	            	            	
-            List<FactorTypeDetails>	flist=queryService.getFactorRateColumns(request,factorTypeId);
+            	
+
+            	 List<FactorTypeDetails> flist=queryService.getFactorRateColumns(request,factorTypeId);
             		
             	if(CollectionUtils.isEmpty(flist)) {
             		validation.add(new Error("500", "FactorTypeDetails", "No records found in FactorTypeDetails "));

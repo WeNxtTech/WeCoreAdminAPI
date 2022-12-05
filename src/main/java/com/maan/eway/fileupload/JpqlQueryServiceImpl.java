@@ -1,6 +1,5 @@
 package com.maan.eway.fileupload;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +19,6 @@ import com.google.gson.Gson;
 import com.maan.eway.bean.FactorRateMaster;
 import com.maan.eway.bean.FactorTypeDetails;
 import com.maan.eway.bean.SectionCoverMaster;
-import com.maan.eway.master.req.FactorRateSaveReq;
 
 @Component
 public class JpqlQueryServiceImpl {

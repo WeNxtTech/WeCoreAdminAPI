@@ -18,6 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.PlanTypeDropDownReq;
+import com.maan.eway.master.req.PlanTypeMasterChangeStatusReq;
+import com.maan.eway.master.req.PlanTypeMasterGetAllReq;
+import com.maan.eway.master.req.PlanTypeMasterGetReq;
+import com.maan.eway.master.req.PlanTypeMasterSaveReq;
+import com.maan.eway.master.res.PlanTypeMasterRes;
 import com.maan.eway.master.service.PlanTypeMasterService;
 
 import com.maan.eway.res.CommonRes;
@@ -42,10 +47,10 @@ public class PlanTypeMasterController {
 	
 	@Autowired
 	private  PrintReqService reqPrinter;
-	/*
+	
 	// save
 		@PostMapping("/insertplantype")
-		@ApiOperation(value = "This method is PlanType Master")
+		@ApiOperation(value = "This method is Plan Type Master")
 		public ResponseEntity<CommonRes> insertPlanType(@RequestBody PlanTypeMasterSaveReq req) {
 
 			reqPrinter.reqPrint(req);
@@ -144,7 +149,7 @@ public class PlanTypeMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	*/	
+		
 		// PlanType Master Drop Down Type
 		@PostMapping("/dropdown/plantype")
 		@ApiOperation(value = "This method is get PlanType Master Drop Down")
@@ -169,14 +174,14 @@ public class PlanTypeMasterController {
 		}	
 	
 
-/*
+
 		@PostMapping("/plantype/changestatus")
 		@ApiOperation(value = "This method is get PlanType Change Status")
-		public ResponseEntity<CommonRes> changeStatusOfPlanType(@RequestBody PlanTypeChangeStatusReq req) {
+		public ResponseEntity<CommonRes> changeStatusOfPlanType(@RequestBody PlanTypeMasterChangeStatusReq req) {
 
 			CommonRes data = new CommonRes();
 			// Change Status
-			SuccessRes res = service.changeStatusOfPlanType(req);
+			SuccessRes res = service.changeStatusOfPlanTypeMaster(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());
@@ -191,5 +196,5 @@ public class PlanTypeMasterController {
 		}
 	
 		
-*/
+
 }

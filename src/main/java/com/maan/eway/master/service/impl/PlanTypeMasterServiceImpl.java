@@ -40,6 +40,11 @@ import com.maan.eway.bean.PlanTypeMaster;
 import com.maan.eway.bean.PlanTypeMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.PlanTypeDropDownReq;
+import com.maan.eway.master.req.PlanTypeMasterChangeStatusReq;
+import com.maan.eway.master.req.PlanTypeMasterGetAllReq;
+import com.maan.eway.master.req.PlanTypeMasterGetReq;
+import com.maan.eway.master.req.PlanTypeMasterSaveReq;
+import com.maan.eway.master.res.PlanTypeMasterRes;
 import com.maan.eway.master.service.PlanTypeMasterService;
 import com.maan.eway.repository.PlanTypeMasterRepository;
 import com.maan.eway.res.DropDownRes;
@@ -62,27 +67,27 @@ private BasicValidationService basicvalidateService;
 Gson json = new Gson();
 
 private Logger log=LogManager.getLogger(PlanTypeMasterServiceImpl.class);
-/*
+
 @Override
 public List<Error> validatePlanType(PlanTypeMasterSaveReq req) {
 	List<Error> errorList = new ArrayList<Error>();
 
 	try {
 	
-		if (StringUtils.isBlank(req.getPlanTypeName())) {
-			errorList.add(new Error("02", "PlanTypeName", "Please Enter PlanTypeName"));
-		}else if (req.getPlanTypeName().length() > 100){
-			errorList.add(new Error("02","PlanTypeName", "Please Enter PlanTypeName 100 Characters")); 
+		if (StringUtils.isBlank(req.getPlanTypeDescription())) {
+			errorList.add(new Error("02", "Plan Type Description", "Please Enter Plan Type Description"));
+		}else if (req.getPlanTypeDescription().length() > 100){
+			errorList.add(new Error("02","PlanTypeDescription", "Please Enter Plan Type Description 100 Characters")); 
 		}else if (StringUtils.isBlank(req.getPlanTypeId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
-			List<PlanTypeMaster> PlanTypeList = getPlanTypeNameExistDetails(req.getPlanTypeName() , req.getInsuranceId() , req.getBranchCode());
+			List<PlanTypeMaster> PlanTypeList = getPlanTypeNameExistDetails(req.getPlanTypeDescription() , req.getInsuranceId() , req.getBranchCode());
 			if (PlanTypeList.size()>0 ) {
-				errorList.add(new Error("01", "PlanTypeName", "This PlanType Name Already Exist "));
+				errorList.add(new Error("01", "PlanTypeDescription", "This Plan Type Description Already Exist "));
 			}
 		}else if (StringUtils.isNotBlank(req.getPlanTypeId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
-			List<PlanTypeMaster> PlanTypeList = getPlanTypeNameExistDetails(req.getPlanTypeName() , req.getInsuranceId() , req.getBranchCode());
+			List<PlanTypeMaster> PlanTypeList = getPlanTypeNameExistDetails(req.getPlanTypeDescription() , req.getInsuranceId() , req.getBranchCode());
 			
 			if (PlanTypeList.size()>0 &&  (! req.getPlanTypeId().equalsIgnoreCase(PlanTypeList.get(0).getPlanTypeId().toString())) ) {
-				errorList.add(new Error("01", "PlanTypeName", "This PlanType Name Already Exist "));
+				errorList.add(new Error("01", "PlanTypeDescription", "This Plan Type Description Already Exist "));
 			}
 			
 		}
@@ -144,7 +149,7 @@ public List<Error> validatePlanType(PlanTypeMasterSaveReq req) {
 	}
 	return errorList;
 }
-public List<PlanTypeMaster> getPlanTypeNameExistDetails(String occupationName , String InsuranceId , String branchCode) {
+public List<PlanTypeMaster> getPlanTypeNameExistDetails(String planDesc , String InsuranceId , String branchCode) {
 	List<PlanTypeMaster> list = new ArrayList<PlanTypeMaster>();
 	try {
 		Date today = new Date();
@@ -162,7 +167,7 @@ public List<PlanTypeMaster> getPlanTypeNameExistDetails(String occupationName , 
 		Subquery<Long> amendId = query.subquery(Long.class);
 		Root<PlanTypeMaster> ocpm1 = amendId.from(PlanTypeMaster.class);
 		amendId.select(cb.max(ocpm1.get("amendId")));
-		Predicate a1 = cb.equal(ocpm1.get("occupationId"), b.get("occupationId"));
+		Predicate a1 = cb.equal(ocpm1.get("planTypeId"), b.get("planTypeId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
 		Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
@@ -170,7 +175,7 @@ public List<PlanTypeMaster> getPlanTypeNameExistDetails(String occupationName , 
 		amendId.where(a1,a2,a3,a4,a5);
 
 		Predicate n1 = cb.equal(b.get("amendId"), amendId);
-		Predicate n2 = cb.equal(cb.lower( b.get("occupationName")), occupationName.toLowerCase());
+		Predicate n2 = cb.equal(cb.lower( b.get("planTypeDescription")), planDesc.toLowerCase());
 		Predicate n3 = cb.equal(b.get("companyId"),InsuranceId);
 		Predicate n4 = cb.equal(b.get("branchCode"), branchCode);
 		Predicate n5 = cb.equal(b.get("branchCode"), "99999");
@@ -189,7 +194,7 @@ public List<PlanTypeMaster> getPlanTypeNameExistDetails(String occupationName , 
 	return list;
 }
 
-*/
+
 
 @Override
 public List<DropDownRes> getPlanTypeMasterDropdown(PlanTypeDropDownReq req) {
@@ -279,7 +284,7 @@ private static <T> java.util.function.Predicate<T> distinctByKey(java.util.funct
     Map<Object, Boolean> seen = new ConcurrentHashMap<>();
     return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
 }
-/*
+
 @Override
 public SuccessRes insertPlanType(PlanTypeMasterSaveReq req) {
 	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
@@ -297,19 +302,19 @@ public SuccessRes insertPlanType(PlanTypeMasterSaveReq req) {
 		Date entryDate = null ;
 		String createdBy = "" ;
 		
-		Integer occupationId = 0 ;
+		Integer planTypeId = 0 ;
 		if(StringUtils.isBlank(req.getPlanTypeId())) {
 			// Save
 			Integer totalCount = getMasterTableCount( req.getInsuranceId() , req.getBranchCode());
-			occupationId =  totalCount+1 ;
+			planTypeId =  totalCount+1 ;
 			entryDate = new Date();
 			createdBy = req.getCreatedBy();
 			res.setResponse("Saved Successfully");
-			res.setSuccessId(occupationId.toString());
+			res.setSuccessId(planTypeId.toString());
 		}
 		else {
 			// Update
-			occupationId = Integer.valueOf(req.getPlanTypeId());
+			planTypeId = Integer.valueOf(req.getPlanTypeId());
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<PlanTypeMaster> query = cb.createQuery(PlanTypeMaster.class);
 			//Find all
@@ -323,11 +328,13 @@ public SuccessRes insertPlanType(PlanTypeMasterSaveReq req) {
 			
 			// Where
 		//	Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			Predicate n2 = cb.equal(b.get("occupationId"), req.getPlanTypeId());
+			Predicate n2 = cb.equal(b.get("planTypeId"), req.getPlanTypeId());
 			Predicate n3 = cb.equal(b.get("companyId"), req.getInsuranceId());
 			Predicate n4 = cb.equal(b.get("branchCode"), req.getBranchCode());
+			Predicate n5 = cb.equal(b.get("sectionId"),  req.getSectionId());
+			Predicate n6 = cb.equal(b.get("productId"),  req.getProductId());
 			
-			query.where(n2,n3,n4).orderBy(orderList);
+			query.where(n2,n3,n4,n5,n6).orderBy(orderList);
 			
 			// Get Result 
 			TypedQuery<PlanTypeMaster> result = em.createQuery(query);
@@ -361,10 +368,10 @@ public SuccessRes insertPlanType(PlanTypeMasterSaveReq req) {
 			    }
 			}
 			res.setResponse("Updated Successfully");
-			res.setSuccessId(occupationId.toString());
+			res.setSuccessId(planTypeId.toString());
 		}
 		dozerMapper.map(req, saveData);
-		saveData.setPlanTypeId(occupationId);
+		saveData.setPlanTypeId(planTypeId);
 		saveData.setEffectiveDateStart(startDate);
 		saveData.setEffectiveDateEnd(endDate);
 		saveData.setCreatedBy(createdBy);
@@ -374,7 +381,7 @@ public SuccessRes insertPlanType(PlanTypeMasterSaveReq req) {
 		saveData.setUpdatedDate(new Date());
 		saveData.setUpdatedBy(req.getCreatedBy());
 		saveData.setAmendId(amendId);
-		saveData.setCoreAppcode(req.getCoreAppCode());
+		saveData.setCoreAppCode(req.getCoreAppCode());
 		repo.saveAndFlush(saveData);
 		log.info("Saved Details is --> " + json.toJson(saveData));
 		
@@ -404,14 +411,15 @@ public SuccessRes insertPlanType(PlanTypeMasterSaveReq req) {
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
 			Root<PlanTypeMaster> ocpm1 = effectiveDate.from(PlanTypeMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			Predicate a1 = cb.equal(ocpm1.get("occupationId"), b.get("occupationId"));
+			Predicate a1 = cb.equal(ocpm1.get("planTypeId"), b.get("planTypeId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+	
 			effectiveDate.where(a1,a2,a3);
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(b.get("occupationId")));
+			orderList.add(cb.desc(b.get("planTypeId")));
 			
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("companyId"), companyId);
@@ -459,11 +467,12 @@ public List<PlanTypeMasterRes> getallPlanType(PlanTypeMasterGetAllReq req) {
 		Subquery<Long> amendId = query.subquery(Long.class);
 		Root<PlanTypeMaster> ocpm1 = amendId.from(PlanTypeMaster.class);
 		amendId.select(cb.max(ocpm1.get("amendId")));
-		Predicate a1 = cb.equal(ocpm1.get("occupationId"), b.get("occupationId"));
+		Predicate a1 = cb.equal(ocpm1.get("planTypeId"), b.get("planTypeId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
-
-		amendId.where(a1, a2,a3);
+		Predicate a4 = cb.equal(  ocpm1.get("sectionId"),b.get("sectionId"));
+		Predicate a5 = cb.equal(  ocpm1.get("productId"),b.get("productId"));
+		amendId.where(a1, a2,a3,a4,a5);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -472,22 +481,24 @@ public List<PlanTypeMasterRes> getallPlanType(PlanTypeMasterGetAllReq req) {
 		// Where
 		Predicate n1 = cb.equal(b.get("amendId"), amendId);
 		Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
+		Predicate n6 = cb.equal(b.get("sectionId"),  req.getSectionId());
+		Predicate n7 = cb.equal(b.get("productId"),  req.getProductId());
 		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
 		Predicate n4 = cb.equal(b.get("branchCode"), "99999");
 		Predicate n5 = cb.or(n3,n4);
-		query.where(n1,n2,n5).orderBy(orderList);
+		query.where(n1,n2,n5,n6,n7).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<PlanTypeMaster> result = em.createQuery(query);
 		list = result.getResultList();
 		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getPlanTypeId()))).collect(Collectors.toList());
-		list.sort(Comparator.comparing(PlanTypeMaster :: getPlanTypeName ));
+		list.sort(Comparator.comparing(PlanTypeMaster :: getPlanTypeDescription ));
 		// Map
 		for (PlanTypeMaster data : list) {
 			PlanTypeMasterRes res = new PlanTypeMasterRes();
 
 			res = mapper.map(data, PlanTypeMasterRes.class);
-			res.setCoreAppCode(data.getCoreAppcode());
+			res.setCoreAppCode(data.getCoreAppCode());
 
 			resList.add(res);
 		}
@@ -500,9 +511,6 @@ public List<PlanTypeMasterRes> getallPlanType(PlanTypeMasterGetAllReq req) {
 	}
 	return resList;
 }
-
-
-
 @Override
 public List<PlanTypeMasterRes> getActivePlanType(PlanTypeMasterGetAllReq req) {
 	List<PlanTypeMasterRes> resList = new ArrayList<PlanTypeMasterRes>();
@@ -524,11 +532,12 @@ public List<PlanTypeMasterRes> getActivePlanType(PlanTypeMasterGetAllReq req) {
 		Subquery<Long> amendId = query.subquery(Long.class);
 		Root<PlanTypeMaster> ocpm1 = amendId.from(PlanTypeMaster.class);
 		amendId.select(cb.max(ocpm1.get("amendId")));
-		Predicate a1 = cb.equal(ocpm1.get("occupationId"), b.get("occupationId"));
+		Predicate a1 = cb.equal(ocpm1.get("planTypeId"), b.get("planTypeId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
-
-		amendId.where(a1, a2,a3);
+		Predicate a4 = cb.equal(  ocpm1.get("sectionId"),b.get("sectionId"));
+		Predicate a5 = cb.equal(  ocpm1.get("productId"),b.get("productId"));
+		amendId.where(a1, a2,a3,a4,a5);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -538,22 +547,24 @@ public List<PlanTypeMasterRes> getActivePlanType(PlanTypeMasterGetAllReq req) {
 		Predicate n1 = cb.equal(b.get("amendId"), amendId);
 		Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
 		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
+		Predicate n6 = cb.equal(b.get("sectionId"),  req.getSectionId());
+		Predicate n7 = cb.equal(b.get("productId"),  req.getProductId());
 		Predicate n4 = cb.equal(b.get("status"), "Y");
 		Predicate n5 = cb.equal(b.get("branchCode"), "99999");
-		Predicate n6 = cb.or(n3,n5);
-		query.where(n1,n2,n4,n6).orderBy(orderList);
+		Predicate n8 = cb.or(n3,n5);
+		query.where(n1,n2,n4,n6,n7,n8).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<PlanTypeMaster> result = em.createQuery(query);
 		list = result.getResultList();
 		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getPlanTypeId()))).collect(Collectors.toList());
-		list.sort(Comparator.comparing(PlanTypeMaster :: getPlanTypeName ));
+		list.sort(Comparator.comparing(PlanTypeMaster :: getPlanTypeDescription ));
 		// Map
 		for (PlanTypeMaster data : list) {
 			PlanTypeMasterRes res = new PlanTypeMasterRes();
 
 			res = mapper.map(data, PlanTypeMasterRes.class);
-			res.setCoreAppCode(data.getCoreAppcode());
+			res.setCoreAppCode(data.getCoreAppCode());
 
 			resList.add(res);
 		}
@@ -596,11 +607,12 @@ public PlanTypeMasterRes getByPlanTypeId(PlanTypeMasterGetReq req) {
 		Subquery<Long> amendId = query.subquery(Long.class);
 		Root<PlanTypeMaster> ocpm1 = amendId.from(PlanTypeMaster.class);
 		amendId.select(cb.max(ocpm1.get("amendId")));
-		Predicate a1 = cb.equal(ocpm1.get("occupationId"), b.get("occupationId"));
+		Predicate a1 = cb.equal(ocpm1.get("planTypeId"), b.get("planTypeId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
-
-		amendId.where(a1, a2,a3);
+		Predicate a4 = cb.equal(  ocpm1.get("sectionId"),b.get("sectionId"));
+		Predicate a5 = cb.equal(  ocpm1.get("productId"),b.get("productId"));
+		amendId.where(a1, a2,a3,a4,a5);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -609,24 +621,26 @@ public PlanTypeMasterRes getByPlanTypeId(PlanTypeMasterGetReq req) {
 		// Where
 		Predicate n1 = cb.equal(b.get("amendId"), amendId);
 		Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
+		Predicate n8 = cb.equal(b.get("sectionId"),  req.getSectionId());
+		Predicate n9 = cb.equal(b.get("productId"),  req.getProductId());
 		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
-		Predicate n4 = cb.equal(b.get("occupationId"), req.getPlanTypeId());
+		Predicate n4 = cb.equal(b.get("planTypeId"), req.getPlanTypeId());
 		Predicate n6 = cb.equal(b.get("branchCode"), "99999");
 		Predicate n7 = cb.or(n3,n6);
-		query.where(n1,n2,n4,n7).orderBy(orderList);
+		query.where(n1,n2,n4,n7,n8,n9).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<PlanTypeMaster> result = em.createQuery(query);
 
 		list = result.getResultList();
 		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getPlanTypeId()))).collect(Collectors.toList());
-		list.sort(Comparator.comparing(PlanTypeMaster :: getPlanTypeName ));
+		list.sort(Comparator.comparing(PlanTypeMaster :: getPlanTypeDescription ));
 		res = mapper.map(list.get(0), PlanTypeMasterRes.class);
 		res.setPlanTypeId(list.get(0).getPlanTypeId().toString());
 		res.setEntryDate(list.get(0).getEntryDate());
 		res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
 		res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
-		res.setCoreAppCode(list.get(0).getCoreAppcode());
+		res.setCoreAppCode(list.get(0).getCoreAppCode());
 		} catch (Exception e) {
 		e.printStackTrace();
 		log.info("Exception is ---> " + e.getMessage());
@@ -634,10 +648,9 @@ public PlanTypeMasterRes getByPlanTypeId(PlanTypeMasterGetReq req) {
 	}
 	return res;
 }
-*/
-/*
+
 @Override
-public SuccessRes changeStatusOfPlanType(PlanTypeChangeStatusReq req) {
+public SuccessRes changeStatusOfPlanTypeMaster(PlanTypeMasterChangeStatusReq req) {
 	SuccessRes res = new SuccessRes();
 	DozerBeanMapper dozerMapper = new DozerBeanMapper();
 	try {
@@ -655,11 +668,12 @@ public SuccessRes changeStatusOfPlanType(PlanTypeChangeStatusReq req) {
 		Subquery<Long> amendId = query.subquery(Long.class);
 		Root<PlanTypeMaster> ocpm1 = amendId.from(PlanTypeMaster.class);
 		amendId.select(cb.max(ocpm1.get("amendId")));
-		Predicate a1 = cb.equal(ocpm1.get("occupationId"), b.get("occupationId"));
+		Predicate a1 = cb.equal(ocpm1.get("planTypeId"), b.get("planTypeId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
-
-		amendId.where(a1, a2,a3);
+		Predicate a4 = cb.equal(  ocpm1.get("sectionId"),b.get("sectionId"));
+		Predicate a5 = cb.equal(  ocpm1.get("productId"),b.get("productId"));
+		amendId.where(a1, a2,a3,a4,a5);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -668,12 +682,14 @@ public SuccessRes changeStatusOfPlanType(PlanTypeChangeStatusReq req) {
 		// Where
 		Predicate n1 = cb.equal(b.get("amendId"), amendId);
 		Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
+		Predicate n7 = cb.equal(b.get("sectionId"),  req.getSectionId());
+		Predicate n8 = cb.equal(b.get("productId"),  req.getProductId());
 		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
-		Predicate n4 = cb.equal(b.get("occupationId"), req.getPlanTypeId());
+		Predicate n4 = cb.equal(b.get("planTypeId"), req.getPlanTypeId());
 		Predicate n5 = cb.equal(b.get("branchCode"), "99999");
 		Predicate n6 = cb.or(n3,n5);
 		
-		query.where(n1,n2,n4,n6).orderBy(orderList);
+		query.where(n1,n2,n4,n6,n7,n8).orderBy(orderList);
 		
 		// Get Result 
 		TypedQuery<PlanTypeMaster> result = em.createQuery(query);
@@ -702,5 +718,5 @@ public SuccessRes changeStatusOfPlanType(PlanTypeChangeStatusReq req) {
 	return res;
 }
 
-*/
+
 }

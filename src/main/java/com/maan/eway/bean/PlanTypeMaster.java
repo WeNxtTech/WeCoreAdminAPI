@@ -21,7 +21,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @IdClass(PlanTypeMasterId.class)
-@Table(name="plant_type_master")
+@Table(name="plan_type_master")
 
 public class PlanTypeMaster {
 

@@ -56,12 +56,16 @@ private static final long serialVersionUID = 1L;
     private String     requestReferenceNo ;
 
     @Id
-    @Column(name="TRAVEL_ID", nullable=false)
-    private Integer    travelId ;
+    @Column(name="HUMAN_ID", nullable=false)
+    private Integer    humanId ;
 
     @Id
     @Column(name="VD_REFNO", nullable=false)
     private Long       vdRefno ;
+    
+    @Id
+    @Column(name="GROUP_ID")
+    private Integer    groupId ;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="TRAVEL_COVER_ID")
@@ -98,6 +102,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="CREATED_BY", length=100)
     private String     createdBy ;
 
+	@Column(name="Period_of_Insurance", nullable=false, length=10)
+	private String     periodOfInsurance ;
+	
     @Column(name="STATUS", length=1)
     private String     status ;
 
@@ -116,8 +123,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="COVID_COVER_YN", length=20)
     private String     covidCoverYn ;
 
-    @Column(name="AGE_GROUP_ID")
-    private Integer    ageGroupId ;
+  
     
     @Column(name="GROUP_COUNT")
     private Integer    groupCount ;

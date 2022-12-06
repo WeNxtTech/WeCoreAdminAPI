@@ -191,12 +191,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="REJECT_REASON", length=100)
     private String     rejectReason ;
 
-    @Column(name="AGE_GROUP_ID")
-    private Integer    ageGroupId ;
-
-    @Column(name="AGE_GROUP_MEMBERS")
-    private Integer    ageGroupMembers ;
-
     @Column(name="REFERAL_REMARKS", length=100)
     private String     referalRemarks ;
 

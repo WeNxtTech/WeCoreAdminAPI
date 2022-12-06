@@ -63,6 +63,9 @@ private static final long serialVersionUID = 1L;
 	@Column(name="status", nullable=false, length=20)
 	private String     status ;
 	
+	@Column(name="REQUEST_REFERENCE_NO", nullable=false, length=10)
+    private String     requestReferenceNo;
+	
 	//--- ENTITY DATA FIELDS 
 	@Column(name="ACCIDENT_YN", nullable=false, length=20)
 	private String     accidentYn ;
@@ -167,6 +170,9 @@ private static final long serialVersionUID = 1L;
 	@Column(name="GPS_YN")
 	private String gpsyn;
 
+	@Column(name="GROUP_COUNT")
+    private Integer groupCount;
+    
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 

@@ -179,99 +179,66 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 
             for(int i=1;i<worksheet.getPhysicalNumberOfRows() ;i++) {
             	Row headers=worksheet.getRow(0);
-            	
                 int maxNumOfCells = worksheet.getRow(0).getLastCellNum(); // The the maximum number of columns
-
                 Row row = worksheet.getRow(i);
+                if(row==null)
+                	continue;
+        
                 Map<String,Object> object =new HashMap<String,Object>();
-                
 	                for (int j=0;j<maxNumOfCells;j++) {
-	                		
-	                	Cell cell =row.getCell(j);
-	                               	
-	                		if(cell==null){
-                			
-	                			object.put(headers.getCell(j).getStringCellValue(), "");
-	                		}
-	                		if( cell!=null && cell.getCellType()==CellType.STRING) {
-	                			
-	                			object.put(headers.getCell(j).getStringCellValue(), StringUtils.isBlank(cell.getStringCellValue())?"N/A":cell.getStringCellValue());
-	                		
-	                		}else  if (cell!=null && cell.getCellType()==CellType.NUMERIC ){
-	                			
-	                			object.put(headers.getCell(j).getStringCellValue(), String.valueOf(cell.getNumericCellValue()).equals("")?"N/A":String.valueOf(cell.getNumericCellValue()));
-
-	                		}
-	                		
-	                		log.info("Cells || "+cell+" || "+ headers.getCell(j));
+	             	    Cell cell =row.getCell(j);
+	                    if(cell==null){
+	                    	object.put(headers.getCell(j).getStringCellValue(), "");
+	                    }else if( cell!=null && cell.getCellType()==CellType.STRING) {
+	                		object.put(headers.getCell(j).getStringCellValue(), StringUtils.isBlank(cell.getStringCellValue())?"N/A":cell.getStringCellValue());
+	                	}else  if (cell!=null && cell.getCellType()==CellType.NUMERIC ){
+	                		object.put(headers.getCell(j).getStringCellValue(), String.valueOf(cell.getNumericCellValue()).equals("")?"N/A":String.valueOf(cell.getNumericCellValue()));
+	                	}
+	                	log.info("Cells || "+cell+" || "+ headers.getCell(j));
 	                }
-	               
-	                dataList.add(object);
+	             dataList.add(object);
             }
             if(!CollectionUtils.isEmpty(dataList)) {
-            	
             	List<SectionCoverMaster> sectionCov=queryService.getSectionCoverMaster(request); 
-            	
             	if(CollectionUtils.isEmpty(sectionCov)) {
             		validation.add(new Error("500", "SectionCoverMaster", "No records found in SectionCoverMaster "));
             		comRes.setErrorMessage(validation);
             		return comRes;
             	}
-            	
             	 factorTypeId = StringUtils.isBlank(sectionCov.get(0).getFactorTypeId().toString())?"":sectionCov.get(0).getFactorTypeId().toString();
-            	
-            	 effectiveDate =sectionCov.get(0).getEffectiveDateStart().toString()==null?null:sectionCov.get(0).getEffectiveDateStart();
-            	
-            	 remarks = StringUtils.isBlank(sectionCov.get(0).getRemarks())?"":sectionCov.get(0).getRemarks();
-            	
-
+            	 effectiveDate =sectionCov.get(0).getEffectiveDateStart().toString()==null?null:sectionCov.get(0).getEffectiveDateStart();            	
+            	 remarks = StringUtils.isBlank(sectionCov.get(0).getRemarks())?"":sectionCov.get(0).getRemarks();            	
             	 List<FactorTypeDetails> flist=queryService.getFactorRateColumns(request,factorTypeId);
             		
             	if(CollectionUtils.isEmpty(flist)) {
             		validation.add(new Error("500", "FactorTypeDetails", "No records found in FactorTypeDetails "));
             		comRes.setErrorMessage(validation);
             		return comRes;
-            	}
-            	
-            	if(!CollectionUtils.isEmpty(flist)) {
-            		
-	            	Map<String,Object> dbkeys =new HashMap<String,Object>();
-	            	
-	            	for(int i=0;i<flist.size();i++) {
-	            		
-	            		FactorTypeDetails fac =flist.get(i);
-	            		
+            	}            
+            	if(!CollectionUtils.isEmpty(flist)) {            	
+	            	Map<String,Object> dbkeys =new HashMap<String,Object>();	            	
+	            	for(int i=0;i<flist.size();i++) {	            		
+	            		FactorTypeDetails fac =flist.get(i);	            	
 	            		if(fac.getRangeYn().equalsIgnoreCase("Y")) {
 	            			String dbfrom =fac.getRangeFromColumn();
 	            			String dbto =fac.getRangeToColumn();
 	            			String fromdisplay =fac.getFromDisplayName();
 	            			String toDisplay =fac.getToDisplayName();
 	            			dbkeys.put(fromdisplay, dbfrom);
-	            			dbkeys.put(toDisplay, dbto);
-	            			
-	            		}else if(fac.getRangeYn().equalsIgnoreCase("N")) {
-	            			
+	            			dbkeys.put(toDisplay, dbto);	            			
+	            		}else if(fac.getRangeYn().equalsIgnoreCase("N")) {	            			
 	            			dbkeys.put(fac.getDiscreteDisplayName(), fac.getDiscreteColumn());
-	            		}
-	            		
+	            		}	            		
 	            	}
-	            	for(int i =0;i<dataList.size();i++) {
-	            		
-	            		Map<String,Object> p =dataList.get(i);
-	            		
-	                	Map<Object,Object> result =new HashMap<Object,Object>();
-	
+	            	for(int i =0;i<dataList.size();i++) {	            		
+	            		Map<String,Object> p =dataList.get(i);	            		
+	                	Map<Object,Object> result =new HashMap<Object,Object>();	
 	            		for (Entry<String, Object> xl:p.entrySet()) {
-	            			
-	            			for(Entry<String, Object> db:dbkeys.entrySet()) {
-	            				
-	            				if(xl.getKey().equalsIgnoreCase( db.getKey()) ) {
-	            					
-	            					result.put(db.getValue(), xl.getValue()==null?"":xl.getValue());
-	            					
+	            			for(Entry<String, Object> db:dbkeys.entrySet()) {	            				
+	            				if(xl.getKey().equalsIgnoreCase( db.getKey()) ) {	            					
+	            					result.put(db.getValue(), xl.getValue()==null?"":xl.getValue());	            					
 	            				}
-	            			}
-	            			
+	            			}	            			
 	            			if(xl.getKey().equalsIgnoreCase("Rate")) {
 	            				result.put(xl.getKey().trim(), xl.getValue()==null?"":xl.getValue());
 	            			}
@@ -282,10 +249,8 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 	            			}else if (xl.getKey().equalsIgnoreCase("MinimumPremium")){
 	            				result.put(xl.getKey().trim(), xl.getValue()==null?"":xl.getValue());
 	            			}	
-	            		}
-	            		
-	            		resultList.add(result);
-	            		
+	            		}	            		
+	            		resultList.add(result);	            		
 	            	}
 	            log.info("Response || "+json.toJson(resultList));
 	           
@@ -293,20 +258,16 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 	            List<FactorParamsInsert> factorParamsInserts = new ArrayList<FactorParamsInsert>();
 	            int sno =1;
 	            for(Map<Object,Object> datas:resultList) {   
-	            	
-	            	 UploadFactorRequest data=  mapper.map(datas , UploadFactorRequest.class );
-	            	 
-	            	 FactorParamsInsert factor =mapper.map(data , FactorParamsInsert.class );
-	            	 
-	            	 factor.setMinimumPremium(datas.get("MinimumPremium")==null?"":datas.get("MinimumPremium").toString());
-	            	 factor.setRate(datas.get("Rate")==null?"":datas.get("Rate").toString());
-	            	 factor.setCalType(datas.get("CalcType")==null?"":datas.get("CalcType").toString());
-	            	 factor.setRegulatoryCode(datas.get("RegulatoryCode")==null?"":datas.get("RegulatoryCode").toString());
-	            	 factor.setSno(String.valueOf(sno));
-	            	 factor.setStatus("Y");
-	            	 factorParamsInserts.add(factor);
-	            	 
-	            	 sno++;
+	            	UploadFactorRequest data=  mapper.map(datas , UploadFactorRequest.class );	            	
+		            FactorParamsInsert factor =mapper.map(data , FactorParamsInsert.class );		            	 
+		            factor.setMinimumPremium(datas.get("MinimumPremium")==null?"":datas.get("MinimumPremium").toString());
+		            factor.setRate(datas.get("Rate")==null?"":datas.get("Rate").toString());
+		            factor.setCalType(datas.get("CalcType")==null?"":datas.get("CalcType").toString());
+		            factor.setRegulatoryCode(datas.get("RegulatoryCode")==null?"":datas.get("RegulatoryCode").toString());
+		            factor.setSno(String.valueOf(sno));
+		            factor.setStatus("Y");
+		            factorParamsInserts.add(factor);		            	 
+		            	sno++;	            	
 	            }
 	     
 	            // frame FactorRateRequest
@@ -348,6 +309,7 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 	    			comRes.setCommonResponse(res);
 	    			comRes.setIsError(false);
 	    			comRes.setMessage("Success");
+	    			res.setFactorTypeId(factorTypeId);
 	    			return comRes;
 
 	    		}

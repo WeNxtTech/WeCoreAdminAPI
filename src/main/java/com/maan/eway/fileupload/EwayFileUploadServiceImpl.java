@@ -345,15 +345,12 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 	    		} else {
 	    			
 	    			SuccessRes res = entityService.insertFactorRateDetails(req);
-	    			data.setCommonResponse(res);
-	    			data.setIsError(false);
-	    			data.setMessage("Success");
+	    			comRes.setCommonResponse(res);
+	    			comRes.setIsError(false);
+	    			comRes.setMessage("Success");
+	    			return comRes;
 
 	    		}
-
-	            comRes.setMessage("Success");
-	            comRes.setIsError(false);
-	            comRes.setCommonResponse(json.toJson(req));
 	            
             	}else {
             		comRes.setMessage("No Record Found in FactorTypeDetails");

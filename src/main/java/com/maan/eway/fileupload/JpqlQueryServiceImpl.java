@@ -162,7 +162,7 @@ public class JpqlQueryServiceImpl {
 			query.setParameter("productId", Integer.valueOf(req.getProductId()));
 			query.setParameter("coverId", Integer.valueOf(req.getCoverId()));
 			query.setParameter("sectionId", Integer.valueOf(req.getSectionId()));
-			query.setParameter("subCoverId", Integer.valueOf(req.getSubCoverId()));
+			query.setParameter("subCoverId", StringUtils.isBlank(req.getSubCoverId())?Integer.valueOf("0"):Integer.valueOf(req.getSubCoverId()));
 			sectionMaster=query.getResultList(); 
 			
 		}catch (Exception e) {

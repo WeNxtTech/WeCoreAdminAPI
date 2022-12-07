@@ -76,7 +76,10 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="DESTINATION_COUNTRY", length=50)
     private String     destinationCountry ;
-
+    
+    @Column(name="SUM_INSURED")
+    private Double     sumInsured;
+    
     @Column(name="SPORTS_COVER_YN", length=20)
     private String     sportsCoverYn ;
 

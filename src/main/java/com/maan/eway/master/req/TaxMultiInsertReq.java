@@ -1,5 +1,7 @@
 package com.maan.eway.master.req;
 
+import javax.persistence.Column;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
@@ -26,5 +28,15 @@ public class TaxMultiInsertReq {
 	    private String    value ;
 
 	    @JsonProperty("Status")
-	    private String     status ; 
+	    private String     status ;
+	    
+	    @JsonProperty("TaxCode")    
+	    private String   taxCode;
+
+	    @JsonProperty("IsTaxExcempted")    		   
+	    private String   isTaxExcempted;
+
+	    @JsonProperty("TaxReferenceNo")    		   
+	    private String   taxReferenceNo;
+	    
 }

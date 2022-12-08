@@ -115,7 +115,16 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="UPDATED_BY", length=20)
     private String   updatedBy ;
-   
+
+    @Column(name="TAX_CODE", length=20)
+    private String   taxCode;
+
+    @Column(name="IS_TAX_EXCEMPTED", length=1)
+    private String   isTaxExcempted;
+    
+    @Column(name="TAX_REFERENCE_NO", length=20)
+    private String   taxReferenceNo;
+    
 }
 
 

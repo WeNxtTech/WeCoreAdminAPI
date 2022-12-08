@@ -29,7 +29,7 @@ import javax.persistence.*;
 
 
 /**
-* Domain class for entity "MotorPolicyCoverData"
+* Domain class for entity "PolicyCoverData"
 *
 * @author Telosys Tools Generator
 *
@@ -43,11 +43,11 @@ import javax.persistence.*;
 @DynamicInsert
 @DynamicUpdate
 @Builder
-@IdClass(MotorPolicyCoverDataId.class)
-@Table(name="motor_policy_cover_data")
+@IdClass(PolicyCoverDataId.class)
+@Table(name="policy_cover_data")
 
 
-public class MotorPolicyCoverData implements Serializable {
+public class PolicyCoverData implements Serializable {
  
 private static final long serialVersionUID = 1L;
  

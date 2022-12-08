@@ -220,8 +220,8 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				  List<String>  discrete12Values = new ArrayList<String>(); */
 				  
 				  List<DuplicateParamCheckingReq> duplicateParams = new ArrayList<DuplicateParamCheckingReq>();
-				
-				for( FactorParamsInsert data : req.getFactorParams() ) {
+				  List<FactorParamsInsert> list =   req.getFactorParams().stream().filter( o -> o.getStatus().equalsIgnoreCase("Y") || o.getStatus().equalsIgnoreCase("R")  ).collect(Collectors.toList());
+				  for( FactorParamsInsert data : list ) {
 					row = row + 1 ;
 					DuplicateParamCheckingReq dupParams = new DuplicateParamCheckingReq();
 					
@@ -1090,7 +1090,10 @@ public Integer getMasterTableCount(String companyId , String branchCode) {
 			cal.set(Calendar.HOUR_OF_DAY, 23);
 			cal.set(Calendar.MINUTE, 1);
 			today = cal.getTime();
-
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			
 			List<FactorRateMaster> list = new ArrayList<FactorRateMaster>();
 		
 			// Find Latest Record
@@ -1116,8 +1119,10 @@ public Integer getMasterTableCount(String companyId , String branchCode) {
 			Predicate a7 = cb.equal(ocpm1.get("agencyCode"), b.get("agencyCode"));
 			Predicate a8 = cb.equal(ocpm1.get("sNo"), b.get("sNo"));
 			Predicate a9 = cb.equal(ocpm1.get("subCoverId"), b.get("subCoverId"));
+			Predicate a10 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
+			Predicate a11 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateEnd"),todayEnd);
 
-			amendId.where(a1, a2,a3,a4,a5,a6,a7,a8,a9);
+			amendId.where(a1, a2,a3,a4,a5,a6,a7,a8,a9,a10,a11);
 
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("productId"), req.getProductId() );	

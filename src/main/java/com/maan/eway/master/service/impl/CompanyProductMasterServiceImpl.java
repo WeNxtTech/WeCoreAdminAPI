@@ -988,7 +988,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
 			Date entryDate = null ;
 			String createdBy = "" ;
-			
+			String motorYn = "" ;
 			// Update
 				Integer productId = Integer.valueOf(req.getProductId());
 				CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -1026,7 +1026,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 				
 				if(list.size()>0) {
 					Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
-				
+					motorYn = list.get(0).getMotorYn();
 					if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
 						amendId = list.get(0).getAmendId() + 1 ;
 						entryDate = new Date() ;
@@ -1060,6 +1060,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			saveData.setCreatedBy(createdBy);
 			saveData.setStatus(req.getStatus());
 			saveData.setCompanyId(req.getCompanyId());
+			saveData.setMotorYn(motorYn);
 			saveData.setEntryDate(entryDate);
 			saveData.setAmendId(amendId);
 			saveData.setCoreAppCode(req.getCoreAppCode());

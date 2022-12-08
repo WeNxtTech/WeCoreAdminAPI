@@ -155,17 +155,6 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 					errorList.add(new Error("15", "TaxCode", "Please Enter TaxCode with in 20 Characters In Row No :" + row));
 				}
 				
-				if (StringUtils.isBlank(data.getIsTaxExcempted())) {
-					errorList.add(new Error("16", "IsTaxExcempted", "Please Enter IsTaxExcempted In Row No :" + row));
-				if(data.getIsTaxExcempted().equalsIgnoreCase("Y")){
-					if (StringUtils.isBlank(data.getTaxReferenceNo())) {
-						errorList.add(new Error("17", "TaxReferenceNo", "Please Enter TaxReferenceNo In Row No :" + row));
-					}else if (data.getTaxReferenceNo().length() > 20) {
-						errorList.add(new Error("17", "TaxReferenceNo", "Please Enter TaxReferenceNo with in 20 Characters In Row No :" + row));
-					}	
-				}
-					
-				}
 				
 				if (StringUtils.isBlank(data.getCalcType())) {
 					errorList.add(new Error("12", "Calc Type", "Please Select Calc Type In Row No :" + row));

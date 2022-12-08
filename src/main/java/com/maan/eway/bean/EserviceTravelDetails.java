@@ -218,12 +218,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="SECTION_NAME", length=100)
     private String     sectionName ;
     
-    @Column(name="AC_EXECUTIVE_NAME", length=100)
-    private String     acExectiveName ;
-    
-    @Column(name="CUSTOMER_NAME", length=100)
-    private String     customerName ;
-    
+   
 
 }
 

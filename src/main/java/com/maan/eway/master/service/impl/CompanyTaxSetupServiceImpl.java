@@ -148,6 +148,13 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 				}else if (data.getTaxDesc().length() > 200) {
 					errorList.add(new Error("08", "TaxDesc", "Please Enter Tax Desc with in 200 Characters In Row No :" + row));
 				}
+			
+				if (StringUtils.isBlank(data.getTaxCode())) {
+					errorList.add(new Error("15", "TaxCode", "Please Enter TaxCode In Row No :" + row));
+				}else if (data.getTaxCode().length() > 20) {
+					errorList.add(new Error("15", "TaxCode", "Please Enter TaxCode with in 20 Characters In Row No :" + row));
+				}
+				
 				
 				if (StringUtils.isBlank(data.getCalcType())) {
 					errorList.add(new Error("12", "Calc Type", "Please Select Calc Type In Row No :" + row));
@@ -170,6 +177,8 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 					errorList.add(new Error("05", "Status", "Please Enter Status  In Row No :" + row));
 				}
 			}
+			
+			
 		}
 		
 		

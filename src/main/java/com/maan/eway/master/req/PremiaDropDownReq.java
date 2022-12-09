@@ -15,8 +15,11 @@ public class PremiaDropDownReq {
 
 	@JsonProperty("SourceType")
 	private String sourcetype;
-	@JsonProperty("DivisionCode")
-	private String divisioncode;
+//	@JsonProperty("DivisionCode")
+//	private String divisioncode;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
 	@JsonProperty("InsuranceId")
 	private String companyId;
 	@JsonProperty("ChannelType")

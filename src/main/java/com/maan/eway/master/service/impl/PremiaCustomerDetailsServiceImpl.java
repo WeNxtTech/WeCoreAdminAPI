@@ -68,7 +68,7 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 		List<PremiaCustomerDetailsRes> res = new ArrayList<PremiaCustomerDetailsRes>();
 //	List<PremiaCustomerDetailsCriteriaRes> resList=new ArrayList<PremiaCustomerDetailsCriteriaRes>();
 		try {
-			if(StringUtils.isNotBlank(req.getDivisioncode())&& StringUtils.isNotBlank(req.getSearchvalue())){
+			if(StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getSearchvalue())){
 				if(req.getSearchvalue().length()<3) {
 					res = new ArrayList<PremiaCustomerDetailsRes>();
 					PremiaCustomerDetailsRes errRes = new PremiaCustomerDetailsRes();
@@ -87,7 +87,7 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 					Subquery<Long> coreAppCode = query.subquery(Long.class);
 					Root<BranchMaster> core = coreAppCode.from(BranchMaster.class);
 					coreAppCode.select( core.get("coreAppCode")) ;
-					Predicate i1 = cb.equal(core.get("branchCode"), req.getDivisioncode());
+					Predicate i1 = cb.equal(core.get("branchCode"), req.getBranchCode());
 					Predicate i2 = cb.between(i1, c.get("divisionFrom"),c.get("divisionTo"));
 					coreAppCode.where(i1,i2);
 					
@@ -102,7 +102,7 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 					Subquery<Long> coreAppCode1 = query.subquery(Long.class);
 					Root<BranchMaster> core1 = coreAppCode1.from(BranchMaster.class);
 					coreAppCode1.select( core1.get("coreAppCode")) ;
-					Predicate co1 = cb.equal(core1.get("branchCode"), req.getDivisioncode());
+					Predicate co1 = cb.equal(core1.get("branchCode"), req.getBranchCode());
 					Predicate co2 = cb.equal(core1.get("status"), "Y");
 					coreAppCode1.where(co1,co2);
 					
@@ -153,7 +153,7 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 				log.info("Exception is --->"+e.getMessage());
 				return null;
 				}
-		return res;
+ 		return res;
 	}
 	
 		

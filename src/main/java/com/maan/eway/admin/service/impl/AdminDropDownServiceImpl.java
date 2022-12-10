@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import com.maan.eway.admin.service.AdminDropDownService;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginMaster;
+import com.maan.eway.common.req.GetTableDropDownReq;
 import com.maan.eway.common.req.LovDropDownReq;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginMasterRepository;
@@ -79,7 +80,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 		}
 		
 		@Override
-		public List<ColummnDropRes> getTableDetails(LovDropDownReq req) {
+		public List<ColummnDropRes> getTableDetails(GetTableDropDownReq req) {
 			List<ColummnDropRes> resList = new ArrayList<ColummnDropRes>();
 			try {
 				//String tableName = "Eservice_Customer_Details" ;

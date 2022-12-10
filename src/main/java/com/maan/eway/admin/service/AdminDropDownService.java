@@ -2,6 +2,7 @@ package com.maan.eway.admin.service;
 
 import java.util.List;
 
+import com.maan.eway.common.req.GetTableDropDownReq;
 import com.maan.eway.common.req.LovDropDownReq;
 import com.maan.eway.req.SubUserTypeReq;
 import com.maan.eway.res.ColummnDropRes;
@@ -27,7 +28,7 @@ public interface AdminDropDownService {
 	
 	List<DropDownRes> getProductCategory(LovDropDownReq req);
 
-	List<ColummnDropRes> getTableDetails(LovDropDownReq req);
+	List<ColummnDropRes> getTableDetails(GetTableDropDownReq req);
 
 
 }

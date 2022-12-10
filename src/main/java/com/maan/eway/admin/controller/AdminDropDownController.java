@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.admin.service.AdminDropDownService;
+import com.maan.eway.common.req.GetTableDropDownReq;
 import com.maan.eway.common.req.LovDropDownReq;
 import com.maan.eway.req.SubUserTypeReq;
 import com.maan.eway.res.ColummnDropRes;
@@ -34,7 +35,7 @@ public class AdminDropDownController {
 	
 	@PostMapping("/gettabledetails")
 	@ApiOperation(value = "This method is to Table Details Drop Down")
-	public ResponseEntity<CommonRes> getTableDetails(@RequestBody LovDropDownReq req) {
+	public ResponseEntity<CommonRes> getTableDetails(@RequestBody GetTableDropDownReq req) {
 		CommonRes data = new CommonRes();
 
 		List<ColummnDropRes> res = dropDownService.getTableDetails(req);

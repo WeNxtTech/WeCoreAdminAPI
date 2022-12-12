@@ -747,8 +747,12 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				Predicate n6 = cb.equal(b.get("branchCode"), "99999");
 				Predicate n8 = cb.equal(b.get("productId"), req.getProductId());
 				Predicate n7 = cb.or(n4,n6);
-				
-				query.where(n2,n3,n5,n7,n8).orderBy(orderList);
+				Predicate n9 = cb.equal(b.get("coverId"), req.getCoverId());
+				Predicate n10 =  cb.equal(b.get("subCoverId"), "0" );
+				if(StringUtils.isNotBlank(req.getSubCoverId()) ) {
+					n10 =  cb.equal(b.get("subCoverId"), req.getSubCoverId() );
+				}
+				query.where(n2,n3,n5,n7,n8,n9,n10).orderBy(orderList);
 				
 				// Get Result 
 				TypedQuery<FactorRateMaster> result = em.createQuery(query);

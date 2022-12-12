@@ -3,6 +3,7 @@ package com.maan.eway.fileupload;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -169,6 +170,8 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 		com.maan.eway.res.CommonRes comRes = new com.maan.eway.res.CommonRes ();
 		List<Error> validation = new ArrayList<Error>();
 		String factorTypeId ="";Date effectiveDate=null;String remarks=""; 
+		String pattern = "#####0";
+	 	DecimalFormat decimalFormat = new DecimalFormat(pattern);
 		try {
 			FileInputStream excelFile = new FileInputStream(new File(filePath));
             @SuppressWarnings("resource")
@@ -192,7 +195,7 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 	                    }else if( cell!=null && cell.getCellType()==CellType.STRING) {
 	                		object.put(headers.getCell(j).getStringCellValue(), StringUtils.isBlank(cell.getStringCellValue())?"N/A":cell.getStringCellValue());
 	                	}else  if (cell!=null && cell.getCellType()==CellType.NUMERIC ){
-	                		object.put(headers.getCell(j).getStringCellValue(), String.valueOf(cell.getNumericCellValue()).equals("")?"N/A":String.valueOf(cell.getNumericCellValue()));
+	                		object.put(headers.getCell(j).getStringCellValue(), String.valueOf(cell.getNumericCellValue()).equals("")?"N/A":decimalFormat.format(Double.valueOf(cell.getNumericCellValue())));
 	                	}
 	                	log.info("Cells || "+cell+" || "+ headers.getCell(j));
 	                }

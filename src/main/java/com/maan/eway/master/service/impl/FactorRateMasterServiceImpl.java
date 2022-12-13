@@ -740,7 +740,8 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 			Predicate a6 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
 			Predicate a7 = cb.equal(ocpm1.get("factorTypeId"), b.get("factorTypeId"));
 			Predicate a8 = cb.equal(ocpm1.get("sNo"), b.get("sNo"));
-			maxAmendId.where(a1,a2,a3,a4,a5,a6,a7,a8);
+			Predicate a9 = cb.equal(ocpm1.get("agencyCode"), b.get("agencyCode"));
+			maxAmendId.where(a1,a2,a3,a4,a5,a6,a7,a8,a9);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -757,8 +758,9 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 			Predicate n8 = cb.or(n6,n7);
 			Predicate n9 = cb.equal(b.get("factorTypeId"), factorTypeId);
 			Predicate n10 = cb.equal(b.get("amendId"), maxAmendId);
+			Predicate n11 = cb.equal(b.get("agencyCode"),StringUtils.isBlank(req.getAgencyCode())?"99999":req.getAgencyCode());
 			
-			query.where(n1,n2,n3,n4,n5,n8,n9,n10).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n5,n8,n9,n10,n11).orderBy(orderList);
 			
 			// Get Result 
 			TypedQuery<FactorRateMaster> result = em.createQuery(query);
@@ -795,7 +797,8 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					n8 = cb.or(n6,n7);
 					n9 = cb.equal(m.get("factorTypeId"), factorTypeId);
 					n10 = cb.equal(m.get("amendId"), list.get(0).getAmendId());
-					update.where(n1,n2,n3,n4,n5,n8,n9,n10);
+					n11 = cb.equal(b.get("agencyCode"),StringUtils.isBlank(req.getAgencyCode())?"99999":req.getAgencyCode());
+					update.where(n1,n2,n3,n4,n5,n8,n9,n10,n11);
 					// perform update
 					em.createQuery(update).executeUpdate();
 					

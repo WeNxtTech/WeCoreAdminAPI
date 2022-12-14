@@ -7,10 +7,16 @@ import lombok.Data;
 @Data
 public class FilePathReq {
 
-	@JsonProperty("RequestRefNo")
-	private String requestRefNo;
-	@JsonProperty("DocumentReferenceNumber")
-	private String reqrefno;
-	@JsonProperty("DocumentTypeId")
-	private String doctypeid;
+	@JsonProperty("QuoteNo")
+	private String quoteNo;
+	
+	@JsonProperty("DocumentId")
+	private String documentId;
+	
+	@JsonProperty("Id")
+	private String id;
+	
+	@JsonProperty("DocumentReferenceNo")
+	private String documentReferenceNo;
+	
 }

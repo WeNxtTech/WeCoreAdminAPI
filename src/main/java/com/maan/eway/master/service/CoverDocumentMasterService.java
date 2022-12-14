@@ -27,11 +27,11 @@ public interface CoverDocumentMasterService  {
 
 	List<CoverDocumentMasterGetRes> getActiveDocument(CoverDocumentMasterGetAllReq req);
 
-	SuccessRes insertDocument(List<CoverDocumentMasterSaveReq> reqList);
+	SuccessRes insertDocument(CoverDocumentMasterSaveReq reqList);
 
 	List<DocumentMasterGetRes> getallNonSelectedCoverDocument(CoverDocumentMasterGetAllReq req);
 
-	List<Error> validateDocument(List<CoverDocumentMasterSaveReq> reqList);
+	List<Error> validateDocument(CoverDocumentMasterSaveReq reqList);
 
 	SuccessRes changeStatusOfDocument(CoverDocumentChangeStatusReq req);
 

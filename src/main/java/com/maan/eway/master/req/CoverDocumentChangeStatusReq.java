@@ -19,9 +19,8 @@ public class CoverDocumentChangeStatusReq {
 	 @JsonProperty("SectionId")
 	 private String sectionId;
 	 
-	 @JsonProperty("CoverId")
-	 private String coverId;
-	 
+//		@JsonProperty("CoverId")
+//		private String coverId;
 	 @JsonProperty("InsuranceId")
 	 private String companyId;
 	 

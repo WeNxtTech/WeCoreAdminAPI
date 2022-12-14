@@ -12,6 +12,7 @@ import com.maan.eway.master.req.DocumentChangeStatusReq;
 import com.maan.eway.master.req.DocumentMasterGetAllReq;
 import com.maan.eway.master.req.DocumentMasterGetReq;
 import com.maan.eway.master.req.DocumentMasterSaveReq;
+import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.req.ProductSectionsGetReq;
 import com.maan.eway.master.req.SectionMasterGetAllReq;
 import com.maan.eway.master.req.SectionMasterGetReq;
@@ -168,12 +169,12 @@ public class DocumentMasterController {
 		
 		// Document Drop Down
 		
-		@GetMapping("/dropdown/document")
+		@PostMapping("/dropdown/document")
 		@ApiOperation(value="This Method is to Drop Down Document")
-		public ResponseEntity<CommonRes> getDocumentDropdown()
+		public ResponseEntity<CommonRes> getDocumentDropdown(LovDropDownReq req)
 		{
 			CommonRes data = new CommonRes();
-			List<DropDownRes> res = documentservice.getDocumentDropDown();
+			List<DropDownRes> res = documentservice.getDocumentDropDown(req);
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);

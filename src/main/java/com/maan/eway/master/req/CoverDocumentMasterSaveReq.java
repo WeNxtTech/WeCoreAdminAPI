@@ -1,6 +1,7 @@
 package com.maan.eway.master.req;
 
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,7 +12,7 @@ import lombok.Data;
 public class CoverDocumentMasterSaveReq {
 
 	@JsonProperty("DocumentId")
-	private String documentId;
+	private List<String> documentId;
 	
 	@JsonProperty("InsuranceId")
 	private String companyId;
@@ -21,11 +22,13 @@ public class CoverDocumentMasterSaveReq {
 	
 	@JsonProperty("SectionId")
 	private String sectionId;
-	
-	@JsonProperty("CoverId")
-	private String coverId;
-		
+			
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 	
+	@JsonProperty("DocumentType")
+	private String documentType;
+	
+//	@JsonProperty("CoverId")
+//	private String coverId;
 }

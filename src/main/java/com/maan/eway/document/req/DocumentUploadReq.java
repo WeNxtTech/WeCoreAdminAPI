@@ -11,8 +11,8 @@ import lombok.Data;
 public class DocumentUploadReq {
 	
 
-	@JsonProperty("RequestRefNo")
-	private String requestRefNo;
+	@JsonProperty("RequestReferenceNo")
+	private String requestReferenceNo;
 	
 	@JsonProperty("InsuranceId")
 	private String companyId;
@@ -29,31 +29,34 @@ public class DocumentUploadReq {
 	@JsonProperty("SectionId")
 	private String sectionId;
 	
-	@JsonProperty("DocumentReferenceNumber")
-	private String documentRef;
-
-	@JsonProperty("DocTypeDescription")
-	private String docTypeDescription;
+	@JsonProperty("DocumentReferenceNo")
+	private String documentReferenceNo;
 
 	@JsonProperty("FileName")
 	private String fileName;
 
-	@JsonProperty("OrginalFileName")
-	private String orginalFileName;
+	@JsonProperty("OriginalFileName")
+	private String originalFileName;
 
-	@JsonProperty("Createdby")
-	private String createdby;
+	@JsonProperty("CreatedBy")
+	private String createdBy;
 
-	@JsonProperty("DocApplicable")
-	private String docApplicable;
+//	@JsonProperty("DocumentType")
+//	private String documentType;
+//
+//	@JsonProperty("DocApplicableId")
+//	private String docApplicableId;
 
-	@JsonProperty("DocApplicableId")
-	private String docApplicableId;
-
-	@JsonProperty("RequestedBy")
-	private String requesteBy;
+//	@JsonProperty("RequestedBy")
+//	private String requesteBy;
+//	
+//	@JsonProperty("UplodedBy")
+//	private String uploadedBy;
 	
-	@JsonProperty("UplodedBy")
-	private String uploadedBy;
+	@JsonProperty("QuoteNo")
+	private String quoteNo;
+	
+	@JsonProperty("Id")
+	private String id;
 
 }

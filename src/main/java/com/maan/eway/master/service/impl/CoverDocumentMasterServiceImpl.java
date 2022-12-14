@@ -53,6 +53,7 @@ import com.maan.eway.master.req.CoverDocumentMasterGetAllReq;
 import com.maan.eway.master.req.CoverDocumentMasterGetReq;
 import com.maan.eway.master.req.CoverDocumentMasterSaveReq;
 import com.maan.eway.master.req.CoverDocumentMasterUpdateReq;
+import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.res.CoverDocumentMasterGetRes;
 import com.maan.eway.master.res.CoverMasterGetAllRes;
 import com.maan.eway.master.res.DocumentMasterGetRes;
@@ -83,14 +84,21 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 	private ListItemValueRepository listRepo;
 
 	@Override
-	public SuccessRes insertDocument(List<CoverDocumentMasterSaveReq> reqList) {
+	public SuccessRes insertDocument(CoverDocumentMasterSaveReq req) {
 		SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/yyyy");
 		SuccessRes res = new SuccessRes();
-		CoverDocumentMaster saveData = new CoverDocumentMaster();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 
 		try {
-			List<ListItemValue> docApplicables = listRepo.findByItemTypeAndStatus("DOCUMENT_APPLICABLE", "Y");
+			//List<ListItemValue> docApplicables = listRepo.findByItemTypeAndStatus("DOCUMENT_APPLICABLE", "Y");
+			String itemType = "DOCUMENT_APPLICABLE" ;
+			List<ListItemValue> getList  = getListItem(req.getCompanyId() , "99999" , itemType);
+			String docApplicable =    getList.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getDocumentType()) ).collect(Collectors.toList()).get(0).getItemValue();
+			
+			itemType = "DOC_TYPE" ;
+			 getList  = getListItem(req.getCompanyId() , "99999" , itemType);
+			String DocTypeDesc =    getList.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getDocumentType()) ).collect(Collectors.toList()).get(0).getItemValue();
+			
 			Calendar cal = new GregorianCalendar();
 			Date today = new Date();
 			cal.setTime(new Date());
@@ -111,12 +119,11 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 			cal.set(Calendar.MINUTE, 1);
 			Date todayEnd = cal.getTime();
 
-			for (CoverDocumentMasterSaveReq req : reqList) {
+			for (String docId : req.getDocumentId() ) {
 				Integer amendId = 0;
 				
-				String documentId = "";
-				documentId = req.getDocumentId().toString();
-
+				String documentId = docId;
+				
 				// Criteria
 				CriteriaBuilder cb = em.getCriteriaBuilder();
 				CriteriaQuery<DocumentMaster> query = cb.createQuery(DocumentMaster.class);
@@ -141,8 +148,7 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 				Root<DocumentMaster> ocpm2 = effectiveDate2.from(DocumentMaster.class);
 				effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
 				javax.persistence.criteria.Predicate a4 = cb.equal(c.get("documentId"), ocpm2.get("documentId"));
-				javax.persistence.criteria.Predicate a5 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"),
-						todayEnd);
+				javax.persistence.criteria.Predicate a5 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"),todayEnd);
 				effectiveDate2.where(a4, a5);
 
 
@@ -155,7 +161,7 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 				javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
 				javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 				javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
-				Predicate n4 = cb.equal(c.get("documentId"), req.getDocumentId());
+				Predicate n4 = cb.equal(c.get("documentId"), docId);
 				query.where(n1, n2, n3, n4);
 
 				// Get Result
@@ -164,21 +170,24 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 				res.setResponse("Document Added Successfully ");
 				res.setSuccessId(documentId);
 				
-			
+				CoverDocumentMaster saveData = new CoverDocumentMaster();
 				dozerMapper.map(list.get(0), saveData);
 				saveData.setDocumentId(Integer.valueOf(documentId));
 				saveData.setEffectiveDateStart(effDate);
 				saveData.setEffectiveDateEnd(endDate);
 				saveData.setStatus("Y");
 				saveData.setEntryDate(new Date());
+				saveData.setDocumentType(req.getDocumentType());
+				saveData.setDocumentTypeDesc(DocTypeDesc);
 				saveData.setAmendId(amendId);
 				saveData.setCoreAppCode("99999");
 				saveData.setRegulatoryCode("99999");
 				saveData.setCompanyId(req.getCompanyId());
+				saveData.setDocApplicable(docApplicable);
 				saveData.setCreatedBy(req.getCreatedBy());
 				saveData.setProductId(Integer.valueOf(req.getProductId()));
 				saveData.setSectionId(Integer.valueOf(req.getSectionId()));
-				saveData.setCoverId(req.getCoverId());
+				saveData.setCoverId("99999");
 				saveData.setUpdatedBy(req.getCreatedBy());
 				saveData.setUpdatedDate(new Date());
 				repo.saveAndFlush(saveData);
@@ -192,6 +201,70 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 		return res;
 	}
 
+
+	public synchronized List<ListItemValue> getListItem(String insId , String branchCode, String itemType) {
+		List<ListItemValue> list = new ArrayList<ListItemValue>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			today = cal.getTime();
+			Date todayEnd = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ListItemValue> query=  cb.createQuery(ListItemValue.class);
+			// Find All
+			Root<ListItemValue> c = query.from(ListItemValue.class);
+			
+			//Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("branchCode")));
+			
+			
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
+			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a3,a4);
+						
+			// Where
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
+			Predicate n4 = cb.equal(c.get("companyId"), insId);
+			Predicate n5 = cb.equal(c.get("companyId"), "99999");
+			Predicate n6 = cb.equal(c.get("branchCode"), branchCode);
+			Predicate n7 = cb.equal(c.get("branchCode"), "99999");
+			Predicate n8 = cb.or(n4,n5);
+			Predicate n9 = cb.or(n6,n7);
+			Predicate n10 = cb.equal(c.get("itemType"),itemType);
+			query.where(n1,n2,n3,n8,n9,n10).orderBy(orderList);
+			// Get Result
+			TypedQuery<ListItemValue> result = em.createQuery(query);
+			list = result.getResultList();
+			
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getItemCode()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(ListItemValue :: getItemValue));
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return list ;
+	}
+	
 	@Override
 	public List<CoverDocumentMasterGetRes> getallDocuments(CoverDocumentMasterGetAllReq req) {
 		List<CoverDocumentMasterGetRes> resList = new ArrayList<CoverDocumentMasterGetRes>();
@@ -231,7 +304,7 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 			Predicate n2 = cb.equal(b.get("sectionId"), req.getSectionId());
 			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
 			Predicate n4 = cb.equal(b.get("productId"), req.getProductId());
-			Predicate n5 = cb.equal(b.get("coverId"), req.getCoverId());
+			Predicate n5 = cb.equal(b.get("coverId"), "99999");
 			query.where(n1, n2, n3, n4, n5).orderBy(orderList);
 
 			// Get Result
@@ -308,7 +381,7 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 			Predicate n2 = cb.equal(b.get("sectionId"), req.getSectionId());
 			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
 			Predicate n4 = cb.equal(b.get("productId"), req.getProductId());
-			Predicate n5 = cb.equal(b.get("coverId"), req.getCoverId());
+			Predicate n5 = cb.equal(b.get("coverId"), "99999");
 			Predicate n6 = cb.equal(b.get("documentId"), req.getDocumentId());
 
 			query.where(n1, n2, n3, n4, n5, n6);
@@ -372,7 +445,7 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 			Predicate n2 = cb.equal(b.get("sectionId"), req.getSectionId());
 			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
 			Predicate n4 = cb.equal(b.get("productId"), req.getProductId());
-			Predicate n5 = cb.equal(b.get("coverId"), req.getCoverId());
+			Predicate n5 = cb.equal(b.get("coverId"), "99999");
 			Predicate n6 = cb.equal(b.get("status"), "Y");
 
 			query.where(n1, n2, n3, n4, n5,n6).orderBy(orderList);
@@ -405,7 +478,7 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 		List<DocumentMasterGetRes> resList = new ArrayList<DocumentMasterGetRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
-			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
+			Date today  =  new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -451,7 +524,7 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 			//  Document Filter
 			cover.select(ps.get("documentId"));
 			Predicate ps1 = cb.equal(ps.get("documentId"), b.get("documentId"));
-			Predicate ps2 = cb.equal(ps.get("coverId"), req.getCoverId());
+			Predicate ps2 = cb.equal(ps.get("coverId"),"99999");
 			Predicate ps3 = cb.equal(ps.get("productId"), req.getProductId());
 			Predicate ps4 = cb.equal(ps.get("sectionId"), req.getSectionId());
 			Predicate ps5 = cb.equal(ps.get("companyId"), req.getCompanyId());
@@ -493,49 +566,36 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 	}
 
 	@Override
-	public List<Error> validateDocument(List<CoverDocumentMasterSaveReq> reqList) {
+	public List<Error> validateDocument(CoverDocumentMasterSaveReq req) {
 		List<Error> errorList = new ArrayList<Error>();
 
 		try {
-			List<String> documentIds = new ArrayList<String>();
-			Long row = 0L;
-
-			for (CoverDocumentMasterSaveReq req : reqList) {
-				row = row + 1;
-
-				if (StringUtils.isBlank(req.getDocumentId().toString())) {
-					errorList.add(new Error("01", "DocumentId", "Please Enter DocumentId "));
-				} else {
-					List<String> filterDocumentIds = documentIds.stream()
-							.filter(o -> o.equalsIgnoreCase(req.getDocumentId())).collect(Collectors.toList());
-					if (filterDocumentIds.size() > 0) {
-						errorList.add(
-								new Error("01", "Document Id", "Duplicate Document Id  Selected in Row No :" + row));
-					} else {
-						documentIds.add(req.getDocumentId());
-					}
-				}
-				if (StringUtils.isBlank(req.getProductId().toString())) {
-					errorList.add(new Error("02", "Product Id", "Please Enter ProductId"));
-				}
-				if (StringUtils.isBlank(req.getSectionId().toString())) {
-					errorList.add(new Error("03", "Section Id", "Please Enter Section Id"));
-				}
-				if (StringUtils.isBlank(req.getCoverId())) {
-					errorList.add(new Error("04", "Cover Id", "Please Enter Cover Id"));
-				} else if (req.getCoverId().length() > 20) {
-					errorList.add(new Error("04", "Cover Id", "Please Enter Cover Id within 20 Characters"));
-				}
-				if (StringUtils.isBlank(req.getCompanyId())) {
-					errorList.add(new Error("05", "Company Id", "Please Enter Company Id"));
-				} else if (req.getCompanyId().length() > 20) {
-					errorList.add(new Error("05", "Company Id", "Please Enter Company Id within 20 Characters"));
-				}
-				if (StringUtils.isBlank(req.getCreatedBy())) {
-					errorList.add(new Error("06", "CreatedBy", "Please Enter CreatedBy "));
-				} else if (req.getCreatedBy().length() > 100) {
-					errorList.add(new Error("06", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
-				}
+			
+			if (req.getDocumentId() ==null || req.getDocumentId().size()<=0 ) {
+				errorList.add(new Error("01", "DocumentId", "Please Select DocumentId "));
+			}
+			
+			if (StringUtils.isBlank(req.getProductId().toString())) {
+				errorList.add(new Error("02", "Product Id", "Please Enter ProductId"));
+			}
+			if (StringUtils.isBlank(req.getSectionId().toString())) {
+				errorList.add(new Error("03", "Section Id", "Please Enter Section Id"));
+			}
+			if (StringUtils.isBlank(req.getCompanyId())) {
+				errorList.add(new Error("05", "Company Id", "Please Enter Company Id"));
+			} else if (req.getCompanyId().length() > 20) {
+				errorList.add(new Error("05", "Company Id", "Please Enter Company Id within 20 Characters"));
+			}
+			if (StringUtils.isBlank(req.getCreatedBy())) {
+				errorList.add(new Error("06", "CreatedBy", "Please Enter CreatedBy "));
+			} else if (req.getCreatedBy().length() > 100) {
+				errorList.add(new Error("06", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+			}
+			
+			if (StringUtils.isBlank(req.getDocumentType())) {
+				errorList.add(new Error("05", "DocType", "Please Enter DocumentType"));
+			} else if (req.getCompanyId().length() > 20) {
+				errorList.add(new Error("05", "DocType", "Please Enter DocumentType within 20 Characters"));
 			}
 
 		} catch (Exception e) {
@@ -582,7 +642,7 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 			Predicate n2 = cb.equal(b.get("documentId"), req.getDocumentId());
 			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
 			Predicate n4 = cb.equal(b.get("sectionId"), req.getSectionId());
-			Predicate n5 = cb.equal(b.get("coverId"), req.getCoverId());
+			Predicate n5 = cb.equal(b.get("coverId"), "99999");
 			Predicate n6 = cb.equal(b.get("productId"), req.getProductId());
 			query.where(n1, n2, n3, n4, n5, n6).orderBy(orderList);
 
@@ -636,9 +696,7 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 						.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
 			} else if (StringUtils.isBlank(req.getCompanyId().toString()) || req.getCompanyId() == null) {
 				errorList.add(new Error("03", "CompanyId", "Please Enter Company Id "));
-			} else if (StringUtils.isBlank(req.getCoverId().toString())) {
-				errorList.add(new Error("08", "Cover Id", "Please Enter Cover Id"));
-			} else if (StringUtils.isBlank(req.getSectionId().toString())) {
+			}else if (StringUtils.isBlank(req.getSectionId().toString())) {
 				errorList.add(new Error("09", "Section Id", "Please Enter Section Id"));
 			}
 
@@ -679,6 +737,12 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 				errorList.add(new Error("13", "CreatedBy", "Please Enter CreatedBy "));
 			} else if (req.getCreatedBy().length() > 100) {
 				errorList.add(new Error("13", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+			}
+			
+			if (StringUtils.isBlank(req.getDocumentType())) {
+				errorList.add(new Error("13", "DocumentType", "Please Select DocumentType"));
+			} else if (req.getDocumentType().length() > 100) {
+				errorList.add(new Error("13", "DocumentType", "Please Select DocumentType within 100 Characters"));
 			}
 
 		} catch (Exception e) {
@@ -748,8 +812,17 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 
 		try {
-			List<ListItemValue> docApplicables = listRepo.findByItemTypeAndStatus("DOCUMENT_APPLICABLE", "Y");
+			//List<ListItemValue> docApplicables = listRepo.findByItemTypeAndStatus("DOCUMENT_APPLICABLE", "Y");
 
+			String itemType = "DOCUMENT_APPLICABLE" ;
+			List<ListItemValue> getList  = getListItem(req.getCompanyId() , "99999" , itemType);
+			String docApplicable =    getList.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getDocumentType()) ).collect(Collectors.toList()).get(0).getItemValue();
+			
+			itemType = "DOC_TYPE" ;
+			 getList  = getListItem(req.getCompanyId() , "99999" , itemType);
+			String DocTypeDesc =    getList.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getDocumentType()) ).collect(Collectors.toList()).get(0).getItemValue();
+			
+			
 			Integer amendId = 0 ;
 			Date startDate = req.getEffectiveDateStart() ;
 			String end = "31/12/2050";
@@ -793,7 +866,7 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 		//	Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n3 = cb.equal(b.get("documentId"), req.getDocumentId());
 			Predicate n4 = cb.equal(b.get("sectionId"), req.getSectionId());
-			Predicate n5 = cb.equal(b.get("coverId"), req.getCoverId());
+			Predicate n5 = cb.equal(b.get("coverId"), "99999");
 			Predicate n6 = cb.equal(b.get("companyId"), req.getCompanyId());
 			Predicate n7 = cb.equal(b.get("productId"), req.getProductId());
 			query.where( n3, n4, n5, n6, n7);
@@ -830,21 +903,21 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 			
 			res.setResponse("Document Added Successfully ");
 			res.setSuccessId(documentId);
+			
 
 			dozerMapper.map(req, saveData);
 			saveData.setDocumentId(Integer.valueOf(documentId));
 			saveData.setDocumentDesc(req.getDocumentDesc());
 			saveData.setEffectiveDateStart(startDate);
 			saveData.setEffectiveDateEnd(endDate);
+			saveData.setDocumentTypeDesc(DocTypeDesc);
 			saveData.setStatus("Y");
 			saveData.setEntryDate(new Date());
 			saveData.setAmendId(amendId);
 			saveData.setUpdatedBy(req.getCreatedBy());
 			saveData.setUpdatedDate(new Date());
-			saveData.setDocApplicable(
-					docApplicables.stream().filter(o -> o.getItemCode().equalsIgnoreCase(req.getDocApplicableId()))
-							.collect(Collectors.toList()).get(0).getItemValue());
-			
+			saveData.setDocApplicable(docApplicable);
+			saveData.setCoverId("99999");
 			repo.saveAndFlush(saveData);
 
 			
@@ -914,21 +987,22 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("productId"), req.getProductId());
 			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("sectionId"), req.getSectionId());
 			javax.persistence.criteria.Predicate n6 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
-			query.where(n1, n2, n3, n4, n5,n6).orderBy(orderList);
+			javax.persistence.criteria.Predicate n7 = cb.equal(c.get("documentType"), req.getDocumentType());
+			query.where(n1, n2, n3, n4, n5,n6,n7).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CoverDocumentMaster> result = em.createQuery(query);
 			list = result.getResultList();
-			Map<Integer, List<CoverDocumentMaster>>  groupByCoverId = list.stream() .collect(Collectors.groupingBy(w ->   w.getDocumentId())) ;
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getDocumentId()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(CoverDocumentMaster :: getDocumentType));
 			
 			// Map
-			for (Integer  data : groupByCoverId.keySet()) {
-				CoverDocumentMaster  coverData = groupByCoverId.get(data).get(0);
+			for (CoverDocumentMaster  data :list) {
 				// Response
 				DropDownRes res = new DropDownRes();
-				res.setCode(coverData.getDocumentId().toString());
-				res.setCodeDesc(coverData.getDocumentName());
-				res.setStatus(coverData.getStatus());
+				res.setCode(data.getDocumentId().toString());
+				res.setCodeDesc(data.getDocumentName());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {

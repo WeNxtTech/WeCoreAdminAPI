@@ -12,6 +12,7 @@ import com.maan.eway.master.req.DocumentChangeStatusReq;
 import com.maan.eway.master.req.DocumentMasterGetAllReq;
 import com.maan.eway.master.req.DocumentMasterGetReq;
 import com.maan.eway.master.req.DocumentMasterSaveReq;
+import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.res.DocumentMasterGetRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
@@ -28,7 +29,7 @@ public interface DocumentMasterService  {
 
 	List<Error> validateDocument(DocumentMasterSaveReq req);
 
-	List<DropDownRes> getDocumentDropDown();
+	List<DropDownRes> getDocumentDropDown(LovDropDownReq req);
 
 	SuccessRes changeStatusOfDocument(DocumentChangeStatusReq req);
 

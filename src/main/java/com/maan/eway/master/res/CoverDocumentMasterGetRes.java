@@ -42,6 +42,13 @@ public class CoverDocumentMasterGetRes implements Serializable {
 	@JsonProperty("Remarks")
 	private String remarks;
 
+
+	@JsonProperty("DocumentType")
+	private String documentType;
+	
+	@JsonProperty("DocumentTypeDesc")
+	private String documentTypeDesc;
+	
 	
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")

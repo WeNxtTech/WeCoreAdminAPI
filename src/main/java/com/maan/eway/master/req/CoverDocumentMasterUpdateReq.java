@@ -19,13 +19,16 @@ public class CoverDocumentMasterUpdateReq {
 	@JsonProperty("DocumentName")
 	private String documentName;
 
-
+//	@JsonProperty("CoverId")
+//	private String coverId;
 	@JsonProperty("DocApplicableId")
 	private String docApplicableId;
 
 	@JsonProperty("DocApplicable")
 	private String docApplicable;
 	
+	@JsonProperty("DocumentType")
+	private String documentType;
 	
 	@JsonProperty("InsuranceId")
 	private String companyId;
@@ -36,8 +39,6 @@ public class CoverDocumentMasterUpdateReq {
 	@JsonProperty("SectionId")
 	private String sectionId;
 	
-	@JsonProperty("CoverId")
-	private String coverId;
 	
 	@JsonProperty("MandatoryStatus")
 	private String mandatoryStatus;

@@ -97,6 +97,12 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="DOC_APPLICABLE", length=100)
     private String     docApplicable ;
+    
+    @Column(name="DOCUMENT_TYPE", nullable=false, length=100)
+    private String     documentType ;
+    
+    @Column(name="DOCUMENT_TYPE_DESC",  length=100)
+    private String     documentTypeDesc ;
 
     @Column(name="MANDATORY_STATUS", length=1)
     private String     mandatoryStatus ;

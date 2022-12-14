@@ -51,7 +51,7 @@ public class CoverDocumentMasterController {
 	// save
 	@PostMapping("/insertcoverdocument")
 	@ApiOperation(value = "This method is Insert Cover Document Master")
-	public ResponseEntity<CommonRes> insertDocument(@RequestBody List<CoverDocumentMasterSaveReq> reqList) {
+	public ResponseEntity<CommonRes> insertDocument(@RequestBody CoverDocumentMasterSaveReq reqList) {
 		reqPrinter.reqPrint(reqList);
 		CommonRes data = new CommonRes();
 		List<Error> validation = documentservice.validateDocument(reqList);

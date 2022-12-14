@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -34,6 +35,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dozer.DozerBeanMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -56,6 +58,8 @@ import com.maan.eway.document.res.DocTypeRes;
 import com.maan.eway.document.res.FilePathRes;
 import com.maan.eway.document.service.DocumentService;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.CoverDocumentMasterGetReq;
+import com.maan.eway.master.res.CoverDocumentMasterGetRes;
 import com.maan.eway.repository.CoverDocumentMasterRepository;
 import com.maan.eway.repository.CoverDocumentUploadDetailsRepository;
 import com.maan.eway.res.CommonRes;
@@ -122,8 +126,8 @@ public class DocumentServiceImpl implements DocumentService{
 		log.info(req);
 
 
-			if(StringUtils.isNotBlank(req.getUploadedBy()) ) {
-				/*	boolean containsValue = ALLOWED_CONTENTTYPE.containsValue(file.getContentType());
+		/*		if(StringUtils.isNotBlank(req.getUploadedBy()) ) {
+					boolean containsValue = ALLOWED_CONTENTTYPE.containsValue(file.getContentType());
 				if (!containsValue) {
 					errorList.add(new Error("01", "ReferenceNo", file.getContentType() + " is Not Allowed for "
 							+ req.getOrginalFileName()));
@@ -135,12 +139,9 @@ public class DocumentServiceImpl implements DocumentService{
 
 				if (size_mb > 25) {
 					errorList.add(new Error("01", "FileSize", "File Size Must be 25Mb Current file value is" + size_mb
-							+ "MB for " + req.getOrginalFileName()));
+							+ "MB for " + req.getOriginalFileName()));
 				}
-			}
 			
-		
-		
 		return errorList;
 
 	}
@@ -156,48 +157,57 @@ public class DocumentServiceImpl implements DocumentService{
 				
 				Random random = new Random();
 				Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-				if(StringUtils.isNotBlank(DocumentUploadDetails.getUploadedBy())  ) {
-					String newfilename  = "";
-					String newfilename1 = "";
-					//OrginalFile
-					Path destination = Paths.get(directoryPath) ;
-					newfilename= random.nextInt(100) + timestamp.toString().replace(":", "T").replace(" ", "S").replace("-", "H").replace(".", "D") +"."+FilenameUtils.getExtension(file.getOriginalFilename());
-					Files.copy(file.getInputStream(),destination.resolve(newfilename));
-					
-					Timestamp timestamp1 = new Timestamp(System.currentTimeMillis());
-					//BackupFile
-					Path destination1 = Paths.get(compressedImg) ; 
-					newfilename1= random.nextInt(100) + timestamp1.toString().replace(":", "T").replace(" ", "S").replace("-", "H").replace(".", "D") +"."+FilenameUtils.getExtension(file.getOriginalFilename());
-					Files.copy(file.getInputStream(),destination1.resolve(newfilename1));
 				
-					doc.setFileName(newfilename);
-					doc.setFilePathOrginal(directoryPath+newfilename);
-					doc.setFilePathBackup(compressedImg+newfilename1);
-					doc.setOrginalFileName(file.getOriginalFilename());
-					doc.setUploadedTime(new Date());
-					doc.setUploadedBy(DocumentUploadDetails.getUploadedBy());
-				}
-				doc.setRequestRefNo(DocumentUploadDetails.getRequestRefNo());
+				String newfilename  = "";
+				String newfilename1 = "";
+				//OrginalFile
+				Path destination = Paths.get(directoryPath) ;
+				newfilename= random.nextInt(100) + timestamp.toString().replace(":", "T").replace(" ", "S").replace("-", "H").replace(".", "D") +"."+FilenameUtils.getExtension(file.getOriginalFilename());
+				Files.copy(file.getInputStream(),destination.resolve(newfilename));
+				
+				Timestamp timestamp1 = new Timestamp(System.currentTimeMillis());
+				//BackupFile
+				Path destination1 = Paths.get(compressedImg) ; 
+				newfilename1= random.nextInt(100) + timestamp1.toString().replace(":", "T").replace(" ", "S").replace("-", "H").replace(".", "D") +"."+FilenameUtils.getExtension(file.getOriginalFilename());
+				Files.copy(file.getInputStream(),destination1.resolve(newfilename1));
+			
+				doc.setFileName(newfilename);
+				doc.setFilePathOrginal(directoryPath+newfilename);
+				doc.setFilePathBackup(compressedImg+newfilename1);
+				doc.setOrginalFileName(file.getOriginalFilename());
+				doc.setUploadedTime(new Date());
+				//doc.setUploadedBy(DocumentUploadDetails.getUploadedBy());
+				
+				CoverDocumentMaster docDetails = 	getByDocumentId(DocumentUploadDetails.getCompanyId() ,DocumentUploadDetails.getProductId() , DocumentUploadDetails.getSectionId() , DocumentUploadDetails.getDocumentId() );
+				
+				doc.setRequestReferenceNo(DocumentUploadDetails.getRequestReferenceNo());
 				doc.setProductId(Integer.valueOf(DocumentUploadDetails.getProductId()));
 				doc.setSectionId(Integer.valueOf(DocumentUploadDetails.getSectionId()));
 				doc.setCoverId("99999");
 				doc.setDocumentId(Integer.valueOf(DocumentUploadDetails.getDocumentId()));
-				doc.setCreatedby(DocumentUploadDetails.getCreatedby());
-				doc.setDocTypeDescription(DocumentUploadDetails.getDocTypeDescription());
-				doc.setDocApplicable(DocumentUploadDetails.getDocApplicable());
-				doc.setDocApplicableId(DocumentUploadDetails.getDocApplicableId());
+				doc.setCreatedBy(DocumentUploadDetails.getCreatedBy());
+				doc.setDocumentType(docDetails.getDocumentType());
+				doc.setDocumentTypeDesc(docDetails.getDocumentTypeDesc());
+				doc.setDocApplicable(docDetails.getDocApplicable());
+				doc.setDocumentDesc(docDetails.getDocumentName());
+				doc.setDocApplicableId(docDetails.getDocApplicableId()==null?null:docDetails.getDocApplicableId().toString());
 				doc.setCompanyId(DocumentUploadDetails.getCompanyId());
 				doc.setEntryDate(new Date());
-				doc.setRequestedBy(DocumentUploadDetails.getRequesteBy());
+				doc.setUploadedTime(new Date());
+				doc.setRequestedBy("");
+				doc.setUploadedBy("");
+				doc.setQuoteNo(DocumentUploadDetails.getQuoteNo());
+				doc.setId(Integer.valueOf(DocumentUploadDetails.getId()));;
+				
 				
 				//RefRunning number
-				if(StringUtils.isBlank(DocumentUploadDetails.getDocumentRef())   ) {
+				if(StringUtils.isBlank(DocumentUploadDetails.getDocumentReferenceNo())   ) {
 					Random rnd = new Random();
 					int number = rnd.nextInt(10000);
 					String randomNo = String.format("%04d", number);
-					doc.setDocumentRef(Integer.valueOf(randomNo));
+					doc.setDocumentReferenceNo(Integer.valueOf(randomNo));
 				} else {
-					doc.setDocumentRef(Integer.valueOf(DocumentUploadDetails.getDocumentRef()));
+					doc.setDocumentReferenceNo(Integer.valueOf(DocumentUploadDetails.getDocumentReferenceNo()));
 				}
 				
 				documentuploaddetailsrepository.save(doc);
@@ -209,26 +219,88 @@ public class DocumentServiceImpl implements DocumentService{
 		}
 		return res;
 	}
+	
+	public CoverDocumentMaster getByDocumentId(String insId, String productId ,String sectionId ,String documentId ) {
+		CoverDocumentMaster res = new CoverDocumentMaster();
+		
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CoverDocumentMaster> query = cb.createQuery(CoverDocumentMaster.class);
+			List<CoverDocumentMaster> list = new ArrayList<CoverDocumentMaster>();
+
+			// Find All
+			Root<CoverDocumentMaster> c = query.from(CoverDocumentMaster.class);
+
+			// Select
+			query.select(c);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("documentName")));
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CoverDocumentMaster> ocpm1 = effectiveDate.from(CoverDocumentMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			javax.persistence.criteria.Predicate a2 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("sectionId"), ocpm1.get("sectionId"));
+			javax.persistence.criteria.Predicate a4 = cb.equal(c.get("coverId"), ocpm1.get("coverId"));
+			javax.persistence.criteria.Predicate a5 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a11 = cb.equal(ocpm1.get("documentId") , c.get("documentId"));
+			effectiveDate.where(a1, a2, a3, a4, a5,a11);
+			// Effective Date End
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<CoverDocumentMaster> ocpm2 = effectiveDate2.from(CoverDocumentMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a6 = cb.equal(c.get("sectionId"), ocpm2.get("sectionId"));
+			Predicate a7 = cb.equal(c.get("coverId"), ocpm2.get("coverId"));
+			Predicate a8 = cb.equal(c.get("companyId"), ocpm2.get("companyId") );
+			Predicate a9 = cb.equal(c.get("productId"), ocpm2.get("productId") );
+			Predicate a10 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			Predicate a12 = cb.equal(ocpm2.get("documentId") , c.get("documentId"));
+			effectiveDate2.where(a6,a7,a8,a9,a10,a12);
+					
+			// Where
+			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
+			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"), insId);
+			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("productId"), productId);
+			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("sectionId"), sectionId);
+			javax.persistence.criteria.Predicate n6 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			javax.persistence.criteria.Predicate n7 = cb.equal(c.get("documentId"), documentId);
+			query.where(n1, n2, n3, n4, n5,n6,n7).orderBy(orderList);
+
+			// Get Result
+			TypedQuery<CoverDocumentMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			res = list.get(0);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return res;
+	}
 
 	@Override
 	public CommonRes deleteFile(DocumentDeleteReq req) {
 
 		CommonRes res = new CommonRes();
 		try {
-			CoverDocumentUploadDetailsId id = new CoverDocumentUploadDetailsId();
 			
-			id.setRequestRefNo(req.getRequestRefNo());
-			id.setDocTypeDescription(req.getDocTypeDescription());
-			id.setDocumentId(Integer.valueOf(req.getDocumentId()));
-			id.setDocumentRef(Integer.valueOf(req.getDocumentRef()));
-			id.setCompanyId(req.getCompanyId());
-			id.setDocApplicable(req.getDocApplicable());
-			id.setDocApplicableId(req.getDocApplicableId());
-			id.setCoverId(req.getCoverId());
-			id.setSectionId(Integer.valueOf(req.getSectionId()));
-			id.setProductId(Integer.valueOf(req.getProductId()));
-			
-			documentuploaddetailsrepository.deleteById(id);
+			documentuploaddetailsrepository.deleteByQuoteNoAndIdAndDocumentIdAndDocumentReferenceNo(req.getQuoteNo() ,Integer.valueOf(req.getId()),
+					Integer.valueOf(req.getDocumentId()) , Integer.valueOf(req.getDocumentReferenceNo()));
 			
 			res.setMessage("Document Deleted Sucessfully");
 			res.setIsError(false);
@@ -331,7 +403,8 @@ public class DocumentServiceImpl implements DocumentService{
 			List<ClientDocListRes> totalDocResList = new ArrayList<ClientDocListRes>();
 
 			try {
-				List<CoverDocumentUploadDetails> list = documentuploaddetailsrepository.findByRequestRefNoOrderByEntryDateAsc(req.getRequestRefNo());
+				List<CoverDocumentUploadDetails> list = documentuploaddetailsrepository.findByQuoteNoAndIdAndDocumentTypeOrderByEntryDateDesc(req.getQuoteNo() , 
+						Integer.valueOf(req.getId()) ,req.getDocumentType() )  ;
 
 				for (CoverDocumentUploadDetails data : list) {
 
@@ -339,7 +412,7 @@ public class DocumentServiceImpl implements DocumentService{
 					mapper.getConfiguration().setAmbiguityIgnored(true);
 					ClientDocListRes res = mapper.map(data, ClientDocListRes.class);
 					res.setFilename(data.getFileName());
-					res.setDocDesc(data.getDocTypeDescription());
+					res.setDocDesc(data.getDocumentDesc());
 					totalDocResList.add(res);
 				}
 
@@ -356,20 +429,19 @@ public class DocumentServiceImpl implements DocumentService{
 		public FilePathRes getFilePath(FilePathReq req) {
 			FilePathRes res = new FilePathRes();
 			try {
-				CoverDocumentUploadDetails getFile = documentuploaddetailsrepository
-						.findByRequestRefNoAndDocumentRefAndDocumentId(req.getRequestRefNo(),
-								Integer.valueOf(req.getReqrefno()), Integer.valueOf(req.getDoctypeid()));
+				CoverDocumentUploadDetails getFile = documentuploaddetailsrepository.findByQuoteNoAndIdAndDocumentIdAndDocumentReferenceNo(req.getQuoteNo() ,Integer.valueOf(req.getId()),
+														Integer.valueOf(req.getDocumentId()) , Integer.valueOf(req.getDocumentReferenceNo()));
 				ModelMapper mapper = new ModelMapper();
 				mapper.getConfiguration().setAmbiguityIgnored(true);
 				res = mapper.map(getFile, FilePathRes.class);
 				res.setDocumentId(getFile.getDocumentId() == null ? "" : getFile.getDocumentId().toString());
 				res.setDocApplicable(getFile.getDocApplicable());
-				res.setDocDesc(getFile.getDocTypeDescription());
+				res.setDocumentDesc(getFile.getDocumentDesc());
 				res.setFilename(getFile.getFileName());
 				res.setFilepathname(getFile.getFilePathOrginal());
 				if (StringUtils.isNotBlank(res.getFilepathname()) && new File(res.getFilepathname()).exists()) {
 					res.setImgurl(new GetFileFromPath(res.getFilepathname()).call().getImgUrl());
-					res.setReqrefno(getFile.getDocumentRef().toString());
+					res.setDocumentReferenceNo(getFile.getDocumentReferenceNo().toString());
 				} else
 					System.out.println("File is Not found!!" + res.getFilepathname());
 			} catch (Exception e) {
@@ -384,21 +456,21 @@ public class DocumentServiceImpl implements DocumentService{
 		public FilePathRes getCompressedImages(FilePathReq req) {
 			FilePathRes res = new FilePathRes();
 			try {
-				CoverDocumentUploadDetails getFile = documentuploaddetailsrepository.findByRequestRefNoAndDocumentRefAndDocumentId(req.getRequestRefNo(), Integer.valueOf(req.getReqrefno()),
-						Integer.valueOf(req.getDoctypeid()) );
-				ModelMapper mapper = new ModelMapper();
+				CoverDocumentUploadDetails getFile = documentuploaddetailsrepository.findByQuoteNoAndIdAndDocumentIdAndDocumentReferenceNo(req.getQuoteNo() ,Integer.valueOf(req.getId()),
+						Integer.valueOf(req.getDocumentId()) , Integer.valueOf(req.getDocumentReferenceNo()));
+					ModelMapper mapper = new ModelMapper();
 				mapper.getConfiguration().setAmbiguityIgnored(true);
 				res = mapper.map(getFile, FilePathRes.class);
 				res.setDocumentId(getFile.getDocumentId()==null?"":getFile.getDocumentId().toString());
 				res.setDocApplicable(getFile.getDocApplicable());
-				res.setDocDesc(getFile.getDocTypeDescription());
+				res.setDocumentDesc(getFile.getDocumentDesc());
 				res.setFilename(getFile.getFileName());
 				res.setFilepathname(getFile.getFilePathBackup());
 				res.setCommonfilepath(getFile.getFilePathBackup() );
 			//	res.setVehChassisNo(getFile.getClaimNo());
 				if(StringUtils.isNotBlank(res.getCommonfilepath()) && new File(res.getCommonfilepath()).exists()) {
 							res.setImgurl(new GetFileFromPath(res.getCommonfilepath()).call().getImgUrl());
-							res.setReqrefno(getFile.getDocumentRef().toString());
+							res.setDocumentReferenceNo(getFile.getDocumentReferenceNo().toString());
 					}else
 						 System.out.println("File is Not found!!"+res.getFilepathname());
 				} catch (Exception e) {

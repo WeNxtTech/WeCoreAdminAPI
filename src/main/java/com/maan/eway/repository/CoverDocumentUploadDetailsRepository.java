@@ -31,15 +31,14 @@ import com.maan.eway.bean.CoverDocumentUploadDetailsId;
 
 public interface CoverDocumentUploadDetailsRepository extends JpaRepository<CoverDocumentUploadDetails, CoverDocumentUploadDetailsId>,JpaSpecificationExecutor<CoverDocumentUploadDetails> {
 
-	List<CoverDocumentUploadDetails> findByRequestRefNoAndCompanyId(String requestRefNo, String insCompanyId);
+	void deleteByQuoteNoAndIdAndDocumentIdAndDocumentReferenceNo(String quoteNo, Integer valueOf, Integer valueOf2,
+			Integer valueOf3);
+
+	List<CoverDocumentUploadDetails> findByQuoteNoAndIdAndDocumentTypeOrderByEntryDateDesc(String quoteNo,
+			Integer valueOf, String documentType);
+
+	CoverDocumentUploadDetails findByQuoteNoAndIdAndDocumentIdAndDocumentReferenceNo(String quoteNo, Integer valueOf,
+			Integer valueOf2, Integer valueOf3);
+
 	
-	List<CoverDocumentUploadDetails> findAllByOrderByDocumentRefDesc();
-	
-	List<CoverDocumentUploadDetails> findByRequestRefNoAndCompanyIdAndDocApplicableInAndDocApplicableIdIn(String requestRefNo, String insCompanyId,List<String> docApplicable,List<String> docApplicableId);
-
-	List<CoverDocumentUploadDetails> findByRequestRefNoOrderByEntryDateAsc(String requestRefNo);
-
-	CoverDocumentUploadDetails findByRequestRefNoAndDocumentRefAndDocumentId(String requestRefNo, Integer valueOf,
-			Integer valueOf2);
-
 }

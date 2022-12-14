@@ -30,5 +30,7 @@ public interface AdminDropDownService {
 
 	List<ColummnDropRes> getTableDetails(GetTableDropDownReq req);
 
+	List<DropDownRes> getDocType(LovDropDownReq req);
+
 
 }

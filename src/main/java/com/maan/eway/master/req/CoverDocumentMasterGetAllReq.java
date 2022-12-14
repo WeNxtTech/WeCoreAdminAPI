@@ -9,13 +9,13 @@ import lombok.Data;
 
 @Data
 public class CoverDocumentMasterGetAllReq {
-
-	@JsonProperty("Limit")
-	private String limit;
-
-	@JsonProperty("Offset")
-	private String offset;
-	
+//
+//	@JsonProperty("Limit")
+//	private String limit;
+//
+//	@JsonProperty("Offset")
+//	private String offset;
+//	
 	@JsonProperty("InsuranceId")
 	private String companyId;
 	
@@ -27,11 +27,11 @@ public class CoverDocumentMasterGetAllReq {
 	@JsonProperty("SectionId")
 	private String sectionId;
 	
-	@JsonProperty("CoverId")
-	private String coverId;
+//	@JsonProperty("CoverId")
+//	private String coverId;
 	
-	@JsonFormat(pattern ="dd/MM/yyyy")
-	@JsonProperty("EffectiveDateStart")
-	private Date effectiveDateStart; 
+//	@JsonFormat(pattern ="dd/MM/yyyy")
+//	@JsonProperty("EffectiveDateStart")
+//	private Date effectiveDateStart; 
 	
 }

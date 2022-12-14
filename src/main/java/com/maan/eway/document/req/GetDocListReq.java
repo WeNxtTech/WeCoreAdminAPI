@@ -7,15 +7,15 @@ import lombok.Data;
 @Data
 public class GetDocListReq {
 	
-	@JsonProperty("RequestRefNo")
-	private String requestRefNo;
+	@JsonProperty("QuoteNo")
+	private String quoteNo;
 	
     @JsonProperty("InsCompanyId")
     private String insCompanyId ;
 	
-	@JsonProperty("DocApplicable")
-	private String docApplicable;
+	@JsonProperty("DocumentType")
+	private String documentType;
 	
-	@JsonProperty("DocApplicableId")
-	private String docApplicableId;
+	@JsonProperty("Id")
+	private String id;
 }

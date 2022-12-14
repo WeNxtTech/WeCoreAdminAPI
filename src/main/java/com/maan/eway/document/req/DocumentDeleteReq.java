@@ -7,36 +7,19 @@ import lombok.Data;
 @Data
 public class DocumentDeleteReq {
 
-
-	@JsonProperty("RequestRefNo")
-	private String requestRefNo;
-
-	@JsonProperty("DocTypeDescription")
-	private String docTypeDescription;
+	@JsonProperty("QuoteNo")
+	private String quoteNo;
+	
+	@JsonProperty("Id")
+	private String id;
 	
 	@JsonProperty("DocumentId")
 	private String documentId;
 	
-	@JsonProperty("DocumentRef")
-	private String documentRef;
+	@JsonProperty("DocumentReferenceNo")
+	private String documentReferenceNo;
 	
-	@JsonProperty("DocApplicable")
-	private String docApplicable;
-
-	@JsonProperty("DocApplicableId")
-	private String docApplicableId;
-
-	@JsonProperty("InsuranceId")
-	private String CompanyId;
-
-	@JsonProperty("ProductId")
-	private String productId;
-
-	@JsonProperty("SectionId")
-	private String sectionId;
-
-	@JsonProperty("CoverId")
-	private String coverId;
+	
 	
 	
 }

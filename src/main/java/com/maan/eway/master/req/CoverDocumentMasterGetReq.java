@@ -19,13 +19,14 @@ public class CoverDocumentMasterGetReq {
 	@JsonProperty("ProductId")
 	private String productId;
 	
-
+	@JsonProperty("DocumentType")
+	private String documentType;
+	
 	@JsonProperty("SectionId")
 	private String sectionId;
 	
-	@JsonProperty("CoverId")
-	private String coverId;
-	
+//	@JsonProperty("CoverId")
+//	private String coverId;
 	@JsonFormat(pattern ="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart; 

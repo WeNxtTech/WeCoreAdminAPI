@@ -542,12 +542,8 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 			// Get Result
 			TypedQuery<DocumentMaster> result = em.createQuery(query);
 			coverList = result.getResultList();
-			Map<Integer, List<DocumentMaster>>  groupByDocumentId = coverList.stream() .collect(Collectors.groupingBy(w ->   w.getDocumentId())) ;
-
 			// Map
-			for (Integer data : groupByDocumentId.keySet()) {
-				DocumentMaster  documentData = groupByDocumentId.get(data).get(0);
-
+			for (DocumentMaster documentData :coverList) {
 				DocumentMasterGetRes res = new DocumentMasterGetRes();
 
 				res = mapper.map(documentData, DocumentMasterGetRes.class);

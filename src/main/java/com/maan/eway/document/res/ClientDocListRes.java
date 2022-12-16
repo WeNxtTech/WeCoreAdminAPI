@@ -19,11 +19,17 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ClientDocListRes {
 
-	@JsonProperty("RequestRefNo")
-	private String requestRefNo;
+	@JsonProperty("RequestReferenceNo")
+	private String requestReferenceNo;
 
-	@JsonProperty("DocumentReferenceNumber")
-	private String documentRef;
+	@JsonProperty("DocumentReferenceNo")
+	private String documentReferenceNo;
+	
+	@JsonProperty("QuoteNo")
+	private String quoteNo;
+	
+	@JsonProperty("Id")
+	private String id;
 
 	@Column(name = "FILE_PATH_ORGINAL")
 	private String filePathOrginal;
@@ -46,6 +52,12 @@ public class ClientDocListRes {
 	@JsonProperty("DocApplicable")
 	private String docApplicable;
 	
+	@JsonProperty("DocumentType")
+	private String documentType;
+	
+	@JsonProperty("DocumentTypeDesc")
+	private String documentTypeDesc;
+	
     @JsonProperty("InsuranceId")
     private String CompanyId ;
 	
@@ -62,11 +74,11 @@ public class ClientDocListRes {
 	@JsonProperty("OrginalFileName")
 	private String orginalFileName;
 	
-	 @JsonProperty("RequestedBy")
-	private String requestedBy ;
-	 
-	 @JsonProperty("UplodedBy")
-	private String uploadedBy ;
+//	 @JsonProperty("RequestedBy")
+//	private String requestedBy ;
+//	 
+//	 @JsonProperty("UplodedBy")
+//	private String uploadedBy ;
 
 	
 }

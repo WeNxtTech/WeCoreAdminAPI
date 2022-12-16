@@ -32,9 +32,4 @@ import com.maan.eway.bean.TravelPassengerDetailsId;
 public interface TravelPassengerDetailsRepository  extends JpaRepository<TravelPassengerDetails,TravelPassengerDetailsId > , JpaSpecificationExecutor<TravelPassengerDetails> {
 
 	
-	List<TravelPassengerDetails> findByStatusOrderBySerialNoAsc(String string);
-
-	TravelPassengerDetails findByRequestReferenceNoAndTravelIdAndSerialNoAndGenderId(String requestReferenceNo,
-			Integer valueOf, String serialNo, Integer valueOf2);
-
 }

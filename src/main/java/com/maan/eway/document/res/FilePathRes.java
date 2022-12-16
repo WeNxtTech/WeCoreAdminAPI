@@ -1,5 +1,10 @@
 package com.maan.eway.document.res;
 
+import java.util.Date;
+
+import javax.persistence.Column;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
@@ -49,4 +54,32 @@ public class FilePathRes {
 	private String createdby ;
 	@JsonProperty("ImgUrl")
 	private String imgurl;
+	
+
+	@JsonProperty("Id")
+	private String id;
+
+	@Column(name = "FILE_PATH_ORGINAL")
+	private String filePathOrginal;
+	
+	@JsonProperty("DocDesc")
+	private String docDesc;
+	
+	
+	@JsonProperty("DocumentType")
+	private String documentType;
+	
+	@JsonProperty("DocumentTypeDesc")
+	private String documentTypeDesc;
+	
+    @JsonProperty("InsuranceId")
+    private String CompanyId ;
+	
+	@JsonFormat(pattern = "dd/MM/YYYY")
+	@JsonProperty("EntryDate")
+	private Date entryDate;
+	
+	@JsonProperty("OrginalFileName")
+	private String orginalFileName;
+	
 }

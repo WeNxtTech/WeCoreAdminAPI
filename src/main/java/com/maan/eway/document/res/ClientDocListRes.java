@@ -41,7 +41,7 @@ public class ClientDocListRes {
 	private String filename;
 	
 	@JsonProperty("DocumentId")
-	private Integer documentId;
+	private String documentId;
 	
 	@JsonProperty("DocDesc")
 	private String docDesc;

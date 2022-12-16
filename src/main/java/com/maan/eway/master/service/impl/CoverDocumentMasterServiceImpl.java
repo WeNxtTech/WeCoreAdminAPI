@@ -963,8 +963,9 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 			javax.persistence.criteria.Predicate a2 = cb.equal(c.get("productId"), ocpm1.get("productId"));
 			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("sectionId"), ocpm1.get("sectionId"));
 			javax.persistence.criteria.Predicate a4 = cb.equal(c.get("coverId"), ocpm1.get("coverId"));
+			Predicate a11 = cb.equal(c.get("documentId"), ocpm1.get("documentId"));
 			javax.persistence.criteria.Predicate a5 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			effectiveDate.where(a1, a2, a3, a4, a5);
+			effectiveDate.where(a1, a2, a3, a4, a5,a11);
 			// Effective Date End
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 			Root<CoverDocumentMaster> ocpm2 = effectiveDate2.from(CoverDocumentMaster.class);
@@ -973,8 +974,9 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 			Predicate a7 = cb.equal(c.get("coverId"), ocpm2.get("coverId"));
 			Predicate a8 = cb.equal(c.get("companyId"), ocpm2.get("companyId") );
 			Predicate a9 = cb.equal(c.get("productId"), ocpm2.get("productId") );
+			Predicate a12 = cb.equal(c.get("documentId"), ocpm2.get("documentId"));
 			Predicate a10 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-			effectiveDate2.where(a6,a7,a8,a9,a10);
+			effectiveDate2.where(a6,a7,a8,a9,a10,a12);
 					
 			// Where
 			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");

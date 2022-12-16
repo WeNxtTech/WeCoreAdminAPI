@@ -26,6 +26,9 @@ public class CoverSubCoverGetRes {
 		
 		@JsonProperty("InsuranceId")
 	    private String companyId;
+		
+		@JsonProperty("CoverBasedOn")
+		private String coverBasedOn;
 	    
 	    @JsonProperty("SubCoverName")
 	    private String subCoverName;

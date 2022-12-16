@@ -36,6 +36,9 @@ public class SubCoverMasterSaveReq implements Serializable {
     @JsonProperty("SubCoverDesc")
     private String subCoverDesc;
     
+    @JsonProperty("CoverBasedOn")
+	private String coverBasedOn;
+    
     @JsonProperty("RegulatoryCode")
 	private String regulatoryCode;
     

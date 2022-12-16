@@ -29,6 +29,9 @@ public class CoverMasterGetAllRes {
 	@JsonProperty("RegulatoryCode")
 	private String regulatoryCode;
 
+	@JsonProperty("CoverBasedOn")
+	private String coverBasedOn;
+	
 	@JsonProperty("Remarks")
 	private String remarks; 
 	

@@ -31,6 +31,10 @@ public class SectionCoverMasterRes {
 	@JsonProperty("CoverName")
 	private String coverName;
 	
+	@JsonProperty("CoverBasedOn")
+	private String coverBasedOn;
+
+	
 	@JsonProperty("CoverDesc")
 	private String coverDesc;
 	

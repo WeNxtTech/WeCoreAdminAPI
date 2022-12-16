@@ -106,7 +106,9 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 				errorList.add(new Error("01", "Sub Cover  Name", "This Sub Cover  Name Already Exist "));
 			}
 		}
-
+		if (StringUtils.isBlank(req.getCoverBasedOn())) {
+			errorList.add(new Error("01", "CoverBasedOn", "Please Select CoverBasedOn "));
+		}
 		if (StringUtils.isNotBlank(req.getDependentCoverYn()) && req.getDependentCoverYn().equalsIgnoreCase("Y") ) {
 			if (StringUtils.isBlank(req.getDependentCoverId()) ) {
 				errorList.add(new Error("08", "Dependent Cover Id", "Please Select Dependent Cover Id"));

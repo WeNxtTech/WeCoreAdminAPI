@@ -29,7 +29,9 @@ public class SubCoverUpdatedReq {
 	    @JsonProperty("SubCoverName")
 	    private String subCoverName;
 	    
-
+	    @JsonProperty("CoverBasedOn")
+		private String coverBasedOn;
+	    
 		@JsonFormat(pattern = "dd/MM/yyyy")
 		@JsonProperty("EffectiveDateStart")
 		private Date effectiveDateStart;

@@ -31,6 +31,8 @@ public class SubCoverMasterGetRes implements Serializable {
     @JsonProperty("Status")
 	private String status;
 
+    @JsonProperty("CoverBasedOn")
+	private String coverBasedOn;
 	
 	@JsonProperty("Remarks")
 	private String remarks; 

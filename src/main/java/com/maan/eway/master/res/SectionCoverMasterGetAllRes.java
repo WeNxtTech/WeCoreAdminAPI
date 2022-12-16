@@ -35,6 +35,10 @@ public class SectionCoverMasterGetAllRes {
 	
 	@JsonProperty("Status")
 	private String status;
+	
+	@JsonProperty("CoverBasedOn")
+	private String coverBasedOn;
+
 
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;

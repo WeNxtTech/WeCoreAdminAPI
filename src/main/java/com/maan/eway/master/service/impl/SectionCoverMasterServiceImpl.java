@@ -942,6 +942,9 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 					errorList.add(new Error("08", "Dependent Cover Id", "Please Select Dependent Cover Id"));
 				}
 			}
+			if (StringUtils.isBlank(req.getCoverBasedOn())) {
+				errorList.add(new Error("01", "CoverBasedOn", "Please Select CoverBasedOn "));
+			}
 			
 			if (StringUtils.isBlank(req.getSubCoverYn())) {
 				errorList.add(new Error("08", "SubCoverYn", "Please Enter SubCoverYn"));

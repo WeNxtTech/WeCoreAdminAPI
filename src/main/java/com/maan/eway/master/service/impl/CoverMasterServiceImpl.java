@@ -94,7 +94,7 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			
 			// Cover Master Validation
 			if (StringUtils.isBlank(req.getCoverName())) {
-				errorList.add(new Error("01", "CoverName", "Please Select Cover  Name "));
+				errorList.add(new Error("01", "CoverName", "Please Enter Cover  Name "));
 			}else if (req.getCoverName().length() > 100){
 				errorList.add(new Error("01","CoverName", "Please Enter Cover  Name within 100 Characters")); 
 			}else if (StringUtils.isBlank(req.getCoverId())) {
@@ -110,6 +110,9 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 				
 			}
 			
+			if (StringUtils.isBlank(req.getCoverBasedOn())) {
+				errorList.add(new Error("01", "CoverBasedOn", "Please Select CoverBasedOn "));
+			}
 			if (StringUtils.isBlank(req.getCoverDesc())) {
 				errorList.add(new Error("02", "Cover Desc", "Please Enter Cover Desc "));
 			} else if (req.getCoverDesc().length() > 100) {

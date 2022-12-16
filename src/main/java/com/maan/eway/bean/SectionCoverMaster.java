@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -195,6 +194,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="UPDATED_DATE")
     private Date       updatedDate ;
 
+    @Column(name="COVER_BASED_ON")
+    private String       coverBasedOn;
 
 }
 

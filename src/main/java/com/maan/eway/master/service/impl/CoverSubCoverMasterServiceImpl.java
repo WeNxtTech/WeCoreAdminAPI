@@ -691,6 +691,9 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 					errorList.add(new Error("08", "Dependent Cover Id", "Please Select Dependent Cover Id"));
 				}
 			}
+			if (StringUtils.isBlank(req.getCoverBasedOn())) {
+				errorList.add(new Error("01", "CoverBasedOn", "Please Select CoverBasedOn "));
+			}
 			
 			// Date Validation
 			Calendar cal = new GregorianCalendar();

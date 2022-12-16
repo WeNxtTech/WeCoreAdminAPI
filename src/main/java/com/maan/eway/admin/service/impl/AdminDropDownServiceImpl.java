@@ -31,10 +31,12 @@ import org.springframework.stereotype.Service;
 import com.maan.eway.admin.service.AdminDropDownService;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginMaster;
+import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.common.req.GetTableDropDownReq;
 import com.maan.eway.common.req.LovDropDownReq;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginMasterRepository;
+import com.maan.eway.repository.ProductMasterRepository;
 import com.maan.eway.req.SubUserTypeReq;
 import com.maan.eway.res.ColummnDropRes;
 import com.maan.eway.res.DropDownRes;
@@ -56,6 +58,8 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 	@PersistenceContext
 	private EntityManager em;
 	
+	@Autowired
+	private ProductMasterRepository productrepo ;
 	
 		@Override
 		public List<DropDownRes> getUserType(LovDropDownReq req) {
@@ -93,7 +97,20 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					entityName = entityName==null ? firstLetterCaps  :entityName +  firstLetterCaps ; 
 					
 				}*/
-				  
+				if(StringUtils.isNotBlank(req.getProductId()) && StringUtils.isBlank(req.getTableName())) {
+					String tablename="MsVehicleDetails";
+					List<ProductMaster> idfortable = productrepo.findByProductIdOrderByEffectiveDateStartDesc(Integer.parseInt(req.getProductId()));
+					String oneProduct = idfortable.get(0).getMotorYn();
+					if(oneProduct.equals("M"))
+						tablename="MsVehicleDetails";
+					else if(oneProduct.equals("H"))
+						tablename="MsHumanDetails";
+					else if(oneProduct.equals("A"))
+						tablename="MsAssetDetails";
+						
+						req.setTableName(tablename);
+				}  
+				
 			String entityName = "com.maan.eway.bean."+req.getTableName();//entityName + ".class" ;
 				 Class<?> forName = Class.forName(entityName);//forName(entityName);
 				

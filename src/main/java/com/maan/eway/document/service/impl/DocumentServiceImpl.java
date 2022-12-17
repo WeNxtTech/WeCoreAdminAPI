@@ -426,12 +426,11 @@ public class DocumentServiceImpl implements DocumentService{
 		@Override
 		public FilePathRes getFilePath(FilePathReq req) {
 			FilePathRes res = new FilePathRes();
+			DozerBeanMapper dozerMapper = new DozerBeanMapper(); 
 			try {
 				CoverDocumentUploadDetails getFile = documentuploaddetailsrepository.findByQuoteNoAndIdAndDocumentIdAndDocumentReferenceNo(req.getQuoteNo() ,Integer.valueOf(req.getId()),
 														Integer.valueOf(req.getDocumentId()) , Integer.valueOf(req.getDocumentReferenceNo()));
-				ModelMapper mapper = new ModelMapper();
-				mapper.getConfiguration().setAmbiguityIgnored(true);
-				res = mapper.map(getFile, FilePathRes.class);
+				res = dozerMapper.map(getFile, FilePathRes.class);
 				res.setDocumentId(getFile.getDocumentId() == null ? "" : getFile.getDocumentId().toString());
 				res.setDocApplicable(getFile.getDocApplicable());
 				res.setDocumentDesc(getFile.getDocumentDesc());
@@ -453,12 +452,12 @@ public class DocumentServiceImpl implements DocumentService{
 		@Override
 		public FilePathRes getCompressedImages(FilePathReq req) {
 			FilePathRes res = new FilePathRes();
+			DozerBeanMapper dozerMapper = new DozerBeanMapper(); 
 			try {
 				CoverDocumentUploadDetails getFile = documentuploaddetailsrepository.findByQuoteNoAndIdAndDocumentIdAndDocumentReferenceNo(req.getQuoteNo() ,Integer.valueOf(req.getId()),
 						Integer.valueOf(req.getDocumentId()) , Integer.valueOf(req.getDocumentReferenceNo()));
-					ModelMapper mapper = new ModelMapper();
-				mapper.getConfiguration().setAmbiguityIgnored(true);
-				res = mapper.map(getFile, FilePathRes.class);
+				
+				res = dozerMapper.map(getFile, FilePathRes.class);
 				res.setDocumentId(getFile.getDocumentId()==null?"":getFile.getDocumentId().toString());
 				res.setDocApplicable(getFile.getDocApplicable());
 				res.setDocumentDesc(getFile.getDocumentDesc());

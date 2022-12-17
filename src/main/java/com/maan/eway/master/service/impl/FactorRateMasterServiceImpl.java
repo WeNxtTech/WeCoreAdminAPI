@@ -806,7 +806,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					amendId = list.get(0).getAmendId() ;
 					entryDate = list.get(0).getEntryDate() ;
 					createdBy = list.get(0).getCreatedBy();
-				
+					repository.deleteAll(list);
 			    }
 			}
 			

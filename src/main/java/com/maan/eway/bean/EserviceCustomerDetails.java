@@ -86,9 +86,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="CLIENT_STATUS", length=20)
     private String     clientStatus ;
 
-    @Column(name="BROKER_BRANCH_CODE", length=100)
-    private String     brokerBranchCode ;
-    
     @Column(name="STATE_CODE")
     private Integer    stateCode ;
 
@@ -97,7 +94,10 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="STATE_NAME", length=100)
     private String     stateName ;
-
+    
+    @Column(name="BROKER_BRANCH_CODE", length=100)
+    private String     brokerBranchCode ;
+    
     @Column(name="CLIENT_STATUS_DESC", length=100)
     private String     clientStatusDesc ;
 
@@ -164,7 +164,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="OCCUPATION_DESC", length=20)
     private String     occupationDesc ;
 
-    @Column(name="BUSINESS_TYPE",  length=1)
+    @Column(name="BUSINESS_TYPE", length=1)
     private String     businessType ;
 
     @Column(name="BUSINESS_TYPE_DESC", length=20)
@@ -233,9 +233,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="EMAIL_3", length=20)
     private String     email3 ;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="APPOINTMENT_DATE")
+    private Date       appointmentDate ;
 
-    //--- ENTITY LINKS ( RELATIONSHIP )
-
+    @Column(name="PREFERRED_NOTIFICATION", length=20)
+    private String     preferredNotification ;
 
 }
 

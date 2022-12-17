@@ -399,7 +399,7 @@ public class DocumentServiceImpl implements DocumentService{
 		// Get Doc List
 		@Override
 		public List<ClientDocListRes> getTotalDocList(GetDocListReq req) {
-
+			DozerBeanMapper dozerMapper = new DozerBeanMapper(); 
 			List<ClientDocListRes> totalDocResList = new ArrayList<ClientDocListRes>();
 
 			try {
@@ -408,9 +408,7 @@ public class DocumentServiceImpl implements DocumentService{
 
 				for (CoverDocumentUploadDetails data : list) {
 
-					ModelMapper mapper = new ModelMapper();
-					mapper.getConfiguration().setAmbiguityIgnored(true);
-					ClientDocListRes res = mapper.map(data, ClientDocListRes.class);
+					ClientDocListRes res = dozerMapper.map(data, ClientDocListRes.class);
 					res.setFilename(data.getFileName());
 					res.setDocDesc(data.getDocumentDesc());
 					totalDocResList.add(res);

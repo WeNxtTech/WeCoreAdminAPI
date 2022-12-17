@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -63,6 +64,7 @@ import com.maan.eway.master.res.CoverDocumentMasterGetRes;
 import com.maan.eway.repository.CoverDocumentMasterRepository;
 import com.maan.eway.repository.CoverDocumentUploadDetailsRepository;
 import com.maan.eway.res.CommonRes;
+import com.maan.eway.res.SuccessRes;
 
 
 
@@ -296,19 +298,31 @@ public class DocumentServiceImpl implements DocumentService{
 	@Override
 	public CommonRes deleteFile(DocumentDeleteReq req) {
 
-		CommonRes res = new CommonRes();
+		CommonRes commonRes = new CommonRes();
+		SuccessRes res = new SuccessRes(); 
 		try {
 			
 			documentuploaddetailsrepository.deleteByQuoteNoAndIdAndDocumentIdAndDocumentReferenceNo(req.getQuoteNo() ,Integer.valueOf(req.getId()),
 					Integer.valueOf(req.getDocumentId()) , Integer.valueOf(req.getDocumentReferenceNo()));
 			
-			res.setMessage("Document Deleted Sucessfully");
-			res.setIsError(false);
+			res.setResponse("Document Deleted Sucessfully");
+			res.setSuccessId(req.getDocumentId());
+			
+			commonRes.setCommonResponse(res);
+			commonRes.setIsError(false);
+			commonRes.setErrorMessage(Collections.emptyList());
+			commonRes.setMessage("File Upload Faild");
+			
 		} catch (Exception e) {
-			res.setMessage("Document Deleted Failed");
-			res.setIsError(true);
+			e.printStackTrace();
+			List<Error> errors = new ArrayList<Error>();
+			errors.add(new Error("01","Failed","Document Deleted Failed"));
+			commonRes.setCommonResponse(res);
+			commonRes.setIsError(true);
+			commonRes.setErrorMessage(errors);
+			commonRes.setMessage("File Upload Faild");
 		}
-		return res;
+		return commonRes;
 	}
 	
 	// Drop|Down

@@ -143,6 +143,13 @@ public class DocumentServiceImpl implements DocumentService{
 					errorList.add(new Error("01", "FileSize", "File Size Must be 25Mb Current file value is" + size_mb
 							+ "MB for " + req.getOriginalFileName()));
 				}
+				
+				CoverDocumentUploadDetails  data = documentuploaddetailsrepository.findByQuoteNoAndSectionIdAndIdAndDocumentId(req.getQuoteNo() ,Integer.valueOf(req.getSectionId())  ,Integer.valueOf(req.getId()) , Integer.valueOf(req.getDocumentId()));
+				
+				if(data!=null ) {
+					errorList.add(new Error("01", "Document Type", "This Document Type Already Uploaded" ));
+					
+				}
 			
 		return errorList;
 

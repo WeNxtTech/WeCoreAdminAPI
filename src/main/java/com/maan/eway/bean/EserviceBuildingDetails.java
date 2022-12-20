@@ -178,6 +178,10 @@ private static final long serialVersionUID = 1L;
     @Column(name="POLICY_START_DATE")
     private Date       policyStartDate ;
 
+    @Column(name="POLICY_PERIORD")
+    private Integer policyPeriord;
+    
+    
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="POLICY_END_DATE")
     private Date       policyEndDate ;

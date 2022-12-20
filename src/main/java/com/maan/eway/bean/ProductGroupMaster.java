@@ -75,6 +75,9 @@ private static final long serialVersionUID = 1L;
     //--- ENTITY DATA FIELDS 
     @Column(name="GROUP_DESC", length=200)
     private String     groupDesc ;
+    
+    @Column(name="BAND_DESC", length=200)
+    private String     bandDesc ;
 
     @Column(name="GROUP_FROM")
     private Integer    groupFrom ;

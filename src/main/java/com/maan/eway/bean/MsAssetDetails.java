@@ -52,9 +52,14 @@ private static final long serialVersionUID = 1L;
  
     //--- ENTITY PRIMARY KEY 
     @Id
-    @Column(name="AS_REF_NO", nullable=false, length=20)
-    private String     asRefNo ;
+    @Column(name="VDREF_NO", nullable=false, length=20)
+    private String     vdrefNo ;
 
+    @Id
+    @Column(name="REQUEST_REFERENCE_NO", nullable=false, length=20)
+    private String     requestReferenceNo ;
+    
+    
     @Id
     @Column(name="LOCATION_ID", nullable=false)
     private Integer    locationId ;
@@ -76,30 +81,30 @@ private static final long serialVersionUID = 1L;
     private String     branchCode ;
 
     //--- ENTITY DATA FIELDS 
-    @Column(name="BUiLDING_AGE")
+    @Column(name="BUILDING_AGE")
     private Integer    buildingAge ;
-
-    @Column(name="INBUILD_CONSTRUCT_TYPE", length=20)
-    private String     inbuildConstructType ;
 
     @Column(name="BUILDING_FLOORS")
     private Integer    buildingFloors ;
 
-    @Column(name="BUILDING_USAGE_YN", length=2)
-    private String     buildingUsageYn ;
-
-    @Column(name="BUILDING_SUMINSURED")
-    private Double     buildingSuminsured ;
-
-    @Column(name="ALLRISK_SUMINSURED")
-    private Double     allriskSuminsured ;
-
-    @Column(name="LIMIT_OF_INDEMINITY_SUMINSURED")
-    private Double     limitOfIndeminitySuminsured ;
-
-    @Column(name="CONTENT_SUMINSURED")
-    private Double     contentSuminsured ;
-
+    @Column(name="BUILDING_USAGE", length=20)
+    private String     buildingUsage;
+    
+    @Column(name="SUMINSURED")
+    private Double suminsured ;
+    
+    @Column(name="PERIORD_OF_INSURANCE")
+    private Integer   periordOfInsurance;
+    
+    
+    @Column(name="CURRENCY", length=20)
+    private String  currency;
+    
+    
+    @Column(name="EXCHANGE_RATE")
+    private Double exchangeRate;
+    
+    
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ENTRY_DATE")
     private Date       entryDate ;
@@ -110,10 +115,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="STATUS", length=2)
     private String     status ;
 
-
-    //--- ENTITY LINKS ( RELATIONSHIP )
-
-
+    @Column(name="GROUP_COUNT")
+    private Integer groupCount;
+    
 }
 
 

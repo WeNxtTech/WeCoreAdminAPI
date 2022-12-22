@@ -236,13 +236,13 @@ public class AdminDropDownController {
 
 	}
 	
-	@PostMapping("/doctype")
-	@ApiOperation(value = "This method is to Product Category  Drop Down")
+	@PostMapping("/referraltype")
+	@ApiOperation(value = "This method is to Product Referrral  Drop Down")
 	public ResponseEntity<CommonRes> getDocType(@RequestBody LovDropDownReq req) {
 		CommonRes data = new CommonRes();
 
 		// Save
-		List<DropDownRes> res = dropDownService.getDocType(req);
+		List<DropDownRes> res = dropDownService.getReferralType(req);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());

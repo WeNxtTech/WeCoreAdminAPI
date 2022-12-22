@@ -47,9 +47,6 @@ public class FilePathRes {
 	@JsonProperty("Errorres")
 	private String errorres ;
 	
-	@JsonProperty("InsuranceId")
-	private String insid;
-	
 	@JsonProperty("CreatedBy")
 	private String createdby ;
 	@JsonProperty("ImgUrl")

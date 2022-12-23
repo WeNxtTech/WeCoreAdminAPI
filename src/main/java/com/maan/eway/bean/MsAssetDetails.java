@@ -87,8 +87,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="BUILDING_FLOORS")
     private Integer    buildingFloors ;
 
-    @Column(name="BUILDING_USAGE_YN", length=20)
-    private String     buildingUsageYn;
+    @Column(name="BUILDING_USAGE_ID", length=100)
+    private String     buildingUsageId;
         
     @Column(name="SUMINSURED")
     private Double suminsured ;

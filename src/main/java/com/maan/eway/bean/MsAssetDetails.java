@@ -100,6 +100,10 @@ private static final long serialVersionUID = 1L;
     @Column(name="CURRENCY", length=20)
     private String  currency;
     
+    @Column(name="BUILDING_PURPOSE_ID", length=100)
+    private String     buildingPurposeId;
+
+    
     
     @Column(name="EXCHANGE_RATE")
     private Double exchangeRate;

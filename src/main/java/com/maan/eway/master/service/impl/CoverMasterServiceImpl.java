@@ -129,6 +129,17 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			} else if (req.getEffectiveDateStart().before(today)) {
 				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
 			}  
+			if(StringUtils.isNotBlank(req.getCoverageType()) && req.getCoverageType().equalsIgnoreCase("P") ) {
+				if (req.getEffectiveDateEnd()==null) {
+					errorList.add(new Error("14", "EffectiveDateEnd", "Please Enter EffectiveDateEnd"));
+				}else if (req.getEffectiveDateStart()!=null && req.getEffectiveDateEnd()!=null) {
+					if( req.getEffectiveDateStart().after(req.getEffectiveDateEnd())) {
+						errorList.add(new Error("14", "EffectiveDateEnd", "EffectiveDateStart After EffectiveDateEnd Not Allwoed"));	
+					}
+					
+				}
+			}
+			
 			
 			if (StringUtils.isBlank(req.getRegulatoryCode())) {
 				errorList.add(new Error("04", "Regulatory Code", "Please Enter Regulatory Code"));

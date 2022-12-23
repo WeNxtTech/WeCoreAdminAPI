@@ -26,6 +26,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -41,6 +42,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.CompanyStateMaster;
+import com.maan.eway.bean.CompanyTaxSetup;
 import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.FactorRateMaster;
 import com.maan.eway.bean.FactorTypeDetails;
@@ -381,52 +383,61 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 			maxAmendId.where(a1,a2,a3,a4);
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(b.get("effectiveDateStart")));
+			orderList.add(cb.desc(b.get("amendId")));
 			
 			// Where
 			Predicate n1 = cb.equal(b.get("factorTypeId"), factorTypeId);
 			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
 			Predicate n3 = cb.equal(b.get("amendId"), maxAmendId);
+			Predicate n4 = cb.equal(b.get("productId"),req.getProductId());
 			
-			query.where(n2,n1,n3).orderBy(orderList);
+			query.where(n2,n1,n3,n4).orderBy(orderList);
 			
 			// Get Result 
 			TypedQuery<FactorTypeDetails> result = em.createQuery(query);
 			list = result.getResultList();
-
+			Integer amendId=0;
+			if(list.size()>0) {
+				Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+			
+				if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
+					amendId = list.get(0).getAmendId() + 1 ;
 					
+					entryDate = new Date() ;
+					createdBy = req.getCreatedBy();
+					
+					//UPDATE
+					CriteriaBuilder cb2 = em.getCriteriaBuilder();
+					// create update
+					CriteriaUpdate<FactorTypeDetails> update = cb2.createCriteriaUpdate(FactorTypeDetails.class);
+					// set the root class
+					Root<FactorTypeDetails> m = update.from(FactorTypeDetails.class);
+					// set update and where clause
+					update.set("updatedBy", req.getCreatedBy());
+					update.set("updatedDate", entryDate);
+					update.set("effectiveDateEnd", oldEndDate);
+					
+					n1 = cb.equal(m.get("factorTypeId"), factorTypeId);
+					n2 = cb.equal(m.get("companyId"), req.getCompanyId());
+					n3 = cb.equal(m.get("amendId"), list.get(0).getAmendId() );
+					 n4 = cb.equal(m.get("productId"),req.getProductId());
+					update.where(n1,n2,n3,n4);
+					// perform update
+					em.createQuery(update).executeUpdate();
+					
+				} else {
+					amendId = list.get(0).getAmendId() ;
+					entryDate = list.get(0).getEntryDate() ;
+					createdBy = list.get(0).getCreatedBy();
+					
+					repository.deleteAll(list);
+				
+			    }
+			}		
 			
 			for ( RatingFieldDetails data :  req.getRatingFieldDetails() ) {
-				Integer amendId=0;
-
-				if(list.size()>0) {
-					Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
-					List<FactorTypeDetails> ratingFilter = list.stream().filter( o -> o.getRatingFieldId().toString().equalsIgnoreCase(data.getRatingFieldId().toString())).collect(Collectors.toList());
-					if(ratingFilter.size()>0) {
-					if ( ratingFilter.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
-						
-						amendId = ratingFilter.get(0).getAmendId() + 1 ;
-						entryDate = new Date() ;
-						createdBy = req.getCreatedBy();
-						FactorTypeDetails lastRecord = ratingFilter.get(0);
-							lastRecord.setEffectiveDateEnd(oldEndDate);
-							repository.saveAndFlush(lastRecord);
-						
-					} else {
-						amendId = ratingFilter.get(0).getAmendId() ;
-						entryDate = ratingFilter.get(0).getEntryDate() ;
-						createdBy = ratingFilter.get(0).getCreatedBy();
-						saveData = ratingFilter.get(0) ;
-						if (ratingFilter.size()>1 ) {
-							FactorTypeDetails lastRecord = ratingFilter.get(1);
-							lastRecord.setEffectiveDateEnd(oldEndDate);
-							repository.saveAndFlush(lastRecord);
-						}
-					
-				    }
-					}
-				}			
 				
+
 				// Save New Records
 				saveData = dozerMapper.map(req, FactorTypeDetails.class );
 				saveData.setFactorTypeId(Integer.valueOf(factorTypeId));

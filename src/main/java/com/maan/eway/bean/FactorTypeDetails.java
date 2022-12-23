@@ -133,6 +133,14 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="API_URL", length=20)
     private String     apiUrl ;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="UPDATED_DATE")
+    private Date       updatedDate ;
+    
+
+    @Column(name="UPDATED_BY", length=20)
+    private String   updatedBy ;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 

@@ -35,7 +35,7 @@ public class CoverMasterSaveReq implements Serializable {
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
-
+	
 	@JsonProperty("CoverName")
 	private String coverName;
 	

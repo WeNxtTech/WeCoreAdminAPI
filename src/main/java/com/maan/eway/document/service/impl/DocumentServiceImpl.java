@@ -203,6 +203,7 @@ public class DocumentServiceImpl implements DocumentService{
 				doc.setCompanyId(DocumentUploadDetails.getCompanyId());
 				doc.setEntryDate(new Date());
 				doc.setUploadedTime(new Date());
+				doc.setStatus("Y");
 				doc.setRequestedBy("");
 				doc.setUploadedBy("");
 				doc.setQuoteNo(DocumentUploadDetails.getQuoteNo());

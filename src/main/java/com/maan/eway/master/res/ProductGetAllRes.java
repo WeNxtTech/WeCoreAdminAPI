@@ -1,10 +1,7 @@
 package com.maan.eway.master.res;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-
-import javax.persistence.Column;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,15 +9,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class CompanyProductMasterRes implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class ProductGetAllRes {
 
 	@JsonProperty("ProductId")
 	private String productId;
-	
-	@JsonProperty("InsuranceId")
-	private String companyId;
 
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
@@ -29,16 +21,15 @@ public class CompanyProductMasterRes implements Serializable {
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateEnd")
 	private Date effectiveDateEnd;
-	
-	@JsonProperty("CurrencyIds")
-	private List<String> currencyIds;
 
 	@JsonProperty("ProductName")
 	private String productName;
-	
-	@JsonProperty("OldProductName")
-	private String oldProductName;
 
+
+	@JsonProperty("MotorYn")
+	private String motorYn;
+
+	
 	@JsonProperty("PaymentYn")
 	private String paymentYn;
 
@@ -58,17 +49,14 @@ public class CompanyProductMasterRes implements Serializable {
 	@JsonProperty("ProductDesc")
 	private String productDesc;
 
-	@JsonProperty("CoreAppCode")
-	private String coreAppCode;
-
+	@JsonProperty("RegulatoryCode")
+	private String regulatoryCode;
+	
 	@JsonProperty("AmendId")
 	private String amendId;
 
 	@JsonProperty("Remarks")
 	private String remarks;
-	
-	@JsonProperty("MotorYn")
-	private String motorYn;
 	
 	@JsonProperty("ProductIconId")
 	private String productIconId;
@@ -76,27 +64,6 @@ public class CompanyProductMasterRes implements Serializable {
 	@JsonProperty("ProductIconName")
 	private String productIconName;
 	
-	@JsonProperty("SumInsuredStart")
-	private String sumInsuredStart;
-	
-	@JsonProperty("SumInsuredEnd")
-	private String sumInsuredEnd;
-	
-	@JsonProperty("CommissionVatYn")
-	private String commissionVatYn;
-	
-	@JsonProperty("CheckerYn")
-	private String checkerYn;
-	
-	@JsonProperty("MakerYn")
-	private String makerYn;
-	
-	@JsonProperty("CustConfirmYn")
-	private String custConfirmYn;
-	
 	@JsonProperty("CreatedBy")
 	private String createdBy;
-	
-	@JsonProperty("RegulatoryCode")
-	private String regulatoryCode;
 }

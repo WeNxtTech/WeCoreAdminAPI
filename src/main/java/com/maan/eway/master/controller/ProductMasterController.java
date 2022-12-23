@@ -12,6 +12,7 @@ import com.maan.eway.master.req.ProductDropDownReq;
 import com.maan.eway.master.req.ProductMasterGetAllReq;
 import com.maan.eway.master.req.ProductMasterGetReq;
 import com.maan.eway.master.req.ProductMasterSaveReq;
+import com.maan.eway.master.res.ProductGetAllRes;
 import com.maan.eway.master.res.ProductMasterRes;
 import com.maan.eway.master.service.ProductMasterService;
 import com.maan.eway.bean.ProductMaster;
@@ -95,7 +96,7 @@ public class ProductMasterController {
 		CommonRes data = new CommonRes();
 		reqPrinter.reqPrint(req);
 		
-		List<ProductMasterRes> res = productService.getallProductDetails(req);
+		List<ProductGetAllRes> res = productService.getallProductDetails(req);
 		data.setCommonResponse(res);
 		data.setErrorMessage(Collections.emptyList());
 		data.setIsError(false);
@@ -118,7 +119,7 @@ public class ProductMasterController {
 			CommonRes data = new CommonRes();
 			reqPrinter.reqPrint(req);
 			
-			List<ProductMasterRes> res = productService.getActiveProductDetails(req);
+			List<ProductGetAllRes> res = productService.getActiveProductDetails(req);
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);

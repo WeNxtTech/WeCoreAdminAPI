@@ -16,7 +16,9 @@ import com.maan.eway.master.req.ProductDropDownReq;
 import com.maan.eway.master.req.ProductMasterGetAllReq;
 import com.maan.eway.master.req.ProductMasterGetReq;
 import com.maan.eway.master.req.ProductMasterSaveReq;
+import com.maan.eway.master.res.CompanyProductGetAllRes;
 import com.maan.eway.master.res.CompanyProductMasterRes;
+import com.maan.eway.master.res.ProductGetAllRes;
 import com.maan.eway.master.res.ProductMasterRes;
 import com.maan.eway.error.Error;
 import com.maan.eway.res.CompanyProductDropDownRes;
@@ -33,13 +35,13 @@ public interface CompanyProductMasterService  {
 
 	SuccessRes insertCompanyProductDetails(List<CompanyProductMultiInsertReq> req);
 
-	List<CompanyProductMasterRes> getallCompanyProductDetails(CompanyProductMasterGetAllReq req);
+	List<CompanyProductGetAllRes> getallCompanyProductDetails(CompanyProductMasterGetAllReq req);
 
-	List<CompanyProductMasterRes> getActiveCompanyProductDetails(CompanyProductMasterGetAllReq req);
+	List<CompanyProductGetAllRes> getActiveCompanyProductDetails(CompanyProductMasterGetAllReq req);
 
 	CompanyProductMasterRes getByCompanyProductId(CompanyProductMasterGetReq req);
 
-	List<ProductMasterRes> getallNonSelectedCompanyProducts(CompanyProductMasterGetAllReq req);
+	List<ProductGetAllRes> getallNonSelectedCompanyProducts(CompanyProductMasterGetAllReq req);
 
 	List<CompanyProductDropDownRes> getCompanyProductMasterDropdown(CompanyProductMasterGetAllReq req);
 

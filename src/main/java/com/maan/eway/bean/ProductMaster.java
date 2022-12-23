@@ -144,6 +144,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="UPDATED_BY", length=20)
     private String     updatedBy ;
+    
+    @Column(name="CURRENCY_IDS", length=20)
+    private String     currencyIds;
 
 
     //--- ENTITY LINKS ( RELATIONSHIP )

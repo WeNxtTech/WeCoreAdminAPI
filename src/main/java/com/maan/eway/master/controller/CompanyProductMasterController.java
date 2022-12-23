@@ -16,8 +16,10 @@ import com.maan.eway.master.req.CoverMasterGetAllReq;
 import com.maan.eway.master.req.CoverMasterGetReq;
 import com.maan.eway.master.req.CoverMasterSaveReq;
 import com.maan.eway.master.req.SectionCoverMasterSaveReq;
+import com.maan.eway.master.res.CompanyProductGetAllRes;
 import com.maan.eway.master.res.CompanyProductMasterRes;
 import com.maan.eway.master.res.CoverMasterRes;
+import com.maan.eway.master.res.ProductGetAllRes;
 import com.maan.eway.master.res.ProductMasterRes;
 import com.maan.eway.master.service.CompanyProductMasterService;
 import com.maan.eway.master.service.CoverMasterService;
@@ -136,7 +138,7 @@ public class CompanyProductMasterController {
 		CommonRes data = new CommonRes();
 		reqPrinter.reqPrint(req);
 		
-		List<CompanyProductMasterRes> res = companyProductService.getallCompanyProductDetails(req);
+		List<CompanyProductGetAllRes> res = companyProductService.getallCompanyProductDetails(req);
 		data.setCommonResponse(res);
 		data.setErrorMessage(Collections.emptyList());
 		data.setIsError(false);
@@ -159,7 +161,7 @@ public class CompanyProductMasterController {
 			CommonRes data = new CommonRes();
 			reqPrinter.reqPrint(req);
 			
-			List<CompanyProductMasterRes> res = companyProductService.getActiveCompanyProductDetails(req);
+			List<CompanyProductGetAllRes> res = companyProductService.getActiveCompanyProductDetails(req);
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);
@@ -203,7 +205,7 @@ public class CompanyProductMasterController {
 			CommonRes data = new CommonRes();
 			reqPrinter.reqPrint(req);
 			
-			List<ProductMasterRes> res = companyProductService.getallNonSelectedCompanyProducts(req);
+			List<ProductGetAllRes> res = companyProductService.getallNonSelectedCompanyProducts(req);
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);

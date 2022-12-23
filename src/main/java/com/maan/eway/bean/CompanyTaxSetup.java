@@ -59,6 +59,10 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="PRODUCT_ID", nullable=false)
     private Integer    productId ;
+    
+    @Id
+    @Column(name="BRANCH_CODE", nullable=false)
+    private String branchCode ;
 
     @Id
     @Column(name="TAX_ID", nullable=false)

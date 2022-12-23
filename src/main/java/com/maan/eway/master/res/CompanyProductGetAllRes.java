@@ -1,10 +1,7 @@
 package com.maan.eway.master.res;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-
-import javax.persistence.Column;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,9 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class CompanyProductMasterRes implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class CompanyProductGetAllRes {
 
 	@JsonProperty("ProductId")
 	private String productId;
@@ -30,9 +25,6 @@ public class CompanyProductMasterRes implements Serializable {
 	@JsonProperty("EffectiveDateEnd")
 	private Date effectiveDateEnd;
 	
-	@JsonProperty("CurrencyIds")
-	private List<String> currencyIds;
-
 	@JsonProperty("ProductName")
 	private String productName;
 	
@@ -66,9 +58,6 @@ public class CompanyProductMasterRes implements Serializable {
 
 	@JsonProperty("Remarks")
 	private String remarks;
-	
-	@JsonProperty("MotorYn")
-	private String motorYn;
 	
 	@JsonProperty("ProductIconId")
 	private String productIconId;

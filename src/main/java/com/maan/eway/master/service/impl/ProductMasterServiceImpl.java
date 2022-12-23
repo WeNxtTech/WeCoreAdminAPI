@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -46,6 +47,7 @@ import com.maan.eway.master.req.ProductChangeStatusReq;
 import com.maan.eway.master.req.ProductMasterGetAllReq;
 import com.maan.eway.master.req.ProductMasterGetReq;
 import com.maan.eway.master.req.ProductMasterSaveReq;
+import com.maan.eway.master.res.ProductGetAllRes;
 import com.maan.eway.master.res.ProductMasterRes;
 import com.maan.eway.master.service.MasterCommonValidationService;
 import com.maan.eway.master.service.ProductMasterService;
@@ -191,6 +193,9 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 				saveData.setUpdatedDate(new Date());
 				saveData.setUpdatedBy(req.getCreatedBy());
 				saveData.setAmendId(amendId);
+				String currencyIds =  String.join(",", req.getCurrencyIds()); ;
+				currencyIds = currencyIds.replace("[", "").replace("]", "");
+				saveData.setCurrencyIds(currencyIds);
 				
 				ListItemValue icon = listRepo.findByItemTypeAndItemCodeAndStatus("PRODUCT_ICONS" , req.getProductIconId() ,"Y");
 				saveData.setProductIconId(Integer.valueOf(icon.getItemCode()));
@@ -252,6 +257,10 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 				if( icon ==null ) {
 					errorList.add(new Error("02", "ProductIconId", "Please Select  Valid Product Icon"));	
 				}
+			}
+			
+			if (req.getCurrencyIds()==null && req.getCurrencyIds().size()<=0 ) {
+				errorList.add(new Error("02", "CurrencyIds", "Please Select Currency Ids"));
 			}
 			
 			if (StringUtils.isBlank(req.getProductDesc())) {
@@ -375,8 +384,8 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 	
 	///*********************************************************************GET ALL******************************************************\\
 	@Override
-	public List<ProductMasterRes> getallProductDetails(ProductMasterGetAllReq req) {
-		List<ProductMasterRes> resList = new ArrayList<ProductMasterRes>();
+	public List<ProductGetAllRes> getallProductDetails(ProductMasterGetAllReq req) {
+		List<ProductGetAllRes> resList = new ArrayList<ProductGetAllRes>();
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 
 		try {
@@ -428,10 +437,11 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			
 			// Map
 			for (ProductMaster data : list) {
-				ProductMasterRes res = new ProductMasterRes();
+				ProductGetAllRes res = new ProductGetAllRes();
 	
-				res = dozerMapper.map(data, ProductMasterRes.class);
+				res = dozerMapper.map(data, ProductGetAllRes.class);
 				res.setProductId(data.getProductId().toString());
+				
 				resList.add(res);
 			}
 	
@@ -496,10 +506,31 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getProductId()))).collect(Collectors.toList());
 			list.sort(Comparator.comparing(ProductMaster :: getProductName ));
 			
-			res = dozerMapper.map(list.get(0) , ProductMasterRes.class);
+		//	res = dozerMapper.map(list.get(0) , ProductMasterRes.class);
 			res.setProductId(list.get(0).getProductId().toString());
 			res.setEntryDate(list.get(0).getEntryDate());
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
+			List<String> currencyIds = new ArrayList<String>(list.get(0).getCurrencyIds()==null?Collections.emptyList() : Arrays.asList(list.get(0).getCurrencyIds().split(",")));
+			res.setCurrencyIds(  currencyIds   );
+			res.setAmendId(list.get(0).getAmendId()==null?"":list.get(0).getAmendId().toString());
+			res.setAppLoginUrl(list.get(0).getAppLoginUrl());
+			res.setCreatedBy(list.get(0).getCreatedBy());
+			res.setEntryDate(list.get(0).getEntryDate());
+			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
+			res.setMotorYn(list.get(0).getMotorYn());
+			res.setPaymentRedirUrl(list.get(0).getPaymentRedirUrl());
+			res.setPaymentYn(list.get(0).getPaymentYn());
+			res.setProductDesc(list.get(0).getProductDesc());
+			res.setProductIconId(list.get(0).getProductIconId()==null?"":list.get(0).getProductIconId().toString());
+			res.setProductIconName(list.get(0).getProductIconName());
+			res.setProductId(list.get(0).getProductId()==null?"":list.get(0).getProductId().toString());
+			res.setProductName(list.get(0).getProductName());
+			res.setProductDesc(list.get(0).getProductDesc());
+			res.setRegulatoryCode(list.get(0).getRegulatoryCode());
+			res.setRemarks(list.get(0).getRemarks());
+			res.setStatus(list.get(0).getStatus());
+
+		
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -583,8 +614,8 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 	
 	//************************************************GET ACTIVE PRODUCT******************************************\\
 	@Override
-	public List<ProductMasterRes> getActiveProductDetails(ProductMasterGetAllReq req) {
-		List<ProductMasterRes> resList = new ArrayList<ProductMasterRes>();
+	public List<ProductGetAllRes> getActiveProductDetails(ProductMasterGetAllReq req) {
+		List<ProductGetAllRes> resList = new ArrayList<ProductGetAllRes>();
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 
 		try {
@@ -635,9 +666,9 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 	
 			// Map
 			for (ProductMaster data : list) {
-				ProductMasterRes res = new ProductMasterRes();
+				ProductGetAllRes res = new ProductGetAllRes();
 	
-				res = dozerMapper.map(data, ProductMasterRes.class);
+				res = dozerMapper.map(data, ProductGetAllRes.class);
 				res.setProductId(data.getProductId().toString());
 				resList.add(res);
 			}

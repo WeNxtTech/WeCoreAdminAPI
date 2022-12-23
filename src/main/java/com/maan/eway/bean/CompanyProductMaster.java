@@ -147,6 +147,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="MOTOR_YN", nullable=false, length=1)
     private String     motorYn ;
 
+    @Column(name="CURRENCY_IDS", length=20)
+    private String     currencyIds;
 }
 
 

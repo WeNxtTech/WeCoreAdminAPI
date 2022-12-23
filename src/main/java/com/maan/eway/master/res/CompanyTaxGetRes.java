@@ -30,6 +30,8 @@ public class CompanyTaxGetRes implements Serializable {
     @JsonProperty("EffectiveDateStart")
     private Date       effectiveDateStart ;
 
+    @JsonProperty("BranchCode")
+    private String     branchCode;
     
     @JsonFormat(pattern = "dd/MM/yyyy")
     @JsonProperty("EffectiveDateEnd")

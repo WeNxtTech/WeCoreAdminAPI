@@ -11,6 +11,7 @@ import com.maan.eway.master.req.ProductDropDownReq;
 import com.maan.eway.master.req.ProductMasterGetAllReq;
 import com.maan.eway.master.req.ProductMasterGetReq;
 import com.maan.eway.master.req.ProductMasterSaveReq;
+import com.maan.eway.master.res.ProductGetAllRes;
 import com.maan.eway.master.res.ProductMasterRes;
 import com.maan.eway.error.Error;
 import com.maan.eway.res.DropDownRes;
@@ -26,9 +27,9 @@ public interface ProductMasterService  {
 
 	SuccessRes insertProduct(ProductMasterSaveReq req);
 
-	List<ProductMasterRes> getallProductDetails(ProductMasterGetAllReq req);
+	List<ProductGetAllRes> getallProductDetails(ProductMasterGetAllReq req);
 
-	List<ProductMasterRes> getActiveProductDetails(ProductMasterGetAllReq req);
+	List<ProductGetAllRes> getActiveProductDetails(ProductMasterGetAllReq req);
 
 	ProductMasterRes getByProductCode(ProductMasterGetReq req);
 

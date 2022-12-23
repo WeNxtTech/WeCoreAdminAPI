@@ -2,6 +2,7 @@ package com.maan.eway.master.res;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 
@@ -33,6 +34,8 @@ public class ProductMasterRes implements Serializable {
 	@JsonProperty("MotorYn")
 	private String motorYn;
 
+	@JsonProperty("CurrencyIds")
+	private List<String> currencyIds;
 	
 	@JsonProperty("PaymentYn")
 	private String paymentYn;

@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -50,7 +51,9 @@ import com.maan.eway.master.req.CompanyProductMasterGetAllReq;
 import com.maan.eway.master.req.CompanyProductMasterGetReq;
 import com.maan.eway.master.req.CompanyProductMasterSaveReq;
 import com.maan.eway.master.req.CompanyProductMultiInsertReq;
+import com.maan.eway.master.res.CompanyProductGetAllRes;
 import com.maan.eway.master.res.CompanyProductMasterRes;
+import com.maan.eway.master.res.ProductGetAllRes;
 import com.maan.eway.master.res.ProductMasterRes;
 import com.maan.eway.master.service.CompanyProductMasterService;
 import com.maan.eway.notif.req.MailFramingReq;
@@ -293,34 +296,34 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 				
 				log.info("Saved Details is ---> " + json.toJson(saveData));
 			
-				// Thread To Trigger Mail
-				
-				InsuranceCompanyMaster companyData = insrepo.findByCompanyId(req.getCompanyId());
-				LoginMaster loginData = loginRepo.findByLoginId(req.getCreatedBy());
-
-				List<String> ccMails = new ArrayList<String>();
-				ccMails.add(companyData.getCompanyEmail());
-			//	ccMails.add(loginData.getUserMail());
-
-				List<String> toMails = new ArrayList<String>();
-				toMails.add(companyData.getCompanyEmail());
-
-				Map<String, Object> keys = new HashMap<String, Object>();
-				keys.put("PRODUCT_ID", productId == null ? "" : productId.toString());
-
-				// Set Mail Request
-				MailFramingReq mailFrameReq = new MailFramingReq();
-				mailFrameReq.setInsId(req.getCompanyId().toString());
-				mailFrameReq.setNotifTemplateId("PRODUCT");
-				mailFrameReq.setKeys(keys);
-				mailFrameReq.setMailCc(ccMails);
-				mailFrameReq.setMailTo(toMails);
-				mailFrameReq.setMailRegards(companyData.getRegards());
-				mailFrameReq.setStatus(res.getResponse());
-
-				log.info("{ Mail Pushed SuccessFully . ProductId is ---> }" + productId  );
-				// mailFrameService.sendSms(mailReq);
-				mailThreadService.threadToSendMail(mailFrameReq);
+//				// Thread To Trigger Mail
+//				
+//				InsuranceCompanyMaster companyData = insrepo.findByCompanyId(req.getCompanyId());
+//				LoginMaster loginData = loginRepo.findByLoginId(req.getCreatedBy());
+//
+//				List<String> ccMails = new ArrayList<String>();
+//				ccMails.add(companyData.getCompanyEmail());
+//			//	ccMails.add(loginData.getUserMail());
+//
+//				List<String> toMails = new ArrayList<String>();
+//				toMails.add(companyData.getCompanyEmail());
+//
+//				Map<String, Object> keys = new HashMap<String, Object>();
+//				keys.put("PRODUCT_ID", productId == null ? "" : productId.toString());
+//
+//				// Set Mail Request
+//				MailFramingReq mailFrameReq = new MailFramingReq();
+//				mailFrameReq.setInsId(req.getCompanyId().toString());
+//				mailFrameReq.setNotifTemplateId("PRODUCT");
+//				mailFrameReq.setKeys(keys);
+//				mailFrameReq.setMailCc(ccMails);
+//				mailFrameReq.setMailTo(toMails);
+//				mailFrameReq.setMailRegards(companyData.getRegards());
+//				mailFrameReq.setStatus(res.getResponse());
+//
+//				log.info("{ Mail Pushed SuccessFully . ProductId is ---> }" + productId  );
+//				// mailFrameService.sendSms(mailReq);
+//				mailThreadService.threadToSendMail(mailFrameReq);
 				
 			}
 			
@@ -396,8 +399,8 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 	}
 	
 	@Override
-	public List<CompanyProductMasterRes> getallCompanyProductDetails(CompanyProductMasterGetAllReq req) {
-		List<CompanyProductMasterRes> resList = new ArrayList<CompanyProductMasterRes>();
+	public List<CompanyProductGetAllRes> getallCompanyProductDetails(CompanyProductMasterGetAllReq req) {
+		List<CompanyProductGetAllRes> resList = new ArrayList<CompanyProductGetAllRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
 			List<CompanyProductMaster> list = new ArrayList<CompanyProductMaster>();
@@ -437,9 +440,9 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			list.sort(Comparator.comparing(CompanyProductMaster :: getProductName ));
 			// Map
 			for (CompanyProductMaster data : list) {
-				CompanyProductMasterRes res = new CompanyProductMasterRes();
+				CompanyProductGetAllRes res = new CompanyProductGetAllRes();
 
-				res = mapper.map(data, CompanyProductMasterRes.class);
+				res = mapper.map(data, CompanyProductGetAllRes.class);
 				res.setCoreAppCode(data.getCoreAppCode());
 
 				resList.add(res);
@@ -458,8 +461,8 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
 	}
 	@Override
-	public List<CompanyProductMasterRes> getActiveCompanyProductDetails(CompanyProductMasterGetAllReq req) {
-		List<CompanyProductMasterRes> resList = new ArrayList<CompanyProductMasterRes>();
+	public List<CompanyProductGetAllRes> getActiveCompanyProductDetails(CompanyProductMasterGetAllReq req) {
+		List<CompanyProductGetAllRes> resList = new ArrayList<CompanyProductGetAllRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
 			List<CompanyProductMaster> list = new ArrayList<CompanyProductMaster>();
@@ -500,9 +503,9 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			list.sort(Comparator.comparing(CompanyProductMaster :: getProductName ));
 			// Map
 			for (CompanyProductMaster data : list) {
-				CompanyProductMasterRes res = new CompanyProductMasterRes();
+				CompanyProductGetAllRes res = new CompanyProductGetAllRes();
 
-				res = mapper.map(data, CompanyProductMasterRes.class);
+				res = mapper.map(data, CompanyProductGetAllRes.class);
 				res.setCoreAppCode(data.getCoreAppCode());
 
 				resList.add(res);
@@ -567,12 +570,39 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			list = result.getResultList();
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getProductId()))).collect(Collectors.toList());
 			list.sort(Comparator.comparing(CompanyProductMaster :: getProductName ));
-			res = mapper.map(list.get(0), CompanyProductMasterRes.class);
+			//res = mapper.map(list.get(0), CompanyProductMasterRes.class);
 			res.setProductId(list.get(0).getProductId().toString());
 			res.setEntryDate(list.get(0).getEntryDate());
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
 			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
 			res.setCoreAppCode(list.get(0).getCoreAppCode());
+			List<String> currencyIds = new ArrayList<String>(list.get(0).getCurrencyIds()==null?Collections.emptyList() : Arrays.asList(list.get(0).getCurrencyIds().split(",")));
+			res.setCurrencyIds(  currencyIds   );
+			res.setAmendId(list.get(0).getAmendId()==null?"":list.get(0).getAmendId().toString());
+			res.setAppLoginUrl(list.get(0).getAppLoginUrl());
+			res.setCreatedBy(list.get(0).getCreatedBy());
+			res.setEntryDate(list.get(0).getEntryDate());
+			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
+			res.setMotorYn(list.get(0).getMotorYn());
+			res.setPaymentRedirUrl(list.get(0).getPaymentRedirUrl());
+			res.setPaymentYn(list.get(0).getPaymentYn());
+			res.setProductDesc(list.get(0).getProductDesc());
+			res.setProductIconId(list.get(0).getProductIconId()==null?"":list.get(0).getProductIconId().toString());
+			res.setProductIconName(list.get(0).getProductIconName());
+			res.setProductId(list.get(0).getProductId()==null?"":list.get(0).getProductId().toString());
+			res.setProductName(list.get(0).getProductName());
+			res.setProductDesc(list.get(0).getProductDesc());
+			res.setRegulatoryCode(list.get(0).getRegulatoryCode());
+			res.setRemarks(list.get(0).getRemarks());
+			res.setStatus(list.get(0).getStatus());
+			res.setCompanyId(list.get(0).getCompanyId());
+			res.setCheckerYn(list.get(0).getCheckerYn());
+			res.setCommissionVatYn(list.get(0).getCommissionVatYn());
+			res.setCoreAppCode(list.get(0).getCoreAppCode());
+			res.setCustConfirmYn(list.get(0).getCustConfirmYn());
+			res.setSumInsuredStart(list.get(0).getSumInsuredStart()==null?"":list.get(0).getSumInsuredStart().toString());
+			res.setSumInsuredEnd(list.get(0).getSumInsuredEnd()==null?"":list.get(0).getSumInsuredEnd().toString());;
+			
 			} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -582,8 +612,8 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 	}
 	
 	@Override
-	public List<ProductMasterRes> getallNonSelectedCompanyProducts(CompanyProductMasterGetAllReq req) {
-		List<ProductMasterRes> resList = new ArrayList<ProductMasterRes>();
+	public List<ProductGetAllRes> getallNonSelectedCompanyProducts(CompanyProductMasterGetAllReq req) {
+		List<ProductGetAllRes> resList = new ArrayList<ProductGetAllRes>();
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
 			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
@@ -661,9 +691,9 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			
 			// Map
 			for (ProductMaster data : list ) {
-				ProductMasterRes res = new ProductMasterRes();
+				ProductGetAllRes res = new ProductGetAllRes();
 	
-				res = dozerMapper.map(data, ProductMasterRes.class);
+				res = dozerMapper.map(data, ProductGetAllRes.class);
 				res.setProductId(data.getProductId().toString());
 				resList.add(res);
 			}
@@ -1064,6 +1094,9 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			saveData.setEntryDate(entryDate);
 			saveData.setAmendId(amendId);
 			saveData.setCoreAppCode(req.getCoreAppCode());
+			String currencyIds =  String.join(",", req.getCurrencyIds()); ;
+			currencyIds = currencyIds.replace("[", "").replace("]", "");
+			saveData.setCurrencyIds(currencyIds);
 			saveData.setProductIconName(data.getItemValue());
 			repo.saveAndFlush(saveData);
 			log.info("Saved Details is --> " + json.toJson(saveData));

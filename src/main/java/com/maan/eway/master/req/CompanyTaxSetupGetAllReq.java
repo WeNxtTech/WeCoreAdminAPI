@@ -18,5 +18,8 @@ public class CompanyTaxSetupGetAllReq implements Serializable {
 	@JsonProperty("InsuranceId")
     private String     companyId     ;
 	
+	@JsonProperty("BranchCode")
+    private String     branchCode;
+	
 
 }

@@ -159,9 +159,9 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			cal.setTime(new Date() );  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
 			cal.set(Calendar.SECOND, today.getSeconds());
 			Date effDate = cal.getTime();
-			Date endDate = sdformat.parse("31/12/2050") ;
-			cal.setTime(sdformat.parse("31/12/2050"));  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 50) ;
-			endDate = cal.getTime() ;
+		//	Date endDate = sdformat.parse("31/12/2050") ;
+		//	cal.setTime(sdformat.parse("31/12/2050"));  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 50) ;
+		//	endDate = cal.getTime() ;
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
 			cal.set(Calendar.MINUTE, 1);
@@ -223,7 +223,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 						
 						dozerMapper.map(data, secCover) ;
 						secCover.setEffectiveDateStart(effDate);
-						secCover.setEffectiveDateEnd(endDate);
+						secCover.setEffectiveDateEnd(data.getEffectiveDateEnd());
 						secCover.setEntryDate(new Date());
 						secCover.setSectionId(Integer.valueOf(req.getSectionId()));
 						secCover.setProductId(Integer.valueOf(req.getProductId()));
@@ -262,7 +262,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 						
 						dozerMapper.map(data, secCover) ;
 						secCover.setEffectiveDateStart(effDate);
-						secCover.setEffectiveDateEnd(endDate);
+						secCover.setEffectiveDateEnd(data.getEffectiveDateEnd());
 						secCover.setEntryDate(new Date());
 						secCover.setSectionId(Integer.valueOf(req.getSectionId()));
 						secCover.setProductId(Integer.valueOf(req.getProductId()));
@@ -960,6 +960,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				errorList.add(new Error("02", "Cover Desc", "Please Enter Cover  Desc within 100 Characters"));
 			}
 			// Date Validation 
+			
 			Calendar cal = new GregorianCalendar();
 			Date today = new Date();
 			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
@@ -997,7 +998,16 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				}	
 			} 
 			
-			
+			if(StringUtils.isNotBlank(req.getCoverageType()) && req.getCoverageType().equalsIgnoreCase("P") ) {
+				if (req.getEffectiveDateEnd()==null) {
+					errorList.add(new Error("14", "EffectiveDateEnd", "Please Enter EffectiveDateEnd"));
+				}else if (req.getEffectiveDateStart()!=null && req.getEffectiveDateEnd()!=null) {
+					if( req.getEffectiveDateStart().after(req.getEffectiveDateEnd())) {
+						errorList.add(new Error("14", "EffectiveDateEnd", "EffectiveDateStart After EffectiveDateEnd Not Allwoed"));	
+					}
+					
+				}
+			}
 			
 			if (StringUtils.isBlank(req.getCreatedBy())) {
 				errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy "));
@@ -1279,7 +1289,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			String createdBy = "" ;
 			Date startDate = req.getEffectiveDateStart() ;
 			String end = "31/12/2050";
-			Date endDate = sdf.parse(end);
+			Date endDate =  req.getCoverageType().equalsIgnoreCase("P") && req.getEffectiveDateEnd()!=null ? req.getEffectiveDateEnd() : sdf.parse(end);
 			long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
 			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
 			

@@ -140,9 +140,6 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			cal.setTime(new Date() );  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
 			cal.set(Calendar.SECOND, today.getSeconds());
 			Date effDate = cal.getTime();
-			Date endDate = sdformat.parse("31/12/2050") ;
-			cal.setTime(sdformat.parse("31/12/2050"));  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 50) ;
-			endDate = cal.getTime() ;
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
 			cal.set(Calendar.MINUTE, 1);
@@ -211,7 +208,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 
 				saveData = dozerMapper.map(list.get(0), SectionCoverMaster.class);
 				saveData.setEffectiveDateStart(effDate);
-				saveData.setEffectiveDateEnd(endDate);
+				saveData.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
 				saveData.setEntryDate(new Date());
 				saveData.setAmendId(amendId);
 				saveData.setSectionId(Integer.valueOf(req.getSectionId()));
@@ -710,6 +707,16 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 				errorList
 						.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
 			} 
+			if(StringUtils.isNotBlank(req.getCoverageType()) && req.getCoverageType().equalsIgnoreCase("P") ) {
+				if (req.getEffectiveDateEnd()==null) {
+					errorList.add(new Error("14", "EffectiveDateEnd", "Please Enter EffectiveDateEnd"));
+				}else if (req.getEffectiveDateStart()!=null && req.getEffectiveDateEnd()!=null) {
+					if( req.getEffectiveDateStart().after(req.getEffectiveDateEnd())) {
+						errorList.add(new Error("14", "EffectiveDateEnd", "EffectiveDateStart After EffectiveDateEnd Not Allwoed"));	
+					}
+					
+				}
+			}
 			if (StringUtils.isBlank(req.getCoreAppCode())) {
 				errorList.add(new Error("04", "Core App Code", "Please Enter Core App Code"));
 			} else if (req.getCoreAppCode().length() > 20) {
@@ -904,7 +911,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
 			Date startDate = req.getEffectiveDateStart() ;
 			String end = "31/12/2050";
-			Date endDate = sdf.parse(end);
+			Date endDate =  req.getCoverageType().equalsIgnoreCase("P") && req.getEffectiveDateEnd()!=null ? req.getEffectiveDateEnd() : sdformat.parse(end);
 			String createdBy = "" ;
 
 			String coverId = StringUtils.isBlank(req.getCoverId()) ? "" : req.getCoverId();
@@ -1067,6 +1074,18 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 				saveData.setTaxCode(req.getTaxCode());
 			}
 			saveData.setDependentCoverYn(StringUtils.isNotBlank(req.getDependentCoverYn()) ? req.getDependentCoverYn() : "N" );
+			saveData.setCoverId(Integer.valueOf(coverId)) ;
+			saveData.setSubCoverId(Integer.valueOf(subcoverId)) ;
+			saveData.setEffectiveDateEnd(endDate);
+			saveData.setCreatedBy(createdBy);
+			saveData.setStatus(req.getStatus());
+			saveData.setEntryDate(new Date());
+			saveData.setUpdatedDate(new Date());
+			saveData.setUpdatedBy(req.getCreatedBy());
+			saveData.setAmendId(amendId);
+			saveData.setCoreAppCode(req.getCoreAppCode());
+			saveData.setDependentCoverYn(StringUtils.isNotBlank(req.getDependentCoverYn()) ? req.getDependentCoverYn() : "N" );
+			
 			repo.saveAndFlush(saveData);
 
 			// Update Old Record

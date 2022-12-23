@@ -368,7 +368,7 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			Integer amendId = 0 ;
 			Date startDate = req.getEffectiveDateStart() ;
 			String end = "31/12/2050";
-			Date endDate = sdformat.parse(end);
+			Date endDate =  req.getCoverageType().equalsIgnoreCase("P") && req.getEffectiveDateEnd()!=null ? req.getEffectiveDateEnd() : sdformat.parse(end);
 			long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
 			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
 			Date entryDate = null ;

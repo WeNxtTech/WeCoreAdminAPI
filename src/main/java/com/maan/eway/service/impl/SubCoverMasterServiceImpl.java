@@ -134,6 +134,16 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 		} else if (req.getEffectiveDateStart().before(today)) {
 			errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
 		}
+		if(StringUtils.isNotBlank(req.getCoverageType()) && req.getCoverageType().equalsIgnoreCase("P") ) {
+			if (req.getEffectiveDateEnd()==null) {
+				errorList.add(new Error("14", "EffectiveDateEnd", "Please Enter EffectiveDateEnd"));
+			}else if (req.getEffectiveDateStart()!=null && req.getEffectiveDateEnd()!=null) {
+				if( req.getEffectiveDateStart().after(req.getEffectiveDateEnd())) {
+					errorList.add(new Error("14", "EffectiveDateEnd", "EffectiveDateStart After EffectiveDateEnd Not Allwoed"));	
+				}
+				
+			}
+		}
 		
 //		else if (req.getEffectiveDateEnd() == null ) {
 //			errorList.add(new Error("10", "EffectiveDateEnd", "Please Enter Effective Date End "));
@@ -314,7 +324,7 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 				Integer amendId=0;
 				Date startDate = req.getEffectiveDateStart() ;
 				String end = "31/12/2050";
-				Date endDate = sdf.parse(end);
+				Date endDate =  req.getCoverageType().equalsIgnoreCase("P") && req.getEffectiveDateEnd()!=null ? req.getEffectiveDateEnd() : sdf.parse(end);
 				long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
 				Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
 				Date entryDate = null ;

@@ -52,6 +52,10 @@ public class CountryMaster implements Serializable {
 private static final long serialVersionUID = 1L;
  
     //--- ENTITY PRIMARY KEY 
+	@Id
+	@Column(name="COMPANY_ID", nullable=false)
+	private String    companyId ;
+	
     @Id
     @Column(name="COUNTRY_ID", nullable=false)
     private String    countryId ;
@@ -87,7 +91,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="STATUS", length=1)
     private String     status ;
 
-    @Column(name="CORE_APP_CODE",  length=20)
+    @Column(name="CORE_APP_CODE", length=20)
     private String     coreAppCode ;
 
 

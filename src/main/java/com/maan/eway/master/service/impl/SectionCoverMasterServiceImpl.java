@@ -326,43 +326,6 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			today = cal.getTime();
 
 			List<SectionCoverMaster> coverList = new ArrayList<SectionCoverMaster>();
-			// Pagination
-			
-			// Find CoverIds
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<Long> query = cb.createQuery(Long.class);
-
-			// Find All
-			Root<SectionCoverMaster> b = query.from(SectionCoverMaster.class);
-
-			// Amend Id Max Filter
-			Subquery<Long> amendId = query.subquery(Long.class);
-			Root<SectionCoverMaster> ocpm1 = amendId.from(SectionCoverMaster.class);
-			amendId.select(cb.max(ocpm1.get("amendId")));
-			Predicate a1 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
-			//Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
-			Predicate a3 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-			Predicate a4 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-			Predicate a5 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			amendId.where(a1,a3,a4,a5);
-			
-			// Select
-			query.select(b.get("coverId") ).distinct(true);
-			// Order By
-			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(b.get("effectiveDateStart")));
-
-			// Where
-			Predicate n1 =  cb.equal(b.get("amendId"), amendId );  
-			Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
-			Predicate n3 = cb.equal(b.get("companyId"), req.getInsuranceId());
-			Predicate n4 = cb.equal(b.get("sectionId"), req.getSectionId());
-			query.where(n1,n2,n3,n4).orderBy(orderList);
-			
-			// Get Result
-			TypedQuery<Long> result = em.createQuery(query);
-	
-			List<Long> coverIds = result.getResultList();
 						
 							
 			// Find Latest Record
@@ -378,11 +341,12 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Root<SectionCoverMaster> ocpm2 = amendId2.from(SectionCoverMaster.class);
 			amendId2.select(cb2.max(ocpm2.get("amendId")));
 			Predicate a7 = cb2.equal(ocpm2.get("coverId"), b2.get("coverId"));
+			Predicate a12 = cb2.equal(ocpm2.get("subCoverId"), b2.get("subCoverId"));
 			Predicate a8 = cb2.equal(ocpm2.get("sectionId"), b2.get("sectionId"));
 			Predicate a9 = cb2.equal(ocpm2.get("productId"), b2.get("productId"));
 			Predicate a10 = cb2.equal(ocpm2.get("companyId"), b2.get("companyId"));
 			Predicate a11 = cb2.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"), today);
-			amendId.where(a7,a8,a9,a10,a11);
+			amendId2.where(a7,a8,a9,a10,a11,a12);
 
 			// Select
 			query2.select(b2);
@@ -391,20 +355,15 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			List<Order> orderList2 = new ArrayList<Order>();
 			orderList2.add(cb2.asc(b2.get("coverName")));
 
-			//In 
-			Expression<String>e0=b2.get("coverId");
 			
 			// Where
-			Predicate n5 = cb2.equal(b2.get("amendId"),amendId);
-			Predicate n6 = e0.in(coverIds);
+			Predicate n5 = cb2.equal(b2.get("amendId"),amendId2);
+			Predicate n6 = cb2.equal(b2.get("subCoverId"),"0");
 			Predicate n7 = cb2.equal(b2.get("productId"), req.getProductId());
 			Predicate n8 = cb2.equal(b2.get("companyId"), req.getInsuranceId());
 			Predicate n9 = cb2.equal(b2.get("sectionId"), req.getSectionId());
-			Predicate n10 = cb2.equal(b2.get("status"), "Y");
-			Predicate n11 = cb2.notEqual(b2.get("status"), "Y");
-			Predicate n12 = cb2.or(n10,n11);
 			
-			query2.where(n5,n6,n7,n8,n9,n12).orderBy(orderList2);
+			query2.where(n5,n6,n7,n8,n9).orderBy(orderList2);
 
 			// Get Result
 			TypedQuery<SectionCoverMaster> result2 = em.createQuery(query2);
@@ -463,8 +422,8 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate a8 = cb2.equal(ocpm2.get("sectionId"), b2.get("sectionId"));
 			Predicate a9 = cb2.equal(ocpm2.get("productId"), b2.get("productId"));
 			Predicate a10 = cb2.equal(ocpm2.get("companyId"), b2.get("companyId"));
-			//Predicate a11 = cb2.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"), today);
-			amendId.where(a7,a8,a9,a10);
+			Predicate a11 = cb2.equal(ocpm2.get("subCoverId"), b2.get("subCoverId"));
+			amendId.where(a7,a8,a9,a10,a11);
 
 			// Select
 			query2.select(b2);
@@ -473,20 +432,15 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			List<Order> orderList2 = new ArrayList<Order>();
 			orderList2.add(cb2.desc(b2.get("effectiveDateStart")));
 
-			//In 
-			Expression<String>e0=b2.get("coverId");
-			
 			// Where
 			Predicate n5 = cb2.equal(b2.get("amendId"),amendId);
-			Predicate n6 =cb2.equal(b2.get("coverId"), req.getCoverId());
+			Predicate n6 =cb2.equal(b2.get("subCoverId"), "0");
 			Predicate n7 = cb2.equal(b2.get("productId"), req.getProductId());
 			Predicate n8 = cb2.equal(b2.get("companyId"), req.getCompanyId());
 			Predicate n9 = cb2.equal(b2.get("sectionId"), req.getSectionId());
-			Predicate n10 = cb2.equal(b2.get("status"), "Y");
-			Predicate n11 = cb2.notEqual(b2.get("status"), "Y");
-			Predicate n12 = cb2.or(n10,n11);
 			
-			query2.where(n5,n6,n7,n8,n9,n12).orderBy(orderList2);
+			
+			query2.where(n5,n6,n7,n8,n9).orderBy(orderList2);
 
 			// Get Result
 			TypedQuery<SectionCoverMaster> result2 = em.createQuery(query2);
@@ -545,44 +499,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			cal.set(Calendar.MINUTE, 50);
 			today = cal.getTime();
 
-			List<SectionCoverMaster> coverList = new ArrayList<SectionCoverMaster>();
-
-			// Find CoverIds
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<Long> query = cb.createQuery(Long.class);
-
-			// Find All
-			Root<SectionCoverMaster> b = query.from(SectionCoverMaster.class);
-
-			// AmendId  Max Filter
-			Subquery<Long> amendId = query.subquery(Long.class);
-			Root<SectionCoverMaster> ocpm1 = amendId.from(SectionCoverMaster.class);
-			amendId.select(cb.max(ocpm1.get("amendId")));
-			Predicate a1 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
-			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
-			Predicate a3 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-			Predicate a4 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-			Predicate a5 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			amendId.where(a1,a2,a3,a4,a5);
-			
-			// Select
-			query.select(b.get("coverId") ).distinct(true);
-			// Order By
-			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(b.get("effectiveDateStart")));
-
-			// Where
-			Predicate n1 =  cb.equal(b.get("amendId"), amendId );  
-			Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
-			Predicate n3 = cb.equal(b.get("companyId"), req.getInsuranceId());
-			Predicate n4 = cb.equal(b.get("sectionId"), req.getSectionId());
-			query.where(n1,n2,n3,n4).orderBy(orderList);
-			
-			// Get Result
-			TypedQuery<Long> result = em.createQuery(query);
-
-			List<Long> coverIds = result.getResultList();
-						
+					
 							
 			// Find Latest Record
 			CriteriaBuilder cb2 = em.getCriteriaBuilder();
@@ -600,7 +517,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate a7 = cb2.equal(ocpm2.get("sectionId"), b2.get("sectionId"));
 			Predicate a8 = cb2.equal(ocpm2.get("productId"), b2.get("productId"));
 			Predicate a9 = cb2.equal(ocpm2.get("companyId"), b2.get("companyId"));
-			Predicate a10 = cb2.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"), today);
+			Predicate a10 = cb2.equal(ocpm2.get("subCoverId"), b2.get("subCoverId"));
 			amendId2.where(a6,a7,a8,a9,a10);
 
 			// Select
@@ -608,14 +525,11 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 
 			// Order By
 			List<Order> orderList2 = new ArrayList<Order>();
-			orderList.add(cb.desc(b.get("effectiveDateStart")));
+			orderList2.add(cb2.desc(b2.get("amendId")));
 
-			//In 
-			Expression<String>e0=b2.get("coverId");
-			
 			// Where
 			Predicate n5 = cb2.equal(b2.get("amendId"),amendId2);
-			Predicate n6 = e0.in(coverIds);
+			Predicate n6 = cb2.equal(b2.get("subCoverId"),"0");
 			Predicate n7 = cb2.equal(b2.get("productId"), req.getProductId());
 			Predicate n8 = cb2.equal(b2.get("companyId"), req.getInsuranceId());
 			Predicate n9 = cb2.equal(b2.get("sectionId"), req.getSectionId());
@@ -625,7 +539,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 
 			// Get Result
 			TypedQuery<SectionCoverMaster> result2 = em.createQuery(query2);
-			coverList = result2.getResultList();
+			List<SectionCoverMaster> coverList = result2.getResultList();
 			Map<Integer,List<SectionCoverMaster>> groupByCover = coverList.stream().collect(Collectors.groupingBy(SectionCoverMaster :: getCoverId));
 			// Map
 			for (Integer  data : groupByCover.keySet()) {
@@ -1336,13 +1250,9 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate n5 = cb.equal(b.get("sectionId"),  req.getSectionId());
 			Predicate n6 = cb.equal(b.get("productId"),req.getProductId());
 			Predicate n7 = cb.equal(b.get("companyId"),req.getCompanyId());
-			if(subCoverYn.equalsIgnoreCase("Y")     ) {
-				Predicate n4 = cb.equal(b.get("subCoverYn"), subCoverYn);
-				query.where(n1, n3,n4,n5,n6,n7).orderBy(orderList);
-			} else {
-				query.where(n1, n3,n5,n6,n7).orderBy(orderList);
-			}
-
+			Predicate n4 = cb.equal(b.get("subCoverId"), "0");
+			query.where(n1, n3,n4,n5,n6,n7).orderBy(orderList);
+			
 			// Get Result
 			TypedQuery<SectionCoverMaster> result = em.createQuery(query);
 			list = result.getResultList();

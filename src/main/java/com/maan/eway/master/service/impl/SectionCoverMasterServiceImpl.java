@@ -438,9 +438,9 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate n7 = cb2.equal(b2.get("productId"), req.getProductId());
 			Predicate n8 = cb2.equal(b2.get("companyId"), req.getCompanyId());
 			Predicate n9 = cb2.equal(b2.get("sectionId"), req.getSectionId());
+			Predicate n10 = cb2.equal(b2.get("coverId"), req.getCoverId());
 			
-			
-			query2.where(n5,n6,n7,n8,n9).orderBy(orderList2);
+			query2.where(n5,n6,n7,n8,n9,n10).orderBy(orderList2);
 
 			// Get Result
 			TypedQuery<SectionCoverMaster> result2 = em.createQuery(query2);

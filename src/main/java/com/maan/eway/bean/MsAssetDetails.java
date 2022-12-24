@@ -52,8 +52,8 @@ private static final long serialVersionUID = 1L;
  
     //--- ENTITY PRIMARY KEY 
     @Id
-    @Column(name="VDREF_NO", nullable=false, length=20)
-    private String     vdrefNo ;
+    @Column(name="VD_REFNO", nullable=false)
+    private Long       vdRefno ;
 
     @Id
     @Column(name="REQUEST_REFERENCE_NO", nullable=false, length=20)
@@ -89,7 +89,7 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="BUILDING_USAGE_ID", length=100)
     private String     buildingUsageId;
-        
+ 
     @Column(name="BUILDING_SUMINSURED")
     private Double buildingSuminsured ;
     
@@ -112,10 +112,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="CURRENCY", length=20)
     private String  currency;
     
-    @Column(name="BUILDING_PURPOSE_ID", length=100)
-    private String     buildingPurposeId;
-
-    
     
     @Column(name="EXCHANGE_RATE")
     private Double exchangeRate;
@@ -128,6 +124,10 @@ private static final long serialVersionUID = 1L;
     @Column(name="CREATED_BY", length=100)
     private String     createdBy ;
 
+    @Column(name="BUILDING_PURPOSE_ID", length=100)
+    private String     buildingPurposeId;
+
+    
     @Column(name="STATUS", length=2)
     private String     status ;
 
@@ -143,10 +143,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="INBUILD_CONSTRUCT_TYPE", length=20)
     private String     inbuildConstructType;
 
-    
 }
-
-
 
 
 

@@ -754,7 +754,7 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 			today = cal.getTime();
 			cal.set(Calendar.HOUR_OF_DAY, 1);
 			cal.set(Calendar.MINUTE, 1);
-			Date 
+			
 			
 			List<ProductMaster> list = new ArrayList<ProductMaster>();
 			// Find Latest Record

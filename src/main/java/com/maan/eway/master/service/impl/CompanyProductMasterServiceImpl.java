@@ -5,6 +5,7 @@
 */
 package com.maan.eway.master.service.impl;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -286,8 +287,8 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 				saveData.setAmendId(amendId);
 				saveData.setCheckerYn("Y");
 				saveData.setMakerYn("Y");
-				saveData.setSumInsuredStart(0D);
-				saveData.setSumInsuredEnd(99999999D);
+				saveData.setSumInsuredStart(BigDecimal.ZERO );
+				saveData.setSumInsuredEnd(new BigDecimal("99999999"));
 				saveData.setCoreAppCode("99999");
 				saveData.setCommissionVatYn("Y");
 				saveData.setCustConfirmYn("Y");

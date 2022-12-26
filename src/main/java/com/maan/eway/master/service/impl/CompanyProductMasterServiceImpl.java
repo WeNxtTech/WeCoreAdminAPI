@@ -916,13 +916,14 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 				errorList.add(new Error("06", "Payment", "Please Select Payment Type  "));
 			} else if (req.getPaymentYn().length() > 1) {
 				errorList.add(new Error("06", "Payment", "Enter Payment Type 1 Character Only  "));
-			}else if(!("Y".equals(req.getPaymentYn())||"N".equals(req.getPaymentYn()))) {
-				errorList.add(new Error("06", "Payment", "Enter Payment Type Y or N Only  "));
-			} else if (StringUtils.isBlank(req.getPaymentRedirUrl())) {
+			}else if(StringUtils.isBlank(req.getPaymentYn())) {
+				errorList.add(new Error("06", "Payment", "Enter Payment Type"));
+			} else if ( "Y".equals(req.getPaymentYn()) && StringUtils.isBlank(req.getPaymentRedirUrl())) {
 				errorList.add(new Error("08", "PaymentRedirUrl", "Please Select PaymentRedirUrl  Category  "));
-			}else if (req.getPaymentRedirUrl().length() > 500) {
+			}else if ("Y".equals(req.getPaymentYn()) && req.getPaymentRedirUrl().length() > 500) {
 				errorList.add(new Error("10", "PaymentRedirUrl", "Please Enter PaymentRedirUrl within 500 Characters  "));
 			}
+			
 			
 			
 			if (StringUtils.isBlank(req.getCommissionVatYn())) {

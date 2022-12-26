@@ -21,6 +21,13 @@ public class ReferalMasterRes  {
 	@JsonProperty("ReferalDesc")
 	private String referalDesc;
 
+	@JsonProperty("ReferalType")
+	private String referalType;
+	
+	@JsonProperty("ReferalTypeDesc")
+	private String referalTypeDesc;
+	
+	
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EntryDate")
 	private Date entryDate;

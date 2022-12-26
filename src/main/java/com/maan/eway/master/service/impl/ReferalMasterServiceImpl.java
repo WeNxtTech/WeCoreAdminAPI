@@ -102,11 +102,11 @@ public SuccessRes insertReferal(ReferalMasterSaveReq req) {
 		String referalId="";
 		
 		
-		if (StringUtils.isBlank(req.getReferalId().toString())) {
+		if (StringUtils.isBlank(req.getReferalId())) {
 				// Save
 			   // Integer totalCount = repo.count();
 				Integer totalCount=getMasterTableCount();			
-				referalId = Integer.valueOf(totalCount + 1).toString();
+				referalId = Integer.valueOf(totalCount==0 ? 1001 :totalCount + 1).toString();
 				saveData.setReferalId(Integer.valueOf(referalId));
 				saveData.setReferalName(req.getReferalName());
 				entryDate = new Date();
@@ -182,11 +182,14 @@ public SuccessRes insertReferal(ReferalMasterSaveReq req) {
 				res.setResponse("Updated Successfully ");
 				res.setSuccessId(referalId);
 			}
-		
-		    dozerMapper.map(req, saveData );
+			String referalTypeDesc = getListItem ("99999" , "99999" ,"REFERRAL_TYPE",req.getReferalType() );  
+		 
+			dozerMapper.map(req, saveData );
 			saveData.setReferalId(Integer.valueOf(referalId));
 			saveData.setReferalName(req.getReferalName());
 			saveData.setEffectiveDateStart(startDate);
+			saveData.setReferalType(req.getReferalType());
+			saveData.setReferalTypeDesc(referalTypeDesc);
 			saveData.setEffectiveDateEnd(endDate);
 			saveData.setCreatedBy(createdBy);
 			saveData.setStatus(req.getStatus());
@@ -253,6 +256,70 @@ public Integer getMasterTableCount() {
 	return data;
 }
 
+public synchronized String getListItem(String insuranceId , String branchCode, String itemType, String itemCode) {
+	String itemDesc = "" ;
+	List<ListItemValue> list = new ArrayList<ListItemValue>();
+	try {
+		Date today = new Date();
+		Calendar cal = new GregorianCalendar();
+		cal.setTime(today);
+		today = cal.getTime();
+		Date todayEnd = cal.getTime();
+		
+		// Criteria
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ListItemValue> query=  cb.createQuery(ListItemValue.class);
+		// Find All
+		Root<ListItemValue> c = query.from(ListItemValue.class);
+		
+		//Select
+		query.select(c);
+		// Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.asc(c.get("branchCode")));
+		
+		
+		// Effective Date Start Max Filter
+		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
+		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
+		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+		effectiveDate.where(a1,a2);
+		// Effective Date End Max Filter
+		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+		Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
+		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+		Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
+		Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+		effectiveDate2.where(a3,a4);
+					
+		// Where
+		Predicate n1 = cb.equal(c.get("status"),"Y");
+		Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
+		Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
+		Predicate n4 = cb.equal(c.get("companyId"), insuranceId);
+		Predicate n5 = cb.equal(c.get("companyId"), "99999");
+		Predicate n6 = cb.equal(c.get("branchCode"), branchCode);
+		Predicate n7 = cb.equal(c.get("branchCode"), "99999");
+		Predicate n8 = cb.or(n4,n5);
+		Predicate n9 = cb.or(n6,n7);
+		Predicate n10 = cb.equal(c.get("itemType"),itemType );
+		Predicate n11 = cb.equal(c.get("itemCode"), itemCode);
+		query.where(n1,n2,n3,n8,n9,n10,n11).orderBy(orderList);
+		// Get Result
+		TypedQuery<ListItemValue> result = em.createQuery(query);
+		list = result.getResultList();
+		
+		itemDesc = list.size() > 0 ? list.get(0).getItemValue() : "" ; 
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is ---> " + e.getMessage());
+		return null;
+	}
+	return itemDesc ;
+}
+
 @Override
 public List<Error> validateReferalDetails(ReferalMasterSaveReq req) {
 
@@ -261,22 +328,26 @@ public List<Error> validateReferalDetails(ReferalMasterSaveReq req) {
 	try {
 	
 		if (StringUtils.isBlank(req.getReferalName())) {
-			errorList.add(new Error("01", "ReferalName", "Please Select Referal  Name "));
+			errorList.add(new Error("01", "ReferalName", "Please Enter Referal  Name "));
 		}else if (req.getReferalName().length() > 100){
 			errorList.add(new Error("01","ReferalName", "Please Enter Referal  Name within 100 Characters")); 
 		}else if (StringUtils.isBlank(req.getReferalId())) {
 			List<ReferalMaster> referalList = getReferalNameExistDetails(req.getReferalName());
 			if (referalList.size()>0 ) {
-				errorList.add(new Error("01", "Referal", "This Referal Name Alrady Exist "));
+				errorList.add(new Error("01", "Referal", "This Referal Name Already Exist "));
 			}
 		}else  {
 			List<ReferalMaster> referalList =  getReferalNameExistDetails(req.getReferalName() );
 			if (referalList.size()>0 &&  (! req.getReferalId().equalsIgnoreCase(referalList.get(0).getReferalId().toString())) ) {
-				errorList.add(new Error("01", "Referal", "This Referal Name Alrady Exist "));
+				errorList.add(new Error("01", "Referal", "This Referal Name Already Exist "));
 			}
 			
 		}
 
+		if (StringUtils.isBlank(req.getReferalType())) {
+			errorList.add(new Error("01", "ReferalType", "Please Select ReferalType"));
+		}
+		
 		if (StringUtils.isBlank(req.getRemarks()) ) {
 			errorList.add(new Error("03", "Remark", "Please Select Remark "));
 		}else if (req.getRemarks().length() > 100){
@@ -323,11 +394,11 @@ public List<Error> validateReferalDetails(ReferalMasterSaveReq req) {
 		}else if (req.getRemarks().length() > 100) {
 			errorList.add(new Error("10", "Remarks", "Please Enter Remarks within 100 Characters"));
 		}
-		if (StringUtils.isBlank(req.getMotorYn())) {
-			errorList.add(new Error("11", "MotorYn", "Please Enter MotorYn"));
-		}else if (req.getMotorYn().length() > 1) {
-			errorList.add(new Error("11", "MotorYn", "Please Enter MotorYn within 1 Character"));
-		}
+//		if (StringUtils.isBlank(req.getMotorYn())) {
+//			errorList.add(new Error("11", "MotorYn", "Please Enter MotorYn"));
+//		}else if (req.getMotorYn().length() > 1) {
+//			errorList.add(new Error("11", "MotorYn", "Please Enter MotorYn within 1 Character"));
+//		}
 		
 	} catch (Exception e) {
 		log.error(e);

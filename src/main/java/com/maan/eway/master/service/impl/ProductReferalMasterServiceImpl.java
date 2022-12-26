@@ -481,10 +481,7 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 			
 			
 			List<ProductReferalMaster> referalList = new ArrayList<ProductReferalMaster>();
-			//Pagination
-			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 10 : Integer.valueOf(req.getOffset());
-	
+		
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<ProductReferalMaster> query = cb.createQuery(ProductReferalMaster.class);
@@ -517,8 +514,6 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 	
 			// Get Result
 			TypedQuery<ProductReferalMaster> result = em.createQuery(query);
-			result.setFirstResult(limit * offset);
-			result.setMaxResults(offset);
 			referalList = result.getResultList();
 			
 			// Map
@@ -553,9 +548,6 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 			cal.set(Calendar.MINUTE, 1);
 			today   = cal.getTime();
 			
-			//Pagination
-			int limit=StringUtils.isBlank(req.getLimit())?0:Integer.valueOf(req.getLimit());
-			int offset=StringUtils.isBlank(req.getOffset())?10:Integer.valueOf(req.getOffset());
 			
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -590,8 +582,6 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 	
 			// Get Result
 			TypedQuery<ProductReferalMaster> result = em.createQuery(query);
-			result.setFirstResult(limit * offset);
-			result.setMaxResults(offset);
 			list = result.getResultList();
 	
 			// Map
@@ -762,6 +752,9 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 			cal.set(Calendar.HOUR_OF_DAY, 23);
 			cal.set(Calendar.MINUTE, 1);
 			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date 
 			
 			List<ProductMaster> list = new ArrayList<ProductMaster>();
 			// Find Latest Record
@@ -781,6 +774,14 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 			Predicate a11 = cb2.equal(ocpm3.get("productId"), b2.get("productId"));
 			Predicate a12 = cb2.lessThanOrEqualTo(ocpm3.get("effectiveDateStart"), today);
 			effectiveDate3.where(a11,a12);
+			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate4 = query2.subquery(Long.class);
+			Root<ProductMaster> ocpm4 = effectiveDate4.from(ProductMaster.class);
+			effectiveDate3.select(cb2.max(ocpm4.get("effectiveDateStart")));
+			Predicate a13 = cb2.equal(ocpm4.get("productId"), b2.get("productId"));
+			Predicate a14 = cb2.lessThanOrEqualTo(ocpm4.get("effectiveDateStart"), today);
+			effectiveDate3.where(a13,a14);
 	
 			// Order By
 			List<Order> orderList2 = new ArrayList<Order>();
@@ -803,10 +804,7 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 			
 			
 			List<ReferalMaster> referalList = new ArrayList<ReferalMaster>();
-			//Pagination
-			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
-	
+		
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<ReferalMaster> query = cb.createQuery(ReferalMaster.class);
@@ -859,8 +857,6 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 	
 			// Get Result
 			TypedQuery<ReferalMaster> result = em.createQuery(query);
-			result.setFirstResult(limit * offset);
-			result.setMaxResults(offset);
 			referalList = result.getResultList();
 			
 			// Map

@@ -54,7 +54,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/master")
-@Api(tags = "COMPANY CONFIG : Section Master ", description = "API's")
+@Api(tags = "2. COMPANY CONFIG : Referal Master ", description = "API's")
 public class ProductReferalMasterController {
 
 	@Autowired

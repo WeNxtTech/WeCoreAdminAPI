@@ -65,6 +65,12 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="REFERAL_DESC", length=300)
     private String     referalDesc ;
+    
+    @Column(name="REFERAL_TYPE", length=300)
+    private String     referalType;
+    
+    @Column(name="REFERAL_TYPE_DESC", length=300)
+    private String     referalTypeDesc ;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="EFFECTIVE_DATE_START", nullable=false)
@@ -87,7 +93,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="CREATED_BY", length=20)
     private String     createdBy ;
 
-    @Column(name="MOTOR_YN", nullable=false, length=1)
+    @Column(name="MOTOR_YN",  length=1)
     private String     motorYn ;
 
     @Column(name="REGULATORY_CODE", nullable=false, length=20)

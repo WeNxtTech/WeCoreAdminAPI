@@ -22,6 +22,9 @@ public class ReferalMasterSaveReq implements Serializable {
 	@JsonProperty("ReferalDesc")
 	private String referalDesc;
 	
+	@JsonProperty("ReferalType")
+	private String referalType;
+	
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
@@ -39,7 +42,7 @@ public class ReferalMasterSaveReq implements Serializable {
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 	
-	@JsonProperty("MotorYn")
-	private String motorYn;
+//	@JsonProperty("MotorYn")
+//	private String motorYn;
 	
 }

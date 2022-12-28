@@ -23,6 +23,7 @@ import javax.persistence.Table;
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import java.util.Date;
@@ -137,28 +138,28 @@ private static final long serialVersionUID = 1L;
     private String     remarks ;
 
     @Column(name="PARAM_1")
-    private Double     param1 ;
+    private BigDecimal     param1 ;
 
     @Column(name="PARAM_2")
-    private Double     param2 ;
+    private BigDecimal     param2 ;
 
     @Column(name="PARAM_3")
-    private Double     param3 ;
+    private BigDecimal     param3 ;
 
     @Column(name="PARAM_4")
-    private Double     param4 ;
+    private BigDecimal     param4 ;
 
     @Column(name="PARAM_5")
-    private Double     param5 ;
+    private BigDecimal     param5 ;
 
     @Column(name="PARAM_6")
-    private Double     param6 ;
+    private BigDecimal     param6 ;
 
     @Column(name="PARAM_7")
-    private Double     param7 ;
+    private BigDecimal     param7 ;
 
     @Column(name="PARAM_8")
-    private Double     param8 ;
+    private BigDecimal     param8 ;
 
     @Column(name="PARAM_9", length=100)
     private String     param9 ;

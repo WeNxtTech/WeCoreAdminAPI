@@ -5,6 +5,7 @@
 */
 package com.maan.eway.master.service.impl;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -824,14 +825,14 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				saveData.setAmendId(amendId);
 				saveData.setStatus(req.getStatus().equalsIgnoreCase("P")?"P" : data.getStatus());		
 				saveData.setSNo(sNo);
-				saveData.setParam1(StringUtils.isBlank(data.getParam1()) ? null :Double.valueOf(data.getParam1()) );
-				saveData.setParam2(StringUtils.isBlank(data.getParam2()) ? null :Double.valueOf(data.getParam2()) );
-				saveData.setParam3(StringUtils.isBlank(data.getParam3()) ? null :Double.valueOf(data.getParam3()) );
-				saveData.setParam4(StringUtils.isBlank(data.getParam4()) ? null :Double.valueOf(data.getParam4()) );
-				saveData.setParam5(StringUtils.isBlank(data.getParam5()) ? null :Double.valueOf(data.getParam5()) );
-				saveData.setParam6(StringUtils.isBlank(data.getParam6()) ? null :Double.valueOf(data.getParam6()) );
-				saveData.setParam7(StringUtils.isBlank(data.getParam7()) ? null :Double.valueOf(data.getParam7()) );
-				saveData.setParam8(StringUtils.isBlank(data.getParam8()) ? null :Double.valueOf(data.getParam8()) );
+				saveData.setParam1(StringUtils.isBlank(data.getParam1()) ? null :new BigDecimal(data.getParam1()) );
+				saveData.setParam2(StringUtils.isBlank(data.getParam2()) ? null :new BigDecimal(data.getParam2()) );
+				saveData.setParam3(StringUtils.isBlank(data.getParam3()) ? null :new BigDecimal(data.getParam3()) );
+				saveData.setParam4(StringUtils.isBlank(data.getParam4()) ? null :new BigDecimal(data.getParam4()) );
+				saveData.setParam5(StringUtils.isBlank(data.getParam5()) ? null :new BigDecimal(data.getParam5()) );
+				saveData.setParam6(StringUtils.isBlank(data.getParam6()) ? null :new BigDecimal(data.getParam6()) );
+				saveData.setParam7(StringUtils.isBlank(data.getParam7()) ? null :new BigDecimal(data.getParam7()) );
+				saveData.setParam8(StringUtils.isBlank(data.getParam8()) ? null :new BigDecimal(data.getParam8()) );
 				saveData.setParam9(data.getParam9());
 				saveData.setParam10(data.getParam10());
 				saveData.setParam11(data.getParam11());

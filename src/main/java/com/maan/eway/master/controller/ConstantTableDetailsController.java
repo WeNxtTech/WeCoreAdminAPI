@@ -11,6 +11,7 @@ import com.maan.eway.master.req.ConstantTableDetailsGetAllReq;
 import com.maan.eway.master.req.ConstantTableDetailsGetReq;
 import com.maan.eway.master.req.ConstantTableDetailsSaveReq;
 import com.maan.eway.master.req.LovDropDownReq;
+import com.maan.eway.master.res.ConstantTableDetailsCommonRes;
 import com.maan.eway.master.res.ConstantTableDetailsRes;
 import com.maan.eway.master.service.ConstantTableDetailsService;
 
@@ -136,7 +137,7 @@ public class ConstantTableDetailsController {
 		public ResponseEntity<CommonRes> getByConstantTableDetailsId(@RequestBody ConstantTableDetailsGetReq req)
 		{
 		CommonRes data = new CommonRes();
-		ConstantTableDetailsRes res = service.getByConstantTableDetailsId(req);
+		ConstantTableDetailsCommonRes res = service.getByConstantTableDetailsId(req);
 		data.setCommonResponse(res);
 		data.setErrorMessage(Collections.emptyList());
 		data.setIsError(false);

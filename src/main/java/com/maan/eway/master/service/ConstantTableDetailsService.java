@@ -12,6 +12,7 @@ import com.maan.eway.master.req.ConstantTableDetailsGetAllReq;
 import com.maan.eway.master.req.ConstantTableDetailsGetReq;
 import com.maan.eway.master.req.ConstantTableDetailsSaveReq;
 import com.maan.eway.master.req.LovDropDownReq;
+import com.maan.eway.master.res.ConstantTableDetailsCommonRes;
 import com.maan.eway.master.res.ConstantTableDetailsRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
@@ -30,7 +31,7 @@ public interface ConstantTableDetailsService  {
 
 	List<ConstantTableDetailsRes> getActiveConstantTableDetails(ConstantTableDetailsGetAllReq req);
 
-	ConstantTableDetailsRes getByConstantTableDetailsId(ConstantTableDetailsGetReq req);
+	ConstantTableDetailsCommonRes getByConstantTableDetailsId(ConstantTableDetailsGetReq req);
 
 	SuccessRes changeStatusOfConstantTableDetails(ConstantTableChangeStatusReq req);
 

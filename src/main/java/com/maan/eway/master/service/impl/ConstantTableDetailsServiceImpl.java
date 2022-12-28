@@ -45,7 +45,9 @@ import com.maan.eway.master.req.DropdownTableDetailsSaveReq;
 import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.req.OfsGridSaveReq;
 import com.maan.eway.master.req.SectionCoverMasterSaveReq;
+import com.maan.eway.master.res.ConstantTableDetailsCommonRes;
 import com.maan.eway.master.res.ConstantTableDetailsRes;
+import com.maan.eway.master.res.DropdownTableDetailsRes;
 import com.maan.eway.master.service.ConstantTableDetailsService;
 
 import com.maan.eway.bean.ConstantTableDetails;
@@ -550,8 +552,9 @@ public List<ConstantTableDetailsRes> getActiveConstantTableDetails(ConstantTable
 
 
 @Override
-public ConstantTableDetailsRes getByConstantTableDetailsId(ConstantTableDetailsGetReq req) {
-	ConstantTableDetailsRes res = new ConstantTableDetailsRes();
+public ConstantTableDetailsCommonRes getByConstantTableDetailsId(ConstantTableDetailsGetReq req) {
+	ConstantTableDetailsCommonRes res = new ConstantTableDetailsCommonRes();
+	
 	DozerBeanMapper mapper = new DozerBeanMapper();
 	try {
 		Date today = new Date();
@@ -601,18 +604,85 @@ public ConstantTableDetailsRes getByConstantTableDetailsId(ConstantTableDetailsG
 
 		list = result.getResultList();
 
-		res = mapper.map(list.get(0), ConstantTableDetailsRes.class);
-		res.setItemId(list.get(0).getItemId().toString());
-		res.setEntryDate(list.get(0).getEntryDate());
-		res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
-		res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
+		res.setConstantTableDetailsRes(mapper.map(list.get(0), ConstantTableDetailsRes.class));
 		
+//		res.setItemId(list.get(0).getItemId().toString());
+//		res.setEntryDate(list.get(0).getEntryDate());
+//		res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
+//		res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
+		List<DropdownTableDetailsRes> dropdownList = new ArrayList<DropdownTableDetailsRes>();
+		if (list.get(0).getRequestYn().equalsIgnoreCase("Y")) {
+			List<DropdownTableDetails> dropdownRes = getByDropdownTableDetailsId(req);
+			for (DropdownTableDetails data : dropdownRes) {
+				DropdownTableDetailsRes dropRes=new DropdownTableDetailsRes();
+				dropRes=mapper.map(data, DropdownTableDetailsRes.class);
+				dropdownList.add(dropRes);
+			}
+		}
+		res.setDropdownTableDetailsRes(dropdownList);
 		} catch (Exception e) {
 		e.printStackTrace();
 		log.info("Exception is ---> " + e.getMessage());
 		return null;
 	}
 	return res;
+}
+public List<DropdownTableDetails> getByDropdownTableDetailsId(ConstantTableDetailsGetReq req) {
+//	List<DropdownTableDetails> res = new ArrayList<DropdownTableDetails>();
+	List<DropdownTableDetails> list = new ArrayList<DropdownTableDetails>();
+	try {
+		Date today = new Date();
+		Calendar cal = new GregorianCalendar();
+		cal.setTime(today);
+		cal.set(Calendar.HOUR_OF_DAY, 23);
+		cal.set(Calendar.MINUTE, 1);
+		today = cal.getTime();
+
+		
+	
+		// Find Latest Record
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<DropdownTableDetails> query = cb.createQuery(DropdownTableDetails.class);
+
+		// Find All
+		Root<DropdownTableDetails> b = query.from(DropdownTableDetails.class);
+
+		// Select
+		query.select(b);
+
+		// Amend ID Max Filter
+		Subquery<Long> amendId = query.subquery(Long.class);
+		Root<DropdownTableDetails> ocpm1 = amendId.from(DropdownTableDetails.class);
+		amendId.select(cb.max(ocpm1.get("amendId")));
+		Predicate a1 = cb.equal(ocpm1.get("itemId"), b.get("itemId"));
+		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+
+		amendId.where(a1, a2,a3);
+
+		// Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.asc(b.get("branchCode")));
+
+		// Where
+		Predicate n1 = cb.equal(b.get("amendId"), amendId);
+		Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
+		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
+		Predicate n4 = cb.equal(b.get("requestId"), req.getItemId());
+		Predicate n6 = cb.equal(b.get("branchCode"), "99999");
+		Predicate n7 = cb.or(n3,n6);
+		query.where(n1,n2,n4,n7).orderBy(orderList);
+		
+		// Get Result
+		TypedQuery<DropdownTableDetails> result = em.createQuery(query);
+		list = result.getResultList();
+		
+		} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is ---> " + e.getMessage());
+		return null;
+	}
+	return list;
 }
 @Override
 public List<DropDownRes> tableType(LovDropDownReq req) {

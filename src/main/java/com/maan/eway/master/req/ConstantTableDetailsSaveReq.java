@@ -20,8 +20,8 @@ public class ConstantTableDetailsSaveReq implements Serializable {
 	@JsonProperty("InsuranceId")
 	private String insuranceId;
 	
-	@JsonProperty("BranchCode")
-	private String branchCode;
+//	@JsonProperty("BranchCode")
+//	private String branchCode;
 	
 	@JsonProperty("ProductId")
 	private String productId;
@@ -29,9 +29,6 @@ public class ConstantTableDetailsSaveReq implements Serializable {
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
-	
-	@JsonProperty("TableName")
-	private String tableName;
 	
 	@JsonProperty("TableType")
 	private String tableType;

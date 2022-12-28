@@ -91,30 +91,28 @@ public List<Error> validateConstantTableDetails(ConstantTableDetailsSaveReq req)
 			errorList.add(new Error("02", "ProductId", "Please Enter ProductId"));
 		}else if (req.getProductId().length() > 20){
 			errorList.add(new Error("02","ProductId", "Please Enter ProductId 20 Characters")); 
-		}if (StringUtils.isBlank(req.getTableName())) {
-			errorList.add(new Error("02", "TableName", "Please Enter TableName"));
 		}
-		else if (StringUtils.isBlank(req.getItemId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
-			List<ConstantTableDetails> ConstantTableDetailsList = getConstantTableNameExistDetails(req.getTableName() , req.getInsuranceId() , req.getBranchCode());
-			if (ConstantTableDetailsList.size()>0 ) {
-				errorList.add(new Error("01", "TableName", "This ConstantTableDetails Name Already Exist "));
-			}
-		}else if (StringUtils.isNotBlank(req.getItemId().toString()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
-			List<ConstantTableDetails> ConstantTableDetailsList = getConstantTableNameExistDetails(req.getTableName() , req.getInsuranceId() , req.getBranchCode());
-			
-			if (ConstantTableDetailsList.size()>0 &&  (! req.getItemId().toString().equalsIgnoreCase(ConstantTableDetailsList.get(0).getItemId().toString())) ) {
-				errorList.add(new Error("01", "ConstantTableDetailsName", "This ConstantTableDetails Name Already Exist "));
-			}
-			
-		}
+//		else if (StringUtils.isBlank(req.getItemId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
+//			List<ConstantTableDetails> ConstantTableDetailsList = getConstantTableNameExistDetails(req.getTableName() , req.getInsuranceId() , req.getBranchCode());
+//			if (ConstantTableDetailsList.size()>0 ) {
+//				errorList.add(new Error("01", "TableName", "This ConstantTableDetails Name Already Exist "));
+//			}
+//		}else if (StringUtils.isNotBlank(req.getItemId().toString()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
+//			List<ConstantTableDetails> ConstantTableDetailsList = getConstantTableNameExistDetails(req.getTableName() , req.getInsuranceId() , req.getBranchCode());
+//			
+//			if (ConstantTableDetailsList.size()>0 &&  (! req.getItemId().toString().equalsIgnoreCase(ConstantTableDetailsList.get(0).getItemId().toString())) ) {
+//				errorList.add(new Error("01", "ConstantTableDetailsName", "This ConstantTableDetails Name Already Exist "));
+//			}
+//			
+//		}
 		
 		if (StringUtils.isBlank(req.getInsuranceId())) {
 			errorList.add(new Error("02", "InsuranceId", "Please Enter InsuranceId"));
 		}
 		
-		if (StringUtils.isBlank(req.getBranchCode())) {
-			errorList.add(new Error("03", "BranchCode", "Please Enter BranchCode"));
-		}
+//		if (StringUtils.isBlank(req.getBranchCode())) {
+//			errorList.add(new Error("03", "BranchCode", "Please Enter BranchCode"));
+//		}
 		
 		// Date Validation 
 		Calendar cal = new GregorianCalendar();
@@ -264,7 +262,7 @@ public SuccessRes insertConstantTableDetails(ConstantTableDetailsSaveReq req) {
 		Integer itemId = 0 ;
 		if(StringUtils.isBlank(req.getItemId())) {
 			// Save
-			Integer totalCount = getMasterTableCount( req.getInsuranceId() , req.getBranchCode());
+			Integer totalCount = getMasterTableCount( req.getInsuranceId() );
 			itemId =  totalCount+1 ;
 			entryDate = new Date();
 			createdBy = req.getCreatedBy();
@@ -288,9 +286,9 @@ public SuccessRes insertConstantTableDetails(ConstantTableDetailsSaveReq req) {
 			// Where
 			Predicate n2 = cb.equal(b.get("itemId"), req.getItemId());
 			Predicate n3 = cb.equal(b.get("companyId"), req.getInsuranceId());
-			Predicate n4 = cb.equal(b.get("branchCode"), req.getBranchCode());
+//			Predicate n4 = cb.equal(b.get("branchCode"), req.getBranchCode());
 			
-			query.where(n2,n3,n4).orderBy(orderList);
+			query.where(n2,n3).orderBy(orderList);
 			
 			// Get Result 
 			TypedQuery<ConstantTableDetails> result = em.createQuery(query);
@@ -328,6 +326,7 @@ public SuccessRes insertConstantTableDetails(ConstantTableDetailsSaveReq req) {
 		}
 		dozerMapper.map(req, saveData);
 		saveData.setItemId(itemId);
+		saveData.setBranchCode("99999");
 		saveData.setEffectiveDateStart(startDate);
 		saveData.setEffectiveDateEnd(endDate);
 		saveData.setEntryDate(entryDate);
@@ -356,7 +355,8 @@ public SuccessRes insertConstantTableDetails(ConstantTableDetailsSaveReq req) {
 				dropDownDetailsSave.setAmendId(0);
 				dropDownDetailsSave.setStatus(req.getStatus());
 				dropDownDetailsSave.setCompanyId(req.getInsuranceId());
-				dropDownDetailsSave.setBranchCode(req.getBranchCode());
+//				dropDownDetailsSave.setBranchCode(req.getBranchCode());
+				dropDownDetailsSave.setBranchCode("99999");
 				dropDownDetailsSave.setProductId(Integer.valueOf(req.getProductId()));
 				dropDownDetailsSave.setEntryDate(entryDate);
 				dropDownDetailsSave.setCreatedBy(createdBy);
@@ -376,7 +376,7 @@ public SuccessRes insertConstantTableDetails(ConstantTableDetailsSaveReq req) {
 	}
 
 	
-	public Integer getMasterTableCount(String companyId , String branchCode) {
+	public Integer getMasterTableCount(String companyId ) {
 		Integer data =0;
 		try {
 			List<ConstantTableDetails> list = new ArrayList<ConstantTableDetails>();
@@ -403,10 +403,10 @@ public SuccessRes insertConstantTableDetails(ConstantTableDetailsSaveReq req) {
 			
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("companyId"), companyId);
-			Predicate n3 = cb.equal(b.get("branchCode"), branchCode);
+//			Predicate n3 = cb.equal(b.get("branchCode"), branchCode);
 			Predicate n4 = cb.equal(b.get("branchCode"), "99999");
-			Predicate n5 = cb.or(n3,n4);
-			query.where(n1,n2,n5).orderBy(orderList);
+//			Predicate n5 = cb.or(n3,n4);
+			query.where(n1,n2,n4).orderBy(orderList);
 			
 			
 			

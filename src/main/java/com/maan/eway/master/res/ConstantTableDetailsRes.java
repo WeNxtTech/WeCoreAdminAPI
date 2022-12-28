@@ -16,8 +16,8 @@ public class ConstantTableDetailsRes implements Serializable {
 	@JsonProperty("ItemId")
 	private String itemId;
 	
-	@JsonProperty("TableName")
-	private String tableName;
+//	@JsonProperty("TableName")
+//	private String tableName;
 	
 	@JsonProperty("TableType")
 	private String tableType;

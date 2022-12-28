@@ -2,9 +2,11 @@ package com.maan.eway.master.res;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.maan.eway.master.req.DropdownTableDetailsSaveReq;
 
 import lombok.Data;
 
@@ -15,9 +17,6 @@ public class ConstantTableDetailsRes implements Serializable {
 
 	@JsonProperty("ItemId")
 	private String itemId;
-	
-//	@JsonProperty("TableName")
-//	private String tableName;
 	
 	@JsonProperty("TableType")
 	private String tableType;
@@ -63,5 +62,6 @@ public class ConstantTableDetailsRes implements Serializable {
 	
 	@JsonProperty("Status")
 	private String status;
+	
 
 }

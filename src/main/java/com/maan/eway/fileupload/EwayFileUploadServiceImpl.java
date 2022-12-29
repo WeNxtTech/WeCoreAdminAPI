@@ -3,7 +3,6 @@ package com.maan.eway.fileupload;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -19,6 +18,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -177,7 +177,7 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
             Sheet worksheet = workbook.getSheetAt(0);
             List<Map<String,Object>> dataList = new ArrayList<Map<String,Object>>();
             List<Map<Object,Object>> resultList = new ArrayList<Map<Object,Object>>();
-
+            DataFormatter formatter = new DataFormatter();
             for(int i=1;i<worksheet.getPhysicalNumberOfRows() ;i++) {
             	Row headers=worksheet.getRow(0);
                 int maxNumOfCells = worksheet.getRow(0).getLastCellNum(); // The the maximum number of columns
@@ -193,7 +193,7 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 	                    }else if( cell!=null && cell.getCellType()==CellType.STRING) {
 	                		object.put(headers.getCell(j).getStringCellValue(), StringUtils.isBlank(cell.getStringCellValue())?"N/A":cell.getStringCellValue());
 	                	}else  if (cell!=null && cell.getCellType()==CellType.NUMERIC ){
-	                		object.put(headers.getCell(j).getStringCellValue(), String.valueOf(cell.getNumericCellValue()).equals("")?"N/A":Double.valueOf(cell.getNumericCellValue()));
+	                		object.put(headers.getCell(j).getStringCellValue(), String.valueOf(cell.getNumericCellValue()).equals("")?"N/A":formatter.formatCellValue(cell));
 	                	}
 	                	log.info("Cells || "+cell+" || "+ headers.getCell(j));
 	                }

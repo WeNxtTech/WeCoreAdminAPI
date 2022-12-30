@@ -12,16 +12,19 @@
 
 package com.maan.eway.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-import com.maan.eway.bean.EserviceBuildingSectionDetails;
-import com.maan.eway.bean.EserviceBuildingSectionDetailsId;
+import com.maan.eway.bean.EserviceBuildingDetails;
+import com.maan.eway.bean.EserviceSectionDetails;
+import com.maan.eway.bean.EserviceSectionDetailsId;
 
  
  
-public interface EServiceBuildingSectionDetailsRepository  extends JpaRepository<EserviceBuildingSectionDetails,EserviceBuildingSectionDetailsId > , JpaSpecificationExecutor<EserviceBuildingSectionDetails> {
+public interface EServiceSectionDetailsRepository  extends JpaRepository<EserviceSectionDetails,EserviceSectionDetailsId > , JpaSpecificationExecutor<EserviceSectionDetails> {
 
-	
+
 
 }

@@ -60,7 +60,7 @@ private static final long serialVersionUID = 1L;
     private String     customerReferenceNo ;
 
     @Id
-    @Column(name="TRAVEL_ID", nullable=false)
+    @Column(name="RISK_ID", nullable=false)
     private Integer    travelId ;
 
     @Id
@@ -204,13 +204,12 @@ private static final long serialVersionUID = 1L;
     private String     customerCode ;
 
 
+    @Column(name="BROKER_BRANCH_NAME", length=20)
+    private String     brokerBranchName ;
 
     @Column(name="BROKER_BRANCH_CODE", length=20)
     private String     brokerBranchCode ;
 
-
-    @Column(name="BROKER_BRANCH_NAME", length=20)
-    private String     brokerBranchName ;
 
     @Column(name="COMPANY_NAME", length=100)
     private String     companyName ;
@@ -233,8 +232,7 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="DESTINATION_COUNTRY_DESC", length=20)
     private String     destinationCountryDesc ;
-
-
+    
     @Column(name="ACTUAL_PREMIUM_LC")
     private Double     actualPremiumLc ;
 
@@ -246,7 +244,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="OVERALL_PREMIUM_FC")
     private Double     overallPremiumFc ;
-
+    
+    @Column(name="OLD_REQ_REF_NO", length=20)
+    private String     oldReqRefNo ;
     
 }
 

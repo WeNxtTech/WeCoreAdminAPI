@@ -42,6 +42,9 @@ public class CompanyProductGetAllRes {
 
 	@JsonProperty("Status")
 	private String status;
+	
+	@JsonProperty("PackageYn")
+	private String packageYn;
 
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EntryDate")

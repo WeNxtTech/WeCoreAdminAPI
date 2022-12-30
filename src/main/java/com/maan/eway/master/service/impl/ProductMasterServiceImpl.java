@@ -529,7 +529,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			res.setRegulatoryCode(list.get(0).getRegulatoryCode());
 			res.setRemarks(list.get(0).getRemarks());
 			res.setStatus(list.get(0).getStatus());
-
+			res.setPackageYn(list.get(0).getPackageYn() );
 		
 		} catch (Exception e) {
 			e.printStackTrace();

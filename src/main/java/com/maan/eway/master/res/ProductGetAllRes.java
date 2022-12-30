@@ -24,11 +24,15 @@ public class ProductGetAllRes {
 
 	@JsonProperty("ProductName")
 	private String productName;
+	
+	
 
 
 	@JsonProperty("MotorYn")
 	private String motorYn;
 
+	@JsonProperty("PackageYn")
+	private String packageYn;
 	
 	@JsonProperty("PaymentYn")
 	private String paymentYn;

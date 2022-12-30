@@ -29,6 +29,9 @@ public class ProductMasterSaveReq implements Serializable {
 
 	@JsonProperty("MotorYn")
 	private String motorYn;
+	
+	@JsonProperty("PackageYn")
+	private String packageYn;
 
 	@JsonProperty("CurrencyIds")
 	private List<String> currencyIds;

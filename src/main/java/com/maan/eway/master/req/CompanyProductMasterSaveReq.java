@@ -37,6 +37,9 @@ public class CompanyProductMasterSaveReq implements Serializable {
 	@JsonProperty("PaymentYn")
 	private String paymentYn;
 
+	@JsonProperty("PackageYn")
+	private String packageYn;
+
 	@JsonProperty("PaymentRedirUrl")
 	private String paymentRedirUrl;
 

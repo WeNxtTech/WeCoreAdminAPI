@@ -1205,7 +1205,15 @@ public Integer getMasterTableCount(String companyId , String branchCode) {
 				for (FactorRateMaster  data : list) {
 					FactorParamsInsert fParam = new FactorParamsInsert();
 					fParam  =  dozerMapper.map(data, FactorParamsInsert.class);
-					fParam.setSno(data.getSNo().toString());
+					 fParam.setParam1( data.getParam1()==null?"" : df.format(data.getParam1()));
+					 fParam.setParam2( data.getParam2()==null?"" : df.format(data.getParam2()));
+					 fParam.setParam3( data.getParam3()==null?"" : df.format(data.getParam3()));
+					 fParam.setParam4( data.getParam4()==null?"" : df.format(data.getParam4()));
+					 fParam.setParam5( data.getParam5()==null?"" : df.format(data.getParam5()));
+					 fParam.setParam6( data.getParam6()==null?"" : df.format(data.getParam6()));
+					 fParam.setParam7( data.getParam7()==null?"" : df.format(data.getParam7()));
+					 fParam.setParam8( data.getParam8()==null?"" : df.format(data.getParam8()));
+					 fParam.setSno(data.getSNo().toString());
 					fParam.setRate(df.format(data.getRate()));
 					fParam.setCalType(data.getCalcType());
 					fParam.setMinimumPremium(df.format(data.getMinPremium()));

@@ -668,7 +668,7 @@ public List<DropdownTableDetails> getByDropdownTableDetailsId(ConstantTableDetai
 		Predicate n1 = cb.equal(b.get("amendId"), amendId);
 		Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
 		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
-		Predicate n4 = cb.equal(b.get("requestId"), req.getItemId());
+		Predicate n4 = cb.equal(b.get("itemId"), req.getItemId());
 		Predicate n6 = cb.equal(b.get("branchCode"), "99999");
 		Predicate n7 = cb.or(n3,n6);
 		query.where(n1,n2,n4,n7).orderBy(orderList);

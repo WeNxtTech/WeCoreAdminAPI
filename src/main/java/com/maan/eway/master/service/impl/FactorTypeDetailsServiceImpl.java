@@ -417,10 +417,10 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 					update.set("updatedDate", entryDate);
 					update.set("effectiveDateEnd", oldEndDate);
 					
-					n1 = cb.equal(m.get("factorTypeId"), factorTypeId);
-					n2 = cb.equal(m.get("companyId"), req.getCompanyId());
-					n3 = cb.equal(m.get("amendId"), list.get(0).getAmendId() );
-					 n4 = cb.equal(m.get("productId"),req.getProductId());
+					n1 = cb2.equal(m.get("factorTypeId"), factorTypeId);
+					n2 = cb2.equal(m.get("companyId"), req.getCompanyId());
+					n3 = cb2.equal(m.get("amendId"), list.get(0).getAmendId() );
+					 n4 = cb2.equal(m.get("productId"),req.getProductId());
 					update.where(n1,n2,n3,n4);
 					// perform update
 					em.createQuery(update).executeUpdate();

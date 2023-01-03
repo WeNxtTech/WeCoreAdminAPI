@@ -219,7 +219,7 @@ public class CompanyProductMasterController {
 			}
 		}
 
-		@PostMapping("/dropdown/companyproducts")
+		@PostMapping(value="/dropdown/companyproducts",produces = "application/json")
 		@ApiOperation(value = "This method is get Company Product Master Drop Down")
 
 		public ResponseEntity<CommonRes> getCompanyProductMasterDropdown(@RequestBody CompanyProductMasterGetAllReq req) {

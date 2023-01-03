@@ -19,6 +19,7 @@ import com.maan.eway.master.res.PolicyTypeMasterGetRes;
 import com.maan.eway.master.service.PolicyTypeMasterService;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.DropdownCommonRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
@@ -126,12 +127,12 @@ public class PolicyTypeMasterController {
 	
 	
 	// Policy Type Master Drop Down Type
-	@PostMapping("/dropdown/policytype")
+	@PostMapping(value="/dropdown/policytype",produces = "application/json")
 	@ApiOperation(value = "This method is get Policy Type Master Drop Down")
 
-	public ResponseEntity<CommonRes> getPolicyTypeMasterDropdown(@RequestBody PolicyTypeMasterGetAllReq req ) {
+	public ResponseEntity<DropdownCommonRes> getPolicyTypeMasterDropdown(@RequestBody PolicyTypeMasterGetAllReq req ) {
 
-		CommonRes data = new CommonRes();
+		DropdownCommonRes data = new DropdownCommonRes();
 
 		// Save
 		List<DropDownRes> res = service.getPolicyTypeMasterDropdown(req);
@@ -141,7 +142,7 @@ public class PolicyTypeMasterController {
 		data.setMessage("Success");
 
 		if (res != null) {
-			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
 		} else {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}

@@ -24,6 +24,7 @@ import com.maan.eway.master.service.ProductSectionMasterService;
 import com.maan.eway.master.service.SectionMasterService;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.DropdownCommonRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
@@ -233,12 +234,12 @@ public class ProductSectionMasterController {
 			}
 		}
 
-		@PostMapping("/dropdown/productsection")
+		@PostMapping(value="/dropdown/productsection",produces = "application/json")
 		@ApiOperation(value = "This method is get Product Section Cover Master Drop Down")
 
-		public ResponseEntity<CommonRes> getSectionCoverMasterDropdown(@RequestBody ProductSectionsGetReq req) {
+		public ResponseEntity<DropdownCommonRes> getSectionCoverMasterDropdown(@RequestBody ProductSectionsGetReq req) {
 
-			CommonRes data = new CommonRes();
+			DropdownCommonRes data = new DropdownCommonRes();
 
 			// Save
 			List<DropDownRes> res = sectionService.getProductSectionDropdown(req);
@@ -248,7 +249,7 @@ public class ProductSectionMasterController {
 			data.setMessage("Success");
 
 			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
 			} else {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}

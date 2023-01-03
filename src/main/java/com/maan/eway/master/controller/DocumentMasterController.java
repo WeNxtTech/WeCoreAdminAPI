@@ -29,6 +29,7 @@ import com.maan.eway.master.service.SectionMasterService;
 import com.maan.eway.master.service.SubCoverMasterService;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.DropdownCommonRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 import com.maan.eway.service.impl.BasicValidationService;
@@ -169,18 +170,18 @@ public class DocumentMasterController {
 		
 		// Document Drop Down
 		
-		@PostMapping("/dropdown/document")
+		@PostMapping(value="/dropdown/document",produces = "application/json")
 		@ApiOperation(value="This Method is to Drop Down Document")
-		public ResponseEntity<CommonRes> getDocumentDropdown(LovDropDownReq req)
+		public ResponseEntity<DropdownCommonRes> getDocumentDropdown(LovDropDownReq req)
 		{
-			CommonRes data = new CommonRes();
+			DropdownCommonRes data = new DropdownCommonRes();
 			List<DropDownRes> res = documentservice.getDocumentDropDown(req);
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);
 			data.setMessage("Success");
 			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
 
 			} else {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);

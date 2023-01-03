@@ -17,6 +17,7 @@ import com.maan.eway.master.service.ReferalMasterService;
 import com.maan.eway.bean.ReferalMaster;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.DropdownCommonRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
@@ -174,12 +175,12 @@ public class ReferalMasterController {
 		}
 		
 		// Referral Master Drop Down Type
-		@GetMapping("/dropdown/referal")
+		@GetMapping(value="/dropdown/referal",produces = "application/json")
 		@ApiOperation(value = "This method is get Referal Master Drop Down")
 
-		public ResponseEntity<CommonRes> getReferalMasterDropdown() {
+		public ResponseEntity<DropdownCommonRes> getReferalMasterDropdown() {
 
-			CommonRes data = new CommonRes();
+			DropdownCommonRes data = new DropdownCommonRes();
 
 			// Save
 			List<DropDownRes> res = referalService.getReferalMasterDropdown();
@@ -189,16 +190,16 @@ public class ReferalMasterController {
 			data.setMessage("Success");
 
 			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
 			} else {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
 
 		}
-		@GetMapping("/dropdown/referraltype")
+		@GetMapping(value="/dropdown/referraltype",produces = "application/json")
 		@ApiOperation(value = "This method is to Referral Type Drop Down")
-		public ResponseEntity<CommonRes> referralType() {
-			CommonRes data = new CommonRes();
+		public ResponseEntity<DropdownCommonRes> referralType() {
+			DropdownCommonRes data = new DropdownCommonRes();
 
 			List<DropDownRes> res = referalService.referralType();
 			data.setCommonResponse(res);
@@ -207,7 +208,7 @@ public class ReferalMasterController {
 			data.setMessage("Success");
 
 			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
 			} else {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}

@@ -197,7 +197,7 @@ public class FactorTypeDetailsController {
 	}
 
 	
-	@PostMapping("/dropdown/factortype")
+	@PostMapping(value="/dropdown/factortype",produces = "application/json")
 	@ApiOperation(value="This method is to get Factor Type dropdown")
 	public ResponseEntity<CommonRes> factorTypeDropDown(@RequestBody FactorTypeDropDownReq req){
 		CommonRes data = new CommonRes();

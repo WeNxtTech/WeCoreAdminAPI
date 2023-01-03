@@ -173,7 +173,7 @@ public class RatingFieldMasterController {
 		}
 		
 		
-		@PostMapping("/dropdown/ratingfields")
+		@PostMapping(value="/dropdown/ratingfields",produces = "application/json")
 		@ApiOperation(value = "This method is get Rating Fields Drop Down")
 
 		public ResponseEntity<CommonRes> getRatingFieldsDropdown(@RequestBody RatingDropDownReq  req  ) {

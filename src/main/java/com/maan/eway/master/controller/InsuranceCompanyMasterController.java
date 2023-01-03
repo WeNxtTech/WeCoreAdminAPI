@@ -26,6 +26,7 @@ import com.maan.eway.master.res.InsuranceCompanyMasterRes;
 import com.maan.eway.master.service.InsuranceCompanyMasterService;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.DropdownCommonRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
@@ -156,12 +157,12 @@ public class InsuranceCompanyMasterController {
 	}
 		
 	// Insurance Company Master Drop Down Type
-		@PostMapping("/dropdown/company")
+		@PostMapping(value="/dropdown/company",produces = "application/json")
 		@ApiOperation(value = "This method is get Company Master Drop Down")
 
-		public ResponseEntity<CommonRes> getInscompanyMasterDropdown( @RequestBody CompanyDropDownReq req ) {
+		public ResponseEntity<DropdownCommonRes> getInscompanyMasterDropdown( @RequestBody CompanyDropDownReq req ) {
 
-			CommonRes data = new CommonRes();
+			DropdownCommonRes data = new DropdownCommonRes();
 
 			// Save
 			List<DropDownRes> res = insService.getInscompanyMasterDropdown(req);
@@ -171,7 +172,7 @@ public class InsuranceCompanyMasterController {
 			data.setMessage("Success");
 
 			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
 			} else {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}

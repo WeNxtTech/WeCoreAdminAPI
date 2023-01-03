@@ -31,6 +31,7 @@ import com.maan.eway.master.res.SectionCoverMasterRes;
 import com.maan.eway.master.service.SectionCoverMasterService;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.DropdownCommonRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
@@ -211,12 +212,12 @@ public class SectionCoverMasterController {
 			}
 		}
 
-		@PostMapping("/dropdown/sectioncover")
+		@PostMapping(value="/dropdown/sectioncover",produces = "application/json")
 		@ApiOperation(value = "This method is get Section Cover Master Drop Down")
 
-		public ResponseEntity<CommonRes> getSectionCoverMasterDropdown(@RequestBody SectionCoverMasterGetReq req) {
+		public ResponseEntity<DropdownCommonRes> getSectionCoverMasterDropdown(@RequestBody SectionCoverMasterGetReq req) {
 
-			CommonRes data = new CommonRes();
+			DropdownCommonRes data = new DropdownCommonRes();
 
 			// Save
 			List<DropDownRes> res = sectionCoverService.getsectionCoverMasterDropdown(req);
@@ -226,7 +227,7 @@ public class SectionCoverMasterController {
 			data.setMessage("Success");
 
 			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
 			} else {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
@@ -234,12 +235,12 @@ public class SectionCoverMasterController {
 		}
 		
 		
-		@PostMapping("/dropdown/discountsectioncover")
+		@PostMapping(value="/dropdown/discountsectioncover",produces = "application/json")
 		@ApiOperation(value = "This method is get Section Cover Master Drop Down")
 
-		public ResponseEntity<CommonRes> getsectionCoverDiscountDropdown(@RequestBody SectionCoverMasterGetReq req) {
+		public ResponseEntity<DropdownCommonRes> getsectionCoverDiscountDropdown(@RequestBody SectionCoverMasterGetReq req) {
 
-			CommonRes data = new CommonRes();
+			DropdownCommonRes data = new DropdownCommonRes();
 
 			// Save
 			List<DropDownRes> res = sectionCoverService.getsectionCoverDiscountDropdown(req);
@@ -249,7 +250,7 @@ public class SectionCoverMasterController {
 			data.setMessage("Success");
 
 			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
 			} else {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}

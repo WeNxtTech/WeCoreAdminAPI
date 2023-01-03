@@ -36,6 +36,7 @@ import com.maan.eway.master.res.SubCoverMasterRes;
 import com.maan.eway.master.service.CoverSubCoverMasterService;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.DropdownCommonRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
@@ -231,10 +232,10 @@ public class CoverSubCoverMasterController {
 
 		}
 		
-		@PostMapping("/dropdown/subcover")
+		@PostMapping(value="/dropdown/subcover",produces = "application/json")
 		@ApiOperation(value="This method is to get dropdown")
-		public ResponseEntity<CommonRes> subcoverDropDown(@RequestBody SubCoverDropDownReq req){
-			CommonRes data = new CommonRes();
+		public ResponseEntity<DropdownCommonRes> subcoverDropDown(@RequestBody SubCoverDropDownReq req){
+			DropdownCommonRes data = new DropdownCommonRes();
 			List<DropDownRes> res = service.subcoverDropDown(req);
 			reqPrinter.reqPrint(req);
 			data.setCommonResponse(res);
@@ -242,7 +243,7 @@ public class CoverSubCoverMasterController {
 			data.setIsError(false);
 			data.setMessage("Success");
 			if(res!=null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
 			}
 			else {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);

@@ -15,6 +15,8 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -89,6 +91,8 @@ public List<Error> validateConstantTableDetails(ConstantTableDetailsSaveReq req)
 
 	try {
 	
+		String regex="^(https?:\\/\\/)"+"(\\d{3}\\.\\d{3}.\\d{1}.\\d{2}):\\d{4}(\\/)"+"[a-zA-Z]+(\\/)"+"[a-zA-Z/]+$";
+		Pattern p = Pattern.compile(regex);
 		if (StringUtils.isBlank(req.getProductId())) {
 			errorList.add(new Error("02", "ProductId", "Please Enter ProductId"));
 		}else if (req.getProductId().length() > 20){
@@ -164,7 +168,13 @@ public List<Error> validateConstantTableDetails(ConstantTableDetailsSaveReq req)
 				errorList.add(new Error("10", "ApiUrl", "Please Enter ApiUrl "));
 			} else if (req.getApiUrl().length() > 200) {
 				errorList.add(new Error("10", "ApiUrl", "Please Enter ApiUrl within 100 Characters"));
-			}else if (StringUtils.isBlank(req.getKeyTable())) {
+			} else if (StringUtils.isNotBlank(req.getApiUrl())) {
+				Matcher matcher3 = p.matcher(req.getApiUrl());
+				if (!matcher3.matches())
+					errorList.add(new Error("10", "ApiUrl", "Please Enter Valid ApiUrl "));
+			}
+
+			else if (StringUtils.isBlank(req.getKeyTable())) {
 				errorList.add(new Error("07", "KeyTable", "Please Select KeyTable"));
 			}else if (req.getKeyTable().length() > 200){
 				errorList.add(new Error("07","KeyTable", "Please Enter KeyTable within 20 Characters")); 

@@ -38,11 +38,11 @@ public interface EServiceMotorDetailsRepository  extends JpaRepository<EserviceM
   
 
 
-	EserviceMotorDetails findByRequestReferenceNoAndIdNumberAndVehicleId(String requestReferenceNo, String idNumber,
+	EserviceMotorDetails findByRequestReferenceNoAndIdNumberAndRiskId(String requestReferenceNo, String idNumber,
 			Integer valueOf);
 
-	List<EserviceMotorDetails> findByRequestReferenceNoOrderByVehicleIdAsc(String requestReferenceNo);
+	List<EserviceMotorDetails> findByRequestReferenceNoOrderByRiskIdAsc(String requestReferenceNo);
 
-	EserviceMotorDetails findByRequestReferenceNoAndVehicleIdOrderByVehicleIdAsc(String requestReferenceNo,
+	EserviceMotorDetails findByRequestReferenceNoAndVehicleIdOrderByRiskIdAsc(String requestReferenceNo,
 			Integer valueOf);
 }

@@ -20,7 +20,7 @@ public class DropdownCommonRes {
 	@JsonProperty("ErrorMessage")
 	private List<Error> errorMessage;
 
-	//Dynamic
+	//Dynamic 
 	@JsonProperty("Result")
 	private List<DropDownRes> commonResponse;
 	

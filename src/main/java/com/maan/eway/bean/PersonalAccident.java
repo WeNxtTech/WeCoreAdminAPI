@@ -88,6 +88,7 @@ public class PersonalAccident implements Serializable {
 	@Column(name = "WEIGHT")
 	private BigDecimal weight;
 
+
 	@Column(name = "DESCRIPTION", length = 100)
 	private String description;
 
@@ -119,9 +120,8 @@ public class PersonalAccident implements Serializable {
 
 	@Column(name = "SALARY")
 	private BigDecimal salary;
-	
 
-	
+
 	@Column(name = "TYPE", length = 20)
 	private String type;
 

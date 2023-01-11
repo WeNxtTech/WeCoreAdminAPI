@@ -154,8 +154,6 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 				errorList.add(new Error("07", "PremiumEnd", "Please Enter PremiumEnd"));
 			} else if (!req.getPremiumEnd().matches("[0-9.]+")) {
 				errorList.add(new Error("07", "PremiumEnd", "Please Enter Valid Number In PremiumEnd"));
-			} else if (!(Double.valueOf(req.getPremiumEnd()) <= 1000000)) {
-				errorList.add(new Error("07", "PremiumEnd", "PremiumEnd must be lesser than 1000000 "));
 			}
 			else if (StringUtils.isBlank(req.getPremiumStart())) {
 				errorList.add(new Error("08", "PremiumStart", "Please Enter PremiumStart"));
@@ -163,8 +161,6 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 				errorList.add(new Error("08", "PremiumStart", "Please Enter Valid Number In PremiumStart"));
 			} else if (Double.valueOf(req.getPremiumStart()) > Double.valueOf(req.getPremiumEnd())) {
 				errorList.add(new Error("08", "PremiumStart", "PremiumStart must be greater than PremiumEnd "));
-			}else if (!(Double.valueOf(req.getPremiumStart()) >= 100000)) {
-				errorList.add(new Error("08", "PremiumStart", "PremiumStart must be greater than 100000 "));
 			}else if (StringUtils.isBlank(req.getInterestPercent())) {
 				errorList.add(new Error("09", "InterestPercent", "Please Enter InterestPercent"));
 			}else if (StringUtils.isBlank(req.getAdvancePercent())) {

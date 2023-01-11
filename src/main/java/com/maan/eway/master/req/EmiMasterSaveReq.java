@@ -27,8 +27,8 @@ public class EmiMasterSaveReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-	@JsonProperty("Sno")
-	private String sno;
+	@JsonProperty("EmiId")
+	private String emiId;
 
 	@JsonProperty("ProductId")
 	private String productId;
@@ -49,7 +49,7 @@ public class EmiMasterSaveReq implements Serializable {
 	private String policyType;
 
 	@JsonProperty("InterestPercent")
-    private String     interestPercent ;
+    private String  interestPercent ;
     
     @JsonProperty("AdvancePercent")
     private String     advancePercent ;

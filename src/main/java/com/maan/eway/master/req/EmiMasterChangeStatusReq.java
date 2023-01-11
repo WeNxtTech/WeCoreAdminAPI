@@ -10,8 +10,8 @@ import lombok.Data;
 @Data
 public class EmiMasterChangeStatusReq {
 
-	 @JsonProperty("Sno")
-	 private String Sno;
+	 @JsonProperty("EmiId")
+	 private String emiId;
 	 
 	 @JsonProperty("Status")
 	 private String status;

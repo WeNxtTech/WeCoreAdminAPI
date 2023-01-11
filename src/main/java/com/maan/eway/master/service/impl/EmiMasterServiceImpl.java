@@ -44,8 +44,10 @@ import com.maan.eway.bean.EmiMaster;
 import com.maan.eway.bean.EmiMaster;
 import com.maan.eway.bean.EmiMaster;
 import com.maan.eway.bean.EmiMaster;
+import com.maan.eway.bean.EmiMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.OccupationMaster;
+import com.maan.eway.bean.PolicyTypeMaster;
 import com.maan.eway.bean.EmiMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.EmiMasterChangeStatusReq;
@@ -54,6 +56,7 @@ import com.maan.eway.master.req.EmiMasterGetReq;
 import com.maan.eway.master.req.EmiMasterSaveReq;
 import com.maan.eway.master.req.OfsGridGetRes;
 import com.maan.eway.master.req.OfsGridSaveReq;
+import com.maan.eway.master.req.PolicyTypeMasterGetAllReq;
 import com.maan.eway.master.res.EmiMasterRes;
 import com.maan.eway.master.res.EmiMasterRes;
 import com.maan.eway.master.res.EmiMasterRes;
@@ -136,6 +139,15 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 				errorList.add(new Error("06", "InstallmentPeriod", "Please Enter Valid Number In InstallmentPeriod"));
 			}else if(!("3".equals(req.getInstallmentPeriod()) || "6".equals(req.getInstallmentPeriod())|| "9".equals(req.getInstallmentPeriod()))) {
 				errorList.add(new Error("06", "InstallmentPeriod", "Please Enter InstallmentPeriod Only 3 Or 6 Or 9"));
+			}else {
+				EmiMaster installmentPeriod =getInstallmentPeriod(req.getInstallmentPeriod(),req.getCompanyId(),req.getProductId());
+				if(StringUtils.isBlank(req.getInstallmentPeriod()) &&  installmentPeriod!=null ) {
+					errorList.add(new Error("08", "InstallmentPeriod", "This InstallmentPeriod  Already Exist"));
+				} else if( installmentPeriod !=null  && StringUtils.isNotBlank(req.getInstallmentPeriod()) ) {
+					if( installmentPeriod.getInstallmentPeriod().equalsIgnoreCase(req.getInstallmentPeriod()) ) {
+						errorList.add(new Error("08", "InstallmentPeriod", "This InstallmentPeriod  Already Exist"));	
+					}			
+				}
 			}
 
 			if (StringUtils.isBlank(req.getPremiumEnd())) {
@@ -168,7 +180,52 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 		return errorList;
 	}
 
-	
+	public EmiMaster getInstallmentPeriod(String installmentPeriod,String companyId, String productId ) {
+		EmiMaster res =null ;
+		try {
+			Date today = new Date();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<EmiMaster> query = cb.createQuery(EmiMaster.class);
+
+			// Find All
+			Root<EmiMaster> s = query.from(EmiMaster.class);
+			
+			// State Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<EmiMaster> ocpm1 = effectiveDate.from(EmiMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate c1 = cb.equal(ocpm1.get("emiId"), s.get("emiId"));
+			Predicate c2 = cb.equal(ocpm1.get("status"),s.get("status"));
+			Predicate c3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate c4 = cb.equal(ocpm1.get("installmentPeriod"), s.get("installmentPeriod"));
+			Predicate c5 = cb.equal(ocpm1.get("companyId"),s.get("companyId"));
+
+			effectiveDate.where(c1,c2,c3,c4,c5);
+			
+			Predicate n1 = cb.equal(s.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(s.get("installmentPeriod"), installmentPeriod);
+			Predicate n3 = cb.equal(s.get("status"), "Y");
+			Predicate n4 = cb.equal(s.get("companyId"), companyId);
+			Predicate n5 = cb.equal(s.get("productId"), productId);
+			// Select
+			query.select( s );
+			
+			query.where(n1,n2,n3,n4,n5);
+			// Get Result
+			TypedQuery<EmiMaster> result = em.createQuery(query);
+			List<EmiMaster> list = result.getResultList();
+			if( list.size()>0) {
+				res = list.get(0);
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+		}
+		return res;
+	}
 	@Transactional
 	@Override
 	public SuccessRes insertEmi(EmiMasterSaveReq req) {
@@ -188,24 +245,25 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			Date entryDate = null;
 			String createdBy = "";
 
-			String sno = "";
-
-			if (StringUtils.isBlank(req.getSno())) {
+			String emiId = "";
+			PolicyTypeMaster policyTypeData=getPolicyTypeDesc(req.getProductId(),req.getCompanyId(),req.getPolicyType());
+			String policyTypeDesc=policyTypeData.getPolicyTypeName();
+			if (StringUtils.isBlank(req.getEmiId())) {
 				// Save
 				// Integer totalCount = repo.count();
 				Integer totalCount = getMasterTableCount(req.getCompanyId());
-				sno = Integer.valueOf(totalCount + 1).toString();
-				saveData.setSno(Integer.valueOf(sno));
+				emiId = Integer.valueOf(totalCount + 1).toString();
+				saveData.setEmiId(Integer.valueOf(emiId));
 				entryDate = new Date();
 				createdBy = req.getCreatedBy();
 				res.setResponse("Saved Successfully ");
-				res.setSuccessId(sno);
+				res.setSuccessId(emiId);
 
 			} else {
 				// Update
 				// Get Less than Equal Today Record
 				// Criteria
-				sno = req.getSno();
+				emiId = req.getEmiId();
 				CriteriaBuilder cb = em.getCriteriaBuilder();
 				CriteriaQuery<EmiMaster> query = cb.createQuery(EmiMaster.class);
 
@@ -221,7 +279,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 
 				// Where
 				Predicate n1 = cb.equal(b.get("companyId"), req.getCompanyId());
-				Predicate n3 = cb.equal(b.get("sno"), req.getSno());
+				Predicate n3 = cb.equal(b.get("emiId"), req.getEmiId());
 
 				query.where(n1, n3).orderBy(orderList);
 
@@ -258,13 +316,14 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 				}
 
 				res.setResponse("Updated Successfully ");
-				res.setSuccessId(sno);
+				res.setSuccessId(emiId);
 			}
 
 			dozerMapper.map(req, saveData);
-			saveData.setSno(Integer.valueOf(sno));
+			saveData.setEmiId(Integer.valueOf(emiId));
 			saveData.setEffectiveDateStart(startDate);
 			saveData.setPolicyType(req.getPolicyType());
+			saveData.setPolicyDesc(policyTypeDesc);
 			saveData.setEffectiveDateEnd(endDate);
 			saveData.setCreatedBy(createdBy);
 			saveData.setStatus(req.getStatus());
@@ -299,13 +358,13 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
 			Root<EmiMaster> ocpm1 = effectiveDate.from(EmiMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			Predicate a1 = cb.equal(ocpm1.get("sno"), b.get("sno"));
+			Predicate a1 = cb.equal(ocpm1.get("emiId"), b.get("emiId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			effectiveDate.where(a1,a2);
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(b.get("sno")));
+			orderList.add(cb.desc(b.get("emiId")));
 			
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("companyId"), companyId);
@@ -319,7 +378,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 		result.setFirstResult(limit * offset);
 		result.setMaxResults(offset);
 		list = result.getResultList();
-		data = list.size() > 0 ?  list.get(0).getSno() : 0 ;
+		data = list.size() > 0 ?  list.get(0).getEmiId() : 0 ;
 	} catch (Exception e) {
 			e.printStackTrace();
 			log.info(e.getMessage());
@@ -327,6 +386,67 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 		return data;
 	}
 
+	public PolicyTypeMaster getPolicyTypeDesc( String productId, String companyId,String policyTypeId ) {
+		PolicyTypeMaster resList = new PolicyTypeMaster();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+
+			List<PolicyTypeMaster> list = new ArrayList<PolicyTypeMaster>();
+
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<PolicyTypeMaster> query = cb.createQuery(PolicyTypeMaster.class);
+
+			// Find All
+			Root<PolicyTypeMaster> b = query.from(PolicyTypeMaster.class);
+
+			// Select
+			query.select(b);
+			// Amend ID Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<PolicyTypeMaster> ocpm1 = amendId.from(PolicyTypeMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("policyTypeId"), b.get("policyTypeId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("productId"),b.get("productId"));
+			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+
+			query.where(a1, a2,a3,a4);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("policyTypeId")));
+
+			// Where
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n2 = cb.equal(b.get("companyId"), companyId);
+			Predicate n3 = cb.equal(b.get("productId"), productId);
+			Predicate n4 = cb.equal(b.get("policyTypeId"), policyTypeId);
+			
+			query.where(n1,n2,n4,n3).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<PolicyTypeMaster> result = em.createQuery(query);
+
+			list = result.getResultList();
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getPolicyTypeId()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(PolicyTypeMaster :: getPolicyTypeName ));
+			if( list.size()>0) {
+				resList = list.get(0);
+			}	
+		}
+			catch(Exception e) {
+				e.printStackTrace();
+				log.info("Exception is --->"+e.getMessage());
+				return null;
+				}
+			return resList;
+		}
 	//Get
 	@Override
 	public EmiMasterRes getByEmiId(EmiMasterGetReq req) {
@@ -356,7 +476,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			Subquery<Long> amendId = query.subquery(Long.class);
 			Root<EmiMaster> ocpm1 = amendId.from(EmiMaster.class);
 			amendId.select(cb.max(ocpm1.get("amendId")));
-			Predicate a1 = cb.equal(ocpm1.get("sno"), b.get("sno"));
+			Predicate a1 = cb.equal(ocpm1.get("emiId"), b.get("emiId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
 
 			amendId.where(a1, a2);
@@ -368,7 +488,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
-			Predicate n4 = cb.equal(b.get("sno"), req.getSno());
+			Predicate n4 = cb.equal(b.get("emiId"), req.getEmiId());
 			Predicate n6 = cb.equal(b.get("companyId"), "99999");
 			Predicate n7 = cb.or(n2,n6);
 			query.where(n1,n4,n7).orderBy(orderList);
@@ -377,10 +497,12 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			TypedQuery<EmiMaster> result = em.createQuery(query);
 
 			list = result.getResultList();
-			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getSno()))).collect(Collectors.toList());
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getEmiId()))).collect(Collectors.toList());
 			res = mapper.map(list.get(0), EmiMasterRes.class);
-			res.setSno(list.get(0).getSno().toString());
+			res.setEmiId(list.get(0).getEmiId().toString());
 			res.setEntryDate(list.get(0).getEntryDate());
+			res.setPolicyType(list.get(0).getPolicyType());
+			res.setPolicyDesc(list.get(0).getPolicyDesc());
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
 			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
 		} catch (Exception e) {
@@ -415,7 +537,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			Subquery<Long> amendId = query.subquery(Long.class);
 			Root<EmiMaster> ocpm1 = amendId.from(EmiMaster.class);
 			amendId.select(cb.max(ocpm1.get("amendId")));
-			Predicate a1 = cb.equal(ocpm1.get("sno"), b.get("sno"));
+			Predicate a1 = cb.equal(ocpm1.get("emiId"), b.get("emiId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			amendId.where(a1, a2,a3);
@@ -435,17 +557,17 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			// Get Result
 			TypedQuery<EmiMaster> result = em.createQuery(query);
 			list = result.getResultList();
-			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getSno()))).collect(Collectors.toList());
-			list.sort(Comparator.comparing(EmiMaster :: getSno ));
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getEmiId()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(EmiMaster :: getEmiId ));
 			// Map
 			for (EmiMaster data : list) {
 				EmiMasterRes res = new EmiMasterRes();
 
 				res = mapper.map(data, EmiMasterRes.class);
-				res.setSno(data.getSno().toString());
+				res.setEmiId(data.getEmiId().toString());
 				res.setCompanyId(data.getCompanyId());
-				
-				
+				res.setPolicyDesc(data.getPolicyDesc());
+				res.setPolicyType(data.getPolicyType());
 				resList.add(res);
 			}
 
@@ -486,7 +608,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			Subquery<Long> amendId = query.subquery(Long.class);
 			Root<EmiMaster> ocpm1 = amendId.from(EmiMaster.class);
 			amendId.select(cb.max(ocpm1.get("amendId")));
-			Predicate a1 = cb.equal(ocpm1.get("sno"), b.get("sno"));
+			Predicate a1 = cb.equal(ocpm1.get("emiId"), b.get("emiId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			amendId.where(a1, a2,a3);
@@ -509,16 +631,16 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			// Get Result
 			TypedQuery<EmiMaster> result = em.createQuery(query);
 			list = result.getResultList();
-			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getSno()))).collect(Collectors.toList());
-			list.sort(Comparator.comparing(EmiMaster :: getSno ));
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getEmiId()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(EmiMaster :: getEmiId ));
 			// Map
 			for (EmiMaster data : list) {
 				EmiMasterRes res = new EmiMasterRes();
 
 				res = mapper.map(data, EmiMasterRes.class);
-				res.setSno(data.getSno().toString());
+				res.setEmiId(data.getEmiId().toString());
 				res.setCompanyId(data.getCompanyId());
-				
+				res.setPolicyDesc(data.getPolicyDesc());
 				resList.add(res);
 			}
 
@@ -551,7 +673,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			Subquery<Long> amendId = query.subquery(Long.class);
 			Root<EmiMaster> ocpm1 = amendId.from(EmiMaster.class);
 			amendId.select(cb.max(ocpm1.get("amendId")));
-			Predicate a1 = cb.equal(ocpm1.get("sno"), b.get("sno"));
+			Predicate a1 = cb.equal(ocpm1.get("emiId"), b.get("emiId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			
 			amendId.where(a1, a2);
@@ -560,7 +682,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			orderList.add(cb.desc(b.get("companyId")));
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
-			Predicate n2 = cb.equal(b.get("sno"), Integer.valueOf(req.getSno()));
+			Predicate n2 = cb.equal(b.get("emiId"), Integer.valueOf(req.getEmiId()));
 			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
 			Predicate n4 = cb.equal(b.get("companyId"), "99999");
 			Predicate n5 = cb.or(n3,n4);
@@ -583,7 +705,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			}
 			// Perform Update
 			res.setResponse("Status Changed");
-			res.setSuccessId(req.getSno());
+			res.setSuccessId(req.getEmiId());
 
 		} catch (Exception e) {
 			e.printStackTrace();

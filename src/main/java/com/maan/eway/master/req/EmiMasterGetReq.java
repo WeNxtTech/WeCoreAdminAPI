@@ -13,8 +13,8 @@ public class EmiMasterGetReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @JsonProperty("Sno")
-    private String sno;
+    @JsonProperty("EmiId")
+    private String emiId;
     @JsonProperty("ProductId")
     private String productId;
     @JsonProperty("InsuranceId")

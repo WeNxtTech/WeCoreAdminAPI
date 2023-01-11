@@ -21,7 +21,7 @@ public class EmiMasterId implements Serializable {
     private static final long serialVersionUID = 1L;
 
     //--- ENTITY KEY ATTRIBUTES 
-    private Integer sno;
+    private Integer    emiId ;
     private Integer     amendId ;
     private Integer    productId ;    
     private String     companyId ;

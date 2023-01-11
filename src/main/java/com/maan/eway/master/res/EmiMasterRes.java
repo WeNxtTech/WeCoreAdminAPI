@@ -14,8 +14,8 @@ public class EmiMasterRes implements Serializable {
     private static final long serialVersionUID = 1L;
 
 
-	@JsonProperty("Sno")
-	private String sno;
+	@JsonProperty("EmiId")
+	private String emiId;
 
 	@JsonProperty("ProductId")
 	private String productId;
@@ -34,6 +34,10 @@ public class EmiMasterRes implements Serializable {
 
 	@JsonProperty("PolicyType")
 	private String policyType;
+	
+	@JsonProperty("PolicyTypeDesc")
+	private String policyDesc;
+	
 
 	@JsonProperty("InterestPercent")
     private String     interestPercent ;

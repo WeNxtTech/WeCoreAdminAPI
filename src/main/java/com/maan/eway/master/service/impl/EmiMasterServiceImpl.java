@@ -163,8 +163,8 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 				errorList.add(new Error("08", "PremiumStart", "Please Enter Valid Number In PremiumStart"));
 			} else if (Double.valueOf(req.getPremiumStart()) > Double.valueOf(req.getPremiumEnd())) {
 				errorList.add(new Error("08", "PremiumStart", "PremiumStart must be greater than PremiumEnd "));
-			}else if (!(Double.valueOf(req.getPremiumStart()) >= 200000)) {
-				errorList.add(new Error("08", "PremiumStart", "PremiumStart must be greater than 200000 "));
+			}else if (!(Double.valueOf(req.getPremiumStart()) >= 100000)) {
+				errorList.add(new Error("08", "PremiumStart", "PremiumStart must be greater than 100000 "));
 			}else if (StringUtils.isBlank(req.getInterestPercent())) {
 				errorList.add(new Error("09", "InterestPercent", "Please Enter InterestPercent"));
 			}else if (StringUtils.isBlank(req.getAdvancePercent())) {

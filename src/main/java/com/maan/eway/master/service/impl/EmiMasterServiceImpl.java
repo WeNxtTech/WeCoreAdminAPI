@@ -140,7 +140,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			}else if(!("3".equals(req.getInstallmentPeriod()) || "6".equals(req.getInstallmentPeriod())|| "9".equals(req.getInstallmentPeriod()))) {
 				errorList.add(new Error("06", "InstallmentPeriod", "Please Enter InstallmentPeriod Only 3 Or 6 Or 9"));
 			}else {
-				EmiMaster installmentPeriod =getInstallmentPeriod(req.getInstallmentPeriod(),req.getCompanyId(),req.getProductId());
+				EmiMaster installmentPeriod =getInstallmentPeriod(req.getInstallmentPeriod(),req.getCompanyId(),req.getProductId(),req.getPolicyType());
 				if(StringUtils.isBlank(req.getInstallmentPeriod()) &&  installmentPeriod!=null ) {
 					errorList.add(new Error("08", "InstallmentPeriod", "This InstallmentPeriod  Already Exist"));
 				} else if( installmentPeriod !=null  && StringUtils.isNotBlank(req.getInstallmentPeriod()) ) {
@@ -180,7 +180,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 		return errorList;
 	}
 
-	public EmiMaster getInstallmentPeriod(String installmentPeriod,String companyId, String productId ) {
+	public EmiMaster getInstallmentPeriod(String installmentPeriod,String companyId, String productId,String policyType ) {
 		EmiMaster res =null ;
 		try {
 			Date today = new Date();
@@ -208,10 +208,11 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			Predicate n3 = cb.equal(s.get("status"), "Y");
 			Predicate n4 = cb.equal(s.get("companyId"), companyId);
 			Predicate n5 = cb.equal(s.get("productId"), productId);
+			Predicate n6 = cb.equal(s.get("policyType"), policyType);
 			// Select
 			query.select( s );
 			
-			query.where(n1,n2,n3,n4,n5);
+			query.where(n1,n2,n3,n4,n5,n6);
 			// Get Result
 			TypedQuery<EmiMaster> result = em.createQuery(query);
 			List<EmiMaster> list = result.getResultList();

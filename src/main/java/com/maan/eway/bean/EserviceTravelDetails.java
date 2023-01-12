@@ -75,6 +75,10 @@ private static final long serialVersionUID = 1L;
     @Column(name="TRAVEL_COVER_ID")
     private Integer    travelCoverId ;
 
+    @Column(name="POLICY_NO", length=100)
+    private String     policyNo;
+
+    
     @Column(name="TRAVEL_COVER_DESC", length=250)
     private String     travelCoverDesc ;
     

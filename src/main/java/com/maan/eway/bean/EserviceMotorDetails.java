@@ -75,6 +75,11 @@ private static final long serialVersionUID = 1L;
     @Column(name="ACCIDENT", length=1)
     private String     accident ;
 
+
+    @Column(name="POLICY_NO", length=100)
+    private String     policyNo;
+
+    
     @Column(name="GPS_TRACKING_INSTALLED", length=1)
     private String     gpsTrackingInstalled ;
 

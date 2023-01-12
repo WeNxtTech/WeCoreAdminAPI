@@ -136,6 +136,10 @@ private static final long serialVersionUID = 1L;
     @Column(name="GENDER_DESC", length=10)
     private String     genderDesc ;
 
+    @Column(name="POLICY_NO", length=100)
+    private String     policyNo;
+
+    
     @Column(name="AGE")
     private Integer    age ;
 

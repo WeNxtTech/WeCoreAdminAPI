@@ -397,7 +397,7 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 			res.setEntryDate(list.get(0).getEntryDate());
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
 			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
-
+			res.setDocumentName(list.get(0).getDocumentName());
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());

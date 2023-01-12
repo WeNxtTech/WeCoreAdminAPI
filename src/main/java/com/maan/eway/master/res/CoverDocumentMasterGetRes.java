@@ -84,5 +84,8 @@ public class CoverDocumentMasterGetRes implements Serializable {
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("UpdatedDate")
     private Date       updatedDate    ;
-	
+
+	@JsonProperty("DocumentName")
+    private String   documentName      ;
+
 }

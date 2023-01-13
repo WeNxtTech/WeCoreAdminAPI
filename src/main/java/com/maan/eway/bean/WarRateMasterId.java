@@ -18,6 +18,7 @@ public class WarRateMasterId implements Serializable {
 	private String branchCode;
 	private String companyId;
 	private Integer amendId;
+	private String sectionId;
 
 
 }

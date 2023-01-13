@@ -45,8 +45,8 @@ public class MailThreadServiceImpl {
 		log.info("Thread Start Time ---> " + sdf.format(new Date()) );
 		try {
 			// Notification Master
-			List<NotifTemplateMaster>  notifDetails = notifRepo.findByStatusAndNotificationApplicableAndEffectiveDateStartLessThanEqualOrderByEntryDateDesc("Y", mReq.getNotifTemplateId() , today); 
-			
+		//	List<NotifTemplateMaster>  notifDetails = notifRepo.findByStatusAndNotificationApplicableAndEffectiveDateStartLessThanEqualOrderByEntryDateDesc("Y", mReq.getNotifTemplateId() , today); 
+			List<NotifTemplateMaster>  notifDetails = notifRepo.findByStatusAndEffectiveDateStartLessThanEqualOrderByEntryDateDesc("Y" , today);
 			if(notifDetails !=null && notifDetails.size()>0 ) {		
 				NotifTemplateMaster notifData = notifDetails.get(0) ;
 				String mailBody    =  notifData.getMailBody() ;

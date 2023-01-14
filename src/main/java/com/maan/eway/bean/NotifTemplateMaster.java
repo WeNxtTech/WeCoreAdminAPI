@@ -54,9 +54,9 @@ private static final long serialVersionUID = 1L;
  
     //--- ENTITY PRIMARY KEY 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    @Column(name="NOTIF_TEMPLATE_CODE", nullable=false)
-    private Long       notifTemplateCode ;
+  //  @GeneratedValue(strategy=GenerationType.AUTO)
+    @Column(name="NOTIF_TEMPLATE_CODE", length=20,nullable=false)
+    private String       notifTemplateCode ;
 
     @Id
     @Column(name="COMPANY_ID", nullable=false, length=10)
@@ -71,11 +71,11 @@ private static final long serialVersionUID = 1L;
     private Integer       amendId ;
 
     //--- ENTITY DATA FIELDS 
-    @Column(name="TO_MESSENGERNO")
-    private BigDecimal toMessengerno ;
+    @Column(name="TO_MESSENGERNO", length=100)
+    private String toMessengerno ;
 
-    @Column(name="TO_SMSNO")
-    private BigDecimal toSmsno ;
+    @Column(name="TO_SMSNO", length=100)
+    private String toSmsno ;
 
     @Column(name="TO_EMAIL", length=100)
     private String     toEmail ;

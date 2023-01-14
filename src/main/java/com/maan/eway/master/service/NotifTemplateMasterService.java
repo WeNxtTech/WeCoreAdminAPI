@@ -7,8 +7,13 @@ package com.maan.eway.master.service;
 import com.maan.eway.bean.NotifTemplateMaster;
 import com.maan.eway.common.req.GetTableDropDownReq;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.NotifTemplateMasterGetReq;
+import com.maan.eway.master.req.NotifTemplateMasterReq;
+import com.maan.eway.master.req.NotifTempleteMasterChangeStatusReq;
+import com.maan.eway.master.req.NotificationTempleteMasterGetAllReq;
 import com.maan.eway.master.req.NotificationTransactionDetailsGetColumnReq;
-import com.maan.eway.notif.req.NotifTemplateMasterReq;
+import com.maan.eway.master.res.NotificationTempMasterColummnDropRes;
+import com.maan.eway.master.res.NotificationTempleteMasterGetRes;
 import com.maan.eway.res.ColummnDropRes;
 import com.maan.eway.res.SuccessRes;
 
@@ -20,9 +25,17 @@ public interface NotifTemplateMasterService  {
 
 	List<Error> validateNotifTemplate(NotifTemplateMasterReq req);
 
-	List<ColummnDropRes> getTableDetails(NotificationTransactionDetailsGetColumnReq req);
+	List<NotificationTempMasterColummnDropRes> getTableDetails();
 
 	SuccessRes insertNotifTemplate(NotifTemplateMasterReq req);
+
+	NotificationTempleteMasterGetRes getNotificationCode(NotifTemplateMasterGetReq req);
+
+	List<NotificationTempleteMasterGetRes> getallNotiTemplete(NotificationTempleteMasterGetAllReq req);
+
+	List<NotificationTempleteMasterGetRes> getactiveNotiTemplete(NotificationTempleteMasterGetAllReq req);
+
+//SuccessRes changeStatusOfNotitemplete(NotifTempleteMasterChangeStatusReq req);
 
 
 }

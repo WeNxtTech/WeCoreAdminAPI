@@ -812,6 +812,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 			}
 			
 			Integer sNo = 0;
+			List<FactorRateMaster> saveList = new ArrayList<FactorRateMaster>();
 			for ( FactorParamsInsert data :  req.getFactorParams() ) {
 				FactorRateMaster saveData = new FactorRateMaster();
 				// Save New Records
@@ -851,10 +852,11 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				saveData.setFactorTypeName(factorTypes.size()>0 ? factorTypes.get(0).getFactorTypeName() : "");
 				saveData.setFactorTypeDesc(factorTypes.size()>0 ? factorTypes.get(0).getFactorTypeDesc(): "");
 				saveData.setRegulatoryCode(data.getRegulatoryCode());
-				repository.saveAndFlush(saveData);
-				log.info("Saved Details is ---> " + json.toJson(saveData));
+				saveList.add(saveData);
+				
 				
 			}
+			repository.saveAllAndFlush(saveList);
 			
 		} catch (Exception e) {
 		e.printStackTrace();

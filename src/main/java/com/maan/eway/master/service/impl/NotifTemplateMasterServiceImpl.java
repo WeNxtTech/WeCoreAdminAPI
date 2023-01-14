@@ -5,31 +5,18 @@
 */
 package com.maan.eway.master.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import com.maan.eway.repository.NotifTemplateMasterRepository;
-import com.maan.eway.res.ColummnDropRes;
-import com.maan.eway.res.SuccessRes;
-import com.google.gson.Gson;
-import com.maan.eway.bean.NotifTemplateMaster;
-import com.maan.eway.bean.NotifTemplateMaster;
-
-import com.maan.eway.bean.ProductMaster;
-import com.maan.eway.common.req.GetTableDropDownReq;
-import com.maan.eway.error.Error;
-import com.maan.eway.master.req.NotificationTransactionDetailsGetColumnReq;
-import com.maan.eway.master.service.NotifTemplateMasterService;
-import com.maan.eway.notif.req.NotifTemplateMasterReq;
-
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -45,6 +32,32 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.google.gson.Gson;
+import com.maan.eway.bean.MotorColorMaster;
+import com.maan.eway.bean.NotifTemplateMaster;
+import com.maan.eway.bean.NotifTemplateMaster;
+import com.maan.eway.bean.NotifTemplateMaster;
+import com.maan.eway.bean.NotifTemplateMaster;
+import com.maan.eway.error.Error;
+import com.maan.eway.master.req.NotifTemplateMasterGetReq;
+import com.maan.eway.master.req.NotifTemplateMasterReq;
+import com.maan.eway.master.req.NotifTempleteMasterChangeStatusReq;
+import com.maan.eway.master.req.NotificationTempleteMasterGetAllReq;
+import com.maan.eway.master.req.NotificationTransactionDetailsGetColumnReq;
+import com.maan.eway.master.res.NotificationTempleteMasterGetRes;
+import com.maan.eway.master.res.NotificationTempleteMasterGetRes;
+import com.maan.eway.master.res.NotificationTempleteMasterGetRes;
+import com.maan.eway.master.res.NotificationTempMasterColummnDropRes;
+import com.maan.eway.master.res.NotificationTempleteMasterGetRes;
+import com.maan.eway.master.service.NotifTemplateMasterService;
+import com.maan.eway.repository.NotifTemplateMasterRepository;
+import com.maan.eway.res.ColummnDropRes;
+import com.maan.eway.res.SuccessRes;
 
 /**
  * <h2>NotifTemplateMasterServiceimpl</h2>
@@ -73,7 +86,8 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 		List<Error> errorList = new ArrayList<Error>();
 
 		try {
-			List<String> content=new ArrayList<String>();
+			List<String> splitString=new ArrayList<String>();
+			List<String> content = new ArrayList<String>();
 			if (StringUtils.isBlank(req.getCompanyId().toString())) {
 				errorList.add(new Error("01", "Company Id", "Please Enter Company Id"));
 			} else if (req.getCompanyId().length() > 20) {
@@ -99,80 +113,128 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 			if (StringUtils.isBlank(req.getToEmail())) {
 				errorList.add(new Error("03", "ToEmail", "Please Enter ToEmail "));
 			}
-			// SMS
+			// SMS---
 			if (StringUtils.isBlank(req.getSmsRequired())) {
 				errorList.add(new Error("04", "SmsRequired", "Please Enter SmsRequired"));
 			} else if (req.getSmsRequired().equals("Y")) {
-
 				if (StringUtils.isBlank(req.getSmsSubject())) {
 					errorList.add(new Error("04", "SmsSubject", "Please Enter SmsSubject"));
 				} else if (req.getSmsSubject().length() > 500) {
 					errorList.add(new Error("04", "SmsSubject", "Please Enter SmsSubject within 500 Characters"));
 				}
-				content=splitSentance(req.getSmsSubject());
+				content = getTableColumn();
+				splitString = split(req.getSmsSubject());
+				for (String str : splitString) {
+					List<String> filter = content.stream().filter(o -> o.equals(str)).collect(Collectors.toList());
+					if (filter.size() <= 0) {
+						errorList.add(new Error("04", "Column Key", "Given {" + str + "} text does not exist in Table"));
+					}
+				}
+				// String str = replaceUserContent(req.getSmsSubject(), content);
 				if (StringUtils.isBlank(req.getSmsBodyEn())) {
 					errorList.add(new Error("04", "SmsBody", "Please Enter SmsBody"));
 				} else if (req.getSmsBodyEn().length() > 2000) {
 					errorList.add(new Error("04", "SmsBody", "Please Enter SmsBody within 2000 Characters"));
 				}
-				content=splitSentance(req.getSmsBodyEn());
-				
-			}
+				content = getTableColumn();
+				splitString = split(req.getSmsBodyEn());
+				for (String str : splitString) {
+					List<String> filter = content.stream().filter(o -> o.equals(str)).collect(Collectors.toList());
+					if (filter.size() <= 0) {
+						errorList.add(new Error("04", "Column Key", "Given {" + str + "} text does not exist in Table"));
+					}
+				}
 
+			}
 			// WhatsApp
 			if (StringUtils.isBlank(req.getWhatsappRequired())) {
 				errorList.add(new Error("05", "WhatsappRequired", "Please Enter WhatsappRequired"));
 			} else if (req.getWhatsappRequired().equals("Y")) {
-
 				if (StringUtils.isBlank(req.getWhatsappSubject())) {
 					errorList.add(new Error("05", "WhatsappSubject", "Please Enter WhatsappSubject"));
 				} else if (req.getWhatsappSubject().length() > 500) {
-					errorList.add(
-							new Error("05", "WhatsappSubject", "Please Enter WhatsappSubject within 500 Characters"));
+					errorList.add(new Error("05", "WhatsappSubject", "Please Enter WhatsappSubject within 500 Characters"));
 				}
-				content=splitSentance(req.getWhatsappSubject());
+				content = getTableColumn();
+				splitString = split(req.getWhatsappSubject());
+				for (String str : splitString) {
+					List<String> filter = content.stream().filter(o -> o.equals(str)).collect(Collectors.toList());
+					if (filter.size() <= 0) {
+						errorList.add(new Error("05", "Column Key", "Given {" + str + "} text does not exist in Table"));
+					}
+				}
 				if (StringUtils.isBlank(req.getWhatsappBodyEn())) {
 					errorList.add(new Error("05", "WhatsappBodyEn", "Please Enter WhatsappBodyEn"));
 				} else if (req.getWhatsappBodyEn().length() > 500) {
-					errorList.add(
-							new Error("05", "WhatsappBodyEn", "Please Enter WhatsappBodyEn within 500 Characters"));
+					errorList.add(new Error("05", "WhatsappBodyEn", "Please Enter WhatsappBodyEn within 500 Characters"));
 				}
-				content=splitSentance(req.getWhatsappBodyEn());
+				content = getTableColumn();
+				splitString = split(req.getWhatsappBodyEn());
+				for (String str : splitString) {
+					List<String> filter = content.stream().filter(o -> o.equals(str)).collect(Collectors.toList());
+					if (filter.size() <= 0) {
+						errorList.add(new Error("05", "Column Key", "Given {" + str + "} text does not exist in Table"));
+					}
+				}
 				if (StringUtils.isBlank(req.getWhatsappRegards())) {
 					errorList.add(new Error("05", "WhatsappRegards", "Please Enter WhatsappRegards"));
 				} else if (req.getWhatsappRegards().length() > 500) {
-					errorList.add(
-							new Error("05", "WhatsappRegards", "Please Enter WhatsappRegards within 500 Characters"));
+					errorList.add(new Error("05", "WhatsappRegards", "Please Enter WhatsappRegards within 500 Characters"));
 				}
-				content=splitSentance(req.getWhatsappRegards());
+				content = getTableColumn();
+				splitString = split(req.getWhatsappRegards());
+				for (String str : splitString) {
+					List<String> filter = content.stream().filter(o -> o.equals(str)).collect(Collectors.toList());
+					if (filter.size() <= 0) {
+						errorList.add(new Error("05", "Column Key", "Given {" + str + "} text does not exist in Table"));
+					}
+				}
 			}
 
 			// Mail
 			if (StringUtils.isBlank(req.getMailRequired())) {
 				errorList.add(new Error("06", "MailRequired", "Please Enter MailRequired"));
 			} else if (req.getMailRequired().equals("Y")) {
-
 				if (StringUtils.isBlank(req.getMailSubject())) {
 					errorList.add(new Error("06", "MailSubject", "Please Enter MailSubject"));
 				} else if (req.getMailSubject().length() > 500) {
 					errorList.add(new Error("06", "MailSubject", "Please Enter MailSubject within 500 Characters"));
 				}
-				
-				content=splitSentance(req.getMailSubject());
-				
+				content = getTableColumn();
+				splitString = split(req.getMailSubject());
+				for (String str : splitString) {
+					List<String> filter = content.stream().filter(o -> o.equals(str)).collect(Collectors.toList());
+					if (filter.size() <= 0) {
+						errorList.add(new Error("06", "Column Key", "Given {" + str + "} text does not exist in Table"));
+					}
+				}
 				if (StringUtils.isBlank(req.getMailBody())) {
 					errorList.add(new Error("06", "MailBody", "Please Enter MailBody"));
 				} else if (req.getMailBody().length() > 2000) {
 					errorList.add(new Error("06", "MailBody", "Please Enter MailSubject within 2000  Characters"));
 				}
-				content=splitSentance(req.getMailSubject());
-				
+				content = getTableColumn();
+				splitString = split(req.getMailBody());
+				for (String str : splitString) {
+					List<String> filter = content.stream().filter(o -> o.equals(str)).collect(Collectors.toList());
+					if (filter.size() <= 0) {
+						errorList
+								.add(new Error("01", "Column Key", "Given {" + str + "} text does not exist in Table"));
+					}
+				}
 				if (StringUtils.isBlank(req.getMailRegards())) {
 					errorList.add(new Error("06", "MailRegards", "Please Enter MailRegards"));
 				} else if (req.getMailRegards().length() > 500) {
 					errorList.add(new Error("06", "MailRegards", "Please Enter MailRegards within 500 Characters"));
 				}
-				content=splitSentance(req.getMailRegards());
+				content = getTableColumn();
+				splitString = split(req.getMailRegards());
+				for (String str : splitString) {
+					List<String> filter = content.stream().filter(o -> o.equals(str)).collect(Collectors.toList());
+					if (filter.size() <= 0) {
+						errorList.add(new Error("01", "Column Key", "Given {" + str + "} text does not exist in Table"));
+					}
+				}
 			}
 
 			// Status Validation
@@ -219,25 +281,77 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 		}
 		return errorList;
 	}
-
-	public List<String> splitSentance(String content) {
-		List<String> res = new ArrayList<String>();
+/*
+	private String replaceUserContent(String smsSubject, List<String> content) {
+		//StringBuilder b=new StringBuffer(smsSubject);
+		String str=new String(smsSubject);
+		if (content != null && !content.isEmpty()) {
+			for (String s : content) {
+				str.replaceAll(s, str);
+			//	errorList.add(new Error("00", "CommonError", "CommonError"));
+			}
+		}
+		return str;
+	}
+*/
+	public List<String> split(String content) {
+		List<String> list = new ArrayList<String>();
 		try {
+			
+			int startingIndex = content.indexOf("{");
+			int closingIndex = content.indexOf("}");
+			for (int i = 0; i <= content.length(); i++) {
+				if (startingIndex > 0 && closingIndex > 0) {
 
-			String s1 = content;
-			String[] result = s1.split("{");
-
-			for (String s : result) {
-				System.out.println(s);
-				res.add(s);
+					String result2 = content.substring(startingIndex+1, closingIndex );
+					startingIndex = content.indexOf("{", closingIndex + 1);
+					closingIndex = content.indexOf("}", closingIndex + 1);
+					list.add(result2);
+					System.out.println(result2);
+				} else
+					break;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			log.info("Exception is -->" + e.getMessage());
 			return null;
 		}
-		return res;
+		return list;
+
 	}
+	
+	
+	public List<String> getTableColumn() {
+		List<String> resList = new ArrayList<String>();
+		try {
+			
+			 String tableName = "NotifTransactionDetails" ;
+			String entityName = "com.maan.eway.bean." + tableName;// entityName + ".class" ;
+			Class<?> forName = Class.forName(entityName);// forName(entityName);
+			Field[] members = forName.getDeclaredFields();
+		
+			for (Field member : members) {
+				
+				if (!member.getName().equalsIgnoreCase("serialVersionUID")) {
+					System.out.println(member.getName());
+					String output = member.getName().substring(0, 1).toUpperCase() + member.getName().substring(1);
+					String field = output.replaceAll("(.)([A-Z])", "$1_$2");
+					System.out.println(field);
+					String display = output.replaceAll("(.)([A-Z])", "$1 $2");
+					System.out.println(display);
+					//queryRes.put(member.getName(),i);
+					resList.add(member.getName());			
+				}
+				
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
 	@Override
 	public SuccessRes insertNotifTemplate(NotifTemplateMasterReq req) {
 		SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/yyyy");
@@ -255,11 +369,11 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 			Date entryDate = null ;
 			String createdBy = "" ;
 			String companyId="";
-			String notificationCode = "" ;
+			Long notificationCode =0L;
 			if(StringUtils.isBlank(req.getNotifTemplateCode())) {
 				// Save
 				Long totalCount = getMasterTableCount( req.getCompanyId(),req.getProductId() );
-				notificationCode ="Not_"+(Long.valueOf(totalCount)+1) ;
+				notificationCode =(Long.valueOf(totalCount)+1);
 				entryDate = new Date();
 				createdBy = req.getCreatedBy();
 				res.setResponse("Saved Successfully");
@@ -283,7 +397,7 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 				// Where
 				Predicate n1 = cb.equal(b.get("status"), "Y");
 				Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-				Predicate n3 = cb.equal(b.get("insId"), req.getCompanyId());
+				Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
 
 				query.where(n1, n2, n3);
 				// Get Result
@@ -317,18 +431,29 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 				res.setSuccessId(companyId);
 			}
 			
-			dozermapper.map(req, saveData);
-			saveData.setNotifTemplateCode(Long.valueOf(notificationCode));
+			//dozermapper.map(req, saveData);
+			saveData.setToMessengerno(req.getToMessengerno());
+			saveData.setToEmail(req.getToEmail());
+			saveData.setToSmsno(req.getToSmsno());
+			saveData.setNotifTemplateCode(notificationCode.toString());
+			saveData.setNotifTemplatename(req.getNotifTemplatename());
 			saveData.setCompanyId(companyId);
 			saveData.setEffectiveDateStart(startDate);
 			saveData.setEffectiveDateEnd(endDate);
 			saveData.setCreatedBy(createdBy);
 			saveData.setStatus(req.getStatus());
 			saveData.setCompanyId(req.getCompanyId());
+			saveData.setProductId(Long.valueOf(req.getProductId().toString()));
 			saveData.setEntryDate(entryDate);
 			saveData.setUpdatedDate(new Date());
 			saveData.setUpdatedBy(req.getCreatedBy());
 			saveData.setAmendId(amendId);
+			saveData.setRemarks(req.getRemarks());
+			saveData.setRegulatoryCode(req.getRegulatoryCode());
+			saveData.setCoreAppCode(req.getCoreAppCode());
+			saveData.setSmsRequired(req.getSmsRequired());
+			saveData.setMailRequired(req.getMailRequired());
+			saveData.setWhatsappRequired(req.getWhatsappRequired());
 			if (req.getMailRequired().equals("Y")) {
 				saveData.setMailBody(req.getMailBody());
 				saveData.setMailSubject(req.getMailSubject());
@@ -344,19 +469,6 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 				saveData.setWhatsappRegards(req.getWhatsappRegards());
 			}
 			repository.saveAndFlush(saveData);
-
-			if (list.size() > 0) {
-				// Update Old Record
-				NotifTemplateMaster lastRecord = list.get(0);
-				lastRecord.setEffectiveDateEnd(oldEndDate);
-				String startDatewithoutTime = sdformat.format(startDate);
-				String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
-
-				if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
-					lastRecord.setStatus("N");
-				}
-				repository.saveAndFlush(lastRecord);
-			}
 			log.info("Saved Details is --> " + json.toJson(saveData));
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -382,14 +494,13 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
 			Root<NotifTemplateMaster> ocpm1 = effectiveDate.from(NotifTemplateMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			Predicate a1 = cb.equal(ocpm1.get("itemId"), b.get("itemId"));
+			Predicate a1 = cb.equal(ocpm1.get("notifTemplateCode"), b.get("notifTemplateCode"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
-			effectiveDate.where(a1,a2,a3);
+			effectiveDate.where(a1,a2);
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(b.get("itemId")));
+			orderList.add(cb.desc(b.get("notifTemplateCode")));
 			
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("companyId"), companyId);
@@ -404,7 +515,7 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			list = result.getResultList();
-			data = list.size() > 0 ? list.get(0).getNotifTemplateCode() : 0 ;
+			data = list.size() > 0 ? Long.valueOf(list.get(0).getNotifTemplateCode()) : 0 ;
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -414,10 +525,10 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 	}
 
 	@Override
-	public List<ColummnDropRes> getTableDetails(NotificationTransactionDetailsGetColumnReq req) {
-		List<ColummnDropRes> resList = new ArrayList<ColummnDropRes>();
+	public List<NotificationTempMasterColummnDropRes> getTableDetails() {
+		List<NotificationTempMasterColummnDropRes> resList = new ArrayList<NotificationTempMasterColummnDropRes>();
 		try {
-			 String tableName = "notif_transaction_details" ;
+			 String tableName = "NotifTransactionDetails" ;
 			String entityName = "com.maan.eway.bean." + tableName;// entityName + ".class" ;
 			Class<?> forName = Class.forName(entityName);// forName(entityName);
 
@@ -433,14 +544,12 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 					System.out.println(field);
 					String display = output.replaceAll("(.)([A-Z])", "$1 $2");
 					System.out.println(display);
-					ColummnDropRes res = new ColummnDropRes();
-					res.setColumnName(field);
-					res.setDispalyName(display);
+					NotificationTempMasterColummnDropRes res = new NotificationTempMasterColummnDropRes();
+//					res.setColumnName(field);
+//					res.setDispalyName(display);
 					res.setFieldName(member.getName());
 					resList.add(res);
-
 				}
-
 			}
 
 		} catch (Exception e) {
@@ -450,7 +559,182 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 		}
 		return resList;
 	}
-
 	
+	@Override
+	public NotificationTempleteMasterGetRes getNotificationCode(NotifTemplateMasterGetReq req) {
+		NotificationTempleteMasterGetRes res = new NotificationTempleteMasterGetRes();
+		ModelMapper mapper = new ModelMapper();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
+		try {
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<NotifTemplateMaster> query = cb.createQuery(NotifTemplateMaster.class);
+			List<NotifTemplateMaster> list = new ArrayList<NotifTemplateMaster>();
+
+			// Find All
+			Root<NotifTemplateMaster> c = query.from(NotifTemplateMaster.class);
+
+			// Select
+			query.select(c);
+
+			// Amend ID Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<NotifTemplateMaster> ocpm1 = amendId.from(NotifTemplateMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("notifTemplateCode"), c.get("notifTemplateCode"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), c.get("companyId"));
+			amendId.where(a1, a2);
+			
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("companyId")));
+
+			// Where
+
+			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("amendId"), amendId);
+			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("notifTemplateCode"), req.getNotifTemplateCode());
+			Predicate n3 = cb.equal(c.get("companyId"), req.getInsuranceId());
+			query.where(n1,n2,n3).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<NotifTemplateMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getNotifTemplateCode()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(NotifTemplateMaster :: getNotifTemplatename ));
+			
+			res = mapper.map(list.get(0), NotificationTempleteMasterGetRes.class);
+			res.setNotifTemplateCode(list.get(0).getNotifTemplateCode());
+			res.setEntryDate(list.get(0).getEntryDate());
+			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
+			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
+			res.setRemarks(list.get(0).getRemarks());
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+	
+	private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
+	    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+	}
+	@Override
+	public List<NotificationTempleteMasterGetRes> getallNotiTemplete(NotificationTempleteMasterGetAllReq req) {
+		List<NotificationTempleteMasterGetRes> resList = new ArrayList<NotificationTempleteMasterGetRes>();
+		DozerBeanMapper mapper = new DozerBeanMapper();
+		try {
+			List<NotifTemplateMaster> list = new ArrayList<NotifTemplateMaster>();
+			
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<NotifTemplateMaster> query = cb.createQuery(NotifTemplateMaster.class);
+
+			// Find All
+			Root<NotifTemplateMaster> b = query.from(NotifTemplateMaster.class);
+
+			// Select
+			query.select(b);
+
+			// Amend ID Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<NotifTemplateMaster> ocpm1 = amendId.from(NotifTemplateMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("notifTemplateCode"), b.get("notifTemplateCode"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			amendId.where(a1, a2);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("companyId")));
+
+			// Where
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
+			query.where(n1,n2).orderBy(orderList);
+			// Get Result
+			TypedQuery<NotifTemplateMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getNotifTemplateCode()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(NotifTemplateMaster :: getNotifTemplatename ));
+			
+			// Map
+			for (NotifTemplateMaster data : list) {
+				NotificationTempleteMasterGetRes res = new NotificationTempleteMasterGetRes();
+
+				res = mapper.map(data, NotificationTempleteMasterGetRes.class);
+				res.setNotifTemplateCode(data.getNotifTemplateCode());
+				resList.add(res);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+
+		}
+		return resList;
+	}
+	@Override
+	public List<NotificationTempleteMasterGetRes> getactiveNotiTemplete(NotificationTempleteMasterGetAllReq req) {
+		List<NotificationTempleteMasterGetRes> resList = new ArrayList<NotificationTempleteMasterGetRes>();
+		DozerBeanMapper mapper = new DozerBeanMapper();
+		try {
+			List<NotifTemplateMaster> list = new ArrayList<NotifTemplateMaster>();
+			// Pagination
+		
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<NotifTemplateMaster> query = cb.createQuery(NotifTemplateMaster.class);
+
+			// Find All
+			Root<NotifTemplateMaster> b = query.from(NotifTemplateMaster.class);
+
+			// Select
+			query.select(b);
+
+
+			// Amend ID Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<NotifTemplateMaster> ocpm1 = amendId.from(NotifTemplateMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("notifTemplateCode"), b.get("notifTemplateCode"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			amendId.where(a1, a2);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("companyId")));
+
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
+			Predicate n4 = cb.equal(b.get("status"), "Y");
+			query.where(n1,n2,n4).orderBy(orderList);
+
+			// Get Result
+			TypedQuery<NotifTemplateMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getNotifTemplateCode()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(NotifTemplateMaster :: getNotifTemplatename ));
+			
+			
+			// Map
+			for (NotifTemplateMaster data : list) {
+				NotificationTempleteMasterGetRes res = new NotificationTempleteMasterGetRes();
+
+				res = mapper.map(data, NotificationTempleteMasterGetRes.class);
+				res.setNotifTemplateCode(data.getNotifTemplateCode());
+				resList.add(res);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+
+		}
+		return resList;
+	}
+	
 }

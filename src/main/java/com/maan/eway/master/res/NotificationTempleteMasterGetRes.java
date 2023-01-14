@@ -1,44 +1,49 @@
-package com.maan.eway.notif.req;
+package com.maan.eway.master.res;
 
-import java.io.Serializable;
 import java.util.Date;
-
-import javax.persistence.Column;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import lombok.Data;
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class NotificationTempleteMasterGetRes {
 
-@Data
-public class NotifTemplateMasterReq implements Serializable {
+	@JsonProperty("NotifTemplateCode")
+	private String notifTemplateCode;
 
-    private static final long serialVersionUID = 1L;
-    @Column(name="NotifTemplateCode")
-    private String       notifTemplateCode ;
-    
-    @Column(name="notifTemplatename")
-    private String     notifTemplatename ;
-    
-    @JsonProperty("ToMessengerno")
-    private String toMessengerno ;
+	@JsonProperty("NotifTemplatename")
+	private String notifTemplatename;
 
-    @JsonProperty("ToSmsno")
-    private String toSmsno ;
+	@JsonProperty("ToMessengerno")
+	private String toMessengerno;
 
-    @JsonProperty("ToEmail")
-    private String     toEmail ;
+	@JsonProperty("ToSmsno")
+	private String toSmsno;
+
+	@JsonProperty("ToEmail")
+	private String toEmail;
 
 	@JsonProperty("InsuranceId")
 	private String companyId;
-	
+
 	@JsonProperty("ProductId")
 	private String productId;
 
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
+
+	@JsonFormat(pattern = "dd/MM/YYYY")
+	@JsonProperty("EffectiveDateEnd")
+	private Date EffectiveDateEnd;
 
 	@JsonProperty("MailRequired")
 	private String mailRequired;
@@ -75,17 +80,28 @@ public class NotifTemplateMasterReq implements Serializable {
 
 	@JsonProperty("Remarks")
 	private String remarks;
-	
+
 	@JsonProperty("Status")
 	private String status;
-	
+
 	@JsonProperty("CreatedBy")
-    private String     createdBy ;
-	
+	private String createdBy;
+
+	@JsonProperty("UpdatedBy")
+	private String updatedBy;
+
+	@JsonFormat(pattern = "dd/MM/YYYY")
+	@JsonProperty("UpdateDate")
+	private Date updateDate;
+
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
-	
+
 	@JsonProperty("RegulatoryCode")
 	private String regulatoryCode;
-    
+
+	@JsonFormat(pattern = "dd/MM/YYYY")
+	@JsonProperty("EntryDate")
+	private Date entryDate;
+
 }

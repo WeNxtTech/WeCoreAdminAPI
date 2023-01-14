@@ -1,4 +1,4 @@
-package com.maan.eway.notif.req;
+package com.maan.eway.master.req;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -14,14 +14,13 @@ public class NotifTemplateMasterGetReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @JsonProperty("InsuranceId")
-    private String companyId;
-   
-	@JsonProperty("NotificationApplicable")
-	private String notificationApplicable;
+	@JsonProperty("NotifTemplateCode")
+	private String notifTemplateCode;
 	
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDateStart")
-	private Date effectiveDateStart;
+	@JsonProperty("InsuranceId")
+	private String insuranceId;
+	
+	@JsonProperty("ProductId")
+	private String productId;
     
 }

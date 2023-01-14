@@ -8,9 +8,18 @@ package com.maan.eway.master.controller;
 import com.maan.eway.bean.NotifTemplateMaster;
 import com.maan.eway.common.req.GetTableDropDownReq;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.ColorChangeStatusReq;
+import com.maan.eway.master.req.MotorColorGetAllReq;
+import com.maan.eway.master.req.MotorColorGetReq;
+import com.maan.eway.master.req.NotifTemplateMasterGetReq;
+import com.maan.eway.master.req.NotifTemplateMasterReq;
+import com.maan.eway.master.req.NotifTempleteMasterChangeStatusReq;
+import com.maan.eway.master.req.NotificationTempleteMasterGetAllReq;
 import com.maan.eway.master.req.NotificationTransactionDetailsGetColumnReq;
+import com.maan.eway.master.res.MotorColorGetRes;
+import com.maan.eway.master.res.NotificationTempMasterColummnDropRes;
+import com.maan.eway.master.res.NotificationTempleteMasterGetRes;
 import com.maan.eway.master.service.NotifTemplateMasterService;
-import com.maan.eway.notif.req.NotifTemplateMasterReq;
 import com.maan.eway.res.ColummnDropRes;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.SuccessRes;
@@ -36,7 +45,7 @@ import java.util.List;
 * <h2>NotifTemplateMasterController</h2>
 */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/master")
 public class NotifTemplateMasterController {
 
 	@Autowired
@@ -91,13 +100,98 @@ public class NotifTemplateMasterController {
 
 		}
 		
+		// Get By Id
+		@PostMapping("/getnotificationcode")
+		@ApiOperation(value = "This method is get by Notification Templete")
 
-		@PostMapping("/getnotitranscolumns")
-		@ApiOperation(value = "This method is to Table Details Drop Down")
-		public ResponseEntity<CommonRes> getTableDetails(@RequestBody NotificationTransactionDetailsGetColumnReq req) {
+		public ResponseEntity<CommonRes> getNotificationCode(@RequestBody NotifTemplateMasterGetReq req) {
 			CommonRes data = new CommonRes();
 
-			List<ColummnDropRes> res = entityService.getTableDetails(req);
+			NotificationTempleteMasterGetRes res = entityService.getNotificationCode(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+
+		// Get All
+		@PostMapping("/getallnotitemplete")
+		@ApiOperation(value = "This method is Get all Notification Templete")
+
+		public ResponseEntity<CommonRes> getallNotiTemplete(@RequestBody NotificationTempleteMasterGetAllReq req) {
+			reqPrinter.reqPrint(req);
+			CommonRes data = new CommonRes();
+
+			// Get All
+			List<NotificationTempleteMasterGetRes> res = entityService.getallNotiTemplete(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+		
+		// Get Active
+		@PostMapping("/getactivenotitemplete")
+		@ApiOperation(value = "This method is Get Active Notification Templete ")
+
+		public ResponseEntity<CommonRes> getactiveNotiTemplete(@RequestBody NotificationTempleteMasterGetAllReq req) {
+			reqPrinter.reqPrint(req);
+			CommonRes data = new CommonRes();
+
+			// Get All
+			List<NotificationTempleteMasterGetRes> res = entityService.getactiveNotiTemplete(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+
+/*		// Change Status
+		@PostMapping("/notitemplete/changestatus")
+		@ApiOperation(value = "This method is get Notification Templete Change Status")
+		public ResponseEntity<CommonRes> changeStatusOfNotitemplete(@RequestBody NotifTempleteMasterChangeStatusReq req) {
+
+			CommonRes data = new CommonRes();
+			// Change Status
+			SuccessRes res = entityService.changeStatusOfNotitemplete(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+
+		}*/
+
+		//Dropdown
+		@GetMapping("/dropdown/getnotitranscolumns")
+		@ApiOperation(value = "This method is to Table Details Drop Down")
+		public ResponseEntity<CommonRes> getTableDetails() {
+			CommonRes data = new CommonRes();
+
+			List<NotificationTempMasterColummnDropRes> res = entityService.getTableDetails();
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());

@@ -138,9 +138,9 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			} else if (!req.getInstallmentPeriod().matches("[0-9.]+")) {
 				errorList.add(new Error("06", "InstallmentPeriod", "Please Enter Valid Number In InstallmentPeriod"));
 			}
-//			else if(!("3".equals(req.getInstallmentPeriod()) || "6".equals(req.getInstallmentPeriod())|| "9".equals(req.getInstallmentPeriod()))) {
-//				errorList.add(new Error("06", "InstallmentPeriod", "Please Enter InstallmentPeriod Only 3 Or 6 Or 9"));
-//			}
+			else if(Integer.valueOf(req.getInstallmentPeriod())<0) {
+				errorList.add(new Error("06", "InstallmentPeriod", "InstallmentPeriod Should be Greather than 0"));
+			}
 			else {
 				EmiMaster installmentPeriod =getInstallmentPeriod(req.getInstallmentPeriod(),req.getCompanyId(),req.getProductId(),req.getPolicyType());
 				if(StringUtils.isBlank(req.getInstallmentPeriod()) &&  installmentPeriod!=null ) {
@@ -157,21 +157,30 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			} else if (!req.getPremiumEnd().matches("[0-9.]+")) {
 				errorList.add(new Error("07", "PremiumEnd", "Please Enter Valid Number In PremiumEnd"));
 			}
-			else if (StringUtils.isBlank(req.getPremiumStart())) {
+			if (StringUtils.isBlank(req.getPremiumStart())) {
 				errorList.add(new Error("08", "PremiumStart", "Please Enter PremiumStart"));
 			} else if (!req.getPremiumStart().matches("[0-9.]+")) {
 				errorList.add(new Error("08", "PremiumStart", "Please Enter Valid Number In PremiumStart"));
 			} else if (Double.valueOf(req.getPremiumStart()) > Double.valueOf(req.getPremiumEnd())) {
 				errorList.add(new Error("08", "PremiumStart", "PremiumStart must be greater than PremiumEnd "));
-			}else if (StringUtils.isBlank(req.getInterestPercent())) {
-				errorList.add(new Error("09", "InterestPercent", "Please Enter InterestPercent"));
-			}else if (Integer.valueOf(req.getInterestPercent())>100) {
-				errorList.add(new Error("09", "InterestPercent", "Please Enter InterestPercent Less that or equal to 100"));
 			}
-			else if (StringUtils.isBlank(req.getAdvancePercent())) {
+			if (StringUtils.isBlank(req.getInterestPercent())) {
+				errorList.add(new Error("09", "InterestPercent", "Please Enter InterestPercent"));
+			}else if (Integer.valueOf(req.getInterestPercent())>100 || Integer.valueOf(req.getInterestPercent())<0 ) {
+				errorList.add(new Error("09", "InterestPercent", "Please Enter InterestPercent Less that or equal to 100"));
+			}else if (Integer.valueOf(req.getInterestPercent())<0 ) {
+				errorList.add(new Error("09", "InterestPercent", "Please Enter InterestPercent Should Br Greater than 0"));
+			}else if (!req.getInterestPercent().matches("[0-9.]+")) {
+				errorList.add(new Error("09", "InterestPercent", "Please Enter Valid Number In InterestPercent"));
+			}
+			if (StringUtils.isBlank(req.getAdvancePercent())) {
 				errorList.add(new Error("10", "AdvancePercent", "Please Enter AdvancePercent"));
 			}else if (Integer.valueOf(req.getAdvancePercent())>100) {
 				errorList.add(new Error("10", "AdvancePercent", "Please Enter AdvancePercent Less that or equal to 100"));
+			}else if (Integer.valueOf(req.getAdvancePercent())<0 ) {
+				errorList.add(new Error("10", "AdvancePercent", "Please Enter AdvancePercent Should Br Greater than 0"));
+			}else if (!req.getAdvancePercent().matches("[0-9.]+")) {
+				errorList.add(new Error("10", "AdvancePercent", "Please Enter Valid Number In AdvancePercent"));
 			}
 
 		} catch (Exception e) {

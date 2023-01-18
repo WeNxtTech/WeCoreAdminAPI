@@ -38,6 +38,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.NotifTemplateMaster;
 import com.maan.eway.bean.MotorColorMaster;
 import com.maan.eway.bean.NotifTemplateMaster;
 import com.maan.eway.bean.NotifTemplateMaster;
@@ -273,13 +274,72 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 				errorList.add(new Error("13", "ToSmsno", "Please Enter To Sms no "));
 
 			}
-	
+			if (StringUtils.isBlank(req.getNotifTemplatename())) {
+				errorList.add(new Error("14", "NotifTemplatename", "Please Enter NotifTemplateName "));
+			}
+			else if (req.getNotifTemplatename().length()>100) {
+				errorList.add(new Error("14", "NotifTemplateName", "Please Enter NotifTemplateName within 100 Characters "));
+			}else if (StringUtils.isBlank(req.getNotifTemplateCode()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getProductId())) {
+				List<NotifTemplateMaster> motorBodyList = getNameExistDetails(req.getNotifTemplatename() , req.getCompanyId(),req.getProductId());
+				if (motorBodyList.size()>0 ) {
+					errorList.add(new Error("15", "NotifTemplateName", "This NotifTemplateName Already Exist "));
+				}
+				
+			}else if (StringUtils.isNotBlank(req.getNotifTemplateCode()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getProductId())) {
+				List<NotifTemplateMaster> list = getNameExistDetails(req.getNotifTemplatename() , req.getCompanyId() , req.getProductId());
+				
+				if (list.size()>0 &&  (! req.getNotifTemplateCode().equalsIgnoreCase(list.get(0).getNotifTemplateCode().toString())) ) {
+					errorList.add(new Error("14", "NotifTemplatename", "This NotifTemplateName Already Exist "));
+				}
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			errorList.add(new Error("00", "CommonError", "CommonError"));
 		}
 		return errorList;
+	}
+	
+	public List<NotifTemplateMaster> getNameExistDetails(String name , String InsuranceId , String productId) {
+		List<NotifTemplateMaster> list = new ArrayList<NotifTemplateMaster>();
+		try {
+			Date today = new Date();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<NotifTemplateMaster> query = cb.createQuery(NotifTemplateMaster.class);
+
+			// Find All
+			Root<NotifTemplateMaster> b = query.from(NotifTemplateMaster.class);
+
+			// Select
+			query.select(b);
+
+			// Effective Date Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<NotifTemplateMaster> ocpm1 = amendId.from(NotifTemplateMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("notifTemplateCode"), b.get("notifTemplateCode"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a5 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateEnd"), today);
+			amendId.where(a1,a2,a4,a5);
+
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n2 = cb.equal(cb.lower( b.get("notifTemplatename")), name.toLowerCase());
+			Predicate n3 = cb.equal(b.get("companyId"),InsuranceId);
+			Predicate n4 = cb.equal(b.get("productId"), productId);
+			query.where(n1,n2,n3,n4);
+			
+			// Get Result
+			TypedQuery<NotifTemplateMaster> result = em.createQuery(query);
+			list = result.getResultList();		
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+
+		}
+		return list;
 	}
 /*
 	private String replaceUserContent(String smsSubject, List<String> content) {
@@ -380,6 +440,7 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 				res.setSuccessId(notificationCode.toString());
 			}else {
 				// Update
+				notificationCode=Long.valueOf(req.getNotifTemplateCode());
 				companyId = req.getCompanyId();
 				CriteriaBuilder cb = em.getCriteriaBuilder();
 				CriteriaQuery<NotifTemplateMaster> query = cb.createQuery(NotifTemplateMaster.class);

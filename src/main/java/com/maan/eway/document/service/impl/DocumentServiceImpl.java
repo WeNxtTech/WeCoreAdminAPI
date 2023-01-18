@@ -187,7 +187,19 @@ public class DocumentServiceImpl implements DocumentService{
 				doc.setUploadedTime(new Date());
 				//doc.setUploadedBy(DocumentUploadDetails.getUploadedBy());
 				
-				CoverDocumentMaster docDetails = 	getByDocumentId(DocumentUploadDetails.getCompanyId() ,DocumentUploadDetails.getProductId() , DocumentUploadDetails.getSectionId() , DocumentUploadDetails.getDocumentId() );
+				CoverDocumentMaster docDetails = new CoverDocumentMaster(); 
+				if((DocumentUploadDetails.getDocumentId().equalsIgnoreCase("16"))||(DocumentUploadDetails.getDocumentId().equalsIgnoreCase("17"))
+						||(DocumentUploadDetails.getDocumentId().equalsIgnoreCase("18"))
+						||(DocumentUploadDetails.getDocumentId().equalsIgnoreCase("19"))
+						) {
+				 docDetails = 	getByDocumentId(DocumentUploadDetails.getCompanyId() ,DocumentUploadDetails.getProductId() ,"99999", DocumentUploadDetails.getDocumentId() );
+				}
+				
+				else {
+				 docDetails = 	getByDocumentId(DocumentUploadDetails.getCompanyId() ,DocumentUploadDetails.getProductId() , DocumentUploadDetails.getSectionId() , DocumentUploadDetails.getDocumentId() );
+							
+				}
+				
 				
 				doc.setRequestReferenceNo(DocumentUploadDetails.getRequestReferenceNo());
 				doc.setProductId(Integer.valueOf(DocumentUploadDetails.getProductId()));

@@ -7,8 +7,8 @@ import lombok.Data;
 @Data
 public class NotificationTempMasterColummnDropRes {
 
-//	@JsonProperty("CodeDesc")
-//	private String dispalyName;
+	@JsonProperty("CodeDesc")
+	private String dispalyName;
 //	@JsonProperty("ColumnName")
 //	private String columnName;
 	@JsonProperty("Code")

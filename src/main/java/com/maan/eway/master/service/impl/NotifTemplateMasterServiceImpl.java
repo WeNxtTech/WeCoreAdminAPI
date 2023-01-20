@@ -607,7 +607,7 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 					System.out.println(display);
 					NotificationTempMasterColummnDropRes res = new NotificationTempMasterColummnDropRes();
 //					res.setColumnName(field);
-//					res.setDispalyName(display);
+					res.setDispalyName(display);
 					res.setFieldName(member.getName());
 					resList.add(res);
 				}

@@ -145,6 +145,10 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 						errorList.add(new Error("04", "Column Key", "Given {" + str + "} text does not exist in Table"));
 					}
 				}
+				if (StringUtils.isBlank(req.getToSmsno())) {
+					errorList.add(new Error("04", "ToSmsno", "Please Enter To Sms no "));
+
+				}
 
 			}
 			// WhatsApp
@@ -190,6 +194,10 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 						errorList.add(new Error("05", "Column Key", "Given {" + str + "} text does not exist in Table"));
 					}
 				}
+				if (StringUtils.isBlank(req.getToMessengerno())) {
+					errorList.add(new Error("05", "ToMessengerno", "Please Enter To Messenger no "));
+
+				}
 			}
 
 			// Mail
@@ -220,7 +228,7 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 					List<String> filter = content.stream().filter(o -> o.equals(str)).collect(Collectors.toList());
 					if (filter.size() <= 0) {
 						errorList
-								.add(new Error("01", "Column Key", "Given {" + str + "} text does not exist in Table"));
+								.add(new Error("06", "Column Key", "Given {" + str + "} text does not exist in Table"));
 					}
 				}
 				if (StringUtils.isBlank(req.getMailRegards())) {
@@ -233,8 +241,12 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 				for (String str : splitString) {
 					List<String> filter = content.stream().filter(o -> o.equals(str)).collect(Collectors.toList());
 					if (filter.size() <= 0) {
-						errorList.add(new Error("01", "Column Key", "Given {" + str + "} text does not exist in Table"));
+						errorList.add(new Error("06", "Column Key", "Given {" + str + "} text does not exist in Table"));
 					}
+				}
+				if (StringUtils.isBlank(req.getToEmail())) {
+					errorList.add(new Error("06", "ToEmail", "Please Enter To Email no "));
+
 				}
 			}
 
@@ -266,26 +278,22 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 			} else if (req.getRegulatoryCode().length() > 20) {
 				errorList.add(new Error("11", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters"));
 			}
-			if (StringUtils.isBlank(req.getToMessengerno())) {
-				errorList.add(new Error("12", "ToMessengerno", "Please Enter To Messenger no "));
-
-			}
-			if (StringUtils.isBlank(req.getToSmsno())) {
-				errorList.add(new Error("13", "ToSmsno", "Please Enter To Sms no "));
-
-			}
+		
+		
 			if (StringUtils.isBlank(req.getNotifTemplatename())) {
 				errorList.add(new Error("14", "NotifTemplatename", "Please Enter NotifTemplateName "));
 			}
 			else if (req.getNotifTemplatename().length()>100) {
 				errorList.add(new Error("14", "NotifTemplateName", "Please Enter NotifTemplateName within 100 Characters "));
-			}else if (StringUtils.isBlank(req.getNotifTemplateCode()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getProductId())) {
-				List<NotifTemplateMaster> motorBodyList = getNameExistDetails(req.getNotifTemplatename() , req.getCompanyId(),req.getProductId());
-				if (motorBodyList.size()>0 ) {
-					errorList.add(new Error("15", "NotifTemplateName", "This NotifTemplateName Already Exist "));
-				}
-				
-			}else if (StringUtils.isNotBlank(req.getNotifTemplateCode()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getProductId())) {
+			}
+//			else if (StringUtils.isBlank(req.getNotifTemplateCode()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getProductId())) {
+//				List<NotifTemplateMaster> motorBodyList = getNameExistDetails(req.getNotifTemplatename() , req.getCompanyId(),req.getProductId());
+//				if (motorBodyList.size()>0 ) {
+//					errorList.add(new Error("15", "NotifTemplateName", "This NotifTemplateName Already Exist "));
+//				}
+//				
+//			}
+			else if (StringUtils.isNotBlank(req.getNotifTemplateCode()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getProductId())) {
 				List<NotifTemplateMaster> list = getNameExistDetails(req.getNotifTemplatename() , req.getCompanyId() , req.getProductId());
 				
 				if (list.size()>0 &&  (! req.getNotifTemplateCode().equalsIgnoreCase(list.get(0).getNotifTemplateCode().toString())) ) {

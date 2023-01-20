@@ -111,9 +111,7 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 						.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
 			} 
 
-			if (StringUtils.isBlank(req.getToEmail())) {
-				errorList.add(new Error("03", "ToEmail", "Please Enter ToEmail "));
-			}
+			
 			// SMS---
 			if (StringUtils.isBlank(req.getSmsRequired())) {
 				errorList.add(new Error("04", "SmsRequired", "Please Enter SmsRequired"));
@@ -128,7 +126,7 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 				for (String str : splitString) {
 					List<String> filter = content.stream().filter(o -> o.equals(str)).collect(Collectors.toList());
 					if (filter.size() <= 0) {
-						errorList.add(new Error("04", "Column Key", "Given {" + str + "} text does not exist in Table"));
+						errorList.add(new Error("04", "Sms Subject Column Key", "Given {" + str + "} text does not exist in Table"));
 					}
 				}
 				// String str = replaceUserContent(req.getSmsSubject(), content);
@@ -142,7 +140,7 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 				for (String str : splitString) {
 					List<String> filter = content.stream().filter(o -> o.equals(str)).collect(Collectors.toList());
 					if (filter.size() <= 0) {
-						errorList.add(new Error("04", "Column Key", "Given {" + str + "} text does not exist in Table"));
+						errorList.add(new Error("04", "Sms BodyColumn Key", "Given {" + str + "} text does not exist in Table"));
 					}
 				}
 				if (StringUtils.isBlank(req.getToSmsno())) {
@@ -165,7 +163,7 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 				for (String str : splitString) {
 					List<String> filter = content.stream().filter(o -> o.equals(str)).collect(Collectors.toList());
 					if (filter.size() <= 0) {
-						errorList.add(new Error("05", "Column Key", "Given {" + str + "} text does not exist in Table"));
+						errorList.add(new Error("05", "Whatsapp Subject Column Key", "Given {" + str + "} text does not exist in Table"));
 					}
 				}
 				if (StringUtils.isBlank(req.getWhatsappBodyEn())) {
@@ -178,7 +176,7 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 				for (String str : splitString) {
 					List<String> filter = content.stream().filter(o -> o.equals(str)).collect(Collectors.toList());
 					if (filter.size() <= 0) {
-						errorList.add(new Error("05", "Column Key", "Given {" + str + "} text does not exist in Table"));
+						errorList.add(new Error("05", "WhatsappBodyEn Column Key", "Given {" + str + "} text does not exist in Table"));
 					}
 				}
 				if (StringUtils.isBlank(req.getWhatsappRegards())) {
@@ -191,7 +189,7 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 				for (String str : splitString) {
 					List<String> filter = content.stream().filter(o -> o.equals(str)).collect(Collectors.toList());
 					if (filter.size() <= 0) {
-						errorList.add(new Error("05", "Column Key", "Given {" + str + "} text does not exist in Table"));
+						errorList.add(new Error("05", "Whatsapp Regards Column Key", "Given {" + str + "} text does not exist in Table"));
 					}
 				}
 				if (StringUtils.isBlank(req.getToMessengerno())) {
@@ -214,7 +212,7 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 				for (String str : splitString) {
 					List<String> filter = content.stream().filter(o -> o.equals(str)).collect(Collectors.toList());
 					if (filter.size() <= 0) {
-						errorList.add(new Error("06", "Column Key", "Given {" + str + "} text does not exist in Table"));
+						errorList.add(new Error("06", "Mail Subject Column Key", "Given {" + str + "} text does not exist in Table"));
 					}
 				}
 				if (StringUtils.isBlank(req.getMailBody())) {
@@ -228,7 +226,7 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 					List<String> filter = content.stream().filter(o -> o.equals(str)).collect(Collectors.toList());
 					if (filter.size() <= 0) {
 						errorList
-								.add(new Error("06", "Column Key", "Given {" + str + "} text does not exist in Table"));
+								.add(new Error("06", "Mail Body Column Key", "Given {" + str + "} text does not exist in Table"));
 					}
 				}
 				if (StringUtils.isBlank(req.getMailRegards())) {
@@ -241,7 +239,7 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 				for (String str : splitString) {
 					List<String> filter = content.stream().filter(o -> o.equals(str)).collect(Collectors.toList());
 					if (filter.size() <= 0) {
-						errorList.add(new Error("06", "Column Key", "Given {" + str + "} text does not exist in Table"));
+						errorList.add(new Error("06", "Mail Regards Column Key", "Given {" + str + "} text does not exist in Table"));
 					}
 				}
 				if (StringUtils.isBlank(req.getToEmail())) {
@@ -286,13 +284,13 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 			else if (req.getNotifTemplatename().length()>100) {
 				errorList.add(new Error("14", "NotifTemplateName", "Please Enter NotifTemplateName within 100 Characters "));
 			}
-//			else if (StringUtils.isBlank(req.getNotifTemplateCode()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getProductId())) {
-//				List<NotifTemplateMaster> motorBodyList = getNameExistDetails(req.getNotifTemplatename() , req.getCompanyId(),req.getProductId());
-//				if (motorBodyList.size()>0 ) {
-//					errorList.add(new Error("15", "NotifTemplateName", "This NotifTemplateName Already Exist "));
-//				}
-//				
-//			}
+			else if (StringUtils.isBlank(req.getNotifTemplateCode()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getProductId())) {
+				List<NotifTemplateMaster> list = getNameExistDetails(req.getNotifTemplatename() , req.getCompanyId(),req.getProductId());
+				if (list.size()>0 ) {
+					errorList.add(new Error("15", "NotifTemplateName", "This NotifTemplateName Already Exist "));
+				}
+				
+			}
 			else if (StringUtils.isNotBlank(req.getNotifTemplateCode()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getProductId())) {
 				List<NotifTemplateMaster> list = getNameExistDetails(req.getNotifTemplatename() , req.getCompanyId() , req.getProductId());
 				

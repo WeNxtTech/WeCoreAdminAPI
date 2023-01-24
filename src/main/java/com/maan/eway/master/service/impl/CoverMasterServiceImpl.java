@@ -5,6 +5,7 @@
 */
 package com.maan.eway.master.service.impl;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -485,10 +486,10 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			}  else if(req.getCalcType().equalsIgnoreCase("P")  ) {
 				
 				// Amount 
-				saveData.setBaseRate(StringUtils.isBlank(req.getBaseRate())? 0D : Double.valueOf(req.getBaseRate()));
-				saveData.setMinPremium(StringUtils.isBlank(req.getMinimumPremium())? 0D : Double.valueOf(req.getMinimumPremium()));
-				saveData.setMaxSuminsured(StringUtils.isBlank(req.getSumInsuredEnd())? 0D : Double.valueOf(req.getSumInsuredEnd()));
-			//	saveData.setMinSuminsured(StringUtils.isBlank(req.getSumInsuredStart())? 0D : Double.valueOf(req.getSumInsuredStart()));
+				saveData.setBaseRate(StringUtils.isBlank(req.getBaseRate())?BigDecimal.ZERO : new BigDecimal(req.getBaseRate()));
+				saveData.setMinPremium(StringUtils.isBlank(req.getMinimumPremium())? BigDecimal.ZERO : new BigDecimal(req.getMinimumPremium()));
+				saveData.setMaxSuminsured(StringUtils.isBlank(req.getSumInsuredEnd())? BigDecimal.ZERO : new BigDecimal(req.getSumInsuredEnd()));
+			//	saveData.setMinSuminsured(StringUtils.isBlank(req.getSumInsuredStart())? BigDecimal.ZERO : new BigDecimal(req.getSumInsuredStart()));
 				
 			}  else if (req.getCalcType().equalsIgnoreCase("G")  ) {
 			
@@ -498,10 +499,10 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 					ofsRepo.deleteAll(ofsGrids);
 				}
 				
-				saveData.setBaseRate(0D );
-				saveData.setMinPremium(0D );
-				saveData.setMaxSuminsured( 0D );
-				saveData.setMinSuminsured( 0D );
+				saveData.setBaseRate( BigDecimal.ZERO );
+				saveData.setMinPremium( BigDecimal.ZERO );
+				saveData.setMaxSuminsured( BigDecimal.ZERO );
+				saveData.setMinSuminsured(  BigDecimal.ZERO  );
 				
 				// Ofs Grid Insert 
 				Integer coverageSubId = 0 ; 
@@ -519,23 +520,23 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 					ofsSave.setCalcTypeDesc(calcTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(data.getCalcType()) ).collect(Collectors.toList()).get(0).getItemValue());
 					
 					// Amount 
-					ofsSave.setBaseRate(StringUtils.isBlank(data.getBaseRate())? 0D : Double.valueOf(data.getBaseRate()));
-					ofsSave.setMinimumPremium(StringUtils.isBlank(data.getMinimumPremium())? 0D : Double.valueOf(data.getMinimumPremium()));
-					ofsSave.setStartSuminsured(StringUtils.isBlank(data.getSumInsuredEnd())? 0D : Double.valueOf(data.getSumInsuredEnd()));
-					ofsSave.setEndSuminsured(StringUtils.isBlank(data.getSumInsuredStart())? 0D : Double.valueOf(data.getSumInsuredStart()));
+					ofsSave.setBaseRate(StringUtils.isBlank(data.getBaseRate())? BigDecimal.ZERO : new BigDecimal(data.getBaseRate()));
+					ofsSave.setMinimumPremium(StringUtils.isBlank(data.getMinimumPremium())? BigDecimal.ZERO : new BigDecimal(data.getMinimumPremium()));
+					ofsSave.setStartSuminsured(StringUtils.isBlank(data.getSumInsuredEnd())? BigDecimal.ZERO : new BigDecimal(data.getSumInsuredEnd()));
+					ofsSave.setEndSuminsured(StringUtils.isBlank(data.getSumInsuredStart())? BigDecimal.ZERO : new BigDecimal(data.getSumInsuredStart()));
 					
 					ofsRepo.saveAndFlush(ofsSave);
 				}
 				
 			} else {
 				
-				saveData.setBaseRate(StringUtils.isBlank(req.getBaseRate())? 0D : Double.valueOf(req.getBaseRate()));
-				saveData.setMinPremium(StringUtils.isBlank(req.getMinimumPremium())? 0D : Double.valueOf(req.getMinimumPremium()));
-				saveData.setMaxSuminsured(StringUtils.isBlank(req.getSumInsuredEnd())? 0D : Double.valueOf(req.getSumInsuredEnd()));	
+				saveData.setBaseRate(StringUtils.isBlank(req.getBaseRate())? BigDecimal.ZERO : new BigDecimal(req.getBaseRate()));
+				saveData.setMinPremium(StringUtils.isBlank(req.getMinimumPremium())? BigDecimal.ZERO : new BigDecimal(req.getMinimumPremium()));
+				saveData.setMaxSuminsured(StringUtils.isBlank(req.getSumInsuredEnd())? BigDecimal.ZERO : new BigDecimal(req.getSumInsuredEnd()));	
 			
 			
-			saveData.setCoverageLimit(StringUtils.isBlank(req.getCoverageLimit())? 0D : Double.valueOf(req.getCoverageLimit()));
-			saveData.setExcess(StringUtils.isBlank(req.getExcess())? 0D : Double.valueOf(req.getExcess()));
+			saveData.setCoverageLimit(StringUtils.isBlank(req.getCoverageLimit())? BigDecimal.ZERO : new BigDecimal(req.getCoverageLimit()));
+			saveData.setExcess(StringUtils.isBlank(req.getExcess())? BigDecimal.ZERO : new BigDecimal(req.getExcess()));
 			saveData.setCalcTypeDesc(StringUtils.isBlank(req.getCalcType())?"":  calcTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getCalcType()) ).collect(Collectors.toList()).get(0).getItemValue());
 			saveData.setCoverageTypeDesc(StringUtils.isBlank(req.getCoverageType())?"":coverageTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getCoverageType()) ).collect(Collectors.toList()).get(0).getItemValue());
 			if( StringUtils.isNotBlank(req.getIsTaxExcempted()) &&  req.getIsTaxExcempted().equalsIgnoreCase("Y") ) {
@@ -548,7 +549,7 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 				saveData.setTaxExcemptionReference(null);
 				saveData.setTaxExcemptionType(null);
 				saveData.setTaxExcemptionTypeDesc(null);
-				saveData.setTaxAmount(req.getTaxAmount()==null ? 0D : Double.valueOf(req.getTaxAmount()));
+				saveData.setTaxAmount(req.getTaxAmount()==null ? BigDecimal.ZERO : new BigDecimal(req.getTaxAmount()));
 				saveData.setTaxCode(req.getTaxCode());
 			}	
 		}

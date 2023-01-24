@@ -5,6 +5,7 @@
 */
 package com.maan.eway.master.service.impl;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -42,6 +43,8 @@ import com.google.gson.Gson;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.CoverOfsGridMaster;
+import com.maan.eway.bean.CurrencyMaster;
+import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.bean.ProductSectionMaster;
@@ -333,9 +336,9 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 	public CoverSubCoverGetRes getByCoverSubCoverId(CoverSubCoverMasterGetReq req) {
 		CoverSubCoverGetRes res = new CoverSubCoverGetRes();
 		DozerBeanMapper mapper = new DozerBeanMapper();
-		 String pattern = "#####0.00";
-		 DecimalFormat df = new DecimalFormat(pattern);
-		try {
+		String pattern = "#####0.00";
+		DecimalFormat df = new DecimalFormat(pattern);
+		 try {
 			Date today = new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
@@ -392,6 +395,12 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
 			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
 			res.setCoreAppCode(list.get(0).getCoreAppCode());
+			res.setExcess(list.get(0).getExcess() == null ? "" :df.format(list.get(0).getExcess()));
+			res.setMinimumPremium(list.get(0).getMinPremium() == null ? "" :df.format(list.get(0).getMinPremium()));
+			res.setSumInsuredEnd(list.get(0).getMaxSuminsured() == null ? "" :df.format(list.get(0).getMaxSuminsured()));
+			res.setBaseRate(list.get(0).getBaseRate() == null ? "" : df.format(list.get(0).getBaseRate()));
+			res.setCoverageLimit(list.get(0).getCoverageLimit() == null ? "" : df.format(list.get(0).getCoverageLimit()));
+			
 			// Ofs Details
 			List<OfsGridGetRes> gridDetails =  new ArrayList<OfsGridGetRes>();
 			if( res.getCalcType().equalsIgnoreCase("G") ) {
@@ -399,12 +408,12 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 				
 				for( SectionCoverOfsGridMaster data : ofsGrids ) {
 					OfsGridGetRes dataRes = new OfsGridGetRes();
-					dataRes.setBaseRate(data.getBaseRate() ==null ?"" : df.format(data.getBaseRate()) );
+					dataRes.setBaseRate(data.getBaseRate() ==null ?"" :data.getBaseRate().toString());
 					dataRes.setCalcType(data.getCalcType() );
 					dataRes.setCalcTypeDesc(data.getCalcTypeDesc() );
-					dataRes.setMinimumPremium(data.getMinimumPremium() ==null ?"" : df.format(data.getMinimumPremium()) );
-					dataRes.setSumInsuredStart(data.getStartSuminsured() ==null ?"" : df.format(data.getStartSuminsured()) );
-					dataRes.setSumInsuredEnd(data.getEndSuminsured() ==null ?"" : df.format(data.getEndSuminsured()) );
+					dataRes.setMinimumPremium(data.getMinimumPremium() ==null ?"" : data.getMinimumPremium().toString() );
+					dataRes.setSumInsuredStart(data.getStartSuminsured() ==null ?"" : data.getStartSuminsured().toString() );
+					dataRes.setSumInsuredEnd(data.getEndSuminsured() ==null ?"" : data.getEndSuminsured().toString()  );
 					dataRes.setCoverageSubId(String.valueOf(data.getCoveragesSubId()));
 					
 					gridDetails.add(dataRes);
@@ -899,7 +908,6 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 		SimpleDateFormat sdformat = new SimpleDateFormat();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		SectionCoverMaster saveData = new SectionCoverMaster();
-
 		try {
 			List<ListItemValue> calcTypes = listRepo.findByItemTypeAndStatus("CALCULATION_TYPE", "Y");
 			List<ListItemValue> coverageTypes = listRepo.findByItemTypeAndStatus("COVERAGE_TYPE", "Y");
@@ -984,11 +992,12 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 				saveData.setFactorTypeId(Integer.valueOf(req.getFactorTypeId()));
 			}  else if(req.getCalcType().equalsIgnoreCase("P")  ) {
 				
+				
 				// Amount 
-				saveData.setBaseRate(StringUtils.isBlank(req.getBaseRate())? 0D : Double.valueOf(req.getBaseRate()));
-				saveData.setMinPremium(StringUtils.isBlank(req.getMinimumPremium())? 0D : Double.valueOf(req.getMinimumPremium()));
-				saveData.setMaxSuminsured(StringUtils.isBlank(req.getSumInsuredEnd())? 0D : Double.valueOf(req.getSumInsuredEnd()));
-				saveData.setMinSuminsured(StringUtils.isBlank(req.getSumInsuredStart())? 0D : Double.valueOf(req.getSumInsuredStart()));
+				saveData.setBaseRate(StringUtils.isBlank(req.getBaseRate())? BigDecimal.ZERO :new BigDecimal(req.getBaseRate()));
+				saveData.setMinPremium(StringUtils.isBlank(req.getMinimumPremium())? BigDecimal.ZERO :new BigDecimal(req.getMinimumPremium()));
+				saveData.setMaxSuminsured(StringUtils.isBlank(req.getSumInsuredEnd())? BigDecimal.ZERO :new BigDecimal(req.getSumInsuredEnd()));
+				saveData.setMinSuminsured(StringUtils.isBlank(req.getSumInsuredStart())? BigDecimal.ZERO :new BigDecimal(req.getSumInsuredStart()));
 				
 			}  else if (req.getCalcType().equalsIgnoreCase("G")) {
 
@@ -1002,10 +1011,10 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 					secOfsRepo.deleteAll(ofsGrids);
 				}
 
-				saveData.setBaseRate(0D);
-				saveData.setMinPremium(0D);
-				saveData.setMaxSuminsured(0D);
-				saveData.setMinSuminsured(0D);
+				saveData.setBaseRate( BigDecimal.ZERO );
+				saveData.setMinPremium( BigDecimal.ZERO );
+				saveData.setMaxSuminsured( BigDecimal.ZERO );
+				saveData.setMinSuminsured( BigDecimal.ZERO );
 			}
 				// Ofs Grid Insert
 				Integer coverageSubId = 0;
@@ -1030,31 +1039,28 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 
 					// Amount
 					ofsSave.setBaseRate(
-							StringUtils.isBlank(data.getBaseRate()) ? 0D : Double.valueOf(data.getBaseRate()));
-					ofsSave.setMinimumPremium(StringUtils.isBlank(data.getMinimumPremium()) ? 0D
-							: Double.valueOf(data.getMinimumPremium()));
-					ofsSave.setStartSuminsured(StringUtils.isBlank(data.getSumInsuredEnd()) ? 0D
-							: Double.valueOf(data.getSumInsuredEnd()));
-					ofsSave.setEndSuminsured(StringUtils.isBlank(data.getSumInsuredStart()) ? 0D
-							: Double.valueOf(data.getSumInsuredStart()));
+							StringUtils.isBlank(data.getBaseRate()) ? BigDecimal.ZERO :new BigDecimal(data.getBaseRate()));
+					ofsSave.setMinimumPremium(StringUtils.isBlank(data.getMinimumPremium()) ? BigDecimal.ZERO :new BigDecimal(data.getMinimumPremium()));
+					ofsSave.setStartSuminsured(StringUtils.isBlank(data.getSumInsuredEnd()) ? BigDecimal.ZERO :new BigDecimal(data.getSumInsuredEnd()));
+					ofsSave.setEndSuminsured(StringUtils.isBlank(data.getSumInsuredStart()) ? BigDecimal.ZERO :new BigDecimal(data.getSumInsuredStart()));
 
 					secOfsRepo.saveAndFlush(ofsSave);
 				}
 
 			} else {
 
-				saveData.setBaseRate(StringUtils.isBlank(req.getBaseRate()) ? 0D : Double.valueOf(req.getBaseRate()));
+				saveData.setBaseRate(StringUtils.isBlank(req.getBaseRate()) ? BigDecimal.ZERO :new BigDecimal(req.getBaseRate()));
 				saveData.setMinPremium(
-						StringUtils.isBlank(req.getMinimumPremium()) ? 0D : Double.valueOf(req.getMinimumPremium()));
+						StringUtils.isBlank(req.getMinimumPremium()) ? BigDecimal.ZERO :new BigDecimal(req.getMinimumPremium()));
 				saveData.setMaxSuminsured(
-						StringUtils.isBlank(req.getSumInsuredEnd()) ? 0D : Double.valueOf(req.getSumInsuredEnd()));
+						StringUtils.isBlank(req.getSumInsuredEnd()) ? BigDecimal.ZERO :new BigDecimal(req.getSumInsuredEnd()));
 				saveData.setMinSuminsured(
-						StringUtils.isBlank(req.getSumInsuredStart()) ? 0D : Double.valueOf(req.getSumInsuredStart()));
+						StringUtils.isBlank(req.getSumInsuredStart()) ?BigDecimal.ZERO :new BigDecimal(req.getSumInsuredStart()));
 			}
 
 			saveData.setCoverageLimit(
-					StringUtils.isBlank(req.getCoverageLimit()) ? 0D : Double.valueOf(req.getCoverageLimit()));
-			saveData.setExcess(StringUtils.isBlank(req.getExcess()) ? 0D : Double.valueOf(req.getExcess()));
+					StringUtils.isBlank(req.getCoverageLimit()) ? BigDecimal.ZERO :new BigDecimal(req.getCoverageLimit()));
+			saveData.setExcess(StringUtils.isBlank(req.getExcess()) ? BigDecimal.ZERO :new BigDecimal(req.getExcess()));
 			saveData.setCalcTypeDesc(calcTypes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(req.getCalcType()))
 					.collect(Collectors.toList()).get(0).getItemValue());
 			saveData.setCoverageTypeDesc(
@@ -1070,7 +1076,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 				saveData.setTaxExcemptionReference(null);
 				saveData.setTaxExcemptionType(null);
 				saveData.setTaxExcemptionTypeDesc(null);
-				saveData.setTaxAmount(req.getTaxAmount()==null ? 0D : Double.valueOf(req.getTaxAmount()));
+				saveData.setTaxAmount(req.getTaxAmount()==null ? BigDecimal.ZERO :new BigDecimal(req.getTaxAmount()));
 				saveData.setTaxCode(req.getTaxCode());
 			}
 			saveData.setDependentCoverYn(StringUtils.isNotBlank(req.getDependentCoverYn()) ? req.getDependentCoverYn() : "N" );
@@ -1114,6 +1120,146 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 		return res;
 	}
 
+	public Integer currencyDecimalFormat(String insuranceId  ,String currencyId ) {
+		Integer decimalFormat = 0 ;
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CurrencyMaster> query = cb.createQuery(CurrencyMaster.class);
+			List<CurrencyMaster> list = new ArrayList<CurrencyMaster>();
+			
+			// Find All
+			Root<CurrencyMaster>    c = query.from(CurrencyMaster.class);		
+			
+			// Select
+			query.select(c);
+			
+		
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("currencyName")));
+			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CurrencyMaster> ocpm1 = effectiveDate.from(CurrencyMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a11 = cb.equal(c.get("currencyId"),ocpm1.get("currencyId") );
+			Predicate a12 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a18 = cb.equal(c.get("status"),ocpm1.get("status") );
+			Predicate a22 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			
+			effectiveDate.where(a11,a12,a18,a22);
+			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<CurrencyMaster> ocpm2 = effectiveDate2.from(CurrencyMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a13 = cb.equal(c.get("currencyId"),ocpm2.get("currencyId") );
+			Predicate a14 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			Predicate a19 = cb.equal(c.get("status"),ocpm2.get("status") );
+			Predicate a23 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			
+			effectiveDate2.where(a13,a14,a19,a23);
+			
+		    // Where	
+			Predicate n1 = cb.equal(c.get("status"), "Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 = cb.equal(c.get("companyId"),insuranceId);
+			Predicate n5 = cb.equal(c.get("companyId"),"99999");
+			Predicate n6 = cb.or(n4,n5);
+			Predicate n7 = cb.equal(c.get("currencyId"),currencyId);
+			query.where(n1,n2,n3,n6,n7).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<CurrencyMaster> result = em.createQuery(query);			
+			list =  result.getResultList(); 
+			
+			decimalFormat = list.size() > 0 ? (list.get(0).getDecimalDigit()==null?0 :list.get(0).getDecimalDigit()) :0; 		
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return decimalFormat;
+	}
+	
+	public String  getInscompanyMasterCurrency(String insuranceId) {
+		String currencyId = "" ;
+		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<InsuranceCompanyMaster> query = cb.createQuery(InsuranceCompanyMaster.class);
+			List<InsuranceCompanyMaster> list = new ArrayList<InsuranceCompanyMaster>();
+			
+			// Find All
+			Root<InsuranceCompanyMaster>    c = query.from(InsuranceCompanyMaster.class);		
+			
+			// Select
+			query.select(c );
+			
+		
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("companyName")));
+			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<InsuranceCompanyMaster> ocpm1 = effectiveDate.from(InsuranceCompanyMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
+			javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2);
+			
+			// Effective Date End
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<InsuranceCompanyMaster> ocpm2 = effectiveDate2.from(InsuranceCompanyMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("companyId"),ocpm2.get("companyId") );
+			javax.persistence.criteria.Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a3,a4);
+			
+		    // Where	
+			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
+			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"), insuranceId);
+			
+			query.where(n1,n2,n3,n4).orderBy(orderList);
+
+			// Get Result
+			TypedQuery<InsuranceCompanyMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			currencyId = list.size() > 0 ? list.get(0).getCurrencyId() : "" ;
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return currencyId;
+	}
 	@Override
 	public List<DropDownRes> subcoverDropDown(SubCoverDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();

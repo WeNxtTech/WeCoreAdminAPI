@@ -294,7 +294,7 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 	
 	            CommonRes data = new CommonRes();
 	            
-	            validation= entityService.validateFactorRateDetails(req);
+	            validation= entityService.validateFactorRateDetails(req,"");
 	            
 	    		if (validation != null && validation.size() != 0) {
 	    			data.setCommonResponse(null);

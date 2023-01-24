@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -49,12 +50,12 @@ public class FactorRateMasterController {
 	// save
 	@PostMapping("/insertfactorrates")
 	@ApiOperation(value = "This method is Insert Factor Rate Details")
-	public ResponseEntity<CommonRes> insertFactorRate(@RequestBody FactorRateSaveReq req) {
+	public ResponseEntity<CommonRes> insertFactorRate(@RequestBody FactorRateSaveReq req,@RequestHeader("Authorization") String tokens) {
 
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
 
-		List<Error> validation = entityService.validateFactorRateDetails(req);
+		List<Error> validation = entityService.validateFactorRateDetails(req,tokens);
 		// validation
 		if (validation != null && validation.size() != 0) {
 			data.setCommonResponse(null);

@@ -76,7 +76,7 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="PRODUCT_DESC", length=100)
     private String  productDesc;
-
+    
     @Column(name="POLICY_NO", length=100)
     private String     policyNo;
 
@@ -113,7 +113,11 @@ private static final long serialVersionUID = 1L;
     @Column(name="CUSTOMER_ID", length=20)
     private String     customerId ;
 
-  
+    @Column(name="CURRENCY_ID", length=20)
+    private String     currencyId ;
+    
+    @Column(name="EXCHANGE_RATE", length=20)
+    private BigDecimal     exchageRate ;
     
 }
 

@@ -29,7 +29,7 @@ import java.util.List;
 */
 public interface FactorRateMasterService  {
 
-	List<Error> validateFactorRateDetails(FactorRateSaveReq req);
+	List<Error> validateFactorRateDetails(FactorRateSaveReq req,String token);
 
 	SuccessRes insertFactorRateDetails(FactorRateSaveReq req);
 

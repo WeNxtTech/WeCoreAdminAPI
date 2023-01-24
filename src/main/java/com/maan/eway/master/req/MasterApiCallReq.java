@@ -23,4 +23,6 @@ public class MasterApiCallReq {
 	private List<Map<String,String>> mp;
 	
 	private String tokenl;
+	
+	private String param;
 }

@@ -228,32 +228,38 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				}
 			}
 			
-			// Masters Api Call
+			// Masters Api Call 
 			List<RatingFieldMaster>  ratingFields =  getRatingFields(req.getProductId());
-			List<CommonDropdown> param9Master  = new ArrayList<CommonDropdown>();
-			List<CommonDropdown> param10Master = new ArrayList<CommonDropdown>();
-			List<CommonDropdown> param11Master = new ArrayList<CommonDropdown>();
-			List<CommonDropdown> param12Master = new ArrayList<CommonDropdown>();
+			
+			Map<String,RatingFieldMaster>  paramsApiReq = new HashMap<String,RatingFieldMaster>();
+			
 			if (param9  == true  ) {
 				Integer param9Column  = param9RatingField ;
 				List<RatingFieldMaster>  filterRatingFields = ratingFields.stream().filter( o -> o.getRatingId().equals(param9Column) ).collect(Collectors.toList());
-				param9Master =  getMasterDropDowns(req , token ,  filterRatingFields.get(0).getInputTable()  , filterRatingFields.get(0).getInputColumn() ) ;
+				paramsApiReq.put("param9", filterRatingFields.get(0));
 			}
 			if (param10  == true  ) {
 				Integer param10Column  = param10RatingField ;
 				List<RatingFieldMaster>  filterRatingFields = ratingFields.stream().filter( o -> o.getRatingId().equals(param10Column)	).collect(Collectors.toList());
-				param10Master =  getMasterDropDowns(req , token ,  filterRatingFields.get(0).getInputTable()  , filterRatingFields.get(0).getInputColumn() ) ;
+				paramsApiReq.put("param10", filterRatingFields.get(0));
 			}
 			if (param11  == true  ) {
 				Integer param11Column  = param11RatingField ;
 				List<RatingFieldMaster>  filterRatingFields = ratingFields.stream().filter( o -> o.getRatingId().equals(param11Column)	).collect(Collectors.toList());
-				param11Master =  getMasterDropDowns(req , token ,  filterRatingFields.get(0).getInputTable()  , filterRatingFields.get(0).getInputColumn() ) ;
+				paramsApiReq.put("param11", filterRatingFields.get(0));
 			}
 			if (param12  == true  ) {
 				Integer param12Column  = param12RatingField ;
 				List<RatingFieldMaster>  filterRatingFields = ratingFields.stream().filter( o -> o.getRatingId().equals(param12Column)	).collect(Collectors.toList());
-				param12Master =  getMasterDropDowns(req , token ,  filterRatingFields.get(0).getInputTable()  , filterRatingFields.get(0).getInputColumn() ) ;
+				paramsApiReq.put("param12", filterRatingFields.get(0));
 			}
+			
+			// Master Api Response 
+			Map<String,List<DropDownRes>>  apiResList = getMasterDropDowns(req , token , paramsApiReq ) ;
+			List<DropDownRes> param9Master  = param9   == true  &&  apiResList.get("param9") !=null ? apiResList.get("param9")  : new ArrayList<>();
+			List<DropDownRes> param10Master = param10  == true  &&  apiResList.get("param10")!=null ? apiResList.get("param10") : new ArrayList<>();
+			List<DropDownRes> param11Master = param11  == true  &&  apiResList.get("param11")!=null ? apiResList.get("param11") : new ArrayList<>();
+			List<DropDownRes> param12Master = param12  == true  &&  apiResList.get("param12")!=null ? apiResList.get("param12") : new ArrayList<>();
 			
 			// Get Master DropDown List 
 			
@@ -360,22 +366,46 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					if ( param9==true  ) {
 						if( StringUtils.isBlank(data.getParam9())  ) 
 							errorList.add(new Error("09", param9Name, "Please Enter " +  param9Name + "in Row No : " + row  ));
+						else if  (param9Master !=null && param9Master.size()> 0  ) {
+							List<DropDownRes> filterMaster = param9Master.stream().filter( o ->  o.getCode().equalsIgnoreCase(data.getParam9()) ).collect(Collectors.toList());
+							if(filterMaster.size()<=0 ) {
+								errorList.add(new Error("09", param9Name,  param9Name +" Row No : " + row +" "  + " Value = "  + data.getParam9() +  " Not available in Master "  ));
+							}
 							
+						}
 					}
 					if ( param10==true  ) {
 						if( StringUtils.isBlank(data.getParam10())  ) 
 							errorList.add(new Error("10", param10Name, "Please Enter " +  param10Name + "in Row No : " + row  ));
-						
+						else if  (param10Master !=null && param10Master.size()> 0  ) {
+							List<DropDownRes> filterMaster = param10Master.stream().filter( o ->  o.getCode().equalsIgnoreCase(data.getParam10()) ).collect(Collectors.toList());
+							if(filterMaster.size()<=0 ) {
+								errorList.add(new Error("09", param10Name,  param10Name +" Row No : " + row +" "  + " Value = " + data.getParam10() +  " Not available in Master "  ));
+							}
+							
+						}
 					}
 					if ( param11==true  ) {
 						if( StringUtils.isBlank(data.getParam11())  ) 
 							errorList.add(new Error("11", param11Name, "Please Enter " +  param11Name + "in Row No : " + row  ));
-						
+						else if  (param11Master !=null && param11Master.size()> 0  ) {
+							List<DropDownRes> filterMaster = param11Master.stream().filter( o ->  o.getCode().equalsIgnoreCase(data.getParam11()) ).collect(Collectors.toList());
+							if(filterMaster.size()<=0 ) {
+								errorList.add(new Error("09", param11Name,  param11Name + " Row No : " + row +" "  +" Value = " + data.getParam11() +  " Not available in Master "  ));
+							}
+							
+						}
 					}
 					if ( param12==true  ) {
 						if( StringUtils.isBlank(data.getParam12())  ) 
 							errorList.add(new Error("12", param12Name, "Please Enter " +  param12Name + "in Row No : " + row  ));
+						else if  (param12Master !=null && param12Master.size()> 0  ) {
+							List<DropDownRes> filterMaster = param12Master.stream().filter( o ->  o.getCode().equalsIgnoreCase(data.getParam12()) ).collect(Collectors.toList());
+							if(filterMaster.size()<=0 ) {
+								errorList.add(new Error("09", param12Name,  param12Name +" Row No : " + row +" "  + " Value = " + data.getParam12() +  " Not available in Master "  ));
+							}
 							
+						}	
 					}
 					
 					Double param1Value = StringUtils.isNotBlank(data.getParam1())  && data.getParam1().matches("[0-9.]+") ? Double.valueOf(data.getParam1()) : 0D ;
@@ -663,8 +693,8 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 		return list;
 	}
 	
-	public List<CommonDropdown> getMasterDropDowns(FactorRateSaveReq req , String token , String paramTable , String paramColumn ) {
-		List<CommonDropdown> dropDownList = new ArrayList<CommonDropdown>();
+	public Map<String,List<DropDownRes>>  getMasterDropDowns(FactorRateSaveReq req , String token , Map<String,RatingFieldMaster>  paramsApiReq ) {
+		Map<String,List<DropDownRes>>  apiResList = new HashMap<String,List<DropDownRes>>();
 		try {
 			CalcEngine engine = new CalcEngine(); 
 			engine.setAgencyCode(StringUtils.isNotBlank( req.getAgencyCode())?req.getAgencyCode() : "99999");
@@ -672,45 +702,37 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 			engine.setInsuranceId(req.getCompanyId() );
 			engine.setProductId(req.getProductId());
 			engine.setSectionId(req.getSectionId());
-		//	engine.setVdRefNo();
-		//	engine.setCdRefNo();
-		//	engine.setCreatedBy();
-		//	engine.setMsrefno();
-		//	engine.setMsVehicleDetails();
-		//	engine.setVehicleId();
-		//	engine.setRequestReferenceNo();
-//			String json = req.toString() ;
-//			Object obj=JSONValue.parse(json); 
-//			JSONObject jsonObject = (JSONObject) obj;    
-		
-			List<MasterApiCallReq> loadConstant = rating.LoadConstant(engine);
+	
 			List<Callable<Object>> queue = new ArrayList<Callable<Object>>();
+			List<String> list=new ArrayList<String>();
 			
-			List<MasterApiCallReq> filterContant = loadConstant.stream().filter( o -> o.getPrimaryKey().contains(paramColumn) ).collect(Collectors.toList()) ;
+			// Jsoon Request
+			String jsonKey = "" , jsonValue = "" , insVal ="" , productVal="" , sectionVal="" , branchVal="" , AgencyVal=""   ;
+			
+			jsonKey = "InsuranceId" ; jsonValue = engine.getInsuranceId()  ; insVal="\""+jsonKey+"\":\""+jsonValue+"\"" ;
+			jsonKey = "ProductId"   ; jsonValue = engine.getProductId()    ; productVal="\""+jsonKey+"\":\""+jsonValue+"\"" ;
+			jsonKey = "SectionId"   ; jsonValue = engine.getSectionId()    ; sectionVal="\""+jsonKey+"\":\""+jsonValue+"\"" ;
+			jsonKey = "BranchCode"  ; jsonValue = engine.getBranchCode()   ; branchVal="\""+jsonKey+"\":\""+jsonValue+"\"" ;
+			jsonKey = "AgencyCode"  ; jsonValue = engine.getAgencyCode()   ; AgencyVal="\""+jsonKey+"\":\""+jsonValue+"\"" ;
+			
+			list.add(insVal);
+			list.add(productVal);
+			list.add(sectionVal);
+			list.add(branchVal);
+			list.add(AgencyVal);
+			
+			String apiRequest = "{"+StringUtils.join(list,',')+"}";
+			
+			for ( String paramReq :  paramsApiReq.keySet() ) {
+				RatingFieldMaster ratingData = paramsApiReq.get(paramReq);
+				MasterApiCallReq r = MasterApiCallReq.builder().apiLink(ratingData.getApiUrl())
+						.apiRequest(apiRequest).param(paramReq)
+				//		.primaryId("").primaryKey(ratingField.getInputColumn()).primaryTable(ratingField.getInputTable())
+						.tokenl(token).build() ;
 					
-			if(filterContant!=null && filterContant.size()>0) {
-				
-				for (MasterApiCallReq r : filterContant) {
-					System.out.println("PrimaryKey  : "+r.getPrimaryKey());
-					
-					List<Map<String, String>> mp = r.getMp();
-					List<String> list=new ArrayList<String>();
-					for(Map<String, String> map:mp){
-						String jsonKey = map.get("JsonKey");
-						String jsonColum = map.get("JsonColum");
-						String jsonValue = "1" ;// jsonObject.get(jsonKey)!=null ? jsonObject.get(jsonKey).toString() :"" ;
-								
-						String value="\""+jsonKey+"\":\""+jsonValue+"\"";
-						list.add(value);		
-						  
-					}
-				 
-					r.setApiRequest("{"+StringUtils.join(list,',')+"}");
-					r.setTokenl(token);
-					queue.add(new ThreadDropDownCall(r));
-				} 
+				queue.add(new ThreadDropDownCall(r));
 			}
-		
+			
 			if(!queue.isEmpty()) {
 				 MyTaskList taskList = new MyTaskList(queue);		
 				 ForkJoinPool forkjoin = new ForkJoinPool((queue.size()>1 ? (queue.size()>10)?10:(int )(queue.size()/2) : 1)); 
@@ -720,8 +742,8 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 						System.out.println(callable.getClass() + "," + callable.isDone());
 						if (callable.isDone()) {
 							try {
-								List<CommonDropdown> map = (List<CommonDropdown>) callable.get();
-									dropDownList.addAll(map);							
+								apiResList.putAll((Map<String,List<DropDownRes>>) callable.get());
+														
 							} catch (InterruptedException | ExecutionException e) {
 								e.printStackTrace();
 							}
@@ -734,7 +756,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 			log.info(e.getMessage());
 	
 		}
-		return dropDownList;
+		return apiResList;
 	}
 
 	public List<FactorTypeDetails> getRatingFieldDetails(String factorTypeId , String companyId, String productId ) {

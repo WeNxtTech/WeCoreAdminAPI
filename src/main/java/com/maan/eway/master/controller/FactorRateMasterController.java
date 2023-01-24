@@ -55,7 +55,7 @@ public class FactorRateMasterController {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
 
-		List<Error> validation = entityService.validateFactorRateDetails(req,tokens);
+		List<Error> validation = entityService.validateFactorRateDetails(req,tokens.replaceAll("Bearer ", "").split(",")[0]);
 		// validation
 		if (validation != null && validation.size() != 0) {
 			data.setCommonResponse(null);

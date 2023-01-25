@@ -86,7 +86,7 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 				
 				String columns =object.get("QUERY_COLUMNS").toString();
 				String factorId =object.get("FACTOR_ID").toString();
-				String defaultColumns =",Rate,CalcType,MinimumPremium,RegulatoryCode";
+				String defaultColumns =",Rate,CalcType,MinimumPremium,RegulatoryCode,Status";
 				String xlColumns =object.get("XL_COLUMNS").toString()+defaultColumns;
 				List<Object[][]> obj =queryService.getFactorRateDetails(req, columns, factorId);
 				
@@ -249,7 +249,10 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 	            				result.put(xl.getKey().trim(), xl.getValue()==null?"":xl.getValue());
 	            			}else if (xl.getKey().equalsIgnoreCase("MinimumPremium")){
 	            				result.put(xl.getKey().trim(), xl.getValue()==null?"":xl.getValue());
-	            			}	
+	            			}else if(xl.getKey().equalsIgnoreCase("Status")) {
+	            				result.put(xl.getKey().trim(), xl.getValue()==null?"":xl.getValue());
+
+	            			}
 	            		}	            		
 	            		resultList.add(result);	            		
 	            	}
@@ -266,7 +269,7 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 		            factor.setCalType(datas.get("CalcType")==null?"":datas.get("CalcType").toString());
 		            factor.setRegulatoryCode(datas.get("RegulatoryCode")==null?"":datas.get("RegulatoryCode").toString());
 		            factor.setSno(String.valueOf(sno));
-		            factor.setStatus("Y");
+		            factor.setStatus(datas.get("Status")==null?"":datas.get("Status").toString());
 		            factorParamsInserts.add(factor);		            	 
 		            	sno++;	            	
 	            }

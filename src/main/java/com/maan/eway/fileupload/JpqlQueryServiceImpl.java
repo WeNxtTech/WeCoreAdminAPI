@@ -89,7 +89,7 @@ public class JpqlQueryServiceImpl {
 	public List<Object[][]> getFactorRateDetails(FileDownloadRequest req,String columns,String factorId){
 		List<Object[][]> object =null;
 		try {
-			query=em.createQuery("select " +columns+ ",rate,calcType,minPremium,regulatoryCode from FactorRateMaster where  companyId=:companyId "
+			query=em.createQuery("select " +columns+ ",rate,calcType,minPremium,regulatoryCode,status from FactorRateMaster where  companyId=:companyId "
 					+ "and productId=:productId and factorTypeId=:factorTypeId and coverId=:coverId and sectionId=:sectionId and agencyCode=:agencyCode and branchCode=:branchCode and"
 					+ " sysdate() between effectiveDateStart and effectiveDateEnd and subCoverId=:subCoverId");
 			

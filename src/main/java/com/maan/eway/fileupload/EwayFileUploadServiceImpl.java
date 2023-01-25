@@ -166,7 +166,7 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 	}
 
 	@Override
-	public com.maan.eway.res.CommonRes upload(String filePath, FileUploadInputRequest request) {
+	public com.maan.eway.res.CommonRes upload(String filePath, FileUploadInputRequest request, String token) {
 		com.maan.eway.res.CommonRes comRes = new com.maan.eway.res.CommonRes ();
 		List<Error> validation = new ArrayList<Error>();
 		String factorTypeId ="";Date effectiveDate=null;String remarks=""; 
@@ -297,7 +297,7 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 	
 	            CommonRes data = new CommonRes();
 	            
-	            validation= entityService.validateFactorRateDetails(req,"");
+	            validation= entityService.validateFactorRateDetails(req,token);
 	            
 	    		if (validation != null && validation.size() != 0) {
 	    			data.setCommonResponse(null);

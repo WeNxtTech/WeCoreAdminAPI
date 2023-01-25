@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,7 +35,7 @@ public class EwayFileUploadController {
 	}
 	
 	@PostMapping("/upload")
-	public com.maan.eway.res.CommonRes upload(@RequestParam("file") MultipartFile file,@RequestParam("uploadReq") String uploadReq  ){
+	public com.maan.eway.res.CommonRes upload(@RequestParam("file") MultipartFile file,@RequestParam("uploadReq") String uploadReq ,@RequestHeader("Authorization") String tokens ){
 		com.maan.eway.res.CommonRes response = new com.maan.eway.res.CommonRes();
 		try {
 			String fileName =FilenameUtils.getBaseName(file.getOriginalFilename());
@@ -46,7 +47,7 @@ public class EwayFileUploadController {
 				request =mapper.readValue(uploadReq, FileUploadInputRequest.class);
 			}
 			 file.transferTo( new File(filePath));
-			 response =service.upload(filePath,request) ;
+			 response =service.upload(filePath,request,tokens.replaceAll("Bearer ", "").split(",")[0]) ;
 		}catch (Exception e) {
 			e.printStackTrace();
 		}

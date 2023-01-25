@@ -130,16 +130,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
 			} 
 			
-			//Status Validation
-			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("05", "Status", "Please Enter Status"));
-			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("05", "Status", "Enter Status 1 Character Only"));
-			}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()) || "P".equals(req.getStatus()))) {
-				errorList.add(new Error("05", "Status", "Enter Status Y or N or P Only"));
-			}
 		
-			
 			if (StringUtils.isBlank(req.getCreatedBy())) {
 				errorList.add(new Error("06", "CreatedBy", "Please Enter CreatedBy"));
 			}else if (req.getCreatedBy().length() > 50) {
@@ -603,16 +594,14 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					}
 					
 					//Status Validation
-					if(StringUtils.isNotBlank(req.getStatus()) && !(req.getStatus().equalsIgnoreCase("P")) ) {
-						
-						if (StringUtils.isBlank(data.getStatus())) {
-							errorList.add(new Error("05", "Status", "Please Enter Status In Row No : " + row ));
-						} else if (data.getStatus().length() > 1) {
-							errorList.add(new Error("05", "Status", "Enter Status 1 Character Only In Row No : " + row ));
-						} else if(!("Y".equals(data.getStatus())||"N".equals(data.getStatus())||"R".equals(data.getStatus()))) {
-							errorList.add(new Error("05", "Status", "Please Enter Status  In Row No : " + row ));
-						}
+					if (StringUtils.isBlank(data.getStatus())) {
+						errorList.add(new Error("05", "Status", "Please Enter Status In Row No : " + row ));
+					} else if (data.getStatus().length() > 1) {
+						errorList.add(new Error("05", "Status", "Enter Status 1 Character Only In Row No : " + row ));
+					} else if(!(req.getStatus().equalsIgnoreCase("P") || "Y".equals(data.getStatus())||"N".equals(data.getStatus())||"R".equals(data.getStatus()))) {
+						errorList.add(new Error("05", "Status", "Please Select Status  In Row No : " + row ));
 					}
+					
 					
 					
 				/*	if (StringUtils.isBlank(data.getRegulatoryCode())) {

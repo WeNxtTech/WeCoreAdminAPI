@@ -19,6 +19,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import java.util.Date;
@@ -73,13 +74,13 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="SOURCE_COUNTRY", length=50)
     private String     sourceCountry ;
-
+    
+    @Column(name="CATEGORY_ID", length=50)
+    private String     categoryId;
+    
     @Column(name="DESTINATION_COUNTRY", length=50)
     private String     destinationCountry ;
-    
-    @Column(name="SUM_INSURED")
-    private Double     sumInsured;
-    
+
     @Column(name="SPORTS_COVER_YN", length=20)
     private String     sportsCoverYn ;
 
@@ -94,7 +95,13 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="AGE")
     private Integer    age ;
+    
+    @Column(name="SUM_INSURED")
+    private BigDecimal     sumInsured;
 
+	@Column(name="Period_of_Insurance", nullable=false, length=10)
+	private String     periodOfInsurance ;
+	
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ENTRY_DATE")
     private Date       entryDate ;
@@ -102,9 +109,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="CREATED_BY", length=100)
     private String     createdBy ;
 
-	@Column(name="Period_of_Insurance", nullable=false, length=10)
-	private String     periodOfInsurance ;
-	
     @Column(name="STATUS", length=1)
     private String     status ;
 
@@ -118,7 +122,7 @@ private static final long serialVersionUID = 1L;
     private String    currency ;
 
     @Column(name="EXCHANGE_RATE")
-    private Double     exchangeRate ;
+    private BigDecimal     exchangeRate ;
     
     @Column(name="COVID_COVER_YN", length=20)
     private String     covidCoverYn ;

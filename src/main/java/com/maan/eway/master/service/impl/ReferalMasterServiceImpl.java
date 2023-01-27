@@ -732,17 +732,15 @@ public SuccessRes changeStatusOfReferal(ReferalMasterChangeStatusReq req) {
 			Root<ReferalMaster> ocpm1 = amendId2.from(ReferalMaster.class);
 			amendId2.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
-			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			amendId2.where(a1, a2);
+			amendId2.where(a1);
 			//Orderby
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("branchCode")));
+			orderList.add(cb.asc(b.get("effectiveDateStart")));
 			//Where
 			Predicate n1 = cb.equal(b.get("referalId"),req.getReferalId());
-			Predicate n2 = cb.equal(b.get("companyId"),req.getCompanyId());
 			Predicate n3 = cb.equal(b.get("amendId"),amendId2);
 			
-			query.where(n1,n2,n3).orderBy(orderList);
+			query.where(n1,n3).orderBy(orderList);
 			// Get Result
 			TypedQuery<ReferalMaster> result = em.createQuery(query);
 			int limit = 0, offset = 2;

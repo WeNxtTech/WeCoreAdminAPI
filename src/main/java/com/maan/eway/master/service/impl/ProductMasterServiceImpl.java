@@ -39,6 +39,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.error.Error;
@@ -687,79 +688,104 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 
 		@Override
 		public SuccessRes changeStatusOfProduct(ProductChangeStatusReq req) {
-			SuccessRes res = new SuccessRes();
-			try {
-				Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
-				Calendar cal = new GregorianCalendar(); 
-				
-				ProductMaster updateRecord  = new ProductMaster();
-				cal.setTime(today);
-				cal.set(Calendar.HOUR_OF_DAY, 23);
-				cal.set(Calendar.MINUTE, 1);
-				today   = cal.getTime();
-				
+			  SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/YYYY");
+				SuccessRes res = new SuccessRes();
+				ProductMaster saveData = new ProductMaster();
 				List<ProductMaster> list = new ArrayList<ProductMaster>();
-				// Find Latest Record
-				CriteriaBuilder cb = em.getCriteriaBuilder();
-				CriteriaQuery<ProductMaster> query = cb.createQuery(ProductMaster.class);
-		
-				// Find All
-				Root<ProductMaster> b = query.from(ProductMaster.class);
-		
-				// Select
-				query.select(b);
-		
-				// Effective Date Max Filter
-				Subquery<Long> amendId = query.subquery(Long.class);
-				Root<ProductMaster> ocpm1 = amendId.from(ProductMaster.class);
-				amendId.select(cb.max(ocpm1.get("amendId")));
-				Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-				amendId.where(a1,a2);
-		
-				// Order By
-				List<Order> orderList = new ArrayList<Order>();
-				orderList.add(cb.desc(b.get("effectiveDateStart")));
-		
-				// Where
-				Predicate n1 = cb.equal(b.get("amendId"), amendId);
-				Predicate n2 = cb.equal(b.get("productId"), req.getProductId() );
-		
-				query.where(n1,n2).orderBy(orderList);
-		
-				// Get Result
-				TypedQuery<ProductMaster> result = em.createQuery(query);
-				list = result.getResultList();
-			
-				updateRecord = list.get(0) ;
-					
-				if (req.getStatus().equalsIgnoreCase("N") )	{
-						// Delete Old Records
-						cal.setTime(today);
-						cal.set(Calendar.HOUR_OF_DAY, 23);
-						cal.set(Calendar.MINUTE, 30);
-						today   = cal.getTime();
-						
-						// create update
-						CriteriaDelete<ProductMaster> delete = cb.createCriteriaDelete(ProductMaster.class);
-						Root<ProductMaster> pm = delete.from(ProductMaster.class);
-						
-						 // Where	
-						javax.persistence.criteria.Predicate n3 = cb.equal(pm.get("productId"), req.getProductId());
-						javax.persistence.criteria.Predicate n4 = cb.greaterThanOrEqualTo(pm.get("effectiveDateStart"), today);
-						delete.where(n3,n4);	
-						em.createQuery(delete).executeUpdate();
-						// Insert Updated Record
-						updateRecord.setStatus(req.getStatus());
-						repo.save(updateRecord);
-					
-				} else if (req.getStatus().equalsIgnoreCase("Y") ) {
-					// Insert Updated Record
-					updateRecord.setStatus(req.getStatus());
-					repo.save(updateRecord);
-				}
-				// perform update
+				DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 				
+				try {
+					Integer amendId = 0;
+					Date startDate = req.getEffectiveDateStart();
+					String end = "31/12/2050";
+					Date endDate = sdformat.parse(end);
+					long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+					Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
+					Date entryDate = null;
+					String createdBy = req.getCreatedBy();
+
+					String productId = "";
+
+					// Update
+					// Get Less than Equal Today Record
+					// Criteria
+					productId = req.getProductId();
+					CriteriaBuilder cb = em.getCriteriaBuilder();
+					CriteriaQuery<ProductMaster> query = cb.createQuery(ProductMaster.class);
+
+					// Find All
+					Root<ProductMaster> b = query.from(ProductMaster.class);
+
+					// Select
+					query.select(b);
+					Subquery<Long> amendId2 = query.subquery(Long.class);
+					Root<ProductMaster> ocpm1 = amendId2.from(ProductMaster.class);
+					amendId2.select(cb.max(ocpm1.get("amendId")));
+					Predicate a1 =  cb.equal(b.get("productId"), ocpm1.get("productId") );
+					amendId2.where(a1);
+					//Orderby
+					List<Order> orderList = new ArrayList<Order>();
+					orderList.add(cb.asc(b.get("effectiveDateStart")));
+					//Where
+					Predicate n1 = cb.equal(b.get("productId"), req.getProductId() );
+					Predicate n2 = cb.equal(b.get("amendId"),amendId2);
+					
+					query.where(n1,n2).orderBy(orderList);
+
+					// Get Result
+					TypedQuery<ProductMaster> result = em.createQuery(query);
+					int limit = 0, offset = 2;
+					result.setFirstResult(limit * offset);
+					result.setMaxResults(offset);
+					list = result.getResultList();
+
+					if (list.size() > 0) {
+						Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+
+						if (list.get(0).getEffectiveDateStart().before(beforeOneDay)) {
+							amendId = list.get(0).getAmendId() + 1;
+							entryDate = new Date();
+							createdBy = req.getCreatedBy();
+							ProductMaster lastRecord = list.get(0);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							repo.saveAndFlush(lastRecord);
+
+						} else {
+							amendId = list.get(0).getAmendId();
+							entryDate = list.get(0).getEntryDate();
+							createdBy = list.get(0).getCreatedBy();
+							saveData = list.get(0);
+							if (list.size() > 1) {
+								ProductMaster lastRecord = list.get(1);
+								lastRecord.setEffectiveDateEnd(oldEndDate);
+								repo.saveAndFlush(lastRecord);
+							}
+
+						}
+					}
+
+					res.setResponse("Updated Successfully ");
+					res.setSuccessId(productId);
+
+					dozerMapper.map(list.get(0), saveData);
+					saveData.setAmendId(amendId);
+					saveData.setProductId(Integer.valueOf(productId));
+					saveData.setProductName(list.get(0).getProductName());
+					saveData.setEffectiveDateStart(startDate);
+					saveData.setEffectiveDateEnd(endDate);
+					saveData.setCreatedBy(createdBy);
+					saveData.setStatus(req.getStatus());
+					saveData.setEntryDate(entryDate);
+					saveData.setUpdatedDate(new Date());
+					saveData.setMakerYn(list.get(0).getMakerYn());
+					saveData.setMotorYn(list.get(0).getMotorYn());
+					saveData.setUpdatedBy(req.getCreatedBy());
+					saveData.setRegulatoryCode(list.get(0).getRegulatoryCode());
+					saveData.setCurrencyIds(list.get(0).getCurrencyIds());
+					saveData.setProductIconId(list.get(0).getProductIconId());
+					saveData.setProductIconName(list.get(0).getProductIconName());
+					repo.saveAndFlush(saveData);
+						
 				res.setResponse("Status Changed");
 				res.setSuccessId(req.getProductId());
 			} catch(Exception e ) {

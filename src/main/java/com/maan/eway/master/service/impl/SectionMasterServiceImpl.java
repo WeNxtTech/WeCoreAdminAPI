@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.maan.eway.repository.SectionMasterRepository;
 import com.maan.eway.res.SuccessRes;
 import com.google.gson.Gson;
+import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.OccupationMaster;
@@ -603,82 +604,102 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 
 	@Override
 	public SuccessRes changeStatusOfSection(SectionMasterChangeStatusReq req) {
-		SuccessRes res = new SuccessRes();
-		try {
-			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
-			Calendar cal = new GregorianCalendar(); 
-			
-			SectionMaster updateRecord  = new SectionMaster();
-			cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 1);
-			today   = cal.getTime();
-			
+		   SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/YYYY");
+			SuccessRes res = new SuccessRes();
+			SectionMaster saveData = new SectionMaster();
 			List<SectionMaster> list = new ArrayList<SectionMaster>();
-			// Find Latest Record
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<SectionMaster> query = cb.createQuery(SectionMaster.class);
-	
-			// Find All
-			Root<SectionMaster> b = query.from(SectionMaster.class);
-	
-			// Select
-			query.select(b);
-	
-			// AmendId Max Filter
-			Subquery<Long> amendId = query.subquery(Long.class);
-			Root<SectionMaster> ocpm1 = amendId.from(SectionMaster.class);
-			amendId.select(cb.max(ocpm1.get("amendId")));
-			Predicate a1 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			amendId.where(a1,a2);
-	
-			// Order By
-			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(b.get("effectiveDateStart")));
-	
-			// Where
-			Predicate n1 = cb.equal(b.get("amendId"), amendId);
-			Predicate n2 = cb.equal(b.get("sectionId"), req.getSectionId() );
-	
-			query.where(n1,n2).orderBy(orderList);
-	
-			// Get Result
-			TypedQuery<SectionMaster> result = em.createQuery(query);
-			list = result.getResultList();
-			updateRecord = list.get(0) ;
-				
-			if (req.getStatus().equalsIgnoreCase("N") )	{
-					// Delete Old Records
-					cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 30);
-					today   = cal.getTime();
-					
-					// create update
-					CriteriaDelete<SectionMaster> delete = cb.createCriteriaDelete(SectionMaster.class);
-					Root<SectionMaster> pm = delete.from(SectionMaster.class);
-					
-					 // Where	
-					javax.persistence.criteria.Predicate n3 = cb.equal(pm.get("sectionId"), req.getSectionId());
-					javax.persistence.criteria.Predicate n4 = cb.greaterThanOrEqualTo(pm.get("effectiveDateStart"), today);
-					delete.where(n3,n4);	
-					em.createQuery(delete).executeUpdate();
-					// Insert Updated Record
-					updateRecord.setStatus(req.getStatus());
-					repo.save(updateRecord);
-				
-			} else if (req.getStatus().equalsIgnoreCase("Y") ) {
-				// Insert Updated Record
-				updateRecord.setStatus(req.getStatus());
-				repo.save(updateRecord);
-			}
-			// perform update
+			 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 			
-			res.setResponse("Status Changed");
-			res.setSuccessId(req.getSectionId());
-		} catch(Exception e ) {
-			e.printStackTrace();
-			log.info("Exception is ---> " + e.getMessage());
-			return null;
+			try {
+				Integer amendId=0;
+				Date startDate = req.getEffectiveDateStart() ;
+				String end = "31/12/2050";
+				Date endDate = sdformat.parse(end);
+				long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+				Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
+				Date entryDate = null ;
+				String createdBy = "";
+				String sectionId = "";
+
+				sectionId = req.getSectionId().toString();
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<SectionMaster> query = cb.createQuery(SectionMaster.class);
+
+				// Find All
+				Root<SectionMaster> b = query.from(SectionMaster.class);
+
+				// Select
+				query.select(b);
+				Subquery<Long> amendId2 = query.subquery(Long.class);
+				Root<SectionMaster> ocpm1 = amendId2.from(SectionMaster.class);
+				amendId2.select(cb.max(ocpm1.get("amendId")));
+				Predicate a1 = cb.equal(b.get("sectionId"), (ocpm1.get("sectionId")));
+				amendId2.where(a1);
+				// Orderby
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.desc(b.get("effectiveDateStart")));
+				// Where
+				Predicate n1 = cb.equal(b.get("sectionId"), req.getSectionId());
+				Predicate n2 = cb.equal(b.get("amendId"), amendId2);
+				query.where(n1, n2).orderBy(orderList);
+
+				// Get Result
+				TypedQuery<SectionMaster> result = em.createQuery(query);
+				int limit = 0, offset = 2;
+				result.setFirstResult(limit * offset);
+				result.setMaxResults(offset);
+				list = result.getResultList();
+
+				if (list.size() > 0) {
+					Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+
+					if (list.get(0).getEffectiveDateStart().before(beforeOneDay)) {
+						amendId = list.get(0).getAmendId() + 1;
+						entryDate = new Date();
+						createdBy = req.getCreatedBy();
+						SectionMaster lastRecord = list.get(0);
+						lastRecord.setEffectiveDateEnd(oldEndDate);
+						repo.saveAndFlush(lastRecord);
+
+					} else {
+						amendId = list.get(0).getAmendId();
+						entryDate = list.get(0).getEntryDate();
+						createdBy = list.get(0).getCreatedBy();
+						saveData = list.get(0);
+						if (list.size() > 1) {
+							SectionMaster lastRecord = list.get(1);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							repo.saveAndFlush(lastRecord);
+						}
+
+					}
+				}
+				res.setResponse("Updated Successfully");
+				res.setSuccessId(sectionId.toString());
+
+				dozerMapper.map(list.get(0), saveData);
+				saveData.setSectionId(Integer.valueOf(sectionId));
+				saveData.setSectionName(list.get(0).getSectionName());
+				saveData.setEffectiveDateStart(startDate);
+				saveData.setEffectiveDateEnd(endDate);
+				saveData.setCreatedBy(createdBy);
+				saveData.setStatus(req.getStatus());
+				saveData.setEntryDate(entryDate);
+				saveData.setUpdatedDate(new Date());
+				saveData.setUpdatedBy(req.getCreatedBy());
+				saveData.setAmendId(amendId);
+
+				saveData.setAmendId(amendId);
+				repo.saveAndFlush(saveData);
+				log.info("Saved Details is ---> " + json.toJson(saveData));
+				res.setResponse("Status Changed");
+				res.setSuccessId(req.getSectionId());
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Exception is ---> " + e.getMessage());
+				return null;
+			}
+			return res;
 		}
-		return res;
+
 	}
-	
-}

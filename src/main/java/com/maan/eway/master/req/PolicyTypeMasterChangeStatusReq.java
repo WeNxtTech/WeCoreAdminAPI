@@ -8,16 +8,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class SectionMasterChangeStatusReq {
+public class PolicyTypeMasterChangeStatusReq {
 
-	@JsonProperty("SectionId")
-	private String sectionId;
-
-	@JsonProperty("Status")
-	private String status;
+	@JsonProperty("PolicyTypeId")
+	private String policyTypeId;
 
 	@JsonProperty("CreatedBy")
 	private String createdBy;
+
+	@JsonProperty("InsuranceId")
+	private String insuranceId;
+	
+	@JsonProperty("ProductId")
+	private String productId;
+
+	@JsonProperty("Status")
+	private String status;
 
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")

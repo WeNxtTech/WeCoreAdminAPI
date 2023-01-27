@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.master.req.PolicyTypeMasterChangeStatusReq;
 import com.maan.eway.master.req.PolicyTypeMasterGetAllReq;
 import com.maan.eway.master.req.PolicyTypeMasterGetReq;
 import com.maan.eway.master.req.PolicyTypeMasterSaveReq;
+import com.maan.eway.master.req.ReferalMasterChangeStatusReq;
 import com.maan.eway.master.res.PolicyTypeMasterGetRes;
 import com.maan.eway.master.service.PolicyTypeMasterService;
 import com.maan.eway.res.CommonRes;
@@ -149,5 +151,24 @@ public class PolicyTypeMasterController {
 
 	}
 
+	@PostMapping("/policytype/changestatus")
+	@ApiOperation(value = "This method is get Referal Master Status Change")
 
+	public ResponseEntity<CommonRes> changeStatusOfPolicyType(@RequestBody PolicyTypeMasterChangeStatusReq req) {
+
+		CommonRes data = new CommonRes();
+		// Change Status
+		SuccessRes res = service.changeStatusOfPolicyType(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
 }

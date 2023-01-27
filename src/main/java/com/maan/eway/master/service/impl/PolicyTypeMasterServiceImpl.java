@@ -32,7 +32,9 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.PolicyTypeMaster;
+import com.maan.eway.bean.PolicyTypeMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.PolicyTypeMasterChangeStatusReq;
 import com.maan.eway.master.req.PolicyTypeMasterGetAllReq;
 import com.maan.eway.master.req.PolicyTypeMasterGetReq;
 import com.maan.eway.master.req.PolicyTypeMasterSaveReq;
@@ -583,6 +585,104 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 			return resList;
 		}
 
+		@Override
+		public SuccessRes changeStatusOfPolicyType(PolicyTypeMasterChangeStatusReq req) {
+			SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/yyyy");
+			SuccessRes res = new SuccessRes();
+			PolicyTypeMaster saveData = new PolicyTypeMaster();
+			List<PolicyTypeMaster> list = new ArrayList<PolicyTypeMaster>();
+			DozerBeanMapper dozermapper = new DozerBeanMapper();
+			try {
+				Integer amendId = 0;
+				Date startDate = req.getEffectiveDateStart();
+				String end = "31/12/2050";
+				Date endDate = sdformat.parse(end);
+				long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+				Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
+				Date entryDate = null;
+				String createdBy = "";
+				String policyId = "";
 
+				// Update
+				policyId = req.getPolicyTypeId().toString();
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<PolicyTypeMaster> query = cb.createQuery(PolicyTypeMaster.class);
+				// Find All
+				Root<PolicyTypeMaster> b = query.from(PolicyTypeMaster.class);
+				// Select
+				query.select(b);
+				Subquery<Long> amendId2 = query.subquery(Long.class);
+				Root<PolicyTypeMaster> ocpm1 = amendId2.from(PolicyTypeMaster.class);
+				amendId2.select(cb.max(ocpm1.get("amendId")));
+				Predicate a1 = cb.equal(ocpm1.get("policyTypeId"), b.get("policyTypeId"));
+				Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+				Predicate a3 = cb.equal(ocpm1.get("productId"),b.get("productId"));
+				amendId2.where(a1, a2,a3);
+				//Orderby
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.desc(b.get("effectiveDateStart")));
+				//Where
+				Predicate n1 = cb.equal(b.get("policyTypeId"), req.getPolicyTypeId());
+				Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
+				Predicate n3 = cb.equal(b.get("productId"), req.getProductId());
+				Predicate n4 = cb.equal(b.get("amendId"),amendId2);
+				
+				query.where(n1,n2,n3,n4).orderBy(orderList);
+	
+				// Get Result
+				TypedQuery<PolicyTypeMaster> result = em.createQuery(query);
+				int limit = 0, offset = 2;
+				result.setFirstResult(limit * offset);
+				result.setMaxResults(offset);
+				list = result.getResultList();
 
+				if (list.size() > 0) {
+					Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+
+					if (list.get(0).getEffectiveDateStart().before(beforeOneDay)) {
+						amendId = list.get(0).getAmendId() + 1;
+						entryDate = new Date();
+						createdBy = req.getCreatedBy();
+						PolicyTypeMaster lastRecord = list.get(0);
+						lastRecord.setEffectiveDateEnd(oldEndDate);
+						repo.saveAndFlush(lastRecord);
+
+					} else {
+						amendId = list.get(0).getAmendId();
+						entryDate = list.get(0).getEntryDate();
+						createdBy = list.get(0).getCreatedBy();
+						saveData = list.get(0);
+						if (list.size() > 1) {
+							PolicyTypeMaster lastRecord = list.get(1);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							repo.saveAndFlush(lastRecord);
+						}
+
+					}
+				}
+				res.setResponse("Updated Successfully");
+				res.setSuccessId(policyId);
+
+				dozermapper.map(list.get(0), saveData);
+				saveData.setEffectiveDateStart(startDate);
+				saveData.setEffectiveDateEnd(endDate);
+				saveData.setCreatedBy(createdBy);
+				saveData.setStatus(req.getStatus());
+				saveData.setCompanyId(req.getInsuranceId());
+				saveData.setEntryDate(entryDate);
+				saveData.setUpdatedDate(new Date());
+				saveData.setUpdatedBy(req.getCreatedBy());
+				saveData.setAmendId(amendId);
+				saveData.setPolicyTypeId(Integer.valueOf(policyId));
+				repo.saveAndFlush(saveData);
+				log.info("Saved Details is --->" + json.toJson(saveData));
+				res.setResponse("Status Changed");
+				res.setSuccessId(policyId);
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Exception is --->" + e.getMessage());
+				return null;
+			}
+			return res;
+		}
 }

@@ -3,6 +3,7 @@ package com.maan.eway.master.service;
 import java.util.List;
 
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.PolicyTypeMasterChangeStatusReq;
 import com.maan.eway.master.req.PolicyTypeMasterGetAllReq;
 import com.maan.eway.master.req.PolicyTypeMasterGetReq;
 import com.maan.eway.master.req.PolicyTypeMasterSaveReq;
@@ -23,5 +24,7 @@ public interface PolicyTypeMasterService {
 	List<PolicyTypeMasterGetRes> getallactivePolicyType(PolicyTypeMasterGetAllReq req);
 
 	List<DropDownRes> getPolicyTypeMasterDropdown( PolicyTypeMasterGetAllReq req );
+
+	SuccessRes changeStatusOfPolicyType(PolicyTypeMasterChangeStatusReq req);
 
 }

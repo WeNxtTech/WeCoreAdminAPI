@@ -79,6 +79,12 @@ public class PersonalAccident implements Serializable {
 	@Column(name = "DOB")
 	private Date dob;
 
+	@Column(name="SUM_INSURED")
+	private BigDecimal sumInsured;
+
+	@Column(name="BENEFIT_COVER_MONTH")
+	private Integer benefitCoverMonth;
+	
 	@Column(name = "AGE")
 	private Integer age;
 

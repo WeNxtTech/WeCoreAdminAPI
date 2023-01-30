@@ -112,6 +112,101 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 		List<Error> errorList = new ArrayList<Error>();
 		try {
 			
+			Map<String,List<DropDownRes>>  apiResList = masterDiscreteApiCall(req ,token ) ;
+			
+			errorList =  factorRatingsValidation( req , apiResList);
+			
+		} catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+			errorList.add(new Error("12", "Common Error", e.getMessage()));
+		}
+		return errorList;
+	}
+	
+	public Map<String,List<DropDownRes>>  masterDiscreteApiCall(FactorRateSaveReq req , String token) {
+		Map<String,List<DropDownRes>>  apiResList = new HashMap<String,List<DropDownRes>>();
+		try {
+			 boolean param9 = false ,
+						param10 = false , param11 = false, param12 = false ;
+			 Integer param9RatingField  = null,param10RatingField  = null ,param11RatingField  = null,param12RatingField  = null ;
+			if (StringUtils.isNotBlank(req.getFactorTypeId())) {
+				List<FactorTypeDetails>  factorList = getRatingFieldDetails(req.getFactorTypeId() ,req.getCompanyId() ,req.getProductId()) ;
+				
+				for(FactorTypeDetails data :factorList ) {
+					
+					if( ! data.getRangeYn().equalsIgnoreCase("Y") ) {
+						if(data.getDiscreteColumn().equalsIgnoreCase("Param9") ) {
+							param9 = true ;
+							
+						    param9RatingField = data.getRatingFieldId();
+						} else if(data.getDiscreteColumn().equalsIgnoreCase("Param10") ) {
+							param10 = true ;
+							
+							param10RatingField = data.getRatingFieldId();
+						} else if(data.getDiscreteColumn().equalsIgnoreCase("Param11") ) {
+							param11 = true ;
+							
+							param11RatingField = data.getRatingFieldId();
+						} else if(data.getDiscreteColumn().equalsIgnoreCase("Param12") ) {
+							param12 = true ;
+							
+							param12RatingField = data.getRatingFieldId();
+						} 
+					}
+				
+				}
+			}
+			
+			// Masters Api Call 
+			List<RatingFieldMaster>  ratingFields =  getRatingFields(req.getProductId());
+			
+			Map<String,RatingFieldMaster>  paramsApiReq = new HashMap<String,RatingFieldMaster>();
+			
+			if (param9  == true  ) {
+				Integer param9Column  = param9RatingField ;
+				List<RatingFieldMaster>  filterRatingFields = ratingFields.stream().filter( o -> o.getRatingId().equals(param9Column) ).collect(Collectors.toList());
+				if(StringUtils.isNotBlank(filterRatingFields.get(0).getApiUrl())) {
+					paramsApiReq.put("param9", filterRatingFields.get(0));
+				}
+			}
+			if (param10  == true  ) {
+				Integer param10Column  = param10RatingField ;
+				List<RatingFieldMaster>  filterRatingFields = ratingFields.stream().filter( o -> o.getRatingId().equals(param10Column)	).collect(Collectors.toList());
+				if(StringUtils.isNotBlank(filterRatingFields.get(0).getApiUrl())) {
+					paramsApiReq.put("param10", filterRatingFields.get(0));
+				}
+			}
+			if (param11  == true  ) {
+				Integer param11Column  = param11RatingField ;
+				List<RatingFieldMaster>  filterRatingFields = ratingFields.stream().filter( o -> o.getRatingId().equals(param11Column)	).collect(Collectors.toList());
+				if(StringUtils.isNotBlank(filterRatingFields.get(0).getApiUrl())) {	
+					paramsApiReq.put("param11", filterRatingFields.get(0));
+				}
+			}
+			if (param12  == true  ) {
+				Integer param12Column  = param12RatingField ;
+				List<RatingFieldMaster>  filterRatingFields = ratingFields.stream().filter( o -> o.getRatingId().equals(param12Column)	).collect(Collectors.toList());
+				if(StringUtils.isNotBlank(filterRatingFields.get(0).getApiUrl())) {	
+					paramsApiReq.put("param12", filterRatingFields.get(0));
+				}
+			}
+			
+			// Master Api Response 
+			apiResList = getMasterDropDowns(req , token , paramsApiReq ) ;
+		
+		} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is --->" + e.getMessage());
+		return null;
+	}
+	return apiResList;
+	}
+	
+	
+	public List<Error> factorRatingsValidation(FactorRateSaveReq req ,Map<String,List<DropDownRes>>  apiResList ) {
+		List<Error> errorList = new ArrayList<Error>();
+		try {
 			if (StringUtils.isBlank(req.getRemarks()) ) {
 				errorList.add(new Error("03", "Remark", "Please Select Remark "));
 			}else if (req.getRemarks().length() > 100){
@@ -246,7 +341,6 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 			}
 			
 			// Master Api Response 
-			Map<String,List<DropDownRes>>  apiResList = getMasterDropDowns(req , token , paramsApiReq ) ;
 			List<DropDownRes> param9Master  = param9   == true  &&  apiResList.get("param9") !=null ? apiResList.get("param9")  : new ArrayList<>();
 			List<DropDownRes> param10Master = param10  == true  &&  apiResList.get("param10")!=null ? apiResList.get("param10") : new ArrayList<>();
 			List<DropDownRes> param11Master = param11  == true  &&  apiResList.get("param11")!=null ? apiResList.get("param11") : new ArrayList<>();
@@ -612,12 +706,13 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 						} */
 					} 
 			}
+		
 		} catch (Exception e) {
-			log.error(e);
-			e.printStackTrace();
-			errorList.add(new Error("12", "Common Error", e.getMessage()));
-		}
-		return errorList;
+		e.printStackTrace();
+		log.info("Exception is --->" + e.getMessage());
+		return null;
+	}
+	return errorList;
 	}
 	
 	public List<RatingFieldMaster> getRatingFields(String productId ) {
@@ -797,6 +892,8 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 		}
 		return list;
 	}
+	
+	
 	
 	@Override
 	public SuccessRes insertFactorRateDetails(FactorRateSaveReq req) {

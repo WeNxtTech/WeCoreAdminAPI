@@ -39,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.NotifTemplateMaster;
+import com.maan.eway.bean.NotifTemplateMaster;
 import com.maan.eway.bean.MotorColorMaster;
 import com.maan.eway.bean.NotifTemplateMaster;
 import com.maan.eway.bean.NotifTemplateMaster;
@@ -803,5 +804,105 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 		}
 		return resList;
 	}
+
+	@Override
+	public SuccessRes changeStatusOfNotitemplete(NotifTempleteMasterChangeStatusReq req) {
+		SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/yyyy");
+		SuccessRes res = new SuccessRes();
+		NotifTemplateMaster saveData = new NotifTemplateMaster();
+		List<NotifTemplateMaster> list = new ArrayList<NotifTemplateMaster>();
+		DozerBeanMapper dozermapper = new DozerBeanMapper();
+		try {
+			Integer amendId = 0;
+			Date startDate = req.getEffectiveDateStart();
+			String end = "31/12/2050";
+			Date endDate = sdformat.parse(end);
+			long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
+			Date entryDate = null;
+			String createdBy = "";
+			String companyId = "";
+			Long notificationCode = 0L;
+
+			// Update
+			notificationCode = Long.valueOf(req.getNotifTemplateCode());
+			companyId = req.getInsuranceId();
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<NotifTemplateMaster> query = cb.createQuery(NotifTemplateMaster.class);
+			// Find all
+			Root<NotifTemplateMaster> b = query.from(NotifTemplateMaster.class);
+			// Select
+			query.select(b);
+			//Orderby
+			Subquery<Long> amendId2 = query.subquery(Long.class);
+			Root<NotifTemplateMaster> ocpm1 = amendId2.from(NotifTemplateMaster.class);
+			amendId2.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("notifTemplateCode"), b.get("notifTemplateCode"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			amendId2.where(a1, a2);
+			//Orderby
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("effectiveDateStart")));
+			//Where
+			Predicate n1 = cb.equal(b.get("notifTemplateCode"),req.getNotifTemplateCode());
+			Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
+			Predicate n3 = cb.equal(b.get("amendId"),amendId2);
+			
+			query.where(n1,n2).orderBy(orderList);
 	
+			// Get Result
+			TypedQuery<NotifTemplateMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			if (list.size() > 0) {
+				Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+
+				if (list.get(0).getEffectiveDateStart().before(beforeOneDay)) {
+					amendId = list.get(0).getAmendId() + 1;
+					entryDate = new Date();
+					createdBy = req.getCreatedBy();
+					NotifTemplateMaster lastRecord = list.get(0);
+					lastRecord.setEffectiveDateEnd(oldEndDate);
+					repository.saveAndFlush(lastRecord);
+
+				} else {
+					amendId = list.get(0).getAmendId();
+					entryDate = list.get(0).getEntryDate();
+					createdBy = list.get(0).getCreatedBy();
+					saveData = list.get(0);
+					if (list.size() > 1) {
+						NotifTemplateMaster lastRecord = list.get(1);
+						lastRecord.setEffectiveDateEnd(oldEndDate);
+						repository.saveAndFlush(lastRecord);
+					}
+
+				}
+			}
+			res.setResponse("Updated Successfully");
+			res.setSuccessId(companyId);
+
+			dozermapper.map(list.get(0), saveData);
+
+			saveData.setNotifTemplateCode(notificationCode.toString());
+			saveData.setCompanyId(companyId);
+			saveData.setEffectiveDateStart(startDate);
+			saveData.setEffectiveDateEnd(endDate);
+			saveData.setCreatedBy(createdBy);
+			saveData.setStatus(req.getStatus());
+			saveData.setProductId(Long.valueOf(req.getProductId().toString()));
+			saveData.setEntryDate(entryDate);
+			saveData.setUpdatedDate(new Date());
+			saveData.setUpdatedBy(req.getCreatedBy());
+			saveData.setAmendId(amendId);
+			repository.saveAndFlush(saveData);
+			log.info("Saved Details is --> " + json.toJson(saveData));
+			res.setResponse("Status Changed");
+			res.setSuccessId(req.getNotifTemplateCode());
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is -->" + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+
 }

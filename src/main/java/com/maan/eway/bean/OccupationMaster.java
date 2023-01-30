@@ -63,6 +63,11 @@ public class OccupationMaster implements Serializable {
     @Column(name="BRANCH_CODE", length=20)
     private String     branchCode;
 
+    @Id
+    @Column(name="PRODUCT_ID", length=20)
+    private String    productId;
+
+    
     @Column(name = "CATEGORY_ID", nullable = false, length = 20)
 	private String categoryId;
     
@@ -101,5 +106,12 @@ public class OccupationMaster implements Serializable {
 
 	@Column(name = "CREATED_BY", length = 100)
 	private String createdBy;
+
+	@Column(name = "UPDATED_BY", length = 100)
+	private String updatedBy;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "UPDATED_DATE")
+	private Date updatedDate;
 
 }

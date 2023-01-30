@@ -23,6 +23,8 @@ public class RatingFieldsMasterChangeStatusReq implements Serializable {
     @JsonProperty("Status")
     private String status;
     
+	@JsonProperty("CreatedBy")
+	private String createdBy;
     
     @JsonFormat(pattern ="dd/MM/yyyy")
     @JsonProperty("EffectiveDateStart")

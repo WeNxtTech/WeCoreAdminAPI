@@ -10,13 +10,16 @@ import lombok.Data;
 @Data
 public class ProductChangeStatusReq {
 
-	 @JsonProperty("ProductId")
-	 private String productId;
-	 
-	 @JsonProperty("Status")
-	 private String status;
-	 
-	  @JsonFormat(pattern ="dd/MM/yyyy")
-	  @JsonProperty("EffectiveDateStart")
-	  private Date effectiveDateStart;
+	@JsonProperty("ProductId")
+	private String productId;
+
+	@JsonProperty("Status")
+	private String status;
+
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
 }

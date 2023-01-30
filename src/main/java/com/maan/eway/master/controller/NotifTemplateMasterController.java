@@ -164,7 +164,7 @@ public class NotifTemplateMasterController {
 			}
 		}
 
-/*		// Change Status
+		// Change Status
 		@PostMapping("/notitemplete/changestatus")
 		@ApiOperation(value = "This method is get Notification Templete Change Status")
 		public ResponseEntity<CommonRes> changeStatusOfNotitemplete(@RequestBody NotifTempleteMasterChangeStatusReq req) {
@@ -182,8 +182,8 @@ public class NotifTemplateMasterController {
 			} else {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
+		}
 
-		}*/
 
 		//Dropdown
 		@GetMapping("/dropdown/getnotitranscolumns")

@@ -37,6 +37,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.RatingFieldMaster;
 import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.OccupationMaster;
@@ -58,7 +59,7 @@ import com.maan.eway.res.RatingFieldDropDownRes;
 import com.maan.eway.res.SuccessRes;
 
 /**
- * <h2>BankMasterServiceimpl</h2>
+ * <h2>RatingFieldMasterServiceimpl</h2>
  */
 @Service
 @Transactional
@@ -558,85 +559,96 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 
 	@Override
 	public SuccessRes changeStatusOfFactorType(RatingFieldsMasterChangeStatusReq req) {
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		SuccessRes res = new SuccessRes();
-		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+
+		RatingFieldMaster saveData = new RatingFieldMaster();
+		List<RatingFieldMaster> list = new ArrayList<RatingFieldMaster>();
+		DozerBeanMapper dozermapper = new DozerBeanMapper();
 		try {
-			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
-			Calendar cal = new GregorianCalendar();
+			Integer amendId=0;
+			Date startDate = req.getEffectiveDateStart() ;
+			String end = "31/12/2050";
+			Date endDate = sdf.parse(end);
+			long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
+			Date entryDate = null ;
+			String createdBy = "" ;
+			String factorId = "";
 
-			RatingFieldMaster updateRecord = new RatingFieldMaster();
-			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 1);
-			today = cal.getTime();
-
-			List<RatingFieldMaster> list = new ArrayList<RatingFieldMaster>();
-			// Find Latest Record
+			factorId = req.getRatingId();
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<RatingFieldMaster> query = cb.createQuery(RatingFieldMaster.class);
-
-			// Find All
+			// Find all
 			Root<RatingFieldMaster> b = query.from(RatingFieldMaster.class);
-
 			// Select
 			query.select(b);
-
-			// Amend ID Max Filter
-			Subquery<Long> amendId = query.subquery(Long.class);
-			Root<RatingFieldMaster> ocpm1 = amendId.from(RatingFieldMaster.class);
-			amendId.select(cb.max(ocpm1.get("amendId")));
-			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			Predicate a3 = cb.equal(ocpm1.get("ratingId"), b.get("ratingId"));
-			amendId.where(a1, a2,a3);
-
-			// Order By
+			// Orderby
+			Subquery<Long> amendId2 = query.subquery(Long.class);
+			Root<RatingFieldMaster> ocpm1 = amendId2.from(RatingFieldMaster.class);
+			amendId2.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("ratingId"), b.get("ratingId"));
+			Predicate a2 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			amendId2.where(a1, a2);
+			// Orderby
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("ratingField")));
-
+			orderList.add(cb.asc(b.get("effectiveDateStart")));
 			// Where
-			Predicate n1 = cb.equal(b.get("amendId"), amendId);
-			Predicate n2 = cb.equal(b.get("ratingId"), req.getRatingId());
-			Predicate n3 = cb.equal(b.get("productId"),req.getProductId());
-			query.where(n1, n2,n3).orderBy(orderList);
+			Predicate n1 = cb.equal(b.get("ratingId"), req.getRatingId());
+			Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
+			Predicate n3 = cb.equal(b.get("amendId"), amendId2);
 
+			query.where(n1, n2, n3).orderBy(orderList);
 			// Get Result
 			TypedQuery<RatingFieldMaster> result = em.createQuery(query);
+			int limit = 0, offset = 2;
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
 			list = result.getResultList();
-			updateRecord = list.get(0);
-			
-			if (req.getStatus().equalsIgnoreCase("N")) {
-				// Delete Old Records
-				cal.setTime(today);
-				cal.set(Calendar.HOUR_OF_DAY, 23);
-				cal.set(Calendar.MINUTE, 30);
-				today = cal.getTime();
+			if (list.size() > 0) {
+				Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
 
-				// create update
-				CriteriaDelete<RatingFieldMaster> delete = cb.createCriteriaDelete(RatingFieldMaster.class);
-				Root<RatingFieldMaster> pm = delete.from(RatingFieldMaster.class);
+				if (list.get(0).getEffectiveDateStart().before(beforeOneDay)) {
+					amendId = list.get(0).getAmendId() + 1;
+					entryDate = new Date();
+					createdBy = req.getCreatedBy();
+					RatingFieldMaster lastRecord = list.get(0);
+					lastRecord.setEffectiveDateEnd(oldEndDate);
+					factorRepo.saveAndFlush(lastRecord);
 
-				// Where
-				javax.persistence.criteria.Predicate n4 = cb.equal(pm.get("ratingId"), req.getRatingId());
-				javax.persistence.criteria.Predicate n5 = cb.greaterThanOrEqualTo(pm.get("effectiveDateStart"), today);
-				javax.persistence.criteria.Predicate n6 = cb.equal(pm.get("productId"),req.getProductId());
-				delete.where(n4,n5,n6);
-				em.createQuery(delete).executeUpdate();
-				// Insert Updated Record
-				updateRecord.setStatus(req.getStatus());
-				factorRepo.save(updateRecord);
+				} else {
+					amendId = list.get(0).getAmendId();
+					entryDate = list.get(0).getEntryDate();
+					createdBy = list.get(0).getCreatedBy();
+					saveData = list.get(0);
+					if (list.size() > 1) {
+						RatingFieldMaster lastRecord = list.get(1);
+						lastRecord.setEffectiveDateEnd(oldEndDate);
+						factorRepo.saveAndFlush(lastRecord);
+					}
 
-			} else if (req.getStatus().equalsIgnoreCase("Y") ) {
-				// Insert Updated Record
-				for (RatingFieldMaster data : list ) {
-					updateRecord = data ; 
-					updateRecord.setStatus(req.getStatus());
-					factorRepo.saveAndFlush(updateRecord);	
 				}
-				
 			}
-			// perform update
+			res.setResponse("Updated Successfully");
+			res.setSuccessId(factorId);
 
+			dozermapper.map(list.get(0), saveData);
+			saveData.setRatingId(Integer.valueOf(factorId));
+			saveData.setEffectiveDateStart(startDate);
+			saveData.setEffectiveDateEnd(endDate);
+			saveData.setEntryDate(entryDate);
+			saveData.setCreatedBy(createdBy);
+			saveData.setUpdatedDate(new Date());
+			saveData.setUpdatedBy(req.getCreatedBy());
+			saveData.setAmendId(amendId);
+			saveData.setStatus(req.getStatus());
+			saveData.setInputTableName(list.get(0).getInputTableName());
+			saveData.setInputColumnName(list.get(0).getInputColumn());
+			saveData.setMasterYn(list.get(0).getMasterYn());
+			saveData.setApiUrl(list.get(0).getApiUrl());
+			factorRepo.saveAndFlush(saveData);
+			log.info("Saved Details is --> " + json.toJson(saveData));
+			
 			res.setResponse("Status Changed");
 			res.setSuccessId(req.getRatingId());
 		} catch (Exception e) {

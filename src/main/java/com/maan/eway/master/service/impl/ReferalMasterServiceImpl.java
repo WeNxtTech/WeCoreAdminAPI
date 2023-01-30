@@ -46,6 +46,7 @@ import com.maan.eway.master.req.ReferalMasterSaveReq;
 import com.maan.eway.master.res.ReferalMasterRes;
 import com.maan.eway.master.service.ReferalMasterService;
 import com.maan.eway.auth.token.passwordEnc;
+import com.maan.eway.bean.ReferalMaster;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.OccupationMaster;
@@ -696,84 +697,106 @@ public List<ReferalMasterRes> getActiveReferalDetails() {
 }
 @Override
 public SuccessRes changeStatusOfReferal(ReferalMasterChangeStatusReq req) {
-	SuccessRes res = new SuccessRes();
-	try {
-		Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
-		Calendar cal = new GregorianCalendar(); 
-		
-		ReferalMaster updateRecord  = new ReferalMaster();
-		cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 1);
-		today   = cal.getTime();
-		
+	  SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/YYYY");
+		SuccessRes res = new SuccessRes();
+		ReferalMaster saveData = new ReferalMaster();
 		List<ReferalMaster> list = new ArrayList<ReferalMaster>();
-		// Find Latest Record
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<ReferalMaster> query = cb.createQuery(ReferalMaster.class);
-
-		// Find All
-		Root<ReferalMaster> b = query.from(ReferalMaster.class);
-
-		// Select
-		query.select(b);
-
-		// Amend ID Max Filter
-		Subquery<Long> amendId = query.subquery(Long.class);
-		Root<ReferalMaster> ocpm1 = amendId.from(ReferalMaster.class);
-		amendId.select(cb.max(ocpm1.get("amendId")));
-		Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
-		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-		amendId.where(a1, a2);
-
-		// Order By
-		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.desc(b.get("effectiveDateStart")));
-
-		// Where
-		Predicate n1 = cb.equal(b.get("amendId"), amendId);
-		Predicate n2 = cb.equal(b.get("referalId"), req.getReferalId() );
-
-		query.where(n1,n2).orderBy(orderList);
-
-		// Get Result
-		TypedQuery<ReferalMaster> result = em.createQuery(query);
-		list = result.getResultList();
-		updateRecord = list.get(0) ;
-			
-		if (req.getStatus().equalsIgnoreCase("N") )	{
-			// Delete Old Records
-			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 30);
-			today = cal.getTime();
-
-			// create update
-			CriteriaDelete<ReferalMaster> delete = cb.createCriteriaDelete(ReferalMaster.class);
-			Root<ReferalMaster> pm = delete.from(ReferalMaster.class);
-
-			// Where
-			javax.persistence.criteria.Predicate n3 = cb.equal(pm.get("referalId"), req.getReferalId());
-			javax.persistence.criteria.Predicate n4 = cb.greaterThanOrEqualTo(pm.get("effectiveDateStart"), today);
-			delete.where(n3, n4);
-			em.createQuery(delete).executeUpdate();
-			// Insert Updated Record
-			updateRecord.setStatus(req.getStatus());
-			repo.save(updateRecord);
-			
-		} else if (req.getStatus().equalsIgnoreCase("Y") ) {
-			// Insert Updated Record
-			updateRecord.setStatus(req.getStatus());
-			repo.save(updateRecord);
-		}
-		// perform update
+		 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		
-		res.setResponse("Status Changed");
-		res.setSuccessId(req.getReferalId());
-	} catch(Exception e ) {
-		e.printStackTrace();
-		log.info("Exception is ---> " + e.getMessage());
-		return null;
-	}
-	return res;
+		try {
+			Integer amendId=0;
+			Date startDate = req.getEffectiveDateStart() ;
+			String end = "31/12/2050";
+			Date endDate = sdformat.parse(end);
+			long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
+			Date entryDate = null;
+			String createdBy = "";
+
+			String referalId = "";
+
+			// Update
+			// Get Less than Equal Today Record
+			// Criteria
+			referalId = req.getReferalId();
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ReferalMaster> query = cb.createQuery(ReferalMaster.class);
+
+			// Find All
+			Root<ReferalMaster> b = query.from(ReferalMaster.class);
+
+			// Select
+			query.select(b);
+
+			Subquery<Long> amendId2 = query.subquery(Long.class);
+			Root<ReferalMaster> ocpm1 = amendId2.from(ReferalMaster.class);
+			amendId2.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
+			amendId2.where(a1);
+			//Orderby
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("effectiveDateStart")));
+			//Where
+			Predicate n1 = cb.equal(b.get("referalId"),req.getReferalId());
+			Predicate n3 = cb.equal(b.get("amendId"),amendId2);
+			
+			query.where(n1,n3).orderBy(orderList);
+			// Get Result
+			TypedQuery<ReferalMaster> result = em.createQuery(query);
+			int limit = 0, offset = 2;
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			list = result.getResultList();
+
+			if (list.size() > 0) {
+				Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+
+				if (list.get(0).getEffectiveDateStart().before(beforeOneDay)) {
+					amendId = list.get(0).getAmendId() + 1;
+					entryDate = new Date();
+					createdBy = req.getCreatedBy();
+					ReferalMaster lastRecord = list.get(0);
+					lastRecord.setEffectiveDateEnd(oldEndDate);
+					repo.saveAndFlush(lastRecord);
+
+				} else {
+					amendId = list.get(0).getAmendId();
+					entryDate = list.get(0).getEntryDate();
+					createdBy = list.get(0).getCreatedBy();
+					saveData = list.get(0);
+					if (list.size() > 1) {
+						ReferalMaster lastRecord = list.get(1);
+						lastRecord.setEffectiveDateEnd(oldEndDate);
+						repo.saveAndFlush(lastRecord);
+					}
+
+				}
+			}
+
+			res.setResponse("Updated Successfully ");
+			res.setSuccessId(referalId);
+			
+			dozerMapper.map(list.get(0), saveData);
+			saveData.setReferalId(Integer.valueOf(referalId));
+			saveData.setEffectiveDateStart(startDate);
+			saveData.setEffectiveDateEnd(endDate);
+			saveData.setCreatedBy(createdBy);
+			saveData.setStatus(req.getStatus());
+			saveData.setEntryDate(entryDate);
+			saveData.setUpdatedDate(new Date());
+			saveData.setUpdatedBy(req.getCreatedBy());
+			saveData.setAmendId(amendId);
+			repo.saveAndFlush(saveData);
+
+			log.info("Saved Details is ---> " + json.toJson(saveData));
+			res.setResponse("Status Changed");
+			res.setSuccessId(req.getReferalId());
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return res;
 }
 @Override
 public List<DropDownRes> referralType( ) {

@@ -451,7 +451,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					if ( param9==true  ) {
 						if( StringUtils.isBlank(data.getParam9())  ) 
 							errorList.add(new Error("09", param9Name, "Please Enter " +  param9Name + "in Row No : " + row  ));
-						else if  (param9Master !=null && param9Master.size()> 0  ) {
+						else if  (param9Master !=null && param9Master.size()> 0 && ! data.getParam9().equalsIgnoreCase("99999") ) {
 							List<DropDownRes> filterMaster = param9Master.stream().filter( o ->  o.getCode().equalsIgnoreCase(data.getParam9()) ).collect(Collectors.toList());
 							if(filterMaster.size()<=0 ) {
 								errorList.add(new Error("09", param9Name,  param9Name +" Row No : " + row +" "  + " Value = "  + data.getParam9() +  " Not available in Master "  ));
@@ -462,7 +462,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					if ( param10==true  ) {
 						if( StringUtils.isBlank(data.getParam10())  ) 
 							errorList.add(new Error("10", param10Name, "Please Enter " +  param10Name + "in Row No : " + row  ));
-						else if  (param10Master !=null && param10Master.size()> 0  ) {
+						else if  (param10Master !=null && param10Master.size()> 0 && ! data.getParam10().equalsIgnoreCase("99999") ) {
 							List<DropDownRes> filterMaster = param10Master.stream().filter( o ->  o.getCode().equalsIgnoreCase(data.getParam10()) ).collect(Collectors.toList());
 							if(filterMaster.size()<=0 ) {
 								errorList.add(new Error("09", param10Name,  param10Name +" Row No : " + row +" "  + " Value = " + data.getParam10() +  " Not available in Master "  ));
@@ -473,7 +473,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					if ( param11==true  ) {
 						if( StringUtils.isBlank(data.getParam11())  ) 
 							errorList.add(new Error("11", param11Name, "Please Enter " +  param11Name + "in Row No : " + row  ));
-						else if  (param11Master !=null && param11Master.size()> 0  ) {
+						else if  (param11Master !=null && param11Master.size()> 0 && ! data.getParam11().equalsIgnoreCase("99999") ) {
 							List<DropDownRes> filterMaster = param11Master.stream().filter( o ->  o.getCode().equalsIgnoreCase(data.getParam11()) ).collect(Collectors.toList());
 							if(filterMaster.size()<=0 ) {
 								errorList.add(new Error("09", param11Name,  param11Name + " Row No : " + row +" "  +" Value = " + data.getParam11() +  " Not available in Master "  ));
@@ -484,7 +484,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					if ( param12==true  ) {
 						if( StringUtils.isBlank(data.getParam12())  ) 
 							errorList.add(new Error("12", param12Name, "Please Enter " +  param12Name + "in Row No : " + row  ));
-						else if  (param12Master !=null && param12Master.size()> 0  ) {
+						else if  (param12Master !=null && param12Master.size()> 0 && ! data.getParam12().equalsIgnoreCase("99999") ) {
 							List<DropDownRes> filterMaster = param12Master.stream().filter( o ->  o.getCode().equalsIgnoreCase(data.getParam12()) ).collect(Collectors.toList());
 							if(filterMaster.size()<=0 ) {
 								errorList.add(new Error("09", param12Name,  param12Name +" Row No : " + row +" "  + " Value = " + data.getParam12() +  " Not available in Master "  ));

@@ -907,7 +907,7 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 			saveData.setEffectiveDateStart(startDate);
 			saveData.setEffectiveDateEnd(endDate);
 			saveData.setDocumentTypeDesc(DocTypeDesc);
-			saveData.setStatus("Y");
+			saveData.setStatus(req.getStatus());
 			saveData.setEntryDate(new Date());
 			saveData.setAmendId(amendId);
 			saveData.setUpdatedBy(req.getCreatedBy());

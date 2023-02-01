@@ -239,7 +239,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="ETHICAL_WORK_INVOLVED", length=10)
     private String  ethicalWorkInvolved;
     
-    
+
+    @Column(name="BANK_CODE", length=100)
+    private String   bankCode;    
     
     
     

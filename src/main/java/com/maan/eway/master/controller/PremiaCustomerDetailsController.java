@@ -40,7 +40,7 @@ public class PremiaCustomerDetailsController {
 	@Autowired
 	private PrintReqService reqPrinter;
 	
-	@PostMapping("/search/premiacustomerdetails")
+	@PostMapping("/search/premiacustomercode")
 	@ApiOperation(value = "This method is Search Premia ")
 
 	public ResponseEntity<CommonRes> searchPremiacustDetails(@RequestBody  PremiaDropDownReq req) {
@@ -61,5 +61,25 @@ public class PremiaCustomerDetailsController {
 		}
 	}
 
+	@PostMapping("/search/premiasourcecode")
+	@ApiOperation(value = "This method is Search Premia ")
+
+	public ResponseEntity<CommonRes> searchPremiaSourceCode(@RequestBody  PremiaDropDownReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+
+		// Search
+		List<PremiaCustomerDetailsRes> res = service.searchPremiaSourceCode(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 
 }

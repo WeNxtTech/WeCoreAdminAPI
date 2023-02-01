@@ -13,10 +13,10 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PremiaCustomerDetailsRes {
 
-	@JsonProperty("CustomerCode")
+	@JsonProperty("Code")
 	private String customercode;
 
-	@JsonProperty("CustomerName")
+	@JsonProperty("Name")
 	private String customername;
 	
 //	@JsonProperty("CustomerTypeDesc")

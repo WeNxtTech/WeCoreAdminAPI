@@ -22,10 +22,6 @@ public class PremiaDropDownReq {
 	private String branchCode;
 	@JsonProperty("InsuranceId")
 	private String companyId;
-	@JsonProperty("ChannelType")
-	private String channeltype;
-	@JsonProperty("SearchBy")
-	private String searchby;
 	@JsonProperty("SearchValue")
 	private String searchvalue;
 	@JsonProperty("LoginId")

@@ -68,14 +68,7 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 		List<PremiaCustomerDetailsRes> res = new ArrayList<PremiaCustomerDetailsRes>();
 //	List<PremiaCustomerDetailsCriteriaRes> resList=new ArrayList<PremiaCustomerDetailsCriteriaRes>();
 		try {
-			if(StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getSearchvalue())){
-				if(req.getSearchvalue().length()<3) {
-					res = new ArrayList<PremiaCustomerDetailsRes>();
-					PremiaCustomerDetailsRes errRes = new PremiaCustomerDetailsRes();
-					errRes.setCustomername("No Record Found");
-					res.add(errRes);
-				}else {
-					
+			if(StringUtils.isNotBlank(req.getBranchCode()) ){
 					List<PremiaCustomerDetailsCriteriaRes> customerDetailsList=new ArrayList<PremiaCustomerDetailsCriteriaRes>(); 
 				
 					CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -88,8 +81,8 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 					Root<BranchMaster> core = coreAppCode.from(BranchMaster.class);
 					coreAppCode.select( core.get("coreAppCode")) ;
 					Predicate i1 = cb.equal(core.get("branchCode"), req.getBranchCode());
-					Predicate i2 = cb.between(i1, c.get("divisionFrom"),c.get("divisionTo"));
-					coreAppCode.where(i1,i2);
+				//	Predicate i2 = cb.between(i1, c.get("divisionFrom"),c.get("divisionTo"));
+					coreAppCode.where(i1);//,i2);
 					
 //					// Get OACode from Login Master
 //					Subquery<Long> agencyCode = query.subquery(Long.class);
@@ -120,11 +113,11 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 //					Predicate n3 = cb.or(n1,n2);
 				    Predicate n3 = cb.equal(c.get("companyId"),req.getCompanyId());
 					Predicate n4 = cb.like(c.get("customerCode"),"%" + req.getSearchvalue() + "%" ) ;
-					Predicate n5 = cb.like(cb.lower(c.get("customerName")),"%" + req.getSearchvalue().toUpperCase() + "%" ) ;
+					Predicate n5 = cb.like(cb.lower(c.get("customerName")),"%" + req.getSearchvalue().toLowerCase() + "%" ) ;
 					Predicate n6 = cb.or(n4,n5);
 					Predicate n7 = cb.equal(c.get("status"),"Y");
 					Predicate n8 = cb.notEqual(c.get("customerCategory"),coreAppCode1);
-					Predicate n9 = c.get("customerType").in("001", "005", "009", "013" , "Individual");
+					Predicate n9 = c.get("customerType").in("001");
 					query.where(n3,n6,n7,n8,n9).orderBy(orderList);
 					
 					// Get Result
@@ -146,7 +139,7 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 						errRes.setCustomername("No Record Found");
 						res.add(errRes);
 					}
-				}
+				
 			}
 		}catch(Exception e) {
 				e.printStackTrace();
@@ -155,6 +148,92 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 				}
  		return res;
 	}
+
+	@Override
+	public List<PremiaCustomerDetailsRes> searchPremiaSourceCode(PremiaDropDownReq req) {
+		List<PremiaCustomerDetailsRes> res = new ArrayList<PremiaCustomerDetailsRes>();
+//		List<PremiaCustomerDetailsCriteriaRes> resList=new ArrayList<PremiaCustomerDetailsCriteriaRes>();
+			try {
+				if(StringUtils.isNotBlank(req.getBranchCode()) ){
+					List<PremiaCustomerDetailsCriteriaRes> customerDetailsList=new ArrayList<PremiaCustomerDetailsCriteriaRes>(); 
+					
+						CriteriaBuilder cb = em.getCriteriaBuilder();
+						CriteriaQuery<PremiaCustomerDetailsCriteriaRes> query = cb.createQuery(PremiaCustomerDetailsCriteriaRes.class);
+						
+						Root<PremiaCustomerDetails> c = query.from(PremiaCustomerDetails.class);
+						
+						// Select Core_App_Code 
+						Subquery<Long> coreAppCode = query.subquery(Long.class);
+						Root<BranchMaster> core = coreAppCode.from(BranchMaster.class);
+						coreAppCode.select( core.get("coreAppCode")) ;
+						Predicate i1 = cb.equal(core.get("branchCode"), req.getBranchCode());
+					//	Predicate i2 = cb.between(i1, c.get("divisionFrom"),c.get("divisionTo"));
+						coreAppCode.where(i1);//,i2);
+						
+//						// Get OACode from Login Master
+//						Subquery<Long> agencyCode = query.subquery(Long.class);
+//						Root<LoginMaster> lm2 = agencyCode.from(LoginMaster.class);
+//						agencyCode.select(lm2.get("agencyCode"));
+//						Predicate lp2 = cb.equal(lm2.get("loginId"), req.getLoginid());
+//						agencyCode.where(lp2);
+						
+						// Select Core_App_Code With Status Y From Branch Master
+						Subquery<Long> coreAppCode1 = query.subquery(Long.class);
+						Root<BranchMaster> core1 = coreAppCode1.from(BranchMaster.class);
+						coreAppCode1.select( core1.get("coreAppCode")) ;
+						Predicate co1 = cb.equal(core1.get("branchCode"), req.getBranchCode());
+						Predicate co2 = cb.equal(core1.get("status"), "Y");
+						coreAppCode1.where(co1,co2);
+						
+						query.multiselect(
+								 c.get("customerCode").alias("customerCode")
+								,c.get("customerName").alias("customerName"));
+					
+						// Order By
+						List<Order> orderList = new ArrayList<Order>();
+					    orderList.add(cb.asc(c.get("customerCode")));
+					    
+						// Where 
+//					    Predicate n1 = cb.equal(c.get("customerAttachedTo"),agencyCode);
+//						Predicate n2 = cb.equal(c.get("customerAttachedTo"), null);
+//						Predicate n3 = cb.or(n1,n2);
+					    Predicate n3 = cb.equal(c.get("companyId"),req.getCompanyId());
+						Predicate n4 = cb.like(c.get("customerCode"),"%" + req.getSearchvalue() + "%" ) ;
+						Predicate n5 = cb.like(cb.lower(c.get("customerName")),"%" + req.getSearchvalue().toLowerCase() + "%" ) ;
+						Predicate n6 = cb.or(n4,n5);
+						Predicate n7 = cb.equal(c.get("status"),"Y");
+						Predicate n8 = cb.notEqual(c.get("customerCategory"),coreAppCode1);
+						Predicate n9 =  cb.notEqual(c.get("customerType"),"001");
+						query.where(n3,n6,n7,n8,n9).orderBy(orderList);
+						
+						// Get Result
+						TypedQuery<PremiaCustomerDetailsCriteriaRes> result = em.createQuery(query);
+						customerDetailsList = result.getResultList();
+						
+					//	customerDetailsList=whatsappRepo.customerDetailsList(req.getDivisioncode(),req.getSearchvalue()+"%",req.getLoginid());
+						if(customerDetailsList.size()>0 && customerDetailsList!=null) {
+							for (PremiaCustomerDetailsCriteriaRes data : customerDetailsList) {
+								// Response 
+								PremiaCustomerDetailsRes resList = new PremiaCustomerDetailsRes();
+								resList.setCustomercode(data.getCustomercode());
+								resList.setCustomername(data.getCustomername());
+								res.add(resList);
+							}
+						}else {
+							res = new ArrayList<PremiaCustomerDetailsRes>();
+							PremiaCustomerDetailsRes errRes = new PremiaCustomerDetailsRes();
+							errRes.setCustomername("No Record Found");
+							res.add(errRes);
+						}
+					
+				}
+			}catch(Exception e) {
+					e.printStackTrace();
+					log.info("Exception is --->"+e.getMessage());
+					return null;
+					}
+	 		return res;
+		}
 	
 		
 }

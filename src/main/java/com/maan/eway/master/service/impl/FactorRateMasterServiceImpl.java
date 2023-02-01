@@ -202,7 +202,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 	}
 	return apiResList;
 	}
-	
+	 
 	
 	public List<Error> factorRatingsValidation(FactorRateSaveReq req ,Map<String,List<DropDownRes>>  apiResList ) {
 		List<Error> errorList = new ArrayList<Error>();

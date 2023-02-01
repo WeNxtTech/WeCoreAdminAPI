@@ -27,6 +27,31 @@ public class FileUploadInputRequest {
 	private String sectionId ;
 	@JsonProperty("Status")
 	private String status ;
+	@JsonProperty("ExcelHeaderColumns")
+	private String excelHeaderColumns ;
+	@JsonProperty("Columns")
+	private String columns ;
+	@JsonProperty("Remarks")
+	private String remarks ;
+	@JsonProperty("FactorTypeId")
+	private String factorTypeId ;
+	@JsonProperty("FileName")
+	private String fileName ;
+	@JsonProperty("EffectiveDate")
+	private String effectiveDate ;
+	@JsonProperty("TotalRecordsCount")
+	private String totalRecordsCount ;
+	@JsonProperty("DiscreteColumn")
+	private String discreteColumn ;
+	@JsonProperty("TranId")
+	private String tranId ;
+	@JsonProperty("CsvFilePath")
+	private String csvFilePath ;
+	@JsonProperty("XlFilePath")
+	private String xlFilePath ;
+	@JsonProperty("Authorization")
+	private String authorization ;
+
 
 }
 

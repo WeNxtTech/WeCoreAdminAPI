@@ -1,0 +1,918 @@
+package com.maan.eway.springbatch;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.StringJoiner;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.dozer.DozerBeanMapper;
+import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.JobParametersBuilder;
+import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.maan.eway.bean.FactorTypeDetails;
+import com.maan.eway.bean.SectionCoverMaster;
+import com.maan.eway.error.Error;
+import com.maan.eway.fileupload.FileUploadInputRequest;
+import com.maan.eway.fileupload.JpqlQueryServiceImpl;
+import com.maan.eway.master.req.FactorParamsInsert;
+import com.maan.eway.master.req.FactorRateSaveReq;
+import com.maan.eway.master.service.FactorRateMasterService;
+import com.maan.eway.master.service.impl.FactorRateMasterServiceImpl;
+import com.maan.eway.res.DropDownRes;
+
+@Service
+@Lazy
+public class UtilityServiceImpl {
+	
+	Logger log =LogManager.getLogger(getClass());
+	
+	@Value("${eway.xl.path}")
+	private String xlpath;
+	
+	@Value("${eway.csv.path}")
+	private String csvPath;
+	
+	@PersistenceContext
+	private EntityManager em;
+	
+	@Autowired
+	private JpqlQueryServiceImpl queryService;
+	@Autowired
+	private SpringBatchTransactionRepository repository;
+	@Autowired
+	private FactorRateRawMasterRepository rawMasterRepository;
+	@Autowired
+	private FactorRateMasterService entityService;
+	@Autowired
+	private AsyncProcessThread processThread;
+	@Autowired
+	private FactorRateMasterServiceImpl rateMasterServiceImpl;
+	
+	public static  int totalRecordCount =0;
+	
+	public static DozerBeanMapper mapper =new DozerBeanMapper();
+
+	@Autowired
+    JobLauncher jobLauncher;
+	
+    @Autowired
+	@Qualifier("ewayJobProcess")
+    Job processJob;
+    
+    @Autowired
+    @Qualifier("MainTableJob")
+    Job job;
+    
+   static private Gson print  = new Gson();
+    
+   static ObjectMapper objectMapper = new ObjectMapper();
+
+	private  static String NEW_LINE_CHARACTER = "\r\n";
+	private final static String OUTPUT_DATE_FORMAT="dd/MM/yyyy";
+	private final static String CVS_SEPERATOR_CHAR = "\t";
+	
+	SimpleDateFormat sdf =new SimpleDateFormat("dd/mm/yyyy") ;
+	
+	public FileUploadInputRequest saveExcelfile(FileUploadInputRequest request, MultipartFile file) {
+		try {
+			log.info("saveExcelfile to path");
+			String fileName =FilenameUtils.getBaseName(file.getOriginalFilename());
+			String extension="."+FilenameUtils.getExtension(file.getOriginalFilename());
+			String currentDateTime = sdf.format(new Date()).replaceAll("[^0-9]", "");
+			String xlfilePath =xlpath+fileName+currentDateTime+extension;			
+			// save file into path
+			log.info("Enter || xlfilePath || "+xlfilePath);
+			File copyFile =new File(xlfilePath);
+			file.transferTo(copyFile);
+			request.setXlFilePath(xlfilePath);
+			request.setFileName(fileName);
+		}catch (Exception e) {
+			log.error(e);
+		}
+		return request;
+		
+	}
+
+	public void convertToCsvFile(UtilityServiceImpl utilService, FileUploadInputRequest request) {
+		log.info("Enter || convertToCsvFile method ||");
+		updateBatchTransaction (request.getTranId(), "Csvfile covertion start" ,"","Progressing",null);
+		try {
+			//CSV File convertion start
+			//String csvFileName = request.get.replace(".xlsx", ".csv").replace(".xls", ".csv").replace(".XLSX", ".csv").replace(".XLS", ".csv");
+			String currentDateTime = sdf.format(new Date()).replaceAll("[^0-9]", "");
+			String csvFilePath =  csvPath+request.getFileName()+currentDateTime+".csv";
+			File csvFile = new File(csvFilePath);
+			if(csvFile.exists()) {
+				if(csvFile.delete()) 
+				{ log.info("File deleted successfully"); } 
+			}
+			
+			int toltalNoRows=csvConvertion(request ,csvFilePath);
+			log.info("ConvertToCsvFile || toltalNoRows || :" +toltalNoRows);
+			totalRecordCount=toltalNoRows;
+			//CSV File convertion end
+			request.setCsvFilePath(csvFilePath);
+			
+			updateBatchTransaction (request.getTranId(), "getting entity columns from table" ,"","Progressing","P");
+
+			// get dynamic columns from DB
+			List<SectionCoverMaster> sectionCov=queryService.getSectionCoverMaster(request); 
+        	String factorTypeId = StringUtils.isBlank(sectionCov.get(0).getFactorTypeId().toString())?"":sectionCov.get(0).getFactorTypeId().toString();
+        	Date effectiveDate =sectionCov.get(0).getEffectiveDateStart().toString()==null?null:sectionCov.get(0).getEffectiveDateStart(); 
+        	String effDate =new SimpleDateFormat("dd/MM/yyyy hh:MM:ss").format(effectiveDate);
+        	String remarks = StringUtils.isBlank(sectionCov.get(0).getRemarks())?"":sectionCov.get(0).getRemarks();  
+        	String createdBy = StringUtils.isBlank(sectionCov.get(0).getCreatedBy())?"":sectionCov.get(0).getCreatedBy();  
+
+        	List<FactorTypeDetails> flist=queryService.getFactorRateColumns(request,factorTypeId);
+        	
+        	StringJoiner entityColumns =new StringJoiner("~");
+        	StringJoiner xlheaderCol =new StringJoiner("~");
+        	StringJoiner discreateColumns =new StringJoiner("~");
+
+        	entityColumns.add("sNo");
+        	for(int i=0;i<flist.size();i++) {	            		
+        		FactorTypeDetails fac =flist.get(i);	            	
+        		if(fac.getRangeYn().equalsIgnoreCase("Y")) {
+        			entityColumns.add(fac.getRangeFromColumn());
+        			entityColumns.add(fac.getRangeToColumn());
+        			xlheaderCol.add(fac.getFromDisplayName());
+        			xlheaderCol.add(fac.getToDisplayName());
+        		}else if(fac.getRangeYn().equalsIgnoreCase("N")) {	            			
+        			entityColumns.add(fac.getDiscreteColumn());
+        			xlheaderCol.add(fac.getDiscreteDisplayName());
+        			discreateColumns.add(fac.getDiscreteColumn());
+        		}	
+        	}
+        	// entity columns
+        	entityColumns.add("rate");
+        	entityColumns.add("calcType");
+        	entityColumns.add("minPremium");
+        	entityColumns.add("regulatoryCode");
+        	
+        	// xl headercolumns
+        	xlheaderCol.add("Rate");
+        	xlheaderCol.add("CalcType");
+        	xlheaderCol.add("MinimumPremium");
+        	xlheaderCol.add("RegulatoryCode");
+        	
+        	request.setExcelHeaderColumns(xlheaderCol.toString());
+        	request.setColumns(entityColumns.toString());
+        	request.setRemarks(remarks);
+        	request.setFactorTypeId(factorTypeId);
+        	request.setEffectiveDate(effDate);
+        	request.setRemarks(remarks);
+        	request.setCreatedBy(createdBy);
+        	request.setDiscreteColumn(discreateColumns.toString());
+        	request.setTotalRecordsCount(String.valueOf(toltalNoRows));
+        	checkMismatchedColumns(request);
+        	
+			updateBatchTransaction (request.getTranId(), "spring batch process calling" ,"","Progressing","P");
+
+        	log.info("Spring batch job started ");
+        	JobParameters jobParameters = new JobParametersBuilder()
+					.addLong("time", System.currentTimeMillis())
+			     	.addString("ewayBatchData", print.toJson(request))
+			        .toJobParameters();
+					jobLauncher.run(processJob, jobParameters);
+        	
+  
+		}catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+			updateBatchTransaction (request.getTranId(), e.getMessage() ,"Error","Error","E");
+
+		}
+		
+	}
+
+	
+	private void checkMismatchedColumns(FileUploadInputRequest request) {
+		updateBatchTransaction (request.getTranId(), "checking columns mismatching columns" ,"","Progressing",null);
+		try {
+			File csvFile = new File(request.getCsvFilePath());
+			String [] headers=null;
+			if(csvFile.exists() && csvFile.canRead()) {
+				ByteArrayInputStream inputFilestream = new ByteArrayInputStream(request.getCsvFilePath().getBytes());
+				BufferedReader br = new BufferedReader(new InputStreamReader(inputFilestream ));
+				String line = "";
+				Integer getHeaderLine=0;
+				while ((line = br.readLine()) != null) {
+					getHeaderLine++;
+					if(getHeaderLine==1) {
+						headers =line.split("~");
+						
+					}
+					break;
+				}
+				br.close();
+			}
+			
+			if(headers.length==request.getExcelHeaderColumns().length()) {
+				
+				List<String> s1 =new ArrayList<String>(Arrays.asList(headers));
+				List<String> s2 =new ArrayList<String>(Arrays.asList(request.getExcelHeaderColumns()));
+				
+				boolean status =s1.toString().replaceAll("\\s", "").contentEquals(s2.toString().replaceAll("\\s", ""))?true:false; 
+				if(status) {
+					
+				}else {
+				
+					updateBatchTransaction (request.getTranId(), "checking columns mismatching columns" ,"mismatched columns found","Progressing",null);
+
+				}
+			}else {
+				updateBatchTransaction (request.getTranId(), "checking columns mismatching columns" ,"Xl Heder columns is not matched","Progressing",null);
+
+			}
+				
+		}catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+			updateBatchTransaction (request.getTranId(), e.getMessage() ,"Error","Error","E");
+
+		}
+		
+	}
+
+	public int csvConvertion(FileUploadInputRequest request, String csvFilePath){
+		int tolalNoofRowsinFile=0;
+        try
+        {
+           String excelFileName=request.getXlFilePath();
+           String fileType=FilenameUtils.getExtension(excelFileName);
+           if("xlsx".equals(fileType))
+           {
+           	tolalNoofRowsinFile=excelXToCSV(excelFileName, csvFilePath,request);
+           } else
+           if("xls".equals(fileType))
+           {
+           	tolalNoofRowsinFile=excelToCSV(excelFileName, csvFilePath,request);
+           }
+        }catch(Exception e){log.error(e);
+		updateBatchTransaction (request.getTranId(), e.getMessage() ,"Error","Error","E");
+
+        }
+        return tolalNoofRowsinFile;
+    }
+	
+	//XLSX TO CSV
+	 public  int excelXToCSV(String excelFileName, String csvFileName, FileUploadInputRequest request) throws  Exception {
+		 int tolalNoofRowsinFile=0;
+		 try
+		    {
+		          checkValidFile(excelFileName);
+		          File file = new File(excelFileName);
+		          OPCPackage opcPackage = OPCPackage.open(file.getAbsolutePath());
+		          @SuppressWarnings("resource")
+		          XSSFWorkbook myWorkBook = new XSSFWorkbook(opcPackage);
+		          XSSFSheet mySheet = myWorkBook.getSheetAt(0);
+		          int count = 0;
+		          int firstCount = 0;
+		          int rows = mySheet.getPhysicalNumberOfRows();
+		          tolalNoofRowsinFile = rows;
+		          for(int eachRow = 0; eachRow < rows; eachRow++){
+		              String csvData = "";
+		              String snoAndVehNo = String.valueOf(eachRow);
+		              XSSFRow myRow = mySheet.getRow(eachRow);
+		              
+		              //System.out.println("RowNo : " + eachRow);
+		              System.out.println("myRow is Empty"+ myRow!=null); 
+		              if(++count == 1){
+		                  firstCount = myRow.getLastCellNum();
+		              }
+		              for(int i = 0; i < firstCount; i++){
+		            	  csvData = (String.valueOf(csvData)+getXLSXCellData(myRow.getCell(i))+"~")
+			                		  .replace("\t", "").replace("\n", "").replace("\r", "").replace("'", "").replaceAll("^\"|\"$", "");
+		              }
+		              if(StringUtils.isNotBlank(csvData)) {
+		            	  if(eachRow==0) {
+		            		  csvData= "sNo~"+csvData;
+		            	  }else {
+		            		  csvData=String.valueOf(eachRow)+"~"+csvData;
+		            	  }
+							
+			              writeCSV(csvFileName, (String.valueOf(csvData.substring(0, csvData.length() - 1))).trim()+"\r\n");
+		              }
+		            }
+		    }catch(Exception e){e.printStackTrace();
+			updateBatchTransaction (request.getTranId(), e.getMessage() ,"Error","Error","E");
+
+		    }finally{
+				updateBatchTransaction (request.getTranId(), "Csvfile covertion completed" ,"","Progressing",null);
+	        }
+		 return tolalNoofRowsinFile;
+		 }
+	 
+	 public int excelToCSV(String excelFileName, String csvFileName, FileUploadInputRequest request)
+	    {
+			int tolalNoofRowsinFile=0;
+	        try
+	        {
+	        	log.info("xls File Start Coverting to csv.....");
+	            checkValidFile(excelFileName);
+	            HSSFWorkbook myWorkBook = new HSSFWorkbook(new POIFSFileSystem(new FileInputStream(excelFileName)));
+	            HSSFSheet mySheet = myWorkBook.getSheetAt(0);
+	            Iterator rowIter = mySheet.rowIterator();
+	            int count = 0;
+	            int rowcount = 0;
+	            int firstCount = 0;
+	            String csvData;
+	            for(; rowIter.hasNext(); writeCSV(csvFileName, (new StringBuilder(String.valueOf(csvData.substring(0, csvData.length() - 1)).trim())).append("\r\n").toString()))
+	            {
+	                csvData = "";
+	                HSSFRow myRow = (HSSFRow)rowIter.next();
+	                if(++count == 1)
+	                {
+	                    firstCount = myRow.getLastCellNum();
+	                }
+	                for(int i = 0; i < firstCount; i++)
+	                {
+	                    csvData = String.valueOf(csvData)+getCellData(myRow.getCell(i)).replace("\t", "").replace("\n", "").replace("\r", "").replace("'", "").replaceAll("^\"|\"$", "")+"~";
+	                }
+	                int rownum = ++rowcount;
+	                if( rownum== 1) {
+	                	
+	                	csvData="Sno~"+csvData;
+	                	
+	  	            }else {
+	  	            	
+	  	            	csvData=String.valueOf(rownum-1)+"~"+csvData;
+	                	
+	  	              
+
+	  	            }
+
+	  	            }
+	              
+	            tolalNoofRowsinFile=count;
+	        } catch(Exception e) {e.printStackTrace();
+			updateBatchTransaction (request.getTranId(), e.getMessage() ,"Error","Error","E");
+
+	        }finally{
+				updateBatchTransaction (request.getTranId(), "Csvfile covertion completed" ,"","Progressing",null);
+	        }
+	        return tolalNoofRowsinFile;
+	    }
+		
+	 
+	 	private void writeCSV(String csvFileName, String csvData)
+		        throws Exception
+		    	{
+	    		//String removedWhilteSpace =csvData.replaceAll("\\s", "");
+	    		//log.info("removedWhilteSpace data : "+removedWhilteSpace);
+		        FileOutputStream writer = new FileOutputStream(csvFileName, true);
+		        writer.write(csvData.getBytes());
+		        writer.close();
+		    	}
+	 	
+	 	
+	 	private static void checkValidFile(String fileName)
+	    {
+	        boolean valid = true;
+	        try
+	        {
+	            File f = new File(fileName);
+	            if(!f.exists() || f.isDirectory())
+	            {
+	                valid = false;
+	            }
+	        }
+	        catch(Exception e)
+	        {
+	            valid = false;
+	        }
+	        if(!valid)
+	        {
+	            System.out.println("File doesn't exist: "+fileName);
+	            System.exit(0);
+	        }
+	    }
+	 	
+	 	
+	 	private  String getXLSXCellData(XSSFCell myCell)
+	            throws Exception
+	        {
+	            String cellData = "";
+	            if(myCell == null)
+	            {
+	                cellData = String.valueOf(cellData)+CVS_SEPERATOR_CHAR;
+	            } else
+	            {
+	                switch(myCell.getCellType())
+	                {
+	                case STRING: 
+	                	cellData = String.valueOf(cellData)+myCell.getRichStringCellValue()+CVS_SEPERATOR_CHAR;
+	                    break;
+	                case BOOLEAN:               cellData = String.valueOf(cellData)+myCell.getBooleanCellValue()+CVS_SEPERATOR_CHAR;
+	                    break;
+
+	                case NUMERIC:  
+	                    cellData = String.valueOf(cellData)+getXLSXNumericValue(myCell)+CVS_SEPERATOR_CHAR;
+	                    break;
+
+	                case FORMULA: 
+	                    cellData = String.valueOf(cellData)+getXLSXFormulaValue(myCell)+CVS_SEPERATOR_CHAR;
+	                case BLANK: 
+	                default:
+	                    cellData = String.valueOf(cellData)+CVS_SEPERATOR_CHAR;
+	                    break;
+	                }
+	            }
+	            return cellData.trim();
+	        }
+	    
+	    @SuppressWarnings("deprecation")
+		private static String getXLSXNumericValue(XSSFCell myCell)
+	            throws Exception
+	        {
+	            String cellData = "";
+	            if(DateUtil.isCellDateFormatted(myCell))
+	            {
+	                java.util.Date obj = myCell.getDateCellValue();
+	                cellData = String.valueOf(cellData)+new SimpleDateFormat(OUTPUT_DATE_FORMAT).format(obj)+CVS_SEPERATOR_CHAR;//new SimpleDateFormat(OUTPUT_DATE_FORMAT).format(
+	            } else
+	            {
+	                //cellData = String.valueOf(cellData)+myCell.getNumericCellValue()+CVS_SEPERATOR_CHAR;
+	            	try{
+	            		cellData = String.valueOf(cellData)+myCell.getRawValue()+CVS_SEPERATOR_CHAR;
+	            	}catch(Exception e){
+	            		cellData = "";
+	            		cellData = String.valueOf(cellData)+myCell.getNumericCellValue()+CVS_SEPERATOR_CHAR;
+	            	}
+	            }
+	            return cellData;
+	        }
+
+	    private static String getXLSXFormulaValue(XSSFCell myCell)
+	            throws Exception
+	        {
+	            String cellData = "";
+	            if(myCell.getCachedFormulaResultType() == CellType.STRING || myCell.getCellType() == CellType.BOOLEAN)
+	            {
+	                cellData = String.valueOf(cellData)+myCell.getRichStringCellValue()+CVS_SEPERATOR_CHAR;
+	            } else
+	            if(myCell.getCachedFormulaResultType() == CellType.NUMERIC)
+	            {
+	                cellData = String.valueOf(cellData)+getXLSXNumericValue(myCell)+CVS_SEPERATOR_CHAR;
+	            }
+	            return cellData;
+	        }
+	    
+	    
+	    private static String getCellData(HSSFCell myCell)
+		        throws Exception
+		    {
+		        String cellData = "";
+		        if(myCell == null)
+		        {
+		            cellData = String.valueOf(cellData)+CVS_SEPERATOR_CHAR;
+		        } else
+		        {
+		            switch(myCell.getCellType())
+		            {
+		            case STRING: 
+		            	cellData = String.valueOf(cellData)+myCell.getRichStringCellValue()+CVS_SEPERATOR_CHAR;
+		                break;
+		            case BOOLEAN: 
+		                cellData = String.valueOf(cellData)+myCell.getBooleanCellValue()+CVS_SEPERATOR_CHAR;
+		                break;
+
+		            case NUMERIC: 
+		                cellData = String.valueOf(cellData)+getNumericValue(myCell);
+		                break;
+
+		            case FORMULA: 
+		                cellData = String.valueOf(cellData)+getFormulaValue(myCell);
+
+		            case BLANK: 
+		            default:
+		                cellData = String.valueOf(cellData)+CVS_SEPERATOR_CHAR;
+		                break;
+		            }
+		        }
+		        return cellData.trim();
+		    }
+	    
+	    
+	    private static String getNumericValue(HSSFCell myCell)
+		        throws Exception
+		    {
+		        String cellData = "";
+		        if(DateUtil.isCellDateFormatted(myCell))
+		        {
+		            java.util.Date obj = myCell.getDateCellValue();
+		            cellData = String.valueOf(cellData)+new SimpleDateFormat(OUTPUT_DATE_FORMAT).format(obj)+CVS_SEPERATOR_CHAR;
+		        } else
+		        {
+		            //DataFormatter formatter = new DataFormatter();
+		            //cellData = String.valueOf(cellData)+formatter.formatCellValue(myCell)+CVS_SEPERATOR_CHAR;
+		        	cellData = String.valueOf(cellData)+(long)myCell.getNumericCellValue()+CVS_SEPERATOR_CHAR;
+		        }
+		        return cellData;
+		    }
+	    
+	    
+	    private static String getFormulaValue(HSSFCell myCell)
+		        throws Exception
+		    {
+		        String cellData = "";
+		        if(myCell.getCachedFormulaResultType() == CellType.STRING ||(myCell.getCachedFormulaResultType() == CellType.BOOLEAN))
+		        {
+		            cellData = String.valueOf(cellData)+myCell.getRichStringCellValue()+CVS_SEPERATOR_CHAR;
+		        } else
+		        if(myCell.getCachedFormulaResultType()== CellType.NUMERIC)
+		        {
+		            cellData = String.valueOf(cellData)+getNumericValue(myCell)+CVS_SEPERATOR_CHAR;
+		        }
+		        return cellData;
+		    }
+	    
+	    public FileUploadInputRequest saveBatchTransaction (FileUploadInputRequest request) {
+	    	log.info("Enter || saveBatchTransaction :");
+	    	try {
+	    		Long count=repository.count();
+	    		Long tranId =count==0?1:count+1;
+	    		SpringBatchTransaction batchTransaction =SpringBatchTransaction.builder()
+	    				.batchStatus("PROCESSING")
+	    				.csvFilePath(StringUtils.isBlank(request.getCsvFilePath())?"":request.getCsvFilePath())
+	    				.entryDate(new Date())
+	    				.errorDesc("")
+	    				.excelFilepath(StringUtils.isBlank(request.getXlFilePath())?"":request.getXlFilePath())
+	    				.progressDesc("patch processing start..")
+	    				.tranId(Integer.valueOf(tranId.toString()))
+	    				.build();
+	    		repository.save(batchTransaction);
+	    		
+		    	log.info("End || saveBatchTransaction Id : "+tranId);
+		    	request.setTranId(tranId.toString());
+	    	}catch (Exception e) {
+				e.printStackTrace();
+				log.error(e);
+			}
+			return request;
+	    }
+	    
+	    
+	    public void updateBatchTransaction (String tranId, String progressDesc ,String errorDesc,String batchStatus,String status) {
+	    	try {
+	    		SpringBatchTransaction transaction = repository.findById(Integer.valueOf(tranId)).orElse(null);
+	    		transaction.setEntryDate(new Date());
+	    		transaction.setErrorDesc(errorDesc);
+	    		transaction.setProgressDesc(progressDesc);
+	    		transaction.setBatchStatus(batchStatus);
+	    		transaction.setCsvFilePath(transaction.getCsvFilePath());
+	    		transaction.setProgrsessStatus(status);
+	    		repository.save(transaction);
+	    	}catch (Exception e) {
+				e.printStackTrace();
+				log.error(e);
+			}
+	    }
+	    
+	    
+	   public String updateFactorRawRecordByTranId(String tranId, String discreateColumns, String auth) {
+		   String response="";
+		   try {
+			  Map<String,List<FactorRateRawInsert>> loadList =new HashMap<String,List<FactorRateRawInsert>>();
+			  List<FactorRateRawInsert> list = rawMasterRepository.findByTranId(tranId);
+			  Map<String,List<DropDownRes>> dropDownList =new HashMap<String,List<DropDownRes>>();
+			  if(list.size()>0) {
+				// get master validation apis details
+				log.info("Master api validation block calling ....");  
+				FactorRateSaveReq factorRateSaveReq = new FactorRateSaveReq();
+				factorRateSaveReq.setAgencyCode(list.get(0).getAgencyCode());
+				factorRateSaveReq.setBranchCode(list.get(0).getBranchCode());
+				factorRateSaveReq.setCompanyId(list.get(0).getCompanyId());
+				factorRateSaveReq.setCoverId(list.get(0).getCoverId().toString());
+				factorRateSaveReq.setSectionId(list.get(0).getSectionId().toString());
+				factorRateSaveReq.setProductId(list.get(0).getProductId().toString());
+				factorRateSaveReq.setFactorTypeId(list.get(0).getFactorTypeId().toString());
+				dropDownList= rateMasterServiceImpl.masterDiscreteApiCall(factorRateSaveReq, auth.replaceAll("Bearer ", "").split(",")[0]);						
+				log.info("Master api validation block completed ..");  
+				 if(StringUtils.isNotBlank(discreateColumns)) {
+					 String [] discreateColArr =discreateColumns.split("~");
+					 log.info("Grouping the records block calling based on the discreate columns ||" +discreateColumns);  
+					 if(discreateColArr.length==1) {
+						 int groupId =1;
+						 
+						Map<Object,List<FactorRateRawInsert>> groupdata =list.stream()
+					        .collect(Collectors.groupingBy(getGroupFields().get(discreateColArr[0])));  
+						
+						for (Entry<Object, List<FactorRateRawInsert>> entry :groupdata.entrySet()) {
+							 List<FactorRateRawInsert> data= entry.getValue();
+							 loadList.put(groupId+"X"+0,data);
+							groupId++;
+						}												
+					 }else if(discreateColArr.length==2) {
+						 int groupId =1;
+						 
+						 
+						 Map<Object, Map<Object, List<FactorRateRawInsert>>> groupdata =list.stream()
+							       .collect(
+					                        Collectors.groupingBy(getGroupFields().get(discreateColArr[0]),
+					                                Collectors.groupingBy(getGroupFields().get(discreateColArr[1])
+					                                       )));
+						 
+						 	
+						 for(Entry<Object, Map<Object, List<FactorRateRawInsert>>> entry : groupdata.entrySet()) {
+							 int subgroupId =1;
+							 Map<Object, List<FactorRateRawInsert>> d1 =entry.getValue();
+							 for(Entry<Object,List<FactorRateRawInsert>> entry2:d1.entrySet()) {
+								 String grouId =groupId+"X"+subgroupId;
+								 List<FactorRateRawInsert> data= entry2.getValue();
+								 loadList.put(grouId,data);
+								 subgroupId++;
+							 }
+							 groupId ++;
+						 }					 						 
+					 }else if(discreateColArr.length==3) {
+						 int groupId = 1;
+						 
+						 Map<Object, Map<Object, Map<Object, List<FactorRateRawInsert>>>> groupdata =list.stream()
+							       .collect(
+					                        Collectors.groupingBy(getGroupFields().get(discreateColArr[0]),
+					                                Collectors.groupingBy(getGroupFields().get(discreateColArr[1]),
+					                                		Collectors.groupingBy(getGroupFields().get(discreateColArr[2])
+					                                       ))));	
+						 
+						 for( Entry<Object, Map<Object, Map<Object, List<FactorRateRawInsert>>>>entry1 : groupdata.entrySet()) {
+							 Map<Object, Map<Object, List<FactorRateRawInsert>>> d1 =entry1.getValue();							 
+							 int subgroupId =1;							 
+							 for(Entry<Object, Map<Object, List<FactorRateRawInsert>>> entry2:d1.entrySet()) {								 
+								 Map<Object, List<FactorRateRawInsert>> d2 =entry2.getValue();								 
+								 int childSubId=1;								 
+								 for(Entry<Object, List<FactorRateRawInsert>> entry3 : d2.entrySet()) {
+									 String grouId =groupId+"X"+subgroupId+"X"+childSubId;
+									 List<FactorRateRawInsert> data= entry3.getValue();
+									 loadList.put(grouId,data);
+									 childSubId ++;	 } subgroupId ++; } groupId ++;	}
+							                    												 						 
+					 }else if(discreateColArr.length==4) {
+					
+						 Map<Object, Map<Object, Map<Object, Map<Object, List<FactorRateRawInsert>>>>> groupdata =list.stream()
+							       .collect(
+					                        Collectors.groupingBy(getGroupFields().get(discreateColArr[0]),
+					                                Collectors.groupingBy(getGroupFields().get(discreateColArr[1]),
+					                                		Collectors.groupingBy(getGroupFields().get(discreateColArr[2]),
+					                                				Collectors.groupingBy(getGroupFields().get(discreateColArr[3])
+					                                       )))));	
+						 
+						 	int groupId_1=1;				 							 							 	
+						 for(Entry<Object, Map<Object, Map<Object, Map<Object, List<FactorRateRawInsert>>>>> entry1 :groupdata.entrySet()) {
+						 		Map<Object, Map<Object, Map<Object, List<FactorRateRawInsert>>>> d1 =entry1.getValue();				 		
+						 		int groupId_2=1;					 		
+						 		for(Entry<Object, Map<Object, Map<Object, List<FactorRateRawInsert>>>> entry2 :d1.entrySet()) {						 			
+						 			 Map<Object, Map<Object, List<FactorRateRawInsert>>> d2 =entry2.getValue();						 			 
+						 			 int groupId_3=1;						 			 
+						 			 for( Entry<Object, Map<Object, List<FactorRateRawInsert>>> entry3 :d2.entrySet()) {						 				 
+						 				Map<Object, List<FactorRateRawInsert>> d3 =entry3.getValue();						 				
+						 				int grouId_4=1;
+						 				for(Map.Entry<Object, List<FactorRateRawInsert>> entry4:d3.entrySet()) {						 					
+						 					List<FactorRateRawInsert> data =entry4.getValue();						 					
+						 					String groupingId =groupId_1+"X"+groupId_2+"X"+groupId_3+"X"+grouId_4;
+						 					loadList.put(groupingId,data);						 					
+						 					grouId_4++; 
+						 				}groupId_3++;						 				 						 				
+						 			 }groupId_2++;						 									 			
+						 		}groupId_1++;						 								 								 		
+						 	}  }					 
+					log.info("Grouping the records block completed based on the discreate columns ||" +discreateColumns);  
+					
+					//calling asyncPrecess thread.
+					processThread.asyncProcess(loadList, discreateColumns,auth,dropDownList);
+					
+				 }else {
+					log.info("Calling non discreate columns block ||" +discreateColumns);  
+					 callNonDiscreate(list,auth,dropDownList);
+				 }
+			  }						 
+			 updateBatchTransaction (tranId, "Rawtable data vaildation completed" ,"","Progressing","P");				 
+		   }catch (Exception e) {
+			   e.printStackTrace();
+				log.error(e);
+				updateBatchTransaction ( tranId,"Error",e.getMessage(),"Error","E");
+		}
+		return response;
+	   }
+	  
+	
+	   private void callNonDiscreate(List<FactorRateRawInsert> list,String auth ,Map<String,List<DropDownRes>> dropDownList) {
+		try {
+			Map<String,List<FactorRateRawInsert>> map =new HashMap<String,List<FactorRateRawInsert>>();
+			map.put("NON_DISCREATE_COLUMNS",list );		
+			processThread.asyncProcess(map,"N/A",auth,dropDownList);		
+		}catch (Exception e) {
+			e.printStackTrace();
+			log.error(e);
+		}
+		
+	}
+
+	public void updateFactorRawRecords(FactorRateSaveReq req, String groupId, List<Error> errors, String tranId, String discreateColumns) {
+		try {
+			FactorRateRawInsert entity = new FactorRateRawInsert();
+			entity.setAgencyCode(req.getAgencyCode());
+			entity.setAmendId(0);
+			entity.setBranchCode(req.getBranchCode());
+			entity.setCompanyId(req.getCompanyId());
+			entity.setFactorTypeId(Integer.valueOf(req.getFactorTypeId()));
+			entity.setProductId(Integer.valueOf(req.getProductId()));
+			entity.setSectionId(Integer.valueOf(req.getSectionId()));
+			entity.setCoverId(Integer.valueOf(req.getCoverId()));
+			entity.setSubCoverId(Integer.valueOf(req.getSubCoverId()));
+			entity.setEffectiveDateStart(req.getEffectiveDateStart());
+			entity.setEffectiveDateEnd(req.getEffectiveDateEnd());
+			entity.setRemarks(req.getRemarks());
+			entity.setStatus(req.getStatus());
+			entity.setCreatedBy(StringUtils.isBlank(req.getCreatedBy())?"":req.getCreatedBy());
+			entity.setGroupId(groupId);
+			entity.setTranId(tranId);
+			entity.setGroupingColumn(discreateColumns);
+			entity.setErrorDesc(errors.size()>0?print.toJson(errors):null);
+			entity.setErrorStatus(CollectionUtils.isEmpty(errors)?"":"E");
+			entity.setEntryDate(new Date());
+			for(FactorParamsInsert p :req.getFactorParams()) {				
+				entity.setParam1(p.getParam1()==null?0D:Double.valueOf(p.getParam1()));
+				entity.setParam2(p.getParam2()==null?0D:Double.valueOf(p.getParam2()));
+				entity.setParam3(p.getParam3()==null?0D:Double.valueOf(p.getParam3()));
+				entity.setParam4(p.getParam4()==null?0D:Double.valueOf(p.getParam4()));
+				entity.setParam5(p.getParam5()==null?0D:Double.valueOf(p.getParam5()));
+				entity.setParam6(p.getParam6()==null?0D:Double.valueOf(p.getParam6()));
+				entity.setParam7(p.getParam7()==null?0D:Double.valueOf(p.getParam7()));
+				entity.setParam8(p.getParam8()==null?0D:Double.valueOf(p.getParam8()));
+				entity.setParam9(StringUtils.isBlank(p.getParam9())?"":p.getParam9());
+				entity.setParam10(StringUtils.isBlank(p.getParam10())?"":p.getParam10());
+				entity.setParam11(StringUtils.isBlank(p.getParam11())?"":p.getParam11());
+				entity.setParam12(StringUtils.isBlank(p.getParam12())?"":p.getParam12());
+				entity.setSNo(Integer.valueOf(p.getSno()));
+				entity.setApiUrl(StringUtils.isBlank(p.getApiUrl())?"":p.getApiUrl());
+				entity.setCalcType(StringUtils.isBlank(p.getCalType())?"":p.getCalType());
+				entity.setMasterYn(StringUtils.isBlank(p.getMasterYn())?"":p.getMasterYn());
+				entity.setMinPremium(p.getMinimumPremium()==null?0D:Double.valueOf(p.getMinimumPremium()));
+				entity.setRegulatoryCode(StringUtils.isBlank(p.getRegulatoryCode())?"":p.getRegulatoryCode());
+				entity.setRate(p.getRate()==null?0D:Double.valueOf(p.getRate()));
+				rawMasterRepository.saveAndFlush(entity);
+			}						
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+
+	private Map<String, Function<FactorRateRawInsert, String>> getGroupFields() {
+		   Map<String, Function<FactorRateRawInsert, String>> map = new HashMap<String, Function<FactorRateRawInsert, String>>();
+		   Function<FactorRateRawInsert, String> param9 = FactorRateRawInsert::getParam9;
+		   Function<FactorRateRawInsert, String> param10 = FactorRateRawInsert::getParam10;
+		   Function<FactorRateRawInsert, String> param11 = FactorRateRawInsert::getParam11;
+		   Function<FactorRateRawInsert, String> param12 = FactorRateRawInsert::getParam12;
+		   map.put("param10", param10);
+		   map.put("param11", param11);
+		   map.put("param9", param9);
+		   map.put("param12", param12);
+		   return map;
+	   }
+	  
+	public void insertFactorRecordsToMainTable(String tranId, String totalRecord) {
+		ObjectMapper objMapper = new ObjectMapper();
+		Long total =0L;
+		Long validRecord =0L;
+		Long errorRecord =0L;
+		try {
+			List<FactorRateRawInsert> list=rawMasterRepository.findByTranIdAndErrorDescIsNull(tranId);
+			if(!CollectionUtils.isEmpty(list)) {
+				FactorRateSaveReq factorRateSaveReq=mapper.map(list.get(0), FactorRateSaveReq.class);
+				List<FactorParmsRequestMapping> parmasMapping = new ArrayList<FactorParmsRequestMapping>();
+				try {
+				 parmasMapping =list.stream()
+						.map(from -> {
+							try {
+								return objMapper.readValue(print.toJson(from), FactorParmsRequestMapping.class);
+							} catch (JsonProcessingException e) {
+								e.printStackTrace();
+							}
+							return null;
+						})
+				.collect(Collectors.toList());
+				}catch (Exception e) {
+					e.printStackTrace();
+				}
+
+				List<FactorParamsInsert> params=parmasMapping.stream()
+					.map(d ->mapper.map(d, FactorParamsInsert.class))
+						.collect(Collectors.toList());
+				
+				factorRateSaveReq.setSubCoverYn(factorRateSaveReq.getSubCoverId().equals("0")?"N":"Y");
+				
+				factorRateSaveReq.setFactorParams(params);
+				
+				log.info(print.toJson(factorRateSaveReq));
+				
+				entityService.insertFactorRateDetails(factorRateSaveReq);
+				
+				log.info("Process Completed at " +new Date());
+				
+				total =Long.valueOf(totalRecord);
+				validRecord =(long)list.size();
+				errorRecord =0L;
+			}else {
+				
+				List<FactorRateRawInsert> errorList=rawMasterRepository.findByTranIdAndErrorDescIsNotNull(tranId);
+				total =Long.valueOf(totalRecord);
+				validRecord =(long)total-errorList.size();
+				errorRecord =(long)errorList.size();
+			}
+			
+			SpringBatchTransaction transaction=repository.findById(Integer.valueOf(tranId)).get();
+			transaction.setTotalRows(total);
+			transaction.setValidRecord(validRecord);
+			transaction.setErrorRecord(errorRecord);
+			repository.save(transaction);
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+			log.error(e);
+		}
+		
+	}
+		
+	
+	public Boolean doMainJob(String tranId, String totalRows) throws Exception {
+		Boolean status =false;
+		Integer totalrecords =Integer.valueOf(totalRows)-1;
+		Long count=0L;
+		log.info("Mainjob batch request ||tranId :"+tranId+" || totalrecords : "+totalrecords+"");
+		try {
+			count=rawMasterRepository.countByTranIdAndErrorStatus(tranId,"E");
+			log.info("FactorRateRawInsert  Error Records count : "+count);
+			if(count==0) {
+				status =true;		
+				log.info("Maintable batch job calling .... : "+count);
+				JobParameters jobParameters = new JobParametersBuilder()
+						.addLong("time", System.currentTimeMillis())
+						.addString("MainTable", tranId+"~"+totalRows)
+				        .toJobParameters();
+						jobLauncher.run(job, jobParameters);
+						log.info("Maintable batch job completed: "+count);
+
+						
+			}
+			
+			SpringBatchTransaction trans =repository.findById(Integer.valueOf(tranId)).get();
+			trans.setTotalRows(totalrecords.longValue());
+			trans.setErrorRecord(count);
+			trans.setValidRecord(totalrecords-count);
+			repository.saveAndFlush(trans);
+			log.info("updated records into SpringBatchTransaction table :"+count);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return status;
+	}
+	    
+}

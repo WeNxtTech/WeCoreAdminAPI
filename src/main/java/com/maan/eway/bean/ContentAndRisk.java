@@ -113,7 +113,6 @@ public class ContentAndRisk implements Serializable {
 	@Column(name = "UPDATED_DATE")
 	private Date updatedDate;
 
-
 	
 
 }

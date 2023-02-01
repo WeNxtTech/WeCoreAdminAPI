@@ -144,6 +144,11 @@
 			<version>1.1.1</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.springframework.batch/spring-batch-core -->
+		<dependency>
+		    <groupId>org.springframework.batch</groupId>
+		    <artifactId>spring-batch-core</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -171,12 +176,34 @@
 		    <version>2.13.4</version>
 		</dependency>
 			
+			<!-- https://mvnrepository.com/artifact/org.springframework/spring-jdbc -->
+		<dependency>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-jdbc</artifactId>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
+		<dependency>
+		    <groupId>com.h2database</groupId>
+		    <artifactId>h2</artifactId>
+		    <scope>test</scope>
+		</dependency>
+	<!-- https://mvnrepository.com/artifact/org.springframework.batch/spring-batch-core -->
+	<dependency>
+	    <groupId>org.springframework.batch</groupId>
+	    <artifactId>spring-batch-core</artifactId>
+	</dependency>
+
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
 			<version>4.1.1</version>
 		</dependency>
+		
+	
 	</dependencies>
+	
+	
 
 	<build>
 		<plugins>

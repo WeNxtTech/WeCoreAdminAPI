@@ -63,8 +63,7 @@ public class ItemWritter  implements ItemWriter<FactorBatchRecordRes> {
 			
 			List<FactorParamsInsert> factorParms =items.stream()
 													.map(p ->mapper.map(p, FactorParamsInsert.class))
-													.collect(Collectors.toList());
-			
+													.collect(Collectors.toList());			
 			factorRateSaveReq.setFactorParams(factorParms);
 			service.insertNewFactorRate(
 					factorRateSaveReq, Integer.valueOf(map.get("amend_id").toString()), factorParms.size(),(List<ListItemValue>) map.get("ListItemValue"), (Map)map.get("CoverDetails"));

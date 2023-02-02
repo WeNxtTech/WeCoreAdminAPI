@@ -25,6 +25,9 @@ public class PremiaCustomerDetailsRes {
 	@JsonProperty("BrokerBrachCode")
 	private String brokerBranchCode;
 	
+	@JsonProperty("BrokerBrachName")
+	private String brokerBranchName;
+	
 //	@JsonProperty("CustomerTypeDesc")
 //	private String customertypedesc;
 //	@JsonProperty("Gender")

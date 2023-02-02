@@ -209,6 +209,7 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 						resList.setCustomername(product.getLoginId());
 						resList.setLoginId(product.getLoginId());
 						resList.setBrokerBranchCode(branch.getBrokerBranchCode());
+						resList.setBrokerBranchName(branch.getBrokerBranchName());
 						res.add(resList);
 					}
 					
@@ -234,6 +235,7 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 						resList.setCustomername(product.getLoginId());
 						resList.setLoginId(product.getLoginId());
 						resList.setBrokerBranchCode(branch.getBrokerBranchCode());
+						resList.setBrokerBranchName(branch.getBrokerBranchName());
 						res.add(resList);
 					}
 				}
@@ -278,8 +280,8 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 			Subquery<Long> loginId = query.subquery(Long.class);
 			Root<LoginBranchMaster> ocpm6 = loginId.from(LoginBranchMaster.class);
 			loginId.select(ocpm6.get("loginId"));
-			Predicate a19 = cb.equal(ocpm6.get("companyId"),c.get("companyId") );
-			Predicate a20 = cb.equal(ocpm6.get("branchCode"),branchCode );
+			Predicate a19 = cb.equal(ocpm6.get("companyId"),b.get("companyId") );
+			Predicate a20 = cb.equal(ocpm6.get("branchCode"),b.get("branchCode") );
 			
 			
 			loginId.where(a19,a20);
@@ -315,7 +317,8 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 			Predicate n7 =e1.in(usertypes); 
 			Predicate n8 =e2.in(subUsertypes);
 			Predicate n9 = cb.equal(c.get("loginId"), b.get("loginId"));
-			query.where(n1,n2,n4,n5,n6,n7,n8,n9).orderBy(orderList);
+			Predicate n10 = cb.equal(b.get("branchCode"),branchCode);
+			query.where(n1,n2,n4,n5,n6,n7,n8,n9,n10).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<Tuple> result = em.createQuery(query);			

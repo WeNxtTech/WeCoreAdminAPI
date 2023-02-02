@@ -19,5 +19,8 @@ public class PremiaCustomerDetailsCriteriaRes {
 	@JsonProperty("CustomerName")
 	private String customername;
 	
+	@JsonProperty("BranchCode")
+	private String branchCode;
+	
 
 }

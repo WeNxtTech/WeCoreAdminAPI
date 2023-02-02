@@ -31,7 +31,5 @@ public class PremiaDropDownReq {
 	@JsonProperty("ProductId")
 	private String productid;
 
-	@JsonProperty("productId")
-	private String product_id;
 
 }

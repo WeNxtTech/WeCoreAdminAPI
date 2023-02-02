@@ -293,6 +293,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 				saveData.setCommissionVatYn("Y");
 				saveData.setCustConfirmYn("Y");
 				saveData.setPaymentYn("Y");
+				saveData.setStatus("Y");
 				repo.saveAndFlush(saveData);
 				
 				log.info("Saved Details is ---> " + json.toJson(saveData));

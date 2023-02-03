@@ -19,6 +19,6 @@ public class ExclusionMasterId implements Serializable {
 	private String companyId;
 	private Integer amendId;
 	private String productId;
-	private String sectionId;
-	private String policyType;
+    private String sectionId;
+//	private String policyType;
 }

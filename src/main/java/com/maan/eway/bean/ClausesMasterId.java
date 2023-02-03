@@ -11,14 +11,15 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class WarRateMasterId implements Serializable {
+public class ClausesMasterId implements Serializable {
 
 	private static final long serialVersionUId = 1L;
-	private Integer warRateId;
+	private Integer clausesId;
 	private String branchCode;
 	private String companyId;
 	private Integer amendId;
 	private String productId;
 	private String sectionId;
-	
+//	private String policyType;
+
 }

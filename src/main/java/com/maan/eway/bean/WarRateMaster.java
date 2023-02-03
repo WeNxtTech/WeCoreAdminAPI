@@ -33,6 +33,10 @@ public class WarRateMaster {
 	private String branchCode;
 	
 	@Id
+	@Column(name="PRODUCT_ID",length=20, nullable=false)
+	private String productId;
+	
+	@Id
 	@Column(name="COMPANY_ID",length=20, nullable=false)
 	private String companyId;
 	
@@ -44,8 +48,6 @@ public class WarRateMaster {
 	@Column(name="SECTION_ID",length=20)
 	private String sectionId;
 	
-	@Column(name="DOC_REF_NO",length=50)
-	private String docRefNo;
 	
 	@Column(name="WAR_RATE_DESC",length=100)
 	private String warRateDesc;
@@ -91,4 +93,14 @@ public class WarRateMaster {
 	@Column(name="CORE_APP_CODE",length=20)
 	private String coreAppCode;
 	
+	
+	@Column(name="DOC_REF_NO",length=50)
+	private String docRefNo;
+
+	@Column(name="TYPE_ID",length=20)
+	private String typeId;
+
+	@Column(name="TYPE_DESC",length=20)
+	private String typeDesc;
+
 }

@@ -11,6 +11,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,6 +44,7 @@ public class MailMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/insertmailmaster")
 		@ApiOperation(value = "This method is to Insert Mail Master ")
 		public ResponseEntity<CommonRes> insertmailmaster(@RequestBody MailMasterSaveReq req) {
@@ -79,7 +81,7 @@ public class MailMasterController {
 		
 			
 		// Get Mail Id
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/getbyid")
 		@ApiOperation("This Method is to get by id")
 		public ResponseEntity<CommonRes> getById(@RequestBody MailMasterGetReq req)

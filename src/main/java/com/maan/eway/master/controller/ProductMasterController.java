@@ -27,6 +27,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -53,6 +54,7 @@ public class ProductMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/insertproduct")
 	@ApiOperation(value = "This method is Insert Product Details")
 	public ResponseEntity<CommonRes> insertProduct(@RequestBody ProductMasterSaveReq req) {
@@ -88,7 +90,7 @@ public class ProductMasterController {
 	}
 	
 	//  Get All Product Master
-	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/getallproductdetails")
 	@ApiOperation("This method is getall Product Details")
 	public ResponseEntity<CommonRes> getallProductDetails(@RequestBody ProductMasterGetAllReq req)
@@ -111,7 +113,7 @@ public class ProductMasterController {
 	}
 	
 	//  Get Active Product Master
-	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/getactiveproduct")
 		@ApiOperation("This method is get Active Product Details")
 		public ResponseEntity<CommonRes> getActiveProductDetails(@RequestBody ProductMasterGetAllReq req)
@@ -134,7 +136,7 @@ public class ProductMasterController {
 		}
 		
 		// Get By Product Id
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/getbyproductid")
 		@ApiOperation("This Method is to get by Product id")
 		public ResponseEntity<CommonRes> getByProductCode(@RequestBody ProductMasterGetReq req)
@@ -154,6 +156,7 @@ public class ProductMasterController {
 		}
 	}
 		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/products/changestatus")
 	@ApiOperation(value = "This method is get Product Change Status ")
 	public ResponseEntity<CommonRes> changeStatusOfProduct(@RequestBody ProductChangeStatusReq req) {
@@ -176,6 +179,7 @@ public class ProductMasterController {
 	
 
 //	Product Master Drop Down Type
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@GetMapping("/dropdown/product")
 	@ApiOperation(value = "This method is get Product Master Drop Down")
 

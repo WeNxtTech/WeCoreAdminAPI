@@ -40,6 +40,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -65,6 +66,7 @@ public class ProductReferalMasterController {
 	private PrintReqService reqPrinter;
 
 	// save
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/insertproductreferal")
 	@ApiOperation(value = "This method is Insert Referal Details")
 	public ResponseEntity<CommonRes> saveProductReferal(@RequestBody List<ProductReferalMultiInsertReq> req) {
@@ -100,6 +102,7 @@ public class ProductReferalMasterController {
 	}
 	
 	// update
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/updateproductreferal")
 	@ApiOperation(value = "This method is Update Referal Details")
 	public ResponseEntity<CommonRes> updateProductReferal(@RequestBody ProductReferalMasterSaveReq req) {
@@ -135,7 +138,7 @@ public class ProductReferalMasterController {
 	}
 
 	// Get All Section Master
-
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/getallproductreferaldetails")
 	@ApiOperation("This method is getall Referal Details")
 	public ResponseEntity<CommonRes> getallSectionDetails(@RequestBody ProductReferalGetAllReq req) {
@@ -156,7 +159,7 @@ public class ProductReferalMasterController {
 	}
 
 	// Get Active Section Master
-
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/getactiveproductreferal")
 	@ApiOperation("This method is get Active Referal Details")
 	public ResponseEntity<CommonRes> getActiveReferalDetails(@RequestBody ProductReferalGetAllReq req) {
@@ -177,7 +180,7 @@ public class ProductReferalMasterController {
 	}
 
 	// Get By Section Id
-
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/getbyproductreferalid")
 	@ApiOperation("This Method is to get by Referal id")
 	public ResponseEntity<CommonRes> getByReferalId(@RequestBody ProductReferalGetReq req) {
@@ -195,7 +198,7 @@ public class ProductReferalMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/getproductreferal")
 	@ApiOperation("This Method is to get by Product  Sections")
 	public ResponseEntity<CommonRes> getProductReferals(@RequestBody ProductReferalsGetReq req) {
@@ -213,7 +216,7 @@ public class ProductReferalMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/getallnonselectedreferals")
 	@ApiOperation("This method is getall Section Details")
 	public ResponseEntity<CommonRes> getallNonSelectedReferals(@RequestBody ProductReferalGetAllReq req) {
@@ -232,7 +235,7 @@ public class ProductReferalMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping(value="/dropdown/productreferals",produces = "application/json")
 	@ApiOperation(value = "This method is get Product Section Cover Master Drop Down")
 
@@ -255,7 +258,7 @@ public class ProductReferalMasterController {
 
 	}
 
-	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("productreferal/changestatus")
 	@ApiOperation(value="This method is to get product referal Master")
 	public ResponseEntity<CommonRes> changestatusofProductReferal(@RequestBody ProductReferalChangeStatusReq req){

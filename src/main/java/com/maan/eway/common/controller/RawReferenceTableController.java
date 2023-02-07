@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,6 +29,7 @@ public class RawReferenceTableController {
 	@Autowired
 	private RawReferenceTableService rawservice;
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@GetMapping("/tabledropdown")
 	@ApiOperation(value="This method is to Table Drop down")
 	public ResponseEntity<CommonRes> tabledetails(){
@@ -46,6 +48,7 @@ public class RawReferenceTableController {
 		
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/columndropdown")
 	@ApiOperation(value="This method is to Column Drop down")
 	public ResponseEntity<CommonRes> columndetails(@RequestBody RawReferenceTableReq req){

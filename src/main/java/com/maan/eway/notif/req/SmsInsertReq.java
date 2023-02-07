@@ -20,8 +20,12 @@ public class SmsInsertReq {
 	@JsonProperty("SNo")
 	private String sNo;
 	
-	@JsonProperty("CompanyId")
+	@JsonProperty("InsuranceId")
 	private String companyId;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
+	
 	
 	@JsonProperty("Status")
 	private String status;

@@ -11,6 +11,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,7 +40,7 @@ public class PremiaCustomerDetailsController {
 	
 	@Autowired
 	private PrintReqService reqPrinter;
-	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/search/premiacustomercode")
 	@ApiOperation(value = "This method is Search Premia ")
 
@@ -60,7 +61,7 @@ public class PremiaCustomerDetailsController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/search/premiasourcecode")
 	@ApiOperation(value = "This method is Search Premia ")
 

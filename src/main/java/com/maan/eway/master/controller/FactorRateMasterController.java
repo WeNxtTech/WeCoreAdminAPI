@@ -11,6 +11,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -48,6 +49,7 @@ public class FactorRateMasterController {
 	private PrintReqService reqPrinter;
 
 	// save
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/insertfactorrates")
 	@ApiOperation(value = "This method is Insert Factor Rate Details")
 	public ResponseEntity<CommonRes> insertFactorRate(@RequestBody FactorRateSaveReq req,@RequestHeader("Authorization") String tokens) {
@@ -83,7 +85,7 @@ public class FactorRateMasterController {
 	}
 
 	// Get All Product Master
-
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/getallfactorrates")
 	@ApiOperation("This method is getall Factor Rates Details")
 	public ResponseEntity<CommonRes> getallFactorTypeDetails(@RequestBody FactorRateGetAllReq req) {
@@ -104,7 +106,7 @@ public class FactorRateMasterController {
 	}
 
 	// Get Active Product Master
-
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/getactivefactorrates")
 	@ApiOperation("This method is get Active Factor Rates Details")
 	public ResponseEntity<CommonRes> getActiveProductDetails(@RequestBody FactorRateGetAllReq req) {
@@ -125,7 +127,7 @@ public class FactorRateMasterController {
 	}
 
 	// Get By Product Id
-
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/getbyfactorrateid")
 	@ApiOperation("This Method is to get by Product id")
 	public ResponseEntity<CommonRes> getByFactorRateId(@RequestBody FactorRateGetReq req) {
@@ -143,7 +145,7 @@ public class FactorRateMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/factorrate/changestatus")
 	@ApiOperation(value = "This method is get Factor Rate Change Status ")
 	public ResponseEntity<CommonRes> changeStatusOfFactorRate(@RequestBody FactorRateUpdateStatusReq req) {
@@ -163,7 +165,7 @@ public class FactorRateMasterController {
 		}
 
 	}
-	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/viewfactorratecovers")
 	@ApiOperation("This method is get Active Factor Rates Details")
 	public ResponseEntity<CommonRes> viewFactorRateDetails(@RequestBody FactorRateViewReq req) {

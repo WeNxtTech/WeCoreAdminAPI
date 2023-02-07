@@ -30,6 +30,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -65,6 +66,7 @@ public class NotifTemplateMasterController {
 */
 
 	// Insert
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/insertnotiftemplate")
 		@ApiOperation(value = "This method is Insert Notification Templete")
 		public ResponseEntity<CommonRes> insertnotiftemplate(@RequestBody NotifTemplateMasterReq req) {
@@ -101,6 +103,7 @@ public class NotifTemplateMasterController {
 		}
 		
 		// Get By Id
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/getnotificationcode")
 		@ApiOperation(value = "This method is get by Notification Templete")
 
@@ -121,6 +124,7 @@ public class NotifTemplateMasterController {
 		}
 
 		// Get All
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/getallnotitemplete")
 		@ApiOperation(value = "This method is Get all Notification Templete")
 
@@ -143,6 +147,7 @@ public class NotifTemplateMasterController {
 		}
 		
 		// Get Active
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/getactivenotitemplete")
 		@ApiOperation(value = "This method is Get Active Notification Templete ")
 
@@ -165,6 +170,7 @@ public class NotifTemplateMasterController {
 		}
 
 		// Change Status
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/notitemplete/changestatus")
 		@ApiOperation(value = "This method is get Notification Templete Change Status")
 		public ResponseEntity<CommonRes> changeStatusOfNotitemplete(@RequestBody NotifTempleteMasterChangeStatusReq req) {
@@ -186,6 +192,7 @@ public class NotifTemplateMasterController {
 
 
 		//Dropdown
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@GetMapping("/dropdown/getnotitranscolumns")
 		@ApiOperation(value = "This method is to Table Details Drop Down")
 		public ResponseEntity<CommonRes> getTableDetails() {

@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +36,7 @@ public class SmsMasterController {
 	private PrintReqService reqPrinter;
 
 	// Save
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/insertsmsmaster")
 	@ApiOperation(value = "This method is to Insert Sms Master")
 	private ResponseEntity<CommonRes> insertsmsmaster(@RequestBody SmsInsertReq req) {
@@ -67,7 +69,7 @@ public class SmsMasterController {
 	}
 
 // Get By Id
-
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/getbysmsid")
 	@ApiOperation("This Method is to get by id")
 	public ResponseEntity<CommonRes> getbysmsid(@RequestBody SmsGetReq req) {

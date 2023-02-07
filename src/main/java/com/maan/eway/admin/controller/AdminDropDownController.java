@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,6 +34,7 @@ public class AdminDropDownController {
 	@Autowired
 	private  AdminDropDownService dropDownService;
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/gettabledetails")
 	@ApiOperation(value = "This method is to Table Details Drop Down")
 	public ResponseEntity<CommonRes> getTableDetails(@RequestBody GetTableDropDownReq req) {
@@ -52,6 +54,7 @@ public class AdminDropDownController {
 
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/getproducttabledetails")
 	@ApiOperation(value = "This method is to Table Details Drop Down")
 	public ResponseEntity<CommonRes> getProducttabledetails(@RequestBody GetTableDropDownReq req) {
@@ -73,6 +76,7 @@ public class AdminDropDownController {
 
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/usertype")
 	@ApiOperation(value = "This method is to UserType  Drop Down")
 	public ResponseEntity<CommonRes> getUserType(@RequestBody LovDropDownReq req) {
@@ -93,6 +97,7 @@ public class AdminDropDownController {
 
 	}
 
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/subusertype")
 	@ApiOperation(value = "This method is to SubUserType  Drop Down")
 	public ResponseEntity<CommonRes> getUserType(@RequestBody SubUserTypeReq req) {
@@ -113,7 +118,7 @@ public class AdminDropDownController {
 
 	}
 	
-	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/producticons")
 	@ApiOperation(value = "This method is to UserType  Drop Down")
 	public ResponseEntity<CommonRes> getProductIcons(@RequestBody LovDropDownReq req) {
@@ -134,6 +139,7 @@ public class AdminDropDownController {
 
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/calctypes")
 	@ApiOperation(value = "This method is to CalcType  Drop Down")
 	public ResponseEntity<CommonRes> getCalcTypes(@RequestBody LovDropDownReq req) {
@@ -154,6 +160,7 @@ public class AdminDropDownController {
 
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/coveragetypes")
 	@ApiOperation(value = "This method is to CoverageType  Drop Down")
 	public ResponseEntity<CommonRes> getCoverageTypes(@RequestBody LovDropDownReq req) {
@@ -174,6 +181,7 @@ public class AdminDropDownController {
 
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/rangeparams")
 	@ApiOperation(value = "This method is to CoverageType  Drop Down")
 	public ResponseEntity<CommonRes> getRangeParams(@RequestBody LovDropDownReq req) {
@@ -195,6 +203,7 @@ public class AdminDropDownController {
 	}
 	
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/discreteparams")
 	@ApiOperation(value = "This method is to CoverageType  Drop Down")
 	public ResponseEntity<CommonRes> getDiscreteParams(@RequestBody LovDropDownReq req) {
@@ -215,7 +224,7 @@ public class AdminDropDownController {
 
 	}
 	
-
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/productcategory")
 	@ApiOperation(value = "This method is to Product Category  Drop Down")
 	public ResponseEntity<CommonRes> getProductCategory(@RequestBody LovDropDownReq req) {
@@ -236,6 +245,7 @@ public class AdminDropDownController {
 
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/doctype")
 	@ApiOperation(value = "This method is to Product Referrral  Drop Down")
 	public ResponseEntity<CommonRes> getDocType(@RequestBody LovDropDownReq req) {
@@ -256,6 +266,7 @@ public class AdminDropDownController {
 
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/referraltype")
 	@ApiOperation(value = "This method is to Product Referrral  Drop Down")
 	public ResponseEntity<CommonRes> getReferralType(@RequestBody LovDropDownReq req) {

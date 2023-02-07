@@ -11,6 +11,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,6 +47,7 @@ public class EmiMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/insertemi")
 		@ApiOperation(value = "This method is Insert Emi Details")
 		public ResponseEntity<CommonRes> insertEmi(@RequestBody EmiMasterSaveReq req) {
@@ -81,7 +83,7 @@ public class EmiMasterController {
 		}
 		
 		//  Get All Emi Master
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/getallemidetails")
 		@ApiOperation("This method is getall Emi Details")
 		public ResponseEntity<CommonRes> getallEmiDetails(@RequestBody EmiMasterGetAllReq req)
@@ -104,7 +106,7 @@ public class EmiMasterController {
 		}
 		
 	//  Get Active Emi Master
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 			@PostMapping("/getactiveemi")
 			@ApiOperation("This method is get Active Emi Details")
 			public ResponseEntity<CommonRes> getActiveEmiDetails(@RequestBody EmiMasterGetAllReq req)
@@ -126,7 +128,7 @@ public class EmiMasterController {
 			}
 		
 		// Get By Emi Id
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/getbyemiid")
 		@ApiOperation("This Method is to get by Emi id")
 		public ResponseEntity<CommonRes> getByEmiId(@RequestBody EmiMasterGetReq req)
@@ -145,7 +147,8 @@ public class EmiMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-
+	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/emi/changestatus")
 		@ApiOperation(value = "This method is get Change Status of Emis")
 		public ResponseEntity<CommonRes> changeStatusOfEmi(@RequestBody EmiMasterChangeStatusReq req) {

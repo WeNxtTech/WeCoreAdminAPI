@@ -36,6 +36,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -61,6 +62,7 @@ public class CompanyProductMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/insertcompanyproducts")
 	@ApiOperation(value = "This method is Insert Company Product Master")
 	public ResponseEntity<CommonRes> insertCompanyProducts(@RequestBody List<CompanyProductMultiInsertReq> req) {
@@ -96,6 +98,7 @@ public class CompanyProductMasterController {
 	}
 	
 	//  Get All Cover Master
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/updatecompanyproducts")
 	@ApiOperation(value = "This method is Insert Company Product Master")
 	public ResponseEntity<CommonRes> insertCompanyProducts(@RequestBody CompanyProductMasterSaveReq req) {
@@ -130,7 +133,7 @@ public class CompanyProductMasterController {
 
 	}
 	
-	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/getallcompanyproducts")
 	@ApiOperation("This method is getall Company Product Master")
 	public ResponseEntity<CommonRes> getallCompanyProductDetails(@RequestBody CompanyProductMasterGetAllReq req)
@@ -153,7 +156,7 @@ public class CompanyProductMasterController {
 	}
 	
 //  Get Active Cover Master
-	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/getactivecompanyproducts")
 		@ApiOperation("This method is get Active Company Product Master")
 		public ResponseEntity<CommonRes> getActiveCompanyProductDetails(@RequestBody CompanyProductMasterGetAllReq req)
@@ -176,7 +179,7 @@ public class CompanyProductMasterController {
 		}
 		
 		// Get By Cover Id
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/getbycompanyproductid")
 		@ApiOperation("This Method is to get by Company Product Master id")
 		public ResponseEntity<CommonRes> getByCompanyProductId(@RequestBody CompanyProductMasterGetReq req)
@@ -197,7 +200,7 @@ public class CompanyProductMasterController {
 	    }
 
 
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/getallnonselectedcompanyproducts")
 		@ApiOperation("This method is getall Company Product Master")
 		public ResponseEntity<CommonRes> getallNonSelectedCompanyProducts(@RequestBody CompanyProductMasterGetAllReq req)
@@ -219,6 +222,7 @@ public class CompanyProductMasterController {
 			}
 		}
 
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping(value="/dropdown/companyproducts",produces = "application/json")
 		@ApiOperation(value = "This method is get Company Product Master Drop Down")
 
@@ -239,7 +243,8 @@ public class CompanyProductMasterController {
 			}
 
 		}
-		
+
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/companyproducts/changestatus")
 		@ApiOperation(value = "This method is get Company Product Master Drop Down")
 

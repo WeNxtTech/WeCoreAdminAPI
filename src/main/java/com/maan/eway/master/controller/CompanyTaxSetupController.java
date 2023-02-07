@@ -33,6 +33,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -59,6 +60,7 @@ public class CompanyTaxSetupController {
 	private  PrintReqService reqPrinter;
 	
 	// save
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/insertcompanytax")
 		@ApiOperation(value = "This method is Insert Company Tax Details")
 		public ResponseEntity<CommonRes> insertCompanyTax(@RequestBody CompanyTaxSetupSaveReq req) {
@@ -94,7 +96,7 @@ public class CompanyTaxSetupController {
 		}
 		
 		//  Get All Branch Master
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")		
 		@PostMapping("/getallcompanytaxes")
 		@ApiOperation("This method is getall Company Taxes")
 		public ResponseEntity<CommonRes> getallComapnyTaxes(@RequestBody CompanyTaxSetupGetAllReq req)
@@ -117,7 +119,7 @@ public class CompanyTaxSetupController {
 		}
 		
 	//  Get Active Branch Master
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 			@PostMapping("/getactivecompanytaxes")
 			@ApiOperation("This method is get Active Branch Details")
 			public ResponseEntity<CommonRes> getActiveCompanyTaxes(@RequestBody CompanyTaxSetupGetAllReq req)
@@ -140,7 +142,7 @@ public class CompanyTaxSetupController {
 			}
 		
 		// Get By Branch Id
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/getbycompanytaxesid")
 		@ApiOperation("This Method is to get by Branch id")
 		public ResponseEntity<CommonRes> getByCompanyTaxes(@RequestBody CompanyTaxSetupGetReq req)
@@ -159,7 +161,7 @@ public class CompanyTaxSetupController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/companytax/changestatus")
 		@ApiOperation(value = "This method is Branch Change Status")
 		public ResponseEntity<CommonRes> changeStatusOfTax(@RequestBody CompanyTaxChangeStatusReq req) {

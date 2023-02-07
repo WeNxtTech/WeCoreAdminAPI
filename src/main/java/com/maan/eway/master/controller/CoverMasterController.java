@@ -11,6 +11,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -50,6 +51,7 @@ public class CoverMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/insertcover")
 		@ApiOperation(value = "This method is Insert Cover Details")
 		public ResponseEntity<CommonRes> insertCover(@RequestBody CoverMasterSaveReq req) {
@@ -86,6 +88,7 @@ public class CoverMasterController {
 		
 		//  Get All Cover Master
 		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 		@GetMapping("/getallcoverdetails")
 		@ApiOperation("This method is getall Cover Details")
 		public ResponseEntity<CommonRes> getallCoverDetails()
@@ -109,6 +112,7 @@ public class CoverMasterController {
 		
 	//  Get Active Cover Master
 		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 			@GetMapping("/getactivecover")
 			@ApiOperation("This method is get Active Cover Details")
 			public ResponseEntity<CommonRes> getActiveCoverDetails()
@@ -131,6 +135,7 @@ public class CoverMasterController {
 		
 		// Get By Cover Id
 		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/getbycoverid")
 		@ApiOperation("This Method is to get by Cover id")
 		public ResponseEntity<CommonRes> getByCoverId(@RequestBody CoverMasterGetReq req)
@@ -149,7 +154,8 @@ public class CoverMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-
+	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/covers/changestatus")
 		@ApiOperation(value = "This method is get Change Status of Covers")
 		public ResponseEntity<CommonRes> changeStatusOfCover(@RequestBody CoverChangeStatusReq req) {
@@ -170,6 +176,7 @@ public class CoverMasterController {
 
 		}
 		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 		@GetMapping(value="/dropdown/cover",produces = "application/json")
 		@ApiOperation(value = "This method is get Section Cover Master Drop Down")
 
@@ -192,7 +199,8 @@ public class CoverMasterController {
 
 		}
 		
-		@PostMapping(value="/dropdown/discountcovers",produces = "application/json")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
+	@PostMapping(value="/dropdown/discountcovers",produces = "application/json")
 		@ApiOperation(value = "This method is get Section Cover Master Drop Down")
 
 		public ResponseEntity<DropdownCommonRes> getCoverMasterDropdown(@RequestBody DiscountCoverReq req ) {

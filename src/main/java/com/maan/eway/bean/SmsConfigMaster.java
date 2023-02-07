@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -51,65 +50,74 @@ public class SmsConfigMaster implements Serializable {
  
 private static final long serialVersionUID = 1L;
  
-    //--- ENTITY PRIMARY KEY 
-    @Id
-    @Column(name="S_No", nullable=false)
-    private Integer    sNo ;
+//--- ENTITY PRIMARY KEY 
+@Id
+@Column(name="S_No", nullable=false)
+private Integer    sNo ;
 
-    @Id
-    @Column(name="COMPANY_ID", nullable=false, length=20)
-    private String     companyId ;
+@Id
+@Column(name="COMPANY_ID", nullable=false, length=20)
+private String     companyId ;
 
-    @Id
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EFFECTIVE_DATE_START", nullable=false)
-    private Date       effectiveDateStart ;
+@Id
+@Column(name="BRANCH_CODE", nullable=false, length=20)
+private String     branchCode ;
 
-    @Id
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EFFECTIVE_DATE_END", nullable=false)
-    private Date       effectiveDateEnd ;
+@Id
+@Column(name="AMEND_ID")
+private Integer    amendId ;
 
-    //--- ENTITY DATA FIELDS 
-    @Column(name="STATUS", length=6)
-    private String     status ;
+//--- ENTITY DATA FIELDS 
+@Column(name="STATUS", length=6)
+private String     status ;
 
-    @Temporal(TemporalType.DATE)
-    @Column(name="ENTRY_DATE")
-    private Date       entryDate ;
+@Temporal(TemporalType.DATE)
+@Column(name="ENTRY_DATE")
+private Date       entryDate ;
 
-    @Column(name="SENDER_ID", length=60)
-    private String     senderId ;
+@Column(name="SENDER_ID", length=60)
+private String     senderId ;
 
-    @Column(name="REMARKS", length=900)
-    private String     remarks ;
+@Column(name="REMARKS", length=900)
+private String     remarks ;
 
-    @Column(name="SMS_USER_PASS", length=150)
-    private String     smsUserPass ;
+@Column(name="SMS_USER_PASS", length=150)
+private String     smsUserPass ;
 
-    @Column(name="SMS_USER_NAME", length=150)
-    private String     smsUserName ;
+@Column(name="SMS_USER_NAME", length=150)
+private String     smsUserName ;
 
-    @Column(name="SMS_PARTY_URL", length=300)
-    private String     smsPartyUrl ;
+@Column(name="SMS_PARTY_URL", length=300)
+private String     smsPartyUrl ;
 
-    @Column(name="SECURE_YN", length=60)
-    private String     secureYn ;
+@Column(name="SECURE_YN", length=60)
+private String     secureYn ;
 
-    @Column(name="CORE_APP_CODE", length=20)
-    private String     coreAppCode ;
+@Column(name="CORE_APP_CODE", length=20)
+private String     coreAppCode ;
 
-    @Column(name="AMEND_ID")
-    private Integer    amendId ;
+@Column(name="REGULATORY_CODE", length=20)
+private String     regulatoryCode ;
 
-    @Column(name="REGULATORY_CODE", nullable=false, length=20)
-    private String     regulatoryCode ;
+@Column(name="CREATED_BY", length=100)
+private String     createdBy ;
 
-    @Column(name="CREATED_BY", length=100)
-    private String     createdBy ;
+@Column(name="UPDATED_BY", length=100)
+private String     updatedBy ;
 
+@Temporal(TemporalType.TIMESTAMP)
+@Column(name="UPDATED_DATE")
+private Date       updatedDate ;
+	
+@Temporal(TemporalType.TIMESTAMP)
+@Column(name="EFFECTIVE_DATE_START")
+private Date       effectiveDateStart ;
 
-    //--- ENTITY LINKS ( RELATIONSHIP )
+@Temporal(TemporalType.TIMESTAMP)
+@Column(name="EFFECTIVE_DATE_END")
+private Date       effectiveDateEnd ;
+//--- ENTITY LINKS ( RELATIONSHIP )
+
 
 
 }

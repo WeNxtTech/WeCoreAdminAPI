@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.MailMaster;
 import com.maan.eway.bean.SmsConfigMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.notif.req.SmsGetReq;
@@ -162,24 +163,15 @@ public class SmsMasterServiceImpl implements SmsMasterService{
 		List<SmsConfigMaster> list = new ArrayList<SmsConfigMaster>();
 		DozerBeanMapper dozermapper = new DozerBeanMapper();
 		try {
-			Integer amendId=0;
-			Calendar cal = new GregorianCalendar();
-			cal.setTime(req.getEffectiveDateStart());
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 59);
-			Date startDate = cal.getTime();
-			Date today = new Date();
-			cal.setTime(req.getEffectiveDateStart());
-			cal.set(Calendar.HOUR_OF_DAY, today.getHours());
-			cal.set(Calendar.MINUTE, today.getMinutes());
-			Date oldEndDate = cal.getTime();
-			cal.setTime(req.getEffectiveDateStart());
-			cal.set(Calendar.HOUR_OF_DAY, today.getHours());
-			cal.set(Calendar.MINUTE, today.getMinutes());
-			Date effDate = cal.getTime();
-			Date endDate = req.getEffectiveDateEnd();
-		
-			String sno ="";
+			Integer amendId = 0;
+			Date startDate = req.getEffectiveDateStart() ;
+			String end = "31/12/2050";
+			Date endDate = sdformat.parse(end);
+			long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
+			Date entryDate = null ;
+			String sno = "";
+			String createdBy = "" ;	
 			if(StringUtils.isBlank(req.getSNo())) {
 				// Save 
 				Long totalcount = getMasterTableCount();
@@ -209,44 +201,47 @@ public class SmsMasterServiceImpl implements SmsMasterService{
 				query.where(n1,n2,n3);
 				// Get Result
 				TypedQuery<SmsConfigMaster> result = em.createQuery(query);
+				int limit = 0 , offset = 2 ;
+				result.setFirstResult(limit * offset);
+				result.setMaxResults(offset);
+			
 				list = result.getResultList();
-				if(list.size()>0) {
-					smsrepo.delete(list.get(0));
-					// Amend Id 
-					if(list.get(0).getEffectiveDateStart().before(startDate)) {
-					String startDateWithoutTime = sdformat.format(startDate);
-					String oldDateWithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
-					if (startDateWithoutTime.equalsIgnoreCase(oldDateWithoutTime)) {
-						amendId = list.get(0).getAmendId() + 1;
-					}
-					}
-				
-				
+				if (list.size() > 0) {
+					Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+					
+					if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
+						amendId = list.get(0).getAmendId() + 1 ;
+						entryDate = new Date() ;
+						createdBy = req.getCreatedBy();
+						SmsConfigMaster lastRecord = list.get(0);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							smsrepo.saveAndFlush(lastRecord);
+						
+					} else {
+						amendId = list.get(0).getAmendId() ;
+						entryDate = list.get(0).getEntryDate() ;
+						createdBy = list.get(0).getCreatedBy();
+						saveData = list.get(0) ;
+						if (list.size()>1 ) {
+							SmsConfigMaster lastRecord = list.get(1);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							smsrepo.saveAndFlush(lastRecord);
+						}
+					
+				    }
 				}
-				
 				res.setResponse("Updated Successfully");
 				res.setSuccessId(sno);
 			}
 			dozermapper.map(req, saveData);
 			saveData.setSNo(Integer.valueOf(sno));
-			saveData.setEffectiveDateStart(effDate);
+			saveData.setEffectiveDateStart(req.getEffectiveDateStart());
 			saveData.setEffectiveDateEnd(endDate);
 			saveData.setEntryDate(new Date());
 			saveData.setAmendId(amendId);
 			smsrepo.saveAndFlush(saveData);
 
-			if (list.size() > 0) {
-				// Update Old Record
-				SmsConfigMaster lastRecord = list.get(0);
-				lastRecord.setEffectiveDateEnd(oldEndDate);
-				String startDatewithoutTime = sdformat.format(startDate);
-				String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
-
-				if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
-					lastRecord.setStatus("N");	
-				}
-				smsrepo.saveAndFlush(lastRecord);
-			}
+		
 			log.info("Saved Details is --> " + json.toJson(saveData));
 		} catch (Exception e) {
 			e.printStackTrace();

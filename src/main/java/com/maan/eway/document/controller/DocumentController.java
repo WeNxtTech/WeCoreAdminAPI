@@ -16,6 +16,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -59,6 +60,7 @@ public class DocumentController {
 	
 	private Logger log = LogManager.getLogger(DocumentController.class);
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/upload")
 	public ResponseEntity<CommonRes> uploadFile(@RequestParam("File") MultipartFile file, @RequestParam("Req") String jsonString) throws CommonValidationException, JsonMappingException, JsonProcessingException{
 		
@@ -85,7 +87,7 @@ public class DocumentController {
 		
 	}
 	
-	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/uploadwithoutfile")
 	public ResponseEntity<CommonRes> uploadWithoutFile( @RequestParam("Req") String jsonString) throws CommonValidationException, JsonMappingException, JsonProcessingException{
 		
@@ -112,6 +114,7 @@ public class DocumentController {
 		
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/delete")
 	public ResponseEntity<CommonRes> deleteFile(@RequestBody DocumentDeleteReq req)  {
 
@@ -121,6 +124,7 @@ public class DocumentController {
 	}
 	
 	//DropDown
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/dropdown/doctypes")
 	@ApiOperation(value = "This method is to Get Insurance Companies")
 	public ResponseEntity<CommonRes> getDocTypeDropDowns(@RequestBody DocTypeDropDownReq req) {
@@ -137,6 +141,7 @@ public class DocumentController {
 	
 	
 	//Get Doc List
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/getdoclist")
 	@ApiOperation(value = "This method is to Get Document List")
 	public ResponseEntity<CommonRes> getdoclist(@RequestBody GetDocListReq req) {
@@ -161,6 +166,7 @@ public class DocumentController {
 	}
 
 	//Get Original Image
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@RequestMapping(path = "/download", method = RequestMethod.POST)
 	public ResponseEntity<Resource> download(@RequestParam("FilePath") String param) throws IOException {
 
@@ -177,7 +183,7 @@ public class DocumentController {
 	            .body(resource);
 	}
 
-	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/getoriginalimage" )	 
 	@ApiOperation(value="This method is to Get Image File ")
 	private ResponseEntity<CommonRes>  getFilePath(@RequestBody FilePathReq req) {
@@ -198,6 +204,7 @@ public class DocumentController {
 		
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/getcompressedimage" )	 
 	@ApiOperation(value="This method is to Get Compressed Image File ")
 	private ResponseEntity<CommonRes>  getCompressedImages(@RequestBody FilePathReq req) {

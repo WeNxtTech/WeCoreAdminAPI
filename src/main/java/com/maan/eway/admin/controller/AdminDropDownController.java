@@ -76,7 +76,7 @@ public class AdminDropDownController {
 
 	}
 	
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/usertype")
 	@ApiOperation(value = "This method is to UserType  Drop Down")
 	public ResponseEntity<CommonRes> getUserType(@RequestBody LovDropDownReq req) {
@@ -97,7 +97,7 @@ public class AdminDropDownController {
 
 	}
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/subusertype")
 	@ApiOperation(value = "This method is to SubUserType  Drop Down")
 	public ResponseEntity<CommonRes> getUserType(@RequestBody SubUserTypeReq req) {

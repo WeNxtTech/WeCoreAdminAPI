@@ -92,7 +92,7 @@ public class InsuranceCompanyMasterController {
 	
 	
 //  Get All Insurance Company Master
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/getallinscompanydetails")
 		@ApiOperation("This method is getall  Company Details")
 		public ResponseEntity<CommonRes> getallInsCompanyDetails(@RequestBody InsuranceCompanyMasterGetAllReq req)
@@ -159,7 +159,7 @@ public class InsuranceCompanyMasterController {
 	}
 		
 	// Insurance Company Master Drop Down Type
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 		@PostMapping(value="/dropdown/company",produces = "application/json")
 		@ApiOperation(value = "This method is get Company Master Drop Down")
 

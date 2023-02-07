@@ -20,13 +20,13 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name="warranty_master")
-@IdClass(WarrantyMasterId.class)
-public class WarrantyMaster {
+@Table(name="clauses_master")
+@IdClass(ClausesMasterId.class)
+public class ClausesMaster {
 
 	@Id
-	@Column(name="WARRANTY_ID",nullable=false)
-	private Integer warrantyId;
+	@Column(name="CLAUSES_ID",nullable=false)
+	private Integer clausesId;
 	
 	@Id
 	@Column(name="BRANCH_CODE",length=20, nullable=false)
@@ -35,26 +35,44 @@ public class WarrantyMaster {
 	@Id
 	@Column(name="COMPANY_ID",length=20, nullable=false)
 	private String companyId;
+
+	@Id
+	@Column(name="PRODUCT_ID",length=20, nullable=false)
+	private String productId;
+
+	@Id
+	@Column(name="SECTION_ID",length=20, nullable=false)
+	private String sectionId;
+//	
+//	@Id
+//	@Column(name="POLICY_TYPE",length=20, nullable=false)
+//	private String policyType;
+
 	
 	@Id
 	@Column(name="AMEND_ID",nullable=false)
 	private Integer amendId;
+	//
+	@Column(name="CLAUSES_DESCRIPTION",length=200)
+	private String clausesDescription;
 	
-	@Id
-	@Column(name="PRODUCT_ID",length=20, nullable=false)
-	private String productId;
+	@Column(name="COVER_ID")
+	private Integer coverId;
 	
-	@Id
-	@Column(name="SECTION_ID",length=20, nullable=false)
-	private String sectionId;
+	@Column(name="EXTRA_COVER_ID")
+	private Integer extraCoverId;
 	
-//	@Id
-//	@Column(name="POLICY_TYPE",length=20, nullable=false)
-//	private String policyType;
+	@Column(name="DISPLAY_ORDER")
+	private Integer displayOrder;
 	
+	@Column(name="PDF_LOCATION",length=200)
+	private String pdfLocation;
 	
-	@Column(name="WARRANTY_DESCRIPTION",length=500)
-	private String warrantyDescription;
+	@Column(name="OPTIONAL_TYPE",length=10)
+	private String optionalType;
+	
+	@Column(name="INT_CODE",length=100)
+	private String intCode;
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="EFFECTIVE_DATE_START",nullable=false)
@@ -90,13 +108,13 @@ public class WarrantyMaster {
 	@Column(name="CORE_APP_CODE",length=20)
 	private String coreAppCode;
 	
+	@Column(name="DOC_REF_NO",length=20)
+	private String docRefNo;
+
 	@Column(name="TYPE_ID",length=20)
 	private String typeId;
 
 	@Column(name="TYPE_DESC",length=20)
 	private String typeDesc;
-
-	@Column(name="DOC_REF_NO",length=50)
-	private String docRefNo;
 
 }

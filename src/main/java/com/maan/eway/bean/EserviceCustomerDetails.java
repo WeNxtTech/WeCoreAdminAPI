@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -215,14 +214,34 @@ private static final long serialVersionUID = 1L;
     @Column(name="STREET", length=100)
     private String     street ;
 
+    @Column(name="MOBILE_CODE_1", length=20)
+    private String     mobileCode1 ;
+    @Column(name="MOBILE_CODE_DESC_1", length=20)
+    private String     mobileCodeDesc1 ;
     @Column(name="MOBILE_NO_1", length=20)
     private String     mobileNo1 ;
 
+    @Column(name="MOBILE_CODE_2", length=20)
+    private String     mobileCode2 ;
+    @Column(name="MOBILE_CODE_DESC_2", length=20)
+    private String     mobileCodeDesc2 ;
     @Column(name="MOBILE_NO_2", length=20)
     private String     mobileNo2 ;
 
+    @Column(name="MOBILE_CODE_3", length=20)
+    private String     mobileCode3 ;
+    @Column(name="MOBILE_CODE_DESC_3", length=20)
+    private String     mobileCodeDesc3 ;
     @Column(name="MOBILE_NO_3", length=20)
     private String     mobileNo3 ;
+
+    @Column(name="WHATSAPP_CODE", length=20)
+    private String     whatsappCode ;
+    @Column(name="WHATSAPP_CODE_DESC", length=20)
+    private String     whatsappCodeDesc ;
+    @Column(name="WHATSAPP_NO", length=20)
+    private String     whatsappNo ;
+    
 
     @Column(name="EMAIL_1", length=20)
     private String     email1 ;

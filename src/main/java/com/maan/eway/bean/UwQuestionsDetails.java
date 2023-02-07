@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -119,6 +118,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="IS_REFERRAL", length=5)
     private String     isReferral ;
+
+    @Column(name="TEXT_VALUE", length=100)
+    private String    textValue;
 
 
     //--- ENTITY LINKS ( RELATIONSHIP )

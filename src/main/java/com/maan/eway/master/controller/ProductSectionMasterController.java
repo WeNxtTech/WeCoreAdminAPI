@@ -235,7 +235,7 @@ public class ProductSectionMasterController {
 				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
 			}
 		}
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 		@PostMapping(value="/dropdown/productsection",produces = "application/json")
 		@ApiOperation(value = "This method is get Product Section Cover Master Drop Down")
 

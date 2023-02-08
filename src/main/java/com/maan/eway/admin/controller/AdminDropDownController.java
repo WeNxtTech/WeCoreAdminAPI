@@ -118,7 +118,7 @@ public class AdminDropDownController {
 
 	}
 	
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/producticons")
 	@ApiOperation(value = "This method is to UserType  Drop Down")
 	public ResponseEntity<CommonRes> getProductIcons(@RequestBody LovDropDownReq req) {

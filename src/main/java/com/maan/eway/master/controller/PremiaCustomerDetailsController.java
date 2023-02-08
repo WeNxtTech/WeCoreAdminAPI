@@ -40,7 +40,7 @@ public class PremiaCustomerDetailsController {
 	
 	@Autowired
 	private PrintReqService reqPrinter;
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/search/premiacustomercode")
 	@ApiOperation(value = "This method is Search Premia ")
 
@@ -61,7 +61,7 @@ public class PremiaCustomerDetailsController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/search/premiasourcecode")
 	@ApiOperation(value = "This method is Search Premia ")
 

@@ -243,7 +243,7 @@ private static final long serialVersionUID = 1L;
     private String     whatsappNo ;
     
 
-    @Column(name="EMAIL_1", length=20)
+    @Column(name="EMAIL_1", length=100)
     private String     email1 ;
 
     @Column(name="EMAIL_2", length=20)

@@ -20,4 +20,7 @@ public class SmsGetReq {
 	@JsonProperty("BranchCode")
 	private String branchCode;
 	
+	@JsonProperty("MobileNo")
+	private String mobileNo;
+	
 }

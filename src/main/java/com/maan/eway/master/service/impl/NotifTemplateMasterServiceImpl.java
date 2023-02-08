@@ -205,7 +205,7 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 			} else if (req.getMailRequired().equals("Y")) {
 				if (StringUtils.isBlank(req.getMailSubject())) {
 					errorList.add(new Error("06", "MailSubject", "Please Enter MailSubject"));
-				} else if (req.getMailSubject().length() > 500) {
+				} else if (req.getMailSubject().length() > 2000) {
 					errorList.add(new Error("06", "MailSubject", "Please Enter MailSubject within 500 Characters"));
 				}
 				content = getTableColumn();
@@ -463,9 +463,11 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 				effectiveDate.where(a1);
 
 				// Where
-				Predicate n1 = cb.equal(b.get("status"), "Y");
+			//	Predicate n1 = cb.equal(b.get("status"), "Y");
+				Predicate n1 = cb.equal(b.get("notifTemplateCode"),req.getNotifTemplateCode());
 				Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 				Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
+
 
 				query.where(n1, n2, n3);
 				// Get Result

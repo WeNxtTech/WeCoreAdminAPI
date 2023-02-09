@@ -186,7 +186,7 @@ public class DocumentController {
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/getoriginalimage" )	 
 	@ApiOperation(value="This method is to Get Image File ")
-	private ResponseEntity<CommonRes>  getFilePath(@RequestBody FilePathReq req) {
+	public ResponseEntity<CommonRes>  getFilePath(@RequestBody FilePathReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes()  ; 
 		
@@ -207,7 +207,7 @@ public class DocumentController {
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/getcompressedimage" )	 
 	@ApiOperation(value="This method is to Get Compressed Image File ")
-	private ResponseEntity<CommonRes>  getCompressedImages(@RequestBody FilePathReq req) {
+	public ResponseEntity<CommonRes>  getCompressedImages(@RequestBody FilePathReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes()  ; 
 		

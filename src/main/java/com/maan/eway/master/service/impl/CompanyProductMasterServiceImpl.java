@@ -1105,8 +1105,8 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			req2.setBranchCode("99999");
 			req2.setInsuranceId(req.getCompanyId());
 			
-			List<ListItemValue> getList  = getListItem(req2 , itemType);
-			List<ListItemValue> filterList = getList.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getProductIconId()) ).collect(Collectors.toList());
+		//	List<ListItemValue> getList  = getListItem(req2 , itemType);
+		//	List<ListItemValue> filterList = getList.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getProductIconId()) ).collect(Collectors.toList());
 			
 			saveData.setProductId(productId);
 			saveData.setEffectiveDateStart(startDate);
@@ -1121,7 +1121,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			String currencyIds =  String.join(",", req.getCurrencyIds()); ;
 			currencyIds = currencyIds.replace("[", "").replace("]", "");
 			saveData.setCurrencyIds(currencyIds);
-			saveData.setProductIconName(filterList.size()> 0 ? filterList.get(0).getItemValue() : "");
+		//	saveData.setProductIconName(filterList.size()> 0 ? filterList.get(0).getItemValue() : "");
 			repo.saveAndFlush(saveData);
 			log.info("Saved Details is --> " + json.toJson(saveData));
 			

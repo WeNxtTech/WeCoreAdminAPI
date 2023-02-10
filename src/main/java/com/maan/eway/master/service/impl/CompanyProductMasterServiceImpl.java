@@ -1100,7 +1100,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			
 			dozerMapper.map(req, saveData);
 			//ListItemValue data = listRepo.findByItemTypeAndItemCodeOrderByItemCodeAsc("PRODUCT_ICONS",req.getProductIconId());
-			String itemType = "BUILDING_TYPE" ;
+			String itemType = "PRODUCT_ICONS" ;
 			LovDropDownReq req2 = new LovDropDownReq(); 
 			req2.setBranchCode("99999");
 			req2.setInsuranceId(req.getCompanyId());

@@ -44,10 +44,13 @@ import com.maan.eway.auth.dto.BrokerProductCompaniesRes;
 import com.maan.eway.auth.dto.BrokerProductsGetRes;
 import com.maan.eway.auth.dto.ChangePasswordReq;
 import com.maan.eway.auth.dto.ClaimLoginResponse;
+import com.maan.eway.auth.dto.ClaimLogoutResponse;
 import com.maan.eway.auth.dto.CommonLoginRes;
 import com.maan.eway.auth.dto.LoginBranchCriteriaRes;
 import com.maan.eway.auth.dto.LoginBranchDetailsRes;
+import com.maan.eway.auth.dto.LoginProductCriteriaRes;
 import com.maan.eway.auth.dto.LoginRequest;
+import com.maan.eway.auth.dto.LogoutRequest;
 import com.maan.eway.auth.dto.ProductDropDownRes;
 import com.maan.eway.auth.service.AuthendicationService;
 import com.maan.eway.auth.token.EncryDecryService;
@@ -62,7 +65,6 @@ import com.maan.eway.bean.LoginMasterId;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.ProductMaster;
-import com.maan.eway.bean.RegionMaster;
 import com.maan.eway.bean.SessionMaster;
 import com.maan.eway.repository.BranchMasterRepository;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
@@ -115,10 +117,18 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 	public CommonLoginRes checkUserLogin(LoginRequest mslogin, HttpServletRequest http) {
 		CommonLoginRes res = new CommonLoginRes();
 		try {
-			passwordEnc passEnc = new passwordEnc();
-			String epass = passEnc.crypt(mslogin.getPassword().trim());
-			log.info("Encrpted password "+epass);
-			LoginMaster login =loginRepo.findByLoginIdAndPassword(mslogin.getLoginId(),epass);
+			LoginMaster login = new LoginMaster();
+			
+			if(mslogin.getLoginId().equalsIgnoreCase("guest") ) {
+				login =loginRepo.findByLoginId(mslogin.getLoginId());
+			} else {
+				passwordEnc passEnc = new passwordEnc();
+				String epass = passEnc.crypt(mslogin.getPassword().trim());
+				log.info("Encrpted password "+epass);
+				 login =loginRepo.findByLoginIdAndPassword(mslogin.getLoginId(),epass);
+					
+			}
+			
 			if (login != null ) {
 				http.getSession().removeAttribute(mslogin.getLoginId());
 				String token = jwtTokenUtil.doGenerateToken(mslogin.getLoginId());
@@ -139,7 +149,25 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 				Date endTime = cal.getTime();
 				session.setEndTime(endTime );
 				session =sessionRep.save(session);
-				ClaimLoginResponse loginRes = setTokenResponse(session,login,mslogin);
+				ClaimLoginResponse loginRes = new ClaimLoginResponse(); 
+				
+				if (login.getLoginId().equalsIgnoreCase("guest") ) {
+					loginRes.setToken(session.getTempTokenid());
+					loginRes.setLoginId(login.getLoginId());
+					loginRes.setUserName("guest");
+					loginRes.setUserMail("");
+					loginRes.setUserMobile("");
+					loginRes.setUserType(login.getUserType());
+					loginRes.setSubUserType(login.getSubUserType());
+					loginRes.setOaCode(login.getOaCode().toString());
+					loginRes.setBankCode(login.getBankCode());
+					
+					
+					
+				} else {
+					loginRes = setTokenResponse(session,login,mslogin);
+				}
+				
 				
 				//Response 
 				res.setCommonResponse(loginRes);
@@ -187,33 +215,42 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 				LoginBranchDetailsRes branchRes = new LoginBranchDetailsRes();
 				
 				List<LoginBranchCriteriaRes>  filterBranchCriteria = loginCriteriaRes.stream().filter( o ->  o.getBranchCode().equalsIgnoreCase(data.getBranchCode()) ).collect(Collectors.toList());
-				branchRes.setBranchCode(data.getBranchCode());
-				
+				branchRes.setBranchCode( data.getBranchCode() );
+				branchRes.setBranchName(data.getBranchName());
 				// Normal Branch
 				if(filterBranchCriteria.size()>0 ) {
 					LoginBranchCriteriaRes getBranch = filterBranchCriteria.get(0);
-					branchRes.setBranchName(getBranch.getBranchName()  );
+					branchRes.setBranchName(getBranch.getBranchName());
+					branchRes.setBrokerBranchCode(data.getBrokerBranchCode());
+					branchRes.setBrokerBranchName(data.getBrokerBranchName());
 					branchRes.setRegionCode(getBranch.getRegionCode() );
-					branchRes.setRegionName(getBranch.getRegionName() );
+				//	branchRes.setRegionName(getBranch.getRegionName() );
 					branchRes.setInsuranceId(getBranch.getCompanyId() );
 					branchRes.setCompanyName(getBranch.getCompanyName() );
-					branchRes.setCompanyLogo(getBranch.getCompanyLogo() );
+			//		branchRes.setCompanyLogo(getBranch.getCompanyLogo() );
 					branchRes.setCurrencyId(getBranch.getCurrencyId() );;
+					branchRes.setSourceType(data.getSourceType());
+					branchRes.setDepartmentCode(data.getDepartmentCode());
+					branchRes.setCustomerCode(data.getCustomerCode());
 				}
 				
 				// Attached Branch
 				if(! data.getBranchCode().equalsIgnoreCase(data.getAttachedBranch())  ) {
-					List<LoginBranchCriteriaRes>  filterAttachedBranch = loginCriteriaRes.stream().filter( o ->  o.getBranchCode().equalsIgnoreCase(data.getAttachedBranch()) ).collect(Collectors.toList());
+					List<LoginBranchCriteriaRes>  filterAttachedBranch = loginCriteriaRes.stream().filter( o ->  o.getBranchCode().equalsIgnoreCase(data.getBranchCode()) ).collect(Collectors.toList());
 					branchRes.setAttachedBranchCode(data.getAttachedBranch());
 					if(filterAttachedBranch.size()>0 ) {
 						LoginBranchCriteriaRes getAttachedBranch = filterAttachedBranch.get(0);
 						branchRes.setAttachedBranchName(getAttachedBranch.getBranchName()  );
 						branchRes.setAttachedRegionCode(getAttachedBranch.getRegionCode() );
-						branchRes.setAttachedRegionName(getAttachedBranch.getRegionName() );
+				//		branchRes.setAttachedRegionName(getAttachedBranch.getRegionName() );
 						branchRes.setAttachedCompanyId(getAttachedBranch.getCompanyId() );
 						branchRes.setAttachedCompanyName(getAttachedBranch.getCompanyName() );
-						branchRes.setAttachedCompanyLogo(getAttachedBranch.getCompanyLogo() );
+				//		branchRes.setAttachedCompanyLogo(getAttachedBranch.getCompanyLogo() );
 						branchRes.setCurrencyId(getAttachedBranch.getCurrencyId() );
+						branchRes.setSourceType(data.getSourceType());
+						branchRes.setDepartmentCode(data.getDepartmentCode());
+						branchRes.setCustomerCode(data.getCustomerCode());
+					
 					}
 				}
 				loginBranchRes.add(branchRes);
@@ -334,7 +371,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 				res.setProductIconId(product.get(0).getProductIconId().toString());
 				res.setProductIconName(product.get(0).getProductIconName());
 				res.setProductId(productId.toString());
-				
+				res.setPackageYn(product.get(0).getPackageYn());
 				resList.add(res);
 			}
 
@@ -443,22 +480,22 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			Predicate ins1 = cb.equal(ins.get("companyId"), b.get("companyId"));
 			Predicate ins2 = cb.equal(ins.get("effectiveDateStart"), effectiveDate2);
 			company.where(ins1,ins2);
-			
-			// Company Logo Effective Date Max Filter
-			Subquery<Long> companyLogo = query.subquery(Long.class);
-			Root<InsuranceCompanyMaster> logo = companyLogo.from(InsuranceCompanyMaster.class);
-			Subquery<Long> effectiveDate5 = query.subquery(Long.class);
-			Root<InsuranceCompanyMaster> ocpm5 = effectiveDate5.from(InsuranceCompanyMaster.class);
-			effectiveDate5.select(cb.max(ocpm5.get("effectiveDateStart")));
-			Predicate iceff1 = cb.equal(ocpm5.get("companyId"), logo.get("companyId"));
-			Predicate iceff2 = cb.lessThanOrEqualTo(ocpm5.get("effectiveDateStart"), today);
-			effectiveDate5.where(iceff1,iceff2);
-			
-			// Company Logo
-			companyLogo.select(logo.get("companyLogo"));
-			Predicate in1 = cb.equal(logo.get("companyId"), b.get("companyId"));
-			Predicate in2 = cb.equal(logo.get("effectiveDateStart"), effectiveDate5);
-			companyLogo.where(in1,in2);
+//			
+//			// Company Logo Effective Date Max Filter
+//			Subquery<Long> companyLogo = query.subquery(Long.class);
+//			Root<InsuranceCompanyMaster> logo = companyLogo.from(InsuranceCompanyMaster.class);
+//			Subquery<Long> effectiveDate5 = query.subquery(Long.class);
+//			Root<InsuranceCompanyMaster> ocpm5 = effectiveDate5.from(InsuranceCompanyMaster.class);
+//			effectiveDate5.select(cb.max(ocpm5.get("effectiveDateStart")));
+//			Predicate iceff1 = cb.equal(ocpm5.get("companyId"), logo.get("companyId"));
+//			Predicate iceff2 = cb.lessThanOrEqualTo(ocpm5.get("effectiveDateStart"), today);
+//			effectiveDate5.where(iceff1,iceff2);
+////			
+//			// Company Logo
+//			companyLogo.select(logo.get("companyLogo"));
+//			Predicate in1 = cb.equal(logo.get("companyId"), b.get("companyId"));
+//			Predicate in2 = cb.equal(logo.get("effectiveDateStart"), effectiveDate5);
+//			companyLogo.where(in1,in2);
 			
 			// Company Currency Effective Date Max Filter
 			Subquery<Long> currency = query.subquery(Long.class);
@@ -478,26 +515,29 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			
 						
 			
-			// Region Effective Date Filter
-			Subquery<Long> region = query.subquery(Long.class);
-			Root<RegionMaster> rm = region.from(RegionMaster.class);
-			Subquery<Long> effectiveDate3 = query.subquery(Long.class);
-			Root<RegionMaster> ocpm3 = effectiveDate3.from(RegionMaster.class);
-			effectiveDate3.select(cb.max(ocpm3.get("effectiveDateStart")));
-			Predicate reff2 = cb.equal(ocpm3.get("regionCode"), rm.get("regionCode"));
-			Predicate reff3 = cb.lessThanOrEqualTo(ocpm3.get("effectiveDateStart"), today);
-			effectiveDate3.where(reff2,reff3);
-			
-			//Region Name
-			region.select(rm.get("regionName"));
-			Predicate rm2 = cb.equal(rm.get("regionCode"),  b.get("regionCode") );
-			Predicate rm3 = cb.equal(rm.get("effectiveDateStart"), effectiveDate3);
-			region.where(rm2,rm3);
-			
+//			// Region Effective Date Filter
+//			Subquery<Long> region = query.subquery(Long.class);
+//			Root<RegionMaster> rm = region.from(RegionMaster.class);
+//			Subquery<Long> effectiveDate3 = query.subquery(Long.class);
+//			Root<RegionMaster> ocpm3 = effectiveDate3.from(RegionMaster.class);
+//			effectiveDate3.select(cb.max(ocpm3.get("effectiveDateStart")));
+//			Predicate reff2 = cb.equal(ocpm3.get("regionCode"), rm.get("regionCode"));
+//			Predicate reff3 = cb.lessThanOrEqualTo(ocpm3.get("effectiveDateStart"), today);
+//			effectiveDate3.where(reff2,reff3);
+//			
+//			//Region Name
+//			region.select(rm.get("regionName"));
+//			Predicate rm2 = cb.equal(rm.get("regionCode"),  b.get("regionCode") );
+//			Predicate rm3 = cb.equal(rm.get("effectiveDateStart"), effectiveDate3);
+//			region.where(rm2,rm3);
+//			
 			// Select
 			query.multiselect(b.get("branchCode").alias("branchCode") , b.get("regionCode").alias("regionCode") ,
 					b.get("companyId").alias("companyId") , b.get("branchName").alias("branchName") ,
-					company.alias("companyName") , region.alias("regionName") , companyLogo.alias("companyLogo") , currency.alias("currencyId") );
+					company.alias("companyName") ,
+					//region.alias("regionName") , 
+				//	companyLogo.alias("companyLogo") ,
+					currency.alias("currencyId") );
 
 			// Effective Date Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
@@ -620,6 +660,34 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 		}
 		return res;
 
+	}
+
+	@Override
+	public CommonLoginRes logout(LogoutRequest mslogin) {
+		CommonLoginRes res = new CommonLoginRes();
+		ClaimLogoutResponse r = new ClaimLogoutResponse();
+		try {
+		
+			LoginMaster login = loginRepo.findByLoginId(mslogin.getUserId());
+			if (login!=null) {
+
+				SessionMaster session = sessionRep.findByTempTokenid(mslogin.getToken());
+				session.setLogoutDate(new Date());
+				session.setStatus("DE-ACTIVE");
+				session = sessionRep.save(session);
+				r.setStatus("Log Out Sucessfully");
+			}else {
+				r.setStatus("Log Out Failed");
+			}
+		} catch (Exception e) {
+			r.setStatus("Log Out Failed");
+			e.printStackTrace();
+		}
+		res.setCommonResponse(r);
+		res.setErrorMessage(Collections.emptyList());
+		res.setIsError(false);
+		res.setMessage("Success");
+		return res;
 	}
 
 	

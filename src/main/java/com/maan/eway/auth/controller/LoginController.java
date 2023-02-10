@@ -5,7 +5,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.auth.dto.CommonLoginRes;
 import com.maan.eway.auth.dto.LoginRequest;
+import com.maan.eway.auth.dto.LogoutRequest;
 import com.maan.eway.auth.service.AuthendicationService;
 import com.maan.eway.auth.service.LoginValidatedService;
 import com.maan.eway.service.PrintReqService;
@@ -32,7 +32,6 @@ public class LoginController {
 	@Autowired
 	private PrintReqService reqPrinter;
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/login")
 	@ApiOperation(value="This method is to Create Token For Access Other Apis")
 	public ResponseEntity<CommonLoginRes> getloginToken(@RequestBody LoginRequest mslogin, HttpServletRequest http)  {
@@ -53,6 +52,11 @@ public class LoginController {
 		
 	}
 	
+	@PostMapping("/logout")
+	@ApiOperation(value="This method is used to Logout From Screen")
+	public CommonLoginRes logout(@RequestBody LogoutRequest mslogin)  {		
+		return authservice.logout(mslogin);
+	}
 
 	
 }

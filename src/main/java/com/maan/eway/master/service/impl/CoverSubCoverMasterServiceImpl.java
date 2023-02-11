@@ -697,9 +697,9 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 					errorList.add(new Error("08", "Dependent Cover Id", "Please Select Dependent Cover Id"));
 				}
 			}
-			if (StringUtils.isBlank(req.getCoverBasedOn())) {
-				errorList.add(new Error("01", "CoverBasedOn", "Please Select CoverBasedOn "));
-			}
+//			if (StringUtils.isBlank(req.getCoverBasedOn())) {
+//				errorList.add(new Error("01", "CoverBasedOn", "Please Select CoverBasedOn "));
+//			}
 			
 			// Date Validation
 			Calendar cal = new GregorianCalendar();
@@ -904,8 +904,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 	@Override
 	public SuccessRes updateSubCover(SubCoverUpdatedReq req) {
 		SuccessRes res = new SuccessRes();
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-		SimpleDateFormat sdformat = new SimpleDateFormat();
+		SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/yyyy");
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		SectionCoverMaster saveData = new SectionCoverMaster();
 		try {

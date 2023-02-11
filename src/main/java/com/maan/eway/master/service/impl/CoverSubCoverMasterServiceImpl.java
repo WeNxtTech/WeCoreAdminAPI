@@ -697,9 +697,9 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 					errorList.add(new Error("08", "Dependent Cover Id", "Please Select Dependent Cover Id"));
 				}
 			}
-			if (StringUtils.isBlank(req.getCoverBasedOn())) {
-				errorList.add(new Error("01", "CoverBasedOn", "Please Select CoverBasedOn "));
-			}
+//			if (StringUtils.isBlank(req.getCoverBasedOn())) {
+//				errorList.add(new Error("01", "CoverBasedOn", "Please Select CoverBasedOn "));
+//			}
 			
 			// Date Validation
 			Calendar cal = new GregorianCalendar();
@@ -904,8 +904,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 	@Override
 	public SuccessRes updateSubCover(SubCoverUpdatedReq req) {
 		SuccessRes res = new SuccessRes();
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-		SimpleDateFormat sdformat = new SimpleDateFormat();
+		SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/yyyy");
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		SectionCoverMaster saveData = new SectionCoverMaster();
 		try {
@@ -1094,17 +1093,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			
 			repo.saveAndFlush(saveData);
 
-			// Update Old Record
-			SectionCoverMaster lastRecord = list.get(0);
-			lastRecord.setEffectiveDateEnd(oldEndDate);
-			lastRecord.setSubCoverYn(subCoverYn);
-			String startDatewithoutTime = sdformat.format(startDate);
-			String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
-
-			if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
-				lastRecord.setStatus("N");	
-			}
-			repo.saveAndFlush(lastRecord);
+			
 			log.info("Saved Details is ---> " + json.toJson(saveData));
 
 			res.setResponse("Updated Successfully ");

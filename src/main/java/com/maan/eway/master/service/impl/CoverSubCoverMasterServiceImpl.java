@@ -1093,17 +1093,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			
 			repo.saveAndFlush(saveData);
 
-			// Update Old Record
-			SectionCoverMaster lastRecord = list.get(0);
-			lastRecord.setEffectiveDateEnd(oldEndDate);
-			lastRecord.setSubCoverYn(subCoverYn);
-			String startDatewithoutTime = sdformat.format(startDate);
-			String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
-
-			if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
-				lastRecord.setStatus("N");	
-			}
-			repo.saveAndFlush(lastRecord);
+			
 			log.info("Saved Details is ---> " + json.toJson(saveData));
 
 			res.setResponse("Updated Successfully ");

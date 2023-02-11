@@ -134,4 +134,7 @@ public class CoverMasterSaveReq implements Serializable {
 	@JsonProperty("IsSelectedYn")
     private String isSelectedYn;
 	
+	@JsonProperty("MultiSelectYn")
+    private String multiSelectYn;
+	
 }

@@ -126,4 +126,7 @@ public class SectionCoverMasterRes {
 	
 	@JsonProperty("IsSelectedYn")
     private String isSelectedYn;
+	
+	@JsonProperty("MultiSelectYn")
+    private String multiSelectYn;
 }

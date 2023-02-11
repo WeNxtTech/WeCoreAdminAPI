@@ -125,4 +125,7 @@ public class SectionCoverUpdateReq {
 	
 	@JsonProperty("IsSelectedYn")
     private String isSelectedYn;
+	
+	@JsonProperty("MultiSelectYn")
+    private String multiSelectYn;
 }

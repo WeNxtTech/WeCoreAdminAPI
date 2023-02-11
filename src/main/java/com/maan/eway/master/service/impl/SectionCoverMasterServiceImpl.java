@@ -1306,6 +1306,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				saveCover.setSubCoverId(Integer.valueOf(0));
 				saveCover.setSubCoverYn(req.getSubCoverYn());
 				saveCover.setDependentCoverYn(StringUtils.isNotBlank(req.getDependentCoverYn()) ? req.getDependentCoverYn() : "N");
+				saveCover.setMultiSelectYn( StringUtils.isNotBlank(req.getMultiSelectYn() ) ? req.getMultiSelectYn()  : "N");
 				repo.saveAndFlush(saveCover);
 
 				log.info("Saved Details is ---> " + json.toJson(saveCover));
@@ -1334,7 +1335,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				saveData.setCreatedBy(createdBy);
 				saveData.setUpdatedDate(new Date());
 				saveData.setUpdatedBy(req.getCreatedBy());
-				
+				saveData.setMultiSelectYn( StringUtils.isNotBlank(req.getMultiSelectYn() ) ? req.getMultiSelectYn()  : "N");
 				// Amount Details
 				if(req.getCalcType().equalsIgnoreCase("F")  ) {
 					

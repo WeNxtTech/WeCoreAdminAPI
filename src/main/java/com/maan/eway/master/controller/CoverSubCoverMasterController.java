@@ -143,6 +143,7 @@ public class CoverSubCoverMasterController {
 		// Get By Section Id
 		
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
+	@PostMapping("/getbycoversubcover")
 		@ApiOperation("This Method is to get by Sub Cover Id")
 		public ResponseEntity<CommonRes> getBySubCoverId(@RequestBody CoverSubCoverMasterGetReq req)
 		{

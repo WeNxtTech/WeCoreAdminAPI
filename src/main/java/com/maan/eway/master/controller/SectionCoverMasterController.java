@@ -54,7 +54,7 @@ public class SectionCoverMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+		@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/insertsectioncover")
 		@ApiOperation(value = "This method is Insert Section  Cover Details")
 		public ResponseEntity<CommonRes> insertSectionCover(@RequestBody List<SectionCoverMasterSaveReq> req) {
@@ -89,7 +89,7 @@ public class SectionCoverMasterController {
 
 		}
 		
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")		
+		@PreAuthorize("hasAnyRole('ROLE_ADMIN')")		
 		@PostMapping("/updatesectioncover")
 		@ApiOperation(value = "This method is Update Section  Cover Details")
 		public ResponseEntity<CommonRes> updateSectionCover(@RequestBody SectionCoverUpdateReq req) {
@@ -125,7 +125,7 @@ public class SectionCoverMasterController {
 		}
 		
 		//  Get All Cover Master
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+		@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/getallsectioncoverdetails")
 		@ApiOperation("This method is getall Section Cover Details")
 		public ResponseEntity<CommonRes> getallSectionCoverDetails(@RequestBody SectionCoverMasterGetAllReq req)
@@ -149,7 +149,7 @@ public class SectionCoverMasterController {
 		
 	//  Get Active Cover Master
 		
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+			@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 			@PostMapping("/getactivesectioncover")
 			@ApiOperation("This method is get Section Active Cover Details")
 			public ResponseEntity<CommonRes> getActiveCoverDetails(@RequestBody SectionCoverMasterGetAllReq req)
@@ -172,7 +172,7 @@ public class SectionCoverMasterController {
 			}
 		
 		// Get By Cover Id
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+		@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/getbysectioncoverid")
 		@ApiOperation("This Method is to get by Section Cover id")
 		public ResponseEntity<CommonRes> getBySectionCoverId(@RequestBody SectionCoverMasterGetReq req)
@@ -193,7 +193,7 @@ public class SectionCoverMasterController {
 	}
 
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+		@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/getallnonselectedsectioncovers")
 		@ApiOperation("This method is getall Cover Details")
 		public ResponseEntity<CommonRes> getallNonSelectedCovers(@RequestBody SectionCoverMasterNonSelectedReq req)
@@ -214,7 +214,7 @@ public class SectionCoverMasterController {
 				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
 			}
 		}
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
+		@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 		@PostMapping(value="/dropdown/sectioncover",produces = "application/json")
 		@ApiOperation(value = "This method is get Section Cover Master Drop Down")
 
@@ -238,7 +238,7 @@ public class SectionCoverMasterController {
 		}
 		
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
+		@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 		@PostMapping(value="/dropdown/discountsectioncover",produces = "application/json")
 		@ApiOperation(value = "This method is get Section Cover Master Drop Down")
 
@@ -261,7 +261,7 @@ public class SectionCoverMasterController {
 
 		}
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+		@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/sectioncover/changestatus")
 		@ApiOperation(value="This method is to get product referal Master")
 		public ResponseEntity<CommonRes> changestatusofSectionCover(@RequestBody SectionCoverChangeStatusReq req){

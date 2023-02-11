@@ -4,10 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.Properties;
 
 import javax.mail.BodyPart;
@@ -37,15 +35,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.MailMaster;
 import com.maan.eway.bean.NotifTemplateMaster;
-import com.maan.eway.bean.Sms;
-import com.maan.eway.bean.SmsConfigMaster;
-import com.maan.eway.bean.SmsDataDetails;
 import com.maan.eway.notif.req.GetMailTemplateReq;
 import com.maan.eway.notif.req.MailTriggerReq;
 import com.maan.eway.notif.req.ReadMailReq;
@@ -433,7 +427,7 @@ public class NotificationServiceImpl implements NotificationService {
 	public SuccessRes SendSms(SmsReq req) {
 
 		SuccessRes res = new SuccessRes();
-		
+	/*	
 		ModelMapper mapper = new ModelMapper();
 		Optional<SmsConfigMaster> master = smsm.findByCompanyId(req.getInsuranceid());
 		SmsConfigMaster rep=mapper.map(master.get(), SmsConfigMaster.class);
@@ -470,6 +464,7 @@ public class NotificationServiceImpl implements NotificationService {
 		Thread thread = new Thread(futureTask);
 		thread.start();
 		*/
+		
 		res.setResponse("SMS Pushed Sucessfully");
 		
 		return res;
@@ -539,12 +534,16 @@ public class NotificationServiceImpl implements NotificationService {
 		ModelMapper mapper = new ModelMapper();
 		List<SmsGetRes> resList = new ArrayList<SmsGetRes>();
 		try {
+		/*
 			List<SmsDataDetails> smsdatas = smsdatarepo.findByMobileNoOrderByReqTimeDesc(req.getMobileNo());
 			for(SmsDataDetails data : smsdatas) {
 				SmsGetRes res = new SmsGetRes();	
+			
 			mapper.map(data,res);
+			
 			resList.add(res);
 			}
+			*/
 		}
 		catch (Exception e) {
 			e.printStackTrace();

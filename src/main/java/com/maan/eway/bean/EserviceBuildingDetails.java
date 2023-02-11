@@ -297,6 +297,50 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="BANK_CODE", length=100)
     private String   bankCode;    
+    
+    @Column(name="ELEC_EQUIP_SUMNINSURED")
+    private BigDecimal ElecEquipSumninsured;
+
+
+    @Column(name="MONEY_SINGLECARRY_SUMNINSURED")
+    private BigDecimal MoneySinglecarrySumninsured;
+
+    @Column(name="MONEY_ANNUALCARRY_SUMNINSURED")
+    private BigDecimal MoneyAnnualcarrySumninsured;
+
+    @Column(name="MONEY_INSAFE_SUMNINSURED")
+    private BigDecimal MoneyInsafeSumninsured;
+
+    @Column(name="FIDELITY_ANYOCCU_SUMNINSURED")
+    private BigDecimal FidelityAnyoccuSumninsured;
+
+    @Column(name="FIDELITY_ANNUAL_SUMNINSURED")
+    private BigDecimal FidelityAnnualSumninsured;
+
+    @Column(name="TPLIABILITY_ANYOCCU_SUMNINSURED")
+    private BigDecimal TpliabilityAnyoccuSumninsured;
+
+    @Column(name="EMPLIABILITY_ANNUAL_SUMNINSURED")
+    private BigDecimal EmpliabilityAnnualSumninsured;
+
+
+    @Column(name="EMPLIABILITY_EXCESS_SUMNINSURED")
+    private BigDecimal EmpliabilityExcessSumninsured;
+
+    @Column(name="GOODS_SINGLECARRY_SUMNINSURED")
+    private BigDecimal GoodsSinglecarrySumninsured;
+
+    @Column(name="GOODS_TURNOVER_SUMNINSURED")
+    private BigDecimal GoodsTurnoverSumninsured;
+
+
+    @Column(name="INDUSTRY_ID")
+    private Integer  industryId ;
+
+    @Column(name="INDUSTRY_DESC", length=100)
+    private String  industryDesc ;
+
+
 }
 
 

@@ -983,8 +983,62 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 					}
 			
 				}
+				SectionCoverMaster coverDetails = new SectionCoverMaster(); 
+				
+				{// Cover Details
+					CriteriaBuilder cb2 = em.getCriteriaBuilder();
+					CriteriaQuery<SectionCoverMaster> query2 = cb2.createQuery(SectionCoverMaster.class);
+					//Find all
+					Root<SectionCoverMaster> b2 = query2.from(SectionCoverMaster.class);
+					//Select 
+					query2.select(b2);
+//					
+					// Order By
+					List<Order> orderList2 = new ArrayList<Order>();
+					orderList2.add(cb2.desc(b2.get("effectiveDateStart")));
+					
+					// Where
+				//	Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+					n2 = cb2.equal(b2.get("productId"), req.getProductId());
+					n3 = cb2.equal(b2.get("companyId"), req.getCompanyId());
+					n4 = cb2.equal(b2.get("sectionId"), req.getSectionId());
+					n5 = cb2.equal(b2.get("coverId"), req.getCoverId());
+					n6 = cb2.equal(b2.get("subCoverId"),"0");
+					
+					
+					query2.where(n2,n3,n4,n5,n6).orderBy(orderList2);
+					
+					// Get Result 
+					TypedQuery<SectionCoverMaster> result2 = em.createQuery(query);
+					limit = 0 ; offset = 2 ;
+					result2.setFirstResult(limit * offset);
+					result2.setMaxResults(offset);
+					List<SectionCoverMaster> coverlist = result2.getResultList();
+					coverDetails = coverlist.get(0);
+					
+				}
+				
+				
+			dozerMapper.map(req, saveData);
 			
-
+			saveData.setSubCoverId(Integer.valueOf(req.getSubCoverId()));
+			saveData.setEffectiveDateStart(startDate);
+			saveData.setCoverName(coverDetails.getCoverName());
+			saveData.setCoverDesc(coverDetails.getCoverDesc());
+			saveData.setCoverId(Integer.valueOf(coverId)) ;
+			saveData.setSubCoverId(Integer.valueOf(subcoverId)) ;
+			saveData.setEffectiveDateStart(startDate);
+			saveData.setEffectiveDateEnd(endDate);
+			saveData.setCreatedBy(createdBy);
+			saveData.setStatus(req.getStatus());
+			saveData.setEntryDate(new Date());
+			saveData.setUpdatedDate(new Date());
+			saveData.setUpdatedBy(req.getCreatedBy());
+			saveData.setAmendId(amendId);
+			saveData.setCoreAppCode(req.getCoreAppCode());
+			saveData.setRegulatoryCode(req.getRegulatoryCode());
+			saveData.setSubCoverYn("Y");
+			
 			// Amount Details
 			if (req.getCalcType().equalsIgnoreCase("F")) {
 
@@ -1078,20 +1132,6 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 				saveData.setTaxAmount(req.getTaxAmount()==null ? BigDecimal.ZERO :new BigDecimal(req.getTaxAmount()));
 				saveData.setTaxCode(req.getTaxCode());
 			}
-			saveData.setDependentCoverYn(StringUtils.isNotBlank(req.getDependentCoverYn()) ? req.getDependentCoverYn() : "N" );
-			saveData.setCoverId(Integer.valueOf(coverId)) ;
-			saveData.setSubCoverId(Integer.valueOf(subcoverId)) ;
-			saveData.setEffectiveDateStart(startDate);
-			saveData.setEffectiveDateEnd(endDate);
-			saveData.setCreatedBy(createdBy);
-			saveData.setStatus(req.getStatus());
-			saveData.setEntryDate(new Date());
-			saveData.setUpdatedDate(new Date());
-			saveData.setUpdatedBy(req.getCreatedBy());
-			saveData.setAmendId(amendId);
-			saveData.setCoreAppCode(req.getCoreAppCode());
-			saveData.setRegulatoryCode(req.getRegulatoryCode());
-			saveData.setDependentCoverYn(StringUtils.isNotBlank(req.getDependentCoverYn()) ? req.getDependentCoverYn() : "N" );
 			
 			repo.saveAndFlush(saveData);
 

@@ -1611,14 +1611,14 @@ public Integer getMasterTableCount(String companyId , String branchCode) {
 				for (FactorRateMaster  data : list) {
 					FactorParamsInsert fParam = new FactorParamsInsert();
 					fParam  =  dozerMapper.map(data, FactorParamsInsert.class);
-					 fParam.setParam1( data.getParam1()==null?"" : data.getParam1().toString());
-					 fParam.setParam2( data.getParam2()==null?"" : data.getParam2().toString());
-					 fParam.setParam3( data.getParam3()==null?"" : data.getParam3().toString());
-					 fParam.setParam4( data.getParam4()==null?"" : data.getParam4().toString());
-					 fParam.setParam5( data.getParam5()==null?"" : data.getParam5().toString());
-					 fParam.setParam6( data.getParam6()==null?"" : data.getParam6().toString());
-					 fParam.setParam7( data.getParam7()==null?"" : data.getParam7().toString());
-					 fParam.setParam8( data.getParam8()==null?"" : data.getParam8().toString());
+					 fParam.setParam1( data.getParam1()==null?"" : data.getParam1().toPlainString());
+					 fParam.setParam2( data.getParam2()==null?"" : data.getParam2().toPlainString());
+					 fParam.setParam3( data.getParam3()==null?"" : data.getParam3().toPlainString());
+					 fParam.setParam4( data.getParam4()==null?"" : data.getParam4().toPlainString());
+					 fParam.setParam5( data.getParam5()==null?"" : data.getParam5().toPlainString());
+					 fParam.setParam6( data.getParam6()==null?"" : data.getParam6().toPlainString());
+					 fParam.setParam7( data.getParam7()==null?"" : data.getParam7().toPlainString());
+					 fParam.setParam8( data.getParam8()==null?"" : data.getParam8().toPlainString());
 					 fParam.setSno(data.getSNo().toString());
 					fParam.setRate(data.getRate().toString());
 					fParam.setCalType(data.getCalcType());

@@ -1009,7 +1009,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 					query2.where(n2,n3,n4,n5,n6).orderBy(orderList2);
 					
 					// Get Result 
-					TypedQuery<SectionCoverMaster> result2 = em.createQuery(query);
+					TypedQuery<SectionCoverMaster> result2 = em.createQuery(query2);
 					limit = 0 ; offset = 2 ;
 					result2.setFirstResult(limit * offset);
 					result2.setMaxResults(offset);

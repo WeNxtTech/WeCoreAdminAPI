@@ -1081,6 +1081,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			saveData.setDependentCoverYn(StringUtils.isNotBlank(req.getDependentCoverYn()) ? req.getDependentCoverYn() : "N" );
 			saveData.setCoverId(Integer.valueOf(coverId)) ;
 			saveData.setSubCoverId(Integer.valueOf(subcoverId)) ;
+			saveData.setEffectiveDateStart(startDate);
 			saveData.setEffectiveDateEnd(endDate);
 			saveData.setCreatedBy(createdBy);
 			saveData.setStatus(req.getStatus());
@@ -1089,6 +1090,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			saveData.setUpdatedBy(req.getCreatedBy());
 			saveData.setAmendId(amendId);
 			saveData.setCoreAppCode(req.getCoreAppCode());
+			saveData.setRegulatoryCode(req.getRegulatoryCode());
 			saveData.setDependentCoverYn(StringUtils.isNotBlank(req.getDependentCoverYn()) ? req.getDependentCoverYn() : "N" );
 			
 			repo.saveAndFlush(saveData);

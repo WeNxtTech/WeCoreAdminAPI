@@ -853,14 +853,6 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				
 			}
 			
-			if (StringUtils.isNotBlank(req.getDependentCoverYn()) && req.getDependentCoverYn().equalsIgnoreCase("Y") ) {
-				if (StringUtils.isBlank(req.getDependentCoverId()) ) {
-					errorList.add(new Error("08", "Dependent Cover Id", "Please Select Dependent Cover Id"));
-				}
-			}
-			if (StringUtils.isBlank(req.getCoverBasedOn())) {
-				errorList.add(new Error("01", "CoverBasedOn", "Please Select CoverBasedOn "));
-			}
 			
 			if (StringUtils.isBlank(req.getSubCoverYn())) {
 				errorList.add(new Error("08", "SubCoverYn", "Please Enter SubCoverYn"));
@@ -914,17 +906,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				}	
 			} 
 			
-			if(StringUtils.isNotBlank(req.getCoverageType()) && req.getCoverageType().equalsIgnoreCase("P") ) {
-				if (req.getEffectiveDateEnd()==null) {
-					errorList.add(new Error("14", "EffectiveDateEnd", "Please Enter EffectiveDateEnd"));
-				}else if (req.getEffectiveDateStart()!=null && req.getEffectiveDateEnd()!=null) {
-					if( req.getEffectiveDateStart().after(req.getEffectiveDateEnd())) {
-						errorList.add(new Error("14", "EffectiveDateEnd", "EffectiveDateStart After EffectiveDateEnd Not Allwoed"));	
-					}
-					
-				}
-			}
-			
+
 			if (StringUtils.isBlank(req.getCreatedBy())) {
 				errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy "));
 			} else if (req.getCreatedBy().length() > 100) {
@@ -950,129 +932,153 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				errorList.add(new Error("09", "Remarks", "Enter Remarks  within 100 Characters Only"));
 			}
 			
-			// Rating Master Validation
-			if (StringUtils.isBlank(req.getCoverageType())) {
-				errorList.add(new Error("09", "CoverageType", "Please Select CoverageType"));
-			}
-			
-			if (StringUtils.isBlank(req.getCoverageLimit())) {
-				errorList.add(new Error("09", "CoverageLimit", "Please Enter CoverageLimit"));
-			} else if (! req.getCoverageLimit().matches("[0-9.]+") ) {
-				errorList.add(new Error("09", "CoverageLimit", "Please Enter Valid Number In CoverageLimit "));
-			}
-			
-			if (StringUtils.isBlank(req.getExcess())) {
-				errorList.add(new Error("09", "Excess", "Please Enter Excess"));
-			} else if (! req.getExcess().matches("[0-9.]+") ) {
-				errorList.add(new Error("09", "Excess", "Please Enter Valid Number In Excess"));
-			}
-			
-			if (StringUtils.isBlank(req.getCalcType())) {
-				errorList.add(new Error("09", "CalcType", "Please Select CalcType"));
-			} 
-			
-			// Tax Calculation
-			if (StringUtils.isBlank(req.getIsTaxExcempted())) {
-				errorList.add(new Error("08", "IsTaxExcempted", "Please Enter Is Tax Excempted"));
-			} else if (req.getIsTaxExcempted().length() > 1) {
-				errorList.add(new Error("08", "IsTaxExcempted", "Enter Is Tax Excempted in 1 Character Only"));
-			} else if (!("Y".equals(req.getIsTaxExcempted()) || "N".equals(req.getIsTaxExcempted()))) {
-				errorList.add(new Error("08", "IsTaxExcempted", "Enter Is Tax Excempted Y or N Only"));
-				
-			} else if(req.getIsTaxExcempted().equalsIgnoreCase("Y") ){
-				if (StringUtils.isBlank(req.getTaxExcemptionReference())) {
-					errorList.add(new Error("08", "TaxExcemptionReference", "Please Enter Tax Excemption Reference"));
-				} else if (req.getTaxExcemptionReference().length() >100 ) {
-					errorList.add(new Error("08", "TaxExcemptionReference", "100 Chatracters Only Allowed As Tax Excemption Reference"));
-				} 
-				
-				if (StringUtils.isBlank(req.getTaxExcemptionType())) {
-					errorList.add(new Error("08", "TaxExcemptionType", "Please Select Tax Excemption Type"));
-				} else if (! req.getTaxExcemptionType().matches( "[0-9]+") ) {
-					errorList.add(new Error("08", "TaxExcemptionType", "Please Select Tax Excemption Type"));
-				} 
-			} else if(req.getIsTaxExcempted().equalsIgnoreCase("N") ){
-				if (StringUtils.isBlank(req.getTaxAmount())) {
-					errorList.add(new Error("08", "TaxAmount", "Please Enter TaxAmount"));
-				} else if (! req.getTaxAmount().matches( "[0-9.]+") ) {
-					errorList.add(new Error("08", "TaxAmount", "Please Enter Valid Tax Amount"));
-				} 
-				
-				if (StringUtils.isBlank(req.getTaxCode())) {
-					errorList.add(new Error("08", "TaxCode", "Please Enter Tax Code "));
-				} else if (req.getTaxCode().length() >100 ) {
-					errorList.add(new Error("08", "TaxCode", "100 Chatracters Only Allowed As Tax Code "));
-				} 
-			}
-			
-			if (StringUtils.isNotBlank(req.getCalcType()) &&  req.getCalcType().equalsIgnoreCase("F") ) {
-				
-				if( StringUtils.isBlank(req.getFactorTypeId()) ) {
-					errorList.add(new Error("09", "Factor Type Id", "Please Enter Factor Type Id "));
-				
-				}
+			if( StringUtils.isNotBlank(req.getSubCoverYn()) && req.getSubCoverYn().equalsIgnoreCase("N")  ) {
 
-			} else if( StringUtils.isNotBlank(req.getCalcType()) &&  req.getCalcType().equalsIgnoreCase("G")  ) {
-				if(req.getGridDetails() == null || req.getGridDetails().size()<=0 ) {
-					errorList.add(new Error("09", "Grid ", "Please Enter Atleast One Grid Details"));
-				} else {
-					Integer row = 0 ;
-					for (OfsGridSaveReq data : req.getGridDetails() ) {
-						row = row + 1 ;
-						if (StringUtils.isBlank(data.getBaseRate())) {
-							errorList.add(new Error("09", "BaseRate", "Please Enter BaseRate in Grid Row No : " + row));
-						} else if (! data.getBaseRate().matches("[0-9.]+") ) {
-							errorList.add(new Error("09", "BaseRate", "Please Enter Valid Number In BaseRate in Grid Row No : " + row ));
+				if (StringUtils.isNotBlank(req.getDependentCoverYn()) && req.getDependentCoverYn().equalsIgnoreCase("Y") ) {
+					if (StringUtils.isBlank(req.getDependentCoverId()) ) {
+						errorList.add(new Error("08", "Dependent Cover Id", "Please Select Dependent Cover Id"));
+					}
+				}
+				if (StringUtils.isBlank(req.getCoverBasedOn())) {
+					errorList.add(new Error("01", "CoverBasedOn", "Please Select CoverBasedOn "));
+				}
+				
+				if(StringUtils.isNotBlank(req.getCoverageType()) && req.getCoverageType().equalsIgnoreCase("P") ) {
+					if (req.getEffectiveDateEnd()==null) {
+						errorList.add(new Error("14", "EffectiveDateEnd", "Please Enter EffectiveDateEnd"));
+					}else if (req.getEffectiveDateStart()!=null && req.getEffectiveDateEnd()!=null) {
+						if( req.getEffectiveDateStart().after(req.getEffectiveDateEnd())) {
+							errorList.add(new Error("14", "EffectiveDateEnd", "EffectiveDateStart After EffectiveDateEnd Not Allwoed"));	
 						}
 						
-						if (StringUtils.isBlank(data.getSumInsuredStart())) {
-							errorList.add(new Error("09", "SumInsuredStart", "Please Enter SumInsuredStart  in Grid Row No : " + row ));
-						} else if (! data.getSumInsuredStart().matches("[0-9.]+") ) {
-							errorList.add(new Error("09", "SumInsuredStart", "Please Enter Valid Number In SumInsuredStart  in Grid Row No : " + row ));
-						} else if (StringUtils.isBlank(data.getSumInsuredEnd())) {
-							errorList.add(new Error("09", "SumInsuredEnd", "Please Enter SumInsuredEnd  in Row No : " + row ));
-						} else if (! data.getSumInsuredEnd().matches("[0-9.]+") ) {
-							errorList.add(new Error("09", "SumInsuredEnd", "Please Enter Valid Number In SumInsuredEnd  in Grid Row No : " + row ));
-						}  else if (Double.valueOf(data.getSumInsuredStart())  > Double.valueOf(data.getSumInsuredEnd())  ) {
-							errorList.add(new Error("09", "SumInsuredEnd", "SumInsuredEnd must be greater than SumInsuredStart  in Grid Row No : " + row ));
-						}
-						
-						if (StringUtils.isBlank(data.getMinimumPremium())) {
-							errorList.add(new Error("09", "MinimumPremium", "Please Enter MinimumPremium  in Grid Row No : " + row ));
-						} else if (! data.getMinimumPremium().matches("[0-9.]+") ) {
-							errorList.add(new Error("09", "MinimumPremium", "Please Enter Valid Number In MinimumPremium  in Grid Row No : " + row ));
-						}
 					}
 				}
 				
+			
 				
-			} else  {
-				
-				if (StringUtils.isBlank(req.getBaseRate())) {
-					errorList.add(new Error("09", "BaseRate", "Please Enter BaseRate" ));
-				} else if (! req.getBaseRate().matches("[0-9.]+") ) {
-					errorList.add(new Error("09", "BaseRate", "Please Enter Valid Number In BaseRate"));
+				// Rating Master Validation
+				if (StringUtils.isBlank(req.getCoverageType())) {
+					errorList.add(new Error("09", "CoverageType", "Please Select CoverageType"));
 				}
 				
-				if (StringUtils.isBlank(req.getSumInsuredStart())) {
-					errorList.add(new Error("09", "SumInsuredStart", "Please Enter SumInsuredStart"));
-				} else if (! req.getSumInsuredStart().matches("[0-9.]+") ) {
-					errorList.add(new Error("09", "SumInsuredStart", "Please Enter Valid Number In SumInsuredStart"));
-				} else if (StringUtils.isBlank(req.getSumInsuredEnd())) {
-					errorList.add(new Error("09", "SumInsuredEnd", "Please Enter SumInsuredEnd"));
-				} else if (! req.getSumInsuredEnd().matches("[0-9.]+") ) {
-					errorList.add(new Error("09", "SumInsuredEnd", "Please Enter Valid Number In SumInsuredEnd"));
-				}  else if (Double.valueOf(req.getSumInsuredStart())  > Double.valueOf(req.getSumInsuredEnd())  ) {
-					errorList.add(new Error("09", "SumInsuredEnd", "SumInsuredEnd must be greater than SumInsuredStart "));
+				if (StringUtils.isBlank(req.getCoverageLimit())) {
+					errorList.add(new Error("09", "CoverageLimit", "Please Enter CoverageLimit"));
+				} else if (! req.getCoverageLimit().matches("[0-9.]+") ) {
+					errorList.add(new Error("09", "CoverageLimit", "Please Enter Valid Number In CoverageLimit "));
 				}
 				
-				if (StringUtils.isBlank(req.getMinimumPremium())) {
-					errorList.add(new Error("09", "MinimumPremium", "Please Enter MinimumPremium"));
-				} else if (! req.getMinimumPremium().matches("[0-9.]+") ) {
-					errorList.add(new Error("09", "MinimumPremium", "Please Enter Valid Number In MinimumPremium"));
+				if (StringUtils.isBlank(req.getExcess())) {
+					errorList.add(new Error("09", "Excess", "Please Enter Excess"));
+				} else if (! req.getExcess().matches("[0-9.]+") ) {
+					errorList.add(new Error("09", "Excess", "Please Enter Valid Number In Excess"));
+				}
+				
+				if (StringUtils.isBlank(req.getCalcType())) {
+					errorList.add(new Error("09", "CalcType", "Please Select CalcType"));
+				} 
+				
+				// Tax Calculation
+				if (StringUtils.isBlank(req.getIsTaxExcempted())) {
+					errorList.add(new Error("08", "IsTaxExcempted", "Please Enter Is Tax Excempted"));
+				} else if (req.getIsTaxExcempted().length() > 1) {
+					errorList.add(new Error("08", "IsTaxExcempted", "Enter Is Tax Excempted in 1 Character Only"));
+				} else if (!("Y".equals(req.getIsTaxExcempted()) || "N".equals(req.getIsTaxExcempted()))) {
+					errorList.add(new Error("08", "IsTaxExcempted", "Enter Is Tax Excempted Y or N Only"));
+					
+				} else if(req.getIsTaxExcempted().equalsIgnoreCase("Y") ){
+					if (StringUtils.isBlank(req.getTaxExcemptionReference())) {
+						errorList.add(new Error("08", "TaxExcemptionReference", "Please Enter Tax Excemption Reference"));
+					} else if (req.getTaxExcemptionReference().length() >100 ) {
+						errorList.add(new Error("08", "TaxExcemptionReference", "100 Chatracters Only Allowed As Tax Excemption Reference"));
+					} 
+					
+					if (StringUtils.isBlank(req.getTaxExcemptionType())) {
+						errorList.add(new Error("08", "TaxExcemptionType", "Please Select Tax Excemption Type"));
+					} else if (! req.getTaxExcemptionType().matches( "[0-9]+") ) {
+						errorList.add(new Error("08", "TaxExcemptionType", "Please Select Tax Excemption Type"));
+					} 
+				} else if(req.getIsTaxExcempted().equalsIgnoreCase("N") ){
+					if (StringUtils.isBlank(req.getTaxAmount())) {
+						errorList.add(new Error("08", "TaxAmount", "Please Enter TaxAmount"));
+					} else if (! req.getTaxAmount().matches( "[0-9.]+") ) {
+						errorList.add(new Error("08", "TaxAmount", "Please Enter Valid Tax Amount"));
+					} 
+					
+					if (StringUtils.isBlank(req.getTaxCode())) {
+						errorList.add(new Error("08", "TaxCode", "Please Enter Tax Code "));
+					} else if (req.getTaxCode().length() >100 ) {
+						errorList.add(new Error("08", "TaxCode", "100 Chatracters Only Allowed As Tax Code "));
+					} 
+				}
+				
+				if (StringUtils.isNotBlank(req.getCalcType()) &&  req.getCalcType().equalsIgnoreCase("F") ) {
+					
+					if( StringUtils.isBlank(req.getFactorTypeId()) ) {
+						errorList.add(new Error("09", "Factor Type Id", "Please Enter Factor Type Id "));
+					
+					}
+	
+				} else if( StringUtils.isNotBlank(req.getCalcType()) &&  req.getCalcType().equalsIgnoreCase("G")  ) {
+					if(req.getGridDetails() == null || req.getGridDetails().size()<=0 ) {
+						errorList.add(new Error("09", "Grid ", "Please Enter Atleast One Grid Details"));
+					} else {
+						Integer row = 0 ;
+						for (OfsGridSaveReq data : req.getGridDetails() ) {
+							row = row + 1 ;
+							if (StringUtils.isBlank(data.getBaseRate())) {
+								errorList.add(new Error("09", "BaseRate", "Please Enter BaseRate in Grid Row No : " + row));
+							} else if (! data.getBaseRate().matches("[0-9.]+") ) {
+								errorList.add(new Error("09", "BaseRate", "Please Enter Valid Number In BaseRate in Grid Row No : " + row ));
+							}
+							
+							if (StringUtils.isBlank(data.getSumInsuredStart())) {
+								errorList.add(new Error("09", "SumInsuredStart", "Please Enter SumInsuredStart  in Grid Row No : " + row ));
+							} else if (! data.getSumInsuredStart().matches("[0-9.]+") ) {
+								errorList.add(new Error("09", "SumInsuredStart", "Please Enter Valid Number In SumInsuredStart  in Grid Row No : " + row ));
+							} else if (StringUtils.isBlank(data.getSumInsuredEnd())) {
+								errorList.add(new Error("09", "SumInsuredEnd", "Please Enter SumInsuredEnd  in Row No : " + row ));
+							} else if (! data.getSumInsuredEnd().matches("[0-9.]+") ) {
+								errorList.add(new Error("09", "SumInsuredEnd", "Please Enter Valid Number In SumInsuredEnd  in Grid Row No : " + row ));
+							}  else if (Double.valueOf(data.getSumInsuredStart())  > Double.valueOf(data.getSumInsuredEnd())  ) {
+								errorList.add(new Error("09", "SumInsuredEnd", "SumInsuredEnd must be greater than SumInsuredStart  in Grid Row No : " + row ));
+							}
+							
+							if (StringUtils.isBlank(data.getMinimumPremium())) {
+								errorList.add(new Error("09", "MinimumPremium", "Please Enter MinimumPremium  in Grid Row No : " + row ));
+							} else if (! data.getMinimumPremium().matches("[0-9.]+") ) {
+								errorList.add(new Error("09", "MinimumPremium", "Please Enter Valid Number In MinimumPremium  in Grid Row No : " + row ));
+							}
+						}
+					}
+					
+					
+				} else  {
+					
+					if (StringUtils.isBlank(req.getBaseRate())) {
+						errorList.add(new Error("09", "BaseRate", "Please Enter BaseRate" ));
+					} else if (! req.getBaseRate().matches("[0-9.]+") ) {
+						errorList.add(new Error("09", "BaseRate", "Please Enter Valid Number In BaseRate"));
+					}
+					
+					if (StringUtils.isBlank(req.getSumInsuredStart())) {
+						errorList.add(new Error("09", "SumInsuredStart", "Please Enter SumInsuredStart"));
+					} else if (! req.getSumInsuredStart().matches("[0-9.]+") ) {
+						errorList.add(new Error("09", "SumInsuredStart", "Please Enter Valid Number In SumInsuredStart"));
+					} else if (StringUtils.isBlank(req.getSumInsuredEnd())) {
+						errorList.add(new Error("09", "SumInsuredEnd", "Please Enter SumInsuredEnd"));
+					} else if (! req.getSumInsuredEnd().matches("[0-9.]+") ) {
+						errorList.add(new Error("09", "SumInsuredEnd", "Please Enter Valid Number In SumInsuredEnd"));
+					}  else if (Double.valueOf(req.getSumInsuredStart())  > Double.valueOf(req.getSumInsuredEnd())  ) {
+						errorList.add(new Error("09", "SumInsuredEnd", "SumInsuredEnd must be greater than SumInsuredStart "));
+					}
+					
+					if (StringUtils.isBlank(req.getMinimumPremium())) {
+						errorList.add(new Error("09", "MinimumPremium", "Please Enter MinimumPremium"));
+					} else if (! req.getMinimumPremium().matches("[0-9.]+") ) {
+						errorList.add(new Error("09", "MinimumPremium", "Please Enter Valid Number In MinimumPremium"));
+					}
 				}
 			}
-			
 				
 			
 		} catch (Exception e) {

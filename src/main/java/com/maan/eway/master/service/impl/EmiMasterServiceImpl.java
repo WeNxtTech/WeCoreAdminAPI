@@ -41,7 +41,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.EmiMaster;
-import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.EmiMaster;
 import com.maan.eway.bean.EmiMaster;
 import com.maan.eway.bean.EmiMaster;
@@ -94,9 +93,9 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 
 			// Emi Master Validation
 			if (StringUtils.isBlank(req.getPolicyType())) {
-				errorList.add(new Error("01", "PolicyType", "Please Enter Policy Type "));
+				errorList.add(new Error("01", "PolicyType", "Please Enter PolicyType "));
 			} else if (req.getPolicyType().length() > 20) {
-				errorList.add(new Error("01", "PolicyType", "Please Enter Policy Type within 100 Characters"));
+				errorList.add(new Error("01", "PolicyType", "Please PolicyType within 100 Characters"));
 			} 
 
 			// Date Validation
@@ -141,18 +140,18 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			}
 			else if(Integer.valueOf(req.getInstallmentPeriod())<0) {
 				errorList.add(new Error("06", "InstallmentPeriod", "InstallmentPeriod Should be Greather than 0"));
-			}else if((StringUtils.isBlank(req.getEmiId()))) {
+			}
+			else {
 				EmiMaster installmentPeriod =getInstallmentPeriod(req.getInstallmentPeriod(),req.getCompanyId(),req.getProductId(),req.getPolicyType());
-				if (installmentPeriod!=null) {
+				if(StringUtils.isBlank(req.getInstallmentPeriod()) &&  installmentPeriod!=null ) {
 					errorList.add(new Error("08", "InstallmentPeriod", "This InstallmentPeriod  Already Exist"));
-				}
-			}else  {
-				EmiMaster installmentPeriod =getInstallmentPeriod(req.getInstallmentPeriod(),req.getCompanyId(),req.getProductId(),req.getPolicyType());
-				if (installmentPeriod !=null  &&  (! req.getEmiId().equalsIgnoreCase(installmentPeriod.getEmiId().toString())) ) {
-					errorList.add(new Error("01", "EMI", "This EMI Already Exist "));
+				} else if( installmentPeriod !=null  && StringUtils.isNotBlank(req.getInstallmentPeriod()) ) {
+					if( installmentPeriod.getInstallmentPeriod().equalsIgnoreCase(req.getInstallmentPeriod()) ) {
+						errorList.add(new Error("08", "InstallmentPeriod", "This InstallmentPeriod  Already Exist"));	
+					}			
 				}
 			}
-	
+
 			if (StringUtils.isBlank(req.getPremiumEnd())) {
 				errorList.add(new Error("07", "PremiumEnd", "Please Enter PremiumEnd"));
 			} else if (!req.getPremiumEnd().matches("[0-9.]+")) {

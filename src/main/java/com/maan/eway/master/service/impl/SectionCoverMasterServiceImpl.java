@@ -1311,6 +1311,8 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				saveCover.setStatus(req.getStatus());
 				saveCover.setSubCoverId(Integer.valueOf(0));
 				saveCover.setSubCoverYn(req.getSubCoverYn());
+				saveCover.setIsSelectedYn(req.getIsSelectedYn());
+				saveCover.setRemarks(req.getRemarks());
 				saveCover.setDependentCoverYn(StringUtils.isNotBlank(req.getDependentCoverYn()) ? req.getDependentCoverYn() : "N");
 				saveCover.setMultiSelectYn( StringUtils.isNotBlank(req.getMultiSelectYn() ) ? req.getMultiSelectYn()  : "N");
 				repo.saveAndFlush(saveCover);

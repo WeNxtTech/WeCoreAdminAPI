@@ -133,7 +133,7 @@ public class CompanyProductMasterController {
 
 	}
 	
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/getallcompanyproducts")
 	@ApiOperation("This method is getall Company Product Master")
 	public ResponseEntity<CommonRes> getallCompanyProductDetails(@RequestBody CompanyProductMasterGetAllReq req)
@@ -156,7 +156,7 @@ public class CompanyProductMasterController {
 	}
 	
 //  Get Active Cover Master
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/getactivecompanyproducts")
 		@ApiOperation("This method is get Active Company Product Master")
 		public ResponseEntity<CommonRes> getActiveCompanyProductDetails(@RequestBody CompanyProductMasterGetAllReq req)
@@ -179,7 +179,7 @@ public class CompanyProductMasterController {
 		}
 		
 		// Get By Cover Id
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/getbycompanyproductid")
 		@ApiOperation("This Method is to get by Company Product Master id")
 		public ResponseEntity<CommonRes> getByCompanyProductId(@RequestBody CompanyProductMasterGetReq req)
@@ -200,7 +200,7 @@ public class CompanyProductMasterController {
 	    }
 
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/getallnonselectedcompanyproducts")
 		@ApiOperation("This method is getall Company Product Master")
 		public ResponseEntity<CommonRes> getallNonSelectedCompanyProducts(@RequestBody CompanyProductMasterGetAllReq req)

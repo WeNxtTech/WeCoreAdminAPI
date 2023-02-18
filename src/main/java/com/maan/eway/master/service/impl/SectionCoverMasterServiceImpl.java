@@ -1222,7 +1222,6 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 						amendId = list.get(0).getAmendId() ;
 						entryDate = list.get(0).getEntryDate() ;
 						createdBy = list.get(0).getCreatedBy();
-						saveData = list.get(0) ;
 						if (list.size()>1 ) {
 							SectionCoverMaster lastRecord = list.get(1);
 							lastRecord.setEffectiveDateEnd(oldEndDate);

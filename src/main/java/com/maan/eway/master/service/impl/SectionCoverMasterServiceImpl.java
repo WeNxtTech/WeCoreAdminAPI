@@ -1259,8 +1259,8 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				saveCover.setRemarks(req.getRemarks());
 				saveCover.setDependentCoverYn(StringUtils.isNotBlank(req.getDependentCoverYn()) ? req.getDependentCoverYn() : "N");
 				saveCover.setMultiSelectYn( StringUtils.isNotBlank(req.getMultiSelectYn() ) ? req.getMultiSelectYn()  : "N");
-				saveData.setAgencyCode(StringUtils.isNotBlank(req.getAgencyCode()) ? req.getAgencyCode() : "99999") ;
-				saveData.setBranchCode(StringUtils.isNotBlank(req.getBranchCode()) ? req.getBranchCode() : "99999");
+				saveCover.setAgencyCode(StringUtils.isNotBlank(req.getAgencyCode()) ? req.getAgencyCode() : "99999") ;
+				saveCover.setBranchCode(StringUtils.isNotBlank(req.getBranchCode()) ? req.getBranchCode() : "99999");
 				repo.saveAndFlush(saveCover);
 
 				log.info("Saved Details is ---> " + json.toJson(saveCover));

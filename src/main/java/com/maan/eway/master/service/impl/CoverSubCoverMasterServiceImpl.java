@@ -522,8 +522,9 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			Predicate n5 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
 			Predicate n6 = cb.equal(b.get("subCoverYn"), "Y");
 			Predicate n7 = cb.equal(b.get("status"), "Y");
+			n8 = cb.notEqual(b.get("subCoverYn"), "0");
 			
-			query.where(n1, n4, n5, n6, n7).orderBy(orderList);
+			query.where(n1, n4, n5, n6, n7,n8).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CoverMaster> result = em.createQuery(query);

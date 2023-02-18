@@ -1034,7 +1034,9 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			saveData.setRegulatoryCode(req.getRegulatoryCode());
 			saveData.setSubCoverYn("Y");
 			saveData.setMultiSelectYn(coverDetails.getMultiSelectYn());
-			
+			saveData.setAgencyCode(StringUtils.isNotBlank(req.getAgencyCode()) ? req.getAgencyCode() : "99999") ;
+			saveData.setBranchCode(StringUtils.isNotBlank(req.getBranchCode()) ? req.getBranchCode() : "99999");
+		
 			// Amount Details
 			if (req.getCalcType().equalsIgnoreCase("F")) {
 

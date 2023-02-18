@@ -943,8 +943,10 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			Predicate n4 = cb.equal(b.get("subCoverId"), req.getSubCoverId());
 			Predicate n5 = cb.equal(b.get("sectionId"), req.getSectionId());
 			Predicate n6 = cb.equal(b.get("productId"), req.getProductId());
+			Predicate n7 = cb.equal(b.get("agencyCode"), StringUtils.isNotBlank(req.getAgencyCode()) ? req.getAgencyCode() : "99999");
+			Predicate n8 = cb.equal(b.get("branchCode"), StringUtils.isNotBlank(req.getBranchCode()) ? req.getBranchCode() : "99999");
 					
-			query.where(n2,n3,n4,n5,n6).orderBy(orderList);
+			query.where(n2,n3,n4,n5,n6,n7,n8).orderBy(orderList);
 			
 			// Get Result 
 			TypedQuery<SectionCoverMaster> result = em.createQuery(query);
@@ -998,7 +1000,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 					n4 = cb2.equal(b2.get("sectionId"), req.getSectionId());
 					n5 = cb2.equal(b2.get("coverId"), req.getCoverId());
 					n6 = cb2.equal(b2.get("subCoverId"),"0");
-					Predicate n8 = cb2.equal(b2.get("agencyCode"), req.getAgencyCode());
+					 n8 = cb2.equal(b2.get("agencyCode"), req.getAgencyCode());
 					Predicate n9 = cb2.equal(b2.get("agencyCode"), "99999");
 					Predicate n10 = cb2.or(n8,n9);
 					Predicate n11 = cb2.equal(b2.get("branchCode"), req.getBranchCode());

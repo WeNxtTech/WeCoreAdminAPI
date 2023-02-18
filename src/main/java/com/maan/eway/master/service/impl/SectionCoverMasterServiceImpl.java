@@ -1216,14 +1216,11 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate n6 = cb.equal(b.get("productId"),req.getProductId());
 			Predicate n7 = cb.equal(b.get("companyId"),req.getCompanyId());
 			Predicate n4 = cb.equal(b.get("subCoverId"), "0");
-			Predicate n8 = cb.equal(b.get("agencyCode"), req.getAgencyCode());
-			Predicate n9 = cb.equal(b.get("agencyCode"), "99999");
-			Predicate n10 = cb.or(n8,n9);
-			Predicate n11 = cb.equal(b.get("branchCode"), req.getBranchCode());
-			Predicate n12 = cb.equal(b.get("branchCode"), "99999");
-			Predicate n13 = cb.or(n11,n12 );
+			Predicate n8 = cb.equal(b.get("agencyCode"), StringUtils.isNotBlank(req.getAgencyCode()) ? req.getAgencyCode() : "99999");
+			Predicate n9 = cb.equal(b.get("branchCode"), StringUtils.isNotBlank(req.getBranchCode()) ? req.getBranchCode() : "99999");
 			
-			query.where(n1, n3,n4,n5,n6,n7,n10,n13 ).orderBy(orderList);
+			
+			query.where(n1, n3,n4,n5,n6,n7,n8,n9 ).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<SectionCoverMaster> result = em.createQuery(query);

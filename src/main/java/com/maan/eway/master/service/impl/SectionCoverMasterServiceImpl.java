@@ -533,8 +533,9 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Root<CoverMaster> ocpm1 = amendId.from(CoverMaster.class);
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
+			Predicate a2 = cb.equal(ocpm1.get("subCoverId"),"0");
 		//	Predicate a3 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"), today);
-			amendId.where(a1);
+			amendId.where(a1,a2);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -552,20 +553,21 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate eff4 = cb.equal(ocpm2.get("companyId"), ps.get("companyId"));
 			Predicate eff5 = cb.equal(ocpm2.get("agencyCode"), ps.get("agencyCode"));
 			Predicate eff6 = cb.equal(ocpm2.get("branchCode"), ps.get("branchCode"));
-			amendId2.where(eff1, eff2, eff3, eff4,eff5,eff6);
+			Predicate eff7 = cb.equal(ocpm2.get("subCoverId"), "0");
+			amendId2.where(eff1, eff2, eff3, eff4,eff5,eff6,eff7);
 
 			// Section Cover Filter
 			cover.select(ps.get("coverId"));
-			Predicate ps1 = cb.equal(ps.get("coverId"), b.get("coverId"));
+			Predicate ps1 = cb.equal(ps.get("subCoverId"),"0");
 			Predicate ps2 = cb.equal(ps.get("productId"), req.getProductId());
 			Predicate ps3 = cb.equal(ps.get("sectionId"), req.getSectionId());
 			Predicate ps4 = cb.equal(ps.get("companyId"), req.getCompanyId());
 			Predicate ps5 = cb.equal(ps.get("amendId"), amendId2);
-			Predicate n8 = cb.equal(b.get("agencyCode"), req.getAgencyCode());
-			Predicate n9 = cb.equal(b.get("agencyCode"), "99999");
+			Predicate n8 = cb.equal(ps.get("agencyCode"), req.getAgencyCode());
+			Predicate n9 = cb.equal(ps.get("agencyCode"), "99999");
 			Predicate n10 = cb.or(n8,n9);
-			Predicate n11 = cb.equal(b.get("branchCode"), req.getBranchCode());
-			Predicate n12 = cb.equal(b.get("branchCode"), "99999");
+			Predicate n11 = cb.equal(ps.get("branchCode"), req.getBranchCode());
+			Predicate n12 = cb.equal(ps.get("branchCode"), "99999");
 			Predicate n13 = cb.or(n11,n12 );
 			cover.where(ps1, ps2, ps3, ps4, ps5,n10,n13);
 
@@ -575,7 +577,8 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n3 = cb.equal(b.get("status"), "Y");
 			Predicate n4 = e0.in(cover).not();
-			query.where(n1, n3, n4).orderBy(orderList);
+			Predicate n5 = cb.equal(b.get("subCoverId"), "0");
+			query.where(n1, n3, n4,n5).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CoverMaster> result = em.createQuery(query);

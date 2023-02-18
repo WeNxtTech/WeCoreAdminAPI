@@ -1577,28 +1577,18 @@ public Integer getMasterTableCount(String companyId , String branchCode) {
 			} else {
 				n7 =  cb.equal(b.get("subCoverId"), req.getSubCoverId()); 
 			}
+			n8 = cb.equal(b.get("agencyCode"), req.getAgencyCode());
+			n9 = cb.equal(b.get("agencyCode"), "99999");
+			Predicate n10 = cb.or(n8 , n9);
+			Predicate n11 = cb.equal(b.get("branchCode"), req.getBranchCode());
+			Predicate n12 = cb.equal(b.get("branchCode"), "99999");
+			Predicate n13 = cb.or(n11 , n12);
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("sNo")));
-			
-			if(StringUtils.isBlank(req.getAgencyCode())  ) {
-				n8 = cb.equal(b.get("agencyCode"), "99999");
-				n9 = cb.equal(b.get("branchCode"), "99999");
-				query.where(n1, n2, n3,n4,n5,n6,n7,n8,n9).orderBy(orderList);
-				
-			} else {
-				n8 = cb.equal(b.get("agencyCode"), req.getAgencyCode());
-				if(StringUtils.isNotBlank(req.getBranchCode())   ) { 
-				n9 = cb.equal(b.get("branchCode"), req.getBranchCode());
-				query.where(n1, n2, n3,n4,n5,n6,n7,n8,n9).orderBy(orderList);
-				} else {
-					n9 = cb.equal(b.get("branchCode"), "99999");
-					query.where(n1, n2, n3,n4,n5,n6,n7,n8,n9).orderBy(orderList);
-				}
-				
-			}	
-	
+			query.where(n1, n2, n3,n4,n5,n6,n7,n10,n13).orderBy(orderList);
+		
 			// Get Result
 			TypedQuery<FactorRateMaster> result = em.createQuery(query);
 			list = result.getResultList();

@@ -495,6 +495,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			effectiveDate3.where(a7, a8, a9, a10, a11, a12,a19,a20);
 
 			subCover.select(ocpm4.get("subCoverId"));
+			 a19 = cb.notEqual(b.get("subCoverId"), req.getCoverId());
 			Predicate a13 = cb.notEqual(ocpm4.get("subCoverId"), "0");
 			Predicate a14 = cb.equal(ocpm4.get("coverId"), req.getCoverId());
 			Predicate a15 = cb.equal(ocpm4.get("productId"), req.getProductId());
@@ -508,7 +509,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			Predicate n12 = cb.equal(ocpm4.get("branchCode"), "99999");
 			Predicate n13 = cb.or(n11,n12 );
 			
-			subCover.where(a13, a14, a15, a16, a17, a18,n10,n13);
+			subCover.where(a13, a14, a15, a16, a17, a18,n10,n13,a19);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();

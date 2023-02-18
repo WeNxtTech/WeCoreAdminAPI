@@ -317,6 +317,25 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			// Get Result
 			TypedQuery<SectionCoverMaster> result = em.createQuery(query);
 			list = result.getResultList();
+			
+			// Filter By Agency Code & Branch Code
+			String agencyCode = StringUtils.isNotBlank(req.getAgencyCode()) ? req.getAgencyCode() : "99999"  ;
+			String branchCode = StringUtils.isNotBlank(req.getBranchCode()) ? req.getBranchCode() : "99999"  ;
+		
+			List<SectionCoverMaster> filerByAgencyCodeBranchCode = list.stream().filter( o -> o.getAgencyCode().equalsIgnoreCase(agencyCode) &&  o.getBranchCode().equalsIgnoreCase(branchCode) ).collect(Collectors.toList());
+			List<SectionCoverMaster> filerByAgencyCode = list.stream().filter( o ->  o.getAgencyCode().equalsIgnoreCase(agencyCode) &&  o.getBranchCode().equalsIgnoreCase("99999")  ).collect(Collectors.toList());
+			List<SectionCoverMaster> filerByCommon = list.stream().filter( o ->  o.getAgencyCode().equalsIgnoreCase("99999") &&  o.getBranchCode().equalsIgnoreCase("99999")  ).collect(Collectors.toList());
+			
+			if(filerByAgencyCodeBranchCode.size() > 0) {
+				list = filerByAgencyCodeBranchCode;
+				
+			} else if (filerByAgencyCode.size() > 0) {
+				list = filerByAgencyCode;
+				
+			} else if (filerByCommon.size() > 0) {
+				list = filerByCommon;
+			}
+			
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getSubCoverId()))).collect(Collectors.toList());
 			list.sort(Comparator.comparing(SectionCoverMaster :: getSubCoverName ));
 			// Map
@@ -407,6 +426,25 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			TypedQuery<SectionCoverMaster> result = em.createQuery(query);
 
 			list = result.getResultList();
+			
+			// Filter By Agency Code & Branch Code
+			String agencyCode = StringUtils.isNotBlank(req.getAgencyCode()) ? req.getAgencyCode() : "99999"  ;
+			String branchCode = StringUtils.isNotBlank(req.getBranchCode()) ? req.getBranchCode() : "99999"  ;
+		
+			List<SectionCoverMaster> filerByAgencyCodeBranchCode = list.stream().filter( o -> o.getAgencyCode().equalsIgnoreCase(agencyCode) &&  o.getBranchCode().equalsIgnoreCase(branchCode) ).collect(Collectors.toList());
+			List<SectionCoverMaster> filerByAgencyCode = list.stream().filter( o ->  o.getAgencyCode().equalsIgnoreCase(agencyCode) &&  o.getBranchCode().equalsIgnoreCase("99999")  ).collect(Collectors.toList());
+			List<SectionCoverMaster> filerByCommon = list.stream().filter( o ->  o.getAgencyCode().equalsIgnoreCase("99999") &&  o.getBranchCode().equalsIgnoreCase("99999")  ).collect(Collectors.toList());
+			
+			if(filerByAgencyCodeBranchCode.size() > 0) {
+				list = filerByAgencyCodeBranchCode;
+				
+			} else if (filerByAgencyCode.size() > 0) {
+				list = filerByAgencyCode;
+				
+			} else if (filerByCommon.size() > 0) {
+				list = filerByCommon;
+			}
+			
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCoverId()))).collect(Collectors.toList());
 			list.sort(Comparator.comparing(SectionCoverMaster :: getCoverName ));
 			res = mapper.map(list.get(0), CoverSubCoverGetRes.class);
@@ -606,6 +644,26 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			// Get Result
 			TypedQuery<SectionCoverMaster> result = em.createQuery(query);
 			list = result.getResultList();
+			
+			// Filter By Agency Code & Branch Code
+			String agencyCode = StringUtils.isNotBlank(req.getAgencyCode()) ? req.getAgencyCode() : "99999"  ;
+			String branchCode = StringUtils.isNotBlank(req.getBranchCode()) ? req.getBranchCode() : "99999"  ;
+		
+			List<SectionCoverMaster> filerByAgencyCodeBranchCode = list.stream().filter( o -> o.getAgencyCode().equalsIgnoreCase(agencyCode) &&  o.getBranchCode().equalsIgnoreCase(branchCode) ).collect(Collectors.toList());
+			List<SectionCoverMaster> filerByAgencyCode = list.stream().filter( o ->  o.getAgencyCode().equalsIgnoreCase(agencyCode) &&  o.getBranchCode().equalsIgnoreCase("99999")  ).collect(Collectors.toList());
+			List<SectionCoverMaster> filerByCommon = list.stream().filter( o ->  o.getAgencyCode().equalsIgnoreCase("99999") &&  o.getBranchCode().equalsIgnoreCase("99999")  ).collect(Collectors.toList());
+			
+			if(filerByAgencyCodeBranchCode.size() > 0) {
+				list = filerByAgencyCodeBranchCode;
+				
+			} else if (filerByAgencyCode.size() > 0) {
+				list = filerByAgencyCode;
+				
+			} else if (filerByCommon.size() > 0) {
+				list = filerByCommon;
+			}
+			
+			
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCoverId()))).collect(Collectors.toList());
 			list.sort(Comparator.comparing(SectionCoverMaster :: getCoverName ));
 			// Map

@@ -104,9 +104,6 @@ public class CoverMasterSaveReq implements Serializable {
 	@JsonProperty("FactorTypeId")
 	private String factorTypeId;
 	
-	@JsonProperty("GridDetails")
-	private List<OfsGridSaveReq> gridDetails;
-
 	@JsonProperty("IsTaxExcempted")
 	private String isTaxExcempted;
 	

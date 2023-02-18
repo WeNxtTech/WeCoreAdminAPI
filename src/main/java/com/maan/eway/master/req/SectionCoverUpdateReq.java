@@ -19,6 +19,11 @@ public class SectionCoverUpdateReq {
 	
 	@JsonProperty("SectionId")
 	private String sectionId;
+	@JsonProperty("AgencyCode")
+	private String agencyCode;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
 	
 	@JsonProperty("InsuranceId")
 	private String companyId;
@@ -95,9 +100,6 @@ public class SectionCoverUpdateReq {
 	@JsonProperty("FactorTypeId")
 	private String factorTypeId;
 	
-	@JsonProperty("GridDetails")
-	private List<OfsGridSaveReq> gridDetails;
-
 	@JsonProperty("IsTaxExcempted")
 	private String isTaxExcempted;
 	

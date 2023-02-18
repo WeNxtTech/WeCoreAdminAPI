@@ -23,7 +23,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
@@ -40,32 +39,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.CoverMaster;
-import com.maan.eway.bean.CoverOfsGridMaster;
 import com.maan.eway.bean.CurrencyMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.bean.OccupationMaster;
-import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.SectionCoverMaster;
-import com.maan.eway.bean.SectionCoverOfsGridMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CoverSubCoverChangeStatusReq;
 import com.maan.eway.master.req.CoverSubCoverMasterGetAllReq;
 import com.maan.eway.master.req.CoverSubCoverMasterGetReq;
 import com.maan.eway.master.req.CoverSubCoverMasterSaveReq;
-import com.maan.eway.master.req.OfsGridGetRes;
-import com.maan.eway.master.req.OfsGridSaveReq;
 import com.maan.eway.master.req.SubCoverDropDownReq;
 import com.maan.eway.master.req.SubCoverUpdatedReq;
 import com.maan.eway.master.res.CoverSubCoverGetRes;
 import com.maan.eway.master.res.SubCoverMasterGetRes;
 import com.maan.eway.master.service.CoverSubCoverMasterService;
-import com.maan.eway.repository.CoverOfsGridMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.SectionCoverMasterRepository;
-import com.maan.eway.repository.SectionCoverOfsGridMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 
@@ -84,12 +74,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 	@Autowired
 	private SectionCoverMasterRepository repo;
 
-	@Autowired
-	private CoverOfsGridMasterRepository ofsRepo;
-
-	@Autowired
-	private SectionCoverOfsGridMasterRepository secOfsRepo;
-
+	
 	@Autowired
 	private ListItemValueRepository listRepo;
 
@@ -219,37 +204,10 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 				saveData.setCompanyId(req.getCompanyId());
 				saveData.setCreatedBy(req.getCreatedBy());
 				saveData.setCoreAppCode("99999");
+				saveData.setAgencyCode(StringUtils.isNotBlank(req.getAgencyCode()) ? req.getAgencyCode() : "99999") ;
+				saveData.setBranchCode(StringUtils.isNotBlank(req.getBranchCode()) ? req.getBranchCode() : "99999");
+			
 				repo.saveAndFlush(saveData);
-
-				if (saveData.getCalcType().equalsIgnoreCase("G")) {
-
-					// find old records
-					List<SectionCoverOfsGridMaster> secOfsDatas = secOfsRepo
-							.findByCompanyIdAndProductIdAndSectionIdAndCoverIdAndSubCoverIdOrderByCoveragesSubIdAsc(
-									req.getCompanyId(), Integer.valueOf(req.getProductId()),
-									Integer.valueOf(req.getSectionId()), saveData.getCoverId(),
-									saveData.getSubCoverId());
-
-					if (secOfsDatas.size() > 0) {
-						secOfsRepo.deleteAll(secOfsDatas);
-					}
-
-					// Save new Rceords
-					List<CoverOfsGridMaster> ofsDatas = ofsRepo.findByCoverIdAndSubCoverIdOrderByCoveragesSubIdAsc(
-							saveData.getCoverId(), saveData.getSubCoverId());
-
-					for (CoverOfsGridMaster ofs : ofsDatas) {
-						SectionCoverOfsGridMaster secOfsSave = new SectionCoverOfsGridMaster();
-						dozerMapper.map(ofs, secOfsSave);
-						secOfsSave.setCompanyId(req.getCompanyId());
-						secOfsSave.setProductId(Integer.valueOf(req.getProductId()));
-						secOfsSave.setSectionId(Integer.valueOf(req.getSectionId()));
-						secOfsSave.setEntryDate(new Date());
-						secOfsSave.setCreatedBy(req.getCreatedBy());
-						secOfsRepo.saveAndFlush(secOfsSave);
-					}
-				}
-
 				log.info("Saved Details is ---> " + json.toJson(saveData));
 			}
 		} catch (Exception e) {
@@ -286,8 +244,10 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			Predicate a3 = cb.equal(ocpm1.get("coverId"),b.get("coverId"));
 			Predicate a4 = cb.equal(ocpm1.get("sectionId"),b.get("sectionId"));
 			Predicate a5 = cb.equal(ocpm1.get("productId"),b.get("productId"));
-
-			amendId.where(a1, a2,a3,a4,a5);
+			Predicate a13 = cb.equal(ocpm1.get("agencyCode"), b.get("agencyCode"));
+			Predicate a14 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+			
+			amendId.where(a1, a2,a3,a4,a5,a13,a14);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -300,8 +260,14 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			Predicate n4 = cb.equal(b.get("sectionId"), req.getSectionId());
 			Predicate n5 = cb.equal(b.get("coverId"), req.getCoverId());
 			Predicate n6 = cb.notEqual(b.get("subCoverId"), "0");
+			Predicate n8 = cb.equal(b.get("agencyCode"), req.getAgencyCode());
+			Predicate n9 = cb.equal(b.get("agencyCode"), "99999");
+			Predicate n10 = cb.or(n8,n9);
+			Predicate n11 = cb.equal(b.get("branchCode"), req.getBranchCode());
+			Predicate n12 = cb.equal(b.get("branchCode"), "99999");
+			Predicate n13 = cb.or(n11,n12 );
 
-			query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n5,n6,n10,n13).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<SectionCoverMaster> result = em.createQuery(query);
@@ -367,8 +333,10 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			Predicate a3 = cb.equal(ocpm1.get("sectionId"),b.get("sectionId"));
 			Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
 			Predicate a5 = cb.equal(ocpm1.get("coverId"),b.get("coverId"));
-
-			amendId.where(a1, a2,a3,a4,a5);
+			Predicate a13 = cb.equal(ocpm1.get("agencyCode"), b.get("agencyCode"));
+			Predicate a14 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+			
+			amendId.where(a1, a2,a3,a4,a5,a13,a14);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -381,7 +349,14 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			Predicate n4 = cb.equal(b.get("productId"), req.getProductId());
 			Predicate n6 = cb.equal(b.get("sectionId"),req.getSectionId());
 			Predicate n7 = cb.equal(b.get("coverId"),req.getCoverId());
-			query.where(n1,n2,n3,n4,n6,n7).orderBy(orderList);
+			Predicate n8 = cb.equal(b.get("agencyCode"), req.getAgencyCode());
+			Predicate n9 = cb.equal(b.get("agencyCode"), "99999");
+			Predicate n10 = cb.or(n8,n9);
+			Predicate n11 = cb.equal(b.get("branchCode"), req.getBranchCode());
+			Predicate n12 = cb.equal(b.get("branchCode"), "99999");
+			Predicate n13 = cb.or(n11,n12 );
+
+			query.where(n1,n2,n3,n4,n6,n7,n10,n13).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<SectionCoverMaster> result = em.createQuery(query);
@@ -401,26 +376,6 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			res.setBaseRate(list.get(0).getBaseRate() == null ? "" : df.format(list.get(0).getBaseRate()));
 			res.setCoverageLimit(list.get(0).getCoverageLimit() == null ? "" : df.format(list.get(0).getCoverageLimit()));
 			
-			// Ofs Details
-			List<OfsGridGetRes> gridDetails =  new ArrayList<OfsGridGetRes>();
-			if( res.getCalcType().equalsIgnoreCase("G") ) {
-				List<SectionCoverOfsGridMaster> ofsGrids   = secOfsRepo.findByCompanyIdAndProductIdAndSectionIdAndCoverIdAndSubCoverIdOrderByCoveragesSubIdAsc(list.get(0).getCompanyId() ,list.get(0).getProductId() ,list.get(0).getSectionId(), list.get(0).getCoverId() , list.get(0).getSubCoverId() );
-				
-				for( SectionCoverOfsGridMaster data : ofsGrids ) {
-					OfsGridGetRes dataRes = new OfsGridGetRes();
-					dataRes.setBaseRate(data.getBaseRate() ==null ?"" :data.getBaseRate().toString());
-					dataRes.setCalcType(data.getCalcType() );
-					dataRes.setCalcTypeDesc(data.getCalcTypeDesc() );
-					dataRes.setMinimumPremium(data.getMinimumPremium() ==null ?"" : data.getMinimumPremium().toString() );
-					dataRes.setSumInsuredStart(data.getStartSuminsured() ==null ?"" : data.getStartSuminsured().toString() );
-					dataRes.setSumInsuredEnd(data.getEndSuminsured() ==null ?"" : data.getEndSuminsured().toString()  );
-					dataRes.setCoverageSubId(String.valueOf(data.getCoveragesSubId()));
-					
-					gridDetails.add(dataRes);
-				}
-			}
-			
-			res.setGridDetails(gridDetails);
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -489,7 +444,10 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			Predicate a10 = cb.equal(ocpm3.get("sectionId"), ocpm4.get("sectionId"));
 			Predicate a11 = cb.equal(ocpm3.get("companyId"), ocpm4.get("companyId"));
 			Predicate a12 = cb.greaterThanOrEqualTo(ocpm3.get("effectiveDateEnd"), todayEnd);
-			effectiveDate3.where(a7, a8, a9, a10, a11, a12);
+			Predicate a20 = cb.equal(ocpm3.get("agencyCode"), ocpm4.get("agencyCode"));
+			Predicate a19 = cb.equal(ocpm3.get("branchCode"), ocpm4.get("branchCode"));
+			
+			effectiveDate3.where(a7, a8, a9, a10, a11, a12,a19,a20);
 
 			subCover.select(ocpm4.get("subCoverId"));
 			Predicate a13 = cb.equal(ocpm4.get("subCoverId"), b.get("subCoverId"));
@@ -498,7 +456,10 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			Predicate a16 = cb.equal(ocpm4.get("sectionId"), req.getSectionId());
 			Predicate a17 = cb.equal(ocpm4.get("companyId"), req.getCompanyId());
 			Predicate a18 = cb.greaterThanOrEqualTo(ocpm4.get("effectiveDateEnd"), todayEnd);
-			subCover.where(a13, a14, a15, a16, a17, a18);
+			Predicate a21 = cb.equal(ocpm3.get("agencyCode"), ocpm4.get("agencyCode"));
+			Predicate a22 = cb.equal(ocpm3.get("branchCode"), ocpm4.get("branchCode"));
+			
+			subCover.where(a13, a14, a15, a16, a17, a18,a21,a22);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -512,9 +473,15 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			Predicate n5 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
 			Predicate n6 = cb.equal(b.get("subCoverYn"), "Y");
 			Predicate n7 = cb.equal(b.get("status"), "Y");
-			Predicate n8 = cb.equal(b.get("coverId"), req.getCoverId());
-
-			query.where(n1, n4, n5, n6, n7, n8).orderBy(orderList);
+			Predicate n14= cb.equal(b.get("coverId"), req.getCoverId());
+			Predicate n8 = cb.equal(b.get("agencyCode"), req.getAgencyCode());
+			Predicate n9 = cb.equal(b.get("agencyCode"), "99999");
+			Predicate n10 = cb.or(n8,n9);
+			Predicate n11 = cb.equal(b.get("branchCode"), req.getBranchCode());
+			Predicate n12 = cb.equal(b.get("branchCode"), "99999");
+			Predicate n13 = cb.or(n11,n12 );
+			
+			query.where(n1, n4, n5, n6, n7, n10,n13,n14).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CoverMaster> result = em.createQuery(query);
@@ -565,8 +532,10 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			Predicate a3 = cb.equal(ocpm1.get("sectionId"),b.get("sectionId"));
 			Predicate a4 = cb.equal(ocpm1.get("coverId"),b.get("coverId"));
 			Predicate a5 = cb.equal(ocpm1.get("subCoverId"),b.get("subCoverId"));
-
-			amendId.where(a1, a2,a3,a4,a5);
+			Predicate a13 = cb.equal(ocpm1.get("agencyCode"), b.get("agencyCode"));
+			Predicate a14 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+			
+			amendId.where(a1, a2,a3,a4,a5,a13,a14);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -580,8 +549,14 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			Predicate n5 = cb.equal(b.get("sectionId"),req.getSectionId());
 			Predicate n6 = cb.equal(b.get("coverId"),req.getCoverId());
 			Predicate n7 = cb.notEqual(b.get("subCoverId"), "0");
+			Predicate n8 = cb.equal(b.get("agencyCode"), req.getAgencyCode());
+			Predicate n9 = cb.equal(b.get("agencyCode"), "99999");
+			Predicate n10 = cb.or(n8,n9);
+			Predicate n11 = cb.equal(b.get("branchCode"), req.getBranchCode());
+			Predicate n12 = cb.equal(b.get("branchCode"), "99999");
+			Predicate n13 = cb.or(n11,n12 );
 
-			query.where(n1,n2,n3,n4,n5,n6,n7).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n5,n6,n7,n10,n13).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<SectionCoverMaster> result = em.createQuery(query);
@@ -632,8 +607,10 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			Predicate a3 = cb.equal(ocpm1.get("sectionId"),b.get("sectionId"));
 			Predicate a4 = cb.equal(ocpm1.get("coverId"),b.get("coverId"));
 			Predicate a5 = cb.equal(ocpm1.get("subCoverId"),b.get("subCoverId"));
-
-			amendId.where(a1, a2,a3,a4,a5);
+			Predicate a13 = cb.equal(ocpm1.get("agencyCode"), b.get("agencyCode"));
+			Predicate a14 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+			
+			amendId.where(a1, a2,a3,a4,a5,a13,a14);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -645,8 +622,14 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			Predicate n3 = cb.equal(b.get("productId"), req.getProductId());
 			Predicate n4 = cb.equal(b.get("sectionId"), req.getSectionId());
 			Predicate n5 = cb.equal(b.get("coverId"),req.getCoverId());
-			
-			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+			Predicate n8 = cb.equal(b.get("agencyCode"), req.getAgencyCode());
+			Predicate n9 = cb.equal(b.get("agencyCode"), "99999");
+			Predicate n10 = cb.or(n8,n9);
+			Predicate n11 = cb.equal(b.get("branchCode"), req.getBranchCode());
+			Predicate n12 = cb.equal(b.get("branchCode"), "99999");
+			Predicate n13 = cb.or(n11,n12 );
+				
+			query.where(n1,n2,n3,n4,n5,n10,n13).orderBy(orderList);
 			
 			// Get Result 
 			TypedQuery<SectionCoverMaster> result = em.createQuery(query);
@@ -822,48 +805,6 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 
 				}
 
-			} else if (StringUtils.isNotBlank(req.getCalcType()) && req.getCalcType().equalsIgnoreCase("G")) {
-				if (req.getGridDetails() == null || req.getGridDetails().size() <= 0) {
-					errorList.add(new Error("09", "Grid ", "Please Enter Atleast One Grid Details"));
-				} else {
-					Integer row = 0;
-					for (OfsGridSaveReq data : req.getGridDetails()) {
-						row = row + 1;
-						if (StringUtils.isBlank(data.getBaseRate())) {
-							errorList.add(new Error("09", "BaseRate", "Please Enter BaseRate in Grid Row No : " + row));
-						} else if (!data.getBaseRate().matches("[0-9.]+")) {
-							errorList.add(new Error("09", "BaseRate",
-									"Please Enter Valid Number In BaseRate in Grid Row No : " + row));
-						}
-
-						if (StringUtils.isBlank(data.getSumInsuredStart())) {
-							errorList.add(new Error("09", "SumInsuredStart",
-									"Please Enter SumInsuredStart  in Grid Row No : " + row));
-						} else if (!data.getSumInsuredStart().matches("[0-9.]+")) {
-							errorList.add(new Error("09", "SumInsuredStart",
-									"Please Enter Valid Number In SumInsuredStart  in Grid Row No : " + row));
-						} else if (StringUtils.isBlank(data.getSumInsuredEnd())) {
-							errorList.add(
-									new Error("09", "SumInsuredEnd", "Please Enter SumInsuredEnd  in Row No : " + row));
-						} else if (!data.getSumInsuredEnd().matches("[0-9.]+")) {
-							errorList.add(new Error("09", "SumInsuredEnd",
-									"Please Enter Valid Number In SumInsuredEnd  in Grid Row No : " + row));
-						} else if (Double.valueOf(data.getSumInsuredStart()) > Double
-								.valueOf(data.getSumInsuredEnd())) {
-							errorList.add(new Error("09", "SumInsuredEnd",
-									"SumInsuredEnd must be greater than SumInsuredStart  in Grid Row No : " + row));
-						}
-
-						if (StringUtils.isBlank(data.getMinimumPremium())) {
-							errorList.add(new Error("09", "MinimumPremium",
-									"Please Enter MinimumPremium  in Grid Row No : " + row));
-						} else if (!data.getMinimumPremium().matches("[0-9.]+")) {
-							errorList.add(new Error("09", "MinimumPremium",
-									"Please Enter Valid Number In MinimumPremium  in Grid Row No : " + row));
-						}
-					}
-				}
-
 			} else {
 
 				if (StringUtils.isBlank(req.getBaseRate())) {
@@ -983,6 +924,8 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 					}
 			
 				}
+			}
+			
 				SectionCoverMaster coverDetails = new SectionCoverMaster(); 
 				
 				{// Cover Details
@@ -1004,9 +947,15 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 					n4 = cb2.equal(b2.get("sectionId"), req.getSectionId());
 					n5 = cb2.equal(b2.get("coverId"), req.getCoverId());
 					n6 = cb2.equal(b2.get("subCoverId"),"0");
+					Predicate n8 = cb.equal(b.get("agencyCode"), req.getAgencyCode());
+					Predicate n9 = cb.equal(b.get("agencyCode"), "99999");
+					Predicate n10 = cb.or(n8,n9);
+					Predicate n11 = cb.equal(b.get("branchCode"), req.getBranchCode());
+					Predicate n12 = cb.equal(b.get("branchCode"), "99999");
+					Predicate n13 = cb.or(n11,n12 );
 					
 					
-					query2.where(n2,n3,n4,n5,n6).orderBy(orderList2);
+					query2.where(n2,n3,n4,n5,n6,n10,n13).orderBy(orderList2);
 					
 					// Get Result 
 					TypedQuery<SectionCoverMaster> result2 = em.createQuery(query2);
@@ -1054,54 +1003,6 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 				saveData.setMaxSuminsured(StringUtils.isBlank(req.getSumInsuredEnd())? BigDecimal.ZERO :new BigDecimal(req.getSumInsuredEnd()));
 				saveData.setMinSuminsured(StringUtils.isBlank(req.getSumInsuredStart())? BigDecimal.ZERO :new BigDecimal(req.getSumInsuredStart()));
 				
-			}  else if (req.getCalcType().equalsIgnoreCase("G")) {
-
-				// Delete Old Ofs Records
-				List<SectionCoverOfsGridMaster> ofsGrids = secOfsRepo
-						.findByCompanyIdAndProductIdAndSectionIdAndCoverIdAndSubCoverIdOrderByCoveragesSubIdAsc(
-								req.getCompanyId(), Integer.valueOf(req.getProductId()),
-								Integer.valueOf(req.getSectionId()), Integer.valueOf(coverId),
-								Integer.valueOf(subcoverId));
-				if (ofsGrids.size() > 0) {
-					secOfsRepo.deleteAll(ofsGrids);
-				}
-
-				saveData.setBaseRate( BigDecimal.ZERO );
-				saveData.setMinPremium( BigDecimal.ZERO );
-				saveData.setMaxSuminsured( BigDecimal.ZERO );
-				saveData.setMinSuminsured( BigDecimal.ZERO );
-			}
-				// Ofs Grid Insert
-				Integer coverageSubId = 0;
-				for (OfsGridSaveReq data : req.getGridDetails()) {
-					SectionCoverOfsGridMaster ofsSave = new SectionCoverOfsGridMaster();
-					subcoverId = coverId;
-					coverageSubId = coverageSubId + 1;
-					ofsSave.setCreatedBy(req.getCreatedBy());
-					ofsSave.setCoverId(Integer.valueOf(coverId));
-					ofsSave.setSubCoverId(Integer.valueOf(subcoverId));
-					ofsSave.setSectionId(Integer.valueOf(req.getSectionId()));
-					ofsSave.setProductId(Integer.valueOf(req.getProductId()));
-					ofsSave.setCompanyId(req.getCompanyId());
-					ofsSave.setCoveragesSubId(coverageSubId);
-					ofsSave.setCreatedBy(req.getCreatedBy());
-					ofsSave.setEntryDate(new Date());
-					ofsSave.setStatus(req.getStatus());
-					ofsSave.setCalcType(list.get(0).getCalcType());
-					ofsSave.setCalcTypeDesc(
-							calcTypes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(data.getCalcType()))
-									.collect(Collectors.toList()).get(0).getItemValue());
-
-					// Amount
-					ofsSave.setBaseRate(
-							StringUtils.isBlank(data.getBaseRate()) ? BigDecimal.ZERO :new BigDecimal(data.getBaseRate()));
-					ofsSave.setMinimumPremium(StringUtils.isBlank(data.getMinimumPremium()) ? BigDecimal.ZERO :new BigDecimal(data.getMinimumPremium()));
-					ofsSave.setStartSuminsured(StringUtils.isBlank(data.getSumInsuredEnd()) ? BigDecimal.ZERO :new BigDecimal(data.getSumInsuredEnd()));
-					ofsSave.setEndSuminsured(StringUtils.isBlank(data.getSumInsuredStart()) ? BigDecimal.ZERO :new BigDecimal(data.getSumInsuredStart()));
-
-					secOfsRepo.saveAndFlush(ofsSave);
-				}
-
 			} else {
 
 				saveData.setBaseRate(StringUtils.isBlank(req.getBaseRate()) ? BigDecimal.ZERO :new BigDecimal(req.getBaseRate()));
@@ -1143,9 +1044,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			res.setResponse("Updated Successfully ");
 			res.setSuccessId(coverId);
 
-				}
-			
-			catch (Exception e) {
+		}catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
 			return null;
@@ -1338,8 +1237,14 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("subCoverYn"), "Y");
 			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("coverId"),req.getCoverId());
+			Predicate n8 = cb.equal(c.get("agencyCode"), req.getAgencyCode());
+			Predicate n9 = cb.equal(c.get("agencyCode"), "99999");
+			Predicate n10 = cb.or(n8,n9);
+			Predicate n11 = cb.equal(c.get("branchCode"), req.getBranchCode());
+			Predicate n12 = cb.equal(c.get("branchCode"), "99999");
+			Predicate n13 = cb.or(n11,n12 );
 			
-			query.where(n1, n2, n3, n4,n5).orderBy(orderList);
+			query.where(n1, n2, n3, n4,n5,n10,n13).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CoverMaster> result = em.createQuery(query);

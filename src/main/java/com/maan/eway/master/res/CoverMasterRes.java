@@ -115,9 +115,7 @@ public class CoverMasterRes implements Serializable {
 	
 	@JsonProperty("AmendId")
 	private String amendId;
-	
-	@JsonProperty("GridDetails")
-	private List<OfsGridGetRes> gridDetails;
+
 	@JsonProperty("IsTaxExcempted")
 	private String isTaxExcempted;
 	

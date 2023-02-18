@@ -97,9 +97,6 @@ public class SectionCoverMasterRes {
 	@JsonProperty("SumInsuredStart")
 	private String sumInsuredStart;
 	
-	@JsonProperty("GridDetails")
-	private List<OfsGridGetRes> gridDetails;
-	
 	@JsonProperty("DiscountCoverId")
 	private String discountCoverId;
 	

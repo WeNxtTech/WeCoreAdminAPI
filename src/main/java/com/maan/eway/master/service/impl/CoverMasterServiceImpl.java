@@ -24,9 +24,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -42,22 +40,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.CoverMaster;
-import com.maan.eway.bean.CoverOfsGridMaster;
 import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.controller.DiscountCoverReq;
 import com.maan.eway.master.req.CoverChangeStatusReq;
-import com.maan.eway.master.req.CoverMasterGetAllReq;
 import com.maan.eway.master.req.CoverMasterGetReq;
 import com.maan.eway.master.req.CoverMasterSaveReq;
-import com.maan.eway.master.req.OfsGridGetRes;
-import com.maan.eway.master.req.OfsGridSaveReq;
 import com.maan.eway.master.res.CoverMasterGetAllRes;
 import com.maan.eway.master.res.CoverMasterRes;
 import com.maan.eway.master.service.CoverMasterService;
 import com.maan.eway.repository.CoverMasterRepository;
-import com.maan.eway.repository.CoverOfsGridMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
@@ -74,9 +66,7 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 
 	@Autowired
 	private ListItemValueRepository listRepo;
-	
-	@Autowired
-	private CoverOfsGridMasterRepository ofsRepo;
+
 
 	@PersistenceContext
 	private EntityManager em;
@@ -254,41 +244,6 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 						errorList.add(new Error("09", "DiscountCoverId", "Please Select DiscountCoverId"));
 					
 					}
-		
-				}else if( StringUtils.isNotBlank(req.getCalcType()) &&  req.getCalcType().equalsIgnoreCase("G")  ) {
-					if(req.getGridDetails() == null || req.getGridDetails().size()<=0 ) {
-						errorList.add(new Error("09", "Grid ", "Please Enter Atleast One Grid Details"));
-					} else {
-						Integer row = 0 ;
-						for (OfsGridSaveReq data : req.getGridDetails() ) {
-							row = row + 1 ;
-							if (StringUtils.isBlank(data.getBaseRate())) {
-								errorList.add(new Error("09", "BaseRate", "Please Enter BaseRate in Grid Row No : " + row));
-							} else if (! data.getBaseRate().matches("[0-9.]+") ) {
-								errorList.add(new Error("09", "BaseRate", "Please Enter Valid Number In BaseRate in Grid Row No : " + row ));
-							}
-							
-							if (StringUtils.isBlank(data.getSumInsuredStart())) {
-								errorList.add(new Error("09", "SumInsuredStart", "Please Enter SumInsuredStart  in Grid Row No : " + row ));
-							} else if (! data.getSumInsuredStart().matches("[0-9.]+") ) {
-								errorList.add(new Error("09", "SumInsuredStart", "Please Enter Valid Number In SumInsuredStart  in Grid Row No : " + row ));
-							} else if (StringUtils.isBlank(data.getSumInsuredEnd())) {
-								errorList.add(new Error("09", "SumInsuredEnd", "Please Enter SumInsuredEnd  in Row No : " + row ));
-							} else if (! data.getSumInsuredEnd().matches("[0-9.]+") ) {
-								errorList.add(new Error("09", "SumInsuredEnd", "Please Enter Valid Number In SumInsuredEnd  in Grid Row No : " + row ));
-							}  else if (Double.valueOf(data.getSumInsuredStart())  > Double.valueOf(data.getSumInsuredEnd())  ) {
-								errorList.add(new Error("09", "SumInsuredEnd", "SumInsuredEnd must be greater than SumInsuredStart  in Grid Row No : " + row ));
-							}
-							
-							if (StringUtils.isBlank(data.getMinimumPremium())) {
-								errorList.add(new Error("09", "MinimumPremium", "Please Enter MinimumPremium  in Grid Row No : " + row ));
-							} else if (! data.getMinimumPremium().matches("[0-9.]+") ) {
-								errorList.add(new Error("09", "MinimumPremium", "Please Enter Valid Number In MinimumPremium  in Grid Row No : " + row ));
-							}
-						}
-					}
-					
-					
 				} else  {
 					
 					if (StringUtils.isBlank(req.getBaseRate())) {
@@ -491,43 +446,6 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 				saveData.setMinPremium(StringUtils.isBlank(req.getMinimumPremium())? BigDecimal.ZERO : new BigDecimal(req.getMinimumPremium()));
 				saveData.setMaxSuminsured(StringUtils.isBlank(req.getSumInsuredEnd())? BigDecimal.ZERO : new BigDecimal(req.getSumInsuredEnd()));
 			//	saveData.setMinSuminsured(StringUtils.isBlank(req.getSumInsuredStart())? BigDecimal.ZERO : new BigDecimal(req.getSumInsuredStart()));
-				
-			}  else if (req.getCalcType().equalsIgnoreCase("G")  ) {
-			
-				// Delete Old Ofs Records
-				List<CoverOfsGridMaster> ofsGrids   = ofsRepo.findByCoverIdAndSubCoverIdOrderByCoveragesSubIdAsc(Integer.valueOf(coverId) ,Integer.valueOf(subcoverId) ); 
-				if( ofsGrids.size() > 0  ) {
-					ofsRepo.deleteAll(ofsGrids);
-				}
-				
-				saveData.setBaseRate( BigDecimal.ZERO );
-				saveData.setMinPremium( BigDecimal.ZERO );
-				saveData.setMaxSuminsured( BigDecimal.ZERO );
-				saveData.setMinSuminsured(  BigDecimal.ZERO  );
-				
-				// Ofs Grid Insert 
-				Integer coverageSubId = 0 ; 
-				for (OfsGridSaveReq data :  req.getGridDetails() ) {
-					CoverOfsGridMaster  ofsSave = new CoverOfsGridMaster();
-					coverageSubId  = coverageSubId  + 1 ;
-					ofsSave.setCreatedBy(req.getCreatedBy());
-					ofsSave.setCoverId(Integer.valueOf(coverId));
-					ofsSave.setSubCoverId(Integer.valueOf(subcoverId));
-					ofsSave.setCoveragesSubId(coverageSubId );
-					ofsSave.setCreatedBy(req.getCreatedBy());
-					ofsSave.setEntryDate(new Date());
-					ofsSave.setStatus(req.getStatus());
-					ofsSave.setCalcType(req.getCalcType());
-					ofsSave.setCalcTypeDesc(calcTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(data.getCalcType()) ).collect(Collectors.toList()).get(0).getItemValue());
-					
-					// Amount 
-					ofsSave.setBaseRate(StringUtils.isBlank(data.getBaseRate())? BigDecimal.ZERO : new BigDecimal(data.getBaseRate()));
-					ofsSave.setMinimumPremium(StringUtils.isBlank(data.getMinimumPremium())? BigDecimal.ZERO : new BigDecimal(data.getMinimumPremium()));
-					ofsSave.setStartSuminsured(StringUtils.isBlank(data.getSumInsuredEnd())? BigDecimal.ZERO : new BigDecimal(data.getSumInsuredEnd()));
-					ofsSave.setEndSuminsured(StringUtils.isBlank(data.getSumInsuredStart())? BigDecimal.ZERO : new BigDecimal(data.getSumInsuredStart()));
-					
-					ofsRepo.saveAndFlush(ofsSave);
-				}
 				
 			} else {
 				
@@ -744,27 +662,6 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			res.setSumInsuredEnd(list.get(0).getMaxSuminsured() == null ? "" :df.format(list.get(0).getMaxSuminsured()));
 			res.setBaseRate(list.get(0).getBaseRate() == null ? "" : df.format(list.get(0).getBaseRate()));
 			res.setCoverageLimit(list.get(0).getCoverageLimit() == null ? "" : df.format(list.get(0).getCoverageLimit()));
-			
-			// Ofs Details
-			List<OfsGridGetRes> gridDetails =  new ArrayList<OfsGridGetRes>();
-			if(StringUtils.isNotBlank(res.getCalcType()) &&  res.getCalcType().equalsIgnoreCase("G") ) {
-				List<CoverOfsGridMaster> ofsGrids   = ofsRepo.findByCoverIdAndSubCoverIdOrderByCoveragesSubIdAsc(list.get(0).getCoverId() , list.get(0).getSubCoverId() );
-				
-				for( CoverOfsGridMaster data : ofsGrids ) {
-					OfsGridGetRes dataRes = new OfsGridGetRes();
-					dataRes.setBaseRate(data.getBaseRate() ==null ?"" : df.format(data.getBaseRate()) );
-					dataRes.setCalcType(data.getCalcType() );
-					dataRes.setCalcTypeDesc(data.getCalcTypeDesc() );
-					dataRes.setMinimumPremium(data.getMinimumPremium() ==null ?"" : df.format(data.getMinimumPremium()) );
-					dataRes.setSumInsuredStart(data.getStartSuminsured() ==null ?"" : df.format(data.getStartSuminsured()) );
-					dataRes.setSumInsuredEnd(data.getEndSuminsured() ==null ?"" : df.format(data.getEndSuminsured()) );
-					dataRes.setCoverageSubId(String.valueOf(data.getCoveragesSubId()));
-					
-					gridDetails.add(dataRes);
-				}
-			}
-			
-			res.setGridDetails(gridDetails);
 			
 		} catch (Exception e) {
 			e.printStackTrace();

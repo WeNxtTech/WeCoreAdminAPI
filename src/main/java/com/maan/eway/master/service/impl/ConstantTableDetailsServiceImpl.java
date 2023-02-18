@@ -33,33 +33,25 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.ConstantTableDetails;
+import com.maan.eway.bean.DropdownTableDetails;
+import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.error.Error;
 import com.maan.eway.master.req.ConstantTableChangeStatusReq;
 import com.maan.eway.master.req.ConstantTableDetailsGetAllReq;
 import com.maan.eway.master.req.ConstantTableDetailsGetReq;
 import com.maan.eway.master.req.ConstantTableDetailsSaveReq;
 import com.maan.eway.master.req.DropdownTableDetailsSaveReq;
 import com.maan.eway.master.req.LovDropDownReq;
-import com.maan.eway.master.req.OfsGridSaveReq;
-import com.maan.eway.master.req.SectionCoverMasterSaveReq;
 import com.maan.eway.master.res.ConstantTableDetailsCommonRes;
 import com.maan.eway.master.res.ConstantTableDetailsRes;
 import com.maan.eway.master.res.DropdownTableDetailsRes;
 import com.maan.eway.master.service.ConstantTableDetailsService;
-
-import com.maan.eway.bean.ConstantTableDetails;
-import com.maan.eway.bean.CoverMaster;
-import com.maan.eway.bean.CoverOfsGridMaster;
-import com.maan.eway.bean.DropdownTableDetails;
-import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.bean.SectionCoverOfsGridMaster;
-import com.maan.eway.error.Error;
-
 import com.maan.eway.repository.ConstantTableDetailsRepository;
 import com.maan.eway.repository.DropdownTableDetailsRepository;
 import com.maan.eway.res.DropDownRes;

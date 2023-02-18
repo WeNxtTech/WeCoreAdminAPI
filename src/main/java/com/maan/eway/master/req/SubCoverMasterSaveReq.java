@@ -103,6 +103,5 @@ public class SubCoverMasterSaveReq implements Serializable {
 	@JsonProperty("DependentCoverId")
     private String dependentCoverId;
 	
- 	@JsonProperty("GridDetails")
- 	private List<OfsGridSaveReq> gridDetails;
+
 }

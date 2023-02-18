@@ -24,6 +24,12 @@ public class SectionCoverChangeStatusReq {
 
 	 @JsonProperty("Status")
 	 private String status;
+	 
+	@JsonProperty("AgencyCode")
+	private String agencyCode;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
 
 	 @JsonFormat(pattern ="dd/MM/yyyy")
 	 @JsonProperty("EffectiveDateStart")

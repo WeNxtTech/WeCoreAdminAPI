@@ -19,4 +19,10 @@ public class SubCoverDropDownReq {
 	
 	@JsonProperty("SectionId")
 	private String sectionId;
+	
+	@JsonProperty("AgencyCode")
+	private String agencyCode;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
 }

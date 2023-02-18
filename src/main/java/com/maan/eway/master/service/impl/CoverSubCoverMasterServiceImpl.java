@@ -495,7 +495,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			effectiveDate3.where(a7, a8, a9, a10, a11, a12,a19,a20);
 
 			subCover.select(ocpm4.get("subCoverId"));
-			 a19 = cb.equal(b.get("coverId"), req.getCoverId());
+			 a19 = cb.equal(ocpm4.get("coverId"), req.getCoverId());
 			Predicate a13 = cb.notEqual(ocpm4.get("subCoverId"), "0");
 			Predicate a14 = cb.equal(ocpm4.get("coverId"), req.getCoverId());
 			Predicate a15 = cb.equal(ocpm4.get("productId"), req.getProductId());
@@ -524,8 +524,9 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			Predicate n6 = cb.equal(b.get("subCoverYn"), "Y");
 			Predicate n7 = cb.equal(b.get("status"), "Y");
 			n8 = cb.notEqual(b.get("subCoverId"), "0");
+			n9 = cb.equal(b.get("coverId"), req.getCoverId());
 			
-			query.where(n1, n4, n5, n6, n7,n8).orderBy(orderList);
+			query.where(n1, n4, n5, n6, n7,n8,n9).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CoverMaster> result = em.createQuery(query);

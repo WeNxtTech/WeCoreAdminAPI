@@ -1462,8 +1462,8 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate a8 = cb.equal(c.get("companyId"), ocpm2.get("companyId") );
 			Predicate a9 = cb.equal(c.get("productId"), ocpm2.get("productId") );
 			Predicate a10 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-			Predicate a15 = cb.equal(ocpm1.get("agencyCode"), c.get("companyId"));
-			Predicate a16 = cb.equal(ocpm1.get("branchCode"), c.get("branchCode"));
+			Predicate a15 = cb.equal(ocpm2.get("agencyCode"), c.get("agencyCode"));
+			Predicate a16 = cb.equal(ocpm2.get("branchCode"), c.get("branchCode"));
 			effectiveDate2.where(a6,a7,a8,a9,a10,a15,a16);
 					
 			// Where
@@ -1482,9 +1482,9 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate n13 = cb.or(n11,n12 );
 			if(StringUtils.isNotBlank(req.getCoverId()) ) {
 				javax.persistence.criteria.Predicate n7 = cb.notEqual(c.get("coverId"), req.getCoverId());
-				query.where(n1, n2, n3, n4, n5,n6,n7,n8,n14,n10,n13).orderBy(orderList);
+				query.where(n1, n2, n3, n4, n5,n6,n7,n14,n10,n13).orderBy(orderList);
 			} else {
-				query.where(n1, n2, n3, n4, n5,n6,n8,n10,n13).orderBy(orderList);
+				query.where(n1, n2, n3, n4, n5,n6,n10,n13).orderBy(orderList);
 			}
 			
 

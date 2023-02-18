@@ -495,16 +495,20 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			effectiveDate3.where(a7, a8, a9, a10, a11, a12,a19,a20);
 
 			subCover.select(ocpm4.get("subCoverId"));
-			Predicate a13 = cb.equal(ocpm4.get("subCoverId"), b.get("subCoverId"));
+			Predicate a13 = cb.notEqual(ocpm4.get("subCoverId"), "0");
 			Predicate a14 = cb.equal(ocpm4.get("coverId"), req.getCoverId());
 			Predicate a15 = cb.equal(ocpm4.get("productId"), req.getProductId());
 			Predicate a16 = cb.equal(ocpm4.get("sectionId"), req.getSectionId());
 			Predicate a17 = cb.equal(ocpm4.get("companyId"), req.getCompanyId());
 			Predicate a18 = cb.greaterThanOrEqualTo(ocpm4.get("effectiveDateEnd"), todayEnd);
-			Predicate a21 = cb.equal(ocpm3.get("agencyCode"), ocpm4.get("agencyCode"));
-			Predicate a22 = cb.equal(ocpm3.get("branchCode"), ocpm4.get("branchCode"));
+			Predicate n8 = cb.equal(ocpm4.get("agencyCode"), req.getAgencyCode());
+			Predicate n9 = cb.equal(ocpm4.get("agencyCode"), "99999");
+			Predicate n10 = cb.or(n8,n9);
+			Predicate n11 = cb.equal(ocpm4.get("branchCode"), req.getBranchCode());
+			Predicate n12 = cb.equal(ocpm4.get("branchCode"), "99999");
+			Predicate n13 = cb.or(n11,n12 );
 			
-			subCover.where(a13, a14, a15, a16, a17, a18,a21,a22);
+			subCover.where(a13, a14, a15, a16, a17, a18,n10,n13);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -518,15 +522,8 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			Predicate n5 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
 			Predicate n6 = cb.equal(b.get("subCoverYn"), "Y");
 			Predicate n7 = cb.equal(b.get("status"), "Y");
-			Predicate n14= cb.equal(b.get("coverId"), req.getCoverId());
-			Predicate n8 = cb.equal(b.get("agencyCode"), req.getAgencyCode());
-			Predicate n9 = cb.equal(b.get("agencyCode"), "99999");
-			Predicate n10 = cb.or(n8,n9);
-			Predicate n11 = cb.equal(b.get("branchCode"), req.getBranchCode());
-			Predicate n12 = cb.equal(b.get("branchCode"), "99999");
-			Predicate n13 = cb.or(n11,n12 );
 			
-			query.where(n1, n4, n5, n6, n7, n10,n13,n14).orderBy(orderList);
+			query.where(n1, n4, n5, n6, n7).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CoverMaster> result = em.createQuery(query);

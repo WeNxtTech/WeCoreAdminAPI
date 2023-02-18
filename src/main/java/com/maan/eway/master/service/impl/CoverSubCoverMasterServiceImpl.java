@@ -136,6 +136,48 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			cal.set(Calendar.MINUTE, 1);
 			Date todayEnd   = cal.getTime();
 			
+			SectionCoverMaster coverDetails = new SectionCoverMaster(); 
+			
+			{// Cover Details
+				CriteriaBuilder cb2 = em.getCriteriaBuilder();
+				CriteriaQuery<SectionCoverMaster> query2 = cb2.createQuery(SectionCoverMaster.class);
+				//Find all
+				Root<SectionCoverMaster> b2 = query2.from(SectionCoverMaster.class);
+				//Select 
+				query2.select(b2);
+//				
+				// Order By
+				List<Order> orderList2 = new ArrayList<Order>();
+				orderList2.add(cb2.desc(b2.get("effectiveDateStart")));
+				
+				// Where
+			//	Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+				Predicate n2 = cb2.equal(b2.get("productId"), reqList.get(0).getProductId());
+				Predicate n3 = cb2.equal(b2.get("companyId"),  reqList.get(0).getCompanyId());
+				Predicate n4 = cb2.equal(b2.get("sectionId"), reqList.get(0).getSectionId());
+				Predicate n5 = cb2.equal(b2.get("coverId"), reqList.get(0).getCoverId());
+				Predicate n6 = cb2.equal(b2.get("subCoverId"),"0");
+				Predicate n8 = cb2.equal(b2.get("agencyCode"), reqList.get(0).getAgencyCode());
+				Predicate n9 = cb2.equal(b2.get("agencyCode"), "99999");
+				Predicate n10 = cb2.or(n8,n9);
+				Predicate n11 = cb2.equal(b2.get("branchCode"), reqList.get(0).getBranchCode());
+				Predicate n12 = cb2.equal(b2.get("branchCode"), "99999");
+				Predicate n13 = cb2.or(n11,n12 );
+				
+				
+				query2.where(n2,n3,n4,n5,n6,n10,n13).orderBy(orderList2);
+				
+				// Get Result 
+				TypedQuery<SectionCoverMaster> result2 = em.createQuery(query2);
+				int limit = 0 , offset = 2 ;
+				result2.setFirstResult(limit * offset);
+				result2.setMaxResults(offset);
+				List<SectionCoverMaster> coverlist = result2.getResultList();
+				coverDetails = coverlist.get(0);
+				
+			}
+			
+			
 			for (CoverSubCoverMasterSaveReq req : reqList) {
 
 				Integer amendId = 0;
@@ -195,6 +237,9 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 				res.setSuccessId(subCoverId);
 
 				saveData = dozerMapper.map(list.get(0), SectionCoverMaster.class);
+				saveData.setCoverName(coverDetails.getCoverName());
+				saveData.setCoverDesc(coverDetails.getCoverDesc());
+				saveData.setMultiSelectYn(coverDetails.getMultiSelectYn());
 				saveData.setEffectiveDateStart(effDate);
 				saveData.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
 				saveData.setEntryDate(new Date());
@@ -947,12 +992,12 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 					n4 = cb2.equal(b2.get("sectionId"), req.getSectionId());
 					n5 = cb2.equal(b2.get("coverId"), req.getCoverId());
 					n6 = cb2.equal(b2.get("subCoverId"),"0");
-					Predicate n8 = cb.equal(b.get("agencyCode"), req.getAgencyCode());
-					Predicate n9 = cb.equal(b.get("agencyCode"), "99999");
-					Predicate n10 = cb.or(n8,n9);
-					Predicate n11 = cb.equal(b.get("branchCode"), req.getBranchCode());
-					Predicate n12 = cb.equal(b.get("branchCode"), "99999");
-					Predicate n13 = cb.or(n11,n12 );
+					Predicate n8 = cb2.equal(b2.get("agencyCode"), req.getAgencyCode());
+					Predicate n9 = cb2.equal(b2.get("agencyCode"), "99999");
+					Predicate n10 = cb2.or(n8,n9);
+					Predicate n11 = cb2.equal(b2.get("branchCode"), req.getBranchCode());
+					Predicate n12 = cb2.equal(b2.get("branchCode"), "99999");
+					Predicate n13 = cb2.or(n11,n12 );
 					
 					
 					query2.where(n2,n3,n4,n5,n6,n10,n13).orderBy(orderList2);

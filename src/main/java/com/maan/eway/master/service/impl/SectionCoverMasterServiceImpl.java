@@ -1302,7 +1302,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				saveData.setToolTip(req.getToolTip());
 				saveData.setDependentCoverYn(StringUtils.isNotBlank(req.getDependentCoverYn()) ? req.getDependentCoverYn() : "N" );
 				saveData.setSubCoverYn(subCoverYn);
-				saveData.setCreatedBy(req.getCreatedBy());
+				saveData.setCreatedBy(createdBy);
 				saveData.setUpdatedDate(new Date());
 				saveData.setUpdatedBy(req.getCreatedBy());
 				saveData.setMultiSelectYn( StringUtils.isNotBlank(req.getMultiSelectYn() ) ? req.getMultiSelectYn()  : "N");

@@ -260,9 +260,9 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 						errorList.add(new Error("09", "SumInsuredEnd", "Please Enter SumInsuredEnd"));
 					} else if (! req.getSumInsuredEnd().matches("[0-9.]+") ) {
 						errorList.add(new Error("09", "SumInsuredEnd", "Please Enter Valid Number In SumInsuredEnd"));
-					}  else if (Double.valueOf(req.getMinimumPremium())  > Double.valueOf(req.getSumInsuredEnd())  ) {
+					}/*  else if (Double.valueOf(req.getMinimumPremium())  > Double.valueOf(req.getSumInsuredEnd())  ) {
 						errorList.add(new Error("09", "SumInsuredEnd", "SumInsuredEnd must be greater than MinimumPremium "));
-					}
+					} */
 					
 				}
 			}

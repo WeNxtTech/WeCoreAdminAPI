@@ -101,4 +101,14 @@ public class CoverMasterGetAllRes {
 
 	@JsonProperty("DiscountCoverId")
 	private String discountCoverId;
+	
+	@JsonProperty("ExcessPercent")
+	private String excessPercent;
+	
+	@JsonProperty("ExcessAmount")
+	private String excessAmount;
+	
+	@JsonProperty("ExcessDesc")
+	private String excessDesc;
+	
 }

@@ -126,4 +126,12 @@ public class SectionCoverMasterRes {
 	
 	@JsonProperty("MultiSelectYn")
     private String multiSelectYn;
+	@JsonProperty("ExcessPercent")
+	private String excessPercent;
+	
+	@JsonProperty("ExcessAmount")
+	private String excessAmount;
+	
+	@JsonProperty("ExcessDesc")
+	private String excessDesc;
 }

@@ -424,7 +424,9 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			res.setSumInsuredEnd(list.get(0).getMaxSuminsured() == null ? "" :df.format(list.get(0).getMaxSuminsured()));
 			res.setBaseRate(list.get(0).getBaseRate() == null ? "" : df.format(list.get(0).getBaseRate()));
 			res.setCoverageLimit(list.get(0).getCoverageLimit() == null ? "" : df.format(list.get(0).getCoverageLimit()));
-			res.setExcess(list.get(0).getExcess() == null ? "" :df.format(list.get(0).getExcess()));
+			res.setExcessPercent(list.get(0).getExcessPercent() == null ? "" :df.format(list.get(0).getExcessPercent()));
+			res.setExcessAmount(list.get(0).getExcessAmount() == null ? "" :df.format(list.get(0).getExcessAmount()));
+			res.setExcessDesc(list.get(0).getExcessDesc()==null ?"": list.get(0).getExcessDesc());	
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -958,10 +960,21 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 					errorList.add(new Error("09", "CoverageLimit", "Please Enter Valid Number In CoverageLimit "));
 				}
 				
-				if (StringUtils.isBlank(req.getExcess())) {
-					errorList.add(new Error("09", "Excess", "Please Enter Excess"));
-				} else if (! req.getExcess().matches("[0-9.]+") ) {
-					errorList.add(new Error("09", "Excess", "Please Enter Valid Number In Excess"));
+				if (StringUtils.isBlank(req.getExcessPercent())) {
+					errorList.add(new Error("09", "Excess Percent ", "Please Enter Excess Percent"));
+				} else if (! req.getExcessPercent().matches("[0-9.]+") ) {
+					errorList.add(new Error("09", "Excess Percent", "Please Enter Valid Number In Excess Percent"));
+				}
+				if (StringUtils.isBlank(req.getExcessAmount())) {
+					errorList.add(new Error("10", "Excess Amount ", "Please Enter Excess Amount"));
+				} else if (! req.getExcessAmount().matches("[0-9.]+") ) {
+					errorList.add(new Error("10", "Excess Amount", "Please Enter Valid Number In Excess Amount"));
+				}
+				if (StringUtils.isBlank(req.getExcessDesc())) {
+					errorList.add(new Error("11", "Excess Desc ", "Please Enter Excess Desc"));
+				}
+				else if (req.getExcessDesc().length() > 500) {
+					errorList.add(new Error("11", "Excess Desc", "Enter Excess Desc  within 500 Characters Only"));
 				}
 				
 				if (StringUtils.isBlank(req.getCalcType())) {
@@ -1332,7 +1345,9 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				}
 				
 				saveData.setCoverageLimit(StringUtils.isBlank(req.getCoverageLimit())? BigDecimal.ZERO :new BigDecimal(req.getCoverageLimit()));
-				saveData.setExcess(StringUtils.isBlank(req.getExcess())? BigDecimal.ZERO :new BigDecimal(Double.valueOf(req.getExcess())));
+				saveData.setExcessPercent(StringUtils.isBlank(req.getExcessPercent())?BigDecimal.ZERO :new BigDecimal(Double.valueOf(req.getExcessPercent())));			
+				saveData.setExcessAmount(StringUtils.isBlank(req.getExcessAmount())? BigDecimal.ZERO :new BigDecimal(Double.valueOf(req.getExcessAmount())));		
+				saveData.setExcessDesc(StringUtils.isBlank(req.getExcessDesc())?"":req.getExcessDesc()); 
 				saveData.setCalcTypeDesc(calcTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getCalcType()) ).collect(Collectors.toList()).get(0).getItemValue());
 				saveData.setCoverageTypeDesc(coverageTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getCoverageType()) ).collect(Collectors.toList()).get(0).getItemValue());
 				if(  req.getIsTaxExcempted().equalsIgnoreCase("Y") ) {

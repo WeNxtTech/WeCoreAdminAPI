@@ -112,4 +112,12 @@ public class SubCoverUpdatedReq {
 		
 		@JsonProperty("BranchCode")
 		private String branchCode;
+		@JsonProperty("ExcessPercent")
+		private String excessPercent;
+		
+		@JsonProperty("ExcessAmount")
+		private String excessAmount;
+		
+		@JsonProperty("ExcessDesc")
+		private String excessDesc;
 }

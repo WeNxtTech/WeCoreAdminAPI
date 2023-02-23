@@ -61,5 +61,13 @@ public class SmsMasterGetRes {
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EntryDate")
 	private Date entryDate;
-	 
+	
+	
+	@JsonProperty("UpdatedBy")
+	private String updatedBy;
+	
+	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("UpdatedDate")
+	private Date updatedDate;
+	
 }

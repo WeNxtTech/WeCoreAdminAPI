@@ -34,7 +34,7 @@ public class SmsServiceImplementation {
 			Date today = new Date();
 			String id = sdf.format(today);
 			mapper.map(req, SmsDataDetails.class);
-			data.setSNo(Integer.valueOf(id));
+			data.setSNo(id);
 			data.setCreatedBy(req.getCreatedBy());
 			res.setResponse("Successfully Inserted");
 			res.setSuccessId(id);

@@ -29,7 +29,7 @@ import com.maan.eway.bean.SmsDataDetails;
  */
 
 
-public interface SmsDataDetailsRepository extends JpaRepository<SmsDataDetails, BigDecimal>, JpaSpecificationExecutor<SmsDataDetails> {
+public interface SmsDataDetailsRepository extends JpaRepository<SmsDataDetails, String>, JpaSpecificationExecutor<SmsDataDetails> {
 
 	List<SmsDataDetails> findByMobileNoOrderByReqTimeDesc(String mobileNo);
 

@@ -420,6 +420,8 @@ public class NotificationServiceImpl implements NotificationService {
 			mapper.map(req,smsreq);
 			smsservice.sms(smsreq);
 			SendSms(req);
+			res.setResponse("SMS Sent Successfully");
+			res.setSuccessId(smsreq.getSmsRefNo());
 			}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -455,7 +457,7 @@ public class NotificationServiceImpl implements NotificationService {
 		String smsId = year.substring(2,4) + milliSecond+(int)(Math.random()*100);
 		
 		//Save
-		data.setSNo(Integer.valueOf(smsId));
+		data.setSNo(smsId);
 		data.setCustName(req.getCustName());
 		data.setInsId(req.getInsuranceid());
 		data.setMobileNo(req.getMobileNo());

@@ -28,4 +28,10 @@ public class CoverSubCoverMasterGetReq {
 	    @JsonFormat(pattern ="dd/MM/yyyy")
 	    @JsonProperty("EffectiveDateStart")
 	    private Date effectiveDateStart;
+	    
+		@JsonProperty("AgencyCode")
+		private String agencyCode;
+		
+		@JsonProperty("BranchCode")
+		private String branchCode;
 }

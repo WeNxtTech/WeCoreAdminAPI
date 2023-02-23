@@ -21,6 +21,11 @@ public class SectionCoverMasterNonSelectedReq implements Serializable {
     @JsonProperty("SectionId")
     private String sectionId;
   
+	@JsonProperty("AgencyCode")
+	private String agencyCode;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
 
 	/*
 	 * @JsonProperty("Limit") private String limit;

@@ -44,7 +44,7 @@ import javax.persistence.*;
 @DynamicUpdate
 @Builder
 @IdClass(BranchMasterId.class)
-@Table(name="branch_master")
+@Table(name="eway_branch_master")
 
 
 public class BranchMaster implements Serializable {
@@ -135,6 +135,12 @@ private static final long serialVersionUID = 1L;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="UPDATED_DATE")
     private Date       updatedDate ;
+    
+    @Column(name="DIRECT_BROKER_ID", length=100)
+    private String    directBrokerId;
+    
+    @Column(name="BROKER_AGENCY_CODE", length=100)
+    private String    brokerAgencyCode;
 
 }
 

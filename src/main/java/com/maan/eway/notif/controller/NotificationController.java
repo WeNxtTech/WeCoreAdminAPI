@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,6 +38,7 @@ public class NotificationController {
 	@Autowired
 	private PrintReqService reqPrinter;
 
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/readReceivedMail")
 	@ApiOperation(value = "This method is to Read Email")
 	public ResponseEntity<CommonRes> readMails(@RequestBody ReadMailReq req) {
@@ -67,6 +69,7 @@ public class NotificationController {
 		
 	}
 
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/sendMail")
 	@ApiOperation(value = "This method is to Send Email")
 	public ResponseEntity<CommonRes> sendMails(@RequestBody MailTriggerReq req) {
@@ -88,7 +91,7 @@ public class NotificationController {
 		}
 	}
 	
-	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/readSendMail")
 	@ApiOperation(value = "This method is to Read Send Email")
 	public ResponseEntity<CommonRes> readSentMail(@RequestBody ReadMailReq req) {
@@ -119,7 +122,7 @@ public class NotificationController {
 		
 	}
 	
-	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/sendSms")
 	@ApiOperation(value = "This method is to Send Sms")
 	public ResponseEntity<CommonRes> sendSms(@RequestBody SmsReq req) {
@@ -140,7 +143,7 @@ public class NotificationController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/replayMail")
 	@ApiOperation(value = "This method is to Send Replay Mail")
 	public ResponseEntity<CommonRes> replayMail(@RequestBody ReplayMailTriggerReq req) {
@@ -162,7 +165,7 @@ public class NotificationController {
 		}
 	}
 
-
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/getSms")
 	@ApiOperation(value = "This method is to Get Sms")
 	public ResponseEntity<CommonRes> getSms(@RequestBody SmsGetReq req) {

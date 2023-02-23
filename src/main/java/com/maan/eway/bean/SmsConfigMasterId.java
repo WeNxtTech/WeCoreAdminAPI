@@ -30,13 +30,14 @@ public class SmsConfigMasterId implements Serializable {
     private static final long serialVersionUID = 1L;
 
     //--- ENTITY KEY ATTRIBUTES 
-    private Integer    sNo ;
+   private Integer    sNo ;
     
     private String     companyId ;
     
-    private Date       effectiveDateStart ;
+    private String     branchCode ;
     
-    private Date       effectiveDateEnd ;
+    private Integer    amendId ;
+    
     
      
 }

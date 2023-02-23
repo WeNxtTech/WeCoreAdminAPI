@@ -32,6 +32,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -59,6 +60,7 @@ public class SubCoverMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/insertsubcover")
 		@ApiOperation(value = "This method is Insert Subcover")
 		public ResponseEntity<CommonRes> insertSubCover(@RequestBody SubCoverMasterSaveReq req) {
@@ -93,7 +95,7 @@ public class SubCoverMasterController {
 		}
 		
 		//  Get All Section Master
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/getallsubcover")
 		@ApiOperation("This method is getall SubCover")
 		public ResponseEntity<CommonRes> getallSubCover(@RequestBody SubCoverMasterGetAllReq req)
@@ -113,7 +115,7 @@ public class SubCoverMasterController {
 				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
 			}
 		}
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/getactivesubcover")
 		@ApiOperation("This method is getall SubCover")
 		public ResponseEntity<CommonRes> getActiveSubCover(@RequestBody SubCoverMasterGetAllReq req)
@@ -134,7 +136,7 @@ public class SubCoverMasterController {
 			}
 		}
 		// Get By Section Id
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/getbysubcover")
 		@ApiOperation("This Method is to get by Sub Cover Id")
 		public ResponseEntity<CommonRes> getBySubCoverId(@RequestBody SubCoverMasterGetReq req)
@@ -153,7 +155,7 @@ public class SubCoverMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/subcover/changestatus")
 		@ApiOperation(value = "This method is get SubCover Change Status")
 		public ResponseEntity<CommonRes> changeStatusOfSubCover(@RequestBody SubCoverChangeStatusReq req) {

@@ -6,16 +6,17 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.error.Error;
+import com.maan.eway.notif.req.SmsConfigInsertReq;
 import com.maan.eway.notif.req.SmsGetReq;
-import com.maan.eway.notif.req.SmsInsertReq;
 import com.maan.eway.notif.res.SmsMasterGetRes;
-import com.maan.eway.notif.service.SmsMasterService;
+import com.maan.eway.notif.service.SmsConfigMasterService;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -24,24 +25,22 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping("/master")
+@RequestMapping("/api")
 @Api(tags = "MASTER : SMS Master", description = "API's")
-public class SmsMasterController {
+public class SmsConfigMasterController {
 
 	@Autowired
-	private SmsMasterService smsService;
+	private SmsConfigMasterService smsConfigService;
 
-	@Autowired
-	private PrintReqService reqPrinter;
 
 	// Save
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/insertsmsmaster")
 	@ApiOperation(value = "This method is to Insert Sms Master")
-	private ResponseEntity<CommonRes> insertsmsmaster(@RequestBody SmsInsertReq req) {
+	public ResponseEntity<CommonRes> insertsmsmaster(@RequestBody SmsConfigInsertReq req) {
 
-		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		List<Error> validation = smsService.validatesmsmaster(req);
+		List<Error> validation = smsConfigService.validatesmsmaster(req);
 		// Validation
 		if (validation != null && validation.size() != 0) {
 			data.setCommonResponse(null);
@@ -52,7 +51,7 @@ public class SmsMasterController {
 
 		} else {
 			// Get all
-			SuccessRes res = smsService.insertsmsmaster(req);
+			SuccessRes res = smsConfigService.insertsmsmaster(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());
@@ -67,12 +66,12 @@ public class SmsMasterController {
 	}
 
 // Get By Id
-
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/getbysmsid")
 	@ApiOperation("This Method is to get by id")
 	public ResponseEntity<CommonRes> getbysmsid(@RequestBody SmsGetReq req) {
 		CommonRes data = new CommonRes();
-		SmsMasterGetRes res = smsService.getbysmsid(req);
+		SmsMasterGetRes res = smsConfigService.getbysmsid(req);
 		data.setCommonResponse(res);
 		data.setErrorMessage(Collections.emptyList());
 		data.setIsError(false);

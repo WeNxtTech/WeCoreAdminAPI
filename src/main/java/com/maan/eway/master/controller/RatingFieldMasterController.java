@@ -11,6 +11,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -50,6 +51,7 @@ public class RatingFieldMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/insertratingfield")
 		@ApiOperation(value = "This method is to Insert Rating Field ")
 		public ResponseEntity<CommonRes> insertfactortype(@RequestBody RatingFieldsMasterSaveReq req) {
@@ -85,7 +87,7 @@ public class RatingFieldMasterController {
 		}
 		
 		//  Get All Factor Type
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/getallratingfields")
 		@ApiOperation("This method is getall Rating Field")
 		public ResponseEntity<CommonRes> getallFactorType(@RequestBody RatingFieldMasterGetAllReq req)
@@ -108,7 +110,7 @@ public class RatingFieldMasterController {
 		}
 		
 	//  Get Active Factor Type
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 			@PostMapping("/getactiveratingfields")
 			@ApiOperation("This method is get Active Rating Field")
 			public ResponseEntity<CommonRes> getActiveFactorType(@RequestBody RatingFieldMasterGetAllReq req)
@@ -131,7 +133,7 @@ public class RatingFieldMasterController {
 			}
 		
 		// Get By Factor Id
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/getbyratingfieldid")
 		@ApiOperation("This Method is to get by Rating Field Id")
 		public ResponseEntity<CommonRes> getByFactorId(@RequestBody RatingFieldsMasterGetReq req)
@@ -151,7 +153,7 @@ public class RatingFieldMasterController {
 		}
 	}
 				
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/ratingfield/changestatus")
 		@ApiOperation(value = "This method is to Rating Field Change Status")
 		public ResponseEntity<CommonRes> changeStatusOfFactorType(@RequestBody RatingFieldsMasterChangeStatusReq req) {
@@ -172,7 +174,7 @@ public class RatingFieldMasterController {
 
 		}
 		
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping(value="/dropdown/ratingfields",produces = "application/json")
 		@ApiOperation(value = "This method is get Rating Fields Drop Down")
 

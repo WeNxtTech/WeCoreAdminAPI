@@ -11,6 +11,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -59,7 +60,8 @@ public class CoverSubCoverMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
-		@PostMapping("/insertcoversubcover")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PostMapping("/insertcoversubcover")
 		@ApiOperation(value = "This method is Insert CoverSubcover")
 		public ResponseEntity<CommonRes> insertSubCover(@RequestBody List<CoverSubCoverMasterSaveReq> req) {
 
@@ -93,7 +95,8 @@ public class CoverSubCoverMasterController {
 		}
 		
 		//  Get All Section Master
-		
+
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/getallcoversubcoverdetails")
 		@ApiOperation("This method is getall Section Cover Details")
 		public ResponseEntity<CommonRes> getallCoverSubCoverDetails(@RequestBody CoverSubCoverMasterGetAllReq req)
@@ -115,7 +118,7 @@ public class CoverSubCoverMasterController {
 			}
 		}
 		
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/getactivecoversubcoverdetails")
 		@ApiOperation("This method is getall Section Cover Details")
 		public ResponseEntity<CommonRes> getActiveCoverSubCoverDetails(@RequestBody CoverSubCoverMasterGetAllReq req)
@@ -139,7 +142,8 @@ public class CoverSubCoverMasterController {
 		
 		// Get By Section Id
 		
-		@PostMapping("/getbycoversubcover")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
+	@PostMapping("/getbycoversubcover")
 		@ApiOperation("This Method is to get by Sub Cover Id")
 		public ResponseEntity<CommonRes> getBySubCoverId(@RequestBody CoverSubCoverMasterGetReq req)
 		{
@@ -158,6 +162,7 @@ public class CoverSubCoverMasterController {
 		}
 	}
 		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/getallnonselectedcoversubcover")
 		@ApiOperation("This method is getall SubCover")
 		public ResponseEntity<CommonRes> getallNonSelectedSubCover(@RequestBody CoverSubCoverMasterGetAllReq req)
@@ -177,7 +182,7 @@ public class CoverSubCoverMasterController {
 				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
 			}
 		}
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/coversubcover/changestatus")
 		@ApiOperation(value = "This method is get Company Change Status")
 		public ResponseEntity<CommonRes> changeStatusOfCoverSubCover(@RequestBody CoverSubCoverChangeStatusReq req) {
@@ -197,7 +202,8 @@ public class CoverSubCoverMasterController {
 			}
 
 		}
-		
+	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/updatecoversubcover")
 		@ApiOperation(value = "This method is Update Section  Cover Details")
 		public ResponseEntity<CommonRes> updateSectionCover(@RequestBody SubCoverUpdatedReq req) {
@@ -232,6 +238,7 @@ public class CoverSubCoverMasterController {
 
 		}
 		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping(value="/dropdown/subcover",produces = "application/json")
 		@ApiOperation(value="This method is to get dropdown")
 		public ResponseEntity<DropdownCommonRes> subcoverDropDown(@RequestBody SubCoverDropDownReq req){

@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,7 +39,7 @@ public class PolicyTypeMasterController {
 	
 	@Autowired
 	private PrintReqService reqPrinter;
-	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/insertpolicytype")
 	@ApiOperation("This method is to save Policy Type Master")
 	public ResponseEntity<CommonRes> insertPolicyType(@RequestBody PolicyTypeMasterSaveReq req){
@@ -70,7 +71,7 @@ public class PolicyTypeMasterController {
 		
 		}
 	}
-	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/getpolicytype")
 	@ApiOperation("This method is to get policy type")
 	public ResponseEntity<CommonRes> getPolicyType(@RequestBody PolicyTypeMasterGetReq req){
@@ -89,7 +90,7 @@ public class PolicyTypeMasterController {
 		}
 	}
 	
-
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/getallpolicytype")
 	@ApiOperation("This method is to get all Policy Type Master")
 	public ResponseEntity<CommonRes>getallPolicyType(@RequestBody PolicyTypeMasterGetAllReq req){
@@ -108,7 +109,7 @@ public class PolicyTypeMasterController {
 		}
 	}
 	
-	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/getactivepolicytype")
 	@ApiOperation("This method is to get all Active Policy Type Master")
 	public ResponseEntity<CommonRes>getallactivePolicyType(@RequestBody PolicyTypeMasterGetAllReq req){
@@ -129,6 +130,7 @@ public class PolicyTypeMasterController {
 	
 	
 	// Policy Type Master Drop Down Type
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@PostMapping(value="/dropdown/policytype",produces = "application/json")
 	@ApiOperation(value = "This method is get Policy Type Master Drop Down")
 
@@ -150,7 +152,7 @@ public class PolicyTypeMasterController {
 		}
 
 	}
-
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/policytype/changestatus")
 	@ApiOperation(value = "This method is get Referal Master Status Change")
 

@@ -54,8 +54,14 @@ public class CoverSubCoverGetRes {
 		@JsonProperty("CoverageLimit")
 		private String coverageLimit;
 		
-		@JsonProperty("Excess")
-		private String excess;
+		@JsonProperty("ExcessPercent")
+		private String excessPercent;
+		
+		@JsonProperty("ExcessAmount")
+		private String excessAmount;
+		
+		@JsonProperty("ExcessDesc")
+		private String excessDesc;
 		
 		@JsonProperty("CalcType")
 		private String calcType;
@@ -79,10 +85,7 @@ public class CoverSubCoverGetRes {
 		private String amendId;
 		@JsonProperty("SumInsuredStart")
 		private String sumInsuredStart;
-		
-		@JsonProperty("GridDetails")
-		private List<OfsGridGetRes> gridDetails;
-		
+	
 		@JsonProperty("DiscountCoverId")
 		private String discountCoverId;
 		

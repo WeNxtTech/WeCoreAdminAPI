@@ -115,6 +115,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="CONTENT_SUMINSURED")
     private BigDecimal     contentSuminsured ;
+    
+    @Column(name="WORKMEN_COMP_SUMINSURED")
+    private BigDecimal     workmenCompSuminsured;
 
     @Column(name="Period_of_Insurance", nullable=false, length=10)
     private String     periodOfInsurance ;
@@ -125,7 +128,7 @@ private static final long serialVersionUID = 1L;
     
     
     @Column(name="EXCHANGE_RATE")
-    private Double exchangeRate;
+    private BigDecimal exchangeRate;
     
     
     @Temporal(TemporalType.TIMESTAMP)
@@ -160,6 +163,44 @@ private static final long serialVersionUID = 1L;
     @Column(name="CATEGORY_ID", length=20)
     private String     categoryId;
 
+    @Column(name="ELEC_EQUIP_SUMINSURED")
+    private BigDecimal elecEquipSuminsured;
+
+    @Column(name="MONEY_SINGLECARRY_SUMINSURED")
+    private BigDecimal moneySinglecarrySuminsured;
+
+    @Column(name="MONEY_ANNUALCARRY_SUMINSURED")
+    private BigDecimal moneyAnnualcarrySuminsured;
+
+    @Column(name="MONEY_INSAFE_SUMINSURED")
+    private BigDecimal moneyInsafeSuminsured;
+
+    @Column(name="FIDELITY_ANYOCCU_SUMINSURED")
+    private BigDecimal fidelityAnyoccuSuminsured;
+
+    @Column(name="FIDELITY_ANNUAL_SUMINSURED")
+    private BigDecimal fidelityAnnualSuminsured;
+
+    @Column(name="TPLIABILITY_ANYOCCU_SUMINSURED")
+    private BigDecimal tpliabilityAnyoccuSuminsured;
+
+    @Column(name="EMPLIABILITY_ANNUAL_SUMINSURED")
+    private BigDecimal empliabilityAnnualSuminsured;
+
+
+    @Column(name="EMPLIABILITY_EXCESS_SUMINSURED")
+    private BigDecimal empliabilityExcessSuminsured;
+
+    @Column(name="GOODS_SINGLECARRY_SUMINSURED")
+    private BigDecimal goodsSinglecarrySuminsured;
+
+    @Column(name="GOODS_TURNOVER_SUMINSURED")
+    private BigDecimal goodsTurnoverSuminsured;
+
+    @Column(name="INDUSTRY_ID")
+    private Integer  industryId ;
+
+        
 }
 
 

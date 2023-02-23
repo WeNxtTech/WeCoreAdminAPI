@@ -1554,13 +1554,14 @@ public Integer getMasterTableCount(String companyId , String branchCode) {
 			Predicate a4 = cb.equal(ocpm1.get("factorTypeId"), b.get("factorTypeId"));
 			Predicate a5 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
 			Predicate a6 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
+			Predicate a12 = cb.equal(ocpm1.get("subCoverId"), b.get("subCoverId"));
 			Predicate a7 = cb.equal(ocpm1.get("agencyCode"), b.get("agencyCode"));
 			Predicate a8 = cb.equal(ocpm1.get("sNo"), b.get("sNo"));
 			Predicate a9 = cb.equal(ocpm1.get("subCoverId"), b.get("subCoverId"));
 			Predicate a10 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
 			Predicate a11 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateEnd"),todayEnd);
 
-			amendId.where(a1, a2,a3,a4,a5,a6,a7,a8,a9,a10,a11);
+			amendId.where(a1, a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12);
 
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("productId"), req.getProductId() );	
@@ -1577,32 +1578,40 @@ public Integer getMasterTableCount(String companyId , String branchCode) {
 			} else {
 				n7 =  cb.equal(b.get("subCoverId"), req.getSubCoverId()); 
 			}
+			n8 = cb.equal(  b.get("agencyCode"), req.getAgencyCode());
+			n9 = cb.equal(b.get("agencyCode"), "99999");
+			Predicate n10 = cb.or(n8 , n9);
+			Predicate n11 = cb.equal(b.get("branchCode"), req.getBranchCode());
+			Predicate n12 = cb.equal(b.get("branchCode"), "99999");
+			Predicate n13 = cb.or(n11 , n12);
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("sNo")));
-			
-			if(StringUtils.isBlank(req.getAgencyCode())  ) {
-				n8 = cb.equal(b.get("agencyCode"), "99999");
-				n9 = cb.equal(b.get("branchCode"), "99999");
-				query.where(n1, n2, n3,n4,n5,n6,n7,n8,n9).orderBy(orderList);
-				
-			} else {
-				n8 = cb.equal(b.get("agencyCode"), req.getAgencyCode());
-				if(StringUtils.isNotBlank(req.getBranchCode())   ) { 
-				n9 = cb.equal(b.get("branchCode"), req.getBranchCode());
-				query.where(n1, n2, n3,n4,n5,n6,n7,n8,n9).orderBy(orderList);
-				} else {
-					n9 = cb.equal(b.get("branchCode"), "99999");
-					query.where(n1, n2, n3,n4,n5,n6,n7,n8,n9).orderBy(orderList);
-				}
-				
-			}	
-	
+			query.where(n1, n2, n3,n4,n5,n6,n7,n10,n13).orderBy(orderList);
+		
 			// Get Result
 			TypedQuery<FactorRateMaster> result = em.createQuery(query);
 			list = result.getResultList();
 			
+			// Filter By Agency Code & Branch Code
+			String agencyCode = StringUtils.isNotBlank(req.getAgencyCode()) ? req.getAgencyCode() : "99999"  ;
+			String branchCode = StringUtils.isNotBlank(req.getBranchCode()) ? req.getBranchCode() : "99999"  ;
+		
+			List<FactorRateMaster> filerByAgencyCodeBranchCode = list.stream().filter( o -> o.getAgencyCode().equalsIgnoreCase(agencyCode) &&  o.getBranchCode().equalsIgnoreCase(branchCode) ).collect(Collectors.toList());
+			List<FactorRateMaster> filerByAgencyCode = list.stream().filter( o ->  o.getAgencyCode().equalsIgnoreCase(agencyCode) &&  o.getBranchCode().equalsIgnoreCase("99999")  ).collect(Collectors.toList());
+			List<FactorRateMaster> filerByCommon = list.stream().filter( o ->  o.getAgencyCode().equalsIgnoreCase("99999") &&  o.getBranchCode().equalsIgnoreCase("99999")  ).collect(Collectors.toList());
+			
+			if(filerByAgencyCodeBranchCode.size() > 0) {
+				list = filerByAgencyCodeBranchCode;
+				
+			} else if (filerByAgencyCode.size() > 0) {
+				list = filerByAgencyCode;
+				
+			} else if (filerByCommon.size() > 0) {
+				list = filerByCommon;
+			}
+		
 			if( list.size()>0) {
 				res = dozerMapper.map(list.get(0), FactorRateGetRes.class);
 				
@@ -1611,14 +1620,14 @@ public Integer getMasterTableCount(String companyId , String branchCode) {
 				for (FactorRateMaster  data : list) {
 					FactorParamsInsert fParam = new FactorParamsInsert();
 					fParam  =  dozerMapper.map(data, FactorParamsInsert.class);
-					 fParam.setParam1( data.getParam1()==null?"" : data.getParam1().toString());
-					 fParam.setParam2( data.getParam2()==null?"" : data.getParam2().toString());
-					 fParam.setParam3( data.getParam3()==null?"" : data.getParam3().toString());
-					 fParam.setParam4( data.getParam4()==null?"" : data.getParam4().toString());
-					 fParam.setParam5( data.getParam5()==null?"" : data.getParam5().toString());
-					 fParam.setParam6( data.getParam6()==null?"" : data.getParam6().toString());
-					 fParam.setParam7( data.getParam7()==null?"" : data.getParam7().toString());
-					 fParam.setParam8( data.getParam8()==null?"" : data.getParam8().toString());
+					 fParam.setParam1( data.getParam1()==null?"" : data.getParam1().toPlainString());
+					 fParam.setParam2( data.getParam2()==null?"" : data.getParam2().toPlainString());
+					 fParam.setParam3( data.getParam3()==null?"" : data.getParam3().toPlainString());
+					 fParam.setParam4( data.getParam4()==null?"" : data.getParam4().toPlainString());
+					 fParam.setParam5( data.getParam5()==null?"" : data.getParam5().toPlainString());
+					 fParam.setParam6( data.getParam6()==null?"" : data.getParam6().toPlainString());
+					 fParam.setParam7( data.getParam7()==null?"" : data.getParam7().toPlainString());
+					 fParam.setParam8( data.getParam8()==null?"" : data.getParam8().toPlainString());
 					 fParam.setSno(data.getSNo().toString());
 					fParam.setRate(data.getRate().toString());
 					fParam.setCalType(data.getCalcType());

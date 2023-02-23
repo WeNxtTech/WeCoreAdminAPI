@@ -67,6 +67,14 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="COMPANY_ID", nullable=false, length=20)
     private String     companyId ;
+    
+    @Id
+    @Column(name="AGENCY_CODE", nullable=false, length=20)
+    private String     agencyCode;
+    
+    @Id
+    @Column(name="BRANCH_CODE", nullable=false, length=20)
+    private String     branchCode ;
 
     @Id
     @Column(name="SUB_COVER_ID", nullable=false)
@@ -137,8 +145,14 @@ private static final long serialVersionUID = 1L;
     @Column(name="BASE_RATE")
     private BigDecimal     baseRate ;
 
-    @Column(name="EXCESS")
-    private BigDecimal     excess ;
+    @Column(name="EXCESS_AMOUNT")
+    private BigDecimal     excessAmount ;
+    
+    @Column(name="EXCESS_PERCENT")
+    private BigDecimal     excessPercent ;
+    
+    @Column(name="EXCESS_DESC")
+    private String     excessDesc ;
 
     @Column(name="MIN_PREMIUM")
     private BigDecimal     minPremium ;
@@ -197,6 +211,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="COVER_BASED_ON")
     private String       coverBasedOn;
+    
+    @Column(name="MULTI_SELECT_YN")
+    private String       multiSelectYn;
 
 }
 

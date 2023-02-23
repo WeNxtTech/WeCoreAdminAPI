@@ -29,4 +29,9 @@ public class CoverSubCoverMasterSaveReq {
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 	
+	@JsonProperty("AgencyCode")
+	private String agencyCode;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
 }

@@ -23,6 +23,12 @@ public class SectionCoverMasterGetReq {
 	@JsonProperty("ProductId")
     private String     productId     ;
 	
+	@JsonProperty("AgencyCode")
+	private String agencyCode;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
+	
 	@JsonFormat(pattern ="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;

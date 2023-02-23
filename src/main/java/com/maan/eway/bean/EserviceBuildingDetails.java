@@ -294,6 +294,53 @@ private static final long serialVersionUID = 1L;
     @Column(name="CATEGORY_DESC", length=100)
     private String     categoryDesc;
 
+
+    @Column(name="BANK_CODE", length=100)
+    private String   bankCode;    
+    
+    @Column(name="ELEC_EQUIP_SUMINSURED")
+    private BigDecimal elecEquipSuminsured;
+
+    @Column(name="MONEY_SINGLECARRY_SUMINSURED")
+    private BigDecimal moneySinglecarrySuminsured;
+
+    @Column(name="MONEY_ANNUALCARRY_SUMINSURED")
+    private BigDecimal moneyAnnualcarrySuminsured;
+
+    @Column(name="MONEY_INSAFE_SUMINSURED")
+    private BigDecimal moneyInsafeSuminsured;
+
+    @Column(name="FIDELITY_ANYOCCU_SUMINSURED")
+    private BigDecimal fidelityAnyoccuSuminsured;
+
+    @Column(name="FIDELITY_ANNUAL_SUMINSURED")
+    private BigDecimal fidelityAnnualSuminsured;
+
+    @Column(name="TPLIABILITY_ANYOCCU_SUMINSURED")
+    private BigDecimal tpliabilityAnyoccuSuminsured;
+
+    @Column(name="EMPLIABILITY_ANNUAL_SUMINSURED")
+    private BigDecimal empliabilityAnnualSuminsured;
+
+
+    @Column(name="EMPLIABILITY_EXCESS_SUMINSURED")
+    private BigDecimal empliabilityExcessSuminsured;
+
+    @Column(name="GOODS_SINGLECARRY_SUMINSURED")
+    private BigDecimal goodsSinglecarrySuminsured;
+
+    @Column(name="GOODS_TURNOVER_SUMINSURED")
+    private BigDecimal goodsTurnoverSuminsured;
+
+    @Column(name="INDUSTRY_ID")
+    private Integer  industryId ;
+
+    
+    @Column(name="INDUSTRY_DESC", length=100)
+    private String  industryDesc ;
+
+    @Column(name="WORKMEN_COMP_SUMINSURED")
+    private BigDecimal     workmenCompSuminsured;
     
 }
 

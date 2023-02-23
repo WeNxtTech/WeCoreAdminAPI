@@ -26,6 +26,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -52,6 +53,7 @@ public class SectionMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/insertsection")
 		@ApiOperation(value = "This method is Insert Section Details")
 		public ResponseEntity<CommonRes> insertSection(@RequestBody SectionMasterSaveReq req) {
@@ -87,7 +89,7 @@ public class SectionMasterController {
 		}
 		
 		//  Get All Section Master
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")		
 		@GetMapping("/getallsectiondetails")
 		@ApiOperation("This method is getall Section Details")
 		public ResponseEntity<CommonRes> getallSectionDetails()
@@ -110,7 +112,7 @@ public class SectionMasterController {
 		}
 		
 	//  Get Active Section Master
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 			@GetMapping("/getactivesection")
 			@ApiOperation("This method is get Active Section Details")
 			public ResponseEntity<CommonRes> getActiveSectionDetails()
@@ -133,7 +135,7 @@ public class SectionMasterController {
 			}
 		
 		// Get By Section Id
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/getbysectionid")
 		@ApiOperation("This Method is to get by Section id")
 		public ResponseEntity<CommonRes> getBySectionId(@RequestBody SectionMasterGetReq req)
@@ -152,7 +154,7 @@ public class SectionMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/getsections")
 		@ApiOperation("This Method is to get by Product  Sections")
 		public ResponseEntity<CommonRes> getProductSections(@RequestBody ProductSectionsGetReq req) {
@@ -172,6 +174,7 @@ public class SectionMasterController {
 		}
 
 		//Change Status
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/section/changestatus")
 		@ApiOperation(value = "This method is get Section Master Status Change")
 

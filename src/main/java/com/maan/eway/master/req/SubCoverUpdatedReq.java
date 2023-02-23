@@ -86,9 +86,6 @@ public class SubCoverUpdatedReq {
 	 	@JsonProperty("FactorTypeId")
 	 	private String factorTypeId;
 	 	
-	 	@JsonProperty("GridDetails")
-	 	private List<OfsGridSaveReq> gridDetails;
-	 	
 		@JsonProperty("IsTaxExcempted")
 		private String isTaxExcempted;
 		
@@ -109,4 +106,18 @@ public class SubCoverUpdatedReq {
 	    
 		@JsonProperty("DependentCoverId")
 	    private String dependentCoverId;
+		
+		@JsonProperty("AgencyCode")
+		private String agencyCode;
+		
+		@JsonProperty("BranchCode")
+		private String branchCode;
+		@JsonProperty("ExcessPercent")
+		private String excessPercent;
+		
+		@JsonProperty("ExcessAmount")
+		private String excessAmount;
+		
+		@JsonProperty("ExcessDesc")
+		private String excessDesc;
 }

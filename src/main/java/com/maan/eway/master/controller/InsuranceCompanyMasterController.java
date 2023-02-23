@@ -11,6 +11,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,6 +58,7 @@ public class InsuranceCompanyMasterController {
 */
 
 	//Insert or Update Insurance Company Master
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/savecompany")
 	@ApiOperation(value = "This method is Insert Company Details")
 	public ResponseEntity<CommonRes> createInsuranceCompanyMaster(@RequestBody  InsuranceCompanyMasterSaveReq req) {
@@ -90,7 +92,7 @@ public class InsuranceCompanyMasterController {
 	
 	
 //  Get All Insurance Company Master
-	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/getallinscompanydetails")
 		@ApiOperation("This method is getall  Company Details")
 		public ResponseEntity<CommonRes> getallInsCompanyDetails(@RequestBody InsuranceCompanyMasterGetAllReq req)
@@ -113,7 +115,7 @@ public class InsuranceCompanyMasterController {
 		}
 		
 	//  Get Active Insurance Company Master
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 			@PostMapping("/getactiveinscompany")
 			@ApiOperation("This method is get Active  Company Details")
 			public ResponseEntity<CommonRes> getActiveInsCompanyDetails(@RequestBody InsuranceCompanyMasterGetAllReq req)
@@ -136,7 +138,7 @@ public class InsuranceCompanyMasterController {
 			}
 		
 		// Get By Insurance Company Id
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/getbycompanyid")
 		@ApiOperation("This Method is to get by Company id")
 		public ResponseEntity<CommonRes> getByCompanyId(@RequestBody InsuranceCompanyMasterGetReq req)
@@ -157,6 +159,7 @@ public class InsuranceCompanyMasterController {
 	}
 		
 	// Insurance Company Master Drop Down Type
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 		@PostMapping(value="/dropdown/company",produces = "application/json")
 		@ApiOperation(value = "This method is get Company Master Drop Down")
 
@@ -179,6 +182,7 @@ public class InsuranceCompanyMasterController {
 
 		}
 
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/company/changestatus")
 		@ApiOperation(value = "This method is get Company Change Status")
 		public ResponseEntity<CommonRes> changeStatusOfCompany(@RequestBody CompanyChangeStatusReq req) {

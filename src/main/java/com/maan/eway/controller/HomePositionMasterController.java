@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +36,7 @@ public class HomePositionMasterController {
 	@Autowired
 	private  PrintReqService reqPrinter;
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/getquotecounts")
 	@ApiOperation(value = "This method is Get Quote Count")
 	public ResponseEntity<CommonRes> getCustomerQuoteCount(@RequestBody GetQuoteCountReq req) {
@@ -56,6 +58,7 @@ public class HomePositionMasterController {
 
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/getquotedetails")
 	@ApiOperation(value = "This method is Get Quote Details")
 	public ResponseEntity<CommonRes> getCustomerQuoteDetails(@RequestBody GetQuoteDetailsReq req) {
@@ -77,6 +80,7 @@ public class HomePositionMasterController {
 
 	} 
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/getpolicydetails")
 	@ApiOperation(value = "This method is Get Policy Details")
 	public ResponseEntity<CommonRes> getCustomerPolicyDetails(@RequestBody GetPolicyDetailsReq req) {

@@ -42,7 +42,7 @@ import javax.persistence.*;
 @DynamicUpdate
 @Builder
 @IdClass(ListItemValueId.class)
-@Table(name="list_item_value")
+@Table(name="eway_list_item_value")
 
 
 public class ListItemValue implements Serializable {
@@ -105,15 +105,15 @@ private static final long serialVersionUID = 1L;
     private String     updatedBy ;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EFFECTIVE_DATE_START", nullable=false)
+    @Column(name="EFFECTIVE_DATE_START")
     private Date       effectiveDateStart ;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EFFECTIVE_DATE_END", nullable=false)
+    @Column(name="EFFECTIVE_DATE_END")
     private Date       effectiveDateEnd ;
     
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="UPDATED_DATE", nullable=false)
+    @Column(name="UPDATED_DATE")
     private Date       updatedDate;
     
     //--- ENTITY LINKS ( RELATIONSHIP )

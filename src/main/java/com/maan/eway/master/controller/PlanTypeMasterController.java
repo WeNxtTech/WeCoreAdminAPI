@@ -11,6 +11,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,7 +51,8 @@ public class PlanTypeMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
-		@PostMapping("/insertplantype")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PostMapping("/insertplantype")
 		@ApiOperation(value = "This method is Plan Type Master")
 		public ResponseEntity<CommonRes> insertPlanType(@RequestBody PlanTypeMasterSaveReq req) {
 
@@ -85,7 +87,7 @@ public class PlanTypeMasterController {
 		}
 		
 		//  Get All PlanType Master
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/getallplantype")
 		@ApiOperation("This method is getall PlanType")
 		public ResponseEntity<CommonRes> getallPlanType(@RequestBody PlanTypeMasterGetAllReq req)
@@ -108,7 +110,7 @@ public class PlanTypeMasterController {
 		}
 		
 	//  Get Active PlanType Master
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 			@PostMapping("/getactiveplantype")
 			@ApiOperation("This method is get Active PlanType")
 			public ResponseEntity<CommonRes> getActivePlanType(@RequestBody PlanTypeMasterGetAllReq req)
@@ -131,7 +133,7 @@ public class PlanTypeMasterController {
 			}
 		
 		// Get By PlanType Id
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/getbyplantypeid")
 		@ApiOperation("This Method is to get by PlanType id")
 		public ResponseEntity<CommonRes> getByPlanTypeId(@RequestBody PlanTypeMasterGetReq req)
@@ -152,6 +154,7 @@ public class PlanTypeMasterController {
 	}
 		
 		// PlanType Master Drop Down Type
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 		@PostMapping(value="/dropdown/plantype",produces = "application/json")
 		@ApiOperation(value = "This method is get PlanType Master Drop Down")
 
@@ -175,7 +178,7 @@ public class PlanTypeMasterController {
 		}	
 	
 
-
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/plantype/changestatus")
 		@ApiOperation(value = "This method is get PlanType Change Status")
 		public ResponseEntity<CommonRes> changeStatusOfPlanType(@RequestBody PlanTypeMasterChangeStatusReq req) {

@@ -88,9 +88,6 @@ public class SubCoverMasterGetRes implements Serializable {
 	
 	@JsonProperty("AmendId")
 	private String amendId;
-	
-	@JsonProperty("GridDetails")
-	private List<OfsGridGetRes> gridDetails;
 
 	@JsonProperty("IsTaxExcempted")
 	private String isTaxExcempted;
@@ -112,4 +109,14 @@ public class SubCoverMasterGetRes implements Serializable {
     
 	@JsonProperty("DependentCoverId")
     private String dependentCoverId;
+	
+	@JsonProperty("ExcessPercent")
+	private String excessPercent;
+	
+	@JsonProperty("ExcessAmount")
+	private String excessAmount;
+	
+	@JsonProperty("ExcessDesc")
+	private String excessDesc;
+	
 }

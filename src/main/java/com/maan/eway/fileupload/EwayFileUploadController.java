@@ -7,6 +7,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -28,12 +29,13 @@ public class EwayFileUploadController {
 	@Autowired
 	private EwayFileUploadService service;
 	
-	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/download")
 	public com.maan.eway.res.CommonRes download(@RequestBody FileDownloadRequest req) {
 		return service.download(req);
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/upload")
 	public com.maan.eway.res.CommonRes upload(@RequestParam("file") MultipartFile file,@RequestParam("uploadReq") String uploadReq ,@RequestHeader("Authorization") String tokens ){
 		com.maan.eway.res.CommonRes response = new com.maan.eway.res.CommonRes();

@@ -62,8 +62,6 @@ public class SubCoverMasterSaveReq implements Serializable {
  	@JsonProperty("CoverageLimit")
  	private String coverageLimit;
  	
- 	@JsonProperty("Excess")
- 	private String excess;
  	
  	@JsonProperty("CalcType")
  	private String calcType;
@@ -103,6 +101,13 @@ public class SubCoverMasterSaveReq implements Serializable {
 	@JsonProperty("DependentCoverId")
     private String dependentCoverId;
 	
- 	@JsonProperty("GridDetails")
- 	private List<OfsGridSaveReq> gridDetails;
+
+	@JsonProperty("ExcessPercent")
+	private String excessPercent;
+	
+	@JsonProperty("ExcessAmount")
+	private String excessAmount;
+	
+	@JsonProperty("ExcessDesc")
+	private String excessDesc;
 }

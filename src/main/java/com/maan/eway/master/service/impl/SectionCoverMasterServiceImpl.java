@@ -9,14 +9,14 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collector;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -42,18 +42,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.CoverMaster;
-import com.maan.eway.bean.CoverOfsGridMaster;
-import com.maan.eway.bean.CurrencyMaster;
+import com.maan.eway.bean.FactorRateMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.bean.LoginMaster;
-import com.maan.eway.bean.OccupationMaster;
-import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.SectionCoverMaster;
-import com.maan.eway.bean.SectionCoverOfsGridMaster;
 import com.maan.eway.error.Error;
-import com.maan.eway.master.req.OfsGridGetRes;
-import com.maan.eway.master.req.OfsGridSaveReq;
 import com.maan.eway.master.req.SectionCoverChangeStatusReq;
 import com.maan.eway.master.req.SectionCoverMasterGetAllReq;
 import com.maan.eway.master.req.SectionCoverMasterGetReq;
@@ -64,15 +57,12 @@ import com.maan.eway.master.res.CoverMasterGetAllRes;
 import com.maan.eway.master.res.SectionCoverMasterGetAllRes;
 import com.maan.eway.master.res.SectionCoverMasterRes;
 import com.maan.eway.master.service.SectionCoverMasterService;
-import com.maan.eway.notif.req.MailFramingReq;
 import com.maan.eway.notif.service.impl.MailThreadServiceImpl;
-import com.maan.eway.repository.CoverOfsGridMasterRepository;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.ProductCoverRatingMasterRepository;
 import com.maan.eway.repository.SectionCoverMasterRepository;
-import com.maan.eway.repository.SectionCoverOfsGridMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 
@@ -88,12 +78,6 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 
 	@Autowired
 	private ProductCoverRatingMasterRepository ratingRepo;
-
-	@Autowired
-	private CoverOfsGridMasterRepository ofsRepo;
-	
-	@Autowired
-	private SectionCoverOfsGridMasterRepository secOfsRepo;
 	
 	@Autowired
 	private ListItemValueRepository listRepo;
@@ -233,31 +217,10 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 						secCover.setCreatedBy(req.getCreatedBy());
 						secCover.setCoreAppCode("99999");
 						secCover.setSubCoverId(Integer.valueOf("0"));
+						secCover.setAgencyCode(StringUtils.isNotBlank(req.getAgencyCode()) ? req.getAgencyCode() : "99999") ;
+						secCover.setBranchCode(StringUtils.isNotBlank(req.getBranchCode()) ? req.getBranchCode() : "99999");
 						repo.saveAndFlush(secCover);
 						
-						if(StringUtils.isNotBlank(secCover.getCalcType()) &&  secCover.getCalcType().equalsIgnoreCase("G")  ) {
-							
-							// find old records
-							List<SectionCoverOfsGridMaster> secOfsDatas =  secOfsRepo.findByCompanyIdAndProductIdAndSectionIdAndCoverIdAndSubCoverIdOrderByCoveragesSubIdAsc(req.getCompanyId() , Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId()) ,   secCover.getCoverId() , secCover.getSubCoverId()  );	
-							    
-							if(secOfsDatas.size() > 0 ) {
-								secOfsRepo.deleteAll(secOfsDatas);
-							}
-							
-							// Save new Rceords 
-							List<CoverOfsGridMaster> ofsDatas =  ofsRepo.findByCoverIdAndSubCoverIdOrderByCoveragesSubIdAsc(   secCover.getCoverId() , secCover.getSubCoverId()  );	
-							
-							for( CoverOfsGridMaster ofs : ofsDatas ) {
-								SectionCoverOfsGridMaster secOfsSave  = new SectionCoverOfsGridMaster();
-								dozerMapper.map(ofs, secOfsSave);
-								secOfsSave.setCompanyId(req.getCompanyId());
-								secOfsSave.setProductId(Integer.valueOf(req.getProductId()));
-								secOfsSave.setSectionId(Integer.valueOf(req.getSectionId()));
-								secOfsSave.setEntryDate(new Date());
-								secOfsSave.setCreatedBy(req.getCreatedBy());
-								secOfsRepo.saveAndFlush(secOfsSave);
-							}
-						}
 						log.info("Saved Detail is  --->" + secCover );
 					} else if(data.getSubCoverYn().equalsIgnoreCase("N") ) {
 						SectionCoverMaster secCover = new SectionCoverMaster();
@@ -271,31 +234,10 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 						secCover.setCompanyId(req.getCompanyId());
 						secCover.setCreatedBy(req.getCreatedBy());
 						secCover.setCoreAppCode("99999");
+						secCover.setAgencyCode(StringUtils.isNotBlank(req.getAgencyCode()) ? req.getAgencyCode() : "99999") ;
+						secCover.setBranchCode(StringUtils.isNotBlank(req.getBranchCode()) ? req.getBranchCode() : "99999");
 						repo.saveAndFlush(secCover);
 						
-						if(StringUtils.isNotBlank(secCover.getCalcType()) &&  secCover.getCalcType().equalsIgnoreCase("G")  ) {
-							
-							// find old records
-							List<SectionCoverOfsGridMaster> secOfsDatas =  secOfsRepo.findByCompanyIdAndProductIdAndSectionIdAndCoverIdAndSubCoverIdOrderByCoveragesSubIdAsc(req.getCompanyId() , Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId()) ,   secCover.getCoverId() , secCover.getSubCoverId()  );	
-							    
-							if(secOfsDatas.size() > 0 ) {
-								secOfsRepo.deleteAll(secOfsDatas);
-							}
-							
-							// Save new Rceords 
-							List<CoverOfsGridMaster> ofsDatas =  ofsRepo.findByCoverIdAndSubCoverIdOrderByCoveragesSubIdAsc(   secCover.getCoverId() , secCover.getSubCoverId()  );	
-							
-							for( CoverOfsGridMaster ofs : ofsDatas ) {
-								SectionCoverOfsGridMaster secOfsSave  = new SectionCoverOfsGridMaster();
-								dozerMapper.map(ofs, secOfsSave);
-								secOfsSave.setCompanyId(req.getCompanyId());
-								secOfsSave.setProductId(Integer.valueOf(req.getProductId()));
-								secOfsSave.setSectionId(Integer.valueOf(req.getSectionId()));
-								secOfsSave.setEntryDate(new Date());
-								secOfsSave.setCreatedBy(req.getCreatedBy());
-								secOfsRepo.saveAndFlush(secOfsSave);
-							}
-						}
 						log.info("Saved Detail is  --->" + secCover );
 					}
 					
@@ -327,7 +269,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			cal.set(Calendar.MINUTE, 50);
 			today = cal.getTime();
 
-			List<SectionCoverMaster> coverList = new ArrayList<SectionCoverMaster>();
+			List<SectionCoverMaster> list = new ArrayList<SectionCoverMaster>();
 						
 							
 			// Find Latest Record
@@ -348,7 +290,9 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate a9 = cb2.equal(ocpm2.get("productId"), b2.get("productId"));
 			Predicate a10 = cb2.equal(ocpm2.get("companyId"), b2.get("companyId"));
 			Predicate a11 = cb2.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"), today);
-			amendId2.where(a7,a8,a9,a10,a11,a12);
+			Predicate a13 = cb2.equal(ocpm2.get("agencyCode"), b2.get("agencyCode"));
+			Predicate a14 = cb2.equal(ocpm2.get("branchCode"), b2.get("branchCode"));
+			amendId2.where(a7,a8,a9,a10,a11,a12,a13,a14);
 
 			// Select
 			query2.select(b2);
@@ -362,15 +306,23 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate n5 = cb2.equal(b2.get("amendId"),amendId2);
 			Predicate n6 = cb2.equal(b2.get("subCoverId"),"0");
 			Predicate n7 = cb2.equal(b2.get("productId"), req.getProductId());
-			Predicate n8 = cb2.equal(b2.get("companyId"), req.getInsuranceId());
-			Predicate n9 = cb2.equal(b2.get("sectionId"), req.getSectionId());
-			
-			query2.where(n5,n6,n7,n8,n9).orderBy(orderList2);
+			Predicate n14 = cb2.equal(b2.get("companyId"), req.getInsuranceId());
+			Predicate n15 = cb2.equal(b2.get("sectionId"), req.getSectionId());
+			Predicate n8 = cb2.equal(b2.get("agencyCode"), req.getAgencyCode());
+			Predicate n9 = cb2.equal(b2.get("agencyCode"), "99999");
+			Predicate n10 = cb2.or(n8,n9);
+			Predicate n11 = cb2.equal(b2.get("branchCode"), req.getBranchCode());
+			Predicate n12 = cb2.equal(b2.get("branchCode"), "99999");
+			Predicate n13 = cb2.or(n11,n12 );
+			query2.where(n5,n6,n7,n14,n15,n10,n13).orderBy(orderList2);
 
 			// Get Result
 			TypedQuery<SectionCoverMaster> result2 = em.createQuery(query2);
-			coverList = result2.getResultList();
-			Map<Integer,List<SectionCoverMaster>> groupByCover = coverList.stream().collect(Collectors.groupingBy(SectionCoverMaster :: getCoverId));
+			list = result2.getResultList();
+			list.sort( Comparator.comparing(SectionCoverMaster :: getAgencyCode  ).thenComparing(SectionCoverMaster :: getBranchCode  ) );;
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCoverId() ,o.getSubCoverId() ))).collect(Collectors.toList());
+			
+			Map<Integer,List<SectionCoverMaster>> groupByCover = list.stream().collect(Collectors.groupingBy(SectionCoverMaster :: getCoverId));
 			// Map
 			for (Integer  data : groupByCover.keySet()) {
 				List<SectionCoverMaster> datas = groupByCover.get(data);
@@ -425,7 +377,9 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate a9 = cb2.equal(ocpm2.get("productId"), b2.get("productId"));
 			Predicate a10 = cb2.equal(ocpm2.get("companyId"), b2.get("companyId"));
 			Predicate a11 = cb2.equal(ocpm2.get("subCoverId"), b2.get("subCoverId"));
-			amendId.where(a7,a8,a9,a10,a11);
+			Predicate a13 = cb2.equal(ocpm2.get("agencyCode"), b2.get("agencyCode"));
+			Predicate a14 = cb2.equal(ocpm2.get("branchCode"), b2.get("branchCode"));
+			amendId.where(a7,a8,a9,a10,a11,a13,a14);
 
 			// Select
 			query2.select(b2);
@@ -438,15 +392,27 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate n5 = cb2.equal(b2.get("amendId"),amendId);
 			Predicate n6 =cb2.equal(b2.get("subCoverId"), "0");
 			Predicate n7 = cb2.equal(b2.get("productId"), req.getProductId());
-			Predicate n8 = cb2.equal(b2.get("companyId"), req.getCompanyId());
-			Predicate n9 = cb2.equal(b2.get("sectionId"), req.getSectionId());
-			Predicate n10 = cb2.equal(b2.get("coverId"), req.getCoverId());
-			
-			query2.where(n5,n6,n7,n8,n9,n10).orderBy(orderList2);
+			Predicate n14 = cb2.equal(b2.get("companyId"), req.getCompanyId());
+			Predicate n15 = cb2.equal(b2.get("sectionId"), req.getSectionId());
+			Predicate n16 = cb2.equal(b2.get("coverId"), req.getCoverId());
+			Predicate n8 = cb2.equal(b2.get("agencyCode"), req.getAgencyCode());
+			Predicate n9 = cb2.equal(b2.get("agencyCode"), "99999");
+			Predicate n10 = cb2.or(n8,n9);
+			Predicate n11 = cb2.equal(b2.get("branchCode"), req.getBranchCode());
+			Predicate n12 = cb2.equal(b2.get("branchCode"), "99999");
+			Predicate n13 = cb2.or(n11,n12 );
+			query2.where(n5,n6,n7,n10,n13,n14,n15,n16).orderBy(orderList2);
 
 			// Get Result
 			TypedQuery<SectionCoverMaster> result2 = em.createQuery(query2);
 			list = result2.getResultList();
+			
+			// Filter By Agency Code & Branch Code
+			String agencyCode = StringUtils.isNotBlank(req.getAgencyCode()) ? req.getAgencyCode() : "99999"  ;
+			String branchCode = StringUtils.isNotBlank(req.getBranchCode()) ? req.getBranchCode() : "99999"  ;
+		
+			list.sort( Comparator.comparing(SectionCoverMaster :: getAgencyCode  ).thenComparing(SectionCoverMaster :: getBranchCode  ) );
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCoverId() ,o.getSubCoverId() ))).collect(Collectors.toList());
 			res = mapper.map(list.get(0), SectionCoverMasterRes.class);
 			res.setCoverId(list.get(0).getCoverId()==null?"" : list.get(0).getCoverId().toString() );
 			res.setEntryDate(list.get(0).getEntryDate());
@@ -458,27 +424,9 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			res.setSumInsuredEnd(list.get(0).getMaxSuminsured() == null ? "" :df.format(list.get(0).getMaxSuminsured()));
 			res.setBaseRate(list.get(0).getBaseRate() == null ? "" : df.format(list.get(0).getBaseRate()));
 			res.setCoverageLimit(list.get(0).getCoverageLimit() == null ? "" : df.format(list.get(0).getCoverageLimit()));
-			res.setExcess(list.get(0).getExcess() == null ? "" :df.format(list.get(0).getExcess()));
-			// Ofs Details
-			List<OfsGridGetRes> gridDetails =  new ArrayList<OfsGridGetRes>();
-			if(StringUtils.isNotBlank(res.getCalcType()) && res.getCalcType().equalsIgnoreCase("G") ) {
-				List<SectionCoverOfsGridMaster> ofsGrids   = secOfsRepo.findByCompanyIdAndProductIdAndSectionIdAndCoverIdAndSubCoverIdOrderByCoveragesSubIdAsc(list.get(0).getCompanyId() ,list.get(0).getProductId() ,list.get(0).getSectionId(), list.get(0).getCoverId() , list.get(0).getSubCoverId() );
-				
-				for( SectionCoverOfsGridMaster data : ofsGrids ) {
-					OfsGridGetRes dataRes = new OfsGridGetRes();
-					dataRes.setBaseRate(data.getBaseRate() ==null ?"" : df.format(data.getBaseRate()) );
-					dataRes.setCalcType(data.getCalcType() );
-					dataRes.setCalcTypeDesc(data.getCalcTypeDesc() );
-					dataRes.setMinimumPremium(data.getMinimumPremium() ==null ?"" : df.format(data.getMinimumPremium()) );
-					dataRes.setSumInsuredStart(data.getStartSuminsured() ==null ?"" : df.format(data.getStartSuminsured()) );
-					dataRes.setSumInsuredEnd(data.getEndSuminsured() ==null ?"" : df.format(data.getEndSuminsured()) );
-					dataRes.setCoverageSubId(String.valueOf(data.getCoveragesSubId()));
-					
-					gridDetails.add(dataRes);
-				}
-			}
-			
-			res.setGridDetails(gridDetails);
+			res.setExcessPercent(list.get(0).getExcessPercent() == null ? "" :df.format(list.get(0).getExcessPercent()));
+			res.setExcessAmount(list.get(0).getExcessAmount() == null ? "" :df.format(list.get(0).getExcessAmount()));
+			res.setExcessDesc(list.get(0).getExcessDesc()==null ?"": list.get(0).getExcessDesc());	
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -520,7 +468,9 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate a8 = cb2.equal(ocpm2.get("productId"), b2.get("productId"));
 			Predicate a9 = cb2.equal(ocpm2.get("companyId"), b2.get("companyId"));
 			Predicate a10 = cb2.equal(ocpm2.get("subCoverId"), b2.get("subCoverId"));
-			amendId2.where(a6,a7,a8,a9,a10);
+			Predicate a13 = cb2.equal(ocpm2.get("agencyCode"), b2.get("agencyCode"));
+			Predicate a14 = cb2.equal(ocpm2.get("branchCode"), b2.get("branchCode"));
+			amendId2.where(a6,a7,a8,a9,a10,a13,a14);
 
 			// Select
 			query2.select(b2);
@@ -533,16 +483,24 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate n5 = cb2.equal(b2.get("amendId"),amendId2);
 			Predicate n6 = cb2.equal(b2.get("subCoverId"),"0");
 			Predicate n7 = cb2.equal(b2.get("productId"), req.getProductId());
-			Predicate n8 = cb2.equal(b2.get("companyId"), req.getInsuranceId());
-			Predicate n9 = cb2.equal(b2.get("sectionId"), req.getSectionId());
-			Predicate n10 = cb2.equal(b2.get("status"), "Y");
-			
-			query2.where(n5,n6,n7,n8,n9,n10).orderBy(orderList2);
+			Predicate n14 = cb2.equal(b2.get("companyId"), req.getInsuranceId());
+			Predicate n15 = cb2.equal(b2.get("sectionId"), req.getSectionId());
+			Predicate n16 = cb2.equal(b2.get("status"), "Y");
+			Predicate n8 = cb2.equal(b2.get("agencyCode"), req.getAgencyCode());
+			Predicate n9 = cb2.equal(b2.get("agencyCode"), "99999");
+			Predicate n10 = cb2.or(n8,n9);
+			Predicate n11 = cb2.equal(b2.get("branchCode"), req.getBranchCode());
+			Predicate n12 = cb2.equal(b2.get("branchCode"), "99999");
+			Predicate n13 = cb2.or(n11,n12 );
+			query2.where(n5,n6,n7,n10,n13,n14,n15,n16).orderBy(orderList2);
 
 			// Get Result
 			TypedQuery<SectionCoverMaster> result2 = em.createQuery(query2);
-			List<SectionCoverMaster> coverList = result2.getResultList();
-			Map<Integer,List<SectionCoverMaster>> groupByCover = coverList.stream().collect(Collectors.groupingBy(SectionCoverMaster :: getCoverId));
+			List<SectionCoverMaster> list = result2.getResultList();
+			
+			list.sort( Comparator.comparing(SectionCoverMaster :: getAgencyCode  ).thenComparing(SectionCoverMaster :: getBranchCode  ) );
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCoverId() ,o.getSubCoverId() ))).collect(Collectors.toList());
+			Map<Integer,List<SectionCoverMaster>> groupByCover = list.stream().collect(Collectors.groupingBy(SectionCoverMaster :: getCoverId));
 			// Map
 			for (Integer  data : groupByCover.keySet()) {
 				List<SectionCoverMaster> datas = groupByCover.get(data);
@@ -593,8 +551,9 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Root<CoverMaster> ocpm1 = amendId.from(CoverMaster.class);
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
+			Predicate a2 = cb.equal(ocpm1.get("subCoverId"),"0");
 		//	Predicate a3 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"), today);
-			amendId.where(a1);
+			amendId.where(a1,a2);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -610,16 +569,25 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate eff2 = cb.equal(ocpm2.get("sectionId"), ps.get("sectionId"));
 			Predicate eff3 = cb.equal(ocpm2.get("productId"), ps.get("productId"));
 			Predicate eff4 = cb.equal(ocpm2.get("companyId"), ps.get("companyId"));
-			amendId2.where(eff1, eff2, eff3, eff4);
+			Predicate eff5 = cb.equal(ocpm2.get("agencyCode"), ps.get("agencyCode"));
+			Predicate eff6 = cb.equal(ocpm2.get("branchCode"), ps.get("branchCode"));
+			Predicate eff7 = cb.equal(ocpm2.get("subCoverId"), "0");
+			amendId2.where(eff1, eff2, eff3, eff4,eff5,eff6,eff7);
 
 			// Section Cover Filter
 			cover.select(ps.get("coverId"));
-			Predicate ps1 = cb.equal(ps.get("coverId"), b.get("coverId"));
+			Predicate ps1 = cb.equal(ps.get("subCoverId"),"0");
 			Predicate ps2 = cb.equal(ps.get("productId"), req.getProductId());
 			Predicate ps3 = cb.equal(ps.get("sectionId"), req.getSectionId());
 			Predicate ps4 = cb.equal(ps.get("companyId"), req.getCompanyId());
 			Predicate ps5 = cb.equal(ps.get("amendId"), amendId2);
-			cover.where(ps1, ps2, ps3, ps4, ps5);
+			Predicate n8 = cb.equal(ps.get("agencyCode"), req.getAgencyCode());
+			Predicate n9 = cb.equal(ps.get("agencyCode"), "99999");
+			Predicate n10 = cb.or(n8,n9);
+			Predicate n11 = cb.equal(ps.get("branchCode"), req.getBranchCode());
+			Predicate n12 = cb.equal(ps.get("branchCode"), "99999");
+			Predicate n13 = cb.or(n11,n12 );
+			cover.where(ps1, ps2, ps3, ps4, ps5,n10,n13);
 
 			// Where
 			Expression<String> e0 = b.get("coverId");
@@ -627,7 +595,8 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n3 = cb.equal(b.get("status"), "Y");
 			Predicate n4 = e0.in(cover).not();
-			query.where(n1, n3, n4).orderBy(orderList);
+			Predicate n5 = cb.equal(b.get("subCoverId"), "0");
+			query.where(n1, n3, n4,n5).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CoverMaster> result = em.createQuery(query);
@@ -692,7 +661,10 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("sectionId"), ocpm1.get("sectionId"));
 			javax.persistence.criteria.Predicate a4 = cb.equal(c.get("coverId"), ocpm1.get("coverId"));
 			javax.persistence.criteria.Predicate a5 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			effectiveDate.where(a1, a2, a3, a4, a5);
+			Predicate a13 = cb.equal(ocpm1.get("agencyCode"), c.get("agencyCode"));
+			Predicate a14 = cb.equal(ocpm1.get("branchCode"), c.get("branchCode"));
+			effectiveDate.where(a1, a2, a3, a4, a5,a13,a14);
+			
 			// Effective Date End
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 			Root<SectionCoverMaster> ocpm2 = effectiveDate2.from(SectionCoverMaster.class);
@@ -702,7 +674,9 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate a8 = cb.equal(c.get("companyId"), ocpm2.get("companyId") );
 			Predicate a9 = cb.equal(c.get("productId"), ocpm2.get("productId") );
 			Predicate a10 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-			effectiveDate2.where(a6,a7,a8,a9,a10);
+			Predicate a15 = cb.equal(ocpm2.get("agencyCode"), c.get("companyId"));
+			Predicate a16 = cb.equal(ocpm2.get("branchCode"), c.get("branchCode"));
+			effectiveDate2.where(a6,a7,a8,a9,a10,a15,a16);
 					
 			// Where
 			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
@@ -711,11 +685,21 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("productId"), req.getProductId());
 			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("sectionId"), req.getSectionId());
 			javax.persistence.criteria.Predicate n6 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
-			query.where(n1, n2, n3, n4, n5,n6).orderBy(orderList);
+			Predicate n8 = cb.equal(c.get("agencyCode"), req.getAgencyCode());
+			Predicate n9 = cb.equal(c.get("agencyCode"), "99999");
+			Predicate n10 = cb.or(n8,n9);
+			Predicate n11 = cb.equal(c.get("branchCode"), req.getBranchCode());
+			Predicate n12 = cb.equal(c.get("branchCode"), "99999");
+			Predicate n13 = cb.or(n11,n12 );
+			query.where(n1, n2, n3, n4, n5,n6,n10,n13).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<SectionCoverMaster> result = em.createQuery(query);
 			list = result.getResultList();
+			
+			list.sort( Comparator.comparing(SectionCoverMaster :: getAgencyCode  ).thenComparing(SectionCoverMaster :: getBranchCode  ) );
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCoverId() ,o.getSubCoverId() ))).collect(Collectors.toList());
+			
 			Map<Integer, List<SectionCoverMaster>>  groupByCoverId = list.stream() .collect(Collectors.groupingBy(w ->   w.getCoverId())) ;
 			
 			// Map
@@ -770,7 +754,9 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate a3 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
 			Predicate a4 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			//Predicate a5 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			amendId.where(a1,a2,a3,a4);
+			Predicate a13 = cb.equal(ocpm1.get("agencyCode"), b.get("agencyCode"));
+			Predicate a14 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+			amendId.where(a1,a2,a3,a4,a13,a14);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -782,7 +768,13 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate n3 = cb.equal(b.get("sectionId"), req.getSectionId() );
 			Predicate n4 = cb.equal(b.get("coverId"), req.getCoverId() );
 			Predicate n5 = cb.equal(b.get("companyId"),req.getCompanyId());
-			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+			Predicate n8 = cb.equal(b.get("agencyCode"), req.getAgencyCode());
+			Predicate n9 = cb.equal(b.get("agencyCode"), "99999");
+			Predicate n10 = cb.or(n8,n9);
+			Predicate n11 = cb.equal(b.get("branchCode"), req.getBranchCode());
+			Predicate n12 = cb.equal(b.get("branchCode"), "99999");
+			Predicate n13 = cb.or(n11,n12 );
+			query.where(n1,n2,n3,n4,n5,n10,n13).orderBy(orderList);
 	
 			// Get Result
 			TypedQuery<SectionCoverMaster> result = em.createQuery(query);
@@ -803,10 +795,11 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 					 // Where	
 					javax.persistence.criteria.Predicate n6 = cb.equal(pm.get("productId"), req.getProductId());
 					javax.persistence.criteria.Predicate n7 = cb.equal(pm.get("sectionId"), req.getSectionId());
-					javax.persistence.criteria.Predicate n8 = cb.equal(pm.get("coverId"), req.getCoverId());
-					javax.persistence.criteria.Predicate n9 = cb.equal(pm.get("effectiveDateStart"), today);
-					javax.persistence.criteria.Predicate n10 = cb.equal(pm.get("companyId"), req.getCompanyId());
-					delete.where(n6,n7,n8,n9,n10);	
+					javax.persistence.criteria.Predicate n14 = cb.equal(pm.get("coverId"), req.getCoverId());
+					javax.persistence.criteria.Predicate n15 = cb.equal(pm.get("effectiveDateStart"), today);
+					javax.persistence.criteria.Predicate n16 = cb.equal(pm.get("companyId"), req.getCompanyId());
+					Predicate n17 = cb.equal(pm.get("subCoverId"), "0");
+					delete.where(n6,n7,n14,n15,n16,n17);	
 					em.createQuery(delete).executeUpdate();
 					// Insert Updated Record
 					
@@ -853,14 +846,6 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				
 			}
 			
-			if (StringUtils.isNotBlank(req.getDependentCoverYn()) && req.getDependentCoverYn().equalsIgnoreCase("Y") ) {
-				if (StringUtils.isBlank(req.getDependentCoverId()) ) {
-					errorList.add(new Error("08", "Dependent Cover Id", "Please Select Dependent Cover Id"));
-				}
-			}
-			if (StringUtils.isBlank(req.getCoverBasedOn())) {
-				errorList.add(new Error("01", "CoverBasedOn", "Please Select CoverBasedOn "));
-			}
 			
 			if (StringUtils.isBlank(req.getSubCoverYn())) {
 				errorList.add(new Error("08", "SubCoverYn", "Please Enter SubCoverYn"));
@@ -914,17 +899,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				}	
 			} 
 			
-			if(StringUtils.isNotBlank(req.getCoverageType()) && req.getCoverageType().equalsIgnoreCase("P") ) {
-				if (req.getEffectiveDateEnd()==null) {
-					errorList.add(new Error("14", "EffectiveDateEnd", "Please Enter EffectiveDateEnd"));
-				}else if (req.getEffectiveDateStart()!=null && req.getEffectiveDateEnd()!=null) {
-					if( req.getEffectiveDateStart().after(req.getEffectiveDateEnd())) {
-						errorList.add(new Error("14", "EffectiveDateEnd", "EffectiveDateStart After EffectiveDateEnd Not Allwoed"));	
-					}
-					
-				}
-			}
-			
+
 			if (StringUtils.isBlank(req.getCreatedBy())) {
 				errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy "));
 			} else if (req.getCreatedBy().length() > 100) {
@@ -950,129 +925,130 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				errorList.add(new Error("09", "Remarks", "Enter Remarks  within 100 Characters Only"));
 			}
 			
-			// Rating Master Validation
-			if (StringUtils.isBlank(req.getCoverageType())) {
-				errorList.add(new Error("09", "CoverageType", "Please Select CoverageType"));
-			}
-			
-			if (StringUtils.isBlank(req.getCoverageLimit())) {
-				errorList.add(new Error("09", "CoverageLimit", "Please Enter CoverageLimit"));
-			} else if (! req.getCoverageLimit().matches("[0-9.]+") ) {
-				errorList.add(new Error("09", "CoverageLimit", "Please Enter Valid Number In CoverageLimit "));
-			}
-			
-			if (StringUtils.isBlank(req.getExcess())) {
-				errorList.add(new Error("09", "Excess", "Please Enter Excess"));
-			} else if (! req.getExcess().matches("[0-9.]+") ) {
-				errorList.add(new Error("09", "Excess", "Please Enter Valid Number In Excess"));
-			}
-			
-			if (StringUtils.isBlank(req.getCalcType())) {
-				errorList.add(new Error("09", "CalcType", "Please Select CalcType"));
-			} 
-			
-			// Tax Calculation
-			if (StringUtils.isBlank(req.getIsTaxExcempted())) {
-				errorList.add(new Error("08", "IsTaxExcempted", "Please Enter Is Tax Excempted"));
-			} else if (req.getIsTaxExcempted().length() > 1) {
-				errorList.add(new Error("08", "IsTaxExcempted", "Enter Is Tax Excempted in 1 Character Only"));
-			} else if (!("Y".equals(req.getIsTaxExcempted()) || "N".equals(req.getIsTaxExcempted()))) {
-				errorList.add(new Error("08", "IsTaxExcempted", "Enter Is Tax Excempted Y or N Only"));
-				
-			} else if(req.getIsTaxExcempted().equalsIgnoreCase("Y") ){
-				if (StringUtils.isBlank(req.getTaxExcemptionReference())) {
-					errorList.add(new Error("08", "TaxExcemptionReference", "Please Enter Tax Excemption Reference"));
-				} else if (req.getTaxExcemptionReference().length() >100 ) {
-					errorList.add(new Error("08", "TaxExcemptionReference", "100 Chatracters Only Allowed As Tax Excemption Reference"));
-				} 
-				
-				if (StringUtils.isBlank(req.getTaxExcemptionType())) {
-					errorList.add(new Error("08", "TaxExcemptionType", "Please Select Tax Excemption Type"));
-				} else if (! req.getTaxExcemptionType().matches( "[0-9]+") ) {
-					errorList.add(new Error("08", "TaxExcemptionType", "Please Select Tax Excemption Type"));
-				} 
-			} else if(req.getIsTaxExcempted().equalsIgnoreCase("N") ){
-				if (StringUtils.isBlank(req.getTaxAmount())) {
-					errorList.add(new Error("08", "TaxAmount", "Please Enter TaxAmount"));
-				} else if (! req.getTaxAmount().matches( "[0-9.]+") ) {
-					errorList.add(new Error("08", "TaxAmount", "Please Enter Valid Tax Amount"));
-				} 
-				
-				if (StringUtils.isBlank(req.getTaxCode())) {
-					errorList.add(new Error("08", "TaxCode", "Please Enter Tax Code "));
-				} else if (req.getTaxCode().length() >100 ) {
-					errorList.add(new Error("08", "TaxCode", "100 Chatracters Only Allowed As Tax Code "));
-				} 
-			}
-			
-			if (StringUtils.isNotBlank(req.getCalcType()) &&  req.getCalcType().equalsIgnoreCase("F") ) {
-				
-				if( StringUtils.isBlank(req.getFactorTypeId()) ) {
-					errorList.add(new Error("09", "Factor Type Id", "Please Enter Factor Type Id "));
-				
-				}
+			if( StringUtils.isNotBlank(req.getSubCoverYn()) && req.getSubCoverYn().equalsIgnoreCase("N")  ) {
 
-			} else if( StringUtils.isNotBlank(req.getCalcType()) &&  req.getCalcType().equalsIgnoreCase("G")  ) {
-				if(req.getGridDetails() == null || req.getGridDetails().size()<=0 ) {
-					errorList.add(new Error("09", "Grid ", "Please Enter Atleast One Grid Details"));
-				} else {
-					Integer row = 0 ;
-					for (OfsGridSaveReq data : req.getGridDetails() ) {
-						row = row + 1 ;
-						if (StringUtils.isBlank(data.getBaseRate())) {
-							errorList.add(new Error("09", "BaseRate", "Please Enter BaseRate in Grid Row No : " + row));
-						} else if (! data.getBaseRate().matches("[0-9.]+") ) {
-							errorList.add(new Error("09", "BaseRate", "Please Enter Valid Number In BaseRate in Grid Row No : " + row ));
+				if (StringUtils.isNotBlank(req.getDependentCoverYn()) && req.getDependentCoverYn().equalsIgnoreCase("Y") ) {
+					if (StringUtils.isBlank(req.getDependentCoverId()) ) {
+						errorList.add(new Error("08", "Dependent Cover Id", "Please Select Dependent Cover Id"));
+					}
+				}
+				if (StringUtils.isBlank(req.getCoverBasedOn())) {
+					errorList.add(new Error("01", "CoverBasedOn", "Please Select CoverBasedOn "));
+				}
+				
+				if(StringUtils.isNotBlank(req.getCoverageType()) && req.getCoverageType().equalsIgnoreCase("P") ) {
+					if (req.getEffectiveDateEnd()==null) {
+						errorList.add(new Error("14", "EffectiveDateEnd", "Please Enter EffectiveDateEnd"));
+					}else if (req.getEffectiveDateStart()!=null && req.getEffectiveDateEnd()!=null) {
+						if( req.getEffectiveDateStart().after(req.getEffectiveDateEnd())) {
+							errorList.add(new Error("14", "EffectiveDateEnd", "EffectiveDateStart After EffectiveDateEnd Not Allwoed"));	
 						}
 						
-						if (StringUtils.isBlank(data.getSumInsuredStart())) {
-							errorList.add(new Error("09", "SumInsuredStart", "Please Enter SumInsuredStart  in Grid Row No : " + row ));
-						} else if (! data.getSumInsuredStart().matches("[0-9.]+") ) {
-							errorList.add(new Error("09", "SumInsuredStart", "Please Enter Valid Number In SumInsuredStart  in Grid Row No : " + row ));
-						} else if (StringUtils.isBlank(data.getSumInsuredEnd())) {
-							errorList.add(new Error("09", "SumInsuredEnd", "Please Enter SumInsuredEnd  in Row No : " + row ));
-						} else if (! data.getSumInsuredEnd().matches("[0-9.]+") ) {
-							errorList.add(new Error("09", "SumInsuredEnd", "Please Enter Valid Number In SumInsuredEnd  in Grid Row No : " + row ));
-						}  else if (Double.valueOf(data.getSumInsuredStart())  > Double.valueOf(data.getSumInsuredEnd())  ) {
-							errorList.add(new Error("09", "SumInsuredEnd", "SumInsuredEnd must be greater than SumInsuredStart  in Grid Row No : " + row ));
-						}
-						
-						if (StringUtils.isBlank(data.getMinimumPremium())) {
-							errorList.add(new Error("09", "MinimumPremium", "Please Enter MinimumPremium  in Grid Row No : " + row ));
-						} else if (! data.getMinimumPremium().matches("[0-9.]+") ) {
-							errorList.add(new Error("09", "MinimumPremium", "Please Enter Valid Number In MinimumPremium  in Grid Row No : " + row ));
-						}
 					}
 				}
 				
+			
 				
-			} else  {
-				
-				if (StringUtils.isBlank(req.getBaseRate())) {
-					errorList.add(new Error("09", "BaseRate", "Please Enter BaseRate" ));
-				} else if (! req.getBaseRate().matches("[0-9.]+") ) {
-					errorList.add(new Error("09", "BaseRate", "Please Enter Valid Number In BaseRate"));
+				// Rating Master Validation
+				if (StringUtils.isBlank(req.getCoverageType())) {
+					errorList.add(new Error("09", "CoverageType", "Please Select CoverageType"));
 				}
 				
-				if (StringUtils.isBlank(req.getSumInsuredStart())) {
-					errorList.add(new Error("09", "SumInsuredStart", "Please Enter SumInsuredStart"));
-				} else if (! req.getSumInsuredStart().matches("[0-9.]+") ) {
-					errorList.add(new Error("09", "SumInsuredStart", "Please Enter Valid Number In SumInsuredStart"));
-				} else if (StringUtils.isBlank(req.getSumInsuredEnd())) {
-					errorList.add(new Error("09", "SumInsuredEnd", "Please Enter SumInsuredEnd"));
-				} else if (! req.getSumInsuredEnd().matches("[0-9.]+") ) {
-					errorList.add(new Error("09", "SumInsuredEnd", "Please Enter Valid Number In SumInsuredEnd"));
-				}  else if (Double.valueOf(req.getSumInsuredStart())  > Double.valueOf(req.getSumInsuredEnd())  ) {
-					errorList.add(new Error("09", "SumInsuredEnd", "SumInsuredEnd must be greater than SumInsuredStart "));
+				if (StringUtils.isBlank(req.getCoverageLimit())) {
+					errorList.add(new Error("09", "CoverageLimit", "Please Enter CoverageLimit"));
+				} else if (! req.getCoverageLimit().matches("[0-9.]+") ) {
+					errorList.add(new Error("09", "CoverageLimit", "Please Enter Valid Number In CoverageLimit "));
 				}
 				
-				if (StringUtils.isBlank(req.getMinimumPremium())) {
-					errorList.add(new Error("09", "MinimumPremium", "Please Enter MinimumPremium"));
-				} else if (! req.getMinimumPremium().matches("[0-9.]+") ) {
-					errorList.add(new Error("09", "MinimumPremium", "Please Enter Valid Number In MinimumPremium"));
+				if (StringUtils.isBlank(req.getExcessPercent())) {
+					errorList.add(new Error("09", "Excess Percent ", "Please Enter Excess Percent"));
+				} else if (! req.getExcessPercent().matches("[0-9.]+") ) {
+					errorList.add(new Error("09", "Excess Percent", "Please Enter Valid Number In Excess Percent"));
+				}
+				if (StringUtils.isBlank(req.getExcessAmount())) {
+					errorList.add(new Error("10", "Excess Amount ", "Please Enter Excess Amount"));
+				} else if (! req.getExcessAmount().matches("[0-9.]+") ) {
+					errorList.add(new Error("10", "Excess Amount", "Please Enter Valid Number In Excess Amount"));
+				}
+				if (StringUtils.isBlank(req.getExcessDesc())) {
+					errorList.add(new Error("11", "Excess Desc ", "Please Enter Excess Desc"));
+				}
+				else if (req.getExcessDesc().length() > 500) {
+					errorList.add(new Error("11", "Excess Desc", "Enter Excess Desc  within 500 Characters Only"));
+				}
+				
+				if (StringUtils.isBlank(req.getCalcType())) {
+					errorList.add(new Error("09", "CalcType", "Please Select CalcType"));
+				} 
+				
+				// Tax Calculation
+				if (StringUtils.isBlank(req.getIsTaxExcempted())) {
+					errorList.add(new Error("08", "IsTaxExcempted", "Please Enter Is Tax Excempted"));
+				} else if (req.getIsTaxExcempted().length() > 1) {
+					errorList.add(new Error("08", "IsTaxExcempted", "Enter Is Tax Excempted in 1 Character Only"));
+				} else if (!("Y".equals(req.getIsTaxExcempted()) || "N".equals(req.getIsTaxExcempted()))) {
+					errorList.add(new Error("08", "IsTaxExcempted", "Enter Is Tax Excempted Y or N Only"));
+					
+				} else if(req.getIsTaxExcempted().equalsIgnoreCase("Y") ){
+					if (StringUtils.isBlank(req.getTaxExcemptionReference())) {
+						errorList.add(new Error("08", "TaxExcemptionReference", "Please Enter Tax Excemption Reference"));
+					} else if (req.getTaxExcemptionReference().length() >100 ) {
+						errorList.add(new Error("08", "TaxExcemptionReference", "100 Chatracters Only Allowed As Tax Excemption Reference"));
+					} 
+					
+					if (StringUtils.isBlank(req.getTaxExcemptionType())) {
+						errorList.add(new Error("08", "TaxExcemptionType", "Please Select Tax Excemption Type"));
+					} else if (! req.getTaxExcemptionType().matches( "[0-9]+") ) {
+						errorList.add(new Error("08", "TaxExcemptionType", "Please Select Tax Excemption Type"));
+					} 
+				} else if(req.getIsTaxExcempted().equalsIgnoreCase("N") ){
+					if (StringUtils.isBlank(req.getTaxAmount())) {
+						errorList.add(new Error("08", "TaxAmount", "Please Enter TaxAmount"));
+					} else if (! req.getTaxAmount().matches( "[0-9.]+") ) {
+						errorList.add(new Error("08", "TaxAmount", "Please Enter Valid Tax Amount"));
+					} 
+					
+					if (StringUtils.isBlank(req.getTaxCode())) {
+						errorList.add(new Error("08", "TaxCode", "Please Enter Tax Code "));
+					} else if (req.getTaxCode().length() >100 ) {
+						errorList.add(new Error("08", "TaxCode", "100 Chatracters Only Allowed As Tax Code "));
+					} 
+				}
+				
+				if (StringUtils.isNotBlank(req.getCalcType()) &&  req.getCalcType().equalsIgnoreCase("F") ) {
+					
+					if( StringUtils.isBlank(req.getFactorTypeId()) ) {
+						errorList.add(new Error("09", "Factor Type Id", "Please Enter Factor Type Id "));
+					
+					}
+	
+				} else  {
+					
+					if (StringUtils.isBlank(req.getBaseRate())) {
+						errorList.add(new Error("09", "BaseRate", "Please Enter BaseRate" ));
+					} else if (! req.getBaseRate().matches("[0-9.]+") ) {
+						errorList.add(new Error("09", "BaseRate", "Please Enter Valid Number In BaseRate"));
+					}
+					
+					if (StringUtils.isBlank(req.getSumInsuredStart())) {
+						errorList.add(new Error("09", "SumInsuredStart", "Please Enter SumInsuredStart"));
+					} else if (! req.getSumInsuredStart().matches("[0-9.]+") ) {
+						errorList.add(new Error("09", "SumInsuredStart", "Please Enter Valid Number In SumInsuredStart"));
+					} else if (StringUtils.isBlank(req.getSumInsuredEnd())) {
+						errorList.add(new Error("09", "SumInsuredEnd", "Please Enter SumInsuredEnd"));
+					} else if (! req.getSumInsuredEnd().matches("[0-9.]+") ) {
+						errorList.add(new Error("09", "SumInsuredEnd", "Please Enter Valid Number In SumInsuredEnd"));
+					}/*  else if (Double.valueOf(req.getMinimumPremium())  > Double.valueOf(req.getSumInsuredEnd())  ) {
+					errorList.add(new Error("09", "SumInsuredEnd", "SumInsuredEnd must be greater than MinimumPremium "));
+				} */
+					
+					if (StringUtils.isBlank(req.getMinimumPremium())) {
+						errorList.add(new Error("09", "MinimumPremium", "Please Enter MinimumPremium"));
+					} else if (! req.getMinimumPremium().matches("[0-9.]+") ) {
+						errorList.add(new Error("09", "MinimumPremium", "Please Enter Valid Number In MinimumPremium"));
+					}
 				}
 			}
-			
 				
 			
 		} catch (Exception e) {
@@ -1253,7 +1229,11 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate n6 = cb.equal(b.get("productId"),req.getProductId());
 			Predicate n7 = cb.equal(b.get("companyId"),req.getCompanyId());
 			Predicate n4 = cb.equal(b.get("subCoverId"), "0");
-			query.where(n1, n3,n4,n5,n6,n7).orderBy(orderList);
+			Predicate n8 = cb.equal(b.get("agencyCode"), StringUtils.isNotBlank(req.getAgencyCode()) ? req.getAgencyCode() : "99999");
+			Predicate n9 = cb.equal(b.get("branchCode"), StringUtils.isNotBlank(req.getBranchCode()) ? req.getBranchCode() : "99999");
+			
+			
+			query.where(n1, n3,n4,n5,n6,n7,n8,n9 ).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<SectionCoverMaster> result = em.createQuery(query);
@@ -1272,7 +1252,6 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 						amendId = list.get(0).getAmendId() ;
 						entryDate = list.get(0).getEntryDate() ;
 						createdBy = list.get(0).getCreatedBy();
-						saveData = list.get(0) ;
 						if (list.size()>1 ) {
 							SectionCoverMaster lastRecord = list.get(1);
 							lastRecord.setEffectiveDateEnd(oldEndDate);
@@ -1305,7 +1284,12 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				saveCover.setStatus(req.getStatus());
 				saveCover.setSubCoverId(Integer.valueOf(0));
 				saveCover.setSubCoverYn(req.getSubCoverYn());
+				saveCover.setIsSelectedYn(req.getIsSelectedYn());
+				saveCover.setRemarks(req.getRemarks());
 				saveCover.setDependentCoverYn(StringUtils.isNotBlank(req.getDependentCoverYn()) ? req.getDependentCoverYn() : "N");
+				saveCover.setMultiSelectYn( StringUtils.isNotBlank(req.getMultiSelectYn() ) ? req.getMultiSelectYn()  : "N");
+				saveCover.setAgencyCode(StringUtils.isNotBlank(req.getAgencyCode()) ? req.getAgencyCode() : "99999") ;
+				saveCover.setBranchCode(StringUtils.isNotBlank(req.getBranchCode()) ? req.getBranchCode() : "99999");
 				repo.saveAndFlush(saveCover);
 
 				log.info("Saved Details is ---> " + json.toJson(saveCover));
@@ -1334,7 +1318,9 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				saveData.setCreatedBy(createdBy);
 				saveData.setUpdatedDate(new Date());
 				saveData.setUpdatedBy(req.getCreatedBy());
-				
+				saveData.setMultiSelectYn( StringUtils.isNotBlank(req.getMultiSelectYn() ) ? req.getMultiSelectYn()  : "N");
+				saveData.setAgencyCode(StringUtils.isNotBlank(req.getAgencyCode()) ? req.getAgencyCode() : "99999") ;
+				saveData.setBranchCode(StringUtils.isNotBlank(req.getBranchCode()) ? req.getBranchCode() : "99999");
 				// Amount Details
 				if(req.getCalcType().equalsIgnoreCase("F")  ) {
 					
@@ -1350,47 +1336,6 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 					saveData.setMaxSuminsured(StringUtils.isBlank(req.getSumInsuredEnd())? BigDecimal.ZERO :new BigDecimal(req.getSumInsuredEnd()));
 					saveData.setMinSuminsured(StringUtils.isBlank(req.getSumInsuredStart())? BigDecimal.ZERO :new BigDecimal(req.getSumInsuredStart()));
 					
-				} else if (req.getCalcType().equalsIgnoreCase("G")  ) {
-				
-					// Delete Old Ofs Records
-					List<SectionCoverOfsGridMaster> ofsGrids   = secOfsRepo.findByCompanyIdAndProductIdAndSectionIdAndCoverIdAndSubCoverIdOrderByCoveragesSubIdAsc( req.getCompanyId() ,Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId()) , Integer.valueOf(coverId) ,Integer.valueOf(subcoverId) ); 
-					if( ofsGrids.size() > 0  ) {
-						secOfsRepo.deleteAll(ofsGrids);
-					}
-					
-					saveData.setBaseRate(BigDecimal.ZERO);
-					saveData.setMinPremium(BigDecimal.ZERO);
-					saveData.setMaxSuminsured(BigDecimal.ZERO);
-					saveData.setMinSuminsured( BigDecimal.ZERO );
-					
-					// Ofs Grid Insert 
-					Integer coverageSubId = 0 ; 
-					for (OfsGridSaveReq data :  req.getGridDetails() ) {
-						SectionCoverOfsGridMaster  ofsSave = new SectionCoverOfsGridMaster();
-						subcoverId = coverId ;
-						coverageSubId  = coverageSubId  + 1 ;
-						ofsSave.setCreatedBy(req.getCreatedBy());
-						ofsSave.setCoverId(Integer.valueOf(coverId));
-						ofsSave.setSubCoverId(Integer.valueOf(subcoverId));
-						ofsSave.setSectionId(Integer.valueOf(req.getSectionId()));
-						ofsSave.setProductId(Integer.valueOf(req.getProductId()));
-						ofsSave.setCompanyId(req.getCompanyId());
-						ofsSave.setCoveragesSubId(coverageSubId );
-						ofsSave.setCreatedBy(req.getCreatedBy());
-						ofsSave.setEntryDate(new Date());
-						ofsSave.setStatus(req.getStatus());
-						ofsSave.setCalcType(data.getCalcType());
-						ofsSave.setCalcTypeDesc(calcTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(data.getCalcType()) ).collect(Collectors.toList()).get(0).getItemValue());
-						
-						// Amount 
-						ofsSave.setBaseRate(StringUtils.isBlank(data.getBaseRate())?BigDecimal.ZERO :new BigDecimal(Double.valueOf(data.getBaseRate())));
-						ofsSave.setMinimumPremium(StringUtils.isBlank(data.getMinimumPremium())?BigDecimal.ZERO :new BigDecimal(data.getMinimumPremium()));
-						ofsSave.setStartSuminsured(StringUtils.isBlank(data.getSumInsuredEnd())?BigDecimal.ZERO :new BigDecimal(data.getSumInsuredEnd()));
-						ofsSave.setEndSuminsured(StringUtils.isBlank(data.getSumInsuredStart())?BigDecimal.ZERO :new BigDecimal(data.getSumInsuredStart()));
-						
-						secOfsRepo.saveAndFlush(ofsSave);
-					}
-					
 				} else {
 					
 					saveData.setBaseRate(StringUtils.isBlank(req.getBaseRate())? BigDecimal.ZERO :new BigDecimal(req.getBaseRate()));
@@ -1400,7 +1345,9 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				}
 				
 				saveData.setCoverageLimit(StringUtils.isBlank(req.getCoverageLimit())? BigDecimal.ZERO :new BigDecimal(req.getCoverageLimit()));
-				saveData.setExcess(StringUtils.isBlank(req.getExcess())? BigDecimal.ZERO :new BigDecimal(Double.valueOf(req.getExcess())));
+				saveData.setExcessPercent(StringUtils.isBlank(req.getExcessPercent())?BigDecimal.ZERO :new BigDecimal(Double.valueOf(req.getExcessPercent())));			
+				saveData.setExcessAmount(StringUtils.isBlank(req.getExcessAmount())? BigDecimal.ZERO :new BigDecimal(Double.valueOf(req.getExcessAmount())));		
+				saveData.setExcessDesc(StringUtils.isBlank(req.getExcessDesc())?"":req.getExcessDesc()); 
 				saveData.setCalcTypeDesc(calcTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getCalcType()) ).collect(Collectors.toList()).get(0).getItemValue());
 				saveData.setCoverageTypeDesc(coverageTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getCoverageType()) ).collect(Collectors.toList()).get(0).getItemValue());
 				if(  req.getIsTaxExcempted().equalsIgnoreCase("Y") ) {
@@ -1534,7 +1481,9 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("sectionId"), ocpm1.get("sectionId"));
 			javax.persistence.criteria.Predicate a4 = cb.equal(c.get("coverId"), ocpm1.get("coverId"));
 			javax.persistence.criteria.Predicate a5 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			effectiveDate.where(a1, a2, a3, a4, a5);
+			Predicate a13 = cb.equal(ocpm1.get("agencyCode"), c.get("agencyCode"));
+			Predicate a14 = cb.equal(ocpm1.get("branchCode"), c.get("branchCode"));
+			effectiveDate.where(a1, a2, a3, a4, a5,a13,a14);
 			// Effective Date End
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 			Root<SectionCoverMaster> ocpm2 = effectiveDate2.from(SectionCoverMaster.class);
@@ -1544,7 +1493,9 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate a8 = cb.equal(c.get("companyId"), ocpm2.get("companyId") );
 			Predicate a9 = cb.equal(c.get("productId"), ocpm2.get("productId") );
 			Predicate a10 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-			effectiveDate2.where(a6,a7,a8,a9,a10);
+			Predicate a15 = cb.equal(ocpm2.get("agencyCode"), c.get("agencyCode"));
+			Predicate a16 = cb.equal(ocpm2.get("branchCode"), c.get("branchCode"));
+			effectiveDate2.where(a6,a7,a8,a9,a10,a15,a16);
 					
 			// Where
 			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
@@ -1553,19 +1504,28 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("productId"), req.getProductId());
 			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("sectionId"), req.getSectionId());
 			javax.persistence.criteria.Predicate n6 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
-			javax.persistence.criteria.Predicate n8 = cb.equal(c.get("subCoverId"), "0");
+			javax.persistence.criteria.Predicate n14 = cb.equal(c.get("subCoverId"), "0");
+			Predicate n8 = cb.equal(c.get("agencyCode"), req.getAgencyCode());
+			Predicate n9 = cb.equal(c.get("agencyCode"), "99999");
+			Predicate n10 = cb.or(n8,n9);
+			Predicate n11 = cb.equal(c.get("branchCode"), req.getBranchCode());
+			Predicate n12 = cb.equal(c.get("branchCode"), "99999");
+			Predicate n13 = cb.or(n11,n12 );
 			if(StringUtils.isNotBlank(req.getCoverId()) ) {
 				javax.persistence.criteria.Predicate n7 = cb.notEqual(c.get("coverId"), req.getCoverId());
-				query.where(n1, n2, n3, n4, n5,n6,n7,n8).orderBy(orderList);
+				query.where(n1, n2, n3, n4, n5,n6,n7,n14,n10,n13).orderBy(orderList);
 			} else {
-				query.where(n1, n2, n3, n4, n5,n6,n8).orderBy(orderList);
+				query.where(n1, n2, n3, n4, n5,n6,n10,n13).orderBy(orderList);
 			}
 			
 
 			// Get Result
 			TypedQuery<SectionCoverMaster> result = em.createQuery(query);
 			list = result.getResultList();
+			list.sort( Comparator.comparing(SectionCoverMaster :: getAgencyCode  ).thenComparing(SectionCoverMaster :: getBranchCode  ) );
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCoverId() ,o.getSubCoverId() ))).collect(Collectors.toList());
 			list.sort(Comparator.comparing(SectionCoverMaster :: getCoverName ));
+			
 			
 			// Map
 			for (SectionCoverMaster  coverData :list) {
@@ -1583,4 +1543,8 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 		return resList;
 	}
 
+	private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
+	    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+	}
 }

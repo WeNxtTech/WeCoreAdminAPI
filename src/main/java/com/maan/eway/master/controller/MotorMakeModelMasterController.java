@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,7 +42,7 @@ public class MotorMakeModelMasterController {
 	@Autowired
 	private PrintReqService reqPrinter;
 	// Insert
-
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/savemakemodel")
 	@ApiOperation(value = "This method is Save Motor Make Model")
 
@@ -76,6 +77,7 @@ public class MotorMakeModelMasterController {
 
 	// Get By Make Id
 
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/getmotormakemodel")
 	@ApiOperation(value = "This method is get by Motor Model")
 
@@ -96,7 +98,7 @@ public class MotorMakeModelMasterController {
 	}
 
 	// Get All
-
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_USER','ROLE_APPROVER')")
 	@PostMapping("/getallmotormakemodel")
 	@ApiOperation(value = "This method is Get all Motor Make Model ")
 
@@ -119,7 +121,7 @@ public class MotorMakeModelMasterController {
 	}
 
 	// Get All
-
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/getactivemotormakemodel")
 	@ApiOperation(value = "This method is Get Active Motor Make MOdel ")
 

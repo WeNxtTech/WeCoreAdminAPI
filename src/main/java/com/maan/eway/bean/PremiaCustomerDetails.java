@@ -171,8 +171,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="OFFICE_EMAIL1", length=100)
     private String     officeEmail1 ;
 
-    @Column(name="DIVISION_FROM", length=50)
-    private String     divisionFrom ;
+    @Column(name="BRANCH_CODE", length=50)
+    private String     branchCode;
 
     @Column(name="DIVISION_TO", length=50)
     private String     divisionTo ;

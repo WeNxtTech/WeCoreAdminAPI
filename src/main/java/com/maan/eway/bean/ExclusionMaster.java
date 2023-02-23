@@ -40,7 +40,6 @@ public class ExclusionMaster {
 	@Column(name="AMEND_ID",nullable=false)
 	private Integer amendId;
 	
-
 	@Id
 	@Column(name="PRODUCT_ID",length=20, nullable=false)
 	private String productId;
@@ -49,9 +48,10 @@ public class ExclusionMaster {
 	@Column(name="SECTION_ID",length=20, nullable=false)
 	private String sectionId;
 	
-	@Id
-	@Column(name="POLICY_TYPE",length=20, nullable=false)
-	private String policyType;
+//	@Id
+//	@Column(name="POLICY_TYPE",length=20, nullable=false)
+//	private String policyType;
+
 	
 	@Column(name="EXCLUSION_DESCRIPTION",length=500)
 	private String exclusionDescription;
@@ -90,4 +90,14 @@ public class ExclusionMaster {
 	@Column(name="REGULATORY_CODE",length=20)
 	private String regulatoryCode;
 	
+
+	@Column(name="DOC_REF_NO",length=20)
+	private String docRefNo;
+
+	@Column(name="TYPE_ID",length=20)
+	private String typeId;
+
+	@Column(name="TYPE_DESC",length=20)
+	private String typeDesc;
+
 }

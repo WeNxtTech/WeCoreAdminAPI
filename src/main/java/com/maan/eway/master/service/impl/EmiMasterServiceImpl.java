@@ -93,9 +93,9 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 
 			// Emi Master Validation
 			if (StringUtils.isBlank(req.getPolicyType())) {
-				errorList.add(new Error("01", "PolicyType", "Please Enter Policy Type "));
+				errorList.add(new Error("01", "PolicyType", "Please Enter PolicyType "));
 			} else if (req.getPolicyType().length() > 20) {
-				errorList.add(new Error("01", "PolicyType", "Please Enter Policy Type within 100 Characters"));
+				errorList.add(new Error("01", "PolicyType", "Please PolicyType within 100 Characters"));
 			} 
 
 			// Date Validation

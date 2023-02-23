@@ -40,6 +40,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -71,6 +72,7 @@ public class DocumentMasterController {
 
 	
 	// save
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/insertdocument")
 		@ApiOperation(value = "This method is Insert Document Master")
 		public ResponseEntity<CommonRes> insertDocument(@RequestBody DocumentMasterSaveReq req) {
@@ -105,7 +107,7 @@ public class DocumentMasterController {
 		}
 		
 		//  Get All Section Master
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@GetMapping("/getalldocuments")
 		@ApiOperation("This method is getall Documents")
 		public ResponseEntity<CommonRes> getallDocuments()
@@ -126,7 +128,7 @@ public class DocumentMasterController {
 			}
 		}
 		// Get By Document Id
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/getbydocument")
 		@ApiOperation("This Method is to get by Document Id")
 		public ResponseEntity<CommonRes> getByDocumentId(@RequestBody DocumentMasterGetReq req)
@@ -149,6 +151,7 @@ public class DocumentMasterController {
 		
 		// Get By Active Status
 		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@GetMapping("/getactivedocument")
 		@ApiOperation("This Method is to Get Active Documents")
 		public ResponseEntity<CommonRes> getActiveDocument()
@@ -169,7 +172,7 @@ public class DocumentMasterController {
 		}
 		
 		// Document Drop Down
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 		@PostMapping(value="/dropdown/document",produces = "application/json")
 		@ApiOperation(value="This Method is to Drop Down Document")
 		public ResponseEntity<DropdownCommonRes> getDocumentDropdown(LovDropDownReq req)
@@ -188,6 +191,7 @@ public class DocumentMasterController {
 			}			
 		}
 		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/document/changestatus")
 		@ApiOperation(value = "This method is  Change Status of Documents")
 		public ResponseEntity<CommonRes> changeStatusOfDocument(@RequestBody DocumentChangeStatusReq req) {

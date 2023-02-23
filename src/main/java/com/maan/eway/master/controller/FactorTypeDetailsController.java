@@ -11,6 +11,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -56,6 +57,7 @@ public class FactorTypeDetailsController {
 	private  PrintReqService reqPrinter;
 	
 	// save
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/insertfactortypes")
 	@ApiOperation(value = "This method is Insert Factor Type Details")
 	public ResponseEntity<CommonRes> insertProduct(@RequestBody FactorTypeDetailsSaveReq req) {
@@ -91,7 +93,7 @@ public class FactorTypeDetailsController {
 	}
 	
 	//  Get All Product Master
-	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/getallfactortypes")
 	@ApiOperation("This method is getall Factor Type Details")
 	public ResponseEntity<CommonRes> getallFactorTypeDetails(@RequestBody FactorTypeGetAllReq req)
@@ -114,7 +116,7 @@ public class FactorTypeDetailsController {
 	}
 	
 	//  Get Active Product Master
-	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/getactivefactortypes")
 		@ApiOperation("This method is get Active Factor Type Details")
 		public ResponseEntity<CommonRes> getActiveProductDetails(@RequestBody FactorTypeGetAllReq req)
@@ -137,7 +139,7 @@ public class FactorTypeDetailsController {
 		}
 		
 		// Get By Product Id
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/getbyfactortypeid")
 		@ApiOperation("This Method is to get by Product id")
 		public ResponseEntity<CommonRes> getByFactorTypeId(@RequestBody FactorTypeGetReq req)
@@ -157,6 +159,7 @@ public class FactorTypeDetailsController {
 		}
 	}
 		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/getfactortypeforrating")
 		@ApiOperation("This Method is to get by Product id")
 		public ResponseEntity<CommonRes> getByFactorTypeForRating(@RequestBody FactorTypeGetReq req)
@@ -176,6 +179,7 @@ public class FactorTypeDetailsController {
 		}
 	}
 		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/factortype/changestatus")
 	@ApiOperation(value = "This method is get Product Change Status ")
 	public ResponseEntity<CommonRes> changeStatusOfFactorType(@RequestBody FactorUpdateStatusReq req) {
@@ -196,7 +200,7 @@ public class FactorTypeDetailsController {
 
 	}
 
-	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@PostMapping(value="/dropdown/factortype",produces = "application/json")
 	@ApiOperation(value="This method is to get Factor Type dropdown")
 	public ResponseEntity<CommonRes> factorTypeDropDown(@RequestBody FactorTypeDropDownReq req){

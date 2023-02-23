@@ -14,6 +14,8 @@ public interface PremiaCustomerDetailsService  {
 
 	List<PremiaCustomerDetailsRes> searchPremiacustDetails(PremiaDropDownReq req);
 
+	List<PremiaCustomerDetailsRes> searchPremiaSourceCode(PremiaDropDownReq req);
+
 
 	
 }

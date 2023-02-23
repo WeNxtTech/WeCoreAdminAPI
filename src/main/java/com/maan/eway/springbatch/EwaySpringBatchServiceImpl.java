@@ -433,7 +433,7 @@ public class EwaySpringBatchServiceImpl implements EwaySpringBatchService {
 					.description(transaction.getProgressDesc())
 					.status(transaction.getProgrsessStatus())
 					.errorRecord(transaction.getErrorRecord()==null?0:transaction.getErrorRecord())
-					.validRecord(transaction.getValidRecord()==null?0:transaction.getErrorRecord())
+					.validRecord(transaction.getValidRecord()==null?0:transaction.getValidRecord())
 					.totalRecord(transaction.getTotalRows()==null?0:transaction.getTotalRows())
 					.excelFilePath(StringUtils.isBlank(transaction.getExcelFilepath())?"":transaction.getExcelFilepath())
 					.build();

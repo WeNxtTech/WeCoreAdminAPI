@@ -24,7 +24,6 @@ public interface CompanyPromocodeMasterService  {
 
 	SuccessRes insertCompanyPromocode(CompanyPromocodeSaveReq req);
 
-	SuccessRes updateCompanyPromocode(CompanyPromocodeSaveReq req);
 
 	List<CompanyPromocodeMasterRes> getallCompanyPromocode(CompanyPromocodeMasterGetAllReq req);
 

@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
@@ -38,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.CompanyPromocodeMaster;
+import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.EmiMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.error.Error;
@@ -340,6 +342,58 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 				res.setResponse("Saved Successfully ");
 				res.setSuccessId(promocodeId);
 
+			}else {
+				// Update
+				// Get Less than Equal Today Record
+				// Criteria
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<CompanyPromocodeMaster> query = cb.createQuery(CompanyPromocodeMaster.class);
+
+				// Find All
+				Root<CompanyPromocodeMaster> b = query.from(CompanyPromocodeMaster.class);
+
+				// Select
+				query.select(b);
+				// Order By
+				 List<Order> orderList = new ArrayList<Order>();
+				 orderList.add(cb.asc(b.get("effectiveDateStart")));
+
+				// Where
+				Predicate n3 = cb.equal(b.get("promocodeId"), req.getPromocodeId());
+				Predicate n5 = cb.equal(b.get("sectionId"),  req.getSectionId());
+				Predicate n6 = cb.equal(b.get("productId"),req.getProductId());
+				Predicate n7 = cb.equal(b.get("companyId"),req.getCompanyId());
+				query.where(n3,n5,n6,n7).orderBy(orderList);
+				
+				// Get Result
+				TypedQuery<CompanyPromocodeMaster> result = em.createQuery(query);
+				list = result.getResultList();
+				if (list.size() > 0) {
+					Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+						if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
+							amendId = list.get(0).getAmendId() + 1 ;
+							entryDate = new Date() ;
+							createdBy = req.getCreatedBy();
+							CompanyPromocodeMaster lastRecord = list.get(0);
+								lastRecord.setEffectiveDateEnd(oldEndDate);
+								comPromorepo.saveAndFlush(lastRecord);
+							
+						} else {
+							amendId = list.get(0).getAmendId() ;
+							entryDate = list.get(0).getEntryDate() ;
+							createdBy = list.get(0).getCreatedBy();
+							saveData = list.get(0) ;
+							if (list.size()>1 ) {
+								CompanyPromocodeMaster lastRecord = list.get(1);
+								lastRecord.setEffectiveDateEnd(oldEndDate);
+								comPromorepo.saveAndFlush(lastRecord);
+							}		
+
+						
+					    }
+				}
+				res.setResponse("Updated Successfully");
+				res.setSuccessId(promocodeId.toString());
 			}
 			dozerMapper.map(req, saveData);
 			saveData.setPromocodeId(Integer.valueOf(promocodeId));
@@ -386,9 +440,10 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 
 			//Section Cover Master Save
 			List<SectionCoverMasterSaveReq> secreqList = new ArrayList<SectionCoverMasterSaveReq>();
-
+			Long totalCount = getCoverMasterTableCount();
+			String coverId = String.valueOf(totalCount + 1);
 			SectionCoverMasterSaveReq secreq = new SectionCoverMasterSaveReq();
-			secreq.setCoverId("43");
+			secreq.setCoverId(coverId);
 			secreq.setBranchCode(req.getBranchCode());
 			secreq.setCompanyId(req.getCompanyId());
 			secreq.setCreatedBy(createdBy);
@@ -399,6 +454,7 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 
 			sectionService.insertSectionCover(secreqList);
 			log.info("Saved Details is ---> " + json.toJson(secreqList));
+			updateCompanyPromocode(req);
 			
 			// Factor Save
 			if (req.getPromocodeType().equalsIgnoreCase("S")) {
@@ -457,125 +513,24 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 		}
 		return data;
 	}
-	@Transactional
-	@Override
+	
 	public SuccessRes updateCompanyPromocode(CompanyPromocodeSaveReq req) {
 		SuccessRes res = new SuccessRes();
 		SimpleDateFormat sdf= new SimpleDateFormat("dd/MM/yyyy");
 		DozerBeanMapper dozerMapper = new DozerBeanMapper(); 
 		try {
-			List<ListItemValue> calcTypes = listRepo.findByItemTypeAndStatus("CALCULATION_TYPE" , "Y");
-			List<ListItemValue> coverageTypes = listRepo.findByItemTypeAndStatus("COVERAGE_TYPE" , "Y");
-			List<ListItemValue> taxExcemptionType = listRepo.findByItemTypeAndStatus("TAX_EXEMPTION_TYPE" , "Y");
-			List<ListItemValue> promoType = listRepo.findByItemTypeAndStatus("PROMOCODE_TYPE" , "Y");
-			Integer amendId = 0 ;
-			Date entryDate = null ;
-			String createdBy = "" ;
-			Date startDate = req.getEffectiveDateStart() ;
-			Date endDate = req.getEffectiveDateEnd() ;
-			long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
-			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
-			
-			
-	//		String coverId=StringUtils.isBlank(req.getCoverId()) ?"" :req.getCoverId() ;
-			CompanyPromocodeMaster saveData = new CompanyPromocodeMaster();
-			List<CompanyPromocodeMaster> list = new ArrayList<CompanyPromocodeMaster>();
-
-		// Update
-		// Get Less than Equal Today Record
-		// Criteria
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<CompanyPromocodeMaster> query = cb.createQuery(CompanyPromocodeMaster.class);
-
-		// Find All
-		Root<CompanyPromocodeMaster> b = query.from(CompanyPromocodeMaster.class);
-
-		// Select
-		query.select(b);
-		// Order By
-		 List<Order> orderList = new ArrayList<Order>();
-		 orderList.add(cb.asc(b.get("effectiveDateStart")));
-
-		// Where
-		Predicate n3 = cb.equal(b.get("promocodeId"), req.getPromocodeId());
-		Predicate n5 = cb.equal(b.get("sectionId"),  req.getSectionId());
-		Predicate n6 = cb.equal(b.get("productId"),req.getProductId());
-		Predicate n7 = cb.equal(b.get("companyId"),req.getCompanyId());
-		query.where(n3,n5,n6,n7).orderBy(orderList);
-		
-		// Get Result
-		TypedQuery<CompanyPromocodeMaster> result = em.createQuery(query);
-		list = result.getResultList();
-		if (list.size() > 0) {
-			Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
-				if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
-					amendId = list.get(0).getAmendId() + 1 ;
-					entryDate = new Date() ;
-					createdBy = req.getCreatedBy();
-					CompanyPromocodeMaster lastRecord = list.get(0);
-						lastRecord.setEffectiveDateEnd(oldEndDate);
-						comPromorepo.saveAndFlush(lastRecord);
-					
-				} else {
-					amendId = list.get(0).getAmendId() ;
-					entryDate = list.get(0).getEntryDate() ;
-					createdBy = list.get(0).getCreatedBy();
-					saveData = list.get(0) ;
-					if (list.size()>1 ) {
-						CompanyPromocodeMaster lastRecord = list.get(1);
-						lastRecord.setEffectiveDateEnd(oldEndDate);
-						comPromorepo.saveAndFlush(lastRecord);
-					}		
-
-				
-			    }
-		}
-		dozerMapper.map(req, saveData);
-		saveData.setAgencyCode(req.getAgencyCode());
-		saveData.setPromocodeDesc(req.getPromocodeDesc());
-		saveData.setPromocodeTypeDesc(promoType.stream().filter(o -> o.getItemCode().equalsIgnoreCase(req.getPromocodeType()))
-				.collect(Collectors.toList()).get(0).getItemValue());
-		saveData.setEffectiveDateStart(startDate);
-		saveData.setEffectiveDateEnd(endDate);
-		saveData.setCreatedBy(createdBy);
-		saveData.setStatus(req.getStatus());
-		saveData.setEntryDate(entryDate);
-		saveData.setUpdatedDate(new Date());
-		saveData.setUpdatedBy(req.getCreatedBy());
-		saveData.setAmendId(amendId);
-		saveData.setDependentCoverYn("Y");
-		saveData.setCoverBasedOn("SumInsured");
-		saveData.setIsSelectedYn("Y");
-		saveData.setDependentCoverId("Base Cover");
-		saveData.setRegulatoryCode(req.getRegulatoryCode());
-		saveData.setMultiSelectYn( "Y");
-		saveData.setFactorTypeId(req.getFactorTypeId() == "" ? 0: Integer.valueOf(req.getFactorTypeId().toString()));
-		saveData.setPromoRateOrAmt(Double.valueOf(req.getPromoRateOrAmt()));
-		saveData.setMinPremium(Double.valueOf(req.getMinimumPremium()));
-		saveData.setCalcTypeDesc(calcTypes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(req.getCalcType()))
-				.collect(Collectors.toList()).get(0).getItemValue());
-		if (req.getIsTaxExcempted().equalsIgnoreCase("Y")) {
-			saveData.setTaxExcemptionReference(req.getTaxExcemptionReference());
-			saveData.setTaxExcemptionType(req.getTaxExcemptionType());
-			saveData.setTaxExcemptionTypeDesc(taxExcemptionType.stream()
-					.filter(o -> o.getItemCode().equalsIgnoreCase(req.getTaxExcemptionType()))
-					.collect(Collectors.toList()).get(0).getItemValue());
-
-		} else if (req.getIsTaxExcempted().equalsIgnoreCase("N")) {
-			saveData.setTaxExcemptionReference(null);
-			saveData.setTaxExcemptionType(null);
-			saveData.setTaxExcemptionTypeDesc(null);
-
-		}
-		comPromorepo.saveAndFlush(saveData);
-		log.info("Saved Details is ---> " + json.toJson(saveData));
-
+//			List<ListItemValue> calcTypes = listRepo.findByItemTypeAndStatus("CALCULATION_TYPE" , "Y");
+//			List<ListItemValue> coverageTypes = listRepo.findByItemTypeAndStatus("COVERAGE_TYPE" , "Y");
+//			List<ListItemValue> taxExcemptionType = listRepo.findByItemTypeAndStatus("TAX_EXEMPTION_TYPE" , "Y");
+//			List<ListItemValue> promoType = listRepo.findByItemTypeAndStatus("PROMOCODE_TYPE" , "Y");
 		// Section Cover Master Save
+			Long totalCount = getCoverMasterTableCount();
+			String coverId = String.valueOf(totalCount + 1);
 		SectionCoverUpdateReq secreq = new SectionCoverUpdateReq();
-		secreq.setCoverId("43");
+		secreq.setCoverId(coverId);
 		secreq.setBranchCode(req.getBranchCode());
 		secreq.setCompanyId(req.getCompanyId());
-		secreq.setCreatedBy(createdBy);
+		secreq.setCreatedBy(req.getCreatedBy());
 		secreq.setProductId(req.getProductId());
 		secreq.setSectionId(req.getSectionId());
 		secreq.setAgencyCode(req.getAgencyCode());
@@ -656,6 +611,66 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 		}
 		log.info("Exit from ValidateDate()");
 		return bo;
+	}
+
+	public Long getCoverMasterTableCount() {
+		
+		Long data = 0L;
+		try {
+	
+			List<Tuple> list = new ArrayList<Tuple>();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+	
+			// Find All
+			Root<CoverMaster> b = query.from(CoverMaster.class);
+	
+			// Select
+			query.multiselect(b.get("coverId").alias("coverId") );
+			
+			Subquery<Long> cover = query.subquery(Long.class);
+			Root<CoverMaster> ocpm2 = cover.from(CoverMaster.class);
+		
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CoverMaster> ocpm1 = effectiveDate.from(CoverMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart"))).distinct(true);
+			Predicate a1 = cb.equal(ocpm1.get("coverId"), ocpm2.get("coverId"));
+			effectiveDate.where(a1);
+									
+			
+			// Cover ID Date Max Filter
+			cover.select(ocpm2.get("coverId")).distinct(true);
+			Predicate a2 = cb.equal(ocpm2.get("coverId"), b.get("coverId"));
+			Predicate a3 = cb.equal(ocpm2.get("effectiveDateStart"), effectiveDate );
+			cover.where(a2, a3);
+			
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("coverId")));
+			
+			Predicate n1 = cb.equal(b.get("coverId"), cover);
+			Predicate n2 =  cb.equal(b.get("subCoverId"), "0" );  
+			query.where(n1,n2).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<Tuple> result = em.createQuery(query);
+			list = result.getResultList();
+	
+			if( list.size() > 0 ) {
+				data = list.get(0).get("coverId") == null ? 0L  : Long.valueOf(list.get(0).get("coverId").toString() ) ;
+			} else {
+				 data = 0L ;
+			}
+			
+	
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+	
+		}
+		return data;
 	}
 
 ///*********************************************************************GET ALL******************************************************\\

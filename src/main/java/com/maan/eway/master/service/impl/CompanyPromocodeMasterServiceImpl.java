@@ -41,16 +41,20 @@ import com.google.gson.Gson;
 import com.maan.eway.bean.CompanyPromocodeMaster;
 import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.EmiMaster;
+import com.maan.eway.bean.FactorRateMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CompanyPromcodeMasterGetReq;
 import com.maan.eway.master.req.CompanyPromocodeMasterChangeStatusReq;
 import com.maan.eway.master.req.CompanyPromocodeMasterGetAllReq;
 import com.maan.eway.master.req.CompanyPromocodeSaveReq;
+import com.maan.eway.master.req.FactorParamsInsert;
+import com.maan.eway.master.req.FactorRateSaveReq;
 import com.maan.eway.master.req.SectionCoverMasterSaveReq;
 import com.maan.eway.master.req.SectionCoverUpdateReq;
 import com.maan.eway.master.res.CompanyPromocodeMasterRes;
 import com.maan.eway.master.service.CompanyPromocodeMasterService;
+import com.maan.eway.master.service.FactorRateMasterService;
 import com.maan.eway.master.service.SectionCoverMasterService;
 import com.maan.eway.repository.CompanyPromocodeMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
@@ -69,6 +73,8 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 	private ListItemValueRepository listRepo;
 	@Autowired
 	private CompanyPromocodeMasterRepository comPromorepo;
+	@Autowired
+	private FactorRateMasterService factorService;
 	@PersistenceContext
 	private EntityManager em;
 
@@ -79,7 +85,7 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 //************************************************INSERT/UPDATE COVER DETAILS******************************************************\\
 
 	@Override
-	public List<Error> validateCompanyPromocode(CompanyPromocodeSaveReq req) {
+	public List<Error> validateCompanyPromocode(CompanyPromocodeSaveReq req,String tokens) {
 		List<Error> errorList = new ArrayList<Error>();
 		try {
 			
@@ -228,30 +234,39 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 				}
 			}
 
-			if (StringUtils.isNotBlank(req.getCalcType()) && req.getCalcType().equalsIgnoreCase("F")) {
+			if (StringUtils.isNotBlank(req.getPromocodeType()) && req.getCalcType().equalsIgnoreCase("S")) {
 
 				if (StringUtils.isBlank(req.getFactorTypeId())) {
 					errorList.add(new Error("13", "Factor Type Id", "Please Enter Factor Type Id "));
-
+				}else if (StringUtils.isBlank(req.getCoverBasedOn())) {
+					errorList.add(new Error("13", "CoverBasedOn", "Please Enter CoverBasedOn "));
 				}
-
+				List<Error> factorValidate = validateFactorRateDetails(req, tokens);
+				if (factorValidate != null && factorValidate.size() != 0) {
+					errorList.add(new Error("13", "FactorRate", "Factor Error "));
+				}
 			}
 			if (StringUtils.isBlank(req.getPromoRateOrAmt())) {
 				errorList.add(new Error("14", "PromoRateOrAmt", "Please Enter PromoRateOrAmt "));
 			} else if (!req.getPromoRateOrAmt().matches("[0-9.]+")) {
 				errorList.add(new Error("14", "PromoRateOrAmt", "Please Enter Valid Number In PromoRateOrAmt "));
-			} else if (Integer.valueOf(req.getPromoRateOrAmt()) < 0) {
-				errorList.add(new Error("14", "PromoRateOrAmt", "Please Enter Valid Number In PromoRateOrAmt "));
+			}else if (Integer.valueOf(req.getPromoRateOrAmt()) < 0) {
+				errorList.add(new Error("14", "PromoRateOrAmt", " PromoRateOrAmt Greater than Zero"));
+			}
+			if("P".equalsIgnoreCase(req.getCalcType())) {
+				if (Integer.valueOf(req.getPromoRateOrAmt()) > 100) {
+					errorList.add(new Error("14", "PromoRateOrAmt", " Promocode Percent Not Greater than 100"));
+				}
 			}
 
 			if (StringUtils.isBlank(req.getMinimumPremium())) {
 				errorList.add(new Error("15", "MinimumPremium", "Please Enter MinimumPremium  "));
 			} else if (!req.getMinimumPremium().matches("[0-9.]+")) {
-				errorList.add(new Error("15", "MinimumPremium", "Please Enter Valid Number In MinimumPremium  "));
-			} else if (Integer.valueOf(req.getMinimumPremium()) > 100) {
-				errorList.add(new Error("15", "MinimumPremium", "Please Enter Valid Number In MinimumPremium  "));
+				errorList.add(new Error("15", "MinimumPremium", "Please Enter Maximum Permium In Number  "));
+			}  else if (Integer.valueOf(req.getMinimumPremium()) < 0) {
+				errorList.add(new Error("15", "MinimumPremium", "Maximum Discount should be Greater than 0 "));
 			}
-
+			
 			if (StringUtils.isBlank(req.getPromocodeDesc())) {
 				errorList.add(new Error("16", "PromocodeDesc", "Please Enter PromocodeDesc  "));
 			} else if (req.getPromocodeDesc().length()>100) {
@@ -458,7 +473,7 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 			
 			// Factor Save
 			if (req.getPromocodeType().equalsIgnoreCase("S")) {
-
+				insertFactorRateDetails(req);
 			}
 			res.setResponse("Saved Successfully ");
 			res.setSuccessId(promocodeId);
@@ -523,9 +538,12 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 //			List<ListItemValue> coverageTypes = listRepo.findByItemTypeAndStatus("COVERAGE_TYPE" , "Y");
 //			List<ListItemValue> taxExcemptionType = listRepo.findByItemTypeAndStatus("TAX_EXEMPTION_TYPE" , "Y");
 //			List<ListItemValue> promoType = listRepo.findByItemTypeAndStatus("PROMOCODE_TYPE" , "Y");
+		
+		//Cover Count
+		Long totalCount = getCoverMasterTableCount();
+		String coverId = String.valueOf(totalCount + 1);
+		
 		// Section Cover Master Save
-			Long totalCount = getCoverMasterTableCount();
-			String coverId = String.valueOf(totalCount + 1);
 		SectionCoverUpdateReq secreq = new SectionCoverUpdateReq();
 		secreq.setCoverId(coverId);
 		secreq.setBranchCode(req.getBranchCode());
@@ -587,6 +605,104 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 
 	}
 
+	public SuccessRes insertFactorRateDetails(CompanyPromocodeSaveReq req) {
+		SuccessRes res = new SuccessRes();
+		try {
+
+			FactorRateSaveReq factorReq=new FactorRateSaveReq();
+			factorReq.setAgencyCode(req.getAgencyCode());
+			factorReq.setBranchCode(req.getBranchCode());
+			factorReq.setCompanyId(req.getCompanyId());
+			factorReq.setCoverId(null);
+			factorReq.setCreatedBy(req.getCreatedBy());
+			factorReq.setEffectiveDateStart(req.getEffectiveDateStart());
+			factorReq.setEffectiveDateEnd(req.getEffectiveDateEnd());
+			factorReq.setFactorTypeId(req.getFactorTypeId());
+			factorReq.setProductId(req.getProductId());
+			factorReq.setRemarks(req.getRemarks());
+			factorReq.setSectionId(req.getSectionId());
+			factorReq.setStatus(req.getStatus());
+			factorReq.setSubCoverId("0");
+			factorReq.setSubCoverYn("N");
+			
+			List<FactorParamsInsert> factorParams = new ArrayList<FactorParamsInsert>();
+			for (FactorParamsInsert  data : req.getFactorParams()) {
+				FactorParamsInsert fParam = new FactorParamsInsert();
+				 fParam.setParam1( data.getParam1()==null?"" : data.getParam1().toString());
+				 fParam.setParam2( data.getParam2()==null?"" : data.getParam2().toString());
+				 fParam.setParam3( data.getParam3()==null?"" : data.getParam3().toString());
+				 fParam.setParam4( data.getParam4()==null?"" : data.getParam4().toString());
+				 fParam.setParam5( data.getParam5()==null?"" : data.getParam5().toString());
+				 fParam.setParam6( data.getParam6()==null?"" : data.getParam6().toString());
+				 fParam.setParam7( data.getParam7()==null?"" : data.getParam7().toString());
+				 fParam.setParam8( data.getParam8()==null?"" : data.getParam8().toString());
+				 fParam.setSno(data.getSno().toString());
+				fParam.setRate(data.getRate().toString());
+				fParam.setCalType(data.getCalType());
+				fParam.setMinimumPremium(data.getMinimumPremium().toString());
+				factorParams.add(fParam);
+			}
+			factorReq.setFactorParams(factorParams);
+			//Inserting In Factor Rate Master
+			 res = factorService.insertFactorRateDetails(factorReq);
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+		}
+		return res;
+	}
+	public List<Error> validateFactorRateDetails(CompanyPromocodeSaveReq req, String tokens) {
+		List<Error> errorList = new ArrayList<Error>();
+		try {
+
+			FactorRateSaveReq factorReq=new FactorRateSaveReq();
+			factorReq.setAgencyCode(req.getAgencyCode());
+			factorReq.setBranchCode(req.getBranchCode());
+			factorReq.setCompanyId(req.getCompanyId());
+			factorReq.setCoverId(null);
+			factorReq.setCreatedBy(req.getCreatedBy());
+			factorReq.setEffectiveDateStart(req.getEffectiveDateStart());
+			factorReq.setEffectiveDateEnd(req.getEffectiveDateEnd());
+			factorReq.setFactorTypeId(req.getFactorTypeId());
+			factorReq.setProductId(req.getProductId());
+			factorReq.setRemarks(req.getRemarks());
+			factorReq.setSectionId(req.getSectionId());
+			factorReq.setStatus(req.getStatus());
+			factorReq.setSubCoverId("0");
+			factorReq.setSubCoverYn("N");
+			
+			List<FactorParamsInsert> factorParams = new ArrayList<FactorParamsInsert>();
+			for (FactorParamsInsert  data : req.getFactorParams()) {
+				FactorParamsInsert fParam = new FactorParamsInsert();
+				 fParam.setParam1( data.getParam1()==null?"" : data.getParam1().toString());
+				 fParam.setParam2( data.getParam2()==null?"" : data.getParam2().toString());
+				 fParam.setParam3( data.getParam3()==null?"" : data.getParam3().toString());
+				 fParam.setParam4( data.getParam4()==null?"" : data.getParam4().toString());
+				 fParam.setParam5( data.getParam5()==null?"" : data.getParam5().toString());
+				 fParam.setParam6( data.getParam6()==null?"" : data.getParam6().toString());
+				 fParam.setParam7( data.getParam7()==null?"" : data.getParam7().toString());
+				 fParam.setParam8( data.getParam8()==null?"" : data.getParam8().toString());
+				 fParam.setSno(data.getSno().toString());
+				fParam.setRate(data.getRate().toString());
+				fParam.setCalType(data.getCalType());
+				fParam.setMinimumPremium(data.getMinimumPremium().toString());
+				factorParams.add(fParam);
+			}
+			factorReq.setFactorParams(factorParams);
+			errorList=factorService.validateFactorRateDetails(factorReq,tokens.replaceAll("Bearer ", "").split(",")[0]);
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+		}
+		return errorList;
+	}
+	
 	private boolean dateChecking(String previewdate, String effectiveDate) {
 		SimpleDateFormat sdfFormat = new SimpleDateFormat("dd/MM/yyyy");
 		boolean bo = false;

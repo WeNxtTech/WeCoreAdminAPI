@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -63,12 +64,12 @@ public class CompanyPromocodeMasterController {
 		@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/insertcompanypromocode")
 		@ApiOperation(value = "This method is Insert Section  Cover Details")
-		public ResponseEntity<CommonRes> insertCompanyPromocode(@RequestBody CompanyPromocodeSaveReq req) {
+		public ResponseEntity<CommonRes> insertCompanyPromocode(@RequestBody CompanyPromocodeSaveReq req,@RequestHeader("Authorization") String tokens) {
 
 			reqPrinter.reqPrint(req);
 			CommonRes data = new CommonRes();
 
-			List<Error> validation = promoService.validateCompanyPromocode(req);
+			List<Error> validation = promoService.validateCompanyPromocode(req,tokens.replaceAll("Bearer ", "").split(",")[0]);
 			// validation
 			if (validation != null && validation.size() != 0) {
 				data.setCommonResponse(null);

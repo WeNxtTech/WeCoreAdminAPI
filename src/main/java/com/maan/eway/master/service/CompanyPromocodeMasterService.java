@@ -20,7 +20,7 @@ import com.maan.eway.res.SuccessRes;
 */
 public interface CompanyPromocodeMasterService  {
 
-	List<Error> validateCompanyPromocode(CompanyPromocodeSaveReq req);
+	List<Error> validateCompanyPromocode(CompanyPromocodeSaveReq req,String tokens);
 
 	SuccessRes insertCompanyPromocode(CompanyPromocodeSaveReq req);
 

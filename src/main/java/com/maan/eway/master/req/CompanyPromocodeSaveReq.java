@@ -78,6 +78,12 @@ public class CompanyPromocodeSaveReq {
 	@JsonProperty("FactorTypeId")
 	private String factorTypeId;
 	
+	@JsonProperty("CoverBasedOn")
+	private String coverBasedOn;
+	
+	@JsonProperty("FactorParams")
+    private List<FactorParamsInsert>     factorParams;
+	
 	@JsonProperty("IsTaxExcempted")
 	private String isTaxExcempted;
 	

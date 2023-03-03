@@ -114,7 +114,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="WHATSAPP_SUBJECT", length=500)
     private String     whatsappSubject ;
 
-    @Column(name="WHATSAPP_BODY_EN", length=500)
+    @Column(name="WHATSAPP_BODY_EN", length=2000)
     private String     whatsappBodyEn ;
 
     @Column(name="WHATSAPP_REGARDS", length=500)

@@ -440,6 +440,7 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			saveData.setSubCoverYn(req.getSubCoverYn());
 			saveData.setDependentCoverYn(StringUtils.isNotBlank(req.getDependentCoverYn()) ? req.getDependentCoverYn() : "N" );
 			saveData.setMultiSelectYn( StringUtils.isNotBlank(req.getMultiSelectYn() ) ? req.getMultiSelectYn()  : "N");
+			saveData.setProRataYn( StringUtils.isNotBlank(req.getProRataYn() ) ? req.getProRataYn()  : "N");
 			repo.saveAndFlush(saveData);
 			
 			// Amount Details

@@ -42,6 +42,9 @@ public class SubCoverUpdatedReq {
 		
 	    @JsonProperty("SubCoverDesc")
 	    private String subCoverDesc;
+
+		@JsonProperty("ProRataYn")
+		private String proRataYn;
 	    
 	    @JsonProperty("CoreAppCode")
 	    private String coreAppCode;

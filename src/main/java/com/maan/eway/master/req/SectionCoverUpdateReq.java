@@ -58,6 +58,9 @@ public class SectionCoverUpdateReq {
 	@JsonProperty("CreatedBy")
 	private String createdBy; 
 	
+	@JsonProperty("ProRataYn")
+	private String proRataYn;
+	
 	@JsonProperty("ToolTip")
 	private String toolTip;  
 

@@ -62,7 +62,10 @@ public class SubCoverMasterSaveReq implements Serializable {
  	@JsonProperty("CoverageLimit")
  	private String coverageLimit;
  	
- 	
+
+	@JsonProperty("ProRataYn")
+	private String proRataYn;
+	
  	@JsonProperty("CalcType")
  	private String calcType;
  	

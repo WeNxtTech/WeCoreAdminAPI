@@ -35,6 +35,9 @@ public class SectionCoverMasterRes {
 	private String coverBasedOn;
 
 	
+	@JsonProperty("ProRataYn")
+	private String proRataYn;
+	
 	@JsonProperty("CoverDesc")
 	private String coverDesc;
 	

@@ -111,4 +111,7 @@ public class CoverMasterGetAllRes {
 	@JsonProperty("ExcessDesc")
 	private String excessDesc;
 	
+	
+	@JsonProperty("ProRataYn")
+	private String proRataYn;
 }

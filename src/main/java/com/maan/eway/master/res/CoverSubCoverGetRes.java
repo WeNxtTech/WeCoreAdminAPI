@@ -36,6 +36,10 @@ public class CoverSubCoverGetRes {
 	    @JsonProperty("SubCoverDesc")
 	    private String subCoverDesc;
 	    
+
+		@JsonProperty("ProRataYn")
+		private String proRataYn;
+		
 	    @JsonProperty("RegulatoryCode")
 		private String regulatoryCode;
 

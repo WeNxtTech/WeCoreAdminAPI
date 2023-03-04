@@ -1436,8 +1436,6 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 					// set the root class
 					Root<LoginProductMaster> m = update.from(LoginProductMaster.class);
 					// set update and where clause
-					update.set("updatedBy", savedLBReq.getCreatedBy());
-					update.set("updatedDate", entryDate);
 					update.set("effectiveDateEnd", oldEndDate);
 					
 					n1 = cb.equal(m.get("companyId"), savedLBReq.getCompanyId());

@@ -44,7 +44,7 @@ public class MailMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/insertmailmaster")
 		@ApiOperation(value = "This method is to Insert Mail Master ")
 		public ResponseEntity<CommonRes> insertmailmaster(@RequestBody MailMasterSaveReq req) {
@@ -81,7 +81,7 @@ public class MailMasterController {
 		
 			
 		// Get Mail Id
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/getbyid")
 		@ApiOperation("This Method is to get by id")
 		public ResponseEntity<CommonRes> getById(@RequestBody MailMasterGetReq req)

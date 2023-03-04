@@ -814,10 +814,7 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 			List<ListItemValue> getList  = getListItem(req.getCompanyId() , "99999" , itemType);
 			String docApplicable =    getList.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getDocumentType()) ).collect(Collectors.toList()).get(0).getItemValue();
 			
-			itemType = "DOC_TYPE" ;
-			 getList  = getListItem(req.getCompanyId() , "99999" , itemType);
-			String DocTypeDesc =    getList.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getDocumentType()) ).collect(Collectors.toList()).get(0).getItemValue();
-			
+		
 			
 			Integer amendId = 0 ;
 			Date startDate = req.getEffectiveDateStart() ;
@@ -906,7 +903,7 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 			saveData.setDocumentDesc(req.getDocumentDesc());
 			saveData.setEffectiveDateStart(startDate);
 			saveData.setEffectiveDateEnd(endDate);
-			saveData.setDocumentTypeDesc(DocTypeDesc);
+			saveData.setDocumentTypeDesc(docApplicable);
 			saveData.setStatus(req.getStatus());
 			saveData.setEntryDate(new Date());
 			saveData.setAmendId(amendId);

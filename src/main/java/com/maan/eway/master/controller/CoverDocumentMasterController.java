@@ -51,7 +51,7 @@ public class CoverDocumentMasterController {
 	private PrintReqService reqPrinter;
 
 	// save
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/insertcoverdocument")
 	@ApiOperation(value = "This method is Insert Cover Document Master")
 	public ResponseEntity<CommonRes> insertDocument(@RequestBody CoverDocumentMasterSaveReq reqList) {
@@ -84,7 +84,7 @@ public class CoverDocumentMasterController {
 	}
 
 	// save
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/updatecoverdocument")
 	@ApiOperation(value = "This method is Update Cover Document Master")
 	public ResponseEntity<CommonRes> updateDocument(@RequestBody CoverDocumentMasterUpdateReq req) {
@@ -117,7 +117,7 @@ public class CoverDocumentMasterController {
 	}
 
 	// Get All Section Master
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/getallcoverdocuments")
 	@ApiOperation("This method is getall Product Documents")
 	public ResponseEntity<CommonRes> getallDocuments(@RequestBody CoverDocumentMasterGetAllReq req) {
@@ -137,7 +137,7 @@ public class CoverDocumentMasterController {
 	}
 
 	// Get By Document Id
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/getbycoverdocument")
 	@ApiOperation("This Method is to get by Product Document Id")
 	public ResponseEntity<CommonRes> getByDocumentId(@RequestBody CoverDocumentMasterGetReq req) {
@@ -157,7 +157,7 @@ public class CoverDocumentMasterController {
 	}
 
 	// Get By Active Status
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/getactivecoverdocument")
 	@ApiOperation("This Method is to Get Active Product Documents")
 	public ResponseEntity<CommonRes> getActiveDocument(@RequestBody CoverDocumentMasterGetAllReq req) {
@@ -176,7 +176,7 @@ public class CoverDocumentMasterController {
 		}
 	}
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/getallnonselectedcoverdocuments")
 	@ApiOperation("This method is getall Cover Document Details")
 	public ResponseEntity<CommonRes> getallNonSelectedProductDocument(@RequestBody CoverDocumentMasterGetAllReq req) {
@@ -196,7 +196,7 @@ public class CoverDocumentMasterController {
 		}
 	}
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/coverdocument/changestatus")
 	@ApiOperation(value = "This method is  Change Status of Documents")
 	public ResponseEntity<CommonRes> changeStatusOfDocument(@RequestBody CoverDocumentChangeStatusReq req) {

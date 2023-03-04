@@ -39,7 +39,7 @@ public class PolicyTypeMasterController {
 	
 	@Autowired
 	private PrintReqService reqPrinter;
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/insertpolicytype")
 	@ApiOperation("This method is to save Policy Type Master")
 	public ResponseEntity<CommonRes> insertPolicyType(@RequestBody PolicyTypeMasterSaveReq req){
@@ -71,7 +71,7 @@ public class PolicyTypeMasterController {
 		
 		}
 	}
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/getpolicytype")
 	@ApiOperation("This method is to get policy type")
 	public ResponseEntity<CommonRes> getPolicyType(@RequestBody PolicyTypeMasterGetReq req){
@@ -90,7 +90,7 @@ public class PolicyTypeMasterController {
 		}
 	}
 	
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/getallpolicytype")
 	@ApiOperation("This method is to get all Policy Type Master")
 	public ResponseEntity<CommonRes>getallPolicyType(@RequestBody PolicyTypeMasterGetAllReq req){
@@ -109,7 +109,7 @@ public class PolicyTypeMasterController {
 		}
 	}
 	
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/getactivepolicytype")
 	@ApiOperation("This method is to get all Active Policy Type Master")
 	public ResponseEntity<CommonRes>getallactivePolicyType(@RequestBody PolicyTypeMasterGetAllReq req){
@@ -152,7 +152,7 @@ public class PolicyTypeMasterController {
 		}
 
 	}
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/policytype/changestatus")
 	@ApiOperation(value = "This method is get Referal Master Status Change")
 

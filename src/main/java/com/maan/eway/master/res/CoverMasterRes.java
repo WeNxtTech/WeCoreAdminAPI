@@ -155,4 +155,8 @@ public class CoverMasterRes implements Serializable {
 	@JsonProperty("ExcessDesc")
 	private String excessDesc;
 	
+
+	@JsonProperty("ProRataYn")
+	private String proRataYn;
+	
 }

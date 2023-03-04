@@ -453,6 +453,7 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 			}
 
 			saveData.setDependentCoverYn(StringUtils.isNotBlank(req.getDependentCoverYn()) ? req.getDependentCoverYn() : "N" );
+			saveData.setProRataYn( StringUtils.isNotBlank(req.getProRataYn() ) ? req.getProRataYn()  : "N");
 			repo.saveAndFlush(saveData);
 			log.info("Saved Details is ---> " + json.toJson(saveData));
 					

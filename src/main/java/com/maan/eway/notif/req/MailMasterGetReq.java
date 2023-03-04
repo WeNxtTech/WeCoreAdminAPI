@@ -10,9 +10,7 @@ import com.fasterxml.jackson.databind.annotation.JacksonStdImpl;
 import lombok.Data;
 
 @Data
-public class MailMasterGetReq implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class MailMasterGetReq {
 
     @JsonProperty("Sno")
     private String sNo;

@@ -42,7 +42,7 @@ public class MotorMakeModelMasterController {
 	@Autowired
 	private PrintReqService reqPrinter;
 	// Insert
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/savemakemodel")
 	@ApiOperation(value = "This method is Save Motor Make Model")
 
@@ -77,7 +77,7 @@ public class MotorMakeModelMasterController {
 
 	// Get By Make Id
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/getmotormakemodel")
 	@ApiOperation(value = "This method is get by Motor Model")
 
@@ -121,7 +121,7 @@ public class MotorMakeModelMasterController {
 	}
 
 	// Get All
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/getactivemotormakemodel")
 	@ApiOperation(value = "This method is Get Active Motor Make MOdel ")
 

@@ -58,7 +58,7 @@ public class InsuranceCompanyMasterController {
 */
 
 	//Insert or Update Insurance Company Master
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/savecompany")
 	@ApiOperation(value = "This method is Insert Company Details")
 	public ResponseEntity<CommonRes> createInsuranceCompanyMaster(@RequestBody  InsuranceCompanyMasterSaveReq req) {
@@ -115,7 +115,7 @@ public class InsuranceCompanyMasterController {
 		}
 		
 	//  Get Active Insurance Company Master
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 			@PostMapping("/getactiveinscompany")
 			@ApiOperation("This method is get Active  Company Details")
 			public ResponseEntity<CommonRes> getActiveInsCompanyDetails(@RequestBody InsuranceCompanyMasterGetAllReq req)
@@ -138,7 +138,7 @@ public class InsuranceCompanyMasterController {
 			}
 		
 		// Get By Insurance Company Id
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/getbycompanyid")
 		@ApiOperation("This Method is to get by Company id")
 		public ResponseEntity<CommonRes> getByCompanyId(@RequestBody InsuranceCompanyMasterGetReq req)
@@ -182,7 +182,7 @@ public class InsuranceCompanyMasterController {
 
 		}
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/company/changestatus")
 		@ApiOperation(value = "This method is get Company Change Status")
 		public ResponseEntity<CommonRes> changeStatusOfCompany(@RequestBody CompanyChangeStatusReq req) {

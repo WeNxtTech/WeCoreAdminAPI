@@ -60,7 +60,7 @@ public class CompanyTaxSetupController {
 	private  PrintReqService reqPrinter;
 	
 	// save
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/insertcompanytax")
 		@ApiOperation(value = "This method is Insert Company Tax Details")
 		public ResponseEntity<CommonRes> insertCompanyTax(@RequestBody CompanyTaxSetupSaveReq req) {
@@ -96,7 +96,7 @@ public class CompanyTaxSetupController {
 		}
 		
 		//  Get All Branch Master
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")		
 		@PostMapping("/getallcompanytaxes")
 		@ApiOperation("This method is getall Company Taxes")
 		public ResponseEntity<CommonRes> getallComapnyTaxes(@RequestBody CompanyTaxSetupGetAllReq req)
@@ -119,7 +119,7 @@ public class CompanyTaxSetupController {
 		}
 		
 	//  Get Active Branch Master
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 			@PostMapping("/getactivecompanytaxes")
 			@ApiOperation("This method is get Active Branch Details")
 			public ResponseEntity<CommonRes> getActiveCompanyTaxes(@RequestBody CompanyTaxSetupGetAllReq req)
@@ -142,7 +142,7 @@ public class CompanyTaxSetupController {
 			}
 		
 		// Get By Branch Id
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/getbycompanytaxesid")
 		@ApiOperation("This Method is to get by Branch id")
 		public ResponseEntity<CommonRes> getByCompanyTaxes(@RequestBody CompanyTaxSetupGetReq req)
@@ -161,7 +161,7 @@ public class CompanyTaxSetupController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/companytax/changestatus")
 		@ApiOperation(value = "This method is Branch Change Status")
 		public ResponseEntity<CommonRes> changeStatusOfTax(@RequestBody CompanyTaxChangeStatusReq req) {

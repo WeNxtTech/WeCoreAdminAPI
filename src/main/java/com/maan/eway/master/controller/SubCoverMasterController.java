@@ -60,7 +60,7 @@ public class SubCoverMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/insertsubcover")
 		@ApiOperation(value = "This method is Insert Subcover")
 		public ResponseEntity<CommonRes> insertSubCover(@RequestBody SubCoverMasterSaveReq req) {
@@ -95,7 +95,7 @@ public class SubCoverMasterController {
 		}
 		
 		//  Get All Section Master
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/getallsubcover")
 		@ApiOperation("This method is getall SubCover")
 		public ResponseEntity<CommonRes> getallSubCover(@RequestBody SubCoverMasterGetAllReq req)
@@ -115,7 +115,7 @@ public class SubCoverMasterController {
 				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
 			}
 		}
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/getactivesubcover")
 		@ApiOperation("This method is getall SubCover")
 		public ResponseEntity<CommonRes> getActiveSubCover(@RequestBody SubCoverMasterGetAllReq req)
@@ -136,7 +136,7 @@ public class SubCoverMasterController {
 			}
 		}
 		// Get By Section Id
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/getbysubcover")
 		@ApiOperation("This Method is to get by Sub Cover Id")
 		public ResponseEntity<CommonRes> getBySubCoverId(@RequestBody SubCoverMasterGetReq req)
@@ -155,7 +155,7 @@ public class SubCoverMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/subcover/changestatus")
 		@ApiOperation(value = "This method is get SubCover Change Status")
 		public ResponseEntity<CommonRes> changeStatusOfSubCover(@RequestBody SubCoverChangeStatusReq req) {

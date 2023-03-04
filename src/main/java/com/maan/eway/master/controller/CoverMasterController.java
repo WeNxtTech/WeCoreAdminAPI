@@ -51,7 +51,7 @@ public class CoverMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/insertcover")
 		@ApiOperation(value = "This method is Insert Cover Details")
 		public ResponseEntity<CommonRes> insertCover(@RequestBody CoverMasterSaveReq req) {
@@ -135,7 +135,7 @@ public class CoverMasterController {
 		
 		// Get By Cover Id
 		
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/getbycoverid")
 		@ApiOperation("This Method is to get by Cover id")
 		public ResponseEntity<CommonRes> getByCoverId(@RequestBody CoverMasterGetReq req)
@@ -155,7 +155,7 @@ public class CoverMasterController {
 		}
 	}
 	
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/covers/changestatus")
 		@ApiOperation(value = "This method is get Change Status of Covers")
 		public ResponseEntity<CommonRes> changeStatusOfCover(@RequestBody CoverChangeStatusReq req) {

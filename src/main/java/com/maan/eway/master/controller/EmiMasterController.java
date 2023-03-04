@@ -83,7 +83,7 @@ public class EmiMasterController {
 		}
 		
 		//  Get All Emi Master
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/getallemidetails")
 		@ApiOperation("This method is getall Emi Details")
 		public ResponseEntity<CommonRes> getallEmiDetails(@RequestBody EmiMasterGetAllReq req)
@@ -106,7 +106,7 @@ public class EmiMasterController {
 		}
 		
 	//  Get Active Emi Master
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 			@PostMapping("/getactiveemi")
 			@ApiOperation("This method is get Active Emi Details")
 			public ResponseEntity<CommonRes> getActiveEmiDetails(@RequestBody EmiMasterGetAllReq req)
@@ -128,7 +128,7 @@ public class EmiMasterController {
 			}
 		
 		// Get By Emi Id
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/getbyemiid")
 		@ApiOperation("This Method is to get by Emi id")
 		public ResponseEntity<CommonRes> getByEmiId(@RequestBody EmiMasterGetReq req)
@@ -148,7 +148,7 @@ public class EmiMasterController {
 		}
 	}
 	
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/emi/changestatus")
 		@ApiOperation(value = "This method is get Change Status of Emis")
 		public ResponseEntity<CommonRes> changeStatusOfEmi(@RequestBody EmiMasterChangeStatusReq req) {

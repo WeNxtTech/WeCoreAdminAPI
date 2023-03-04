@@ -51,7 +51,7 @@ public class RatingFieldMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/insertratingfield")
 		@ApiOperation(value = "This method is to Insert Rating Field ")
 		public ResponseEntity<CommonRes> insertfactortype(@RequestBody RatingFieldsMasterSaveReq req) {
@@ -87,7 +87,7 @@ public class RatingFieldMasterController {
 		}
 		
 		//  Get All Factor Type
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/getallratingfields")
 		@ApiOperation("This method is getall Rating Field")
 		public ResponseEntity<CommonRes> getallFactorType(@RequestBody RatingFieldMasterGetAllReq req)
@@ -110,7 +110,7 @@ public class RatingFieldMasterController {
 		}
 		
 	//  Get Active Factor Type
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 			@PostMapping("/getactiveratingfields")
 			@ApiOperation("This method is get Active Rating Field")
 			public ResponseEntity<CommonRes> getActiveFactorType(@RequestBody RatingFieldMasterGetAllReq req)
@@ -133,7 +133,7 @@ public class RatingFieldMasterController {
 			}
 		
 		// Get By Factor Id
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/getbyratingfieldid")
 		@ApiOperation("This Method is to get by Rating Field Id")
 		public ResponseEntity<CommonRes> getByFactorId(@RequestBody RatingFieldsMasterGetReq req)
@@ -153,7 +153,7 @@ public class RatingFieldMasterController {
 		}
 	}
 				
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/ratingfield/changestatus")
 		@ApiOperation(value = "This method is to Rating Field Change Status")
 		public ResponseEntity<CommonRes> changeStatusOfFactorType(@RequestBody RatingFieldsMasterChangeStatusReq req) {
@@ -174,7 +174,7 @@ public class RatingFieldMasterController {
 
 		}
 		
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping(value="/dropdown/ratingfields",produces = "application/json")
 		@ApiOperation(value = "This method is get Rating Fields Drop Down")
 

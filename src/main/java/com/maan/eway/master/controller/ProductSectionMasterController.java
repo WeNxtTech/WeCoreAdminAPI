@@ -61,7 +61,7 @@ public class ProductSectionMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/insertproductsection")
 		@ApiOperation(value = "This method is Insert Section Details")
 		public ResponseEntity<CommonRes> insertSection(@RequestBody List<SectionMultiInsertReq> req) {
@@ -95,7 +95,7 @@ public class ProductSectionMasterController {
 			}
 
 		}
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/updateproductsection")
 		@ApiOperation(value = "This method is Insert Section Details")
 		public ResponseEntity<CommonRes> updatedSection(@RequestBody ProductSectionMasterReq req) {
@@ -131,7 +131,7 @@ public class ProductSectionMasterController {
 		}
 		
 		//  Get All Section Master
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/getallproductsectiondetails")
 		@ApiOperation("This method is getall Section Details")
 		public ResponseEntity<CommonRes> getallSectionDetails(@RequestBody ProductSectionMasterGetAllReq req)
@@ -154,7 +154,7 @@ public class ProductSectionMasterController {
 		}
 		
 	//  Get Active Section Master
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 			@PostMapping("/getactiveproductsection")
 			@ApiOperation("This method is get Active Section Details")
 			public ResponseEntity<CommonRes> getActiveSectionDetails(@RequestBody ProductSectionMasterGetAllReq req)
@@ -177,7 +177,7 @@ public class ProductSectionMasterController {
 			}
 		
 		// Get By Section Id
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/getbyproductsectionid")
 		@ApiOperation("This Method is to get by Section id")
 		public ResponseEntity<CommonRes> getBySectionId(@RequestBody ProductSectionsGetReq req)
@@ -196,7 +196,7 @@ public class ProductSectionMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/getproductsections")
 		@ApiOperation("This Method is to get by Product  Sections")
 		public ResponseEntity<CommonRes> getProductSections(@RequestBody ProductSectionsGetReq req) {
@@ -214,7 +214,7 @@ public class ProductSectionMasterController {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
 		}
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/getallnonselectedsections")
 		@ApiOperation("This method is getall Section Details")
 		public ResponseEntity<CommonRes> getallNonSelectedSections(@RequestBody ProductSectionMasterGetAllReq req)
@@ -257,7 +257,7 @@ public class ProductSectionMasterController {
 			}
 
 		}
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/productsection/changestatus")
 		@ApiOperation(value = "This method is get Product Section Master Status Change")
 

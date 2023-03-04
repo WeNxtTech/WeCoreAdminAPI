@@ -51,7 +51,7 @@ public class PlanTypeMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/insertplantype")
 		@ApiOperation(value = "This method is Plan Type Master")
 		public ResponseEntity<CommonRes> insertPlanType(@RequestBody PlanTypeMasterSaveReq req) {
@@ -87,7 +87,7 @@ public class PlanTypeMasterController {
 		}
 		
 		//  Get All PlanType Master
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/getallplantype")
 		@ApiOperation("This method is getall PlanType")
 		public ResponseEntity<CommonRes> getallPlanType(@RequestBody PlanTypeMasterGetAllReq req)
@@ -110,7 +110,7 @@ public class PlanTypeMasterController {
 		}
 		
 	//  Get Active PlanType Master
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 			@PostMapping("/getactiveplantype")
 			@ApiOperation("This method is get Active PlanType")
 			public ResponseEntity<CommonRes> getActivePlanType(@RequestBody PlanTypeMasterGetAllReq req)
@@ -133,7 +133,7 @@ public class PlanTypeMasterController {
 			}
 		
 		// Get By PlanType Id
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/getbyplantypeid")
 		@ApiOperation("This Method is to get by PlanType id")
 		public ResponseEntity<CommonRes> getByPlanTypeId(@RequestBody PlanTypeMasterGetReq req)
@@ -178,7 +178,7 @@ public class PlanTypeMasterController {
 		}	
 	
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/plantype/changestatus")
 		@ApiOperation(value = "This method is get PlanType Change Status")
 		public ResponseEntity<CommonRes> changeStatusOfPlanType(@RequestBody PlanTypeMasterChangeStatusReq req) {

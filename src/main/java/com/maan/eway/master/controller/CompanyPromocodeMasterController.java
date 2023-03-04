@@ -61,7 +61,7 @@ public class CompanyPromocodeMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// Insert
-		@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+		@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/insertcompanypromocode")
 		@ApiOperation(value = "This method is Insert Section  Cover Details")
 		public ResponseEntity<CommonRes> insertCompanyPromocode(@RequestBody CompanyPromocodeSaveReq req,@RequestHeader("Authorization") String tokens) {
@@ -97,7 +97,7 @@ public class CompanyPromocodeMasterController {
 		}
 	
 		//  Get All 
-		@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+		@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/getallcompanypromocodedetails")
 		@ApiOperation("This method is getall Company Promocode Details")
 		public ResponseEntity<CommonRes> getallCompanyPromocode(@RequestBody CompanyPromocodeMasterGetAllReq req)
@@ -121,7 +121,7 @@ public class CompanyPromocodeMasterController {
 		
 	//  Get Active 
 		
-			@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+			@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 			@PostMapping("/getactivecompanypromocode")
 			@ApiOperation("This method is get Active Promocode Details")
 			public ResponseEntity<CommonRes> getActivePromocode(@RequestBody CompanyPromocodeMasterGetAllReq req)
@@ -144,7 +144,7 @@ public class CompanyPromocodeMasterController {
 			}
 		
 		// Get By Cover Id
-		@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+		@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/getbycompanypromocodeid")
 		@ApiOperation("This Method is to get by Promocode id")
 		public ResponseEntity<CommonRes> getByCompanyPromocodeId(@RequestBody CompanyPromcodeMasterGetReq req)
@@ -165,7 +165,7 @@ public class CompanyPromocodeMasterController {
 	}
 
 
-		@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+		@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/companypromocode/changestatus")
 		@ApiOperation(value="This method is to get product referal Master")
 		public ResponseEntity<CommonRes> changestatusofCompanyPromocode(@RequestBody CompanyPromocodeMasterChangeStatusReq req){

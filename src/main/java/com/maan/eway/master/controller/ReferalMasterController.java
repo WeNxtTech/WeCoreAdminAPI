@@ -54,7 +54,7 @@ public class ReferalMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/insertreferal")
 		@ApiOperation(value = "This method is Insert Referal Details")
 		public ResponseEntity<CommonRes> insertReferal(@RequestBody ReferalMasterSaveReq req) {
@@ -90,7 +90,7 @@ public class ReferalMasterController {
 		}
 		
 		//  Get All Referal Master
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@GetMapping("/getallreferaldetails")
 		@ApiOperation("This method is getall Referal Details")
 		public ResponseEntity<CommonRes> getallReferalDetails()
@@ -112,7 +112,7 @@ public class ReferalMasterController {
 		}
 		
 	//  Get Active Referral Master
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 			@GetMapping("/getactivereferal")
 			@ApiOperation("This method is get Active Referal Details")
 			public ResponseEntity<CommonRes> getActiveReferalDetails()
@@ -135,7 +135,7 @@ public class ReferalMasterController {
 			}
 		
 		// Get By Referal Id
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/getbyreferalid")
 		@ApiOperation("This Method is to get by Referal id")
 		public ResponseEntity<CommonRes> getByReferalId(@RequestBody ReferalMasterGetReq req)
@@ -154,7 +154,7 @@ public class ReferalMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/referal/changestatus")
 		@ApiOperation(value = "This method is get Referal Master Status Change")
 

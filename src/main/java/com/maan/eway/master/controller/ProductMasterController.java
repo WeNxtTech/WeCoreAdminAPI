@@ -54,7 +54,7 @@ public class ProductMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/insertproduct")
 	@ApiOperation(value = "This method is Insert Product Details")
 	public ResponseEntity<CommonRes> insertProduct(@RequestBody ProductMasterSaveReq req) {
@@ -90,7 +90,7 @@ public class ProductMasterController {
 	}
 	
 	//  Get All Product Master
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/getallproductdetails")
 	@ApiOperation("This method is getall Product Details")
 	public ResponseEntity<CommonRes> getallProductDetails(@RequestBody ProductMasterGetAllReq req)
@@ -113,7 +113,7 @@ public class ProductMasterController {
 	}
 	
 	//  Get Active Product Master
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/getactiveproduct")
 		@ApiOperation("This method is get Active Product Details")
 		public ResponseEntity<CommonRes> getActiveProductDetails(@RequestBody ProductMasterGetAllReq req)
@@ -136,7 +136,7 @@ public class ProductMasterController {
 		}
 		
 		// Get By Product Id
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/getbyproductid")
 		@ApiOperation("This Method is to get by Product id")
 		public ResponseEntity<CommonRes> getByProductCode(@RequestBody ProductMasterGetReq req)
@@ -156,7 +156,7 @@ public class ProductMasterController {
 		}
 	}
 		
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/products/changestatus")
 	@ApiOperation(value = "This method is get Product Change Status ")
 	public ResponseEntity<CommonRes> changeStatusOfProduct(@RequestBody ProductChangeStatusReq req) {

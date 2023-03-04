@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -53,40 +52,64 @@ public class CompanyProrataMaster implements Serializable {
 private static final long serialVersionUID = 1L;
  
     //--- ENTITY PRIMARY KEY 
-    @Id
-    @Column(name="InsuranceId", nullable=false, length=10)
-    private String     insuranceid ;
 
-    @Id
-    @Column(name="ProductId", nullable=false)
-    private Integer    productid ;
+	@Id
+	@Column(name = "Insuranceid", nullable = false, length = 10)
+	private String insuranceid;
 
-    @Id
-    @Column(name="Sno", nullable=false)
-    private Integer    sno ;
+	@Id
+	@Column(name = "Productid", nullable = false)
+	private Integer productid;
 
-    //--- ENTITY DATA FIELDS 
-    @Column(name="StartFrom")
-    private BigDecimal startfrom ;
+	@Id
+	@Column(name = "Sno", nullable = false)
+	private Integer sno;
+	
+	@Id
+	@Column(name = "Amend_Id", nullable = false)
+	private Integer amendId;
 
-    @Column(name="EndTo")
-    private BigDecimal endto ;
+//--- ENTITY DATA FIELDS 
+	@Column(name = "Startfrom")
+	private BigDecimal startfrom;
 
-    @Column(name="Percent")
-    private BigDecimal percent ;
+	@Column(name = "Endto")
+	private BigDecimal endto;
 
-    @Column(name="Status", length=5)
-    private String     status ;
+	@Column(name = "Percent")
+	private BigDecimal percent;
 
-    @Column(name="remarks", length=100)
-    private String     remarks ;
+	@Column(name = "Status", length = 5)
+	private String status;
 
+	@Column(name = "remarks", length = 100)
+	private String remarks;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "entry_date")
+	private Date entryDate;
+
+    
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="entry_date")
-    private Date       entryDate ;
+    @Column(name="Effective_Date_Start")
+    private Date       effectiveDateStart ;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="Effective_Date_End")
+    private Date       effectiveDateEnd ;
+    
+    
+    @Column(name="Created_By", length=100)
+    private String     createdBy ;
+    
+    @Column(name="Updated_By", length=100)
+    private String     updatedBy ;
+   
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="Updated_Date")
+    private Date updatedDate ;
 
 
-    //--- ENTITY LINKS ( RELATIONSHIP )
 
 
 }

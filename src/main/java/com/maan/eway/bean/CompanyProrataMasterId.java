@@ -29,11 +29,12 @@ public class CompanyProrataMasterId implements Serializable {
     private static final long serialVersionUID = 1L;
 
     //--- ENTITY KEY ATTRIBUTES 
-    private String     insuranceid ;
+    private String insuranceid;
     
     private Integer    productid ;
     
     private Integer    sno ;
     
+    private Integer       amendId ;
      
 }

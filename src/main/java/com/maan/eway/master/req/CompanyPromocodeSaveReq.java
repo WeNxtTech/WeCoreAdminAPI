@@ -69,6 +69,9 @@ public class CompanyPromocodeSaveReq {
 	@JsonProperty("CalcType")
 	private String calcType;
 	
+	@JsonProperty("CoverId")
+	private String coverId;
+	
 	@JsonProperty("PromoRateOrAmt")
 	private String promoRateOrAmt;
 	

@@ -207,8 +207,8 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 			}
 			if (StringUtils.isBlank(req.getCalcType())) {
 				errorList.add(new Error("11", "CalcType", "Please Select CalcType"));
-			} else if (!("P".equals(req.getCalcType()) || "A".equals(req.getCalcType()))) {
-				errorList.add(new Error("11", "CalcType", "Enter CalcType P or A Only"));
+			} else if (!("P".equals(req.getCalcType()) || "A".equals(req.getCalcType() )|| "F".equals(req.getCalcType()))) {
+				errorList.add(new Error("11", "CalcType", "Enter CalcType P or A or F"));
 			}
 
 			// Tax Calculation
@@ -234,16 +234,16 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 				}
 			}
 
-			if (StringUtils.isNotBlank(req.getPromocodeType()) && req.getCalcType().equalsIgnoreCase("S")) {
+			//Factor validation
+			if ("S".equalsIgnoreCase(req.getPromocodeType()) && "F".equalsIgnoreCase(req.getCalcType())) {
 
 				if (StringUtils.isBlank(req.getFactorTypeId())) {
 					errorList.add(new Error("13", "Factor Type Id", "Please Enter Factor Type Id "));
-				}else if (StringUtils.isBlank(req.getCoverBasedOn())) {
+				} else if (StringUtils.isBlank(req.getCoverBasedOn())) {
 					errorList.add(new Error("13", "CoverBasedOn", "Please Enter CoverBasedOn "));
-				}
-				List<Error> factorValidate = validateFactorRateDetails(req, tokens);
-				if (factorValidate != null && factorValidate.size() != 0) {
-					errorList.add(new Error("13", "FactorRate", "Factor Error "));
+				} else if (StringUtils.isNotBlank(req.getFactorTypeId())) {
+					List<Error> factorValidate = validateFactorRateDetails(req, tokens);
+					errorList.addAll(factorValidate);
 				}
 			}
 			if (StringUtils.isBlank(req.getPromoRateOrAmt())) {
@@ -453,10 +453,14 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 			comPromorepo.saveAndFlush(saveData);
 			log.info("Saved Details is ---> " + json.toJson(saveData));
 
-			//Section Cover Master Save
-			List<SectionCoverMasterSaveReq> secreqList = new ArrayList<SectionCoverMasterSaveReq>();
+			
+			//Cover count
 			Long totalCount = getCoverMasterTableCount();
 			String coverId = String.valueOf(totalCount + 1);
+			
+			//Section Cover Master Save
+			List<SectionCoverMasterSaveReq> secreqList = new ArrayList<SectionCoverMasterSaveReq>();
+			
 			SectionCoverMasterSaveReq secreq = new SectionCoverMasterSaveReq();
 			secreq.setCoverId(coverId);
 			secreq.setBranchCode(req.getBranchCode());
@@ -469,14 +473,15 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 
 			sectionService.insertSectionCover(secreqList);
 			log.info("Saved Details is ---> " + json.toJson(secreqList));
-			updateCompanyPromocode(req);
+			updateCompanyPromocode(req,coverId);
 			
 			// Factor Save
-			if (req.getPromocodeType().equalsIgnoreCase("S")) {
-				insertFactorRateDetails(req);
+			if ("S".equalsIgnoreCase(req.getPromocodeType()) && "F".equalsIgnoreCase(req.getCalcType())) {
+				insertFactorRateDetails(req,coverId);
 			}
 			res.setResponse("Saved Successfully ");
 			res.setSuccessId(promocodeId);
+			res.setFactorTypeId(req.getFactorTypeId()==null?"" : req.getFactorTypeId().toString());
 			
 	} catch (Exception e) {
 			e.printStackTrace();
@@ -529,7 +534,7 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 		return data;
 	}
 	
-	public SuccessRes updateCompanyPromocode(CompanyPromocodeSaveReq req) {
+	public SuccessRes updateCompanyPromocode(CompanyPromocodeSaveReq req,String coverId) {
 		SuccessRes res = new SuccessRes();
 		SimpleDateFormat sdf= new SimpleDateFormat("dd/MM/yyyy");
 		DozerBeanMapper dozerMapper = new DozerBeanMapper(); 
@@ -538,10 +543,6 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 //			List<ListItemValue> coverageTypes = listRepo.findByItemTypeAndStatus("COVERAGE_TYPE" , "Y");
 //			List<ListItemValue> taxExcemptionType = listRepo.findByItemTypeAndStatus("TAX_EXEMPTION_TYPE" , "Y");
 //			List<ListItemValue> promoType = listRepo.findByItemTypeAndStatus("PROMOCODE_TYPE" , "Y");
-		
-		//Cover Count
-		Long totalCount = getCoverMasterTableCount();
-		String coverId = String.valueOf(totalCount + 1);
 		
 		// Section Cover Master Save
 		SectionCoverUpdateReq secreq = new SectionCoverUpdateReq();
@@ -605,7 +606,7 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 
 	}
 
-	public SuccessRes insertFactorRateDetails(CompanyPromocodeSaveReq req) {
+	public SuccessRes insertFactorRateDetails(CompanyPromocodeSaveReq req,String coverId) {
 		SuccessRes res = new SuccessRes();
 		try {
 
@@ -613,7 +614,7 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 			factorReq.setAgencyCode(req.getAgencyCode());
 			factorReq.setBranchCode(req.getBranchCode());
 			factorReq.setCompanyId(req.getCompanyId());
-			factorReq.setCoverId(null);
+			factorReq.setCoverId(req.getCoverId());
 			factorReq.setCreatedBy(req.getCreatedBy());
 			factorReq.setEffectiveDateStart(req.getEffectiveDateStart());
 			factorReq.setEffectiveDateEnd(req.getEffectiveDateEnd());
@@ -636,10 +637,15 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 				 fParam.setParam6( data.getParam6()==null?"" : data.getParam6().toString());
 				 fParam.setParam7( data.getParam7()==null?"" : data.getParam7().toString());
 				 fParam.setParam8( data.getParam8()==null?"" : data.getParam8().toString());
+				 fParam.setParam9( data.getParam9()==null?"" : data.getParam9().toString());
+				 fParam.setParam10( data.getParam10()==null?"" : data.getParam10().toString());
+				 fParam.setParam11( data.getParam11()==null?"" : data.getParam11().toString());
+				 fParam.setParam12( data.getParam12()==null?"" : data.getParam12().toString());
 				 fParam.setSno(data.getSno().toString());
 				fParam.setRate(data.getRate().toString());
 				fParam.setCalType(data.getCalType());
 				fParam.setMinimumPremium(data.getMinimumPremium().toString());
+				fParam.setStatus(req.getStatus());
 				factorParams.add(fParam);
 			}
 			factorReq.setFactorParams(factorParams);
@@ -658,11 +664,16 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 		List<Error> errorList = new ArrayList<Error>();
 		try {
 
+			//Cover Count
+			Long totalCount = getCoverMasterTableCount();
+			String coverId = String.valueOf(totalCount + 1);
+			
+			//Framining Factor Rate Req
 			FactorRateSaveReq factorReq=new FactorRateSaveReq();
 			factorReq.setAgencyCode(req.getAgencyCode());
 			factorReq.setBranchCode(req.getBranchCode());
 			factorReq.setCompanyId(req.getCompanyId());
-			factorReq.setCoverId(null);
+			factorReq.setCoverId(req.getCoverId());
 			factorReq.setCreatedBy(req.getCreatedBy());
 			factorReq.setEffectiveDateStart(req.getEffectiveDateStart());
 			factorReq.setEffectiveDateEnd(req.getEffectiveDateEnd());
@@ -685,10 +696,15 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 				 fParam.setParam6( data.getParam6()==null?"" : data.getParam6().toString());
 				 fParam.setParam7( data.getParam7()==null?"" : data.getParam7().toString());
 				 fParam.setParam8( data.getParam8()==null?"" : data.getParam8().toString());
+				 fParam.setParam9( data.getParam9()==null?"" : data.getParam9().toString());
+				 fParam.setParam10( data.getParam10()==null?"" : data.getParam10().toString());
+				 fParam.setParam11( data.getParam11()==null?"" : data.getParam11().toString());
+				 fParam.setParam12( data.getParam12()==null?"" : data.getParam12().toString());
 				 fParam.setSno(data.getSno().toString());
 				fParam.setRate(data.getRate().toString());
 				fParam.setCalType(data.getCalType());
 				fParam.setMinimumPremium(data.getMinimumPremium().toString());
+				fParam.setStatus(req.getStatus());
 				factorParams.add(fParam);
 			}
 			factorReq.setFactorParams(factorParams);

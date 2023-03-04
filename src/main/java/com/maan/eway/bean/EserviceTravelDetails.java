@@ -19,6 +19,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import java.util.Date;
@@ -61,7 +62,7 @@ private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name="RISK_ID", nullable=false)
-    private Integer    travelId ;
+    private Integer    riskId ;
 
     @Id
     @Column(name="COMPANY_ID", nullable=false, length=20)
@@ -75,10 +76,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="TRAVEL_COVER_ID")
     private Integer    travelCoverId ;
 
-    @Column(name="POLICY_NO", length=100)
-    private String     policyNo;
-
-    
     @Column(name="TRAVEL_COVER_DESC", length=250)
     private String     travelCoverDesc ;
     
@@ -87,6 +84,10 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="PRODUCT_ID", nullable=false, length=20)
     private String     productId ;
+
+    @Column(name="POLICY_NO", length=100)
+    private String     policyNo;
+
     
     @Column(name="SOURCE_COUNTRY", length=50)
     private String     sourceCountry ;
@@ -107,7 +108,7 @@ private static final long serialVersionUID = 1L;
     private String    currency ;
 
     @Column(name="EXCHANGE_RATE")
-    private Double     exchangeRate ;
+    private BigDecimal     exchangeRate ;
     
     @Column(name="PLAN_TYPE_DESC", length=50)
     private String     planTypeDesc ;
@@ -127,7 +128,7 @@ private static final long serialVersionUID = 1L;
     private Integer    totalPassengers ;
 
     @Column(name="TOTAL_PREMIUM")
-    private Double     totalPremium ;
+    private BigDecimal     totalPremium ;
 
     @Column(name="AGE")
     private Integer    age ;
@@ -238,16 +239,16 @@ private static final long serialVersionUID = 1L;
     private String     destinationCountryDesc ;
     
     @Column(name="ACTUAL_PREMIUM_LC")
-    private Double     actualPremiumLc ;
+    private BigDecimal     actualPremiumLc ;
 
     @Column(name="ACTUAL_PREMIUM_FC")
-    private Double     actualPremiumFc ;
+    private BigDecimal     actualPremiumFc ;
     
     @Column(name="OVERALL_PREMIUM_LC")
-    private Double     overallPremiumLc ;
+    private BigDecimal     overallPremiumLc ;
 
     @Column(name="OVERALL_PREMIUM_FC")
-    private Double     overallPremiumFc ;
+    private BigDecimal     overallPremiumFc ;
     
     @Column(name="OLD_REQ_REF_NO", length=20)
     private String     oldReqRefNo ;
@@ -255,6 +256,50 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="BANK_CODE", length=100)
     private String   bankCode;
+    
+    @Column(name="MANUAL_REFERAL_YN", length=100)
+    private String  manualReferalYn;
+    
+    @Column(name="ENDORSEMENT_TYPE")
+    private Integer    endorsementType ;
+
+    @Column(name="ENDORSEMENT_TYPE_DESC", length=100)
+    private String     endorsementTypeDesc ;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="ENDORSEMENT_DATE")
+    private Date       endorsementDate ;
+
+    @Column(name="ENDORSEMENT_REMARKS", length=500)
+    private String     endorsementRemarks ;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="ENDORSEMENT_EFFDATE")
+    private Date       endorsementEffdate ;
+
+    @Column(name="ORIGINAL_POLICY_NO", length=500)
+    private String     originalPolicyNo ;
+
+    @Column(name="ENDT_PREV_POLICY_NO", length=500)
+    private String     endtPrevPolicyNo ;
+
+    @Column(name="ENDT_PREV_QUOTE_NO", length=500)
+    private String     endtPrevQuoteNo ;
+
+    @Column(name="ENDT_COUNT")
+    private BigDecimal endtCount ;
+
+    @Column(name="ENDT_STATUS", length=10)
+    private String     endtStatus ;
+    
+    
+    
+    @Column(name="IS_FINYN", length=10)
+    private String     isFinaceYn ;
+    
+    
+    @Column(name="ENDT_CATEG_DESC", length=10)
+    private String     endtCategDesc ;
 }
 
 

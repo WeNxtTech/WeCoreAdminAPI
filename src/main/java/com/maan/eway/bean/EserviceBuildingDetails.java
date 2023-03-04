@@ -58,7 +58,7 @@ private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name="RISK_ID", nullable=false)
-    private Integer    locationId ;
+    private Integer    riskId ;
 
     @Id
     @Column(name="CUSTOMER_REFERENCE_NO", nullable=false, length=20)
@@ -68,13 +68,14 @@ private static final long serialVersionUID = 1L;
     @Column(name="PRODUCT_ID", length=20)
     private String  productId ;
 
+    @Column(name="COMPANY_ID", length=20)
+    private String     companyId ;
+
+
     @Column(name="POLICY_NO", length=100)
     private String     policyNo;
 
     
-    @Column(name="COMPANY_ID", length=20)
-    private String     companyId ;
-
     @Column(name="BRANCH_CODE", length=20)
     private String     branchCode ;
 
@@ -129,7 +130,7 @@ private static final long serialVersionUID = 1L;
     private Integer    buildingAge ;
 
     @Column(name="BUILDING_AREA_SQM")
-    private Double     buildingAreaSqm ;
+    private BigDecimal     buildingAreaSqm ;
 
     @Column(name="BUILDING_SUMINSURED")
     private BigDecimal     buildingSuminsured ;
@@ -154,6 +155,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="CONTENT_SUMINSURED")
     private BigDecimal     contentSuminsured ;
+    
+    @Column(name="WORKMEN_COMP_SUMINSURED")
+    private BigDecimal     workmenCompSuminsured;
 
     
     
@@ -214,7 +218,7 @@ private static final long serialVersionUID = 1L;
     private String     currency ;
 
     @Column(name="EXCHANGE_RATE")
-    private Double     exchangeRate ;
+    private BigDecimal     exchangeRate ;
 
     @Column(name="ADMIN_LOGIN_ID", length=100)
     private String     adminLoginId ;
@@ -245,17 +249,17 @@ private static final long serialVersionUID = 1L;
     
     
     @Column(name="ACTUAL_PREMIUM_FC")
-    private Double     actualPremiumFc ;
+    private BigDecimal     actualPremiumFc ;
 
     
     @Column(name="ACTUAL_PREMIUM_LC")
-    private Double     actualPremiumLc ;
+    private BigDecimal     actualPremiumLc ;
 
     @Column(name="OVERALL_PREMIUM_LC")
-    private Double     overallPremiumLc ;
+    private BigDecimal     overallPremiumLc ;
 
     @Column(name="OVERALL_PREMIUM_FC")
-    private Double     overallPremiumFc ;
+    private BigDecimal     overallPremiumFc ;
 
     @Column(name="BROKER_BRANCH_CODE", length=20)
     private String     brokerBranchCode ;
@@ -296,7 +300,19 @@ private static final long serialVersionUID = 1L;
 
 
     @Column(name="BANK_CODE", length=100)
-    private String   bankCode;    
+    private String   bankCode;  
+    
+    @Column(name="SOURCE_TYPE", length=100)
+    private String   sourceType;  
+    
+    @Column(name="CUSTOMER_CODE", length=100)
+    private String   customerCode;  
+    
+    @Column(name="BDM_CODE", length=100)
+    private String  bdmCode;
+    
+    @Column(name="MANUAL_REFERAL_YN", length=100)
+    private String  manualReferalYn;
     
     @Column(name="ELEC_EQUIP_SUMINSURED")
     private BigDecimal elecEquipSuminsured;
@@ -339,9 +355,46 @@ private static final long serialVersionUID = 1L;
     @Column(name="INDUSTRY_DESC", length=100)
     private String  industryDesc ;
 
-    @Column(name="WORKMEN_COMP_SUMINSURED")
-    private BigDecimal     workmenCompSuminsured;
-    
+      @Column(name="ENDORSEMENT_TYPE")
+      private Integer    endorsementType ;
+
+      @Column(name="ENDORSEMENT_TYPE_DESC", length=100)
+      private String     endorsementTypeDesc ;
+
+      @Temporal(TemporalType.TIMESTAMP)
+      @Column(name="ENDORSEMENT_DATE")
+      private Date       endorsementDate ;
+
+      @Column(name="ENDORSEMENT_REMARKS", length=500)
+      private String     endorsementRemarks ;
+
+      @Temporal(TemporalType.TIMESTAMP)
+      @Column(name="ENDORSEMENT_EFFDATE")
+      private Date       endorsementEffdate ;
+
+      @Column(name="ORIGINAL_POLICY_NO", length=500)
+      private String     originalPolicyNo ;
+
+      @Column(name="ENDT_PREV_POLICY_NO", length=500)
+      private String     endtPrevPolicyNo ;
+
+      @Column(name="ENDT_PREV_QUOTE_NO", length=500)
+      private String     endtPrevQuoteNo ;
+
+      @Column(name="ENDT_COUNT")
+      private BigDecimal endtCount ;
+
+      @Column(name="ENDT_STATUS", length=10)
+      private String     endtStatus ;
+      
+      
+      
+      @Column(name="IS_FINYN", length=10)
+      private String     isFinaceYn ;
+      
+      
+      @Column(name="ENDT_CATEG_DESC", length=10)
+      private String     endtCategDesc ;
 }
 
 

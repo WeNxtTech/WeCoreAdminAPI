@@ -63,6 +63,10 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="CUSTOMER_REFERENCE_NO", nullable=false, length=20)
     private String     customerReferenceNo ;
+    
+    @Id
+    @Column(name="OCCUPATION_TYPE", length=100)
+    private String occupationType ;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="PRODUCT_ID", length=20)
@@ -83,9 +87,6 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="OCCUPATION_DESC", length=100)
     private String occupationDesc ;
-
-    @Column(name="OCCUPATION_TYPE", length=100)
-    private String occupationType ;
     
     @Column(name="COMPANY_ID", length=20)
     private String     companyId ;
@@ -168,9 +169,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="BROKER_BRANCH_NAME", length=100)
     private String   brokerBranchName ;
     
-    @Column(name="BDM_CODE", length=100)
-    private String  bdmCode;
-    
+   
     @Column(name="CUSTOMER_ID", length=100)
     private String  customerId;
     
@@ -222,14 +221,7 @@ private static final long serialVersionUID = 1L;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="DOB")
     private Date       dob ;
-    
-    
-    @Column(name="ID_PROOF_TYPE", length=100)
-    private String    idProofType;
-    
-    @Column(name="ID_NO", length=100)
-    private String    idNo;
-    
+     
     @Column(name="JOB_JOINING_MONTH", length=100)
     private String    jobJoiningMonth;
     
@@ -239,12 +231,62 @@ private static final long serialVersionUID = 1L;
     @Column(name="ETHICAL_WORK_INVOLVED", length=10)
     private String  ethicalWorkInvolved;
     
-    
 
     @Column(name="BANK_CODE", length=100)
     private String   bankCode;    
     
+    @Column(name="SOURCE_TYPE", length=100)
+    private String   sourceType;  
     
+    @Column(name="CUSTOMER_CODE", length=100)
+    private String   customerCode;  
+    
+    @Column(name="BDM_CODE", length=100)
+    private String  bdmCode;
+    
+    @Column(name="MANUAL_REFERAL_YN", length=100)
+    private String  manualReferalYn;
+    
+    @Column(name="ENDORSEMENT_TYPE")
+    private Integer    endorsementType ;
+
+    @Column(name="ENDORSEMENT_TYPE_DESC", length=100)
+    private String     endorsementTypeDesc ;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="ENDORSEMENT_DATE")
+    private Date       endorsementDate ;
+
+    @Column(name="ENDORSEMENT_REMARKS", length=500)
+    private String     endorsementRemarks ;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="ENDORSEMENT_EFFDATE")
+    private Date       endorsementEffdate ;
+
+    @Column(name="ORIGINAL_POLICY_NO", length=500)
+    private String     originalPolicyNo ;
+
+    @Column(name="ENDT_PREV_POLICY_NO", length=500)
+    private String     endtPrevPolicyNo ;
+
+    @Column(name="ENDT_PREV_QUOTE_NO", length=500)
+    private String     endtPrevQuoteNo ;
+
+    @Column(name="ENDT_COUNT")
+    private BigDecimal endtCount ;
+
+    @Column(name="ENDT_STATUS", length=10)
+    private String     endtStatus ;
+    
+    
+    
+    @Column(name="IS_FINYN", length=10)
+    private String     isFinaceYn ;
+    
+    
+    @Column(name="ENDT_CATEG_DESC", length=10)
+    private String     endtCategDesc ;
 }
 
 

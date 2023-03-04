@@ -41,7 +41,7 @@ public class NotifTransactionDetailsController {
 		this.entityService = entityService;
 	}
 */
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping(value = "/notiftransactiondetails")
 	public ResponseEntity<NotifTransactionDetails> createNotifTransactionDetails(@RequestBody  NotifTransactionDetails model) {
 
@@ -53,7 +53,7 @@ public class NotifTransactionDetailsController {
    			 }
     }
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
     @GetMapping(value = "/notiftransactiondetails")
     public ResponseEntity<List<NotifTransactionDetails>> getAllNotifTransactionDetails() {
         List<NotifTransactionDetails> lst = entityService.getAll();

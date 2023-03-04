@@ -60,7 +60,7 @@ public class CoverSubCoverMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/insertcoversubcover")
 		@ApiOperation(value = "This method is Insert CoverSubcover")
 		public ResponseEntity<CommonRes> insertSubCover(@RequestBody List<CoverSubCoverMasterSaveReq> req) {
@@ -182,7 +182,7 @@ public class CoverSubCoverMasterController {
 				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
 			}
 		}
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/coversubcover/changestatus")
 		@ApiOperation(value = "This method is get Company Change Status")
 		public ResponseEntity<CommonRes> changeStatusOfCoverSubCover(@RequestBody CoverSubCoverChangeStatusReq req) {
@@ -203,7 +203,7 @@ public class CoverSubCoverMasterController {
 
 		}
 	
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/updatecoversubcover")
 		@ApiOperation(value = "This method is Update Section  Cover Details")
 		public ResponseEntity<CommonRes> updateSectionCover(@RequestBody SubCoverUpdatedReq req) {
@@ -238,7 +238,7 @@ public class CoverSubCoverMasterController {
 
 		}
 		
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping(value="/dropdown/subcover",produces = "application/json")
 		@ApiOperation(value="This method is to get dropdown")
 		public ResponseEntity<DropdownCommonRes> subcoverDropDown(@RequestBody SubCoverDropDownReq req){

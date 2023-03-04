@@ -51,7 +51,7 @@ public class ConstantTableDetailsController {
 	private  PrintReqService reqPrinter;
 	
 	// save
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/insertconstanttabledetails")
 		@ApiOperation(value = "This method is ConstantTableDetails Master")
 		public ResponseEntity<CommonRes> insertConstantTableDetails(@RequestBody ConstantTableDetailsSaveReq req) {
@@ -87,7 +87,7 @@ public class ConstantTableDetailsController {
 		}
 		
 		//  Get All ConstantTableDetails Master
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/getallconstanttabledetails")
 		@ApiOperation("This method is getall ConstantTableDetails")
 		public ResponseEntity<CommonRes> getallConstantTableDetails(@RequestBody ConstantTableDetailsGetAllReq req)
@@ -111,7 +111,7 @@ public class ConstantTableDetailsController {
 		
 	//  Get Active ConstantTableDetails Master
 		
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 			@PostMapping("/getactiveconstanttabledetails")
 			@ApiOperation("This method is get Active ConstantTableDetails")
 			public ResponseEntity<CommonRes> getActiveConstantTableDetails(@RequestBody ConstantTableDetailsGetAllReq req)
@@ -135,7 +135,7 @@ public class ConstantTableDetailsController {
 		
 		// Get By ConstantTableDetails Id
 		
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/getbyconstanttabledetailsid")
 		@ApiOperation("This Method is to get by ConstantTableDetails id")
 		public ResponseEntity<CommonRes> getByConstantTableDetailsId(@RequestBody ConstantTableDetailsGetReq req)
@@ -156,7 +156,7 @@ public class ConstantTableDetailsController {
 	}
 
 		// ConstantTableDetails Master Drop Down Type
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")	
 	@PostMapping("/dropdown/tabletype")
 		@ApiOperation(value = "This method is to Table Type Drop Down")
 		public ResponseEntity<CommonRes> tableType(@RequestBody LovDropDownReq req) {
@@ -176,7 +176,7 @@ public class ConstantTableDetailsController {
 
 		}		
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/constanttabledetails/changestatus")
 		@ApiOperation(value = "This method is get ConstantTableDetails Change Status")
 		public ResponseEntity<CommonRes> changeStatusOfConstantTableDetails(@RequestBody ConstantTableChangeStatusReq req) {

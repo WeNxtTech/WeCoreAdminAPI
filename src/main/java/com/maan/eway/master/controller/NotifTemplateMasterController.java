@@ -66,7 +66,7 @@ public class NotifTemplateMasterController {
 */
 
 	// Insert
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/insertnotiftemplate")
 		@ApiOperation(value = "This method is Insert Notification Templete")
 		public ResponseEntity<CommonRes> insertnotiftemplate(@RequestBody NotifTemplateMasterReq req) {
@@ -103,7 +103,7 @@ public class NotifTemplateMasterController {
 		}
 		
 		// Get By Id
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/getnotificationcode")
 		@ApiOperation(value = "This method is get by Notification Templete")
 
@@ -124,7 +124,7 @@ public class NotifTemplateMasterController {
 		}
 
 		// Get All
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/getallnotitemplete")
 		@ApiOperation(value = "This method is Get all Notification Templete")
 
@@ -147,7 +147,7 @@ public class NotifTemplateMasterController {
 		}
 		
 		// Get Active
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/getactivenotitemplete")
 		@ApiOperation(value = "This method is Get Active Notification Templete ")
 
@@ -170,7 +170,7 @@ public class NotifTemplateMasterController {
 		}
 
 		// Change Status
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/notitemplete/changestatus")
 		@ApiOperation(value = "This method is get Notification Templete Change Status")
 		public ResponseEntity<CommonRes> changeStatusOfNotitemplete(@RequestBody NotifTempleteMasterChangeStatusReq req) {
@@ -192,7 +192,7 @@ public class NotifTemplateMasterController {
 
 
 		//Dropdown
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@GetMapping("/dropdown/getnotitranscolumns")
 		@ApiOperation(value = "This method is to Table Details Drop Down")
 		public ResponseEntity<CommonRes> getTableDetails() {

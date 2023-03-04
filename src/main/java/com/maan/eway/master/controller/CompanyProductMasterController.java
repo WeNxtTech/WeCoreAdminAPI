@@ -62,7 +62,7 @@ public class CompanyProductMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/insertcompanyproducts")
 	@ApiOperation(value = "This method is Insert Company Product Master")
 	public ResponseEntity<CommonRes> insertCompanyProducts(@RequestBody List<CompanyProductMultiInsertReq> req) {
@@ -98,7 +98,7 @@ public class CompanyProductMasterController {
 	}
 	
 	//  Get All Cover Master
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/updatecompanyproducts")
 	@ApiOperation(value = "This method is Insert Company Product Master")
 	public ResponseEntity<CommonRes> insertCompanyProducts(@RequestBody CompanyProductMasterSaveReq req) {
@@ -244,7 +244,7 @@ public class CompanyProductMasterController {
 
 		}
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/companyproducts/changestatus")
 		@ApiOperation(value = "This method is get Company Product Master Drop Down")
 

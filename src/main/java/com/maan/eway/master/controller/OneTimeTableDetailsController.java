@@ -29,7 +29,7 @@ public class OneTimeTableDetailsController {
 
 	@Autowired
 	private OneTimeTableDetailsService service;
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@GetMapping("/tablename")
 	@ApiOperation(value = "This method is to Table Name Drop Down")
 	public ResponseEntity<CommonRes> tableName() {
@@ -49,7 +49,7 @@ public class OneTimeTableDetailsController {
 
 	}
 	
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/columnname")
 	@ApiOperation(value = "This method is to Column Name Drop Down")
 	public ResponseEntity<CommonRes> columnName(@RequestBody ColumnNameDropDownlReq req) {

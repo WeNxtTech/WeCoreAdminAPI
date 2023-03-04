@@ -72,7 +72,7 @@ public class DocumentMasterController {
 
 	
 	// save
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/insertdocument")
 		@ApiOperation(value = "This method is Insert Document Master")
 		public ResponseEntity<CommonRes> insertDocument(@RequestBody DocumentMasterSaveReq req) {
@@ -107,7 +107,7 @@ public class DocumentMasterController {
 		}
 		
 		//  Get All Section Master
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@GetMapping("/getalldocuments")
 		@ApiOperation("This method is getall Documents")
 		public ResponseEntity<CommonRes> getallDocuments()
@@ -128,7 +128,7 @@ public class DocumentMasterController {
 			}
 		}
 		// Get By Document Id
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/getbydocument")
 		@ApiOperation("This Method is to get by Document Id")
 		public ResponseEntity<CommonRes> getByDocumentId(@RequestBody DocumentMasterGetReq req)
@@ -151,7 +151,7 @@ public class DocumentMasterController {
 		
 		// Get By Active Status
 		
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@GetMapping("/getactivedocument")
 		@ApiOperation("This Method is to Get Active Documents")
 		public ResponseEntity<CommonRes> getActiveDocument()
@@ -191,7 +191,7 @@ public class DocumentMasterController {
 			}			
 		}
 		
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/document/changestatus")
 		@ApiOperation(value = "This method is  Change Status of Documents")
 		public ResponseEntity<CommonRes> changeStatusOfDocument(@RequestBody DocumentChangeStatusReq req) {

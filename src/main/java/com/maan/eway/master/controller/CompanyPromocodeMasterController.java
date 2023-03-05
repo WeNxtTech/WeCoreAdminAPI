@@ -63,13 +63,13 @@ public class CompanyPromocodeMasterController {
 	// Insert
 		@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/insertcompanypromocode")
-		@ApiOperation(value = "This method is Insert Section  Cover Details")
+		@ApiOperation(value = "This method is Insert Company Promocode Discount Details")
 		public ResponseEntity<CommonRes> insertCompanyPromocode(@RequestBody CompanyPromocodeSaveReq req,@RequestHeader("Authorization") String tokens) {
 
 			reqPrinter.reqPrint(req);
 			CommonRes data = new CommonRes();
 
-			List<Error> validation = promoService.validateCompanyPromocode(req,tokens.replaceAll("Bearer ", "").split(",")[0]);
+			List<Error> validation = promoService.validateCompanyPromocode(req);
 			// validation
 			if (validation != null && validation.size() != 0) {
 				data.setCommonResponse(null);
@@ -95,6 +95,42 @@ public class CompanyPromocodeMasterController {
 			}
 
 		}
+		
+		// Insert
+				@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
+				@PostMapping("/insertpromocodescheme")
+				@ApiOperation(value = "This method is Insert Scheme details of Promocode Details")
+				public ResponseEntity<CommonRes> insertSchemePromocode(@RequestBody CompanyPromocodeSaveReq req,@RequestHeader("Authorization") String tokens) {
+
+					reqPrinter.reqPrint(req);
+					CommonRes data = new CommonRes();
+
+					List<Error> validation = promoService.validateSchemePromocode(req,tokens.replaceAll("Bearer ", "").split(",")[0]);
+					// validation
+					if (validation != null && validation.size() != 0) {
+						data.setCommonResponse(null);
+						data.setIsError(true);
+						data.setErrorMessage(validation);
+						data.setMessage("Failed");
+						return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+					} else {
+
+						// Save
+						SuccessRes res = promoService.insertSchemePromocode(req);
+						data.setCommonResponse(res);
+						data.setIsError(false);
+						data.setErrorMessage(Collections.emptyList());
+						data.setMessage("Success");
+
+						if (res != null) {
+							return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+						} else {
+							return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+						}
+					}
+
+				}
 	
 		//  Get All 
 		@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")

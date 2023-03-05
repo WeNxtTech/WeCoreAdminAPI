@@ -15,5 +15,8 @@ public class SuccessRes {
 	
 	@JsonProperty("FactorTypeId")
 	private String factorTypeId;
+	
+	@JsonProperty("CoverId")
+	private String coverId;
 
 }

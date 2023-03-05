@@ -85,7 +85,7 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 //************************************************INSERT/UPDATE COVER DETAILS******************************************************\\
 
 	@Override
-	public List<Error> validateCompanyPromocode(CompanyPromocodeSaveReq req,String tokens) {
+	public List<Error> validateCompanyPromocode(CompanyPromocodeSaveReq req) {
 		List<Error> errorList = new ArrayList<Error>();
 		try {
 			
@@ -129,6 +129,202 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 					errorList.add(new Error("04", "Promocode", "This Promocode Already Exist "));
 				} else if( list !=null  && StringUtils.isNotBlank(req.getPromocodeId()) ) {
 					if( list.getPromocode().equalsIgnoreCase(req.getPromocode()) ) {
+						errorList.add(new Error("04", "Promocode", "This Promocode Already Exist "));	
+					}			
+				}
+			}
+			
+			// Date Validation 
+			
+			Calendar cal = new GregorianCalendar();
+			Date today = new Date();
+			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
+			today = cal.getTime();
+			if (StringUtils.isBlank(req.getPromocodeId())) {
+				if (req.getEffectiveDateStart() == null) {
+					errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
+				} else if (req.getEffectiveDateStart().before(today)) {
+					errorList.add(
+							new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+				}
+			}
+			if (req.getEffectiveDateEnd() == null) {
+				errorList.add(new Error("04", "EffectiveDateEnd", "Please Enter Effective Date End "));
+			}
+			Date date1 =req.getEffectiveDateStart();  
+			Date date2 =req.getEffectiveDateEnd();
+			DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");  
+			String strDate = dateFormat.format(date1);  
+			String endDate = dateFormat.format(date2); 
+			boolean date = dateChecking(strDate, endDate);
+			if (date==false) {
+				errorList.add(new Error("04", "EffectiveDateEnd", "Please Enter Effective Date End greater than Start Date"));
+			} 
+			else if (StringUtils.isBlank(req.getCoreAppCode())) {
+				errorList.add(new Error("05", "CoreAppCode", "Please Enter CoreAppCode"));
+			} else if (req.getCoreAppCode().length() > 20) {
+				errorList.add(new Error("05", "CoreAppCode", "CoreAppCode under 20 Characters only allowed"));
+			} 
+
+//			List<CompanyPromocodeMaster> CompanyList = getCoreAppCodeExistDetails(req.getCoreAppCode(),
+//					req.getEffectiveDateStart(), req.getCompanyId(), req.getProductId(), req.getSectionId());
+//			if (CompanyList.size() > 0
+//					&& (!req.getProductId().equalsIgnoreCase(CompanyList.get(0).getProductId().toString()))) {
+//				errorList
+//						.add(new Error("02", "Core App Code", "This Core App Code Already Exist For Another Section "));
+//			}
+			
+			
+			if (StringUtils.isBlank(req.getPromocodeType())) {
+				errorList.add(new Error("06", "PromocodeType", "Please Select PromocodeType"));
+			}else if (!("D".equals(req.getPromocodeType()) || "S".equals(req.getPromocodeType()))) {
+				errorList.add(new Error("06", "PromocodeType", "Enter PromocodeType D or S Only"));
+			} 
+
+			if (StringUtils.isBlank(req.getCreatedBy())) {
+				errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy "));
+			} else if (req.getCreatedBy().length() > 100) {
+				errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+			}
+			// Status Validation
+			if (StringUtils.isBlank(req.getStatus())) {
+				errorList.add(new Error("08", "Status", "Please Enter Status"));
+			} else if (req.getStatus().length() > 1) {
+				errorList.add(new Error("08", "Status", "Enter Status in 1 Character Only"));
+			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()) || "P".equals(req.getStatus()) || "R".equals(req.getStatus()))) {
+				errorList.add(new Error("08", "Status", "Enter Status Y or N Only"));
+			}
+			if (StringUtils.isBlank(req.getRegulatoryCode())) {
+				errorList.add(new Error("09", "Regulatory Code", "Please Enter RegulatoryCode"));
+			} else if (req.getRegulatoryCode().length() > 20) {
+				errorList.add(new Error("09", "RegulatoryCode", "Enter RegulatoryCode  within 20 Characters Only"));
+			}
+			
+			if (StringUtils.isBlank(req.getRemarks())) {
+				errorList.add(new Error("10", "Remarks", "Please Enter Remarks"));
+			} else if (req.getRemarks().length() > 100) {
+				errorList.add(new Error("10", "Remarks", "Enter Remarks  within 100 Characters Only"));
+			}
+			if (StringUtils.isBlank(req.getCalcType())) {
+				errorList.add(new Error("11", "CalcType", "Please Select CalcType"));
+			} else if (!("P".equals(req.getCalcType()) || "A".equals(req.getCalcType() )|| "F".equals(req.getCalcType()))) {
+				errorList.add(new Error("11", "CalcType", "Enter CalcType P or A or F"));
+			}
+
+			// Tax Calculation
+			if (StringUtils.isBlank(req.getIsTaxExcempted())) {
+				errorList.add(new Error("12", "IsTaxExcempted", "Please Enter Is Tax Excempted"));
+			} else if (req.getIsTaxExcempted().length() > 1) {
+				errorList.add(new Error("12", "IsTaxExcempted", "Enter Is Tax Excempted in 1 Character Only"));
+			} else if (!("Y".equals(req.getIsTaxExcempted()) || "N".equals(req.getIsTaxExcempted()))) {
+				errorList.add(new Error("12", "IsTaxExcempted", "Enter Is Tax Excempted Y or N Only"));
+
+			} else if (req.getIsTaxExcempted().equalsIgnoreCase("Y")) {
+				if (StringUtils.isBlank(req.getTaxExcemptionReference())) {
+					errorList.add(new Error("12", "TaxExcemptionReference", "Please Enter Tax Excemption Reference"));
+				} else if (req.getTaxExcemptionReference().length() > 100) {
+					errorList.add(new Error("12", "TaxExcemptionReference",
+							"100 Chatracters Only Allowed As Tax Excemption Reference"));
+				}
+
+				if (StringUtils.isBlank(req.getTaxExcemptionType())) {
+					errorList.add(new Error("12", "TaxExcemptionType", "Please Select Tax Excemption Type"));
+				} else if (!req.getTaxExcemptionType().matches("[0-9]+")) {
+					errorList.add(new Error("12", "TaxExcemptionType", "Please Select Tax Excemption Type"));
+				}
+			}
+
+		/*	//Factor validation
+			if ("S".equalsIgnoreCase(req.getPromocodeType()) && "F".equalsIgnoreCase(req.getCalcType())) {
+
+				if (StringUtils.isBlank(req.getFactorTypeId())) {
+					errorList.add(new Error("13", "Factor Type Id", "Please Enter Factor Type Id "));
+				} else if (StringUtils.isBlank(req.getCoverBasedOn())) {
+					errorList.add(new Error("13", "CoverBasedOn", "Please Enter CoverBasedOn "));
+				}
+			}*/
+			if (StringUtils.isBlank(req.getPromoRateOrAmt())) {
+				errorList.add(new Error("14", "PromoRateOrAmt", "Please Enter PromoRateOrAmt "));
+			} else if (!req.getPromoRateOrAmt().matches("[0-9.]+")) {
+				errorList.add(new Error("14", "PromoRateOrAmt", "Please Enter Valid Number In PromoRateOrAmt "));
+			}else if (Integer.valueOf(req.getPromoRateOrAmt()) < 0) {
+				errorList.add(new Error("14", "PromoRateOrAmt", " PromoRateOrAmt Greater than Zero"));
+			}
+			if("P".equalsIgnoreCase(req.getCalcType())) {
+				if (Integer.valueOf(req.getPromoRateOrAmt()) > 100) {
+					errorList.add(new Error("14", "PromoRateOrAmt", " Promocode Percent Not Greater than 100"));
+				}
+			}
+
+			if (StringUtils.isBlank(req.getMinimumPremium())) {
+				errorList.add(new Error("15", "MinimumPremium", "Please Enter MinimumPremium  "));
+			} else if (!req.getMinimumPremium().matches("[0-9.]+")) {
+				errorList.add(new Error("15", "MinimumPremium", "Please Enter Maximum Permium In Number  "));
+			}  else if (Integer.valueOf(req.getMinimumPremium()) < 0) {
+				errorList.add(new Error("15", "MinimumPremium", "Maximum Discount should be Greater than 0 "));
+			}
+			
+			if (StringUtils.isBlank(req.getPromocodeDesc())) {
+				errorList.add(new Error("16", "PromocodeDesc", "Please Enter PromocodeDesc  "));
+			} else if (req.getPromocodeDesc().length()>100) {
+				errorList.add(new Error("16", "PromocodeDesc", "Please Enter PromocodeDesc within 100 Characters  "));
+			}
+		} catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+			errorList.add(new Error("100", "Common Error", e.getMessage()));
+		}
+		return errorList;
+	}
+
+	
+//***************************************Scheme Validation*******************************************//
+	@Override
+	public List<Error> validateSchemePromocode(CompanyPromocodeSaveReq req,String tokens) {
+		List<Error> errorList = new ArrayList<Error>();
+		try {
+			
+			if (StringUtils.isBlank(req.getCompanyId())) {
+				errorList.add(new Error("01", "CompanyId", "Please Enter Company Id "));
+			}else if (req.getCompanyId().length() > 20) {
+				errorList.add(new Error("01", "CompanyId", "Please Enter CompanyId within 20 Characters  "));
+			}
+			if (StringUtils.isBlank(req.getSectionId())) {
+				errorList.add(new Error("02", "SectionId", "Please Enter Section Id  "));
+			}else if (req.getSectionId().length() > 20) {
+				errorList.add(new Error("02", "SectionId", "Please Enter SectionId within 20 Characters  "));
+			} else if (!StringUtils.isNumeric(req.getSectionId()) ){
+				errorList.add(new Error("02", "SectionId", "Please Enter Valid Number SectionId "));
+			} 
+			
+			if (StringUtils.isBlank(req.getProductId())) {
+				errorList.add(new Error("03", "ProductId", "Please Enter Product Id "));
+			}else if (req.getProductId().length() > 20) {
+				errorList.add(new Error("03", "ProductId", "Please Enter ProductId within 20 Characters  "));
+			} else if (!req.getProductId().matches("[0-9]+") ) {
+				errorList.add(new Error("03", "ProductId", "Please Enter Valid Number ProductId "));
+			}
+		
+			if (StringUtils.isBlank(req.getPromocode())) {
+				errorList.add(new Error("04", "Promocode", "Please Enter Promocode"  ));
+			}else if (req.getPromocode().length() > 20){
+				errorList.add(new Error("04","Promocode", "Please Enter Promocode within 20 Characters")); 
+			}
+//			else  {
+//				List<CompanyPromocodeMaster> list =  getPromocodeExistDetails(req.getPromocode() , req );
+//				if (list.size()>0 && req.getPromocodeId() !=null && (! req.getPromocodeId().equalsIgnoreCase(list.get(0).getPromocodeId().toString())) ) {
+//					errorList.add(new Error("04", "Promocode", "This Promocode Already Exist "));
+//				}
+//				
+//			}
+			
+			else{
+				CompanyPromocodeMaster list =getPromocodeExistDetails(req.getPromocode(), req);
+				if(StringUtils.isBlank(req.getPromocodeId())&&  list!=null ) {
+					errorList.add(new Error("04", "Promocode", "This Promocode Already Exist "));
+				} else if( list !=null  && StringUtils.isNotBlank(req.getPromocodeId()) ) {
+					if(! req.getPromocodeId().equalsIgnoreCase(list.getPromocodeId().toString())) {
+//					if( !list.getPromocodeId().equals(req.getPromocodeId().toString()) ) {
 						errorList.add(new Error("04", "Promocode", "This Promocode Already Exist "));	
 					}			
 				}
@@ -281,6 +477,7 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 	}
 
 	
+
 	
 	public CompanyPromocodeMaster getPromocodeExistDetails(String promocode , CompanyPromocodeSaveReq req ) {
 		CompanyPromocodeMaster res=null;
@@ -326,6 +523,8 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 		}
 		return res ;
 	}
+	
+	//*******************************************Insert Promocode Discount *******************************************************//
 	@Transactional
 	@Override
 	public SuccessRes insertCompanyPromocode(CompanyPromocodeSaveReq req) {
@@ -342,6 +541,11 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 			long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
 			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
 			CompanyPromocodeMaster saveData = new CompanyPromocodeMaster();
+			
+			//Cover count
+			Long coverTotalCount = getCoverMasterTableCount();
+			String coverId = String.valueOf(coverTotalCount + 1);
+			
 			List<CompanyPromocodeMaster> list = new ArrayList<CompanyPromocodeMaster>();
 			List<ListItemValue> calcTypes = listRepo.findByItemTypeAndStatus("CALCULATION_TYPE" , "Y");
 			List<ListItemValue> promoType = listRepo.findByItemTypeAndStatus("PROMOCODE_TYPE" , "Y");
@@ -356,6 +560,7 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 				createdBy = req.getCreatedBy();
 				res.setResponse("Saved Successfully ");
 				res.setSuccessId(promocodeId);
+				res.setCoverId(coverId);
 
 			}else {
 				// Update
@@ -409,6 +614,7 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 				}
 				res.setResponse("Updated Successfully");
 				res.setSuccessId(promocodeId.toString());
+				res.setCoverId(coverId);
 			}
 			dozerMapper.map(req, saveData);
 			saveData.setPromocodeId(Integer.valueOf(promocodeId));
@@ -451,12 +657,7 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 
 			}
 			comPromorepo.saveAndFlush(saveData);
-			log.info("Saved Details is ---> " + json.toJson(saveData));
-
-			
-			//Cover count
-			Long totalCount = getCoverMasterTableCount();
-			String coverId = String.valueOf(totalCount + 1);
+			log.info("Company PromoCode Master Saved Details is ---> " + json.toJson(saveData));
 			
 			//Section Cover Master Save
 			List<SectionCoverMasterSaveReq> secreqList = new ArrayList<SectionCoverMasterSaveReq>();
@@ -472,17 +673,17 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 			secreqList.add(secreq);
 
 			sectionService.insertSectionCover(secreqList);
-			log.info("Saved Details is ---> " + json.toJson(secreqList));
+			log.info("Section Cover Inserted Successfully Saved Details is ---> " + json.toJson(secreqList));
 			updateCompanyPromocode(req,coverId);
-			
-			// Factor Save
+			log.info("Section Cover Updated Successfully Saved Details is ---> " + json.toJson(secreqList));
+			/*// Factor Save
 			if ("S".equalsIgnoreCase(req.getPromocodeType()) && "F".equalsIgnoreCase(req.getCalcType())) {
-				insertFactorRateDetails(req,coverId);
-			}
+				insertFactorRateDetails(req);
+			}*/
 			res.setResponse("Saved Successfully ");
 			res.setSuccessId(promocodeId);
-			res.setFactorTypeId(req.getFactorTypeId()==null?"" : req.getFactorTypeId().toString());
-			
+			//res.setFactorTypeId(req.getFactorTypeId()==null?"" : req.getFactorTypeId().toString());
+			res.setCoverId(coverId);
 	} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
@@ -606,7 +807,35 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 
 	}
 
-	public SuccessRes insertFactorRateDetails(CompanyPromocodeSaveReq req,String coverId) {
+	//***************************************Insert Promocode Scheme *********************************************//
+	
+		@Transactional
+		@Override
+		public SuccessRes insertSchemePromocode(CompanyPromocodeSaveReq req) {
+			SuccessRes res = new SuccessRes();
+			SimpleDateFormat sdf= new SimpleDateFormat("dd/MM/yyyy");
+			DozerBeanMapper dozerMapper = new DozerBeanMapper(); 
+			try {
+								
+				// Factor Save
+				if ("S".equalsIgnoreCase(req.getPromocodeType()) && "F".equalsIgnoreCase(req.getCalcType())) {
+					res=insertFactorRateDetails(req);
+					log.info("Factor Inserted Successfully ");
+					res.setResponse("Factor Saved Successfully ");
+				}
+				res.setSuccessId(req.getPromocodeId());
+				res.setFactorTypeId(req.getFactorTypeId()==null?"" : req.getFactorTypeId().toString());
+				res.setCoverId(req.getCoverId());
+				
+		} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Exception is --->" + e.getMessage());
+				return null;
+			}
+			return res;
+		}
+
+	public SuccessRes insertFactorRateDetails(CompanyPromocodeSaveReq req) {
 		SuccessRes res = new SuccessRes();
 		try {
 

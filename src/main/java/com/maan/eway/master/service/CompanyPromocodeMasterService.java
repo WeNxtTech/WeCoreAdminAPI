@@ -20,7 +20,7 @@ import com.maan.eway.res.SuccessRes;
 */
 public interface CompanyPromocodeMasterService  {
 
-	List<Error> validateCompanyPromocode(CompanyPromocodeSaveReq req,String tokens);
+	List<Error> validateCompanyPromocode(CompanyPromocodeSaveReq req);
 
 	SuccessRes insertCompanyPromocode(CompanyPromocodeSaveReq req);
 
@@ -32,5 +32,9 @@ public interface CompanyPromocodeMasterService  {
 	CompanyPromocodeMasterRes getByCompanyPromocodeId(CompanyPromcodeMasterGetReq req);
 
 	SuccessRes changestatusofCompanyPromocode(CompanyPromocodeMasterChangeStatusReq req);
+
+	List<Error> validateSchemePromocode(CompanyPromocodeSaveReq req, String string);
+
+	SuccessRes insertSchemePromocode(CompanyPromocodeSaveReq req);
 
 }

@@ -1178,7 +1178,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			List<ListItemValue> taxExcemptionType = listRepo.findByItemTypeAndStatus("TAX_EXEMPTION_TYPE" , "Y");
 			Integer amendId = 0 ;
 			Date entryDate = null ;
-			String createdBy = "" ;
+		//	String createdBy = "" ;
 			Date startDate = req.getEffectiveDateStart() ;
 			String end = "31/12/2050";
 			Date endDate =  req.getCoverageType().equalsIgnoreCase("P") && req.getEffectiveDateEnd()!=null ? req.getEffectiveDateEnd() : sdf.parse(end);
@@ -1243,7 +1243,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 					if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
 						amendId = list.get(0).getAmendId() + 1 ;
 						entryDate = new Date() ;
-						createdBy = req.getCreatedBy();
+					//	createdBy = req.getCreatedBy();
 						SectionCoverMaster lastRecord = list.get(0);
 							lastRecord.setEffectiveDateEnd(oldEndDate);
 							repo.saveAndFlush(lastRecord);
@@ -1251,7 +1251,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 					} else {
 						amendId = list.get(0).getAmendId() ;
 						entryDate = list.get(0).getEntryDate() ;
-						createdBy = list.get(0).getCreatedBy();
+					//	createdBy = list.get(0).getCreatedBy();
 						if (list.size()>1 ) {
 							SectionCoverMaster lastRecord = list.get(1);
 							lastRecord.setEffectiveDateEnd(oldEndDate);
@@ -1316,7 +1316,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				saveData.setToolTip(req.getToolTip());
 				saveData.setDependentCoverYn(StringUtils.isNotBlank(req.getDependentCoverYn()) ? req.getDependentCoverYn() : "N" );
 				saveData.setSubCoverYn(subCoverYn);
-				saveData.setCreatedBy(createdBy);
+				saveData.setCreatedBy(req.getCreatedBy());
 				saveData.setUpdatedDate(new Date());
 				saveData.setUpdatedBy(req.getCreatedBy());
 				saveData.setMultiSelectYn( StringUtils.isNotBlank(req.getMultiSelectYn() ) ? req.getMultiSelectYn()  : "N");

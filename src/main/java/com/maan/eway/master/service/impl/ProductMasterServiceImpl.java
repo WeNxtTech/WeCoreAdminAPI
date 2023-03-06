@@ -417,8 +417,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			Root<ProductMaster> ocpm1 = amendId.from(ProductMaster.class);
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			amendId.where(a1,a2);
+			amendId.where(a1);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -591,8 +590,9 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
-			
-			query.where(n1,n2,n3).orderBy(orderList);
+			Predicate n4 = cb.equal(c.get("status"),"R");
+			Predicate n5 = cb.or(n1,n4);
+			query.where(n5,n2,n3).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<ProductMaster> result = em.createQuery(query);			

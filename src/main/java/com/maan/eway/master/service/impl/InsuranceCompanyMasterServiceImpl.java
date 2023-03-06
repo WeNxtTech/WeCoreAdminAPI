@@ -276,12 +276,13 @@ this.repository = repo;
 			errors.add(new Error("08", "Remark", "Insurance Company Remark under 100 Characters only allowed"));
 		}
 
+		//Status Validation
 		if (StringUtils.isBlank(req.getStatus())) {
-			errors.add(new Error("09", "Status", "Please Enter Status"));
+			errors.add(new Error("05", "Status", "Please Select Status  "));
 		} else if (req.getStatus().length() > 1) {
-			errors.add(new Error("09", "Status", "Insurance Company Status 1 Character Only"));
-		} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus())|| "R".equals(req.getStatus()) || "P".equals(req.getStatus()))) {
-			errors.add(new Error("09", "Status", "Please Enter Status"));
+			errors.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+		}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
+			errors.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
 		}
 
 		if (StringUtils.isBlank(req.getBrokerYn())) {
@@ -823,20 +824,22 @@ this.repository = repo;
 			effectiveDate2.where(a3,a4);
 			
 		    // Where	
-			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n11 = cb.equal(c.get("status"),"R");
+			Predicate n12 = cb.or(n1,n11);
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 			
 			if(StringUtils.isNotBlank(req.getBrokerCompanyYn()) ) {
 				Predicate n3 = cb.equal(c.get("brokerYn"), req.getBrokerCompanyYn());
-				query.where(n1,n2,n3,n4).orderBy(orderList);
+				query.where(n12,n2,n3,n4).orderBy(orderList);
 
 				// Get Result
 				TypedQuery<InsuranceCompanyMaster> result = em.createQuery(query);
 				list = result.getResultList();
 				
 			} else {
-				query.where(n1,n2,n4).orderBy(orderList);
+				query.where(n12,n2,n4).orderBy(orderList);
 
 				// Get Result
 				TypedQuery<InsuranceCompanyMaster> result = em.createQuery(query);

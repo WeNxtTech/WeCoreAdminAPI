@@ -688,12 +688,12 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					}
 					
 					//Status Validation
-					if (StringUtils.isBlank(data.getStatus())) {
-						errorList.add(new Error("05", "Status", "Please Enter Status In Row No : " + row ));
-					} else if (data.getStatus().length() > 1) {
-						errorList.add(new Error("05", "Status", "Enter Status 1 Character Only In Row No : " + row ));
-					} else if(!(req.getStatus().equalsIgnoreCase("P") || "Y".equals(data.getStatus())||"N".equals(data.getStatus())||"R".equals(data.getStatus()))) {
-						errorList.add(new Error("05", "Status", "Please Select Status  In Row No : " + row ));
+					if (StringUtils.isBlank(req.getStatus())) {
+						errorList.add(new Error("05", "Status", "Please Select Status  "));
+					} else if (req.getStatus().length() > 1) {
+						errorList.add(new Error("05", "Status", "Please Select Valid Status - 1 Character Only Allwed"));
+					}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
+						errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
 					}
 					
 					
@@ -1912,6 +1912,8 @@ public Integer getMasterTableCount(String companyId , String branchCode) {
 						
 			// Where
 			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n11 = cb.equal(c.get("status"),"R");
+			Predicate n12 = cb.or(n1,n11);
 			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
 			Predicate n4 = cb.equal(c.get("companyId"),insuranceId);
@@ -1921,7 +1923,7 @@ public Integer getMasterTableCount(String companyId , String branchCode) {
 			Predicate n8 = cb.or(n4,n5);
 			Predicate n9 = cb.or(n6,n7);
 			Predicate n10 = cb.equal(c.get("itemType"),itemType);
-			query.where(n1,n2,n3,n8,n9,n10).orderBy(orderList);
+			query.where(n12,n2,n3,n8,n9,n10).orderBy(orderList);
 			// Get Result
 			TypedQuery<ListItemValue> result = em.createQuery(query);
 			list = result.getResultList();

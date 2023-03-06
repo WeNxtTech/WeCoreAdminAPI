@@ -171,13 +171,15 @@ public class MailMasterServiceImpl implements MailMasterService {
 			} else if (req.getEffectiveDateStart().before(today)) {
 				errorList
 						.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
-			}			// Status Validation
+			}
+
+			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("04", "Status", "Please Enter Status"));
+				errorList.add(new Error("05", "Status", "Please Select Status  "));
 			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("04", "Status", "Status 1 Character Only"));
-			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()))) {
-				errorList.add(new Error("04", "Status", "Enter Status Y or N Only"));
+				errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
+				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
 			}
 			if (StringUtils.isBlank(req.getCreatedBy())) {
 				errorList.add(new Error("05", "CreatedBy", "Please Enter CreatedBy"));

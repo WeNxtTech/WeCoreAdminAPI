@@ -240,7 +240,10 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 			effectiveDate2.where(a3,a4);
 						
 			// Where
+
 			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n11 = cb.equal(c.get("status"),"R");
+			Predicate n12 = cb.or(n1,n11);
 			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
 			Predicate n4 = cb.equal(c.get("companyId"), insId);
@@ -250,7 +253,7 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 			Predicate n8 = cb.or(n4,n5);
 			Predicate n9 = cb.or(n6,n7);
 			Predicate n10 = cb.equal(c.get("itemType"),itemType);
-			query.where(n1,n2,n3,n8,n9,n10).orderBy(orderList);
+			query.where(n12,n2,n3,n8,n9,n10).orderBy(orderList);
 			// Get Result
 			TypedQuery<ListItemValue> result = em.createQuery(query);
 			list = result.getResultList();
@@ -721,13 +724,13 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 				errorList.add(new Error("07", "Remarks", "Please Enter Remarks within 100 Characters"));
 			}
 
-			// Status Validation
+			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("10", "Status", "Please Enter Status"));
+				errorList.add(new Error("05", "Status", "Please Select Status  "));
 			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("10", "Status", "Enter Status in 1 Character Only"));
-			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()) || "P".equals(req.getStatus()) || "R".equals(req.getStatus()))) {
-				errorList.add(new Error("10", "Status", "Please Enter Status "));
+				errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
+				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
 			}
 			if (StringUtils.isBlank(req.getCreatedBy())) {
 				errorList.add(new Error("13", "CreatedBy", "Please Enter CreatedBy "));
@@ -976,14 +979,16 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 			effectiveDate2.where(a6,a7,a8,a9,a10,a12);
 					
 			// Where
-			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n11 = cb.equal(c.get("status"),"R");
+			Predicate n12 = cb.or(n1,n11);
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"), req.getCompanyId());
 			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("productId"), req.getProductId());
 			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("sectionId"), req.getSectionId());
 			javax.persistence.criteria.Predicate n6 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 			javax.persistence.criteria.Predicate n7 = cb.equal(c.get("documentType"), req.getDocumentType());
-			query.where(n1, n2, n3, n4, n5,n6,n7).orderBy(orderList);
+			query.where(n12, n2, n3, n4, n5,n6,n7).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CoverDocumentMaster> result = em.createQuery(query);

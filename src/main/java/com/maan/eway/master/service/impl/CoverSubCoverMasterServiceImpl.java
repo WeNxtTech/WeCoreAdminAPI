@@ -777,13 +777,13 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			} else if (req.getCreatedBy().length() > 100) {
 				errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
 			}
-			// Status Validation
+			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("08", "Status", "Please Enter Status"));
+				errorList.add(new Error("05", "Status", "Please Select Status  "));
 			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("08", "Status", "Enter Status in 1 Character Only"));
-			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()) || "P".equals(req.getStatus()) || "R".equals(req.getStatus()))) {
-				errorList.add(new Error("08", "Status", "Enter Status Y or N Only"));
+				errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
+				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
 			}
 			if (StringUtils.isBlank(req.getRegulatoryCode())) {
 				errorList.add(new Error("09", "RegulatoryCode", "Please Enter RegulatoryCode"));
@@ -913,9 +913,9 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		SectionCoverMaster saveData = new SectionCoverMaster();
 		try {
-			List<ListItemValue> calcTypes = listRepo.findByItemTypeAndStatus("CALCULATION_TYPE", "Y");
-			List<ListItemValue> coverageTypes = listRepo.findByItemTypeAndStatus("COVERAGE_TYPE", "Y");
-			List<ListItemValue> taxExcemptionType = listRepo.findByItemTypeAndStatus("TAX_EXEMPTION_TYPE" , "Y");
+			List<ListItemValue> calcTypes = getListItem(req.getCompanyId() , req.getBranchCode() , "CALCULATION_TYPE");
+			List<ListItemValue> coverageTypes = getListItem(req.getCompanyId() , req.getBranchCode() , "COVERAGE_TYPE");
+			List<ListItemValue> taxExcemptionType = getListItem(req.getCompanyId() , req.getBranchCode() , "TAX_EXEMPTION_TYPE");
 			List<SectionCoverMaster> list = new ArrayList<SectionCoverMaster>();
 			Integer amendId = 0;
 			Date entryDate = null ;
@@ -1121,6 +1121,70 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 		return res;
 	}
 
+	public synchronized List<ListItemValue> getListItem(String insuranceId , String branchCode, String itemType) {
+		List<ListItemValue> list = new ArrayList<ListItemValue>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			today = cal.getTime();
+			Date todayEnd = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ListItemValue> query=  cb.createQuery(ListItemValue.class);
+			// Find All
+			Root<ListItemValue> c = query.from(ListItemValue.class);
+			
+			//Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("branchCode")));
+			
+			
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
+			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a3,a4);
+						
+			// Where
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n11 = cb.equal(c.get("status"),"R");
+			Predicate n12 = cb.or(n1,n11);
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
+			Predicate n4 = cb.equal(c.get("companyId"),insuranceId);
+			Predicate n5 = cb.equal(c.get("companyId"), "99999");
+			Predicate n6 = cb.equal(c.get("branchCode"),branchCode);
+			Predicate n7 = cb.equal(c.get("branchCode"), "99999");
+			Predicate n8 = cb.or(n4,n5);
+			Predicate n9 = cb.or(n6,n7);
+			Predicate n10 = cb.equal(c.get("itemType"),itemType);
+			query.where(n12,n2,n3,n8,n9,n10).orderBy(orderList);
+			// Get Result
+			TypedQuery<ListItemValue> result = em.createQuery(query);
+			list = result.getResultList();
+			
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getItemCode()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(ListItemValue :: getItemValue));
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return list ;
+	}
 	public Integer currencyDecimalFormat(String insuranceId  ,String currencyId ) {
 		Integer decimalFormat = 0 ;
 		try {
@@ -1301,7 +1365,10 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			effectiveDate2.where(a4, a5);
 
 			// Where
-			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
+
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n14 = cb.equal(c.get("status"),"R");
+			Predicate n15 = cb.or(n1,n14);
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("subCoverYn"), "Y");
@@ -1313,7 +1380,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			Predicate n12 = cb.equal(c.get("branchCode"), "99999");
 			Predicate n13 = cb.or(n11,n12 );
 			
-			query.where(n1, n2, n3, n4,n5,n10,n13).orderBy(orderList);
+			query.where(n15, n2, n3, n4,n5,n10,n13).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CoverMaster> result = em.createQuery(query);

@@ -123,13 +123,6 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 		}else if (req.getCreatedBy().length() > 50) {
 			errorList.add(new Error("08", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
 		} 
-			
-		if (StringUtils.isBlank(req.getCreatedBy())) {
-			errorList.add(new Error("09", "CreatedBy", "Please Enter CreatedBy"));
-		}else if (req.getCreatedBy().length() > 20) {
-			errorList.add(new Error("09", "CreatedBy", "Please Enter CreatedBy within 20 Characters"));
-		}
-		
 		if (StringUtils.isBlank(req.getBranchCode())) {
 			errorList.add(new Error("08", "BranchCode", "Please Select BranchCode"));
 		}
@@ -174,11 +167,11 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 				
 				//Status Validation
 				if (StringUtils.isBlank(data.getStatus())) {
-					errorList.add(new Error("05", "Status", "Please Enter StatusPercent In Tax Value In Row No :" + row));
+					errorList.add(new Error("05", "Status", "Please Select Status  "));
 				} else if (data.getStatus().length() > 1) {
-					errorList.add(new Error("05", "Status", "Enter Status 1 Character Only Percent In Tax Value In Row No :" + row));
-				}else if(!("Y".equals(data.getStatus())||"N".equals(data.getStatus())||"R".equals(data.getStatus()))) {
-					errorList.add(new Error("05", "Status", "Please Enter Status  In Row No :" + row));
+					errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+				}else if(!("Y".equalsIgnoreCase(data.getStatus())||"N".equalsIgnoreCase(data.getStatus())||"R".equalsIgnoreCase(data.getStatus())|| "P".equalsIgnoreCase(data.getStatus()))) {
+					errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
 				}
 			}
 			
@@ -371,7 +364,10 @@ public synchronized List<ListItemValue> getCalcType(String insuranceId , String 
 		effectiveDate2.where(a3,a4);
 					
 		// Where
+
 		Predicate n1 = cb.equal(c.get("status"),"Y");
+		Predicate n11 = cb.equal(c.get("status"),"R");
+		Predicate n12 = cb.or(n1,n11);
 		Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 		Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
 		Predicate n4 = cb.equal(c.get("companyId"), insuranceId);
@@ -381,7 +377,7 @@ public synchronized List<ListItemValue> getCalcType(String insuranceId , String 
 		Predicate n8 = cb.or(n4,n5);
 		Predicate n9 = cb.or(n6,n7);
 		Predicate n10 = cb.equal(c.get("itemType"),itemType );
-		query.where(n1,n2,n3,n8,n9,n10).orderBy(orderList);
+		query.where(n12,n2,n3,n8,n9,n10).orderBy(orderList);
 		// Get Result
 		TypedQuery<ListItemValue> result = em.createQuery(query);
 		list = result.getResultList();

@@ -103,11 +103,14 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 			if (StringUtils.isBlank(req.getStatus())) {
 				error.add(new Error("01", "Status", "Please Enter Status "));
 			}
-			 if (req.getStatus().length() > 1) {
-				 error.add(new Error("03", "Status", "Status 1 Character Only"));
-				} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus())|| "R".equals(req.getStatus())||"Y".equals(req.getStatus()))) {
-					error.add(new Error("03", "Status", "Enter Status Y or N or R Only"));
-				}
+			//Status Validation
+			if (StringUtils.isBlank(req.getStatus())) {
+				error.add(new Error("05", "Status", "Please Select Status  "));
+			} else if (req.getStatus().length() > 1) {
+				error.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
+				error.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+			}
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -560,11 +563,13 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 			effectiveDate2.where(a3,a4,a6,a8);
 			// Where
 			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n11 = cb.equal(c.get("status"),"R");
+			Predicate n12 = cb.or(n1,n11);
 			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
 			Predicate n4 = cb.equal(c.get("companyId"),req.getInsuranceId());
 			Predicate n5 = cb.equal(c.get("productId"),req.getProductId());
-			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+			query.where(n12,n2,n3,n4,n5).orderBy(orderList);
 			// Get Result
 			TypedQuery<PolicyTypeMaster> result = em.createQuery(query);
 			list = result.getResultList();

@@ -118,13 +118,13 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			} else if (req.getCreatedBy().length() > 100) {
 				errorList.add(new Error("03", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
 			}
-			// Status Validation
+			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("04", "Status", "Please Enter Status"));
+				errorList.add(new Error("05", "Status", "Please Select Status  "));
 			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("04", "Status", "Enter Status in 1 Character Only"));
-			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()))) {
-				errorList.add(new Error("04", "Status", "Enter Status Y or N Only"));
+				errorList.add(new Error("05", "Status", "Please Select Valid Status - 1 Character Only Allwed"));
+			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
+				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
 			}
 
 			if (StringUtils.isBlank(req.getRemarks())) {

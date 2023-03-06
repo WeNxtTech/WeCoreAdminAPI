@@ -420,13 +420,13 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 			} else if (req.getMandatoryStatus().length() > 1) {
 				errorList.add(new Error("03", "Mandatory Status", "Please Enter Mandatory Status within 1 Character"));
 			}
-			// Status Validation
+			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("04", "Status", "Please Enter Status"));
+				errorList.add(new Error("05", "Status", "Please Select Status  "));
 			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("04", "Status", "Enter Status in 1 Character Only"));
-			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()) || "P".equals(req.getStatus()) || "R".equals(req.getStatus()))) {
-				errorList.add(new Error("04", "Status", "Please Enter Status "));
+				errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
+				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
 			}
 			if (req.getRemarks().length() > 100) {
 				errorList.add(new Error("05", "Remarks", "Please Enter Remarks within 100 Characters"));
@@ -629,7 +629,10 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 			effectiveDate2.where(a3,a4);
 						
 			// Where
+
 			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n11 = cb.equal(c.get("status"),"R");
+			Predicate n12 = cb.or(n1,n11);
 			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
 			Predicate n4 = cb.equal(c.get("companyId"), req.getInsuranceId());
@@ -639,7 +642,7 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 			Predicate n8 = cb.or(n4,n5);
 			Predicate n9 = cb.or(n6,n7);
 			Predicate n10 = cb.equal(c.get("itemType"),itemType);
-			query.where(n1,n2,n3,n8,n9,n10).orderBy(orderList);
+			query.where(n12,n2,n3,n8,n9,n10).orderBy(orderList);
 			// Get Result
 			TypedQuery<ListItemValue> result = em.createQuery(query);
 			list = result.getResultList();

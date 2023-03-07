@@ -97,8 +97,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
 			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
 			Date entryDate = null ;
-			String createdBy = "" ;
-			
+			String createdBy = "" ;		
 			
 			String productId="";
 			
@@ -487,12 +486,12 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			Root<ProductMaster> ocpm1 = amendId.from(ProductMaster.class);
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			amendId.where(a1,a2);
+		//	Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			amendId.where(a1);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(b.get("effectiveDateStart")));
+			orderList.add(cb.desc(b.get("amendId")));
 	
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);

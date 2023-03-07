@@ -146,7 +146,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 				if(StringUtils.isBlank(req.getInstallmentPeriod()) &&  installmentPeriod!=null ) {
 					errorList.add(new Error("08", "InstallmentPeriod", "This InstallmentPeriod  Already Exist"));
 				} else if( installmentPeriod !=null  && StringUtils.isNotBlank(req.getInstallmentPeriod()) ) {
-					if( installmentPeriod.getInstallmentPeriod().equalsIgnoreCase(req.getInstallmentPeriod()) ) {
+					if(! installmentPeriod.getInstallmentPeriod().equalsIgnoreCase(req.getInstallmentPeriod()) ) {
 						errorList.add(new Error("08", "InstallmentPeriod", "This InstallmentPeriod  Already Exist"));	
 					}			
 				}

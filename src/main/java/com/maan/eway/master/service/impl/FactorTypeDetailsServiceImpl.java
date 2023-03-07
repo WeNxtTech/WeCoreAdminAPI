@@ -41,6 +41,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.BankMaster;
 import com.maan.eway.bean.CompanyStateMaster;
 import com.maan.eway.bean.CompanyTaxSetup;
 import com.maan.eway.bean.CoverMaster;
@@ -802,7 +803,7 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 	
 			// Select
 			query.select(b);
-	
+/*	
 			// Effective Date Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
 			Root<FactorTypeDetails> ocpm1 = effectiveDate.from(FactorTypeDetails.class);
@@ -826,6 +827,17 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 			Predicate a10 = cb.equal(ocpm2.get("ratingFieldId"), b.get("ratingFieldId"));
 
 			effectiveDate2.where(a6,a7,a8,a9,a10);
+*/
+			// Amend ID Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<FactorTypeDetails> ocpm1 = amendId.from(FactorTypeDetails.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("factorTypeId"), b.get("factorTypeId"));
+			Predicate a5 = cb.equal(ocpm1.get("ratingFieldId"), b.get("ratingFieldId"));
+
+			amendId.where(a1, a2,a3,a5);
 
 			
 			// Order By
@@ -833,13 +845,13 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 			orderList.add(cb.asc(b.get("columnsId")));
 			
 			// Where
-			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+		//	Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
 			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
 			Predicate n4 = cb.equal(b.get("factorTypeId"), req.getFactorTypeId());
-			Predicate n5 = cb.equal(b.get("effectiveDateEnd"),effectiveDate2);	
-
-			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+		//	Predicate n5 = cb.equal(b.get("effectiveDateEnd"),effectiveDate2);	
+			Predicate n6 = cb.equal(b.get("amendId"), amendId);
+			query.where(n6,n2,n3,n4).orderBy(orderList);
 	
 			// Get Result
 			TypedQuery<FactorTypeDetails> result = em.createQuery(query);

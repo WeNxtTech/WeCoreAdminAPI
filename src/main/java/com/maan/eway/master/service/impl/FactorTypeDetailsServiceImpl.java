@@ -844,6 +844,7 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 			// Get Result
 			TypedQuery<FactorTypeDetails> result = em.createQuery(query);
 			list = result.getResultList();
+			if(list.size()>0) {
 	
 			// Map
 			res = dozerMapper.map(list.get(0) , FactorTypeDetailsGetRes.class );
@@ -854,7 +855,10 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 				rating = dozerMapper.map(data , RatingFieldDetailsRes.class );
 				ratingFieldList.add(rating);
 			}
+			
 			res.setRatingFieldDetails(ratingFieldList);
+			}
+			
 			
 		} catch (Exception e) {
 			e.printStackTrace();

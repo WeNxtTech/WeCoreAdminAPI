@@ -270,9 +270,9 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			}
 			
 			if (StringUtils.isBlank(req.getMotorYn())) {
-				errorList.add(new Error("12", "Motor YN", "Please Select Motor YN "));
+				errorList.add(new Error("12", "Product Type", "Please Select Product Type "));
 			}else if (req.getMotorYn().length() >1) {
-				errorList.add(new Error("12", "Motor YN", "Please Enter Motor YN within 1 Character"));
+				errorList.add(new Error("12", "Product Type", "Please Enter Product Type within 1 Character"));
 			}
 			
 		} catch (Exception e) {

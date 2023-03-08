@@ -36,5 +36,6 @@ public class IndustryMasterId implements Serializable {
     
     private String    productId ;
 
-     
+    private Integer  industryId ;
+
 }

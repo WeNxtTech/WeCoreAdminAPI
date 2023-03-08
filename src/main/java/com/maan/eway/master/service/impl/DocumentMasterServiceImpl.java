@@ -428,15 +428,15 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
 				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
 			}
-			if (req.getRemarks().length() > 100) {
-				errorList.add(new Error("05", "Remarks", "Please Enter Remarks within 100 Characters"));
+			if ( StringUtils.isBlank(req.getRemarks()) ) {
+				errorList.add(new Error("05", "Remarks", "Please Enter Remarks "));
 			}
 			// Date Validation 
 			Calendar cal = new GregorianCalendar();
 			Date today = new Date();
 			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
 			today = cal.getTime();
-			if (req.getEffectiveDateStart() == null ) {
+			if (req.getEffectiveDateStart() == null ||StringUtils.isBlank(req.getEffectiveDateStart().toString()) ) {
 				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
 	
 			} else if (req.getEffectiveDateStart().before(today)) {
@@ -452,7 +452,7 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 			} else if (req.getCreatedBy().length() > 100) {
 				errorList.add(new Error("09", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
 			}
-			else if (StringUtils.isBlank(req.getCoreAppCode())) {
+			if (StringUtils.isBlank(req.getCoreAppCode())) {
 				errorList.add(new Error("02", "CoreAppCode", "Please Enter getCoreAppCode"));
 			} else if (req.getCoreAppCode().length() > 20) {
 				errorList.add(new Error("02", "CoreAppCode", "getCoreAppCode under 20 Characters only allowed"));
@@ -473,6 +473,7 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
+			errorList.add(new Error("02", "Common Eror", e.getMessage() ));
 		}
 		return errorList;
 	}

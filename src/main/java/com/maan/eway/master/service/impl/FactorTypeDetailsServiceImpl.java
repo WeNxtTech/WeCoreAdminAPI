@@ -458,7 +458,8 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 				saveData.setColumnsId(Integer.valueOf(data.getColumnsId()));
 				saveData.setStatus(StringUtils.isBlank(data.getStatus()) ? req.getStatus()  : data.getStatus());
 				saveData.setAmendId(amendId);
-				saveData.setStatus(req.getStatus().equalsIgnoreCase("P")?"P" : data.getStatus());		
+				//saveData.setStatus(req.getStatus().equalsIgnoreCase("P")?"P" : data.getStatus());		
+				saveData.setStatus(req.getStatus());
 				saveData.setApiUrl(data.getApiUrl());
 				saveData.setMasterYn(data.getMasterYn());
 				

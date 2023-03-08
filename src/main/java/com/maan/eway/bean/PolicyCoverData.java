@@ -246,7 +246,13 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="MINIMUM_PREMIUM_YN")
     private String    minimumPremiumYn ;
+    
+    @Column(name="PRO_RATA_YN")
+    private String    proRataYn ;
  
+    @Column(name="DISCOUNT_COVER_ID")
+    private Integer    discountCoverId;
+    
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

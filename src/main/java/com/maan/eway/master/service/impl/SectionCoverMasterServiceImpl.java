@@ -386,7 +386,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 
 			// Order By
 			List<Order> orderList2 = new ArrayList<Order>();
-			orderList2.add(cb2.desc(b2.get("effectiveDateStart")));
+			orderList2.add(cb2.desc(b2.get("amendId")));
 
 			// Where
 			Predicate n5 = cb2.equal(b2.get("amendId"),amendId);
@@ -411,7 +411,8 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			String agencyCode = StringUtils.isNotBlank(req.getAgencyCode()) ? req.getAgencyCode() : "99999"  ;
 			String branchCode = StringUtils.isNotBlank(req.getBranchCode()) ? req.getBranchCode() : "99999"  ;
 		
-			list.sort( Comparator.comparing(SectionCoverMaster :: getAgencyCode  ).thenComparing(SectionCoverMaster :: getBranchCode  ) );
+		//	list.sort( Comparator.comparing(SectionCoverMaster :: getAgencyCode  ).thenComparing(SectionCoverMaster :: getBranchCode  ) );
+			list = list.stream().filter( o -> o.getAgencyCode().equalsIgnoreCase(agencyCode) && o.getBranchCode().equalsIgnoreCase(branchCode)   ).collect(Collectors.toList());
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCoverId() ,o.getSubCoverId() ))).collect(Collectors.toList());
 			res = mapper.map(list.get(0), SectionCoverMasterRes.class);
 			res.setCoverId(list.get(0).getCoverId()==null?"" : list.get(0).getCoverId().toString() );

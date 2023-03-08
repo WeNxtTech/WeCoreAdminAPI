@@ -709,7 +709,7 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 		
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(c.get("sectionName")));
+			orderList.add(cb.desc(c.get("amendId")));
 			
 			// Effective Date Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
@@ -753,7 +753,10 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 				res.setCodeDesc(data.getSectionName());
 				res.setStatus(data.getStatus());
 				resList.add(res);
-			}		
+			}	
+			
+			resList.sort( Comparator.comparing(DropDownRes :: getCodeDesc )) ;
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -987,9 +990,10 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 				//Predicate n1 = cb.equal(b.get("status"), "Y");
 				//Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 				Predicate n1 = cb.equal(b.get("companyId"), req.getInsuranceId());
+				Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
 				Predicate n3 =  cb.equal(b.get("sectionId"), req.getSectionId() );
 
-				query.where(n1, n3);//.orderBy(orderList);
+				query.where(n1,n2, n3);//.orderBy(orderList);
 
 				// Get Result
 				TypedQuery<ProductSectionMaster> result = em.createQuery(query);

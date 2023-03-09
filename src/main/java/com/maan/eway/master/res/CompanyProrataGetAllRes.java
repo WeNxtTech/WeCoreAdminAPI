@@ -14,27 +14,35 @@ import com.maan.eway.master.req.TaxMultiInsertReq;
 import lombok.Data;
 
 @Data
-public class CompanyProrataGetRes implements Serializable {
+public class CompanyProrataGetAllRes implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @JsonProperty("Sno")
+    private String sno ;
    
     @JsonProperty("ProductId")
     private String productid ;
 
-    
     @JsonProperty("InsuranceId")
     private String     insuranceid;
-    
+
+	@JsonProperty("StartFrom")
+	private String startfrom;
+
+	@JsonProperty("EndTo")
+	private String endto;
+
+	@JsonProperty("Percent")
+	private String percent;
     
     @JsonFormat(pattern = "dd/MM/yyyy")
     @JsonProperty("EffectiveDateStart")
     private Date       effectiveDateStart ;
 
-    
     @JsonFormat(pattern = "dd/MM/yyyy")
     @JsonProperty("EffectiveDateEnd")
-    private Date       effectiveDateEnd ;
+    private Date       effectiveDateEnd ; 
     
     @JsonProperty("CreatedBy")
     private String   createdBy ;
@@ -48,8 +56,6 @@ public class CompanyProrataGetRes implements Serializable {
 
 	@JsonProperty("AmendId")
     private String    amendId;
-
-	 @JsonProperty("ProrataDetails")
-	 private List<ProrataMultiInsertReq> prorataMultiInsertReq ; 
+	
 
 }

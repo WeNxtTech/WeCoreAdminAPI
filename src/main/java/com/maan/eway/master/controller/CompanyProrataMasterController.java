@@ -12,8 +12,7 @@ import com.maan.eway.master.req.CompanyProrataChangeStatusReq;
 import com.maan.eway.master.req.CompanyProrataGetAllReq;
 import com.maan.eway.master.req.CompanyProrataGetReq;
 import com.maan.eway.master.req.CompanyProrataSaveReq;
-
-
+import com.maan.eway.master.res.CompanyProrataGetAllRes;
 import com.maan.eway.master.res.CompanyProrataGetRes;
 
 import com.maan.eway.master.service.CompanyProrataService;
@@ -95,7 +94,7 @@ public class CompanyProrataMasterController {
 		CommonRes data = new CommonRes();
 		reqPrinter.reqPrint(req);
 
-		List<CompanyProrataGetRes> res = prorataService.getallComapnyProrata(req);
+		List<CompanyProrataGetAllRes> res = prorataService.getallComapnyProrata(req);
 		data.setCommonResponse(res);
 		data.setErrorMessage(Collections.emptyList());
 		data.setIsError(false);
@@ -116,7 +115,7 @@ public class CompanyProrataMasterController {
 		CommonRes data = new CommonRes();
 		reqPrinter.reqPrint(req);
 
-		List<CompanyProrataGetRes> res = prorataService.getActiveCompanyProrata(req);
+		List<CompanyProrataGetAllRes> res = prorataService.getActiveCompanyProrata(req);
 		data.setCommonResponse(res);
 		data.setErrorMessage(Collections.emptyList());
 		data.setIsError(false);

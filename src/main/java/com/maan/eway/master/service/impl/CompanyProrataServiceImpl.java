@@ -71,6 +71,7 @@ import com.maan.eway.master.req.CompanyTaxChangeStatusReq;
 import com.maan.eway.master.req.FactorParamsInsert;
 import com.maan.eway.master.req.ProrataMultiInsertReq;
 import com.maan.eway.master.req.TaxMultiInsertReq;
+import com.maan.eway.master.res.CompanyProrataGetAllRes;
 import com.maan.eway.master.res.CompanyProrataGetRes;
 import com.maan.eway.master.res.CompanyTaxGetRes;
 import com.maan.eway.master.service.CompanyProrataService;
@@ -124,12 +125,7 @@ public List<Error> validateCompanyProrata(CompanyProrataSaveReq req) {
 		}else if (req.getCreatedBy().length() > 50) {
 			errorList.add(new Error("02", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
 		} 
-			
-		
-		
-//		if (StringUtils.isBlank(req.getBranchCode())) {
-//			errorList.add(new Error("08", "BranchCode", "Please Select BranchCode"));
-//		}
+
 		
 //		if( req.getProrataMultiInsertReq() ==null || req.getProrataMultiInsertReq().size()<=0 ) {
 //			errorList.add(new Error("12", "Value", "Please Enter Atleas One Tax Details"));
@@ -158,9 +154,9 @@ public List<Error> validateCompanyProrata(CompanyProrataSaveReq req) {
 				} else if (data.getStatus().length() > 1) {
 					errorList.add(new Error("04", "Status", "Enter Status 1 Character Only Percent In Tax Value In Row No :" + row));
 				}
-//					else if(!("Y".equals(data.getStatus())||"N".equals(data.getStatus())||"R".equals(data.getStatus()))) {
-////					errorList.add(new Error("04", "Status", "Please Enter Status  In Row No :" + row));
-//				}
+				else if(!("Y".equals(data.getStatus())||"N".equals(data.getStatus())||"R".equals(data.getStatus()))) {
+					errorList.add(new Error("04", "Status", "Please Enter Status  In Row No :" + row));
+			}
 			
 		}
 		
@@ -263,27 +259,25 @@ public List<Error> validateCompanyProrata(CompanyProrataSaveReq req) {
 					prorataRepo.deleteAll(list);
 			    }
 			}
-			
-			Integer sNo = 0;
+		
 			for ( ProrataMultiInsertReq data :  req.getProrataMultiInsertReq() ) {
 				CompanyProrataMaster saveData = new CompanyProrataMaster();
 				// Save New Records
-				sNo = getMasterTableCount(req.getCompanyId()) + 1 ;
+				//sNo = getMasterTableCount(req.getCompanyId()) + 1 ;
 				saveData = dozerMapper.map(req, CompanyProrataMaster.class );
+				saveData.setSno(Integer.valueOf(data.getSno()));
 				saveData.setEffectiveDateStart(req.getEffectiveDateStart());
 				saveData.setEffectiveDateEnd(endDate);
 				saveData.setEntryDate(new Date());
 				saveData.setProductid(Integer.valueOf(req.getProductId()));
 				saveData.setAmendId(amendId);
 				saveData.setInsuranceid(req.getCompanyId());
-				saveData.setStatus(req.getStatus().equalsIgnoreCase("P")?"P" : data.getStatus());		
-				saveData.setSno(sNo);
-				saveData.setStatus(StringUtils.isBlank(data.getStatus()) ? req.getStatus()  : data.getStatus());
+				saveData.setStatus(data.getStatus());		
 				prorataRepo.saveAndFlush(saveData);
 				log.info("Saved Details is ---> " + json.toJson(saveData));
 				
 				res.setResponse("Saved Successfully ");
-				res.setSuccessId(sNo.toString());
+				res.setSuccessId(data.getSno().toString());
 				
 				log.info("Saved Details is ---> " + json.toJson(saveData));	
 			}
@@ -340,8 +334,8 @@ public List<Error> validateCompanyProrata(CompanyProrataSaveReq req) {
 
 
 	@Override
-	public List<CompanyProrataGetRes> getallComapnyProrata(CompanyProrataGetAllReq req) {
-		List<CompanyProrataGetRes> resList = new ArrayList<CompanyProrataGetRes>();
+	public List<CompanyProrataGetAllRes> getallComapnyProrata(CompanyProrataGetAllReq req) {
+		List<CompanyProrataGetAllRes> resList = new ArrayList<CompanyProrataGetAllRes>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper(); 
 		try {
 			List<CompanyProrataMaster> list = new ArrayList<CompanyProrataMaster>();
@@ -391,13 +385,13 @@ public List<Error> validateCompanyProrata(CompanyProrataSaveReq req) {
 			TypedQuery<CompanyProrataMaster> result = em.createQuery(query);
 			
 			list = result.getResultList();
-		//	list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getSno()))).collect(Collectors.toList());
-		//	list.sort(Comparator.comparing(CompanyProrataMaster :: getTaxName ));
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getProductid()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(CompanyProrataMaster :: getSno ));
 			
 			// Map
 			for (CompanyProrataMaster data : list ) {
-				CompanyProrataGetRes res = new CompanyProrataGetRes();
-				res = dozerMapper.map(data, CompanyProrataGetRes.class);
+				CompanyProrataGetAllRes res = new CompanyProrataGetAllRes();
+				res = dozerMapper.map(data, CompanyProrataGetAllRes.class);
 				resList.add(res);
 			}
 
@@ -410,8 +404,8 @@ public List<Error> validateCompanyProrata(CompanyProrataSaveReq req) {
 		return resList;
 	}
 	@Override
-	public List<CompanyProrataGetRes> getActiveCompanyProrata(CompanyProrataGetAllReq req) {
-		List<CompanyProrataGetRes> resList = new ArrayList<CompanyProrataGetRes>();
+	public List<CompanyProrataGetAllRes> getActiveCompanyProrata(CompanyProrataGetAllReq req) {
+		List<CompanyProrataGetAllRes> resList = new ArrayList<CompanyProrataGetAllRes>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper(); 
 		try {
 			List<CompanyProrataMaster> list = new ArrayList<CompanyProrataMaster>();
@@ -455,14 +449,14 @@ public List<Error> validateCompanyProrata(CompanyProrataSaveReq req) {
 			TypedQuery<CompanyProrataMaster> result = em.createQuery(query);
 
 			list = result.getResultList();
-			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getSno()))).collect(Collectors.toList());
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getProductid()))).collect(Collectors.toList());
 			//list.sort(Comparator.comparing(CompanyProrataMaster :: getTaxName ));
 			
 			// Map
 			for (CompanyProrataMaster data : list ) {
-				CompanyProrataGetRes res = new CompanyProrataGetRes();
+				CompanyProrataGetAllRes res = new CompanyProrataGetAllRes();
 				
-				res = dozerMapper.map(data, CompanyProrataGetRes.class);
+				res = dozerMapper.map(data, CompanyProrataGetAllRes.class);
 				resList.add(res);
 			}
 
@@ -505,8 +499,7 @@ public List<Error> validateCompanyProrata(CompanyProrataSaveReq req) {
 			Predicate a1 = cb.equal(ocpm1.get("sno"), b.get("sno"));
 			Predicate a2 = cb.equal(ocpm1.get("insuranceid"), b.get("insuranceid"));
 			Predicate a3 = cb.equal(ocpm1.get("productid"),b.get("productid"));
-			Predicate a4 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
-			amendId.where(a1, a2,a3,a4);
+			amendId.where(a1, a2,a3);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -590,7 +583,6 @@ public List<Error> validateCompanyProrata(CompanyProrataSaveReq req) {
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("sno"), b.get("sno"));
 			Predicate a2 = cb.equal(ocpm1.get("insuranceid"), b.get("insuranceid"));
-			//Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
 			Predicate a4 = cb.equal(ocpm1.get("productid"), b.get("productid"));
 			
 			amendId.where(a1, a2,a4);
@@ -602,7 +594,6 @@ public List<Error> validateCompanyProrata(CompanyProrataSaveReq req) {
 	
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
-			//Predicate n2 = cb.equal(b.get("insuranceid"), req.getCompanyId());
 			Predicate n3 = cb.equal(b.get("insuranceid"), req.getCompanyId());
 			Predicate n4 = cb.equal(b.get("sno"), req.getSno());
 			Predicate n5 = cb.equal(b.get("insuranceid"), "99999");
@@ -635,6 +626,8 @@ public List<Error> validateCompanyProrata(CompanyProrataSaveReq req) {
 		}
 		return res;
 	}
+	
+	
 
 }
 

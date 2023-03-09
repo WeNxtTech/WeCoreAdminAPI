@@ -11,7 +11,8 @@ import lombok.Data;
 @Data
 public class ProrataMultiInsertReq {
 	
-
+	@JsonProperty("Sno")
+    private String sno ;
 
 	@JsonProperty("StartFrom")
 	private String startfrom;
@@ -21,7 +22,9 @@ public class ProrataMultiInsertReq {
 
 	@JsonProperty("Percent")
 	private String percent;
-
+	
+	@JsonProperty("Remarks")
+    private String     remarks ;
 
 	@JsonProperty("Status")
     private String     status ;

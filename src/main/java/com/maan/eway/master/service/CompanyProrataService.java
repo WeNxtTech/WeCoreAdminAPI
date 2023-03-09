@@ -16,6 +16,7 @@ import com.maan.eway.master.req.CompanyTaxChangeStatusReq;
 import com.maan.eway.master.req.CompanyTaxSetupGetAllReq;
 import com.maan.eway.master.req.CompanyTaxSetupGetReq;
 import com.maan.eway.master.req.CompanyTaxSetupSaveReq;
+import com.maan.eway.master.res.CompanyProrataGetAllRes;
 import com.maan.eway.master.res.CompanyProrataGetRes;
 import com.maan.eway.master.res.CompanyTaxGetRes;
 import com.maan.eway.res.SuccessRes;
@@ -30,11 +31,11 @@ public interface CompanyProrataService  {
 
 	CompanyProrataGetRes getByCompanyProrata(CompanyProrataGetReq req);
 
-	List<CompanyProrataGetRes> getActiveCompanyProrata(CompanyProrataGetAllReq req);
+	List<CompanyProrataGetAllRes> getActiveCompanyProrata(CompanyProrataGetAllReq req);
 
 	SuccessRes changeStatusOfProrata(CompanyProrataChangeStatusReq req);
 
-	List<CompanyProrataGetRes> getallComapnyProrata(CompanyProrataGetAllReq req);
+	List<CompanyProrataGetAllRes> getallComapnyProrata(CompanyProrataGetAllReq req);
 
 	
 

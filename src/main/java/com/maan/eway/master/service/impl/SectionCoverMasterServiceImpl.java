@@ -386,7 +386,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 
 			// Order By
 			List<Order> orderList2 = new ArrayList<Order>();
-			orderList2.add(cb2.desc(b2.get("amendId")));
+			orderList2.add(cb2.desc(b2.get("effectiveDateEnd")));
 
 			// Where
 			Predicate n5 = cb2.equal(b2.get("amendId"),amendId);
@@ -1224,7 +1224,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 //
 			// Order By
 			 List<Order> orderList = new ArrayList<Order>();
-			 orderList.add(cb.asc(b.get("effectiveDateStart")));
+			 orderList.add(cb.desc(b.get("amendId")));
 
 			// Where
 	//		Predicate n1 = cb.equal(b.get("status"), "Y");

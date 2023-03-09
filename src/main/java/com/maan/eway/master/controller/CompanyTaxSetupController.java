@@ -182,7 +182,25 @@ public class CompanyTaxSetupController {
 
 		}
 
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
+	@PostMapping("/deletecompanytaxesid")
+	@ApiOperation("This Method is to get by Branch id")
+	public ResponseEntity<CommonRes> deleteCompanyTaxes(@RequestBody CompanyTaxSetupGetReq req)
+	{
+	CommonRes data = new CommonRes();
+	SuccessRes res = entityService.deleteCompanyTaxes(req);
+	data.setCommonResponse(res);
+	data.setErrorMessage(Collections.emptyList());
+	data.setIsError(false);
+	data.setMessage("Success");
 
+	if (res != null) {
+		return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+
+	} else {
+		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+	}
+}
 		
 
 }

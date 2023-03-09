@@ -21,5 +21,9 @@ public class CompanyTaxSetupGetReq implements Serializable {
     private String     branchCode;
 	@JsonProperty("TaxId")
     private String     taxId;
+	
+	@JsonProperty("CreatedBy")
+    private String     createdBy;
+	
     
 }

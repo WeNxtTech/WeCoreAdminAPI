@@ -31,6 +31,8 @@ public interface CompanyTaxSetupService  {
 
 	SuccessRes changeStatusOfTax(CompanyTaxChangeStatusReq req);
 
+	SuccessRes deleteCompanyTaxes(CompanyTaxSetupGetReq req);
+
 
 
 

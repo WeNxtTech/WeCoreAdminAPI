@@ -292,12 +292,11 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 			    }
 			}
 			
-			
+			Integer row = 0 ;
 			for (TaxMultiInsertReq  req  : request.getCompanyTaxDetails()) {
 				CompanyTaxSetup saveData = new CompanyTaxSetup();
 				
-				
-				
+				row = row + 1 ;
 				mapper.map(req, saveData);
 				saveData.setCompanyId(request.getCompanyId());
 				saveData.setProductId(Integer.valueOf(request.getProductId()));
@@ -307,7 +306,7 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 				saveData.setStatus(req.getStatus());
 				saveData.setAmendId(amendId);
 				saveData.setCreatedBy(request.getCreatedBy());
-				
+				saveData.setTaxId(row);
 				saveData.setCalcTypeDesc(StringUtils.isBlank(req.getCalcType())?"":calcTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getCalcType()) ).collect(Collectors.toList()).get(0).getItemValue());
 				saveData.setBranchCode(request.getBranchCode());
 				companyRepo.saveAndFlush(saveData);
@@ -731,6 +730,126 @@ public synchronized List<ListItemValue> getCalcType(String insuranceId , String 
 			
 			res.setResponse("Status Changed");
 			res.setSuccessId(req.getTaxId());
+		} catch(Exception e ) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+
+	@Override
+	public SuccessRes deleteCompanyTaxes(CompanyTaxSetupGetReq request) {
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		SuccessRes res = new SuccessRes();
+		SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/yyyy");
+		try {
+			Date startDate = new Date() ;
+			String end = "31/12/2050";
+			Date endDate = sdformat.parse(end);
+			long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+			Date oldEndDate = new Date(startDate.getTime() - MILLIS_IN_A_DAY);
+			Date entryDate = null ;
+			String createdBy = "" ;
+
+			List<ListItemValue> calcTypes = getCalcType(request.getCompanyId() , request.getBranchCode() ,"CALCULATION_TYPE" );// listRepo.findByItemTypeAndStatus("CALCULATION_TYPE" , "Y");
+			
+			
+			List<CompanyTaxSetup> list = new ArrayList<CompanyTaxSetup>();
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CompanyTaxSetup> query = cb.createQuery(CompanyTaxSetup.class);
+
+			// Find All
+			Root<CompanyTaxSetup> b = query.from(CompanyTaxSetup.class);
+
+			// Select
+			query.select(b);
+
+			// Effective Date Max Filter
+			Subquery<Long> amend = query.subquery(Long.class);
+			Root<CompanyTaxSetup> ocpm1 = amend.from(CompanyTaxSetup.class);
+			amend.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("taxId"), b.get("taxId"));
+			Predicate a3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a4 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a5 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+			amend.where(a1,a3,a4,a5);
+
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("amendId")));
+				
+			// Where
+			Predicate n1 =  cb.equal(b.get("amendId"), amend);
+			Predicate n2 =  cb.equal(b.get("companyId"), request.getCompanyId() );
+			Predicate n3 =  cb.equal(b.get("productId"), request.getProductId() );
+			Predicate n4 =  cb.equal(b.get("branchCode"), request.getBranchCode() );
+			query.where(n1,n2,n3,n4).orderBy(orderList);
+
+			// Get Result
+			
+			TypedQuery<CompanyTaxSetup> result = em.createQuery(query);
+			list = result.getResultList();
+			
+			Integer amendId = 0 ;
+			if(list.size()>0) {
+				Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+			
+				if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
+					amendId = list.get(0).getAmendId() + 1 ;
+					
+					entryDate = new Date() ;
+					createdBy = request.getCreatedBy();
+					
+					//UPDATE
+					CriteriaBuilder cb2 = em.getCriteriaBuilder();
+					// create update
+					CriteriaUpdate<CompanyTaxSetup> update = cb2.createCriteriaUpdate(CompanyTaxSetup.class);
+					// set the root class
+					Root<CompanyTaxSetup> m = update.from(CompanyTaxSetup.class);
+					// set update and where clause
+					update.set("updatedBy", request.getCreatedBy());
+					update.set("updatedDate", entryDate);
+					update.set("effectiveDateEnd", oldEndDate);
+					
+					n1 =  cb.equal(m.get("amendId"), list.get(0).getAmendId());
+					n2 =  cb.equal(m.get("companyId"), request.getCompanyId() );
+					n3 =  cb.equal(m.get("productId"), request.getProductId() );
+					n4 =  cb.equal(m.get("branchCode"), request.getBranchCode() );
+					update.where(n1,n2,n3,n4);
+					// perform update
+					em.createQuery(update).executeUpdate();
+					
+				} else {
+					amendId = list.get(0).getAmendId() ;
+					entryDate = list.get(0).getEntryDate() ;
+					createdBy = list.get(0).getCreatedBy();
+					
+					companyRepo.deleteAll(list);
+				
+			    }
+			}
+			
+			for (CompanyTaxSetup  req  : list ) {
+				if(! req.getTaxId().equals(Integer.valueOf(request.getTaxId() ))  ) {
+					CompanyTaxSetup saveData = new CompanyTaxSetup();
+					
+					dozerMapper.map(req, saveData);
+					saveData.setCompanyId(request.getCompanyId());
+					saveData.setProductId(Integer.valueOf(request.getProductId()));
+					saveData.setEffectiveDateStart(req.getEffectiveDateStart());
+					saveData.setEffectiveDateEnd(endDate);
+					saveData.setEntryDate(new Date());
+					saveData.setStatus(req.getStatus());
+					saveData.setAmendId(amendId);
+					saveData.setCreatedBy(request.getCreatedBy());
+					saveData.setCalcTypeDesc(StringUtils.isBlank(req.getCalcType())?"":calcTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getCalcType()) ).collect(Collectors.toList()).get(0).getItemValue());
+					saveData.setBranchCode(request.getBranchCode());
+					companyRepo.saveAndFlush(saveData);
+				}
+			}
+			res.setResponse("Deleted Successfully ");
+			res.setSuccessId(request.getTaxId().toString());
+			
 		} catch(Exception e ) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());

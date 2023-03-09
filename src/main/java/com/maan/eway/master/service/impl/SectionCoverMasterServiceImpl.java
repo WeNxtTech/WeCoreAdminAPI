@@ -411,8 +411,8 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			String agencyCode = StringUtils.isNotBlank(req.getAgencyCode()) ? req.getAgencyCode() : "99999"  ;
 			String branchCode = StringUtils.isNotBlank(req.getBranchCode()) ? req.getBranchCode() : "99999"  ;
 		
-		//	list.sort( Comparator.comparing(SectionCoverMaster :: getAgencyCode  ).thenComparing(SectionCoverMaster :: getBranchCode  ) );
-			list = list.stream().filter( o -> o.getAgencyCode().equalsIgnoreCase(agencyCode) && o.getBranchCode().equalsIgnoreCase(branchCode)   ).collect(Collectors.toList());
+			list.sort( Comparator.comparing(SectionCoverMaster :: getAgencyCode  ).thenComparing(SectionCoverMaster :: getBranchCode  ) );
+		//	list = list.stream().filter( o -> o.getAgencyCode().equalsIgnoreCase(agencyCode) && o.getBranchCode().equalsIgnoreCase(branchCode)   ).collect(Collectors.toList());
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCoverId() ,o.getSubCoverId() ))).collect(Collectors.toList());
 			res = mapper.map(list.get(0), SectionCoverMasterRes.class);
 			res.setCoverId(list.get(0).getCoverId()==null?"" : list.get(0).getCoverId().toString() );
@@ -1227,7 +1227,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			 orderList.add(cb.asc(b.get("effectiveDateStart")));
 
 			// Where
-			Predicate n1 = cb.equal(b.get("status"), "Y");
+	//		Predicate n1 = cb.equal(b.get("status"), "Y");
 		//	Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n3 = cb.equal(b.get("coverId"), req.getCoverId());
 			Predicate n5 = cb.equal(b.get("sectionId"),  req.getSectionId());
@@ -1238,7 +1238,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate n9 = cb.equal(b.get("branchCode"), StringUtils.isNotBlank(req.getBranchCode()) ? req.getBranchCode() : "99999");
 			
 			
-			query.where(n1, n3,n4,n5,n6,n7,n8,n9 ).orderBy(orderList);
+			query.where( n3,n4,n5,n6,n7,n8,n9 ).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<SectionCoverMaster> result = em.createQuery(query);

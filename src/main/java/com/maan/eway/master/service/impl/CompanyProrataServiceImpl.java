@@ -188,8 +188,8 @@ public List<Error> validateCompanyProrata(CompanyProrataSaveReq req) {
 			Date endDate = sdformat.parse(end);
 			long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
 			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
-			Date entryDate = null ;
-			String createdBy = "" ;
+			Date entryDate = new Date() ;
+			String createdBy = req.getCreatedBy() ;
 
 			// Get Sno Record For Amend ID
 			// FInd Old Record
@@ -264,15 +264,20 @@ public List<Error> validateCompanyProrata(CompanyProrataSaveReq req) {
 				CompanyProrataMaster saveData = new CompanyProrataMaster();
 				// Save New Records
 				//sNo = getMasterTableCount(req.getCompanyId()) + 1 ;
-				saveData = dozerMapper.map(req, CompanyProrataMaster.class );
+				saveData = dozerMapper.map(data, CompanyProrataMaster.class );
 				saveData.setSno(Integer.valueOf(data.getSno()));
 				saveData.setEffectiveDateStart(req.getEffectiveDateStart());
 				saveData.setEffectiveDateEnd(endDate);
 				saveData.setEntryDate(new Date());
 				saveData.setProductid(Integer.valueOf(req.getProductId()));
+				saveData.setCreatedBy(createdBy);
+				saveData.setEntryDate(entryDate);
+				saveData.setUpdatedBy(req.getCreatedBy());
+				saveData.setUpdatedDate(new Date());
 				saveData.setAmendId(amendId);
 				saveData.setInsuranceid(req.getCompanyId());
-				saveData.setStatus(data.getStatus());		
+				saveData.setStatus(data.getStatus());	
+				
 				prorataRepo.saveAndFlush(saveData);
 				log.info("Saved Details is ---> " + json.toJson(saveData));
 				

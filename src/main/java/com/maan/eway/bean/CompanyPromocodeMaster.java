@@ -171,6 +171,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="MULTI_SELECT_YN")
     private String       multiSelectYn;
+    
+    @Column(name="DISCOUNT_COVER_ID")
+    private Integer    discountCoverId ;
 
 }
 

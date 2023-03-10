@@ -468,6 +468,10 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 			} else if (req.getPromocodeDesc().length()>100) {
 				errorList.add(new Error("16", "PromocodeDesc", "Please Enter PromocodeDesc within 100 Characters  "));
 			}
+			
+			if (StringUtils.isBlank(req.getDiscountCoverId())) {
+				errorList.add(new Error("17", "Discount Cover Id", "Please Enter Discount CoverId  "));
+			} 
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
@@ -785,6 +789,7 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 		secreq.setTaxExcemptionReference("");
 		secreq.setTaxExcemptionType("");
 		secreq.setToolTip(req.getToolTip());
+		secreq.setDiscountCoverId(req.getDiscountCoverId());
 		sectionService.updateectionCover(secreq);
 		log.info("Saved Details is ---> " + json.toJson(secreq));
 		

@@ -72,6 +72,9 @@ public class CompanyPromocodeMasterRes {
 	@JsonProperty("PromoRateOrAmt")
 	private String promoRateOrAmt;
 	
+	@JsonProperty("DiscountCoverId")
+	private String discountCoverId;
+	
 	@JsonProperty("DependentCoverYn")
     private String dependentCoverYn;
     

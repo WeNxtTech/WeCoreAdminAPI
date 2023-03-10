@@ -45,6 +45,9 @@ public class CompanyPromocodeSaveReq {
 	@JsonProperty("PeriodTo")
 	private Date effectiveDateEnd;
 	
+	@JsonProperty("DiscountCoverId")
+	private String discountCoverId;
+	
 	@JsonProperty("Status")
 	private String status;
 

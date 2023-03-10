@@ -654,8 +654,8 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("notifTemplateCode"), c.get("notifTemplateCode"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), c.get("companyId"));
-			amendId.where(a1, a2);
-			
+			Predicate a3 = cb.equal(ocpm1.get("productId"), c.get("productId"));
+			amendId.where(a1, a2,a3);			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(c.get("companyId")));
@@ -665,7 +665,8 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("amendId"), amendId);
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("notifTemplateCode"), req.getNotifTemplateCode());
 			Predicate n3 = cb.equal(c.get("companyId"), req.getInsuranceId());
-			query.where(n1,n2,n3).orderBy(orderList);
+			Predicate n4 = cb.equal(c.get("productId"), req.getProductId());
+			query.where(n1,n2,n3,n4).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<NotifTemplateMaster> result = em.createQuery(query);
@@ -714,7 +715,8 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("notifTemplateCode"), b.get("notifTemplateCode"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			amendId.where(a1, a2);
+			Predicate a3 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			amendId.where(a1, a2,a3);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -723,7 +725,8 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
-			query.where(n1,n2).orderBy(orderList);
+			Predicate n3 = cb.equal(b.get("productId"), req.getProductId());
+			query.where(n1,n2,n3).orderBy(orderList);
 			// Get Result
 			TypedQuery<NotifTemplateMaster> result = em.createQuery(query);
 			list = result.getResultList();
@@ -772,15 +775,17 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("notifTemplateCode"), b.get("notifTemplateCode"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			amendId.where(a1, a2);
+			Predicate a3 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			amendId.where(a1, a2,a3);
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("companyId")));
 
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
+			Predicate n3 = cb.equal(b.get("productId"), req.getProductId());
 			Predicate n4 = cb.equal(b.get("status"), "Y");
-			query.where(n1,n2,n4).orderBy(orderList);
+			query.where(n1,n2,n3,n4).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<NotifTemplateMaster> result = em.createQuery(query);
@@ -841,16 +846,18 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 			amendId2.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("notifTemplateCode"), b.get("notifTemplateCode"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			amendId2.where(a1, a2);
+			Predicate a3 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			amendId2.where(a1, a2,a3);
 			//Orderby
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("effectiveDateStart")));
 			//Where
 			Predicate n1 = cb.equal(b.get("notifTemplateCode"),req.getNotifTemplateCode());
 			Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
-			Predicate n3 = cb.equal(b.get("amendId"),amendId2);
+			Predicate n3 = cb.equal(b.get("productId"), req.getProductId());
+			Predicate n4 = cb.equal(b.get("amendId"),amendId2);
 			
-			query.where(n1,n2).orderBy(orderList);
+			query.where(n1,n2,n3,n4).orderBy(orderList);
 	
 			// Get Result
 			TypedQuery<NotifTemplateMaster> result = em.createQuery(query);

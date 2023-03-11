@@ -639,7 +639,9 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 			saveData.setCoverBasedOn("SumInsured");
 			saveData.setMultiSelectYn( "Y");
 			saveData.setIsSelectedYn("Y");
-			saveData.setDependentCoverId("Base Cover");
+			saveData.setDependentCoverYn("N");
+			saveData.setDependentCoverId("0");
+			saveData.setDiscountCoverId(Integer.valueOf(req.getDiscountCoverId()));
 			saveData.setRegulatoryCode(req.getRegulatoryCode());
 			saveData.setAgencyCode(req.getAgencyCode());
 			saveData.setFactorTypeId(req.getFactorTypeId() == "" ? 0: Integer.valueOf(req.getFactorTypeId().toString()));
@@ -767,8 +769,8 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 		secreq.setCoverName(req.getPromocode());
 		secreq.setCoverDesc(req.getPromocodeDesc());
 		secreq.setDependentCoverId("0");
-		secreq.setDependentCoverYn("Y");
-		secreq.setDiscountCoverId("0");
+		secreq.setDependentCoverYn("N");
+		secreq.setDiscountCoverId(req.getDiscountCoverId());
 		secreq.setEffectiveDateEnd(req.getEffectiveDateEnd());
 		secreq.setEffectiveDateStart(req.getEffectiveDateStart());
 		secreq.setExcess("0");
@@ -789,7 +791,6 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 		secreq.setTaxExcemptionReference("");
 		secreq.setTaxExcemptionType("");
 		secreq.setToolTip(req.getToolTip());
-		secreq.setDiscountCoverId(req.getDiscountCoverId());
 		sectionService.updateectionCover(secreq);
 		log.info("Saved Details is ---> " + json.toJson(secreq));
 		

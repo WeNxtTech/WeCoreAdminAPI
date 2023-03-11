@@ -98,7 +98,7 @@ public class CompanyPromocodeSaveReq {
 	
 	@JsonProperty("TaxExcemptionType")
 	private String taxExcemptionType;
-	
+//	
 //	@JsonProperty("DependentCoverYn")
 //    private String dependentCoverYn;
 //    

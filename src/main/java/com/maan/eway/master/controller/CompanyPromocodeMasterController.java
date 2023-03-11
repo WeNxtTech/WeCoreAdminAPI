@@ -23,6 +23,7 @@ import com.maan.eway.master.req.CompanyPromcodeMasterGetReq;
 import com.maan.eway.master.req.CompanyPromocodeMasterChangeStatusReq;
 import com.maan.eway.master.req.CompanyPromocodeMasterGetAllReq;
 import com.maan.eway.master.req.CompanyPromocodeSaveReq;
+import com.maan.eway.master.req.CompanyPromocodeSchemeSaveReq;
 import com.maan.eway.master.req.ProductReferalChangeStatusReq;
 import com.maan.eway.master.req.SectionCoverChangeStatusReq;
 import com.maan.eway.master.req.SectionCoverMasterGetAllReq;
@@ -100,7 +101,7 @@ public class CompanyPromocodeMasterController {
 				@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 				@PostMapping("/insertpromocodescheme")
 				@ApiOperation(value = "This method is Insert Scheme details of Promocode Details")
-				public ResponseEntity<CommonRes> insertSchemePromocode(@RequestBody CompanyPromocodeSaveReq req,@RequestHeader("Authorization") String tokens) {
+				public ResponseEntity<CommonRes> insertSchemePromocode(@RequestBody CompanyPromocodeSchemeSaveReq req,@RequestHeader("Authorization") String tokens) {
 
 					reqPrinter.reqPrint(req);
 					CommonRes data = new CommonRes();

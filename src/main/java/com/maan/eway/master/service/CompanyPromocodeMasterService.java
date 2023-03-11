@@ -12,6 +12,7 @@ import com.maan.eway.master.req.CompanyPromcodeMasterGetReq;
 import com.maan.eway.master.req.CompanyPromocodeMasterChangeStatusReq;
 import com.maan.eway.master.req.CompanyPromocodeMasterGetAllReq;
 import com.maan.eway.master.req.CompanyPromocodeSaveReq;
+import com.maan.eway.master.req.CompanyPromocodeSchemeSaveReq;
 import com.maan.eway.master.res.CompanyPromocodeMasterRes;
 import com.maan.eway.res.SuccessRes;
 
@@ -33,8 +34,8 @@ public interface CompanyPromocodeMasterService  {
 
 	SuccessRes changestatusofCompanyPromocode(CompanyPromocodeMasterChangeStatusReq req);
 
-	List<Error> validateSchemePromocode(CompanyPromocodeSaveReq req, String string);
+	List<Error> validateSchemePromocode(CompanyPromocodeSchemeSaveReq req, String string);
 
-	SuccessRes insertSchemePromocode(CompanyPromocodeSaveReq req);
+	SuccessRes insertSchemePromocode(CompanyPromocodeSchemeSaveReq req);
 
 }

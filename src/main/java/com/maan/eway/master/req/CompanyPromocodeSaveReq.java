@@ -72,9 +72,6 @@ public class CompanyPromocodeSaveReq {
 	@JsonProperty("CalcType")
 	private String calcType;
 	
-	@JsonProperty("CoverId")
-	private String coverId;
-	
 	@JsonProperty("PromoRateOrAmt")
 	private String promoRateOrAmt;
 	
@@ -84,12 +81,9 @@ public class CompanyPromocodeSaveReq {
 	@JsonProperty("FactorTypeId")
 	private String factorTypeId;
 	
-	@JsonProperty("CoverBasedOn")
-	private String coverBasedOn;
-	
-	@JsonProperty("FactorParams")
-    private List<FactorParamsInsert>     factorParams;
-	
+//	@JsonProperty("FactorParams")
+//    private List<FactorParamsInsert>     factorParams;
+//	
 	@JsonProperty("IsTaxExcempted")
 	private String isTaxExcempted;
 	
@@ -98,16 +92,5 @@ public class CompanyPromocodeSaveReq {
 	
 	@JsonProperty("TaxExcemptionType")
 	private String taxExcemptionType;
-//	
-//	@JsonProperty("DependentCoverYn")
-//    private String dependentCoverYn;
-//    
-//	@JsonProperty("DependentCoverId")
-//    private String dependentCoverId;
-	
-//	@JsonProperty("IsSelectedYn")
-//    private String isSelectedYn;
-//	
-//	@JsonProperty("MultiSelectYn")
-//    private String multiSelectYn;
+
 }

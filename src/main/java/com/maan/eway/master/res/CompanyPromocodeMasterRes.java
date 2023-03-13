@@ -112,5 +112,7 @@ public class CompanyPromocodeMasterRes {
 	@JsonProperty("TaxExcemptionType")
 	private String taxExcemptionType;
 	
+	@JsonProperty("CoverId")
+	private String coverId;
 
 }

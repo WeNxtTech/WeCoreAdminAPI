@@ -43,6 +43,7 @@ import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.EmiMaster;
 import com.maan.eway.bean.FactorRateMaster;
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CompanyPromcodeMasterGetReq;
 import com.maan.eway.master.req.CompanyPromocodeMasterChangeStatusReq;
@@ -230,12 +231,12 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 				errorList.add(new Error("14", "PromoRateOrAmt", "Please Enter PromoRateOrAmt "));
 			} else if (!req.getPromoRateOrAmt().matches("[0-9.]+")) {
 				errorList.add(new Error("14", "PromoRateOrAmt", "Please Enter Valid Number In PromoRateOrAmt "));
-			} else if (Integer.valueOf(req.getPromoRateOrAmt()) < 0) {
+			} else if ((Double.parseDouble(req.getPromoRateOrAmt().toString()))< 0.0) {
 				errorList.add(new Error("14", "PromoRateOrAmt", " PromoRateOrAmt Greater than Zero"));
 			}
 		}
 			if("P".equalsIgnoreCase(req.getCalcType())) {
-				if (Integer.valueOf(req.getPromoRateOrAmt()) > 100) {
+				if (Double.valueOf(req.getPromoRateOrAmt()) > 100) {
 					errorList.add(new Error("14", "PromoRateOrAmt", " Promocode Percent Not Greater than 100"));
 				}
 			}
@@ -244,7 +245,7 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 				errorList.add(new Error("15", "MinimumPremium", "Please Enter MinimumPremium  "));
 			} else if (!req.getMinimumPremium().matches("[0-9.]+")) {
 				errorList.add(new Error("15", "MinimumPremium", "Please Enter Maximum Permium In Number  "));
-			}  else if (Integer.valueOf(req.getMinimumPremium()) < 0) {
+			}  else if (Double.valueOf(req.getMinimumPremium()) < 0) {
 				errorList.add(new Error("15", "MinimumPremium", "Maximum Discount should be Greater than 0 "));
 			}
 			
@@ -389,10 +390,7 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 			long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
 			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
 			CompanyPromocodeMaster saveData = new CompanyPromocodeMaster();
-			
-			//Cover count
-			Long coverTotalCount = getCoverMasterTableCount();
-			String coverId = String.valueOf(coverTotalCount + 1);
+			String coverId="";
 			
 			List<CompanyPromocodeMaster> list = new ArrayList<CompanyPromocodeMaster>();
 			List<ListItemValue> calcTypes = listRepo.findByItemTypeAndStatus("CALCULATION_TYPE" , "Y");
@@ -400,6 +398,9 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 			List<ListItemValue> taxExcemptionType = listRepo.findByItemTypeAndStatus("TAX_EXEMPTION_TYPE" , "Y");
 			if (StringUtils.isBlank(req.getPromocodeId())) {
 				// Save
+				//Cover count
+				Long coverTotalCount = getCoverMasterTableCount();
+				coverId = String.valueOf(coverTotalCount + 1);
 				// Integer totalCount = repo.count();
 				Integer totalCount = getMasterTableCount(req.getCompanyId());
 				promocodeId = Integer.valueOf(totalCount + 1).toString();
@@ -442,6 +443,8 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 							amendId = list.get(0).getAmendId() + 1 ;
 							entryDate = new Date() ;
 							createdBy = req.getCreatedBy();
+							promocodeId=req.getPromocodeId();
+							coverId=list.get(0).getCoverId().toString();
 							CompanyPromocodeMaster lastRecord = list.get(0);
 								lastRecord.setEffectiveDateEnd(oldEndDate);
 								comPromorepo.saveAndFlush(lastRecord);
@@ -450,6 +453,8 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 							amendId = list.get(0).getAmendId() ;
 							entryDate = list.get(0).getEntryDate() ;
 							createdBy = list.get(0).getCreatedBy();
+							promocodeId=req.getPromocodeId();
+							coverId=list.get(0).getCoverId().toString();
 							saveData = list.get(0) ;
 							if (list.size()>1 ) {
 								CompanyPromocodeMaster lastRecord = list.get(1);
@@ -462,10 +467,11 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 				}
 				res.setResponse("Updated Successfully");
 				res.setSuccessId(promocodeId.toString());
-				res.setCoverId(coverId);
+				
 			}
 			dozerMapper.map(req, saveData);
 			saveData.setPromocodeId(Integer.valueOf(promocodeId));
+			saveData.setCoverId(Integer.valueOf(coverId));
 			saveData.setPromocodeType(req.getPromocodeType());
 			saveData.setPromocodeDesc(req.getPromocodeDesc());
 			saveData.setPromocodeTypeDesc(promoType.stream().filter(o -> o.getItemCode().equalsIgnoreCase(req.getPromocodeType()))
@@ -487,8 +493,8 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 			saveData.setDiscountCoverId(req.getDiscountCoverId()==null?0:Integer.valueOf(req.getDiscountCoverId()));
 			saveData.setRegulatoryCode(req.getRegulatoryCode());
 			saveData.setAgencyCode(req.getAgencyCode());
-			saveData.setFactorTypeId(req.getFactorTypeId() == "" ? 0: Integer.valueOf(req.getFactorTypeId().toString()));
-			saveData.setCoverBasedOn("SumInsured");
+			saveData.setFactorTypeId(req.getFactorTypeId() == null ? 0: Integer.valueOf(req.getFactorTypeId().toString()));
+			saveData.setCoverBasedOn("sumInsured");
 			saveData.setPromoRateOrAmt(req.getPromoRateOrAmt()==null?0 : Double.valueOf(req.getPromoRateOrAmt()));
 			saveData.setMinPremium(Double.valueOf(req.getMinimumPremium()));
 			saveData.setCalcTypeDesc(calcTypes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(req.getCalcType()))
@@ -509,7 +515,9 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 			comPromorepo.saveAndFlush(saveData);
 			log.info("Company PromoCode Master Saved Details is ---> " + json.toJson(saveData));
 			
+			
 			//Section Cover Master Save
+
 			List<SectionCoverMasterSaveReq> secreqList = new ArrayList<SectionCoverMasterSaveReq>();
 			
 			SectionCoverMasterSaveReq secreq = new SectionCoverMasterSaveReq();
@@ -524,11 +532,16 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 
 			sectionService.insertSectionCover(secreqList);
 			log.info("Section Cover Inserted Successfully Saved Details is ---> " + json.toJson(secreqList));
-			updateCompanyPromocode(req,coverId);
-			log.info("Section Cover Updated Successfully Saved Details is ---> " + json.toJson(secreqList));
 			
+			if ("D".equalsIgnoreCase(req.getPromocodeType())) {
+
+				updateCompanyPromocode(req, coverId);
+				log.info("Section Cover Updated Successfully Saved Details is ---> " + json.toJson(secreqList));
+
+			}
 			res.setResponse("Saved Successfully ");
 			res.setSuccessId(promocodeId);
+			res.setCoverId(coverId);
 			//res.setFactorTypeId(req.getFactorTypeId()==null?"" : req.getFactorTypeId().toString());
 			res.setCoverId(coverId);
 	} catch (Exception e) {
@@ -615,7 +628,7 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 		secreq.setEffectiveDateStart(req.getEffectiveDateStart());
 		secreq.setExcess("0");
 		secreq.setFactorTypeId(req.getFactorTypeId() == null ? "":req.getFactorTypeId().toString());
-		secreq.setCoverBasedOn("SumInsured");
+		secreq.setCoverBasedOn("sumInsured");
 		secreq.setIsSelectedYn("Y");
 		secreq.setTaxExcemptionReference(req.getTaxExcemptionReference());
 		secreq.setTaxExcemptionType(req.getTaxExcemptionType());
@@ -634,11 +647,7 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 		secreq.setToolTip(req.getToolTip());
 		sectionService.updateectionCover(secreq);
 		log.info("Saved Details is ---> " + json.toJson(secreq));
-		
-		// Factor Save
-		if (req.getPromocodeType().equalsIgnoreCase("S")) {
-
-		}
+	
 		res.setResponse("Updated Successfully ");
 		res.setSuccessId(req.getPromocodeId());
 
@@ -661,16 +670,124 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 			SimpleDateFormat sdf= new SimpleDateFormat("dd/MM/yyyy");
 			DozerBeanMapper dozerMapper = new DozerBeanMapper(); 
 			try {
-				//PromocodeSave
+				// PromocodeSave
+
+				Integer amendId = 0 ;
+				Date entryDate = null ;
+				String createdBy = req.getCreatedBy() ;
+				String promocodeId="";
+				long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+			//	Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
+				String coverId="";
 				
-				//Update Section cover master
+				CompanyPromocodeMaster saveData = new CompanyPromocodeMaster();
+				List<CompanyPromocodeMaster> list = new ArrayList<CompanyPromocodeMaster>();
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<CompanyPromocodeMaster> query = cb.createQuery(CompanyPromocodeMaster.class);
+
+				// Find All
+				Root<CompanyPromocodeMaster> b = query.from(CompanyPromocodeMaster.class);
+
+				// Select
+				query.select(b);
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.asc(b.get("effectiveDateStart")));
+
+				// Where
+				Predicate n3 = cb.equal(b.get("promocodeId"), req.getPromocodeId());
+				Predicate n5 = cb.equal(b.get("sectionId"), req.getSectionId());
+				Predicate n6 = cb.equal(b.get("productId"), req.getProductId());
+				Predicate n7 = cb.equal(b.get("companyId"), req.getCompanyId());
+				query.where(n3, n5, n6, n7).orderBy(orderList);
+
+				// Get Result
+				TypedQuery<CompanyPromocodeMaster> result = em.createQuery(query);
+				list = result.getResultList();
+				if (list.size() > 0) {
+					Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+						if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
+							amendId = list.get(0).getAmendId() + 1 ;
+							entryDate = new Date() ;
+							createdBy = req.getCreatedBy();
+							promocodeId=req.getPromocodeId();
+							coverId=list.get(0).getCoverId().toString();
+							CompanyPromocodeMaster lastRecord = list.get(0);
+								//lastRecord.setEffectiveDateEnd(oldEndDate);
+								comPromorepo.saveAndFlush(lastRecord);
+							
+						} else {
+							amendId = list.get(0).getAmendId() ;
+							entryDate = list.get(0).getEntryDate() ;
+							createdBy = list.get(0).getCreatedBy();
+							promocodeId=req.getPromocodeId();
+							coverId=list.get(0).getCoverId().toString();
+							saveData = list.get(0) ;
+							if (list.size()>1 ) {
+								CompanyPromocodeMaster lastRecord = list.get(1);
+							//	lastRecord.setEffectiveDateEnd(oldEndDate);
+								comPromorepo.saveAndFlush(lastRecord);
+							}		
+
+						
+					    }
+				}
+				
+				saveData.setFactorTypeId(req.getFactorTypeId() == null ? 0 : Integer.valueOf(req.getFactorTypeId().toString()));
+				comPromorepo.saveAndFlush(saveData);
+				log.info("Company PromoCode Master Saved Details is ---> " + json.toJson(saveData));
+				
+				// Section Cover Master Save
+				if (list.size() > 0) {
+					
+					SectionCoverUpdateReq secreq = new SectionCoverUpdateReq();
+					secreq.setCoverId(req.getCoverId());
+					secreq.setBranchCode(req.getBranchCode());
+					secreq.setCompanyId(req.getCompanyId());
+					secreq.setCreatedBy(req.getCreatedBy());
+					secreq.setProductId(req.getProductId());
+					secreq.setSectionId(req.getSectionId());
+					secreq.setAgencyCode(req.getAgencyCode());
+					secreq.setBaseRate("");
+					secreq.setCalcType(list.get(0).getCalcType());
+					secreq.setCoreAppCode(list.get(0).getCoreAppCode());
+					secreq.setCoverageLimit("0");
+					secreq.setCoverageType("P");
+					secreq.setCoverName(list.get(0).getPromocode());
+					secreq.setCoverDesc(list.get(0).getPromocodeDesc());
+					secreq.setDependentCoverId("0");
+					secreq.setDependentCoverYn("N");
+					secreq.setDiscountCoverId(list.get(0).getDiscountCoverId().toString());
+					secreq.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
+					secreq.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
+					secreq.setExcess("0");
+					secreq.setFactorTypeId(req.getFactorTypeId() == null ? "" : req.getFactorTypeId().toString());
+					secreq.setCoverBasedOn(req.getCoverBasedOn());
+					secreq.setIsSelectedYn("Y");
+					secreq.setTaxExcemptionReference(list.get(0).getTaxExcemptionReference());
+					secreq.setTaxExcemptionType(list.get(0).getTaxExcemptionType());
+					secreq.setIsTaxExcempted(list.get(0).getIsTaxExcempted());
+					secreq.setMinimumPremium(list.get(0).getMinPremium().toString());
+					secreq.setMultiSelectYn("N");
+					secreq.setRegulatoryCode(list.get(0).getRegulatoryCode());
+					secreq.setRemarks(list.get(0).getRemarks());
+					secreq.setStatus(list.get(0).getStatus());
+					secreq.setSubCoverYn("N");
+					secreq.setSumInsuredEnd("0");
+					secreq.setSumInsuredStart("0");
+					secreq.setTaxAmount("0");
+					secreq.setTaxExcemptionReference("");
+					secreq.setTaxExcemptionType("");
+					secreq.setToolTip(list.get(0).getToolTip());
+					sectionService.updateectionCover(secreq);
+				}
 				
 				// Factor Save
 				res = insertFactorRateDetails(req);
 				log.info("Factor Inserted Successfully ");
 				res.setResponse("Factor Saved Successfully ");
 				res.setSuccessId(req.getPromocodeId());
-				res.setFactorTypeId(req.getFactorTypeId()==null?"" : req.getFactorTypeId().toString());
+				res.setFactorTypeId(req.getFactorTypeId() == null ? "" : req.getFactorTypeId().toString());
 				res.setCoverId(req.getCoverId());
 				
 		} catch (Exception e) {

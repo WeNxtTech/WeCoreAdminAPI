@@ -1094,8 +1094,8 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 			Predicate a8 = cb2.equal(ocpm2.get("sectionId"), b2.get("sectionId"));
 			Predicate a9 = cb2.equal(ocpm2.get("productId"), b2.get("productId"));
 			Predicate a10 = cb2.equal(ocpm2.get("companyId"), b2.get("companyId"));
-			Predicate a11 = cb2.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"), today);
-			amendId2.where(a7,a8,a9,a10,a11);
+		//	Predicate a11 = cb2.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"), today);
+			amendId2.where(a7,a8,a9,a10);
 
 			// Select
 			query2.select(b2);

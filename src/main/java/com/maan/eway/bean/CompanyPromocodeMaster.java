@@ -84,7 +84,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="PROMOCODE", length=100)
     private String     promocode ;
     
-    @Column(name="PROMOCODE_DESC", length=100)
+    @Column(name="PROMOCODE_DESC", length=500)
     private String     promocodeDesc ;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -114,7 +114,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="PROMOCODE_TYPE_DESC", length=100)
     private String     promocodeTypeDesc ;
 
-    @Column(name="TOOL_TIP", length=100)
+    @Column(name="TOOL_TIP", length=500)
     private String     toolTip ;
 
     @Column(name="CALC_TYPE", length=1)

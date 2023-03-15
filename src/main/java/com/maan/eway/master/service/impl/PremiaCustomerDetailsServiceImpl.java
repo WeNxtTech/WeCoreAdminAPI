@@ -200,7 +200,7 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 					String branchCode = req.getBranchCode() ;
 					List<String> usertypes = new ArrayList<String>();
 					usertypes.add("Broker");
-					usertypes.add("User");
+				//	usertypes.add("User");
 					List<String> subUsertypes = new ArrayList<String>();
 					subUsertypes.add("b2b");
 					subUsertypes.add("b2c");
@@ -229,7 +229,7 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 					String branchCode = req.getBranchCode() ;
 					List<String> usertypes = new ArrayList<String>();
 					usertypes.add("Broker");
-					usertypes.add("User");
+				//	usertypes.add("User");
 					List<String> subUsertypes = new ArrayList<String>();
 					subUsertypes.add("bank");
 					Date today = new Date() ;

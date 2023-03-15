@@ -32,4 +32,7 @@ public class PremiaDropDownReq {
 	private String productid;
 
 
+	@JsonProperty("BrokerCode")
+	private String brokerCode ;
+
 }

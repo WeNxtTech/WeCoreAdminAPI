@@ -13,6 +13,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PremiaCustomerDetailsRes {
 
+	@JsonProperty("OrderId")
+	private Long orderId;
+	
 	@JsonProperty("Code")
 	private String customercode;
 

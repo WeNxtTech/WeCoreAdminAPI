@@ -9,12 +9,15 @@ import java.util.List;
 
 import com.maan.eway.master.req.PremiaDropDownReq;
 import com.maan.eway.master.res.PremiaCustomerDetailsRes;
+import com.maan.eway.res.DropDownRes;
 
 public interface PremiaCustomerDetailsService  {
 
 	List<PremiaCustomerDetailsRes> searchPremiacustDetails(PremiaDropDownReq req);
 
 	List<PremiaCustomerDetailsRes> searchPremiaSourceCode(PremiaDropDownReq req);
+
+	List<DropDownRes> getBrokerBranches(PremiaDropDownReq req);
 
 
 	

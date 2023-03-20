@@ -47,6 +47,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.maan.eway.bean.CoverDocumentMaster;
 import com.maan.eway.bean.CoverDocumentUploadDetails;
 import com.maan.eway.bean.CoverDocumentUploadDetailsId;
+import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.document.req.DocTypeDropDownReq;
 import com.maan.eway.document.req.DocumentDeleteReq;
@@ -63,6 +64,7 @@ import com.maan.eway.master.req.CoverDocumentMasterGetReq;
 import com.maan.eway.master.res.CoverDocumentMasterGetRes;
 import com.maan.eway.repository.CoverDocumentMasterRepository;
 import com.maan.eway.repository.CoverDocumentUploadDetailsRepository;
+import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.SuccessRes;
 
@@ -71,6 +73,10 @@ import com.maan.eway.res.SuccessRes;
 @Service
 @Transactional
 public class DocumentServiceImpl implements DocumentService{
+	
+	@Autowired
+	private EndtTypeMasterRepository endtTypeRepo;
+	
 	
 	private Logger log = LogManager.getLogger(DocumentServiceImpl.class);
 
@@ -164,6 +170,7 @@ public class DocumentServiceImpl implements DocumentService{
 		try {
 				CoverDocumentUploadDetails doc = new CoverDocumentUploadDetails();
 				
+			
 				Random random = new Random();
 				Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 				
@@ -219,9 +226,24 @@ public class DocumentServiceImpl implements DocumentService{
 				doc.setRequestedBy("");
 				doc.setUploadedBy("");
 				doc.setQuoteNo(DocumentUploadDetails.getQuoteNo());
-				doc.setId(Integer.valueOf(DocumentUploadDetails.getId()));;
-				
-				
+				doc.setId(Integer.valueOf(DocumentUploadDetails.getId()));
+				if (StringUtils.isNotBlank(DocumentUploadDetails.getEndorsementType())) {
+					EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeId(DocumentUploadDetails.getCompanyId(), Integer.parseInt(DocumentUploadDetails.getProductId()), "Y",Integer.valueOf(DocumentUploadDetails.getEndorsementType()));
+					if (entMaster != null) {
+						doc.setEndorsementDate(DocumentUploadDetails.getEndorsementDate() == null ? null : new Date());
+						doc.setEndorsementEffdate(DocumentUploadDetails.getEndorsementEffdate() == null ? null
+								: DocumentUploadDetails.getEndorsementEffdate());
+						doc.setEndorsementRemarks(DocumentUploadDetails.getEndorsementRemarks() == null ? ""
+								: DocumentUploadDetails.getEndorsementRemarks());
+						doc.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
+						doc.setIsFinaceYn(entMaster.getEndtTypeCategoryId()==2?"Y":"N");
+						doc.setEndtCategDesc(entMaster.getEndtTypeCategory());
+						doc.setEndtStatus("P");
+						doc.setEndtCount(new BigDecimal(DocumentUploadDetails.getEndtCount()));
+						doc.setEndtPrevPolicyNo(DocumentUploadDetails.getEndtPrevPolicyNo());
+						doc.setEndtPrevQuoteNo(DocumentUploadDetails.getEndtPrevQuoteNo());
+					}
+				}
 				//RefRunning number
 				if(StringUtils.isBlank(DocumentUploadDetails.getDocumentReferenceNo())   ) {
 					Random rnd = new Random();

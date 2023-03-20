@@ -45,7 +45,7 @@ public class CoverDocumentMasterSaveReq {
     @JsonProperty("EndtPrevQuoteNo") // EndtPrevQuoteNo
     private String     endtPrevQuoteNo ;
     @JsonProperty("EndtCount")  // EndtCount
-    private BigDecimal endtCount ;
+    private String endtCount ;
     @JsonProperty("EndtStatus") //EndtStatus
     private String     endtStatus ;   
     @JsonProperty("IsFinanceEndt") //IsFinanceEndt
@@ -53,7 +53,7 @@ public class CoverDocumentMasterSaveReq {
     @JsonProperty("EndtCategoryDesc") //EndtCategoryDesc
     private String     endtCategDesc ;
     @JsonProperty("EndorsementType") //EndorsementType
-    private Integer    endorsementType ;
+    private String    endorsementType ;
 
     @JsonProperty("EndorsementTypeDesc") // EndorsementTypeDesc
     private String     endorsementTypeDesc ;

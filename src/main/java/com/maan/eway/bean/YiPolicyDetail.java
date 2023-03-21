@@ -14,7 +14,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -80,7 +79,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="BUSINESS_TYPE", length=12)
     private String     businessType ;
 
-    @Column(name="CUSTOMER", length=12)
+    @Column(name="CUSTOMER", length=100)
     private String     customer ;
 
     @Column(name="SOURCE_TYPE", length=12)
@@ -214,9 +213,10 @@ private static final long serialVersionUID = 1L;
     @Column(name="INSTALLMENT_YN", length=1)
     private String     installmentYn ;
 
-    @Column(name="POLICY_PERIOD")
-    private BigDecimal policyPeriod ;
 
+    @Column(name="POLICY_PERIOD",length=100)
+    private String policyPeriod ;
+    
     @Column(name="PRE_INSP_REQ_YN", length=1)
     private String     preInspReqYn ;
 
@@ -283,7 +283,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="QUOTATION_ISSUE_DT")
     private Date       quotationIssueDt ;
 
-    @Column(name="VALIDITY_PERIOD", length=10)
+    @Column(name="VALIDITY_PERIOD", length=100)
     private String     validityPeriod ;
 
     @Column(name="UW_ID", length=10)

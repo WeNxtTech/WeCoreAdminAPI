@@ -85,4 +85,7 @@ public class CompanyProductMasterSaveReq implements Serializable {
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 	
+	@JsonProperty("DisplayOrder")
+	private String displayOrder;
+	
 }

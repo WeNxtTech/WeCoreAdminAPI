@@ -618,7 +618,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			res.setCustConfirmYn(list.get(0).getCustConfirmYn());
 			res.setSumInsuredStart(list.get(0).getSumInsuredStart()==null?"":list.get(0).getSumInsuredStart().toString());
 			res.setSumInsuredEnd(list.get(0).getSumInsuredEnd()==null?"":list.get(0).getSumInsuredEnd().toString());;
-			
+			res.setDisplayOrder(list.get(0).getDisplayOrder()==null?"":list.get(0).getDisplayOrder().toString());
 			} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());

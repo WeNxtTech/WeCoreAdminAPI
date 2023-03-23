@@ -91,4 +91,7 @@ public class CompanyProductGetAllRes {
 	
 	@JsonProperty("RegulatoryCode")
 	private String regulatoryCode;
+	
+	@JsonProperty("DisplayOrder")
+	private String displayOrder;
 }

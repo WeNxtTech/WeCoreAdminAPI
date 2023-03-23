@@ -99,4 +99,7 @@ public class CompanyProductMasterRes implements Serializable {
 	
 	@JsonProperty("RegulatoryCode")
 	private String regulatoryCode;
+	
+	@JsonProperty("DisplayOrder")
+	private String displayOrder;
 }

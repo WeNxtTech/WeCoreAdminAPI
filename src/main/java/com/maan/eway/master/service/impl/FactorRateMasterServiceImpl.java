@@ -1615,6 +1615,9 @@ public Integer getMasterTableCount(String companyId , String branchCode) {
 			if( list.size()>0) {
 				res = dozerMapper.map(list.get(0), FactorRateGetRes.class);
 				
+				String pattern = "#####0";
+			 	DecimalFormat minPreFormat = new DecimalFormat(pattern);
+			 	
 				// Map
 				List<FactorParamsInsert> factorParams = new ArrayList<FactorParamsInsert>();
 				for (FactorRateMaster  data : list) {
@@ -1631,7 +1634,7 @@ public Integer getMasterTableCount(String companyId , String branchCode) {
 					 fParam.setSno(data.getSNo().toString());
 					fParam.setRate(data.getRate().toString());
 					fParam.setCalType(data.getCalcType());
-					fParam.setMinimumPremium(data.getMinPremium().toString());
+					fParam.setMinimumPremium(data.getMinPremium() == null ? null : minPreFormat.format(data.getMinPremium()));
 					factorParams.add(fParam);
 				}
 				res.setFactorParams(factorParams);

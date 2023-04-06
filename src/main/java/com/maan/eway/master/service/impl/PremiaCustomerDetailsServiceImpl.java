@@ -318,8 +318,8 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 			effectiveDate4.where(a12,a13,a14,a16);
 			//In 
 			Expression<String>e0=c.get("loginId");
-			Expression<String>e1=b.get("userType");
-			Expression<String>e2=b.get("subUserType");
+			Expression<String>e1=l.get("userType");
+			Expression<String>e2=l.get("subUserType");
 			
 		    // Where	
 			Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate3);

@@ -35,8 +35,8 @@ public class CityMasterSaveReq implements Serializable {
 	private String countryId;
 	
 
-	@JsonProperty("RegionId")
-	private String regionId;
+//	@JsonProperty("RegionId")
+//	private String regionId;
 	
 	@JsonProperty("Status")
 	private String status;

@@ -1039,6 +1039,11 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			saveData.setEffectiveDateStart(startDate);
 			saveData.setCoverName(coverDetails.getCoverName());
 			saveData.setCoverDesc(coverDetails.getCoverDesc());
+			saveData.setCoverageType(coverDetails.getCoverageType());
+			saveData.setIsSelectedYn(coverDetails.getIsSelectedYn());
+			saveData.setProRataYn(StringUtils.isNotBlank(req.getProRataYn()) ?  req.getProRataYn() : coverDetails.getProRataYn() );
+			saveData.setRegulatoryCode(StringUtils.isNotBlank(req.getRegulatoryCode()) ?  req.getRegulatoryCode() : coverDetails.getRegulatoryCode() );
+			saveData.setMultiSelectYn(coverDetails.getMultiSelectYn() );
 			saveData.setCoverId(Integer.valueOf(coverId)) ;
 			saveData.setSubCoverId(Integer.valueOf(subcoverId)) ;
 			saveData.setEffectiveDateStart(startDate);

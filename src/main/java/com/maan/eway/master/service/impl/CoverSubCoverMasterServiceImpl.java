@@ -1039,7 +1039,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			saveData.setEffectiveDateStart(startDate);
 			saveData.setCoverName(coverDetails.getCoverName());
 			saveData.setCoverDesc(coverDetails.getCoverDesc());
-			saveData.setCoverageType(coverDetails.getCoverageType());
+			saveData.setCoverageType(StringUtils.isNotBlank(req.getCoverageType()) ?  req.getCoverageType() : coverDetails.getCoverageType());
 			saveData.setIsSelectedYn(coverDetails.getIsSelectedYn());
 			saveData.setProRataYn(StringUtils.isNotBlank(req.getProRataYn()) ?  req.getProRataYn() : coverDetails.getProRataYn() );
 			saveData.setRegulatoryCode(StringUtils.isNotBlank(req.getRegulatoryCode()) ?  req.getRegulatoryCode() : coverDetails.getRegulatoryCode() );
@@ -1061,7 +1061,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			saveData.setMultiSelectYn(coverDetails.getMultiSelectYn());
 			saveData.setAgencyCode(StringUtils.isNotBlank(req.getAgencyCode()) ? req.getAgencyCode() : "99999") ;
 			saveData.setBranchCode(StringUtils.isNotBlank(req.getBranchCode()) ? req.getBranchCode() : "99999");
-			saveData.setProRataYn( StringUtils.isNotBlank(req.getProRataYn() ) ? req.getProRataYn()  : "N");
+			
 			// Amount Details
 			if (req.getCalcType().equalsIgnoreCase("F")) {
 

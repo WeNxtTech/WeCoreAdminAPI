@@ -199,11 +199,13 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 								
 							} else  {
 								if(loginData.getSubUserType().equalsIgnoreCase(data.getItemValue()) ) {
-									res.setCode(data.getItemCode());
-									res.setCodeDesc(data.getItemValue());
-									res.setDisplayName(data.getParam1());
-									res.setStatus(data.getStatus());
-									resList.add(res);
+									if(! data.getItemCode().equalsIgnoreCase("both") ) {
+										res.setCode(data.getItemCode());
+										res.setCodeDesc(data.getItemValue());
+										res.setDisplayName(data.getParam1());
+										res.setStatus(data.getStatus());
+										resList.add(res);
+									}
 								}
 							}
 						}  else  {

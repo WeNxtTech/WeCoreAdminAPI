@@ -5,6 +5,8 @@
 */
 package com.maan.eway.master.service.impl;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,6 +59,10 @@ import com.maan.eway.repository.DropdownTableDetailsRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 
+import junit.framework.Assert;
+
+
+
 /**
 * <h2>ConstantTableDetailsServiceImpl</h2>
 */
@@ -83,8 +89,6 @@ public List<Error> validateConstantTableDetails(ConstantTableDetailsSaveReq req)
 
 	try {
 	
-		String regex="^(https?:\\/\\/)"+"(\\d{3}\\.\\d{3}.\\d{1}.\\d{2}):\\d{4}(\\/)"+"[a-zA-Z]+(\\/)"+"[a-zA-Z/]+$";
-		Pattern p = Pattern.compile(regex);
 		if (StringUtils.isBlank(req.getProductId())) {
 			errorList.add(new Error("02", "ProductId", "Please Enter ProductId"));
 		}else if (req.getProductId().length() > 20){
@@ -161,9 +165,35 @@ public List<Error> validateConstantTableDetails(ConstantTableDetailsSaveReq req)
 			} else if (req.getApiUrl().length() > 200) {
 				errorList.add(new Error("10", "ApiUrl", "Please Enter ApiUrl within 100 Characters"));
 			} else if (StringUtils.isNotBlank(req.getApiUrl())) {
+//				 try {
+				        // it will check only for scheme and not null input 
+//					 UrlValidator validator = new UrlValidator(); 
+//					 new URL(req.getApiUrl());
+//				        
+//				    } catch (MalformedURLException e) {
+//				    	errorList.add(new Error("10", "ApiUrl", "Please Enter Valid ApiUrl "));
+//				    }
+				
+//				URL url = new URL(req.getApiUrl());
+//				HttpURLConnection huc = (HttpURLConnection) url.openConnection();
+//				try {
+//					int responseCode = huc.getResponseCode();
+//					if(responseCode == 403  || responseCode == 500  ) {
+//						errorList.add(new Error("10", "ApiUrl", "Please Enter Valid ApiUrl "));
+//					}
+//				} catch(Exception e ) {
+//					log.error(e);
+//					errorList.add(new Error("10", "ApiUrl", "Please Enter Valid ApiUrl "));
+//				}
+				
+				
+					
+				String regex="^(https?:\\/\\/)"+"(\\d{3}\\.\\d{3}.\\d{1}.\\d{2}):\\d{4}(\\/)"+"[a-zA-Z]+(\\/)"+"[a-zA-Z/]+$";
+				Pattern p = Pattern.compile(regex);	
 				Matcher matcher3 = p.matcher(req.getApiUrl());
 				if (!matcher3.matches())
 					errorList.add(new Error("10", "ApiUrl", "Please Enter Valid ApiUrl "));
+				
 			}
 
 			else if (StringUtils.isBlank(req.getKeyTable())) {

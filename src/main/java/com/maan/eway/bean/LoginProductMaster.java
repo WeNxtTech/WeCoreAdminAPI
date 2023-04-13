@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -141,8 +140,17 @@ private static final long serialVersionUID = 1L;
     @Column(name="BACK_DAYS")
     private Integer     backDays;
     
-    //--- ENTITY LINKS ( RELATIONSHIP )
+    @Column(name="FINANCIAL_ENDT_IDS", length=500)
+    private String    financialEndtIds;
+    
+    @Column(name="NON_FINANCIAL_ENDT_IDS", length=500)
+    private String    nonFinancialEndtIds;
 
+    @Column(name="POLICY_TYPE_ID", length=100)
+    private String    policyTypeId;
+
+    @Column(name="POLICY_TYPE_DESC", length=500)
+    private String    policyTypeDesc;
 
 }
 

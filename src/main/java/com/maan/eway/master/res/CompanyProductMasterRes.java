@@ -102,4 +102,18 @@ public class CompanyProductMasterRes implements Serializable {
 	
 	@JsonProperty("DisplayOrder")
 	private String displayOrder;
+	
+	
+	@JsonProperty("FinanceIds")
+	private List<String> financeIds;
+
+	@JsonProperty("NonFinanceIds")
+	private List<String> nonFinanceIds;
+
+	@JsonProperty("PolicyTypeId")
+	private String policyTypeId;
+
+	@JsonProperty("PolicyTypeDesc")
+	private String policyTypeDesc;
+
 }

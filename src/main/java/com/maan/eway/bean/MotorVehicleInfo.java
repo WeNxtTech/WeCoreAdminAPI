@@ -15,11 +15,11 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import java.util.Date;
@@ -86,8 +86,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="CREATED_BY", length=200)
     private String     createdBy ;
 
-    @Column(name="RES_RESPONSE_ID")
-    private Integer    resResponseId ;
+//    @Column(name="RES_RESPONSE_ID")
+//    private Integer    resResponseId ;
 
     @Column(name="RES_REQUEST_ID", length=20)
     private String     resRequestId ;
@@ -162,7 +162,10 @@ private static final long serialVersionUID = 1L;
     private String     savedFrom ;
 
     @Column(name="POLICY_YN", length=20)
-    private String     policyYn ;
+    private String     policyYn ;    
+    
+    @Column(name="RES_RESPONSE_ID")
+    private BigDecimal    resResponseId ;
 
 
     //--- ENTITY LINKS ( RELATIONSHIP )

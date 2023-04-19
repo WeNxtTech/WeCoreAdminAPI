@@ -615,8 +615,8 @@ public ConstantTableDetailsCommonRes getByConstantTableDetailsId(ConstantTableDe
 		Predicate a1 = cb.equal(ocpm1.get("itemId"), b.get("itemId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
-
-		amendId.where(a1, a2,a3);
+		Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
+		amendId.where(a1, a2,a3,a4);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -629,7 +629,8 @@ public ConstantTableDetailsCommonRes getByConstantTableDetailsId(ConstantTableDe
 		Predicate n4 = cb.equal(b.get("itemId"), req.getItemId());
 		Predicate n6 = cb.equal(b.get("branchCode"), "99999");
 		Predicate n7 = cb.or(n3,n6);
-		query.where(n1,n2,n4,n7).orderBy(orderList);
+		Predicate n8 = cb.equal(b.get("productId"),req.getProductId());
+		query.where(n1,n2,n4,n7,n8).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<ConstantTableDetails> result = em.createQuery(query);
@@ -689,8 +690,8 @@ public List<DropdownTableDetails> getByDropdownTableDetailsId(ConstantTableDetai
 		Predicate a1 = cb.equal(ocpm1.get("itemId"), b.get("itemId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
-
-		amendId.where(a1, a2,a3);
+		Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
+		amendId.where(a1, a2,a3,a4);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -703,7 +704,8 @@ public List<DropdownTableDetails> getByDropdownTableDetailsId(ConstantTableDetai
 		Predicate n4 = cb.equal(b.get("itemId"), req.getItemId());
 		Predicate n6 = cb.equal(b.get("branchCode"), "99999");
 		Predicate n7 = cb.or(n3,n6);
-		query.where(n1,n2,n4,n7).orderBy(orderList);
+		Predicate n8 = cb.equal(b.get("productId"),req.getProductId());
+		query.where(n1,n2,n4,n7,n8).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<DropdownTableDetails> result = em.createQuery(query);

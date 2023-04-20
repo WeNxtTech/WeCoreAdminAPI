@@ -45,5 +45,8 @@ public interface CoverDocumentUploadDetailsRepository extends JpaRepository<Cove
 	CoverDocumentUploadDetails findByQuoteNoAndSectionIdAndIdAndDocumentId(String quoteNo, Integer valueOf,
 			Integer valueOf2, Integer documentId);
 
+	List<CoverDocumentUploadDetails> findByQuoteNoAndIdNotAndDocumentTypeOrderByEntryDateDesc(String quoteNo, int i,
+			String documentType);
+
 	
 }

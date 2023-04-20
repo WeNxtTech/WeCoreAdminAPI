@@ -437,9 +437,16 @@ public class DocumentServiceImpl implements DocumentService{
 			List<ClientDocListRes> totalDocResList = new ArrayList<ClientDocListRes>();
 
 			try {
-				List<CoverDocumentUploadDetails> list = documentuploaddetailsrepository.findByQuoteNoAndIdAndDocumentTypeOrderByEntryDateDesc(req.getQuoteNo() , 
-						Integer.valueOf(req.getId()) ,req.getDocumentType() )  ;
-
+				List<CoverDocumentUploadDetails> list  = new ArrayList<CoverDocumentUploadDetails>();
+				if(StringUtils.isNotBlank(req.getId())) {
+					list = documentuploaddetailsrepository.findByQuoteNoAndIdAndDocumentTypeOrderByEntryDateDesc(req.getQuoteNo() , 
+							Integer.valueOf(req.getId()) ,req.getDocumentType() )  ;
+	
+				} else {
+					list = documentuploaddetailsrepository.findByQuoteNoAndIdNotAndDocumentTypeOrderByEntryDateDesc(req.getQuoteNo() , 
+							0 ,req.getDocumentType() )  ;
+				}
+				
 				for (CoverDocumentUploadDetails data : list) {
 
 					ClientDocListRes res = dozerMapper.map(data, ClientDocListRes.class);

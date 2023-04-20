@@ -332,7 +332,8 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 			Predicate n9 = cb.equal(c.get("loginId"), b.get("loginId"));
 			Predicate n10 = cb.equal(b.get("branchCode"),branchCode);
 			Predicate n11 = cb.equal(c.get("loginId"), l.get("loginId"));
-			query.where(n1,n2,n4,n5,n6,n7,n8,n9,n10,n11).orderBy(orderList);
+			Predicate n12 = cb.notEqual(c.get("status"), "D");
+			query.where(n1,n2,n4,n5,n6,n7,n8,n9,n10,n11,n12).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<Tuple> result = em.createQuery(query);			

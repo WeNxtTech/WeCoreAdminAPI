@@ -147,7 +147,7 @@ private static final long serialVersionUID = 1L;
     private Long       totalNoOfEmployees;
     
     @Column(name="TOTAL_EXCLUDED_EMPLOYEES")
-    private Long       totoalExcludedEmployees ;
+    private Long       totalExcludedEmployees ;
     
     @Column(name="TOTAL_REJOINED_EMPLOYEES")
     private Long       totalRejoinedEmployees ;
@@ -158,7 +158,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="ACCOUNT_AUDITENT_TYPE")
     private Integer       accountAuditentType ;
 
-    
+    @Column(name="TOTAL_OUTSTANDING_AMOUNT")
+    private Long       totalOutstandingAmount;    
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

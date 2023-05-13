@@ -253,7 +253,7 @@ private static final long serialVersionUID = 1L;
     private Long       totalNoOfEmployees;
     
     @Column(name="TOTAL_EXCLUDED_EMPLOYEES")
-    private Long       totoalExcludedEmployees ;
+    private Long       totalExcludedEmployees ;
     
     @Column(name="TOTAL_REJOINED_EMPLOYEES")
     private Long       totalRejoinedEmployees ;
@@ -266,7 +266,12 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="AUDITENT_TYPE_DESC")
     private String       auditentTypeDesc;   
-    
+
+    @Column(name="INDUSTRY_NAME")
+    private String       industryName;
+
+    @Column(name="TOTAL_OUTSTANDING_AMOUNT")
+    private Long       totalOutstandingAmount;
 }
 
 

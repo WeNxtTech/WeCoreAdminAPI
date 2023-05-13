@@ -146,6 +146,7 @@ public class SectionCoverMasterController {
 				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
 			}
 		}
+
 		
 	//  Get Active Cover Master
 		
@@ -280,4 +281,86 @@ public class SectionCoverMasterController {
 			}
 		}
 
+		
+		// save
+		@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
+		@PostMapping("/insertbrokersectioncover")
+		@ApiOperation(value = "This method is Insert Section  Cover Details")
+		public ResponseEntity<CommonRes> insertBrokerSectionCover(@RequestBody List<SectionCoverMasterSaveReq> req) {
+
+			reqPrinter.reqPrint(req);
+			CommonRes data = new CommonRes();
+
+			List<Error> validation = sectionCoverService.validateSectionCoverDetails(req);
+			// validation
+			if (validation != null && validation.size() != 0) {
+				data.setCommonResponse(null);
+				data.setIsError(true);
+				data.setErrorMessage(validation);
+				data.setMessage("Failed");
+				return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+			} else {
+
+				// Save
+				SuccessRes res = sectionCoverService.insertBrokerSectionCover(req);
+				data.setCommonResponse(res);
+				data.setIsError(false);
+				data.setErrorMessage(Collections.emptyList());
+				data.setMessage("Success");
+
+				if (res != null) {
+					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				} else {
+					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				}
+			}
+
+		}
+
+		//  Get All Cover Master
+		@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
+		@PostMapping("/getallsectionbrokercoverdetails")
+		@ApiOperation("This method is getall Section Broker Cover Details")
+		public ResponseEntity<CommonRes> getallSectionBrokerCoverDetails(@RequestBody SectionCoverMasterGetAllReq req)
+		{
+			CommonRes data = new CommonRes();
+			reqPrinter.reqPrint(req);
+			
+			List<SectionCoverMasterGetAllRes> res = sectionCoverService.getallSectionBrokerCoverDetails(req);
+			data.setCommonResponse(res);
+			data.setErrorMessage(Collections.emptyList());
+			data.setIsError(false);
+			data.setMessage("Success");
+			
+			if(res!= null) {
+				return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
+			}
+			else {
+				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+			}
+		}
+		@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
+		@PostMapping("/getallsectioncoverbroker")
+		@ApiOperation("This method is getall Section Cover Details for Broker")
+		public ResponseEntity<CommonRes> getallSectionCoverBroker(@RequestBody SectionCoverMasterGetAllReq req)
+		{
+			CommonRes data = new CommonRes();
+			reqPrinter.reqPrint(req);
+			
+			List<SectionCoverMasterGetAllRes> res = sectionCoverService.getallSectionCoverBroker(req);
+			data.setCommonResponse(res);
+			data.setErrorMessage(Collections.emptyList());
+			data.setIsError(false);
+			data.setMessage("Success");
+			
+			if(res!= null) {
+				return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
+			}
+			else {
+				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+			}
+		}
+
+		
 }

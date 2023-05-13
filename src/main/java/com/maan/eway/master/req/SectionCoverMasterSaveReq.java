@@ -30,5 +30,12 @@ public class SectionCoverMasterSaveReq {
 	
 	@JsonProperty("BranchCode")
 	private String branchCode;
+
+	@JsonProperty("Status")
+	private String status;
 	
+	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
+
 }

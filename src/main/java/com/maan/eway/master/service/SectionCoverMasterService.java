@@ -51,5 +51,11 @@ public interface SectionCoverMasterService  {
 
 	List<DropDownRes> getsectionCoverDiscountDropdown(SectionCoverMasterGetReq req);
 
+	List<SectionCoverMasterGetAllRes> getallSectionCoverBroker(SectionCoverMasterGetAllReq req);
+
+	SuccessRes insertBrokerSectionCover(List<SectionCoverMasterSaveReq> req);
+
+	List<SectionCoverMasterGetAllRes> getallSectionBrokerCoverDetails(SectionCoverMasterGetAllReq req);
+
 
 }

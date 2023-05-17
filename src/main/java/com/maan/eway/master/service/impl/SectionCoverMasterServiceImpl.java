@@ -1821,7 +1821,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				String end = "31/12/2050";
 				Date endDate = sdf.parse(end);
 				long MILLS_IN_A_DAY = 1000*60*60*24;
-				Date oldEndDate = new Date(req.getEffectiveDateStart().getTime()- MILLS_IN_A_DAY);
+				Date oldEndDate = new Date(StartDate.getTime()- MILLS_IN_A_DAY);
 				Date entryDate = null;
 				String createdBy ="";
 				Date beforeOneDay = new Date(new Date().getTime()- MILLS_IN_A_DAY);
@@ -1944,6 +1944,9 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 							}
 				}
 						repo.saveAndFlush(secCover);
+						String successRes = "Cover Added Successfully";
+						res.setResponse(successRes);
+						res.setSuccessId(req.getCoverId());
 						
 						log.info("Saved Detail is  --->" + secCover );
 					} else if(data.getSubCoverYn().equalsIgnoreCase("N") ) {
@@ -1993,16 +1996,18 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 								}
 							}
 				}
+						String successRes = "Cover Added Successfully";
+						res.setResponse(successRes);
+						res.setSuccessId(req.getCoverId());
+			
 						repo.saveAndFlush(secCover);
 						
 						log.info("Saved Detail is  --->" + secCover );
 					}
 					
 				}
-				String successRes = "Cover Added Successfully";
+				
 						
-				res.setResponse(successRes);
-				res.setSuccessId(req.getCoverId());
 			}
 			
 		} catch (Exception e) {

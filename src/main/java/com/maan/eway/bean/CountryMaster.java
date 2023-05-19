@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -114,6 +113,12 @@ private static final long serialVersionUID = 1L;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="UPDATED_DATE")
     private Date       updatedDate ;
+
+    @Column(name="PLAN_ID", length=100)
+    private String     planId;
+
+    @Column(name="PLAN_DESC", length=100)
+    private String     planDesc;
 
 }
 

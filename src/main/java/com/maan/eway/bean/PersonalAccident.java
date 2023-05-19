@@ -180,4 +180,6 @@ public class PersonalAccident implements Serializable {
    
    @Column(name="ENDT_CATEG_DESC", length=100)
    private String     endtCategDesc ;
+   
+   
 }

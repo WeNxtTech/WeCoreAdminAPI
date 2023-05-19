@@ -484,8 +484,9 @@ public List<ConstantTableDetailsRes> getallConstantTableDetails(ConstantTableDet
 		Predicate a1 = cb.equal(ocpm1.get("itemId"), b.get("itemId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+		Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
 
-		amendId.where(a1, a2,a3);
+		amendId.where(a1, a2,a3,a4);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -497,7 +498,9 @@ public List<ConstantTableDetailsRes> getallConstantTableDetails(ConstantTableDet
 		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
 		Predicate n4 = cb.equal(b.get("branchCode"), "99999");
 		Predicate n5 = cb.or(n3,n4);
-		query.where(n1,n2,n5).orderBy(orderList);
+		Predicate n6 = cb.equal(b.get("productId"), req.getProductId());
+		
+		query.where(n1,n2,n5,n6).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<ConstantTableDetails> result = em.createQuery(query);

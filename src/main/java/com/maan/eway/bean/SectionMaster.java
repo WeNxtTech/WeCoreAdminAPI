@@ -94,7 +94,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="UPDATED_BY", length=20)
     private String     updatedBy ;
 
-
+    @Column(name="MOTOR_YN")
+    private String       motorYn;
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

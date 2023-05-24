@@ -32,11 +32,13 @@ import com.maan.eway.admin.service.AdminDropDownService;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.ProductMaster;
+import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.common.req.GetTableDropDownReq;
 import com.maan.eway.common.req.LovDropDownReq;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.ProductMasterRepository;
+import com.maan.eway.repository.ProductSectionMasterRepository;
 import com.maan.eway.req.SubUserTypeReq;
 import com.maan.eway.res.ColummnDropRes;
 import com.maan.eway.res.DropDownRes;
@@ -60,6 +62,9 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 	
 	@Autowired
 	private ProductMasterRepository productrepo ;
+	
+	@Autowired
+	private ProductSectionMasterRepository sectionRepo;
 	
 		@Override
 		public List<DropDownRes> getUserType(LovDropDownReq req) {
@@ -99,7 +104,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 				}*/
 				if(StringUtils.isNotBlank(req.getProductId()) && StringUtils.isBlank(req.getTableName())) {
 					String tablename="MsVehicleDetails";
-					List<ProductMaster> idfortable = productrepo.findByProductIdOrderByEffectiveDateStartDesc(Integer.parseInt(req.getProductId()));
+					List<ProductSectionMaster> idfortable = sectionRepo.findByProductIdAndSectionIdOrderByEffectiveDateStartDesc(Integer.parseInt(req.getProductId()), Integer.parseInt(req.getSectionId()));
 					String oneProduct = idfortable.get(0).getMotorYn();
 					if(oneProduct.equals("M"))
 						tablename="MsVehicleDetails";

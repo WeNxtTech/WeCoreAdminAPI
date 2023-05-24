@@ -16,4 +16,7 @@ public class GetTableDropDownReq {
 	private String tableName;
 	@JsonProperty("ProductId")
 	private String productId;
+	@JsonProperty("SectionId")
+	private String sectionId;
+
 }

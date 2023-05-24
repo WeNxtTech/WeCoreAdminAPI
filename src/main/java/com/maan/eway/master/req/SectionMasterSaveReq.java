@@ -58,4 +58,7 @@ public class SectionMasterSaveReq implements Serializable {
 	@JsonProperty("Remarks")
 	private String remarks;
 
+	@JsonProperty("MotorYn")
+	private String motorYn;
+
 }

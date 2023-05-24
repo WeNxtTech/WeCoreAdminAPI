@@ -600,7 +600,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			res.setCreatedBy(list.get(0).getCreatedBy());
 			res.setEntryDate(list.get(0).getEntryDate());
 			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
-			res.setMotorYn(list.get(0).getMotorYn());
+			//res.setMotorYn(list.get(0).getMotorYn());
 			res.setPaymentRedirUrl(list.get(0).getPaymentRedirUrl());
 			res.setPaymentYn(list.get(0).getPaymentYn());
 			res.setProductDesc(list.get(0).getProductDesc());
@@ -1078,7 +1078,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 				
 				if(list.size()>0) {
 					Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
-					motorYn = list.get(0).getMotorYn();
+					//motorYn = list.get(0).getMotorYn();
 					if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
 						amendId = list.get(0).getAmendId() + 1 ;
 						entryDate = new Date() ;

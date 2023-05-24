@@ -66,10 +66,10 @@ public class CompanyProductMasterRes implements Serializable {
 
 	@JsonProperty("Remarks")
 	private String remarks;
-	
+	/*
 	@JsonProperty("MotorYn")
 	private String motorYn;
-	
+	*/
 	@JsonProperty("ProductIconId")
 	private String productIconId;
 	

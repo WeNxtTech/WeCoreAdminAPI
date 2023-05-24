@@ -268,13 +268,13 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			}else if (req.getProductDesc().length() > 500) {
 				errorList.add(new Error("08", "ProductDesc", "Please Enter Product Descwithin 500 Characters"));
 			}
-			
+			/*
 			if (StringUtils.isBlank(req.getMotorYn())) {
 				errorList.add(new Error("12", "Product Type", "Please Select Product Type "));
 			}else if (req.getMotorYn().length() >1) {
 				errorList.add(new Error("12", "Product Type", "Please Enter Product Type within 1 Character"));
 			}
-			
+			*/
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
@@ -777,7 +777,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 					saveData.setEntryDate(entryDate);
 					saveData.setUpdatedDate(new Date());
 					saveData.setMakerYn(list.get(0).getMakerYn());
-					saveData.setMotorYn(list.get(0).getMotorYn());
+					//saveData.setMotorYn(list.get(0).getMotorYn());
 					saveData.setUpdatedBy(req.getCreatedBy());
 					saveData.setRegulatoryCode(list.get(0).getRegulatoryCode());
 					saveData.setCurrencyIds(list.get(0).getCurrencyIds());

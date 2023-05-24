@@ -70,4 +70,7 @@ public class SectionMasterRes implements Serializable {
 	@JsonProperty("EffectiveDateEnd")
 	private Date effectiveDateEnd;
 
+	@JsonProperty("MotorYn")
+	private String motorYn;
+
 }

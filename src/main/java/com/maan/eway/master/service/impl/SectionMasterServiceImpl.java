@@ -138,7 +138,12 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			}else if (req.getRemarks().length() > 100) {
 				errorList.add(new Error("08", "Remarks", "Please Enter Remarks within 100 Characters"));
 			}
-			
+			if (StringUtils.isBlank(req.getMotorYn())) {
+				errorList.add(new Error("12", "Product Type", "Please Select Product Type "));
+			}else if (req.getMotorYn().length() >1) {
+				errorList.add(new Error("12", "Product Type", "Please Enter Product Type within 1 Character"));
+			}
+
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();

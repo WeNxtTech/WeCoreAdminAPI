@@ -960,7 +960,7 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 				Date entryDate = new Date(); ;
 				String createdBy = "" ;
 				String sectionId="";
-		
+				String motorYn = "" ;
 				// Update
 				// Get Less than Equal Today Record 
 				// Criteria
@@ -1004,7 +1004,7 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 				
 				if(list.size()>0) {
 					Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
-				
+					motorYn = list.get(0).getMotorYn();
 					if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
 						amendId = list.get(0).getAmendId() + 1 ;
 						entryDate = new Date() ;
@@ -1043,6 +1043,7 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 				saveData.setCoreAppCode(req.getCoreAppCode());
 				saveData.setUpdatedDate(new Date());
 				saveData.setUpdatedBy(req.getCreatedBy());
+				saveData.setMotorYn(motorYn);
 				repo.saveAndFlush(saveData);
 			
 				log.info("Saved Details is ---> " + json.toJson(saveData));

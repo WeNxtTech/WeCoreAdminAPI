@@ -105,9 +105,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="UPDATED_DATE")
     private Date       updatedDate ;
 
-    @Column(name="MOTOR_YN")
-    private String       motorYn;
-    //--- ENTITY LINKS ( RELATIONSHIP )
+
+    @Column(name="MOTOR_YN", length=1)
+    private String     motorYn;
 
 
 }

@@ -961,6 +961,7 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 				fParam.setRate(data.getRate().toString());
 				fParam.setCalType(data.getCalType());
 				fParam.setMinimumPremium(data.getMinimumPremium().toString());
+				fParam.setRegulatoryCode(data.getRegulatoryCode());
 				fParam.setStatus(data.getStatus());
 				factorParams.add(fParam);
 			}

@@ -561,6 +561,9 @@ private static final long serialVersionUID = 1L;
       
       @Column(name="ACC_DAMAGE_SI")
       private BigDecimal accDamageSi ;
+      
+      @Column(name="FIRST_LOSS_PERCENT")
+      private Long firstLossPercent ;
 }
 
 

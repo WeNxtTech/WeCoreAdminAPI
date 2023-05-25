@@ -324,6 +324,13 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="LIABILITY_SI")
     private BigDecimal       liabilitySi;
+    
+    @Column(name="FID_EMP_COUNT")
+    private BigDecimal       fidEmpCount;
+    
+    @Column(name="FID_EMP_SI")
+    private BigDecimal       fidEmpSi;
+    
 }
 
 

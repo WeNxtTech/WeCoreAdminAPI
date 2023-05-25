@@ -306,6 +306,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="PLATE_GLASS_SI")
     private BigDecimal plateGlassSi ;
 
+    @Column(name="ACC_DAMAGE_SI")
+    private BigDecimal accDamageSi ;
 }
 
 

@@ -159,7 +159,10 @@ private static final long serialVersionUID = 1L;
     private Integer       accountAuditentType ;
 
     @Column(name="TOTAL_OUTSTANDING_AMOUNT")
-    private Long       totalOutstandingAmount;    
+    private Long       totalOutstandingAmount;
+    
+    @Column(name="LIABILITY_SI")
+    private BigDecimal       liabilitySi;
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

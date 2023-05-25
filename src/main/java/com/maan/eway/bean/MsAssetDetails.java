@@ -312,6 +312,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="FIRST_LOSS_PERCENT")
     private Long firstLossPercent ;
     
+    @Column(name="BURGLARY_SI")
+    private BigDecimal burglarySi ;
+    
     
 }
 

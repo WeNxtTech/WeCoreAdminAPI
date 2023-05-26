@@ -562,8 +562,6 @@ private static final long serialVersionUID = 1L;
       @Column(name="ACC_DAMAGE_SI")
       private BigDecimal accDamageSi ;
       
-      @Column(name="FIRST_LOSS_PERCENT")
-      private Long firstLossPercent ;
       
       @Column(name="BURGLARY_SI")
       private BigDecimal burglarySi ;
@@ -585,7 +583,13 @@ private static final long serialVersionUID = 1L;
       
       @Column(name="BOILER_PLANTS_SI")
       private BigDecimal boilerPlantsSi ;
-      
+
+      @Column(name="FIRST_LOSS_PERCENT_ID")
+      private Integer firstLossPercentId;
+
+      @Column(name="FIRST_LOSS_PERCENT")
+      private Integer firstLossPercent;
+
 }
 
 

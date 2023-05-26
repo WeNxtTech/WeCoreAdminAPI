@@ -10,11 +10,10 @@
  */
 
 
-package com.maan.eway.notification.bean;
+package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -47,161 +46,161 @@ import javax.persistence.*;
 
 
 public class NotifTransactionDetails implements Serializable {
- 
-private static final long serialVersionUID = 1L;
- 
-    //--- ENTITY PRIMARY KEY 
-    @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(name="Notif_No", nullable=false)
-    public Integer    notifNo ;
+	 
+	private static final long serialVersionUID = 1L;
+	 
+	    //--- ENTITY PRIMARY KEY 
+	    @Id
+	    @GeneratedValue(strategy=GenerationType.IDENTITY)
+	    @Column(name="Notif_No", nullable=false)
+	    public Integer    notifNo ;
 
-    //--- ENTITY DATA FIELDS 
-    @Column(name="Customer_Name", length=20)
-    public String     customerName ;
+	    //--- ENTITY DATA FIELDS 
+	    @Column(name="Customer_Name", length=20)
+	    public String     customerName ;
 
-    @Column(name="Customer_Mail_Id", length=20)
-    public String     customerMailid ;
+	    @Column(name="Customer_Mail_Id", length=20)
+	    public String     customerMailid ;
 
-    @Column(name="Customer_Phone_No")
-    public BigDecimal customerPhoneNo ;
+	    @Column(name="Customer_Phone_No")
+	    public BigDecimal customerPhoneNo ;
 
-    @Column(name="Customer_Phone_Code")
-    public Integer    customerPhoneCode ;
+	    @Column(name="Customer_Phone_Code")
+	    public Integer    customerPhoneCode ;
 
-    @Column(name="Customer_Messenger_Code")
-    public Integer    customerMessengerCode ;
+	    @Column(name="Customer_Messenger_Code")
+	    public Integer    customerMessengerCode ;
 
-    @Column(name="Customer_Messenger_Phone")
-    public BigDecimal customerMessengerPhone ;
+	    @Column(name="Customer_Messenger_Phone")
+	    public BigDecimal customerMessengerPhone ;
 
-    @Column(name="Broker_Name", length=20)
-    public String     brokerName ;
+	    @Column(name="Broker_Name", length=20)
+	    public String     brokerName ;
 
-    @Column(name="Broker_Company_Name", length=20)
-    public String     brokerCompanyName ;
+	    @Column(name="Broker_Company_Name", length=20)
+	    public String     brokerCompanyName ;
 
-    @Column(name="Broker_Mail_Id", length=20)
-    public String     brokerMailId ;
+	    @Column(name="Broker_Mail_Id", length=20)
+	    public String     brokerMailId ;
 
-    @Column(name="Broker_Phone_No")
-    public BigDecimal brokerPhoneNo ;
+	    @Column(name="Broker_Phone_No")
+	    public BigDecimal brokerPhoneNo ;
 
-    @Column(name="Broker_Phone_Code")
-    public Integer    brokerPhoneCode ;
+	    @Column(name="Broker_Phone_Code")
+	    public Integer    brokerPhoneCode ;
 
-    @Column(name="Broker_Messenger_Code")
-    public Integer    brokerMessengerCode ;
+	    @Column(name="Broker_Messenger_Code")
+	    public Integer    brokerMessengerCode ;
 
-    @Column(name="Broker_Messenger_Phone")
-    public BigDecimal brokerMessengerPhone ;
+	    @Column(name="Broker_Messenger_Phone")
+	    public BigDecimal brokerMessengerPhone ;
 
-    @Column(name="UW_name", length=20)
-    public String     uwName ;
+	    @Column(name="UW_name", length=20)
+	    public String     uwName ;
 
-    @Column(name="uw_mail_id", length=20)
-    public String     uwMailid ;
+	    @Column(name="uw_mail_id", length=20)
+	    public String     uwMailid ;
 
-    @Column(name="UW_Phone_Code")
-    public Integer    uwPhonecode ;
+	    @Column(name="UW_Phone_Code")
+	    public Integer    uwPhonecode ;
 
-    @Column(name="UW_Phone_No")
-    public BigDecimal uwPhoneNo ;
+	    @Column(name="UW_Phone_No")
+	    public BigDecimal uwPhoneNo ;
 
-    @Column(name="UW_messenger_code")
-    public Integer    uwMessengerCode ;
+	    @Column(name="UW_messenger_code")
+	    public Integer    uwMessengerCode ;
 
-    @Column(name="UW_messenger_phone")
-    public BigDecimal uwMessengerPhone ;
+	    @Column(name="UW_messenger_phone")
+	    public BigDecimal uwMessengerPhone ;
 
-    @Column(name="Company_Name", length=20)
-    public String     companyName ;
+	    @Column(name="Company_Name", length=20)
+	    public String     companyName ;
 
-    @Column(name="Product_Name", length=20)
-    public String     productName ;
+	    @Column(name="Product_Name", length=20)
+	    public String     productName ;
 
-    @Column(name="Section_Name", length=20)
-    public String     sectionName ;
+	    @Column(name="Section_Name", length=20)
+	    public String     sectionName ;
 
-    @Column(name="Status_message", length=20)
-    public String     statusMessage ;
+	    @Column(name="Status_message", length=20)
+	    public String     statusMessage ;
 
-    @Column(name="OTP")
-    public Integer    otp ;
+	    @Column(name="OTP")
+	    public Integer    otp ;
 
-    @Column(name="Policy_No")
-    public String policyNo ;
+	    @Column(name="Policy_No")
+	    public String policyNo ;
 
-    @Column(name="Quote_No")
-    public String quoteNo ;
+	    @Column(name="Quote_No")
+	    public String quoteNo ;
 
-    @Column(name="Notif_Description", length=100)
-    public String     notifDescription ;
+	    @Column(name="Notif_Description", length=100)
+	    public String     notifDescription ;
 
-    @Column(name="notif_template_name", length=20)
-    public String     notifTemplatename ;
+	    @Column(name="notif_template_name", length=20)
+	    public String     notifTemplatename ;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="Entry_Date")
-    public Date       entryDate ;
+	    @Temporal(TemporalType.TIMESTAMP)
+	    @Column(name="Entry_Date")
+	    public Date       entryDate ;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="Notifcation_Push_date")
-    public Date       notifcationPushDate ;
-    
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="Notifcation_End_date")
-    public Date       notifcationEndDate ;
+	    @Temporal(TemporalType.TIMESTAMP)
+	    @Column(name="Notifcation_Push_date")
+	    public Date       notifcationPushDate ;
+	    
+	    @Temporal(TemporalType.TIMESTAMP)
+	    @Column(name="Notifcation_End_date")
+	    public Date       notifcationEndDate ;
 
-    @Column(name="Notif_pushed_status", length=20)
-    public String     notifPushedStatus ;
+	    @Column(name="Notif_pushed_status", length=20)
+	    public String     notifPushedStatus ;
 
-    @Column(name="Notif_Priority", nullable=false)
-    public Integer    notifPriority ;
+	    @Column(name="Notif_Priority", nullable=false)
+	    public Integer    notifPriority ;
 
-    @Column(name="Tiny_URL", length=15)
-    public String     tinyUrl ;
+	    @Column(name="Tiny_URL", length=15)
+	    public String     tinyUrl ;
 
-    @Column(name="company_id", nullable=false, length=15)
-    public String     companyid ;
+	    @Column(name="company_id", nullable=false, length=15)
+	    public String     companyid ;
 
-    @Column(name="product_id", nullable=false)
-    public Integer    productid ;
+	    @Column(name="product_id", nullable=false)
+	    public Integer    productid ;
 
-    @Column(name="company_Address")
-    public String companyAddress;
-    @Column(name="company_Logo")
-    public String companyLogo;
-    //--- ENTITY LINKS ( RELATIONSHIP )
-    @Column(name="attach_file_path")
-    public String attachFilePath;
-    
-    @Column(name="PUSHED_BY", length=100)
-    public String pushedBy;
-    
-    @Column(name="UWLOGIN_ID", length=100)
-    public String uwloginId;
-    
-    @Column(name="UWUSER_TYPE", length=100)
-    public String uwUserType;
-    
-    @Column(name="UWSUBUSER_TYPE", length=100)
-    public String uwSubuserType;
+	    @Column(name="company_Address")
+	    public String companyAddress;
+	    @Column(name="company_Logo")
+	    public String companyLogo;
+	    //--- ENTITY LINKS ( RELATIONSHIP )
+	    @Column(name="attach_file_path")
+	    public String attachFilePath;
+	    
+	    @Column(name="PUSHED_BY", length=100)
+	    public String pushedBy;
+	    
+	    @Column(name="UWLOGIN_ID", length=100)
+	    public String uwloginId;
+	    
+	    @Column(name="UWUSER_TYPE", length=100)
+	    public String uwUserType;
+	    
+	    @Column(name="UWSUBUSER_TYPE", length=100)
+	    public String uwSubuserType;
 
-    @Column(name="CUSTOMER_REFNO", length=100)
-    public String customerRefno;
+	    @Column(name="CUSTOMER_REFNO", length=100)
+	    public String customerRefno;
 
-    @Column(name="PAGE_TYPE", length=100)
-    public String pageType;
+	    @Column(name="PAGE_TYPE", length=100)
+	    public String pageType;
 
-    @Column(name="BRANCH_CODE", length=100)
-    public String branchCode;
+	    @Column(name="BRANCH_CODE", length=100)
+	    public String branchCode;
 
-    @Column(name="REFNO", length=100)
-    public String refno;
+	    @Column(name="REFNO", length=100)
+	    public String refno;
 
-    @Column(name="INSURANCE_ID", length=100)
-    public String insuranceId;
+	    @Column(name="INSURANCE_ID", length=100)
+	    public String insuranceId;
 
 }
 

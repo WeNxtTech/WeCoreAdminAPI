@@ -10,7 +10,7 @@
  */
 
 
-package com.maan.eway.bean;
+package com.maan.eway.notification.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -52,115 +52,156 @@ private static final long serialVersionUID = 1L;
  
     //--- ENTITY PRIMARY KEY 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name="Notif_No", nullable=false)
-    private Integer    notifNo ;
+    public Integer    notifNo ;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="Customer_Name", length=20)
-    private String     customerName ;
+    public String     customerName ;
 
-    @Column(name="Customer_MailId", length=20)
-    private String     customerMailid ;
+    @Column(name="Customer_Mail_Id", length=20)
+    public String     customerMailid ;
 
     @Column(name="Customer_Phone_No")
-    private BigDecimal customerPhoneNo ;
+    public BigDecimal customerPhoneNo ;
 
     @Column(name="Customer_Phone_Code")
-    private Integer    customerPhoneCode ;
+    public Integer    customerPhoneCode ;
 
     @Column(name="Customer_Messenger_Code")
-    private Integer    customerMessengerCode ;
+    public Integer    customerMessengerCode ;
 
     @Column(name="Customer_Messenger_Phone")
-    private BigDecimal customerMessengerPhone ;
+    public BigDecimal customerMessengerPhone ;
 
     @Column(name="Broker_Name", length=20)
-    private String     brokerName ;
+    public String     brokerName ;
 
     @Column(name="Broker_Company_Name", length=20)
-    private String     brokerCompanyName ;
+    public String     brokerCompanyName ;
 
     @Column(name="Broker_Mail_Id", length=20)
-    private String     brokerMailId ;
+    public String     brokerMailId ;
 
     @Column(name="Broker_Phone_No")
-    private BigDecimal brokerPhoneNo ;
+    public BigDecimal brokerPhoneNo ;
 
     @Column(name="Broker_Phone_Code")
-    private Integer    brokerPhoneCode ;
+    public Integer    brokerPhoneCode ;
 
     @Column(name="Broker_Messenger_Code")
-    private Integer    brokerMessengerCode ;
+    public Integer    brokerMessengerCode ;
 
     @Column(name="Broker_Messenger_Phone")
-    private BigDecimal brokerMessengerPhone ;
+    public BigDecimal brokerMessengerPhone ;
 
     @Column(name="UW_name", length=20)
-    private String     uwName ;
+    public String     uwName ;
 
-    @Column(name="UW_MailId", length=20)
-    private String     uwMailid ;
+    @Column(name="uw_mail_id", length=20)
+    public String     uwMailid ;
 
-    @Column(name="UW_PhoneCode")
-    private Integer    uwPhonecode ;
+    @Column(name="UW_Phone_Code")
+    public Integer    uwPhonecode ;
 
     @Column(name="UW_Phone_No")
-    private BigDecimal uwPhoneNo ;
+    public BigDecimal uwPhoneNo ;
 
     @Column(name="UW_messenger_code")
-    private Integer    uwMessengerCode ;
+    public Integer    uwMessengerCode ;
 
     @Column(name="UW_messenger_phone")
-    private BigDecimal uwMessengerPhone ;
+    public BigDecimal uwMessengerPhone ;
 
     @Column(name="Company_Name", length=20)
-    private String     companyName ;
+    public String     companyName ;
 
     @Column(name="Product_Name", length=20)
-    private String     productName ;
+    public String     productName ;
 
     @Column(name="Section_Name", length=20)
-    private String     sectionName ;
+    public String     sectionName ;
 
     @Column(name="Status_message", length=20)
-    private String     statusMessage ;
+    public String     statusMessage ;
 
     @Column(name="OTP")
-    private Integer    otp ;
+    public Integer    otp ;
 
     @Column(name="Policy_No")
-    private BigDecimal policyNo ;
+    public String policyNo ;
 
     @Column(name="Quote_No")
-    private BigDecimal quoteNo ;
+    public String quoteNo ;
 
     @Column(name="Notif_Description", length=100)
-    private String     notifDescription ;
+    public String     notifDescription ;
 
-    @Column(name="Notif_TemplateName", length=20)
-    private String     notifTemplatename ;
+    @Column(name="notif_template_name", length=20)
+    public String     notifTemplatename ;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="Entry_Date")
-    private Date       entryDate ;
+    public Date       entryDate ;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="Notifcation_date")
-    private Date       notifcationDate ;
+    @Column(name="Notifcation_Push_date")
+    public Date       notifcationPushDate ;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="Notifcation_End_date")
+    public Date       notifcationEndDate ;
 
     @Column(name="Notif_pushed_status", length=20)
-    private String     notifPushedStatus ;
+    public String     notifPushedStatus ;
 
     @Column(name="Notif_Priority", nullable=false)
-    private Integer    notifPriority ;
+    public Integer    notifPriority ;
 
     @Column(name="Tiny_URL", length=15)
-    private String     tinyUrl ;
+    public String     tinyUrl ;
 
+    @Column(name="company_id", nullable=false, length=15)
+    public String     companyid ;
 
+    @Column(name="product_id", nullable=false)
+    public Integer    productid ;
+
+    @Column(name="company_Address")
+    public String companyAddress;
+    @Column(name="company_Logo")
+    public String companyLogo;
     //--- ENTITY LINKS ( RELATIONSHIP )
+    @Column(name="attach_file_path")
+    public String attachFilePath;
+    
+    @Column(name="PUSHED_BY", length=100)
+    public String pushedBy;
+    
+    @Column(name="UWLOGIN_ID", length=100)
+    public String uwloginId;
+    
+    @Column(name="UWUSER_TYPE", length=100)
+    public String uwUserType;
+    
+    @Column(name="UWSUBUSER_TYPE", length=100)
+    public String uwSubuserType;
 
+    @Column(name="CUSTOMER_REFNO", length=100)
+    public String customerRefno;
+
+    @Column(name="PAGE_TYPE", length=100)
+    public String pageType;
+
+    @Column(name="BRANCH_CODE", length=100)
+    public String branchCode;
+
+    @Column(name="REFNO", length=100)
+    public String refno;
+
+    @Column(name="INSURANCE_ID", length=100)
+    public String insuranceId;
 
 }
 

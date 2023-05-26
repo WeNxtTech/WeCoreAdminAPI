@@ -315,6 +315,23 @@ private static final long serialVersionUID = 1L;
     @Column(name="BURGLARY_SI")
     private BigDecimal burglarySi ;
     
+    @Column(name="POWER_PLANT_SI")
+    private BigDecimal powerPlantSi ;
+    
+    @Column(name="ELEC_MACHINES_SI")
+    private BigDecimal elecMachinesSi ;
+    
+    @Column(name="EQUIPMENT_SI")
+    private BigDecimal equipmentSi ;
+    
+    @Column(name="GENERAL_MACHINE_SI")
+    private BigDecimal generalMachineSi ;
+    
+    @Column(name="MANU_UNITS_SI")
+    private BigDecimal manuUnitsSi ;
+    
+    @Column(name="BOILER_PLANTS_SI")
+    private BigDecimal boilerPlantsSi ;
     
 }
 

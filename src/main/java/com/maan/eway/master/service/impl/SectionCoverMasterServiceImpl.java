@@ -345,8 +345,9 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate n11 = cb2.equal(b2.get("branchCode"), req.getBranchCode());
 			Predicate n12 = cb2.equal(b2.get("branchCode"), "99999");
 			Predicate n13 = cb2.or(n11,n12 );
-			Predicate n16 = cb2.equal(b2.get("status"),"Y");
-			query2.where(n4,n5,n6,n7,n14,n15,n10,n13,n16).orderBy(orderList2);
+//			Predicate n16 = cb2.equal(b2.get("status"),"Y");
+
+			query2.where(n4,n5,n6,n7,n14,n15,n10,n13).orderBy(orderList2);
 
 			// Get Result
 			TypedQuery<SectionCoverMaster> result2 = em.createQuery(query2);

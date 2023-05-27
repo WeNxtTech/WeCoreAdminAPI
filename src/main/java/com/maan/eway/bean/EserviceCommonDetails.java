@@ -333,6 +333,16 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="EMP_LIABILITY_SI")
     private BigDecimal       empLiabilitySi;
+    
+    
+    @Column(name="PERSONAL_LIABILITY_OCCUPATION")
+    private String       personalLiabilityOccupation; 
+    
+    @Column(name="PERSONAL_LIABILITY_SI")
+    private BigDecimal       personalLiabilitySi; 
+    
+    @Column(name="PERSONAL_LIABILITY_CATEGORY")
+    private BigDecimal       personalLiabilityCategory; 
 }
 
 

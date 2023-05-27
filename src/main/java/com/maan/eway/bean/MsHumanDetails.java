@@ -171,7 +171,8 @@ private static final long serialVersionUID = 1L;
     private BigDecimal       fidEmpSi;
     
     //--- ENTITY LINKS ( RELATIONSHIP )
-
+    @Column(name="EMP_LIABILITY_SI")
+    private BigDecimal       empLiabilitySi;
 
 }
 

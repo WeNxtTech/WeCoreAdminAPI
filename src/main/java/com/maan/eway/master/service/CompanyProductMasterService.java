@@ -16,6 +16,7 @@ import com.maan.eway.master.req.ProductDropDownReq;
 import com.maan.eway.master.req.ProductMasterGetAllReq;
 import com.maan.eway.master.req.ProductMasterGetReq;
 import com.maan.eway.master.req.ProductMasterSaveReq;
+import com.maan.eway.master.res.CompanyProductConfigRes;
 import com.maan.eway.master.res.CompanyProductGetAllRes;
 import com.maan.eway.master.res.CompanyProductMasterRes;
 import com.maan.eway.master.res.ProductGetAllRes;
@@ -50,6 +51,8 @@ public interface CompanyProductMasterService  {
 	List<Error> validateUpdateCompanyProductDetails(CompanyProductMasterSaveReq req);
 
 	SuccessRes updateCompanyProductDetails(CompanyProductMasterSaveReq req);
+
+	CompanyProductConfigRes getByCompanyProductConfig(CompanyProductMasterGetReq req);
 
 
 }

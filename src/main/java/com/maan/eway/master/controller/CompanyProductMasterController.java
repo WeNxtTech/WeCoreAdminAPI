@@ -16,6 +16,7 @@ import com.maan.eway.master.req.CoverMasterGetAllReq;
 import com.maan.eway.master.req.CoverMasterGetReq;
 import com.maan.eway.master.req.CoverMasterSaveReq;
 import com.maan.eway.master.req.SectionCoverMasterSaveReq;
+import com.maan.eway.master.res.CompanyProductConfigRes;
 import com.maan.eway.master.res.CompanyProductGetAllRes;
 import com.maan.eway.master.res.CompanyProductMasterRes;
 import com.maan.eway.master.res.CoverMasterRes;
@@ -222,7 +223,7 @@ public class CompanyProductMasterController {
 			}
 		}
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
+	  @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping(value="/dropdown/companyproducts",produces = "application/json")
 		@ApiOperation(value = "This method is get Company Product Master Drop Down")
 
@@ -265,6 +266,26 @@ public class CompanyProductMasterController {
 			}
 
 		}
+	
+	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
+	@PostMapping("/getbycompanyproductconfig")
+	public ResponseEntity<CommonRes> getByCompanyProductConfig(@RequestBody CompanyProductMasterGetReq req)
+	{
+		CommonRes data = new CommonRes();
+		CompanyProductConfigRes res = companyProductService.getByCompanyProductConfig(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+    }
 
 
 }

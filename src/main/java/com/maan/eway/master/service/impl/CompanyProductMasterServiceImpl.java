@@ -44,12 +44,19 @@ import com.maan.eway.auth.dto.AttachCompnayProductRequest;
 import com.maan.eway.auth.dto.LoginCreationRes;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.CompanyProductMaster;
+import com.maan.eway.bean.CompanyTaxSetup;
+import com.maan.eway.bean.CoverDocumentMaster;
+import com.maan.eway.bean.EmiMaster;
 import com.maan.eway.bean.EndtTypeMaster;
+import com.maan.eway.bean.FactorTypeDetails;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginBranchMasterArch;
 import com.maan.eway.bean.LoginProductMaster;
+import com.maan.eway.bean.PolicyTypeMaster;
 import com.maan.eway.bean.ProductMaster;
+import com.maan.eway.bean.ProductSectionMaster;
+import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.common.req.LovDropDownReq;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CompanyProductChangeStatusReq;
@@ -58,9 +65,15 @@ import com.maan.eway.master.req.CompanyProductMasterGetReq;
 import com.maan.eway.master.req.CompanyProductMasterSaveReq;
 import com.maan.eway.master.req.CompanyProductMultiInsertReq;
 import com.maan.eway.master.req.DirectBrokerCreateReq;
+import com.maan.eway.master.res.CommonConfigRes;
+import com.maan.eway.master.res.CompanyProductConfigRes;
 import com.maan.eway.master.res.CompanyProductGetAllRes;
 import com.maan.eway.master.res.CompanyProductMasterRes;
+import com.maan.eway.master.res.FactorTypeIdConfigRes;
+import com.maan.eway.master.res.PolicyTypeConfigRes;
 import com.maan.eway.master.res.ProductGetAllRes;
+import com.maan.eway.master.res.ProductSectionConfigRes;
+import com.maan.eway.master.res.SectionCoverRes;
 import com.maan.eway.master.service.CompanyProductMasterService;
 import com.maan.eway.notif.service.impl.MailThreadServiceImpl;
 import com.maan.eway.repository.CompanyProductMasterRepository;
@@ -1540,5 +1553,688 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 	return amendId;
 	}
 		
+	public CompanyProductConfigRes getByCompanyProductConfig(CompanyProductMasterGetReq req) {
+		List<ProductSectionConfigRes> resList=new ArrayList<ProductSectionConfigRes>();
+
+		CompanyProductConfigRes res=new CompanyProductConfigRes();
+		CompanyProductConfigRes productdetails = getCompanyProductConfig(req.getCompanyId(), req.getProductId());		
+		try {
+			if(productdetails!=null)
+			{
+            if(StringUtils.equalsIgnoreCase(productdetails.getStatus(), "Y")) {
+            	productdetails.setStatus("Available");   
+            	
+            	List<ProductSectionMaster> sectiondetails=getCompanyProductConfigSection(productdetails.getCompanyId(),productdetails.getProductId());
+
+                if(sectiondetails!=null) {
+            	for (ProductSectionMaster data : sectiondetails) {
+    				// Response
+    				ProductSectionConfigRes productRes=new ProductSectionConfigRes();
+    				productRes.setSectionId(data.getSectionId().toString());
+    				productRes.setSectionName(data.getSectionName());
+    				resList.add(productRes);
+    				List<CommonConfigRes> coverListRes=new ArrayList<CommonConfigRes>();
+    				List<SectionCoverMaster> coverDetails =getCompanyProductConfigSectionCover(data.getSectionId().toString(),data.getProductId().toString());
+    				for(SectionCoverMaster coverdata : coverDetails)
+    				{
+    					CommonConfigRes coverRes=new CommonConfigRes();
+    					coverRes.setId(coverdata.getCoverId().toString());
+    					coverRes.setName(coverdata.getCoverName());
+    					coverListRes.add(coverRes);
+    					productRes.setSectionCoverRes(coverListRes);
+    				}
+    			}  
+                }
+                
+            	List<CommonConfigRes> listFactorTypeDetails=new ArrayList<CommonConfigRes>();
+                List<FactorTypeDetails> factorTypeDetails=getCompanyProductConfigFactorTypeId(req.getCompanyId(), req.getProductId());
+                if(factorTypeDetails!=null)
+                {
+                factorTypeDetails = factorTypeDetails.stream().filter(distinctByKey(o -> Arrays.asList(o.getFactorTypeId()))).collect(Collectors.toList());
+                factorTypeDetails.sort(Comparator.comparing(FactorTypeDetails :: getFactorTypeName ));
+                
+                
+                for( FactorTypeDetails factordata:factorTypeDetails)
+            	{
+                	CommonConfigRes factorRes= new CommonConfigRes();
+            		factorRes.setId(factordata.getFactorTypeId().toString());         		
+            		factorRes.setName(factordata.getFactorTypeName());
+            		listFactorTypeDetails.add(factorRes);
+            		}
+            	
+                }
+                productdetails.setSectionRes(resList);      	
+                productdetails.setFactorTypeDetails(listFactorTypeDetails);
+                
+                List<CommonConfigRes> listPolicy=new ArrayList<CommonConfigRes>();
+                List<PolicyTypeMaster> policyType=getCompanyProductConfigPolicyType(req.getCompanyId(), req.getProductId());
+               
+                if(policyType != null)
+                {
+                	for(PolicyTypeMaster  policyData : policyType)
+                	{
+                		CommonConfigRes policyRes=new CommonConfigRes();
+                		policyRes.setName(policyData.getPolicyTypeName());
+                		listPolicy.add(policyRes);
+                		}
+              	  productdetails.setPolicyTypeDetails(listPolicy);
+
+                }
+                
+                List<CommonConfigRes> listEmiRes=new ArrayList<CommonConfigRes>();
+                List<EmiMaster>  emi=getCompanyProductConfigEmi(req.getCompanyId(),req.getProductId());
+                
+                if(emi != null)
+                {
+                	for(EmiMaster emidata:emi)
+                	{
+                		CommonConfigRes emiRes=new CommonConfigRes();
+                		emiRes.setId(emidata.getEmiId().toString()); 
+                		listEmiRes.add(emiRes);
+                		}
+                	productdetails.setEmiConfigRes(listEmiRes);
+                	
+                }
+                
+                
+                List<CommonConfigRes> listTaxRes=new ArrayList<CommonConfigRes>();
+                List<CompanyTaxSetup> tax =getCompanyProductConfigTax(req.getCompanyId(),req.getProductId());
+                
+                if(tax != null)
+                {
+                	for(CompanyTaxSetup taxdata:tax)
+                	{
+                		CommonConfigRes taxRes=new CommonConfigRes();
+                		taxRes.setId(taxdata.getTaxId().toString()); 
+                		listTaxRes.add(taxRes);
+                		}
+                	productdetails.setTaxSetUpDetails(listTaxRes);
+                	
+                }
+
+
+                
+                List<CommonConfigRes> listDocRes=new ArrayList<CommonConfigRes>();
+                List<CoverDocumentMaster> doc =getCompanyProductConfigDocument(req.getCompanyId(),req.getProductId());
+                
+                if(doc != null)
+                {
+                	for(CoverDocumentMaster docdata:doc)
+                	{
+                		CommonConfigRes docRes=new CommonConfigRes();
+                		docRes.setId(docdata.getDocumentId().toString()); 
+                		docRes.setName(docdata.getDocumentName());                
+                		listDocRes.add(docRes);
+                		}
+                	productdetails.setDocumentDetails(listDocRes);
+                	
+                }
+
+                
+            } else if(StringUtils.equalsIgnoreCase(productdetails.getStatus() , "N") ){
+            	productdetails.setStatus("Deactive");
+            }else {
+            	productdetails.setStatus("No Record Found");
+            }
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		
+		return productdetails;
+	}
+
+	
+	public CompanyProductConfigRes  getCompanyProductConfig(String companyId, String productId) {
+		String productName = "";
+		
+		CompanyProductConfigRes res=new CompanyProductConfigRes();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			;
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CompanyProductMaster> query = cb.createQuery(CompanyProductMaster.class);
+			List<CompanyProductMaster> list = new ArrayList<CompanyProductMaster>();
+			// Find All
+			Root<CompanyProductMaster> c = query.from(CompanyProductMaster.class);
+			// Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("productName")));
+
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1, a2, a3);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(c.get("productId"), ocpm2.get("productId"));
+			Predicate a5 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a4, a5, a6);
+
+			// Where
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 = cb.equal(c.get("companyId"), companyId);
+			Predicate n5 = cb.equal(c.get("productId"), productId);
+			query.where(n2, n3, n4, n5).orderBy(orderList);
+			// Get Result
+			TypedQuery<CompanyProductMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			productName = list.size() > 0 ? list.get(0).getProductName() : "";
+			res.setProductId(productId);	
+			res.setCompanyId(companyId);
+			res.setProductName(list.get(0).getProductName());
+			res.setStatus(list.get(0).getStatus());	
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+
+	
+	public List<ProductSectionMaster>  getCompanyProductConfigSection(String companyId, String productId) {
+		List<ProductSectionMaster> list = new ArrayList<ProductSectionMaster>();
+
+//		List<ProductSectionConfigRes> resList=new ArrayList<ProductSectionConfigRes>();
+		CompanyProductConfigRes res=new CompanyProductConfigRes();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			;
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ProductSectionMaster> query = cb.createQuery(ProductSectionMaster.class);
+//			List<ProductSectionMaster> list = new ArrayList<ProductSectionMaster>();
+			// Find All
+			Root<ProductSectionMaster> c = query.from(ProductSectionMaster.class);
+			// Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("sectionName")));
+
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<ProductSectionMaster> ocpm1 = effectiveDate.from(ProductSectionMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			Predicate a7 = cb.equal(c.get("sectionId"), ocpm1.get("sectionId"));
+
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1, a2, a3,a7);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<ProductSectionMaster> ocpm2 = effectiveDate2.from(ProductSectionMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(c.get("productId"), ocpm2.get("productId"));
+			Predicate a5 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			Predicate a8 = cb.equal(c.get("sectionId"), ocpm2.get("sectionId"));
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a4, a5, a6,a8);
+			// Where
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 = cb.equal(c.get("companyId"), companyId);
+			Predicate n5 = cb.equal(c.get("productId"), productId);
+			query.where(n2, n3, n4, n5).orderBy(orderList);
+			// Get Result
+			TypedQuery<ProductSectionMaster> result = em.createQuery(query);
+			list = result.getResultList();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return list;
+	}
+	
+
+	public List<SectionCoverMaster>  getCompanyProductConfigSectionCover(String sectionId, String productId) {
+		List<SectionCoverMaster> list = new ArrayList<SectionCoverMaster>();
+
+//		List<ProductSectionConfigRes> resList=new ArrayList<ProductSectionConfigRes>();
+		CompanyProductConfigRes res=new CompanyProductConfigRes();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			;
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<SectionCoverMaster> query = cb.createQuery(SectionCoverMaster.class);
+//			List<ProductSectionMaster> list = new ArrayList<ProductSectionMaster>();
+			// Find All
+			Root<SectionCoverMaster> c = query.from(SectionCoverMaster.class);
+			// Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("coverName")));
+
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<SectionCoverMaster> ocpm1 = effectiveDate.from(SectionCoverMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			Predicate a7 = cb.equal(c.get("sectionId"), ocpm1.get("sectionId"));
+
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1, a2, a3,a7);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<SectionCoverMaster> ocpm2 = effectiveDate2.from(SectionCoverMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(c.get("productId"), ocpm2.get("productId"));
+			Predicate a5 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			Predicate a8 = cb.equal(c.get("sectionId"), ocpm2.get("sectionId"));
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a4, a5, a6,a8);
+			// Where
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 = cb.equal(c.get("productId"), productId);
+			Predicate n5 = cb.equal(c.get("sectionId"), sectionId);
+			query.where(n2, n3, n4, n5).orderBy(orderList);
+			// Get Result
+			TypedQuery<SectionCoverMaster> result = em.createQuery(query);
+			list = result.getResultList();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return list;
+	}
+	
+	
+	public List<FactorTypeDetails>  getCompanyProductConfigFactorTypeId(String companyId, String productId) {
+		List<FactorTypeDetails> list = new ArrayList<FactorTypeDetails>();
+
+//		List<ProductSectionConfigRes> resList=new ArrayList<ProductSectionConfigRes>();
+		CompanyProductConfigRes res=new CompanyProductConfigRes();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			;
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<FactorTypeDetails> query = cb.createQuery(FactorTypeDetails.class);
+//			List<ProductSectionMaster> list = new ArrayList<ProductSectionMaster>();
+			// Find All
+			Root<FactorTypeDetails> c = query.from(FactorTypeDetails.class);
+			// Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("factorTypeId")));
+
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<FactorTypeDetails> ocpm1 = effectiveDate.from(FactorTypeDetails.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			Predicate a7 = cb.equal(c.get("factorTypeId"), ocpm1.get("factorTypeId"));
+
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1, a2, a3,a7);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<FactorTypeDetails> ocpm2 = effectiveDate2.from(FactorTypeDetails.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(c.get("productId"), ocpm2.get("productId"));
+			Predicate a5 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			Predicate a8 = cb.equal(c.get("factorTypeId"), ocpm2.get("factorTypeId"));
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a4, a5, a6,a8);
+			// Where
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 = cb.equal(c.get("productId"), productId);
+			Predicate n5 = cb.equal(c.get("companyId"), companyId);
+			Predicate n6 = cb.equal(c.get("status"), "Y");
+
+			query.where(n2, n3, n4, n5, n6).orderBy(orderList);
+			// Get Result
+			TypedQuery<FactorTypeDetails> result = em.createQuery(query);
+			list = result.getResultList();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return list;
+	}
+	
+	public List<PolicyTypeMaster>  getCompanyProductConfigPolicyType(String companyId, String productId) {
+		List<PolicyTypeMaster> list = new ArrayList<PolicyTypeMaster>();
+
+//		List<ProductSectionConfigRes> resList=new ArrayList<ProductSectionConfigRes>();
+		CompanyProductConfigRes res=new CompanyProductConfigRes();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			;
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<PolicyTypeMaster> query = cb.createQuery(PolicyTypeMaster.class);
+//			List<ProductSectionMaster> list = new ArrayList<ProductSectionMaster>();
+			// Find All
+			Root<PolicyTypeMaster> c = query.from(PolicyTypeMaster.class);
+			// Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("policyTypeId")));
+
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<PolicyTypeMaster> ocpm1 = effectiveDate.from(PolicyTypeMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			Predicate a7 = cb.equal(c.get("policyTypeId"), ocpm1.get("policyTypeId"));
+
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1, a2, a3,a7);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<PolicyTypeMaster> ocpm2 = effectiveDate2.from(PolicyTypeMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(c.get("productId"), ocpm2.get("productId"));
+			Predicate a5 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			Predicate a8 = cb.equal(c.get("policyTypeId"), ocpm2.get("policyTypeId"));
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a4, a5, a6,a8);
+			// Where
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 = cb.equal(c.get("productId"), productId);
+			Predicate n5 = cb.equal(c.get("companyId"), companyId);
+			Predicate n6 = cb.equal(c.get("status"), "Y");
+
+			query.where(n2, n3, n4, n5, n6).orderBy(orderList);
+			// Get Result
+			TypedQuery<PolicyTypeMaster> result = em.createQuery(query);
+			list = result.getResultList();
+
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return list;
+	}
+	
+	
+	public List<EmiMaster>  getCompanyProductConfigEmi(String companyId, String productId) {
+		List<EmiMaster> list = new ArrayList<EmiMaster>();
+
+//		List<ProductSectionConfigRes> resList=new ArrayList<ProductSectionConfigRes>();
+		CompanyProductConfigRes res=new CompanyProductConfigRes();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			;
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<EmiMaster> query = cb.createQuery(EmiMaster.class);
+//			List<ProductSectionMaster> list = new ArrayList<ProductSectionMaster>();
+			// Find All
+			Root<EmiMaster> c = query.from(EmiMaster.class);
+			// Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("emiId")));
+
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<EmiMaster> ocpm1 = effectiveDate.from(EmiMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			Predicate a7 = cb.equal(c.get("emiId"), ocpm1.get("emiId"));
+
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1, a2, a3,a7);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<EmiMaster> ocpm2 = effectiveDate2.from(EmiMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(c.get("productId"), ocpm2.get("productId"));
+			Predicate a5 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			Predicate a8 = cb.equal(c.get("emiId"), ocpm2.get("emiId"));
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a4, a5, a6,a8);
+			// Where
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 = cb.equal(c.get("productId"), productId);
+			Predicate n5 = cb.equal(c.get("companyId"), companyId);
+			Predicate n6 = cb.equal(c.get("status"), "Y");
+
+			query.where(n2, n3, n4, n5, n6).orderBy(orderList);
+			// Get Result
+			TypedQuery<EmiMaster> result = em.createQuery(query);
+			list = result.getResultList();
+
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return list;
+	}
+	
+	
+	public List<CompanyTaxSetup>  getCompanyProductConfigTax(String companyId, String productId) {
+		List<CompanyTaxSetup> list = new ArrayList<CompanyTaxSetup>();
+
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			;
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CompanyTaxSetup> query = cb.createQuery(CompanyTaxSetup.class);
+//			List<ProductSectionMaster> list = new ArrayList<ProductSectionMaster>();
+			// Find All
+			Root<CompanyTaxSetup> c = query.from(CompanyTaxSetup.class);
+			// Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("taxId")));
+
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CompanyTaxSetup> ocpm1 = effectiveDate.from(CompanyTaxSetup.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			Predicate a7 = cb.equal(c.get("taxId"), ocpm1.get("taxId"));
+			Predicate a9 = cb.equal(c.get("branchCode"), ocpm1.get("branchCode"));
+
+
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1, a2, a3,a7,a9);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<CompanyTaxSetup> ocpm2 = effectiveDate2.from(CompanyTaxSetup.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(c.get("productId"), ocpm2.get("productId"));
+			Predicate a5 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			Predicate a8 = cb.equal(c.get("taxId"), ocpm2.get("taxId"));
+			Predicate a10 = cb.equal(c.get("branchCode"), ocpm2.get("branchCode"));
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a4, a5, a6,a8,a10);
+			// Where
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 = cb.equal(c.get("productId"), productId);
+			Predicate n5 = cb.equal(c.get("companyId"), companyId);
+			Predicate n6 = cb.equal(c.get("status"), "Y");
+
+			query.where(n2, n3, n4, n5, n6).orderBy(orderList);
+			// Get Result
+			TypedQuery<CompanyTaxSetup> result = em.createQuery(query);
+			list = result.getResultList();
+
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return list;
+	}
+	
+	
+	public List<CoverDocumentMaster>  getCompanyProductConfigDocument(String companyId, String productId) {
+		List<CoverDocumentMaster> list = new ArrayList<CoverDocumentMaster>();
+
+		CompanyProductConfigRes res=new CompanyProductConfigRes();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			;
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CoverDocumentMaster> query = cb.createQuery(CoverDocumentMaster.class);
+//			List<ProductSectionMaster> list = new ArrayList<ProductSectionMaster>();
+			// Find All
+			Root<CoverDocumentMaster> c = query.from(CoverDocumentMaster.class);
+			// Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("documentId")));
+
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CoverDocumentMaster> ocpm1 = effectiveDate.from(CoverDocumentMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			Predicate a7 = cb.equal(c.get("documentId"), ocpm1.get("documentId"));
+
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1, a2, a3,a7);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<CoverDocumentMaster> ocpm2 = effectiveDate2.from(CoverDocumentMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(c.get("productId"), ocpm2.get("productId"));
+			Predicate a5 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			Predicate a8 = cb.equal(c.get("documentId"), ocpm2.get("documentId"));
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a4, a5, a6,a8);
+			// Where
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 = cb.equal(c.get("productId"), productId);
+			Predicate n5 = cb.equal(c.get("companyId"), companyId);
+			Predicate n6 = cb.equal(c.get("status"), "Y");
+
+			query.where(n2, n3, n4, n5, n6).orderBy(orderList);
+			// Get Result
+			TypedQuery<CoverDocumentMaster> result = em.createQuery(query);
+			list = result.getResultList();
+
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return list;
+	}
 	
 }

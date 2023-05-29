@@ -269,7 +269,7 @@ public class CompanyProductMasterController {
 	
 	
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
-	@PostMapping("/getbycompanyproductconfig")
+	@PostMapping("/companyproductconfigstatus")
 	public ResponseEntity<CommonRes> getByCompanyProductConfig(@RequestBody CompanyProductMasterGetReq req)
 	{
 		CommonRes data = new CommonRes();

@@ -9,11 +9,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class ProductSectionConfigRes {
-	
+public class SectionDocumentConfigRes {
 
 	@JsonProperty("Id")
-	private String Id;
+	private String id;
+	
+	@JsonProperty("Type")
+	private String type;
 	
 	@JsonProperty("Name")
 	private String Name;
@@ -23,17 +25,9 @@ public class ProductSectionConfigRes {
 	
 	@JsonProperty("StatusDesc")
 	private String statusDesc;
-	
-	@JsonFormat(pattern ="dd/MM/yyyy")
-	@JsonProperty("EffectiveDateStart")
-	private Date effectiveDateStart;
-	
-	@JsonFormat(pattern ="dd/MM/yyyy")
-	@JsonProperty("EffectiveDateEnd")
-	private Date effectiveDateEnd;
-
-	@JsonProperty("CoverDetails")
-	private List<CommonConfigRes> sectionCoverRes; 
 
 	
+	@JsonProperty("DocumentDetails")
+	private List<DocumentConfigRes> documentList ;
+
 }

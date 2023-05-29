@@ -1,7 +1,6 @@
 package com.maan.eway.master.res;
 
 import java.util.Date;
-import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -9,20 +8,26 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class ProductSectionConfigRes {
-	
+public class PaymentConfigRes {
 
 	@JsonProperty("Id")
-	private String Id;
+	private String id;
 	
 	@JsonProperty("Name")
-	private String Name;
+	private String name;
+	
 	
 	@JsonProperty("Status")
 	private String status;
 	
 	@JsonProperty("StatusDesc")
 	private String statusDesc;
+	
+	@JsonProperty("UserType")
+	private String userType;
+	
+	@JsonProperty("SubUsertype")
+	private String subUsertype;
 	
 	@JsonFormat(pattern ="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
@@ -31,9 +36,4 @@ public class ProductSectionConfigRes {
 	@JsonFormat(pattern ="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateEnd")
 	private Date effectiveDateEnd;
-
-	@JsonProperty("CoverDetails")
-	private List<CommonConfigRes> sectionCoverRes; 
-
-	
 }

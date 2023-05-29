@@ -1,7 +1,9 @@
 package com.maan.eway.master.res;
 
+import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.maan.eway.bean.FactorTypeDetails;
 
@@ -22,11 +24,21 @@ public class CompanyProductConfigRes {
 	@JsonProperty("Status")
 	private String status;
 	
+	@JsonProperty("StatusDesc")
+	private String statusDesc;
+	
+	@JsonFormat(pattern ="dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
+	
+	@JsonFormat(pattern ="dd/MM/yyyy")
+	@JsonProperty("EffectiveDateEnd")
+	private Date effectiveDateEnd;
 	
 	@JsonProperty("SectionDeatils")
 	private List<ProductSectionConfigRes> sectionRes;
 
-	@JsonProperty("FactorTypeId")
+	@JsonProperty("FactorTypeDetails")
 	private List<CommonConfigRes> factorTypeDetails;
 	
 	@JsonProperty("PolicyTypeDetails")
@@ -39,15 +51,18 @@ public class CompanyProductConfigRes {
 	private List<CommonConfigRes>  taxSetUpDetails;
 	
 	@JsonProperty("DocumentDetails")
-	private List<CommonConfigRes>  documentDetails;
-	
-	@JsonProperty("ProrateDetails")
-	private List<CommonConfigRes>  prorateDetails;
+	private List<SectionDocumentConfigRes>  documentDetails;
 	
 	
 	@JsonProperty("RefferalDetails")
 	private List<CommonConfigRes>  refferalDetails;
 	
+	
+	@JsonProperty("PaymentDetails")
+	private List<PaymentConfigRes>  paymentDetails;
+	
+	@JsonProperty("ProRataDetails")
+	private List<ProRataConfigRes>  proRataDetails;
 	
 	
 

@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -151,7 +150,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="COVID_PREMIUM")
     private Double     covidPremium ;
 
-
+    @Column(name="TIRA_COVER_NOTE_NO")
+    private String tiraCoverNoteNo;
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

@@ -355,6 +355,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="BANK_CODE", length=100)
     private String   bankCode;
+    
+    @Column(name="TIRA_COVER_NOTE_NO")
+    private String tiraCoverNoteNo;
 }
 
 

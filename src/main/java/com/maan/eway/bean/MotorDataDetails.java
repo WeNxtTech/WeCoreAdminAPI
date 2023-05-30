@@ -425,6 +425,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="ENDORSEMENT_YN", length=10)
     private String     endorsementYn ;
+    
+    @Column(name="TIRA_COVER_NOTE_NO")
+    private String tiraCoverNoteNo;
 }
 
 

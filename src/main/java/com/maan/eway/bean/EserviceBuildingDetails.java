@@ -589,7 +589,9 @@ private static final long serialVersionUID = 1L;
 
       @Column(name="FIRST_LOSS_PERCENT")
       private Integer firstLossPercent;
-
+      
+      @Column(name="TIRA_COVER_NOTE_NO")
+      private String tiraCoverNoteNo;
 }
 
 

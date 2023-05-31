@@ -708,7 +708,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate a8 = cb.equal(c.get("companyId"), ocpm2.get("companyId") );
 			Predicate a9 = cb.equal(c.get("productId"), ocpm2.get("productId") );
 			Predicate a10 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-			Predicate a15 = cb.equal(ocpm2.get("agencyCode"), c.get("companyId"));
+			Predicate a15 = cb.equal(ocpm2.get("agencyCode"), c.get("agencyCode"));
 			Predicate a16 = cb.equal(ocpm2.get("branchCode"), c.get("branchCode"));
 			effectiveDate2.where(a6,a7,a8,a9,a10,a15,a16);
 					

@@ -68,6 +68,7 @@ import com.maan.eway.master.req.CompanyProductMasterSaveReq;
 import com.maan.eway.master.req.CompanyProductMultiInsertReq;
 import com.maan.eway.master.req.DirectBrokerCreateReq;
 import com.maan.eway.master.res.CommonConfigRes;
+import com.maan.eway.master.res.CommonCoverConfigRes;
 import com.maan.eway.master.res.CompanyProductConfigRes;
 import com.maan.eway.master.res.CompanyProductGetAllRes;
 import com.maan.eway.master.res.CompanyProductMasterRes;
@@ -1632,23 +1633,13 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
     				
     				List<SectionCoverMaster> filterCovers = coverDetails.stream().filter( o -> o.getSectionId().equals(data.getSectionId()) ).collect(Collectors.toList());
     				setCoverDetails(filterCovers);
-    				List<CommonConfigRes> coverResList = setCoverDetails(filterCovers);
+    				List<CommonCoverConfigRes> coverResList = setCoverDetails(filterCovers);
     				productRes.setSectionCoverRes(coverResList);
     				sectionResList.add(productRes);
     				
     			}
         		
-        	} else {
-        		ProductSectionConfigRes productRes=new ProductSectionConfigRes();
-				productRes.setId("");
-				productRes.setName("");
-				productRes.setEffectiveDateStart(null );
-				productRes.setEffectiveDateEnd(null);
-				productRes.setStatus("N/A");
-				productRes.setStatusDesc( getStatusDescription(productRes.getStatus()) );
-				
-				sectionResList.add(productRes);
-        	}
+        	} 
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1658,32 +1649,45 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 		return sectionResList;
 	}
 	
-	public List<CommonConfigRes>  setCoverDetails(List<SectionCoverMaster> coverDetails ) {
-		List<CommonConfigRes> coverResList = new ArrayList<CommonConfigRes>();
+	public List<CommonCoverConfigRes>  setCoverDetails(List<SectionCoverMaster> coverDetails ) {
+		List<CommonCoverConfigRes> coverResList = new ArrayList<CommonCoverConfigRes>();
 		try {
 			// Set Covers
+			List<SectionCoverMaster> filterCovers = coverDetails.stream().filter( o -> o.getSubCoverId().equals(0) ).collect(Collectors.toList());
 			
-			if(coverDetails.size() > 0) {
-				for(SectionCoverMaster coverData : coverDetails) {
-					CommonConfigRes coverRes=new CommonConfigRes();
+			if(filterCovers.size() > 0) {
+				for(SectionCoverMaster coverData : filterCovers) {
+					CommonCoverConfigRes coverRes=new CommonCoverConfigRes();
 					coverRes.setId(coverData.getCoverId().toString());
 					coverRes.setName(coverData.getCoverName());
 					coverRes.setEffectiveDateStart(coverData.getEffectiveDateStart());
 					coverRes.setEffectiveDateEnd(coverData.getEffectiveDateEnd());
 					coverRes.setStatus(coverData.getStatus());
 					coverRes.setStatusDesc( getStatusDescription(coverRes.getStatus()));
+					
+					// SubCovers
+					List<CommonConfigRes> subCoverResList = new ArrayList<CommonConfigRes>();
+					List<SectionCoverMaster> filterSubCovers = coverDetails.stream().filter( o -> o.getCoverId().equals(coverData.getCoverId()) && ! o.getSubCoverId().equals(0)  ).collect(Collectors.toList());
+					if(filterSubCovers.size() > 0) {
+						for(SectionCoverMaster subCoverData : filterSubCovers) {
+							CommonConfigRes subCoverRes=new CommonConfigRes();
+							subCoverRes.setId(subCoverData.getCoverId().toString());
+							subCoverRes.setName(subCoverData.getCoverName());
+							subCoverRes.setEffectiveDateStart(subCoverData.getEffectiveDateStart());
+							subCoverRes.setEffectiveDateEnd(subCoverData.getEffectiveDateEnd());
+							subCoverRes.setStatus(subCoverData.getStatus());
+							subCoverRes.setStatusDesc( getStatusDescription(subCoverData.getStatus()));
+							
+							// SubCovers
+							
+							subCoverResList.add(subCoverRes);
+							
+						}
+					}
+					coverRes.setSubCoverDetails(subCoverResList);
 					coverResList.add(coverRes);
 					
 				}
-			} else {
-				CommonConfigRes coverRes=new CommonConfigRes();
-				coverRes.setId("");
-				coverRes.setName("");
-				coverRes.setEffectiveDateStart(null);
-				coverRes.setEffectiveDateEnd(null);
-				coverRes.setStatus("N/A");
-				coverRes.setStatusDesc( getStatusDescription(coverRes.getStatus()));
-				coverResList.add(coverRes);
 			}
 			
 			
@@ -1710,15 +1714,6 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 					factorTypeResList.add(factorRes);
 					
 				}
-			} else {
-				CommonConfigRes factorRes=new CommonConfigRes();
-				factorRes.setId("");
-				factorRes.setName("");
-				factorRes.setEffectiveDateStart(null);
-				factorRes.setEffectiveDateEnd(null);
-				factorRes.setStatus("N/A");
-				factorRes.setStatusDesc( getStatusDescription(factorRes.getStatus()));
-				factorTypeResList.add(factorRes);
 			}
 			
 		} catch (Exception e) {
@@ -1744,15 +1739,6 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 					taxResList.add(taxRes);
 					
 				}
-			} else {
-				CommonConfigRes taxRes =new CommonConfigRes();
-				taxRes.setId("");
-				taxRes.setName("");
-				taxRes.setEffectiveDateStart(null);
-				taxRes.setEffectiveDateEnd(null);
-				taxRes.setStatus("N/A");
-				taxRes.setStatusDesc( getStatusDescription(taxRes.getStatus()));
-				taxResList.add(taxRes);
 			}
 			
 		} catch (Exception e) {
@@ -1780,15 +1766,6 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 					policyTypeResList.add(policyTypeRes);
 					
 				}
-			} else {
-				CommonConfigRes policyTypeRes=new CommonConfigRes();
-				policyTypeRes.setId("");
-				policyTypeRes.setName("");
-				policyTypeRes.setEffectiveDateStart(null);
-				policyTypeRes.setEffectiveDateEnd(null);
-				policyTypeRes.setStatus("N/A");
-				policyTypeRes.setStatusDesc( getStatusDescription(policyTypeRes.getStatus()));
-				policyTypeResList.add(policyTypeRes);
 			}
 			
 			
@@ -1815,15 +1792,6 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 					emiResList.add(emiRes);
 					
 				}
-			} else {
-				CommonConfigRes emiRes=new CommonConfigRes();
-				emiRes.setId("");
-				emiRes.setName("");
-				emiRes.setEffectiveDateStart(null);
-				emiRes.setEffectiveDateEnd(null);
-				emiRes.setStatus("N/A");
-				emiRes.setStatusDesc( getStatusDescription(emiRes.getStatus()));
-				emiResList.add(emiRes);
 			}
 			
 		} catch (Exception e) {
@@ -1860,15 +1828,6 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 					induvidualSection.setStatusDesc( getStatusDescription(induvidualSection.getStatus()) );
 					documentSetionResList.add(induvidualSection);
 				}
-			} else {
-				SectionDocumentConfigRes induvidualSection = new SectionDocumentConfigRes();
-				List<DocumentConfigRes> filterOtherDocuments = new ArrayList<DocumentConfigRes>(); 
-				induvidualSection.setId("");
-				induvidualSection.setName("");
-				induvidualSection.setStatus("N/A");
-				induvidualSection.setStatusDesc( getStatusDescription(induvidualSection.getStatus()) );
-				induvidualSection.setDocumentList(filterOtherDocuments);
-				documentSetionResList.add(induvidualSection);
 			}
 			
 		} catch (Exception e) {
@@ -1953,7 +1912,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 					}
 					
 					paymentRes.setId(paymentData.getPaymentMasterId().toString());
-					paymentRes.setName("");
+					paymentRes.setName("Usertype :" + paymentData.getUserType() + " " + "SubUserType :" + paymentData.getSubUserType());
 					paymentRes.setEffectiveDateStart(paymentData.getEffectiveDateStart());
 					paymentRes.setEffectiveDateEnd(paymentData.getEffectiveDateEnd());
 					paymentRes.setUserType(paymentData.getUserType());
@@ -1963,17 +1922,6 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 					paymentResList.add(paymentRes);
 				}
 				
-			} else {
-				PaymentConfigRes paymentRes = new PaymentConfigRes();
-				paymentRes.setId("");
-				paymentRes.setName("");
-				paymentRes.setEffectiveDateStart(null);
-				paymentRes.setEffectiveDateEnd(null);
-				paymentRes.setUserType("");
-				paymentRes.setSubUsertype("");
-				paymentRes.setStatus("N/A");
-				paymentRes.setStatusDesc( getStatusDescription(paymentRes.getStatus()));
-				paymentResList.add(paymentRes);
 			}
 			
 		} catch (Exception e) {
@@ -2006,18 +1954,6 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 					proRataResList.add(proRataRes);
 				}
 				
-			} else {
-				ProRataConfigRes proRataRes = new ProRataConfigRes();
-				proRataRes.setProRataPercent("");
-				proRataRes.setStartFrom("");
-				proRataRes.setEndTo("");
-				proRataRes.setId("");
-				proRataRes.setName("");
-				proRataRes.setEffectiveDateStart(null);
-				proRataRes.setEffectiveDateEnd(null);
-				proRataRes.setStatus("N/A");
-				proRataRes.setStatusDesc( getStatusDescription(proRataRes.getStatus()));
-				proRataResList.add(proRataRes);
 			}
 			
 		} catch (Exception e) {

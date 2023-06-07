@@ -270,6 +270,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="NO_OF_DAYS")
     private BigDecimal    noOfDays;
     
+    @Column(name="REGULATORY_RATE")
+    private BigDecimal    regulatoryRate ;
+    
+    @Column(name="REGULATORY_SUMINSURED")
+    private BigDecimal    regulatorySuminsured ;
+    
 }
 
 

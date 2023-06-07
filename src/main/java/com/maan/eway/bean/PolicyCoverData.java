@@ -276,7 +276,11 @@ private static final long serialVersionUID = 1L;
     private String    policyNo ;
     //--- ENTITY LINKS ( RELATIONSHIP )
 
-
+    @Column(name="REGULATORY_RATE")
+    private BigDecimal    regulatoryRate ;
+    
+    @Column(name="REGULATORY_SUMINSURED")
+    private BigDecimal    regulatorySuminsured ;
 }
 
 

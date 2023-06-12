@@ -27,10 +27,10 @@ public class ProductGetAllRes {
 	
 	
 
-	/*
+	
 	@JsonProperty("MotorYn")
 	private String motorYn;
-	*/
+	
 	@JsonProperty("PackageYn")
 	private String packageYn;
 	

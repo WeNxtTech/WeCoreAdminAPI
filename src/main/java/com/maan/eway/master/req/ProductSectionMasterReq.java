@@ -34,7 +34,10 @@ public class ProductSectionMasterReq {
 
 	@JsonProperty("Status")
 	private String status;
-
+	
+	@JsonProperty("MotorYn")
+	private String motorYn;
+	
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
 

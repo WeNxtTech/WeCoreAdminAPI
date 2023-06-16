@@ -104,8 +104,15 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 				}*/
 				if(StringUtils.isNotBlank(req.getProductId()) && StringUtils.isBlank(req.getTableName())) {
 					String tablename="MsVehicleDetails";
-					List<ProductMaster> idfortable = productrepo.findByProductIdOrderByEffectiveDateStartDesc(Integer.parseInt(req.getProductId()));
-					String oneProduct = idfortable.get(0).getMotorYn();	
+					String oneProduct  = "A" ;
+					if(StringUtils.isNotBlank(req.getSectionId())) {
+						List<ProductSectionMaster> idfortable = sectionRepo.findByProductIdAndSectionIdOrderByEffectiveDateStartDesc(Integer.parseInt(req.getProductId()) , Integer.parseInt(req.getSectionId()));
+						oneProduct = idfortable.get(0).getMotorYn();
+					} else {
+						List<ProductMaster> idfortable = productrepo.findByProductIdOrderByEffectiveDateStartDesc(Integer.parseInt(req.getProductId()));
+						oneProduct = idfortable.get(0).getMotorYn();
+					}
+						
 					if(oneProduct.equals("M"))
 						tablename="MsVehicleDetails";
 					else if(oneProduct.equals("H"))

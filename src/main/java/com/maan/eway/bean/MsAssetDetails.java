@@ -119,7 +119,7 @@ public class MsAssetDetails implements Serializable {
 	@Column(name = "WORKMEN_COMP_SUMINSURED")
 	private BigDecimal workmenCompSuminsured;
 
-	@Column(name = "Period_of_Insurance", nullable = false, length = 10)
+	@Column(name = "PERIOD_OF_INSURANCE", nullable = false, length = 10)
 	private String periodOfInsurance;
 
 	@Column(name = "CURRENCY", length = 20)

@@ -64,7 +64,6 @@ import com.maan.eway.notif.service.impl.MailThreadServiceImpl;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginMasterRepository;
-import com.maan.eway.repository.ProductCoverRatingMasterRepository;
 import com.maan.eway.repository.SectionCoverMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
@@ -79,8 +78,8 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 	@Autowired
 	private SectionCoverMasterRepository repo;
 
-	@Autowired
-	private ProductCoverRatingMasterRepository ratingRepo;
+//	@Autowired
+//	private ProductCoverRatingMasterRepository ratingRepo;
 	
 	@Autowired
 	private ListItemValueRepository listRepo;

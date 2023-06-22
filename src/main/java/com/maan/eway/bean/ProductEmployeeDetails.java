@@ -57,6 +57,17 @@ private static final long serialVersionUID = 1L;
     private String     quoteNo ;
 
     @Id
+    @Column(name="SECTION_ID", nullable=false)
+    private String    sectionId ;
+    
+    @Id
+    @Column(name="LOCATION_ID", nullable=false)
+    private Integer     locationId ;
+    
+    @Column(name="SECTION_DESC")
+    private String     sectionDesc ;
+    
+    @Id
     @Column(name="RISK_ID", nullable=false)
     private Integer    riskId ;
 

@@ -33,7 +33,7 @@ public class SpringBatchConfig_2 {
 	@Bean("MainTableStep")
 	public Step mainTableStep() {
 		return stepBuilderFactory.get("mainTableStep")
-				.<FactorBatchRecordRes, FactorBatchRecordRes> chunk(new DynamicChunkSize())
+				.<FactorBatchRecordRes, FactorBatchRecordRes> chunk(2000)
 				.reader(itemReader_2)
 				.processor(itemProcessor_2)
 				.writer(itemWritter)

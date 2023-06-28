@@ -51,6 +51,13 @@ public class FileUploadInputRequest {
 	private String xlFilePath ;
 	@JsonProperty("Authorization")
 	private String authorization ;
+	
+	@JsonProperty("ProgressDesc")
+	private String progressDesc ;
+	@JsonProperty("ProgressErrorDesc")
+	private String progressErrorDesc ;
+	@JsonProperty("ProgressStatus")
+	private String progressStatus ;
 
 
 }

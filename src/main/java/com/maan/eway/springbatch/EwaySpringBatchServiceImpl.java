@@ -36,9 +36,7 @@ import com.maan.eway.bean.FactorRateMaster;
 import com.maan.eway.bean.FactorTypeDetails;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.SectionCoverMaster;
-import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.fileupload.FileUploadInputRequest;
-import com.maan.eway.master.req.FactorParamsInsert;
 import com.maan.eway.master.req.FactorRateSaveReq;
 import com.maan.eway.repository.FactorRateMasterRepository;
 
@@ -56,8 +54,9 @@ public class EwaySpringBatchServiceImpl implements EwaySpringBatchService {
 	
 	@Autowired
 	private FactorRateMasterRepository factorRepo;;
+	
 	@Autowired
-	private SpringBatchTransactionRepository transactionRepo;
+	private TransactionControlDetailsRepository transactionConRepo;
 	
 	DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 
@@ -67,7 +66,7 @@ public class EwaySpringBatchServiceImpl implements EwaySpringBatchService {
 		log.info("batchUpload request "+json.toJson(request));
 		try {
 			request =utilService.saveExcelfile(request,file);
-			utilService.saveBatchTransaction(request);
+			utilService.saveUploadTransactionData(request);
 			Thread_Batch_Upload batchUpload = new Thread_Batch_Upload(utilService,request,"Batch_upload");
 			Thread thread = new Thread(batchUpload);
 			thread.setDaemon(false);
@@ -428,14 +427,15 @@ public class EwaySpringBatchServiceImpl implements EwaySpringBatchService {
 	public com.maan.eway.res.CommonRes  getTranactionByTranId(String tranId) {
 		com.maan.eway.res.CommonRes res = new com.maan.eway.res.CommonRes ();
 		try {
-			SpringBatchTransaction transaction =transactionRepo.findById(Integer.valueOf(tranId)).get();
+			TransactionControlDetails transaction =transactionConRepo.findByRequestReferenceNo(tranId);
 			TransactionResponse response =TransactionResponse.builder()
-					.description(transaction.getProgressDesc())
-					.status(transaction.getProgrsessStatus())
-					.errorRecord(transaction.getErrorRecord()==null?0:transaction.getErrorRecord())
-					.validRecord(transaction.getValidRecord()==null?0:transaction.getValidRecord())
-					.totalRecord(transaction.getTotalRows()==null?0:transaction.getTotalRows())
-					.excelFilePath(StringUtils.isBlank(transaction.getExcelFilepath())?"":transaction.getExcelFilepath())
+					.description(transaction.getProgressDescription())
+					.status(transaction.getStatus())
+					.errorRecord(transaction.getErrorRecords()==null?0:transaction.getErrorRecords())
+					.validRecord(transaction.getValidRecords()==null?0:transaction.getValidRecords())
+					.totalRecord(transaction.getTotalRecords()==null?0:transaction.getTotalRecords())
+					.excelFilePath(StringUtils.isBlank(transaction.getFilePath())?"":transaction.getFilePath())
+					.tranId(tranId)
 					.build();
 			res.setCommonResponse(response);
 			
@@ -443,6 +443,16 @@ public class EwaySpringBatchServiceImpl implements EwaySpringBatchService {
 			e.printStackTrace();
 		}
 		return res;
+	}
+
+	@Override
+	public com.maan.eway.res.CommonRes doMainJob(String tranId) {
+		try {
+			return utilService.doMainJob(tranId);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 

@@ -9,6 +9,8 @@ import lombok.Data;
 @Builder
 public class TransactionResponse {
 	
+	@JsonProperty("TranId")
+	private Object tranId;
 	@JsonProperty("Status")
 	private Object status;
 	@JsonProperty("Description")

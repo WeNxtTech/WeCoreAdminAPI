@@ -1157,7 +1157,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 			for ( FactorParamsInsert data :  req.getFactorParams() ) {
 				FactorRateMaster saveData = new FactorRateMaster();
 				// Save New Records
-				sNo = sNo + 1 ;
+				//sNo = sNo + 1 ;
 				saveData = dozerMapper.map(req, FactorRateMaster.class );
 				saveData.setFactorTypeId(Integer.valueOf(factorTypeId));
 				saveData.setEffectiveDateStart(req.getEffectiveDateStart());
@@ -1166,7 +1166,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				saveData.setSubCoverId(req.getSubCoverYn().equalsIgnoreCase("Y") ? Integer.valueOf(req.getSubCoverId()) : 0 );
 				saveData.setAmendId(amendId);
 				saveData.setStatus(req.getStatus().equalsIgnoreCase("P")?"P" : data.getStatus());		
-				saveData.setSNo(sNo);
+				saveData.setSNo(Integer.valueOf(data.getSno()));
 				saveData.setParam1(StringUtils.isBlank(data.getParam1()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam1()))) );
 				saveData.setParam2(StringUtils.isBlank(data.getParam2()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam2()))) );
 				saveData.setParam3(StringUtils.isBlank(data.getParam3()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam3()))) );

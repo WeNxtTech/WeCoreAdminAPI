@@ -41,4 +41,9 @@ public class EwaySpringBatchController {
 		return service.getTranactionByTranId(tranId);
 	}
 	
+	@GetMapping("/doMainJob")
+	public com.maan.eway.res.CommonRes doMainJob(@RequestParam("tranId") String tranId) {
+		return service.doMainJob(tranId);
+	}
+	
 }

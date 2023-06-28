@@ -29,16 +29,14 @@ public class Joblistener extends JobExecutionListenerSupport implements ChunkLis
 			    	factorData = mapper.readValue(data, SpringBatchMapperResponse.class);
 			    	tranId =factorData.getTranId();
 			    	service.updateFactorRawRecordByTranId(tranId,factorData.getDiscreteColumn(),factorData.getAuthorization());
-			    	status =service.doMainJob(tranId,factorData.getTotalRecordsCount());
+			    	//status =service.doMainJob(tranId,factorData.getTotalRecordsCount());
 				} catch (Exception e) {
 					service.updateBatchTransaction (tranId, e.getMessage() ,"","Failed","E");
 					e.printStackTrace();
 				} 
-			    if(status)
-			    	service.updateBatchTransaction (tranId, "spring batch process completed " ,"","completed","S");
-			    else
-			    	service.updateBatchTransaction (tranId, "spring batch process completed" ,"","completed","R");
-
+			   
+			    service.updateBatchTransaction (tranId, "spring batch process completed " ,"","completed","S");
+			   
 			}else {
 				
 				service.updateBatchTransaction (tranId, "spring batch process failed" ,"","Failed","E");

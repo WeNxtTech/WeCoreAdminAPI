@@ -101,7 +101,7 @@ public class SpringBatchConfig {
 		@Bean
 	    public Step stepA() {
 	       return stepBuilderFactory.get("EwayStep")
-	               .<FactorRateRawInsert,FactorRateRawInsert>chunk(new DynamicChunkSize())
+	               .<FactorRateRawInsert,FactorRateRawInsert>chunk(2000)
 	               .reader(reader(item_reader_input))
 	               .processor(processor())
 	               .writer(writer())
@@ -128,11 +128,11 @@ public class SpringBatchConfig {
 	   @Bean
 		 public TaskExecutor taskExecutor(){
 			  asyncTaskExecutor=new ThreadPoolTaskExecutor();
-			 	asyncTaskExecutor.setCorePoolSize(100);
-			 	asyncTaskExecutor.setMaxPoolSize(200);
+			 	asyncTaskExecutor.setCorePoolSize(500);
+			 	asyncTaskExecutor.setMaxPoolSize(1000);
 			 	asyncTaskExecutor.setWaitForTasksToCompleteOnShutdown(true);
 			 	asyncTaskExecutor.setAwaitTerminationSeconds(15);	
-			 	asyncTaskExecutor.setQueueCapacity(1000);
+			 	asyncTaskExecutor.setQueueCapacity(10000);
 			 	asyncTaskExecutor.setThreadNamePrefix("eway_spring_batch");
 			 	asyncTaskExecutor.initialize();
 	    	return asyncTaskExecutor;

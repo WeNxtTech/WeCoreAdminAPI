@@ -63,6 +63,7 @@ import com.maan.eway.master.req.FactorParamsInsert;
 import com.maan.eway.master.req.FactorRateSaveReq;
 import com.maan.eway.master.service.FactorRateMasterService;
 import com.maan.eway.master.service.impl.FactorRateMasterServiceImpl;
+import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
 
 @Service
@@ -83,8 +84,6 @@ public class UtilityServiceImpl {
 	@Autowired
 	private JpqlQueryServiceImpl queryService;
 	@Autowired
-	private SpringBatchTransactionRepository repository;
-	@Autowired
 	private FactorRateRawMasterRepository rawMasterRepository;
 	@Autowired
 	private FactorRateMasterService entityService;
@@ -92,6 +91,8 @@ public class UtilityServiceImpl {
 	private AsyncProcessThread processThread;
 	@Autowired
 	private FactorRateMasterServiceImpl rateMasterServiceImpl;
+	@Autowired
+	private TransactionControlDetailsRepository controlDetailsRepository;
 	
 	public static  int totalRecordCount =0;
 	
@@ -131,6 +132,9 @@ public class UtilityServiceImpl {
 			file.transferTo(copyFile);
 			request.setXlFilePath(xlfilePath);
 			request.setFileName(fileName);
+			request.setProgressDesc("Progressing");
+			request.setProgressStatus("P");
+			request.setStatus("P");
 		}catch (Exception e) {
 			log.error(e);
 		}
@@ -262,11 +266,11 @@ public class UtilityServiceImpl {
 					
 				}else {
 				
-					updateBatchTransaction (request.getTranId(), "checking columns mismatching columns" ,"mismatched columns found","Progressing",null);
+					updateBatchTransaction (request.getTranId(), "checking columns mismatching columns" ,"mismatched columns found","Progressing","E");
 
 				}
 			}else {
-				updateBatchTransaction (request.getTranId(), "checking columns mismatching columns" ,"Xl Heder columns is not matched","Progressing",null);
+				updateBatchTransaction (request.getTranId(), "checking columns mismatching columns" ,"Xl Heder columns is not matched","Progressing","E");
 
 			}
 				
@@ -572,47 +576,67 @@ public class UtilityServiceImpl {
 		        return cellData;
 		    }
 	    
-	    public FileUploadInputRequest saveBatchTransaction (FileUploadInputRequest request) {
-	    	log.info("Enter || saveBatchTransaction :");
-	    	try {
-	    		Long count=repository.count();
+	    
+	    
+	    public void updateBatchTransaction(String tranId,String progressStatus,String errordesc,String progrssDesc,String loading){
+			try {
+				Long total=0L;
+				Long error_records=0L;
+				Long valid_records =0L;
+				TransactionControlDetails t =controlDetailsRepository.findByRequestReferenceNo(tranId);
+				t.setProgressDescription(progrssDesc); 
+				t.setErrorDescription(errordesc); 
+				t.setStatus(loading);
+				
+				List<FactorRateRawInsert> list =rawMasterRepository.findByTranId(tranId);
+				if(!CollectionUtils.isEmpty(list)) {
+					
+					 total =list.stream().count();
+					 error_records =list.stream().filter(p ->"E".equalsIgnoreCase(p.getErrorStatus()))
+							.count();
+					 valid_records =total - error_records;
+					
+				}
+				t.setTotalRecords(total.intValue());
+				t.setErrorRecords(error_records.intValue());
+				t.setValidRecords(valid_records.intValue());
+				controlDetailsRepository.saveAndFlush(t);
+				//saveUploadTransactionData(uploadResponse);
+				}catch (Exception e) {log.error(e);}
+		}
+		
+		public void saveUploadTransactionData(FileUploadInputRequest res ) {
+			try {
+				Long count=controlDetailsRepository.count();
 	    		Long tranId =count==0?1:count+1;
-	    		SpringBatchTransaction batchTransaction =SpringBatchTransaction.builder()
-	    				.batchStatus("PROCESSING")
-	    				.csvFilePath(StringUtils.isBlank(request.getCsvFilePath())?"":request.getCsvFilePath())
-	    				.entryDate(new Date())
-	    				.errorDesc("")
-	    				.excelFilepath(StringUtils.isBlank(request.getXlFilePath())?"":request.getXlFilePath())
-	    				.progressDesc("patch processing start..")
-	    				.tranId(Integer.valueOf(tranId.toString()))
-	    				.build();
-	    		repository.save(batchTransaction);
-	    		
-		    	log.info("End || saveBatchTransaction Id : "+tranId);
-		    	request.setTranId(tranId.toString());
-	    	}catch (Exception e) {
-				e.printStackTrace();
+				TransactionControlDetails controlDetails = TransactionControlDetails.builder()
+						.branchCode(StringUtils.isBlank(res.getBranchCode())?"":res.getBranchCode())
+						.companyId(StringUtils.isBlank(res.getInsuranceId())?null:Integer.valueOf(res.getInsuranceId()))
+						.entryDate(new Date())
+						.errorDescription(StringUtils.isBlank(res.getProgressErrorDesc())?"":res.getProgressErrorDesc())
+						//.errorRecords(StringUtils.isBlank(res.getErrorRecords())?0:Integer.valueOf(res.getErrorRecords()))
+						//.validRecords(StringUtils.isBlank(res.get)?0:Integer.valueOf(res.getValidRecords()))
+						//.totalRecords(StringUtils.isBlank(res.getTotalRecordsCount()())?0:Integer.valueOf(res.getTotalRecordsCount()))
+						.fileName(StringUtils.isBlank(res.getFileName())?"":res.getFileName())
+						.filePath(StringUtils.isBlank(res.getXlFilePath())?"":res.getXlFilePath())
+						.lastUpdatedDate(new Date())
+						.loadPercentage(null)
+						.loginName(StringUtils.isBlank(res.getCreatedBy())?"":res.getCreatedBy())
+						.productId(StringUtils.isBlank(res.getProductId())?null:Integer.valueOf(res.getProductId()))
+						.progressDescription(StringUtils.isBlank(res.getProgressDesc())?"":res.getProgressDesc())
+						.requestReferenceNo(tranId.toString())
+						.sectionId(StringUtils.isBlank(res.getSectionId())?null:Integer.valueOf(res.getSectionId()))
+						.status(StringUtils.isBlank(res.getProgressStatus())?"":res.getProgressStatus())
+						.typeId(Long.valueOf(0))
+						.tranDate(new Date())
+						.build();
+				controlDetailsRepository.saveAndFlush(controlDetails);
+				res.setTranId(tranId.toString());
+			}catch (Exception e) {
 				log.error(e);
-			}
-			return request;
-	    }
-	    
-	    
-	    public void updateBatchTransaction (String tranId, String progressDesc ,String errorDesc,String batchStatus,String status) {
-	    	try {
-	    		SpringBatchTransaction transaction = repository.findById(Integer.valueOf(tranId)).orElse(null);
-	    		transaction.setEntryDate(new Date());
-	    		transaction.setErrorDesc(errorDesc);
-	    		transaction.setProgressDesc(progressDesc);
-	    		transaction.setBatchStatus(batchStatus);
-	    		transaction.setCsvFilePath(transaction.getCsvFilePath());
-	    		transaction.setProgrsessStatus(status);
-	    		repository.save(transaction);
-	    	}catch (Exception e) {
 				e.printStackTrace();
-				log.error(e);
 			}
-	    }
+		}
 	    
 	    
 	   public String updateFactorRawRecordByTranId(String tranId, String discreateColumns, String auth) {
@@ -820,9 +844,6 @@ public class UtilityServiceImpl {
 	  
 	public void insertFactorRecordsToMainTable(String tranId, String totalRecord) {
 		ObjectMapper objMapper = new ObjectMapper();
-		Long total =0L;
-		Long validRecord =0L;
-		Long errorRecord =0L;
 		try {
 			List<FactorRateRawInsert> list=rawMasterRepository.findByTranIdAndErrorDescIsNull(tranId);
 			if(!CollectionUtils.isEmpty(list)) {
@@ -857,22 +878,8 @@ public class UtilityServiceImpl {
 				
 				log.info("Process Completed at " +new Date());
 				
-				total =Long.valueOf(totalRecord);
-				validRecord =(long)list.size();
-				errorRecord =0L;
-			}else {
-				
-				List<FactorRateRawInsert> errorList=rawMasterRepository.findByTranIdAndErrorDescIsNotNull(tranId);
-				total =Long.valueOf(totalRecord);
-				validRecord =(long)total-errorList.size();
-				errorRecord =(long)errorList.size();
 			}
-			
-			SpringBatchTransaction transaction=repository.findById(Integer.valueOf(tranId)).get();
-			transaction.setTotalRows(total);
-			transaction.setValidRecord(validRecord);
-			transaction.setErrorRecord(errorRecord);
-			repository.save(transaction);
+		
 			
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -882,37 +889,35 @@ public class UtilityServiceImpl {
 	}
 		
 	
-	public Boolean doMainJob(String tranId, String totalRows) throws Exception {
+	public CommonRes doMainJob(String tranId) throws Exception {
 		Boolean status =false;
-		Integer totalrecords =Integer.valueOf(totalRows)-1;
 		Long count=0L;
-		log.info("Mainjob batch request ||tranId :"+tranId+" || totalrecords : "+totalrecords+"");
+		log.info("Mainjob batch request ||tranId :"+tranId+" ");
+		CommonRes response = new CommonRes();
 		try {
 			count=rawMasterRepository.countByTranIdAndErrorStatus(tranId,"E");
 			log.info("FactorRateRawInsert  Error Records count : "+count);
 			if(count==0) {
-				status =true;		
+				status =true;	
+				count=rawMasterRepository.countByTranIdAndStatus(tranId,"Y");
 				log.info("Maintable batch job calling .... : "+count);
 				JobParameters jobParameters = new JobParametersBuilder()
 						.addLong("time", System.currentTimeMillis())
-						.addString("MainTable", tranId+"~"+totalRows)
+						.addString("MainTable", tranId+"~"+count)
 				        .toJobParameters();
 						jobLauncher.run(job, jobParameters);
 						log.info("Maintable batch job completed: "+count);
 
-						
+						response.setMessage("SUCCESS");
+						response.setCommonResponse("Records moved Successfully");	
+			}else {
+				response.setMessage("SUCCESS");
+				response.setCommonResponse("Please update or delete error records");	
 			}
-			
-			SpringBatchTransaction trans =repository.findById(Integer.valueOf(tranId)).get();
-			trans.setTotalRows(totalrecords.longValue());
-			trans.setErrorRecord(count);
-			trans.setValidRecord(totalrecords-count);
-			repository.saveAndFlush(trans);
-			log.info("updated records into SpringBatchTransaction table :"+count);
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
-		return status;
+		return response;
 	}
 	    
 }

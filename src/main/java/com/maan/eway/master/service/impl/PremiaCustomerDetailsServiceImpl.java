@@ -143,113 +143,33 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 //		List<PremiaCustomerDetailsCriteriaRes> resList=new ArrayList<PremiaCustomerDetailsCriteriaRes>();
 		Long orderId = 0L ;
 			try {
-				if(req.getSourcetype().equalsIgnoreCase("Direct") ){
-					List<PremiaCustomerDetails> customerDetailsList=new ArrayList<PremiaCustomerDetails>(); 
-					
-						CriteriaBuilder cb = em.getCriteriaBuilder();
-						CriteriaQuery<PremiaCustomerDetails> query = cb.createQuery(PremiaCustomerDetails.class);
-						
-						Root<PremiaCustomerDetails> c = query.from(PremiaCustomerDetails.class);
-						
-						query.select( c
-								);
-					
-						// Order By
-						List<Order> orderList = new ArrayList<Order>();
-					    orderList.add(cb.asc(c.get("customerCode")));
-					    
-						// Where 
-//					    Predicate n1 = cb.equal(c.get("customerAttachedTo"),agencyCode);
-//						Predicate n2 = cb.equal(c.get("customerAttachedTo"), null);
-//						Predicate n3 = cb.or(n1,n2);
-					    Predicate n3 = cb.equal(c.get("companyId"),req.getCompanyId());
-						Predicate n4 = cb.like(c.get("customerCode"),"%" + req.getSearchvalue() + "%" ) ;
-						Predicate n5 = cb.like(cb.lower(c.get("customerName")),"%" + req.getSearchvalue().toLowerCase() + "%" ) ;
-						Predicate n6 = cb.or(n4,n5);
-						Predicate n7 = cb.equal(c.get("status"),"Y");
-						Predicate n8 = cb.notEqual(c.get("branchCode"),req.getBranchCode());
-						Predicate n9 =  cb.notEqual(c.get("customerType"),"001");
-						query.where(n3,n6,n7,n8,n9).orderBy(orderList);
-						
-						// Get Result
-						TypedQuery<PremiaCustomerDetails> result = em.createQuery(query);
-						customerDetailsList = result.getResultList();
-						
-					//	customerDetailsList=whatsappRepo.customerDetailsList(req.getDivisioncode(),req.getSearchvalue()+"%",req.getLoginid());
-						if(customerDetailsList.size()>0 && customerDetailsList!=null) {
-							for (PremiaCustomerDetails data : customerDetailsList) {
-								orderId = orderId + 1 ;
-								// Response 
-								PremiaCustomerDetailsRes resList = new PremiaCustomerDetailsRes();
-								resList.setCustomercode(data.getCustomerCode());
-								resList.setCustomername(data.getCustomerName());
-								resList.setBrokerBranchCode(data.getBranchCode() );
-								resList.setOrderId(orderId);
-								res.add(resList);
-							}
-						}else {
-							res = new ArrayList<PremiaCustomerDetailsRes>();
-							PremiaCustomerDetailsRes errRes = new PremiaCustomerDetailsRes();
-							errRes.setCustomername("No Record Found");
-							res.add(errRes);
-						}
-					
-				} else if (req.getSourcetype().equalsIgnoreCase("Broker") ) {
-					String productId = req.getProductid() ;
-					String  companyId = req.getCompanyId() ;
-					String branchCode = req.getBranchCode() ;
-					List<String> usertypes = new ArrayList<String>();
-					usertypes.add("Broker");
-				//	usertypes.add("User");
-					List<String> subUsertypes = new ArrayList<String>();
-					subUsertypes.add("b2b");
-					subUsertypes.add("b2c");
-					Date today = new Date() ;
-					
-					
-					List<Tuple> loginList = getBrokerProducts ( productId ,companyId ,branchCode , usertypes , subUsertypes , today ) ;
-					for (Tuple data : loginList) {
-					//	LoginProductMaster product = (LoginProductMaster) data.get("loginProduct")  ;
-						LoginMaster  login = (LoginMaster)   data.get("loginMaster") ;
-						orderId = orderId + 1 ;
-						// Response 
-						PremiaCustomerDetailsRes resList = new PremiaCustomerDetailsRes();
-						resList.setCustomercode(login.getAgencyCode().toString());
-						resList.setCustomername(login.getLoginId());
-						resList.setLoginId(login.getLoginId());
-					//	resList.setBrokerBranchCode(branch.getBrokerBranchCode());
-					//	resList.setBrokerBranchName(branch.getBrokerBranchName());
-						resList.setOrderId(orderId);
-						res.add(resList);
-					}
-					
-				} else if (req.getSourcetype().equalsIgnoreCase("Agent") ) {
-					String productId = req.getProductid() ;
-					String  companyId = req.getCompanyId() ;
-					String branchCode = req.getBranchCode() ;
-					List<String> usertypes = new ArrayList<String>();
-					usertypes.add("Broker");
-				//	usertypes.add("User");
-					List<String> subUsertypes = new ArrayList<String>();
-					subUsertypes.add("bank");
-					Date today = new Date() ;
-					
-					List<Tuple> loginList = getBrokerProducts ( productId ,companyId ,branchCode , usertypes , subUsertypes , today ) ;
-					for (Tuple data : loginList) {
-				//		LoginProductMaster product = (LoginProductMaster) data.get("loginProduct")  ;
-						LoginMaster  login = (LoginMaster)   data.get("loginMaster") ;
-						orderId = orderId + 1 ;
-						// Response 
-						PremiaCustomerDetailsRes resList = new PremiaCustomerDetailsRes();
-						resList.setCustomercode(login.getAgencyCode().toString() );
-						resList.setCustomername(login.getLoginId());
-						resList.setLoginId(login.getLoginId());
-					//	resList.setBrokerBranchCode(branch.getBrokerBranchCode());
-					//	resList.setBrokerBranchName(branch.getBrokerBranchName());
-						resList.setOrderId(orderId);
-						res.add(resList);
-					}
+				String productId = req.getProductid() ;
+				String  companyId = req.getCompanyId() ;
+				String branchCode = req.getBranchCode() ;
+				List<String> usertypes = new ArrayList<String>();
+				usertypes.add("Broker");
+				usertypes.add("User");
+				List<String> subUsertypes = new ArrayList<String>();
+				subUsertypes.add(req.getSourcetype() );
+				Date today = new Date() ;
+				
+				
+				List<Tuple> loginList = getBrokerProducts ( productId ,companyId ,branchCode , usertypes , subUsertypes , today ) ;
+				for (Tuple data : loginList) {
+				//	LoginProductMaster product = (LoginProductMaster) data.get("loginProduct")  ;
+					LoginMaster  login = (LoginMaster)   data.get("loginMaster") ;
+					orderId = orderId + 1 ;
+					// Response 
+					PremiaCustomerDetailsRes resList = new PremiaCustomerDetailsRes();
+					resList.setCustomercode(login.getAgencyCode().toString());
+					resList.setCustomername(login.getLoginId());
+					resList.setLoginId(login.getLoginId());
+				//	resList.setBrokerBranchCode(branch.getBrokerBranchCode());
+				//	resList.setBrokerBranchName(branch.getBrokerBranchName());
+					resList.setOrderId(orderId);
+					res.add(resList);
 				}
+				
 				
 			}catch(Exception e) {
 					e.printStackTrace();
@@ -333,7 +253,10 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 			Predicate n10 = cb.equal(b.get("branchCode"),branchCode);
 			Predicate n11 = cb.equal(c.get("loginId"), l.get("loginId"));
 			Predicate n12 = cb.notEqual(c.get("status"), "D");
-			query.where(n1,n2,n4,n5,n6,n7,n8,n9,n10,n11,n12).orderBy(orderList);
+			Predicate n13 = cb.notEqual(c.get("status"), "N");
+			Predicate n14 = cb.notEqual(l.get("status"), "N");
+			Predicate n15 = cb.notEqual(b.get("status"), "N");
+			query.where(n1,n2,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<Tuple> result = em.createQuery(query);			

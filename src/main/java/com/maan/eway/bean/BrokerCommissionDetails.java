@@ -93,6 +93,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="COMMISSION_PERCENTAGE")
     private Double commissionPercentage;
     
+    @Column(name="COMMISSION_VAT_YN")
+    private String commissionVatYn;
+    
+    @Column(name="COMMISSION_VAT_PERCENT")
+    private Double commissionVatPercent;
+    
     @Column(name="CHECKER_YN",length=10)
     private String   checkerYn;
         
@@ -133,8 +139,14 @@ private static final long serialVersionUID = 1L;
     @Column(name="FMV_STATUS", length=10)
     private String     fmvStatus;
 
+    @Column(name="BACK_DAYS",length=10)
+    private Integer   backDays;
 
-
+    @Column(name="CORE_APP_CODE", length=100)
+    private String     coreAppCode ;
+    
+    @Column(name="REGULATORY_CODE", length=100)
+    private String     regulatoryCode ;
 }
 
 

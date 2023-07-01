@@ -1267,7 +1267,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 				saveLB.setBrokerBranchCode(brokerBranchCode);
 				saveLB.setLoginId(branch.getDirectBrokerId());
 				saveLB.setUserType("Broker");
-				saveLB.setSubUserType("b2b");
+				saveLB.setSubUserType("direct");
 				loginBrokerRepo.saveAndFlush(saveLB);
 
 				log.info("Login Master Updated Details ---> " + json.toJson(saveLB));

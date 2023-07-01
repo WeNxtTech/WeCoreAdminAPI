@@ -698,12 +698,13 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					
 					
 					
-				/*	if (StringUtils.isBlank(data.getRegulatoryCode())) {
+					if (StringUtils.isBlank(data.getRegulatoryCode())) {
 						errorList.add(new Error("06", "RegulatoryCode", "Please Enter RegulatoryCode In Row No : " + row ));
 					}
 					else if(data.getRegulatoryCode().length()>20) {
 						errorList.add(new Error("06", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters In Row No : " + row ));
-						} */
+					}
+					
 					} 
 			}
 		

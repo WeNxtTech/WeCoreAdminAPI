@@ -40,7 +40,8 @@ public class FactorRateRawMasterId implements Serializable {
 	    
 	    private Integer    subCoverId ;
 	    
-	   
+	    private String tranId;
+	    
 	    private Integer   amendId;
 
 }

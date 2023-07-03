@@ -137,6 +137,7 @@ public class UtilityServiceImpl {
 			request.setStatus("P");
 		}catch (Exception e) {
 			log.error(e);
+			e.printStackTrace();
 		}
 		return request;
 		
@@ -299,6 +300,7 @@ public class UtilityServiceImpl {
            }
         }catch(Exception e){log.error(e);
 		updateBatchTransaction (request.getTranId(), e.getMessage() ,"Error","Error","E");
+		e.printStackTrace();
 
         }
         return tolalNoofRowsinFile;
@@ -602,13 +604,14 @@ public class UtilityServiceImpl {
 				t.setValidRecords(valid_records.intValue());
 				controlDetailsRepository.saveAndFlush(t);
 				//saveUploadTransactionData(uploadResponse);
-				}catch (Exception e) {log.error(e);}
+				}catch (Exception e) {log.error(e);e.printStackTrace();}
 		}
 		
 		public void saveUploadTransactionData(FileUploadInputRequest res ) {
 			try {
 				Long count=controlDetailsRepository.count();
 	    		Long tranId =count==0?1:count+1;
+	    		String refeNo ="FACTOR_"+String.valueOf(tranId);
 				TransactionControlDetails controlDetails = TransactionControlDetails.builder()
 						.branchCode(StringUtils.isBlank(res.getBranchCode())?"":res.getBranchCode())
 						.companyId(StringUtils.isBlank(res.getInsuranceId())?null:Integer.valueOf(res.getInsuranceId()))
@@ -624,14 +627,14 @@ public class UtilityServiceImpl {
 						.loginName(StringUtils.isBlank(res.getCreatedBy())?"":res.getCreatedBy())
 						.productId(StringUtils.isBlank(res.getProductId())?null:Integer.valueOf(res.getProductId()))
 						.progressDescription(StringUtils.isBlank(res.getProgressDesc())?"":res.getProgressDesc())
-						.requestReferenceNo(tranId.toString())
+						.requestReferenceNo(refeNo)
 						.sectionId(StringUtils.isBlank(res.getSectionId())?null:Integer.valueOf(res.getSectionId()))
 						.status(StringUtils.isBlank(res.getProgressStatus())?"":res.getProgressStatus())
 						.typeId(Long.valueOf(0))
 						.tranDate(new Date())
 						.build();
-				controlDetailsRepository.saveAndFlush(controlDetails);
-				res.setTranId(tranId.toString());
+				TransactionControlDetails result =controlDetailsRepository.saveAndFlush(controlDetails);
+				res.setTranId(result.getRequestReferenceNo());
 			}catch (Exception e) {
 				log.error(e);
 				e.printStackTrace();
@@ -797,10 +800,37 @@ public class UtilityServiceImpl {
 			entity.setGroupId(groupId);
 			entity.setTranId(tranId);
 			entity.setGroupingColumn(discreateColumns);
-			entity.setErrorDesc(errors.size()>0?print.toJson(errors):null);
+			entity.setErrorDesc(errors.size()>0?print.toJson(errors).length()>10000?print.toJson(errors).substring(0,10000):print.toJson(errors)
+				:null);
 			entity.setErrorStatus(CollectionUtils.isEmpty(errors)?"":"E");
 			entity.setEntryDate(new Date());
-			for(FactorParamsInsert p :req.getFactorParams()) {				
+			
+			req.getFactorParams().stream().map(p ->{
+				entity.setParam1(p.getParam1()==null?0D:Double.valueOf(p.getParam1()));
+				entity.setParam2(p.getParam2()==null?0D:Double.valueOf(p.getParam2()));
+				entity.setParam3(p.getParam3()==null?0D:Double.valueOf(p.getParam3()));
+				entity.setParam4(p.getParam4()==null?0D:Double.valueOf(p.getParam4()));
+				entity.setParam5(p.getParam5()==null?0D:Double.valueOf(p.getParam5()));
+				entity.setParam6(p.getParam6()==null?0D:Double.valueOf(p.getParam6()));
+				entity.setParam7(p.getParam7()==null?0D:Double.valueOf(p.getParam7()));
+				entity.setParam8(p.getParam8()==null?0D:Double.valueOf(p.getParam8()));
+				entity.setParam9(StringUtils.isBlank(p.getParam9())?"0":p.getParam9());
+				entity.setParam10(StringUtils.isBlank(p.getParam10())?"0":p.getParam10());
+				entity.setParam11(StringUtils.isBlank(p.getParam11())?"0":p.getParam11());
+				entity.setParam12(StringUtils.isBlank(p.getParam12())?"0":p.getParam12());
+				entity.setSNo(Integer.valueOf(p.getSno()));
+				entity.setApiUrl(StringUtils.isBlank(p.getApiUrl())?"":p.getApiUrl());
+				entity.setCalcType(StringUtils.isBlank(p.getCalType())?"":p.getCalType());
+				entity.setMasterYn(StringUtils.isBlank(p.getMasterYn())?"":p.getMasterYn());
+				entity.setMinPremium(p.getMinimumPremium()==null?0D:Double.valueOf(p.getMinimumPremium()));
+				entity.setRegulatoryCode(StringUtils.isBlank(p.getRegulatoryCode())?"":p.getRegulatoryCode());
+				entity.setRate(p.getRate()==null?0D:Double.valueOf(p.getRate()));
+				return rawMasterRepository.save(entity);
+			}).collect(Collectors.toList());
+			
+			
+			
+			/*for(FactorParamsInsert p :req.getFactorParams()) {				
 				entity.setParam1(p.getParam1()==null?0D:Double.valueOf(p.getParam1()));
 				entity.setParam2(p.getParam2()==null?0D:Double.valueOf(p.getParam2()));
 				entity.setParam3(p.getParam3()==null?0D:Double.valueOf(p.getParam3()));
@@ -821,7 +851,7 @@ public class UtilityServiceImpl {
 				entity.setRegulatoryCode(StringUtils.isBlank(p.getRegulatoryCode())?"":p.getRegulatoryCode());
 				entity.setRate(p.getRate()==null?0D:Double.valueOf(p.getRate()));
 				rawMasterRepository.saveAndFlush(entity);
-			}						
+			}*/						
 			
 		}catch (Exception e) {
 			e.printStackTrace();

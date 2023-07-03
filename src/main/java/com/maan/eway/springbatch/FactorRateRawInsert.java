@@ -65,11 +65,13 @@ public class FactorRateRawInsert {
 	    @Column(name="AMEND_ID", nullable=false)
 	    private Integer    amendId ;
 	    
-	    // created new columns by baskar
-	    
+	    @Id
 	    @Column(name="TRAN_ID", length=20)
 	    private String     tranId;
 	    
+	    // created new columns by baskar
+	    
+	   
 	    @Column(name="GROUP_ID", length=20)
 	    private String groupId;
 	    

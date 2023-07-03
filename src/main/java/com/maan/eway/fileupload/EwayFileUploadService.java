@@ -1,8 +1,5 @@
 package com.maan.eway.fileupload;
 
-import com.maan.eway.master.req.FactorRateSaveReq;
-import com.maan.eway.res.CommonRes;
-
 public interface EwayFileUploadService {
 
 	com.maan.eway.res.CommonRes download(FileDownloadRequest req);

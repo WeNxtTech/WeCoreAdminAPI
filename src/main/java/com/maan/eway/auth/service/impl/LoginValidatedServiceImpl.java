@@ -93,11 +93,21 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 			}
 			
 			// Other Login Checking
-			if(! loginId.equalsIgnoreCase("guest")  ) {
-//				if (req.getPassword() == null || StringUtils.isBlank(req.getPassword())) {
-//					list.add(new Error("", "Password", "Please enter password"));
-//				}
+			if(! (list.size()>0)) {
+		
+				if(! loginId.equalsIgnoreCase("guest")  ) {
+
 				
+				if (StringUtils.isNotBlank(req.getLoginId()) && StringUtils.isNotBlank(req.getPassword())) {
+					//LoginMaster loginData = loginRepo.findByLoginIdAndEffectiveDateStartLessThanEqual(req.getLoginId(), new Date());
+					LoginMaster loginData = loginRepo.findByLoginId(req.getLoginId());
+					
+					if (loginData !=null && loginData.getEffectiveDateStart().after(new Date())) {
+						list.add(new Error("", "UserId", "Your  Login Id Date is not started"));
+					} 
+				}
+				
+				if(! (list.size()>0)) {
 				if (StringUtils.isNotBlank(req.getLoginId()) && StringUtils.isNotBlank(req.getPassword())) {
 					LoginMaster loginData = loginRepo.findByLoginId(req.getLoginId());
 					if (loginData ==null ) {
@@ -118,7 +128,6 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 								changePwd = "Y";
 							}
 						}
-						
 					}
 				} 
 				
@@ -135,8 +144,8 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 						}
 				}
 			}
-			
-			
+			}
+			}	
 			
 		} catch (Exception e) {
 			e.printStackTrace();

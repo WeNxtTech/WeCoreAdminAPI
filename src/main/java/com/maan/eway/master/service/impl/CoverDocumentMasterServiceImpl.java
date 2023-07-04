@@ -449,9 +449,9 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
 			Predicate n4 = cb.equal(b.get("productId"), req.getProductId());
 			Predicate n5 = cb.equal(b.get("coverId"), "99999");
-			Predicate n6 = cb.equal(b.get("status"), "Y");
+	//		Predicate n6 = cb.equal(b.get("status"), "Y");
 
-			query.where(n1, n2, n3, n4, n5,n6).orderBy(orderList);
+			query.where(n1, n2, n3, n4, n5).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CoverDocumentMaster> result = em.createQuery(query);
@@ -815,8 +815,10 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 
 			String itemType = "DOCUMENT_APPLICABLE" ;
 			List<ListItemValue> getList  = getListItem(req.getCompanyId() , "99999" , itemType);
-			String docApplicable =    getList.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getDocumentType()) ).collect(Collectors.toList()).get(0).getItemValue();
-			
+			String docApplicable =    getList.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getDocApplicableId()) ).collect(Collectors.toList()).get(0).getItemValue();
+			String itemType2 = "DOC_TYPE" ;
+			List<ListItemValue> getDocTypes  = getListItem(req.getCompanyId() , "99999" , itemType2);
+			String documentType =   getDocTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getDocumentType()) ).collect(Collectors.toList()).get(0).getItemValue();
 		
 			
 			Integer amendId = 0 ;
@@ -906,7 +908,7 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 			saveData.setDocumentDesc(req.getDocumentDesc());
 			saveData.setEffectiveDateStart(startDate);
 			saveData.setEffectiveDateEnd(endDate);
-			saveData.setDocumentTypeDesc(docApplicable);
+			saveData.setDocumentTypeDesc(documentType);
 			saveData.setStatus(req.getStatus());
 			saveData.setEntryDate(new Date());
 			saveData.setAmendId(amendId);

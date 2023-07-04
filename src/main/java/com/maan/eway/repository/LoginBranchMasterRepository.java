@@ -13,6 +13,7 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import com.maan.eway.bean.LoginBranchMaster;
@@ -48,6 +49,9 @@ public interface LoginBranchMasterRepository  extends JpaRepository<LoginBranchM
 	List<LoginBranchMaster> findByLoginIdAndStatus(String loginId, String string);
 
 	List<LoginBranchMaster> findByAgencyCodeAndStatusAndBranchCode(Integer valueOf, String string, String branchCode);
+
+	List<LoginBranchMaster> findByAgencyCodeAndStatusAndBranchCodeAndEffectiveDateStartLessThanEqual(Integer valueOf,
+			String string, String branchCode, Date date);
 
 	
 

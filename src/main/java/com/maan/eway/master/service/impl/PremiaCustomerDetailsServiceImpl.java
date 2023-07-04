@@ -275,7 +275,7 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 	public List<DropDownRes> getBrokerBranches(PremiaDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 			try {
-				List<LoginBranchMaster> lb = lbRepo.findByAgencyCodeAndStatusAndBranchCode(Integer.valueOf(req.getBrokerCode()) , "Y" ,req.getBranchCode());
+				List<LoginBranchMaster> lb = lbRepo.findByAgencyCodeAndStatusAndBranchCodeAndEffectiveDateStartLessThanEqual(Integer.valueOf(req.getBrokerCode()) , "Y" ,req.getBranchCode(), new Date());
 					for (LoginBranchMaster data : lb ) {
 						// Response 
 						DropDownRes res = new DropDownRes(); 

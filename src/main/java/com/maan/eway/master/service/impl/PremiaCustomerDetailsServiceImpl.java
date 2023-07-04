@@ -256,7 +256,8 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 			Predicate n13 = cb.notEqual(c.get("status"), "N");
 			Predicate n14 = cb.notEqual(l.get("status"), "N");
 			Predicate n15 = cb.notEqual(b.get("status"), "N");
-			query.where(n1,n2,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15).orderBy(orderList);
+			Predicate n16 = cb.lessThanOrEqualTo(l.get("effectiveDateStart"), new Date());
+			query.where(n1,n2,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15,n16).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<Tuple> result = em.createQuery(query);			

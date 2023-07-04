@@ -261,6 +261,10 @@ private static final long serialVersionUID = 1L;
     private String     preferredNotification ;
     
     
+    @Column(name="PIN_CODE", length=20)
+    private String     pinCode ;
+    
+    
 //    @Temporal(TemporalType.TIMESTAMP)
 //    @Column(name="ENDORSEMENT_DATE")
 //    private Date       endorsementDate ;

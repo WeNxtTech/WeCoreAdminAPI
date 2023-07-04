@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.BrokerCommissionDetails;
 import com.maan.eway.bean.PolicyTypeMaster;
 import com.maan.eway.bean.PolicyTypeMaster;
 import com.maan.eway.error.Error;
@@ -524,7 +525,7 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 			Date today = new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);;
+			cal.set(Calendar.HOUR_OF_DAY, 23);
 			cal.set(Calendar.MINUTE, 1);
 			today = cal.getTime();
 			cal.set(Calendar.HOUR_OF_DAY, 1);
@@ -534,9 +535,13 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 			// Criteria
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<PolicyTypeMaster> query=  cb.createQuery(PolicyTypeMaster.class);
+			
+			
 			List<PolicyTypeMaster> list = new ArrayList<PolicyTypeMaster>();
+			
 			// Find All
 			Root<PolicyTypeMaster> c = query.from(PolicyTypeMaster.class);
+			Root<BrokerCommissionDetails> b = query.from(BrokerCommissionDetails.class);
 			//Select
 			query.select(c);
 			// Order By
@@ -569,7 +574,17 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
 			Predicate n4 = cb.equal(c.get("companyId"),req.getInsuranceId());
 			Predicate n5 = cb.equal(c.get("productId"),req.getProductId());
-			query.where(n12,n2,n3,n4,n5).orderBy(orderList);
+			
+			Predicate m1 = cb.equal(b.get("loginId"),req.getLoginId());
+			Predicate m2 = cb.equal(b.get("productId"),req.getProductId());  //start<=sysdate<=end
+					
+			Predicate m3 = cb.equal(b.get("status"),"Y");
+			Predicate m4 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"), new Date());
+			Predicate m5 = cb.greaterThanOrEqualTo(b.get("effectiveDateEnd"), new Date());
+			Predicate m6 = cb.equal(b.get("policyType"), c.get("policyTypeId"));
+			
+			
+			query.where(n12,n2,n3,n4,n5,m1,m2,m3,m4,m5,m6).orderBy(orderList);
 			// Get Result
 			TypedQuery<PolicyTypeMaster> result = em.createQuery(query);
 			list = result.getResultList();

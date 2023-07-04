@@ -13,10 +13,13 @@ public class PolicyTypeMasterGetAllReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
 	
-@JsonProperty("InsuranceId")
-private String insuranceId;
-
-@JsonProperty("ProductId")
-private String productId;
+		@JsonProperty("InsuranceId")
+		private String insuranceId;
+		
+		@JsonProperty("ProductId")
+		private String productId;
+		
+		@JsonProperty("LoginId")
+		private String loginId;
    
    }

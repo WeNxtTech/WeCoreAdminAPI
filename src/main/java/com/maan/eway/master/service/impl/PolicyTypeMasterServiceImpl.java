@@ -532,7 +532,7 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 			cal.set(Calendar.MINUTE, 1);
 			Date todayEnd = cal.getTime();
 			List<PolicyTypeMaster> list = new ArrayList<PolicyTypeMaster>();
-			if(StringUtils.isNotBlank(req.getLoginId()) || ! req.getLoginId().equalsIgnoreCase("guest") ) {
+			if(StringUtils.isNotBlank(req.getLoginId()) && ! req.getLoginId().equalsIgnoreCase("guest") ) {
 				// Criteria
 				CriteriaBuilder cb = em.getCriteriaBuilder();
 				CriteriaQuery<PolicyTypeMaster> query=  cb.createQuery(PolicyTypeMaster.class);

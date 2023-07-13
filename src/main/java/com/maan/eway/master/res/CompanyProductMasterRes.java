@@ -116,4 +116,6 @@ public class CompanyProductMasterRes implements Serializable {
 	@JsonProperty("PolicyTypeDesc")
 	private String policyTypeDesc;
 
+	@JsonProperty("SectionEndtYn")
+	private String sectionEndtYn;
 }

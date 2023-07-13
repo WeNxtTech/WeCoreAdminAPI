@@ -637,7 +637,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			res.setSumInsuredStart(list.get(0).getSumInsuredStart()==null?"":list.get(0).getSumInsuredStart().toString());
 			res.setSumInsuredEnd(list.get(0).getSumInsuredEnd()==null?"":list.get(0).getSumInsuredEnd().toString());;
 			res.setDisplayOrder(list.get(0).getDisplayOrder()==null?"":list.get(0).getDisplayOrder().toString());
-			
+			res.setSectionEndtYn(list.get(0).getSectionEndtYn());
 		
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1143,6 +1143,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			String currencyIds =  String.join(",", req.getCurrencyIds()); ;
 			currencyIds = currencyIds.replace("[", "").replace("]", "");
 			saveData.setCurrencyIds(currencyIds);
+			saveData.setSectionEndtYn(StringUtils.isNotBlank(req.getSectionEndtYn()) ? req.getSectionEndtYn() : "N"  );
 		//	saveData.setProductIconName(filterList.size()> 0 ? filterList.get(0).getItemValue() : "");
 			repo.saveAndFlush(saveData);
 			log.info("Saved Details is --> " + json.toJson(saveData));

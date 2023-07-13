@@ -196,7 +196,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 				String currencyIds =  String.join(",", req.getCurrencyIds()); ;
 				currencyIds = currencyIds.replace("[", "").replace("]", "");
 				saveData.setCurrencyIds(currencyIds);
-				
+				saveData.setSectionEndtYn(StringUtils.isNotBlank(req.getSectionEndtYn()) ? req.getSectionEndtYn() :"N" );
 				ListItemValue icon = listRepo.findByItemTypeAndItemCodeAndStatus("PRODUCT_ICONS" , req.getProductIconId() ,"Y");
 				saveData.setProductIconId(Integer.valueOf(icon.getItemCode()));
 				saveData.setProductIconName(icon.getItemValue());
@@ -529,6 +529,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			res.setRemarks(list.get(0).getRemarks());
 			res.setStatus(list.get(0).getStatus());
 			res.setPackageYn(list.get(0).getPackageYn() );
+			res.setSectionEndtYn(list.get(0).getSectionEndtYn());
 		
 		} catch (Exception e) {
 			e.printStackTrace();

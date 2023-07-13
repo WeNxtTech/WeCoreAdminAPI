@@ -76,4 +76,8 @@ public class ProductMasterRes implements Serializable {
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 	
+	@JsonProperty("SectionEndtYn")
+	private String sectionEndtYn;
+	
+	
 }

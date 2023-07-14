@@ -48,7 +48,7 @@ public class FactorRateValidation {
 					factor.setApiUrl(StringUtils.isBlank(p.getApiUrl())?"":p.getApiUrl());
 					factor.setCalType(StringUtils.isBlank(p.getCalcType())?"":p.getCalcType());
 					factor.setMasterYn(StringUtils.isBlank(p.getMasterYn())?"":p.getMasterYn());
-					factor.setMinimumPremium(p.getMinPremium()==null?"":p.getMinPremium().toString());
+					factor.setMinimumPremium(p.getMinPremium()==null?"":new BigDecimal(p.getMinPremium()).toPlainString());
 					factor.setParam1(p.getParam1()==null?"0":new BigDecimal(p.getParam1()).toPlainString());
 					factor.setParam2(p.getParam2()==null?"0":new BigDecimal(p.getParam2()).toPlainString());
 					factor.setParam3(p.getParam3()==null?"0":new BigDecimal(p.getParam3()).toPlainString());

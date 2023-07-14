@@ -61,15 +61,15 @@ public class SmsConfigMasterServiceImpl implements SmsConfigMasterService{
 			} else if (req.getCompanyId().length() > 20) {
 				errorList.add(new Error("01", "Company Id", "Please Enter Company Id within 20 Characters"));
 			} else if (StringUtils.isBlank(req.getSNo())) {
-				List<SmsConfigMaster> smsList = getSnoDetails(req.getCompanyId(),req.getBranchCode());
-				if (smsList.size() > 0) {
-					errorList.add(new Error("01", "S No", "Please Enter Your Sno"));
-				}
+//				List<SmsConfigMaster> smsList = getSnoDetails(req.getCompanyId(),req.getBranchCode());
+//				if (smsList.size() > 0) {
+//					errorList.add(new Error("01", "S No", "Please Enter Your Sno"));
+//				}
 			} else {
-				List<SmsConfigMaster> smsList = getCompanyIdExistDetails(req.getCompanyId(),req.getBranchCode());
-				if (smsList.size() > 0 && (!req.getSNo().equalsIgnoreCase(smsList.get(0).getSNo().toString()))) {
-					errorList.add(new Error("01", "Company Id", "This Company Id Already Exist "));
-				}
+//				List<SmsConfigMaster> smsList = getCompanyIdExistDetails(req.getCompanyId(),req.getBranchCode());
+//				if (smsList.size() > 0 && (!req.getSNo().equalsIgnoreCase(smsList.get(0).getSNo().toString()))) {
+//					errorList.add(new Error("01", "Company Id", "This Company Id Already Exist "));
+//				}
 
 			}
 			// Date Validation

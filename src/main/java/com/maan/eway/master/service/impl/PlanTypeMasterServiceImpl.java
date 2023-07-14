@@ -254,7 +254,7 @@ try {
 	Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 	Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 	Predicate n4 = cb.equal(c.get("sectionId"), req.getSectionId());
-	Predicate n9 = cb.equal(c.get("sectionId"), req.getSectionId());
+	Predicate n9 = cb.equal(c.get("productId"), req.getProductId());
 	Predicate n8 = cb.equal(c.get("companyId"), req.getInsuranceId());
 	Predicate n5 = cb.equal(c.get("branchCode"), req.getBranchCode());
 	Predicate n6 = cb.equal(c.get("branchCode"), "99999");
@@ -265,7 +265,7 @@ try {
 	TypedQuery<PlanTypeMaster> result = em.createQuery(query);
 	list = result.getResultList();
 	list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getPlanTypeId()))).collect(Collectors.toList());
-	list.sort(Comparator.comparing(PlanTypeMaster :: getPlanTypeDescription ));
+	list.sort(Comparator.comparing(PlanTypeMaster :: getPlanTypeId ));
 	for (PlanTypeMaster data : list) {
 		// Response 
 		DropDownRes res = new DropDownRes();

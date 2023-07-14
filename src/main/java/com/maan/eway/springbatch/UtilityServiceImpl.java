@@ -9,14 +9,12 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Random;
 import java.util.StringJoiner;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
@@ -58,6 +56,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.maan.eway.batch.repository.TransactionControlDetailsRepository;
 import com.maan.eway.bean.FactorTypeDetails;
 import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.error.Error;
@@ -69,8 +68,6 @@ import com.maan.eway.master.service.FactorRateMasterService;
 import com.maan.eway.master.service.impl.FactorRateMasterServiceImpl;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
-
-import oracle.net.aso.p;
 
 @Service
 @Lazy

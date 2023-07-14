@@ -52,4 +52,10 @@ public interface TransactionControlDetailsRepository  extends JpaRepository<Tran
 	@Query(value="SELECT COALESCE(MAX(RISK_ID),0) FROM eservice_motor_details WHERE request_reference_no=?1 AND PRODUCT_ID=?2",nativeQuery=true)
 	Long getVehicleId(String refNo,String productId);
 	
+	
+	TransactionControlDetails findByRequestReferenceNo(
+			String requestRefNo);
+
+
+	
 }

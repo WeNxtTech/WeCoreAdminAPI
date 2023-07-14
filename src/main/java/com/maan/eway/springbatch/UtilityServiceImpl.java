@@ -9,19 +9,23 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.StringJoiner;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -65,6 +69,8 @@ import com.maan.eway.master.service.FactorRateMasterService;
 import com.maan.eway.master.service.impl.FactorRateMasterServiceImpl;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
+
+import oracle.net.aso.p;
 
 @Service
 @Lazy
@@ -646,6 +652,9 @@ public class UtilityServiceImpl {
 		   String response="";
 		   try {
 			  Map<String,List<FactorRateRawInsert>> loadList =new HashMap<String,List<FactorRateRawInsert>>();
+			
+			  AtomicInteger uniqueId =new AtomicInteger(0);
+
 			  List<FactorRateRawInsert> list = rawMasterRepository.findByTranId(tranId);
 			  Map<String,List<DropDownRes>> dropDownList =new HashMap<String,List<DropDownRes>>();
 			  if(list.size()>0) {
@@ -665,19 +674,16 @@ public class UtilityServiceImpl {
 					 String [] discreateColArr =discreateColumns.split("~");
 					 log.info("Grouping the records block calling based on the discreate columns ||" +discreateColumns);  
 					 if(discreateColArr.length==1) {
-						 int groupId =1;
 						 
 						Map<Object,List<FactorRateRawInsert>> groupdata =list.stream()
 					        .collect(Collectors.groupingBy(getGroupFields().get(discreateColArr[0])));  
 						
 						for (Entry<Object, List<FactorRateRawInsert>> entry :groupdata.entrySet()) {
 							 List<FactorRateRawInsert> data= entry.getValue();
-							 loadList.put(groupId+"X"+0,data);
-							groupId++;
-						}												
+							 loadList.put(String.valueOf(uniqueId.getAndIncrement()),data);	
+							
+							}												
 					 }else if(discreateColArr.length==2) {
-						 int groupId =1;
-						 
 						 
 						 Map<Object, Map<Object, List<FactorRateRawInsert>>> groupdata =list.stream()
 							       .collect(
@@ -687,38 +693,29 @@ public class UtilityServiceImpl {
 						 
 						 	
 						 for(Entry<Object, Map<Object, List<FactorRateRawInsert>>> entry : groupdata.entrySet()) {
-							 int subgroupId =1;
 							 Map<Object, List<FactorRateRawInsert>> d1 =entry.getValue();
 							 for(Entry<Object,List<FactorRateRawInsert>> entry2:d1.entrySet()) {
-								 String grouId =groupId+"X"+subgroupId;
 								 List<FactorRateRawInsert> data= entry2.getValue();
-								 loadList.put(grouId,data);
-								 subgroupId++;
+								 loadList.put(String.valueOf(uniqueId.getAndIncrement()),data);	
 							 }
-							 groupId ++;
 						 }					 						 
-					 }else if(discreateColArr.length==3) {
-						 int groupId = 1;
-						 
+					 }else if(discreateColArr.length==3) {						 
 						 Map<Object, Map<Object, Map<Object, List<FactorRateRawInsert>>>> groupdata =list.stream()
 							       .collect(
 					                        Collectors.groupingBy(getGroupFields().get(discreateColArr[0]),
 					                                Collectors.groupingBy(getGroupFields().get(discreateColArr[1]),
 					                                		Collectors.groupingBy(getGroupFields().get(discreateColArr[2])
-					                                       ))));	
+					                                       ))));
 						 
 						 for( Entry<Object, Map<Object, Map<Object, List<FactorRateRawInsert>>>>entry1 : groupdata.entrySet()) {
 							 Map<Object, Map<Object, List<FactorRateRawInsert>>> d1 =entry1.getValue();							 
-							 int subgroupId =1;							 
 							 for(Entry<Object, Map<Object, List<FactorRateRawInsert>>> entry2:d1.entrySet()) {								 
 								 Map<Object, List<FactorRateRawInsert>> d2 =entry2.getValue();								 
-								 int childSubId=1;								 
 								 for(Entry<Object, List<FactorRateRawInsert>> entry3 : d2.entrySet()) {
-									 String grouId =groupId+"X"+subgroupId+"X"+childSubId;
 									 List<FactorRateRawInsert> data= entry3.getValue();
-									 loadList.put(grouId,data);
-									 childSubId ++;	 } subgroupId ++; } groupId ++;	}
-							                    												 						 
+									 loadList.put(String.valueOf(uniqueId.getAndIncrement()),data);	
+
+								 }}}              												 						 
 					 }else if(discreateColArr.length==4) {
 					
 						 Map<Object, Map<Object, Map<Object, Map<Object, List<FactorRateRawInsert>>>>> groupdata =list.stream()
@@ -728,30 +725,36 @@ public class UtilityServiceImpl {
 					                                		Collectors.groupingBy(getGroupFields().get(discreateColArr[2]),
 					                                				Collectors.groupingBy(getGroupFields().get(discreateColArr[3])
 					                                       )))));	
-						 
-						 	int groupId_1=1;				 							 							 	
+						 						 
 						 for(Entry<Object, Map<Object, Map<Object, Map<Object, List<FactorRateRawInsert>>>>> entry1 :groupdata.entrySet()) {
 						 		Map<Object, Map<Object, Map<Object, List<FactorRateRawInsert>>>> d1 =entry1.getValue();				 		
-						 		int groupId_2=1;					 		
 						 		for(Entry<Object, Map<Object, Map<Object, List<FactorRateRawInsert>>>> entry2 :d1.entrySet()) {						 			
 						 			 Map<Object, Map<Object, List<FactorRateRawInsert>>> d2 =entry2.getValue();						 			 
-						 			 int groupId_3=1;						 			 
 						 			 for( Entry<Object, Map<Object, List<FactorRateRawInsert>>> entry3 :d2.entrySet()) {						 				 
 						 				Map<Object, List<FactorRateRawInsert>> d3 =entry3.getValue();						 				
-						 				int grouId_4=1;
 						 				for(Map.Entry<Object, List<FactorRateRawInsert>> entry4:d3.entrySet()) {						 					
 						 					List<FactorRateRawInsert> data =entry4.getValue();						 					
-						 					String groupingId =groupId_1+"X"+groupId_2+"X"+groupId_3+"X"+grouId_4;
-						 					loadList.put(groupingId,data);						 					
-						 					grouId_4++; 
-						 				}groupId_3++;						 				 						 				
-						 			 }groupId_2++;						 									 			
-						 		}groupId_1++;						 								 								 		
-						 	}  }					 
+						 					loadList.put(String.valueOf(uniqueId.getAndIncrement()),data);						 					
+						 					
+						 				}						 				 						 				
+						 			 }						 									 			
+						 		}					 								 								 		
+						 	}  }		
+					 
 					log.info("Grouping the records block completed based on the discreate columns ||" +discreateColumns);  
 					
-					//calling asyncPrecess thread.
-					processThread.asyncProcess(loadList, discreateColumns,auth,dropDownList);
+					
+					 List<List<FactorRateRawInsert>> data =loadList.entrySet().stream()
+							  .map(p -> p.getValue())
+							  .collect(Collectors.toList());
+					  
+					 /*List<FactorRateRawInsert> flat = 
+							    ff.stream()
+							        .flatMap(List::stream)
+							        .collect(Collectors.toList());
+					 System.out.println("==================>"+flat.size());*/
+					  
+					processThread.asyncProcess(data, discreateColumns,auth,dropDownList);
 					
 				 }else {
 					log.info("Calling non discreate columns block ||" +discreateColumns);  
@@ -767,12 +770,13 @@ public class UtilityServiceImpl {
 		return response;
 	   }
 	  
+	  
 	
 	   private void callNonDiscreate(List<FactorRateRawInsert> list,String auth ,Map<String,List<DropDownRes>> dropDownList) {
 		try {
-			Map<String,List<FactorRateRawInsert>> map =new HashMap<String,List<FactorRateRawInsert>>();
-			map.put("NON_DISCREATE_COLUMNS",list );		
-			processThread.asyncProcess(map,"N/A",auth,dropDownList);		
+			List<List<FactorRateRawInsert>> discreateList =ListUtils.partition(list, list.size());
+		
+			processThread.asyncProcess(discreateList,"N/A",auth,dropDownList);		
 		}catch (Exception e) {
 			e.printStackTrace();
 			log.error(e);
@@ -780,32 +784,10 @@ public class UtilityServiceImpl {
 		
 	}
 
-	public void updateFactorRawRecords(FactorRateSaveReq req, String groupId, List<Error> errors, String tranId, String discreateColumns) {
-		try {
-			FactorRateRawInsert entity = new FactorRateRawInsert();
-			entity.setAgencyCode(req.getAgencyCode());
-			entity.setAmendId(0);
-			entity.setBranchCode(req.getBranchCode());
-			entity.setCompanyId(req.getCompanyId());
-			entity.setFactorTypeId(Integer.valueOf(req.getFactorTypeId()));
-			entity.setProductId(Integer.valueOf(req.getProductId()));
-			entity.setSectionId(Integer.valueOf(req.getSectionId()));
-			entity.setCoverId(Integer.valueOf(req.getCoverId()));
-			entity.setSubCoverId(Integer.valueOf(req.getSubCoverId()));
-			entity.setEffectiveDateStart(req.getEffectiveDateStart());
-			entity.setEffectiveDateEnd(req.getEffectiveDateEnd());
-			entity.setRemarks(req.getRemarks());
-			entity.setStatus(req.getStatus());
-			entity.setCreatedBy(StringUtils.isBlank(req.getCreatedBy())?"":req.getCreatedBy());
-			entity.setGroupId(groupId);
-			entity.setTranId(tranId);
-			entity.setGroupingColumn(discreateColumns);
-			entity.setErrorDesc(errors.size()>0?print.toJson(errors).length()>10000?print.toJson(errors).substring(0,10000):print.toJson(errors)
-				:null);
-			entity.setErrorStatus(CollectionUtils.isEmpty(errors)?"":"E");
-			entity.setEntryDate(new Date());
-			
-			req.getFactorParams().stream().map(p ->{
+	public void updateFactorRawRecords(FactorRateSaveReq req,List<Error> errors, String tranId, String discreateColumns) {
+		try {			
+			List<FactorRateRawInsert> saveData=req.getFactorParams().stream().map(p ->{
+				FactorRateRawInsert entity = new FactorRateRawInsert();
 				entity.setParam1(p.getParam1()==null?0D:Double.valueOf(p.getParam1()));
 				entity.setParam2(p.getParam2()==null?0D:Double.valueOf(p.getParam2()));
 				entity.setParam3(p.getParam3()==null?0D:Double.valueOf(p.getParam3()));
@@ -825,9 +807,31 @@ public class UtilityServiceImpl {
 				entity.setMinPremium(p.getMinimumPremium()==null?0D:Double.valueOf(p.getMinimumPremium()));
 				entity.setRegulatoryCode(StringUtils.isBlank(p.getRegulatoryCode())?"":p.getRegulatoryCode());
 				entity.setRate(p.getRate()==null?0D:Double.valueOf(p.getRate()));
-				return rawMasterRepository.save(entity);
+				entity.setAgencyCode(req.getAgencyCode());
+				entity.setAmendId(0);
+				entity.setBranchCode(req.getBranchCode());
+				entity.setCompanyId(req.getCompanyId());
+				entity.setFactorTypeId(Integer.valueOf(req.getFactorTypeId()));
+				entity.setProductId(Integer.valueOf(req.getProductId()));
+				entity.setSectionId(Integer.valueOf(req.getSectionId()));
+				entity.setCoverId(Integer.valueOf(req.getCoverId()));
+				entity.setSubCoverId(Integer.valueOf(req.getSubCoverId()));
+				entity.setEffectiveDateStart(req.getEffectiveDateStart());
+				entity.setEffectiveDateEnd(req.getEffectiveDateEnd());
+				entity.setRemarks(req.getRemarks());
+				entity.setStatus(req.getStatus());
+				entity.setCreatedBy(StringUtils.isBlank(req.getCreatedBy())?"":req.getCreatedBy());
+				entity.setTranId(tranId);
+				entity.setGroupingColumn(discreateColumns);
+				entity.setErrorDesc(errors.size()>0?print.toJson(errors).length()>10000?print.toJson(errors).substring(0,10000):print.toJson(errors)
+					:null);
+				entity.setErrorStatus(CollectionUtils.isEmpty(errors)?"":"E");
+				entity.setEntryDate(new Date());
+				return entity;
 			}).collect(Collectors.toList());
 			
+			rawMasterRepository.saveAllAndFlush(saveData);
+				
 			
 			
 			/*for(FactorParamsInsert p :req.getFactorParams()) {				

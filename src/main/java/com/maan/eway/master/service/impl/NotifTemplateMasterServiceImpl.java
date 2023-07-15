@@ -508,7 +508,7 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 			saveData.setNotifTemplateCode(notificationCode.toString());
 			saveData.setNotifTemplatename(req.getNotifTemplatename());
 			saveData.setCompanyId(companyId);
-			saveData.setEffectiveDateStart(startDate);
+			saveData.setEffectiveDateStart(startDate); //
 			saveData.setEffectiveDateEnd(endDate);
 			saveData.setCreatedBy(createdBy);
 			saveData.setStatus(req.getStatus());
@@ -524,6 +524,8 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 			saveData.setSmsRequired(req.getSmsRequired());
 			saveData.setMailRequired(req.getMailRequired());
 			saveData.setWhatsappRequired(req.getWhatsappRequired());
+			saveData.setSmsRegards(req.getSmsRegards());
+			
 			if (req.getMailRequired().equals("Y")) {
 				saveData.setMailBody(req.getMailBody());
 				saveData.setMailSubject(req.getMailSubject());

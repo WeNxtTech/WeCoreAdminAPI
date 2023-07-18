@@ -196,6 +196,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			r.setSubUserType(login.getSubUserType());
 			r.setOaCode(login.getOaCode().toString());
 			r.setBankCode(login.getBankCode());
+			r.setCountryId(userInfo.getCountryCode() );
 			
 			// Branch Res	
 			List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginIdAndStatus(login.getLoginId() , "Y");

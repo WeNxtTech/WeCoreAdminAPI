@@ -336,7 +336,7 @@ public class UtilityServiceImpl {
 		              }
 		              for(int i = 0; i < firstCount; i++){
 		            	  csvData = (String.valueOf(csvData)+getXLSXCellData(myRow.getCell(i))+"~")
-			                		  .replace("\t", "").replace("\n", "").replace("\r", "").replace("'", "").replaceAll("^\"|\"$", "");
+			                		  .replace("\t", "").replace("\n", "").replace("\r", "").replace("'", "").replaceAll("^\"|\"$", "").replace(",", "");
 		              }
 		              if(StringUtils.isNotBlank(csvData)) {
 		            	  if(eachRow==0) {
@@ -381,7 +381,7 @@ public class UtilityServiceImpl {
 	                }
 	                for(int i = 0; i < firstCount; i++)
 	                {
-	                    csvData = String.valueOf(csvData)+getCellData(myRow.getCell(i)).replace("\t", "").replace("\n", "").replace("\r", "").replace("'", "").replaceAll("^\"|\"$", "")+"~";
+	                    csvData = String.valueOf(csvData)+getCellData(myRow.getCell(i)).replace("\t", "").replace("\n", "").replace("\r", "").replace("'", "").replaceAll("^\"|\"$", "").replace(",", "")+"~";
 	                }
 	                int rownum = ++rowcount;
 	                if( rownum== 1) {

@@ -44,7 +44,7 @@ public class FactorRateValidation {
 					factor.setSno(p.getSNo()==null?"0":p.getSNo().toString());
 					factor.setStatus("Y");
 					factor.setRegulatoryCode(StringUtils.isBlank(p.getRegulatoryCode())?"":p.getRegulatoryCode());
-					factor.setRate(p.getRate()==null?"":p.getRate().toString());
+					factor.setRate(p.getRate()==null?"":new BigDecimal(p.getRate()).toPlainString());
 					factor.setApiUrl(StringUtils.isBlank(p.getApiUrl())?"":p.getApiUrl());
 					factor.setCalType(StringUtils.isBlank(p.getCalcType())?"":p.getCalcType());
 					factor.setMasterYn(StringUtils.isBlank(p.getMasterYn())?"":p.getMasterYn());

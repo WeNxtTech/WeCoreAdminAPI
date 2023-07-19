@@ -712,6 +712,7 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 							createdBy = req.getCreatedBy();
 							promocodeId=req.getPromocodeId();
 							coverId=list.get(0).getCoverId().toString();
+							saveData = list.get(0) ;
 							CompanyPromocodeMaster lastRecord = list.get(0);
 								//lastRecord.setEffectiveDateEnd(oldEndDate);
 								comPromorepo.saveAndFlush(lastRecord);

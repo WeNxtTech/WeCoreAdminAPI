@@ -87,5 +87,8 @@ public class NotifTemplateMasterReq implements Serializable {
 	
 	@JsonProperty("RegulatoryCode")
 	private String regulatoryCode;
+	
+	@JsonProperty("SmsRegards")
+	private String smsRegards;
     
 }

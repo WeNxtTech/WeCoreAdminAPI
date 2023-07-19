@@ -10,7 +10,7 @@
  */
 
 
-package com.maan.eway.springbatch;
+package com.maan.eway.batch.repository;
 
 import javax.transaction.Transactional;
 
@@ -19,6 +19,9 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import com.maan.eway.springbatch.TransactionControlDetails;
+import com.maan.eway.springbatch.TransactionControlDetailsId;
 
 
 /**
@@ -35,10 +38,6 @@ public interface TransactionControlDetailsRepository  extends JpaRepository<Tran
 
 	TransactionControlDetails findByCompanyIdAndProductIdAndRequestReferenceNo(Integer companyId, Integer productId,
 			String requestRefNo);
-	
-	TransactionControlDetails findByRequestReferenceNo(
-			String requestRefNo);
-
 
 	@Modifying
 	@Transactional
@@ -54,5 +53,9 @@ public interface TransactionControlDetailsRepository  extends JpaRepository<Tran
 	Long getVehicleId(String refNo,String productId);
 	
 	
+	TransactionControlDetails findByRequestReferenceNo(
+			String requestRefNo);
+
+
 	
 }

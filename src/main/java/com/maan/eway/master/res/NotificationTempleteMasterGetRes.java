@@ -103,5 +103,8 @@ public class NotificationTempleteMasterGetRes {
 	@JsonFormat(pattern = "dd/MM/YYYY")
 	@JsonProperty("EntryDate")
 	private Date entryDate;
+	
+	@JsonProperty("SmsRegards")
+	private String smsRegards;
 
 }

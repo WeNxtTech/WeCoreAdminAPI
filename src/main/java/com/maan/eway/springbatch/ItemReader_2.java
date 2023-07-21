@@ -2,6 +2,7 @@ package com.maan.eway.springbatch;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 
 import javax.sql.DataSource;
 
@@ -48,8 +49,8 @@ public class ItemReader_2 extends JdbcCursorItemReader<FactorBatchRecordRes> imp
 					.companyId(String.valueOf(rs.getInt("COMPANY_ID")))
 					.coverId(String.valueOf(rs.getInt("COVER_ID")))
 					.createdBy(StringUtils.isBlank(rs.getString("CREATED_BY"))?"":rs.getString("CREATED_BY"))
-					.effectiveDateEnd(rs.getDate("EFFECTIVE_DATE_END"))
-					.effectiveDateStart(rs.getDate("EFFECTIVE_DATE_START"))
+					.effectiveDateEnd( (Date) rs.getObject("EFFECTIVE_DATE_END"))
+					.effectiveDateStart( (Date)  rs.getObject("EFFECTIVE_DATE_START"))
 					.factorTypeId(String.valueOf(rs.getInt("FACTOR_TYPE_ID")))
 					.masterYn(StringUtils.isBlank(rs.getString("MASTER_YN"))?"":rs.getString("MASTER_YN"))
 					.minimumPremium(String.valueOf(rs.getDouble("MIN_PREMIUM")))

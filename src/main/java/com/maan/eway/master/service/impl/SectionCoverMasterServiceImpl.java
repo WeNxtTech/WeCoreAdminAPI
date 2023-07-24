@@ -382,6 +382,9 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 		String pattern = "#####0.00";
 		DecimalFormat df = new DecimalFormat(pattern);
 		
+		String patternn = "#####0.0000";
+		DecimalFormat df1 = new DecimalFormat(patternn);
+		
 		try {
 			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
 			Calendar cal = new GregorianCalendar();
@@ -455,7 +458,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			res.setToolTip(list.get(0).getToolTip() == null ? "" : list.get(0).getToolTip());
 			res.setMinimumPremium(list.get(0).getMinPremium() == null ? "" :df.format(list.get(0).getMinPremium()));
 			res.setSumInsuredEnd(list.get(0).getMaxSuminsured() == null ? "" :df.format(list.get(0).getMaxSuminsured()));
-			res.setBaseRate(list.get(0).getBaseRate() == null ? "" : df.format(list.get(0).getBaseRate()));
+			res.setBaseRate(list.get(0).getBaseRate() == null ? "" : df1.format(list.get(0).getBaseRate()));
 			res.setCoverageLimit(list.get(0).getCoverageLimit() == null ? "" : df.format(list.get(0).getCoverageLimit()));
 			res.setExcessPercent(list.get(0).getExcessPercent() == null ? "" :df.format(list.get(0).getExcessPercent()));
 			res.setExcessAmount(list.get(0).getExcessAmount() == null ? "" :df.format(list.get(0).getExcessAmount()));

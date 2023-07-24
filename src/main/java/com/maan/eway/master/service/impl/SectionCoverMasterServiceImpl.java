@@ -449,20 +449,22 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			list.sort( Comparator.comparing(SectionCoverMaster :: getAgencyCode  ).thenComparing(SectionCoverMaster :: getBranchCode  ) );
 		//	list = list.stream().filter( o -> o.getAgencyCode().equalsIgnoreCase(agencyCode) && o.getBranchCode().equalsIgnoreCase(branchCode)   ).collect(Collectors.toList());
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCoverId() ,o.getSubCoverId() ))).collect(Collectors.toList());
-			res = mapper.map(list.get(0), SectionCoverMasterRes.class);
-			res.setCoverId(list.get(0).getCoverId()==null?"" : list.get(0).getCoverId().toString() );
-			res.setEntryDate(list.get(0).getEntryDate());
-			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
-			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
-			res.setCreatedBy(list.get(0).getCreatedBy() == null ? "" : list.get(0).getCreatedBy());
-			res.setToolTip(list.get(0).getToolTip() == null ? "" : list.get(0).getToolTip());
-			res.setMinimumPremium(list.get(0).getMinPremium() == null ? "" :df.format(list.get(0).getMinPremium()));
-			res.setSumInsuredEnd(list.get(0).getMaxSuminsured() == null ? "" :df.format(list.get(0).getMaxSuminsured()));
-			res.setBaseRate(list.get(0).getBaseRate() == null ? "" : df1.format(list.get(0).getBaseRate()));
-			res.setCoverageLimit(list.get(0).getCoverageLimit() == null ? "" : df.format(list.get(0).getCoverageLimit()));
-			res.setExcessPercent(list.get(0).getExcessPercent() == null ? "" :df.format(list.get(0).getExcessPercent()));
-			res.setExcessAmount(list.get(0).getExcessAmount() == null ? "" :df.format(list.get(0).getExcessAmount()));
-			res.setExcessDesc(list.get(0).getExcessDesc()==null ?"": list.get(0).getExcessDesc());	
+			if(list.size()>0) {
+				res = mapper.map(list.get(0), SectionCoverMasterRes.class);
+				res.setCoverId(list.get(0).getCoverId()==null?"" : list.get(0).getCoverId().toString() );
+				res.setEntryDate(list.get(0).getEntryDate());
+				res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
+				res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
+				res.setCreatedBy(list.get(0).getCreatedBy() == null ? "" : list.get(0).getCreatedBy());
+				res.setToolTip(list.get(0).getToolTip() == null ? "" : list.get(0).getToolTip());
+				res.setMinimumPremium(list.get(0).getMinPremium() == null ? "" :df.format(list.get(0).getMinPremium()));
+				res.setSumInsuredEnd(list.get(0).getMaxSuminsured() == null ? "" :df.format(list.get(0).getMaxSuminsured()));
+				res.setBaseRate(list.get(0).getBaseRate() == null ? "" : df1.format(list.get(0).getBaseRate()));
+				res.setCoverageLimit(list.get(0).getCoverageLimit() == null ? "" : df.format(list.get(0).getCoverageLimit()));
+				res.setExcessPercent(list.get(0).getExcessPercent() == null ? "" :df.format(list.get(0).getExcessPercent()));
+				res.setExcessAmount(list.get(0).getExcessAmount() == null ? "" :df.format(list.get(0).getExcessAmount()));
+				res.setExcessDesc(list.get(0).getExcessDesc()==null ?"": list.get(0).getExcessDesc());	
+			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();

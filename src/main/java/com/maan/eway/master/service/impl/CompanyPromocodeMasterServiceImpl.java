@@ -702,7 +702,7 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 				
 				// Order By
 				List<Order> orderList = new ArrayList<Order>();
-				orderList.add(cb.asc(b.get("effectiveDateStart")));
+				orderList.add(cb.desc(b.get("effectiveDateStart")));
 
 				// Where
 				Predicate n3 = cb.equal(b.get("promocodeId"), req.getPromocodeId());

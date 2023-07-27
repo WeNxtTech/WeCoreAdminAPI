@@ -897,9 +897,9 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 			
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
-			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
-			Predicate n4 = cb.equal(b.get("factorTypeId"), req.getFactorTypeId());
+			Predicate n2 = cb.equal(b.get("productId"), productId);
+			Predicate n3 = cb.equal(b.get("companyId"),companyId);
+			Predicate n4 = cb.equal(b.get("factorTypeId"),factorTypeId);
 			Predicate n5 = cb.equal(b.get("effectiveDateEnd"),effectiveDate2);	
 			Predicate n6 = cb.equal(b.get("status"), "Y");
 			query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);

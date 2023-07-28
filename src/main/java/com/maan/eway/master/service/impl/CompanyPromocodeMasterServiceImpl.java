@@ -40,10 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.gson.Gson;
 import com.maan.eway.bean.CompanyPromocodeMaster;
 import com.maan.eway.bean.CoverMaster;
-import com.maan.eway.bean.EmiMaster;
-import com.maan.eway.bean.FactorRateMaster;
 import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CompanyPromcodeMasterGetReq;
 import com.maan.eway.master.req.CompanyPromocodeMasterChangeStatusReq;
@@ -423,16 +420,27 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 
 				// Select
 				query.select(b);
+				
+				Subquery<Long> amend = query.subquery(Long.class);
+				Root<CompanyPromocodeMaster> ocpm2 = amend.from(CompanyPromocodeMaster.class);
+				amend.select(cb.max(ocpm2.get("amendId")));
+				Predicate a7 = cb.equal(ocpm2.get("promocodeId"), b.get("promocodeId"));
+				Predicate a8 = cb.equal(ocpm2.get("sectionId"), b.get("sectionId"));
+				Predicate a9 = cb.equal(ocpm2.get("productId"), b.get("productId"));
+				Predicate a10 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
+				amend.where(a7,a8,a9,a10);
+				
 				// Order By
 				 List<Order> orderList = new ArrayList<Order>();
-				 orderList.add(cb.asc(b.get("effectiveDateStart")));
+				 orderList.add(cb.desc(b.get("effectiveDateStart")));
 
 				// Where
 				Predicate n3 = cb.equal(b.get("promocodeId"), req.getPromocodeId());
 				Predicate n5 = cb.equal(b.get("sectionId"),  req.getSectionId());
 				Predicate n6 = cb.equal(b.get("productId"),req.getProductId());
 				Predicate n7 = cb.equal(b.get("companyId"),req.getCompanyId());
-				query.where(n3,n5,n6,n7).orderBy(orderList);
+				Predicate n8 = cb.equal(b.get("amendId"),amend);
+				query.where(n3,n5,n6,n7,n8).orderBy(orderList);
 				
 				// Get Result
 				TypedQuery<CompanyPromocodeMaster> result = em.createQuery(query);

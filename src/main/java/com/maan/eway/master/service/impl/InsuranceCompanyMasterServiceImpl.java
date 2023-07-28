@@ -611,9 +611,9 @@ this.repository = repo;
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			if(StringUtils.isNotBlank(req.getBrokerCompanyYn()) ) {
-			//	Predicate n2 = cb.equal(b.get("brokerYn"), req.getBrokerCompanyYn());
-			//	query.where(n1,n2).orderBy(orderList);
-				query.where(n1).orderBy(orderList);
+				Predicate n2 = cb.equal(b.get("brokerYn"), req.getBrokerCompanyYn());
+				query.where(n1,n2).orderBy(orderList);
+				
 				
 				TypedQuery<InsuranceCompanyMaster> result = em.createQuery(query);
 
@@ -676,10 +676,9 @@ this.repository = repo;
 			Predicate n2 = cb.equal(b.get("status"), "Y");
 
 			if(StringUtils.isNotBlank(req.getBrokerCompanyYn()) ) {
-//				Predicate n3 = cb.equal(b.get("brokerYn"), req.getBrokerCompanyYn());
-//				query.where(n1,n2,n3).orderBy(orderList);
-				query.where(n1,n2).orderBy(orderList);
-					
+				Predicate n3 = cb.equal(b.get("brokerYn"), req.getBrokerCompanyYn());
+				query.where(n1,n2,n3).orderBy(orderList);
+
 				// Get Result
 				TypedQuery<InsuranceCompanyMaster> result = em.createQuery(query);
 				list = result.getResultList();
@@ -833,9 +832,8 @@ this.repository = repo;
 			
 			if(StringUtils.isNotBlank(req.getBrokerCompanyYn()) ) {
 			//	Predicate n3 = cb.equal(c.get("brokerYn"), req.getBrokerCompanyYn());
-			//	query.where(n12,n2,n3,n4).orderBy(orderList);
 				query.where(n12,n2,n4).orderBy(orderList);
-				
+
 				// Get Result
 				TypedQuery<InsuranceCompanyMaster> result = em.createQuery(query);
 				list = result.getResultList();

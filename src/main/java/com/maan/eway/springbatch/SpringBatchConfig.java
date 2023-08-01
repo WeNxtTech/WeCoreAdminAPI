@@ -140,7 +140,7 @@ public class SpringBatchConfig {
 	    
 	    
 	    
-	    @Bean
+	    @Bean("FactorListener")
 	    public Joblistener listener() {
 	       return new Joblistener();
 	    }

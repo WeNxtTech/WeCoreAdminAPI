@@ -18,10 +18,4 @@ public class SamplFileDownloadReq {
 	@JsonProperty("ProductId")
     private String productId;
 	
-	@JsonProperty("TypeId")
-    private String typeId;
-	
-	
-
-
 }

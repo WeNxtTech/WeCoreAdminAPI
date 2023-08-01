@@ -73,5 +73,13 @@ public interface EwayEmplyeeDetailRawRepository extends JpaRepository<EwayEmplye
 	@Query(value="UPDATE eway_employee_details_raw SET STATUS='E',ERROR_DESC=CONCAT(COALESCE(error_desc,'~'),'duplicate civilId number found for this : ',civil_id) WHERE(request_reference_no,civil_id)IN (SELECT request_reference_no,civil_id FROM(SELECT a.request_reference_no,a.civil_id FROM eway_employee_details_raw a,eway_employee_details_raw b WHERE a.rownum=b.rownum AND a.company_id=b.company_id AND a.product_id=b.product_id AND a.request_reference_no =b.request_reference_no AND a.quote_no=b.quote_no AND a.company_id=?1 AND a.product_id=?2 AND a.request_reference_no=?3 AND a.quote_no=?4 GROUP BY a.request_reference_no ,a.civil_id HAVING COUNT(*) >1)X) and status='Y' and api_status is null",nativeQuery=true)
 	Integer updateDuplicateCivilId(String companyId,String productId,String refno,String quoteNo);
 
+	@Query("select count(emp) from EwayEmplyeeDetailRaw emp where emp.companyId=?1 and emp.productId=?2 and emp.requestReferenceNo=?3 and emp.status='Y'")
+	Long getCountRecords(Integer companyId, Integer productId, String requestReferenceNo);
+
+	@Modifying
+	@Transactional
+	@Query("update EwayEmplyeeDetailRaw emp set emp.status='E',emp.errorDesc='The employee count has exceeded more than your setup' where emp.companyId=?1 and emp.productId=?2 and emp.requestReferenceNo=?3 and emp.status='Y'")
+	Integer updateEmployeeExceededCount(Integer companyId, Integer productId, String requestReferenceNo);
+
 	
 }

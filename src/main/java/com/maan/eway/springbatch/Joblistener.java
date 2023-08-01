@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@Component
+@Component(value="FactorListener")
 public class Joblistener extends JobExecutionListenerSupport implements ChunkListener {
 
 	@Autowired

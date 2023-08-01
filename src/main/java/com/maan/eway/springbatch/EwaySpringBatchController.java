@@ -13,8 +13,11 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maan.eway.fileupload.FileUploadInputRequest;
 
+import io.swagger.annotations.Api;
+
 @RestController
 @RequestMapping("/batch")
+@Api(tags ="FACTOR : Excel Upload Api's")
 public class EwaySpringBatchController {
 	
 	@Autowired

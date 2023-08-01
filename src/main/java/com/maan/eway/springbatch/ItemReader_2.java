@@ -2,6 +2,7 @@ package com.maan.eway.springbatch;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 
 import javax.sql.DataSource;
 

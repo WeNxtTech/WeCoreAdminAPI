@@ -682,7 +682,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 						errorList.add(new Error("05", "CalcType", "Enter CalcType 1 Character Only In Row No : " + row ));
 						
 					} else if (data.getCalType().equalsIgnoreCase("P")) {
-						if(StringUtils.isNotBlank(data.getRate()) &&  Double.valueOf(data.getRate())>100 ) {
+						if(StringUtils.isNotBlank(data.getRate()) &&  Double.valueOf(data.getRate())>1000 ) {
 							errorList.add(new Error("05", "Rate", "Please Enter Valid Percent In Row No : " + row ));
 						}
 					}
@@ -853,6 +853,8 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
 			cal.set(Calendar.MINUTE, 1);
 			today   = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			Date todayEnd   = cal.getTime();
 			
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -864,22 +866,43 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 			// Select
 			query.select(b);
 	
+
 			// Effective Date Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
 			Root<FactorTypeDetails> ocpm1 = effectiveDate.from(FactorTypeDetails.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			Predicate a2 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("factorTypeId"), b.get("factorTypeId"));
 			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			effectiveDate.where(a1,a2,a3,a4);
+			Predicate a5 = cb.equal(ocpm1.get("ratingFieldId"), b.get("ratingFieldId"));
+
+			effectiveDate.where(a1,a2,a3,a4,a5);
 	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<FactorTypeDetails> ocpm2 = effectiveDate2.from(FactorTypeDetails.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a6 = cb.equal(ocpm2.get("productId"), b.get("productId"));
+			Predicate a7 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
+			Predicate a8 = cb.equal(ocpm2.get("factorTypeId"), b.get("factorTypeId"));
+			Predicate a9 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			Predicate a10 = cb.equal(ocpm2.get("ratingFieldId"), b.get("ratingFieldId"));
+
+			effectiveDate2.where(a6,a7,a8,a9,a10);
+			
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("columnsId")));
+			
+			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			Predicate n2 = cb.equal(b.get("factorTypeId"),factorTypeId);
+			Predicate n2 = cb.equal(b.get("productId"), productId);
 			Predicate n3 = cb.equal(b.get("companyId"),companyId);
-			Predicate n4 = cb.equal(b.get("productId"),productId);
-			Predicate n5 = cb.equal(b.get("status"),"Y");
-			query.where(n1,n2,n3,n4,n5);
+			Predicate n4 = cb.equal(b.get("factorTypeId"),factorTypeId);
+			Predicate n5 = cb.equal(b.get("effectiveDateEnd"),effectiveDate2);	
+			Predicate n6 = cb.equal(b.get("status"), "Y");
+			query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);
 			
 			
 			// Get Result

@@ -33,4 +33,9 @@ public class TaxMultiInsertReq {
 	    @JsonProperty("TaxCode")    
 	    private String   taxCode;
 
+	    @JsonProperty("TaxFor")    
+	    private String   taxFor;
+	    
+	    @JsonProperty("ChargeOrRefund")    
+	    private String   chargeOrRefund;
 }

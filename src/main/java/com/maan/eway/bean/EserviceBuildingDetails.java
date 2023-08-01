@@ -622,6 +622,22 @@ private static final long serialVersionUID = 1L;
       
       @Column(name="PLATE_GLASS_DESC")
       private String plateGlassDesc;
+      
+      @Column(name="MINING_PLANT_SI")
+      private BigDecimal miningPlantSi;
+      
+      @Column(name="NONMINING_PLANT_SI")
+      private BigDecimal nonminingPlantSi;
+      
+      @Column(name="GENSETS_SI")
+      private BigDecimal gensetsSi;
+      
+      
+      @Column(name="COMMISSION_PERCENTAGE")
+      private BigDecimal commissionPercentage;
+      
+      @Column(name="VAT_COMMISSION")
+      private BigDecimal vatCommission;
 }
 
 

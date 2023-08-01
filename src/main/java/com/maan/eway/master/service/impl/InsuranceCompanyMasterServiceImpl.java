@@ -298,12 +298,12 @@ this.repository = repo;
 		}else if (req.getRegulatoryCode().length() > 20) {
 			errors.add(new Error("11", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters"));
 		}
-		if (StringUtils.isBlank(req.getCurrencyId())) {
-			errors.add(new Error("12", "CurrencyId", "Please Enter CurrencyId"));
-		}
-		else if (req.getCurrencyId().length() > 20) {
-			errors.add(new Error("12", "CurrencyId", "Please Enter CurrencyId within 20 Characters"));
-		}
+//		if (StringUtils.isBlank(req.getCurrencyId())) {
+//			errors.add(new Error("12", "CurrencyId", "Please Enter CurrencyId"));
+//		}
+//		else if (req.getCurrencyId().length() > 20) {
+//			errors.add(new Error("12", "CurrencyId", "Please Enter CurrencyId within 20 Characters"));
+//		}
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
@@ -831,8 +831,8 @@ this.repository = repo;
 			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 			
 			if(StringUtils.isNotBlank(req.getBrokerCompanyYn()) ) {
-				Predicate n3 = cb.equal(c.get("brokerYn"), req.getBrokerCompanyYn());
-				query.where(n12,n2,n3,n4).orderBy(orderList);
+			//	Predicate n3 = cb.equal(c.get("brokerYn"), req.getBrokerCompanyYn());
+				query.where(n12,n2,n4).orderBy(orderList);
 
 				// Get Result
 				TypedQuery<InsuranceCompanyMaster> result = em.createQuery(query);

@@ -231,7 +231,7 @@ public class VehicleAsynchronousProcess {
 				vehicleRequest.put("accident" ,"Y");
 			}
 			vehicleRequest.put("NcdYn", ncdYn);
-			vehicleRequest.put("Gpstrackinginstalled", StringUtils.isBlank(p.getGpsTrackingEnabled())?"":p.getGpsTrackingEnabled());
+			vehicleRequest.put("Gpstrackinginstalled", "yes".equalsIgnoreCase(p.getGpsTrackingEnabled())?"Y":"N");
 
 			
 			if("Y".equalsIgnoreCase(EndorsementYn)) {

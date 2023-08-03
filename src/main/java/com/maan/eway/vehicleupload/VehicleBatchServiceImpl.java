@@ -955,7 +955,11 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			String encodeString =Base64.getEncoder().encodeToString(bytes);
 			String base64 =dataUri+encodeString;
 			res.setMessage("SUCCESS");
-			res.setCommonResponse(base64);
+			Map<String,Object> map =new HashMap<String,Object>();
+			map.put("Base64", base64);
+			map.put("FileName", typeMaster.getTypename());
+			map.put("Message", "SUCCESS");
+			res.setCommonResponse(map);
 		}catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();

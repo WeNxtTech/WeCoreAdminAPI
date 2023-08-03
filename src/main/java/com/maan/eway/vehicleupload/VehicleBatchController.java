@@ -84,7 +84,7 @@ public class VehicleBatchController {
 		return service.deleteRecords(req);
 	}
 	
-	@PostMapping("/sample/download/")
+	@PostMapping("/sample/download")
 	public CommonRes sampleDownload(@RequestBody SamplFileDownloadReq req) {
 		return service.sampleDownload(req);
 	}

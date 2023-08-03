@@ -205,8 +205,8 @@ public class VehicleAsynchronousProcess {
 			vehicleRequest.put("UserType", StringUtils.isBlank(p.getUserType())?"":p.getUserType()); 
 			vehicleRequest.put("SourceType",StringUtils.isBlank(p.getSourceType())?"":p.getSourceType()); 
 			vehicleRequest.put("CustomerCode",StringUtils.isBlank(p.getCustomerCode())?"":p.getCustomerCode());
-			
-			String EndorsementYn =StringUtils.isBlank(p.getEndorsementYn())?"":p.getEndorsementYn();
+			vehicleRequest.put("ClaimYn", StringUtils.isBlank(p.getClaimYn())?"":p.getClaimYn());
+			String EndorsementYn =StringUtils.isBlank(p.getEndorsementYn())?"N":p.getEndorsementYn();
 			String ncdYn =StringUtils.isBlank(p.getNcdYn())?"N":p.getNcdYn();
 			String collateralYn =StringUtils.isBlank(p.getCollateral())?"NO":p.getCollateral();
 			String promcodeYn =StringUtils.isBlank(p.getHavePromocode())?"N":p.getHavePromocode();
@@ -228,14 +228,12 @@ public class VehicleAsynchronousProcess {
 
 			}
 			if("Y".equals(ncdYn)) {
-				vehicleRequest.put("Gpstrackinginstalled", StringUtils.isBlank(p.getGpsTrackingEnabled())?"":p.getGpsTrackingEnabled());
 				vehicleRequest.put("accident" ,"Y");
-				vehicleRequest.put("NcdYn", ncdYn);
-			}else {
-				vehicleRequest.put("NcdYn", ncdYn);
-				vehicleRequest.put("Gpstrackinginstalled", "N");
-
 			}
+			vehicleRequest.put("NcdYn", ncdYn);
+			vehicleRequest.put("Gpstrackinginstalled", StringUtils.isBlank(p.getGpsTrackingEnabled())?"":p.getGpsTrackingEnabled());
+
+			
 			if("Y".equalsIgnoreCase(EndorsementYn)) {
 				vehicleRequest.put("EndorsementDate", StringUtils.isBlank(p.getEndorsementDate())?"":p.getEndorsementDate());
 				vehicleRequest.put("EndorsementEffectiveDate", StringUtils.isBlank(p.getEndorsementEffectiveDate())?"":p.getEndorsementEffectiveDate());			
@@ -306,6 +304,7 @@ public class VehicleAsynchronousProcess {
 					
 					p.setApiStatus("Y");
 					p.setCalcRequest(calcReq);
+					p.setMotorRequest(vehRequest);
 					eserviceRepository.saveAndFlush(p);
 				}else if("Failed".equals(responseStatus)) {
 					String motorErrorDesc=vehResponse.get("ErrorMessage")==null?"":vehResponse.get("ErrorMessage").toString();

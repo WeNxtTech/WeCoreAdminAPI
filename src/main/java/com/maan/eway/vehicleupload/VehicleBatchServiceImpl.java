@@ -203,6 +203,8 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			uploadRes.setSectionId(StringUtils.isBlank(req.getSectionId())?"":req.getSectionId());
 			uploadRes.setRelationId(StringUtils.isBlank(req.getRelationId())?"":req.getRelationId());
 			uploadRes.setStateCode(StringUtils.isBlank(req.getStateCode())?"":req.getStateCode());
+			uploadRes.setUploadType(StringUtils.isBlank(req.getUploadType())?"":req.getUploadType());
+			
 			LocalDateTime dateTime =LocalDateTime.now();
 			String excelFilePath=filePath+fileName+dateTime.getNano()+"."+extension;
 			Path path =Paths.get(excelFilePath);
@@ -335,6 +337,12 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			ObjectMapper mapper = new ObjectMapper();
 			String ewayBatchReq=mapper.writerWithDefaultPrettyPrinter().writeValueAsString(request);
 			
+			//String uploadType =StringUtils.isBlank(uploadResponse.getUploadType())?"":uploadResponse.getUploadType();
+			
+			//if("NEW".equalsIgnoreCase(uploadType)) {
+				//eserviceRepository.deleteByRequestReferenceNo(uploadResponse.getRequestReferenceNo());
+			//}
+			
 			JobParameters jobParameters = new JobParametersBuilder()
 			     	.addLong("time", System.currentTimeMillis())
 			     	.addString("EwayBatchReq", ewayBatchReq)
@@ -438,7 +446,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 				errorRecords =dlist.stream().filter(p ->"E".equals(p.getStatus()) ||  "E".equals(p.getTiraStatus())).count();
 				totalRecords =validRecords + errorRecords;
 			}
-			
+			                                            
 			
 			// For Employee validation block
 			else if("14".equals(product) || "15".equals(product) || "32".equals(product)) {

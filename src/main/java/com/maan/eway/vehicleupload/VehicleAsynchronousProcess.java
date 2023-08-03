@@ -207,7 +207,7 @@ public class VehicleAsynchronousProcess {
 			vehicleRequest.put("CustomerCode",StringUtils.isBlank(p.getCustomerCode())?"":p.getCustomerCode());
 			vehicleRequest.put("ClaimYn", StringUtils.isBlank(p.getClaimYn())?"":p.getClaimYn());
 			String EndorsementYn =StringUtils.isBlank(p.getEndorsementYn())?"N":p.getEndorsementYn();
-			String ncdYn =StringUtils.isBlank(p.getNcdYn())?"N":p.getNcdYn();
+			String claimYn =StringUtils.isBlank(p.getClaimYn())?"N":p.getClaimYn();
 			String collateralYn =StringUtils.isBlank(p.getCollateral())?"NO":p.getCollateral();
 			String promcodeYn =StringUtils.isBlank(p.getHavePromocode())?"N":p.getHavePromocode();
 			
@@ -227,13 +227,13 @@ public class VehicleAsynchronousProcess {
 				vehicleRequest.put("CollateralYn", "N");
 
 			}
-			if("Y".equals(ncdYn)) {
+			
+			if("Y".equals(claimYn)) {
 				vehicleRequest.put("accident" ,"Y");
 			}
-			vehicleRequest.put("NcdYn", ncdYn);
+			vehicleRequest.put("NcdYn", claimYn);
 			vehicleRequest.put("Gpstrackinginstalled", "yes".equalsIgnoreCase(p.getGpsTrackingEnabled())?"Y":"N");
 
-			
 			if("Y".equalsIgnoreCase(EndorsementYn)) {
 				vehicleRequest.put("EndorsementDate", StringUtils.isBlank(p.getEndorsementDate())?"":p.getEndorsementDate());
 				vehicleRequest.put("EndorsementEffectiveDate", StringUtils.isBlank(p.getEndorsementEffectiveDate())?"":p.getEndorsementEffectiveDate());			

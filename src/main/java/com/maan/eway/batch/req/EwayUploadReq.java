@@ -95,4 +95,6 @@ public class EwayUploadReq {
 	private String relationId;
 	@JsonProperty("StateCode")
 	private String stateCode;
+	@JsonProperty("UploadType")
+	private String uploadType;
 }

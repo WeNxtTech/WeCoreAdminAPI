@@ -150,4 +150,7 @@ public class EwayUploadRes {
 	private String relationId;
 	@JsonProperty("StateCode")
 	private String stateCode;
+	
+	@JsonProperty("UploadType")
+	private String uploadType;
 }

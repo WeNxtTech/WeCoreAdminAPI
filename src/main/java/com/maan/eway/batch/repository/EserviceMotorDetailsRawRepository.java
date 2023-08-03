@@ -128,5 +128,7 @@ public interface EserviceMotorDetailsRawRepository  extends JpaRepository<Eservi
 	List<EserviceMotorDetailsRaw> findByCompanyIdAndProductIdAndRequestReferenceNoAndStatusIgnoreCaseInAndApiStatusIsNull(
 			Integer companyId, Integer productId, String requestReferenceNo, List<String> status);
 
+	@Transactional
+	void deleteByRequestReferenceNo(String requestReferenceNo);
 	
 }

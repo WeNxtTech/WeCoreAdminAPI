@@ -4,10 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.maan.eway.batch.entity.EserviceMotorDetailsRaw;
 import com.maan.eway.batch.entity.EwayEmplyeeDetailRaw;
 import com.maan.eway.batch.repository.EwayEmplyeeDetailRawRepository;
 import com.maan.eway.batch.req.EmployeeUpdateReq;
@@ -16,10 +25,14 @@ import com.maan.eway.batch.req.UpdateRecordReq;
 import com.maan.eway.error.Error;
 
 @Component
+@Transactional
 public class VehicleInputValidation {
 
 	@Autowired
 	private EwayEmplyeeDetailRawRepository empRepo;
+	
+	@PersistenceContext
+	EntityManager em;
 	
 	
 	public List<Error> validateEmployee(UpdateRecordReq empReq){
@@ -115,4 +128,41 @@ public class VehicleInputValidation {
 		return list ;
 	}
 
+	public void statusUpdate(Object companyId,Object productId,Object typeId,Object refNo) {
+		try {
+			 CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+		        CriteriaUpdate<EserviceMotorDetailsRaw> updateQuery = criteriaBuilder.createCriteriaUpdate(EserviceMotorDetailsRaw.class);
+		        Root<EserviceMotorDetailsRaw> root = updateQuery.from(EserviceMotorDetailsRaw.class);
+
+		        // Define the case condition using a Predicate
+		        Predicate caseCondition = criteriaBuilder.or(
+		        	criteriaBuilder.notEqual(root.get("errorDesc"),""),
+		            criteriaBuilder.isNotNull(root.get("errorDesc"))
+		           
+		        );
+
+		        // Set the propertyToUpdate based on the case condition
+		        updateQuery.set(root.<String>get("status"),
+		            criteriaBuilder.selectCase()
+		                .when(caseCondition, "E")
+		                .otherwise("Y").as(String.class)
+		        );
+
+		        // Apply the conditions to restrict the update
+		        Predicate whereCondition = criteriaBuilder.and(
+		            criteriaBuilder.equal(root.get("companyId"), companyId),
+		            criteriaBuilder.equal(root.get("productId"), productId),
+		            criteriaBuilder.equal(root.get("typeid"), typeId),
+		            criteriaBuilder.equal(root.get("requestReferenceNo"), refNo)
+		        );
+
+		        updateQuery.where(whereCondition);
+
+		        // Perform the update
+		        em.createQuery(updateQuery).executeUpdate();
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 }

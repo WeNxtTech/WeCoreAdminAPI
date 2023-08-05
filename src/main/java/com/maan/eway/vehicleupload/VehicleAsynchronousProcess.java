@@ -185,7 +185,7 @@ public class VehicleAsynchronousProcess {
 			vehicleRequest.put("AcccessoriesSumInsured", p.getAccessoriesSuminsured());
 			vehicleRequest.put("AxelDistance", StringUtils.isBlank(p.getAxelDistance())?"":p.getAxelDistance());
 			vehicleRequest.put("Chassisnumber", StringUtils.isBlank(p.getReqChassisNo())?"":p.getReqChassisNo());
-			vehicleRequest.put("CreatedBy", StringUtils.isBlank(p.getCreatedBy())?"":p.getCreatedBy());
+			vehicleRequest.put("CreatedBy", StringUtils.isBlank(p.getCreatedBy())?p.getLoginId():p.getCreatedBy());
 			vehicleRequest.put("Insurancetype", StringUtils.isBlank(p.getInsuranceTypeId())?"":p.getInsuranceTypeId());
 			vehicleRequest.put("InsuranceId", p.getCompanyId());
 			vehicleRequest.put("InsuranceClass", StringUtils.isBlank(p.getInsuranceClassId())?"":p.getInsuranceClassId());
@@ -289,9 +289,9 @@ public class VehicleAsynchronousProcess {
 					Map<String,Object> calcResponse=callApi(calcReq,auth,mediaType,calcApi);
 					log.info("callCreateQuote || calcResponse " + print.toJson(calcResponse));
 					
-					List<Map<String,Object>> calcResStatus=calcResponse.get("CoverList")==null?null:(List<Map<String,Object>>)calcResponse.get("CoverList");
+					//List<Map<String,Object>> calcResStatus=calcResponse.get("CoverList")==null?null:(List<Map<String,Object>>)calcResponse.get("CoverList");
 					
-					if(!CollectionUtils.isEmpty(calcResStatus)) {
+					/*if(!CollectionUtils.isEmpty(calcResStatus)) {
 						synchronized(this) {
 							TransactionControlDetails trans=transactionRepo.findByCompanyIdAndProductIdAndRequestReferenceNo(p.getCompanyId(), p.getProductId(), p.getRequestReferenceNo());
 							Long validRecord =trans.getValidRecords().longValue();
@@ -300,7 +300,7 @@ public class VehicleAsynchronousProcess {
 							trans.setMovedRecords(trans.getMovedRecords()==null || "0".equals(String.valueOf(trans.getMovedRecords()))?1:trans.getMovedRecords()+1);
 							transactionRepo.saveAndFlush(trans);
 						}
-					}
+					}*/
 					
 					p.setApiStatus("Y");
 					p.setCalcRequest(calcReq);

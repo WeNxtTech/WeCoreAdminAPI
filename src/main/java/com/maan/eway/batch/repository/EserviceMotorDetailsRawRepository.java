@@ -47,43 +47,49 @@ public interface EserviceMotorDetailsRawRepository  extends JpaRepository<Eservi
 	
 	@Modifying
 	@Transactional
-	@Query(value ="UPDATE eservice_motor_details_raw raw SET INSURANCE_TYPE_ID =( SELECT SECTION_ID FROM Product_Section_Master WHERE raw.product_id=product_id AND raw.company_id = company_id AND STATUS='Y' AND SYSDATE() BETWEEN effective_date_start AND effective_date_end AND TRIM(UPPER(raw.insurance_type_desc))=TRIM(UPPER(section_name)) AND amend_id = ( SELECT MAX(amend_id) FROM Product_Section_Master WHERE raw.product_id=product_id AND raw.company_id = company_id AND STATUS='Y' AND SYSDATE() BETWEEN effective_date_start AND effective_date_end AND TRIM(UPPER(raw.insurance_type_desc))=TRIM(UPPER(section_name)))) WHERE raw.company_id=?1 AND raw.product_id=?2 AND raw.typeid=?3 AND raw.request_reference_no =?4",nativeQuery=true)
+	//@Query(value ="UPDATE eservice_motor_details_raw ra SET INSURANCE_TYPE_ID =( SELECT SECTION_ID FROM Product_Section_Master WHERE ra.product_id=product_id AND ra.company_id = company_id AND STATUS='Y' AND SYSDATE() BETWEEN effective_date_start AND effective_date_end AND TRIM(UPPER(ra.insurance_type_desc))=TRIM(UPPER(section_name)) AND amend_id = ( SELECT MAX(amend_id) FROM Product_Section_Master WHERE ra.product_id=product_id AND ra.company_id = company_id AND STATUS='Y' AND SYSDATE() BETWEEN effective_date_start AND effective_date_end AND TRIM(UPPER(ra.insurance_type_desc))=TRIM(UPPER(section_name)))) WHERE ra.company_id=?1 AND ra.product_id=?2 AND ra.typeid=?3 AND ra.request_reference_no =?4",nativeQuery=true)
+	@Query(value="UPDATE eservice_motor_details_raw ra SET insurance_type_id =( SELECT distinct section_id FROM product_section_master WHERE ra.product_id = product_id AND ra.company_id = company_id AND status = 'Y' AND (SELECT CURRENT_DATE FROM DUAL) BETWEEN effective_date_start AND effective_date_end AND TRIM(upper(ra.insurance_type_desc)) = TRIM(upper(section_name) ) AND amend_id = ( SELECT MAX(amend_id) FROM product_section_master WHERE ra.product_id = product_id AND ra.company_id = company_id AND status = 'Y' AND (SELECT CURRENT_DATE FROM DUAL) BETWEEN effective_date_start AND effective_date_end AND TRIM(upper(ra.insurance_type_desc) ) = TRIM(upper(section_name) ) ) ) WHERE ra.company_id = ?1 AND ra.product_id = ?2 AND ra.typeid = ?3 AND ra.request_reference_no = ?4",nativeQuery=true)
 	Integer updateInsuranceTypeId(Integer companyId,Integer productId,Integer typeId,String requestRefNo );
 	
 	@Modifying
 	@Transactional
-	@Query(value ="UPDATE Eservice_Motor_Details_Raw RA INNER JOIN Eservice_Motor_Details_Raw RS ON RA.company_Id = RS.company_Id AND RA.product_Id = RS.product_Id AND RA.typeid = RS.typeid AND RA.request_Reference_No = RS.request_Reference_No AND RA.ROW_NUM=RS.ROW_NUM SET RA.section_Id = RS.insurance_Type_Id WHERE RA.company_Id =?1 AND RA.product_Id =?2 AND RA.typeid =?3 AND RA.request_Reference_No =?4",nativeQuery=true)
+	//@Query(value ="UPDATE Eservice_Motor_Details_raw RA INNER JOIN Eservice_Motor_Details_raw RS ON RA.company_Id = RS.company_Id AND RA.product_Id = RS.product_Id AND RA.typeid = RS.typeid AND RA.request_Reference_No = RS.request_Reference_No AND RA.ROW_NUM=RS.ROW_NUM SET RA.section_Id = RS.insurance_Type_Id WHERE RA.company_Id =?1 AND RA.product_Id =?2 AND RA.typeid =?3 AND RA.request_Reference_No =?4",nativeQuery=true)
+	@Query(value ="UPDATE Eservice_Motor_Details_raw RA SET RA.section_Id =(SELECT distinct insurance_Type_Id FROM (SELECT RS.insurance_Type_Id FROM Eservice_Motor_Details_raw RS WHERE RA.company_Id = RS.company_Id AND RA.product_Id = RS.product_Id AND RA.typeid = RS.typeid AND RA.request_Reference_No = RS.request_Reference_No AND RA.ROW_NUM=RS.ROW_NUM)X) WHERE company_Id =?1 AND product_Id =?2 AND typeid =?3 AND request_Reference_No =?4",nativeQuery=true)
 	Integer updateSectionIdByRequestRefNo(Integer companyId,Integer productId,Integer typeId,String requestRefNo );
 	
 	@Modifying
 	@Transactional
-	@Query(value ="UPDATE eservice_motor_details_raw raw SET body_type_id =( SELECT body_id FROM Eway_Motor_Bodytype_Master WHERE TRIM( UPPER(BODY_NAME_EN))= TRIM( UPPER(raw.body_type_desc) ) AND STATUS = 'Y' AND (BRANCH_CODE=RAW.BRANCH_CODE OR BRANCH_CODE='99999' ) AND SYSDATE() BETWEEN effective_date_start AND effective_date_end AND company_id = raw.company_id AND amend_id =( SELECT MAX(amend_id) FROM Eway_Motor_Bodytype_Master WHERE TRIM(UPPER(BODY_NAME_EN))= TRIM(UPPER(raw.body_type_desc)) AND STATUS = 'Y' AND (BRANCH_CODE=RAW.BRANCH_CODE OR BRANCH_CODE='99999') AND SYSDATE() BETWEEN effective_date_start AND effective_date_end AND company_id = raw.company_id ) LIMIT 1 ) WHERE raw.company_id =?1 AND raw.product_id =?2 AND raw.typeid =?3 AND raw.request_reference_no =?4",nativeQuery=true)
+	//@Query(value ="UPDATE eservice_motor_details_raw ra SET body_type_id =( SELECT body_id FROM Eway_Motor_Bodytype_Master WHERE TRIM( UPPER(BODY_NAME_EN))= TRIM( UPPER(ra.body_type_desc) ) AND STATUS = 'Y' AND (BRANCH_CODE=ra.BRANCH_CODE OR BRANCH_CODE='99999' ) AND SYSDATE() BETWEEN effective_date_start AND effective_date_end AND company_id = ra.company_id AND amend_id =( SELECT MAX(amend_id) FROM Eway_Motor_Bodytype_Master WHERE TRIM(UPPER(BODY_NAME_EN))= TRIM(UPPER(ra.body_type_desc)) AND STATUS = 'Y' AND (BRANCH_CODE=ra.BRANCH_CODE OR BRANCH_CODE='99999') AND SYSDATE() BETWEEN effective_date_start AND effective_date_end AND company_id = ra.company_id ) LIMIT 1 ) WHERE ra.company_id =?1 AND ra.product_id =?2 AND ra.typeid =?3 AND ra.request_reference_no =?4",nativeQuery=true)
+	@Query(value="UPDATE eservice_motor_details_raw ra SET body_type_id =( SELECT distinct body_id FROM Eway_Motor_Bodytype_Master WHERE TRIM( UPPER(BODY_NAME_EN))= TRIM( UPPER(ra.body_type_desc) ) AND STATUS = 'Y' AND( BRANCH_CODE = ra.BRANCH_CODE OR BRANCH_CODE = '99999' ) AND (SELECT CURRENT_DATE FROM DUAL) BETWEEN effective_date_start AND effective_date_end AND company_id = ra.company_id AND amend_id =( SELECT MAX(amend_id) FROM Eway_Motor_Bodytype_Master WHERE TRIM( UPPER(BODY_NAME_EN) )= TRIM( UPPER(ra.body_type_desc) ) AND STATUS = 'Y' AND ( BRANCH_CODE = ra.BRANCH_CODE OR BRANCH_CODE = '99999' ) AND (SELECT CURRENT_DATE FROM DUAL) BETWEEN effective_date_start AND effective_date_end AND company_id = ra.company_id )) WHERE ra.company_id = ?1 AND ra.product_id = ?2 AND ra.typeid = ?3 AND ra.request_reference_no = ?4 ",nativeQuery=true)
 	Integer updateBodyTypeId(Integer companyId,Integer productId,Integer typeId,String requestRefNo );
 	
 	
 	@Modifying
 	@Transactional
-	@Query(value="UPDATE eservice_motor_details_raw raw SET motor_usage_id =( SELECT vehicle_usage_id FROM Motor_VehicleUsage_master WHERE REPLACE(UPPER(TRIM(VEHICLE_USAGE_DESC)),'\\r\\n','')= REPLACE(UPPER(TRIM(raw.MOTOR_USAGE_DESC)),'\\r\\n','') AND( section_id = raw.section_id OR section_id = '99999') AND ( BRANCH_CODE = RAW.BRANCH_CODE OR BRANCH_CODE = '99999' ) AND STATUS = 'Y' AND SYSDATE() BETWEEN effective_date_start AND effective_date_end AND company_id = raw.company_id AND amend_id = ( SELECT MAX(amend_id) FROM Motor_VehicleUsage_master WHERE REPLACE(UPPER(TRIM(VEHICLE_USAGE_DESC)),'\\r\\n','')= REPLACE(UPPER(TRIM(raw.MOTOR_USAGE_DESC)),'\\r\\n','') AND ( section_id = raw.section_id OR section_id = '99999' ) AND ( BRANCH_CODE = RAW.BRANCH_CODE OR BRANCH_CODE = '99999' ) AND STATUS = 'Y' AND SYSDATE() BETWEEN effective_date_start AND effective_date_end AND company_id = raw.company_id ) LIMIT 1 ) WHERE raw.company_id =?1 AND raw.product_id =?2 AND raw.typeid =?3 AND raw.request_reference_no =?4",nativeQuery=true)
+	//@Query(value="UPDATE eservice_motor_details_raw ra SET motor_usage_id =( SELECT vehicle_usage_id FROM Motor_VehicleUsage_master WHERE REPLACE(UPPER(TRIM(VEHICLE_USAGE_DESC)),'\\r\\n','')= REPLACE(UPPER(TRIM(ra.MOTOR_USAGE_DESC)),'\\r\\n','') AND( section_id = ra.section_id OR section_id = '99999') AND ( BRANCH_CODE = ra.BRANCH_CODE OR BRANCH_CODE = '99999' ) AND STATUS = 'Y' AND SYSDATE() BETWEEN effective_date_start AND effective_date_end AND company_id = ra.company_id AND amend_id = ( SELECT MAX(amend_id) FROM Motor_VehicleUsage_master WHERE REPLACE(UPPER(TRIM(VEHICLE_USAGE_DESC)),'\\r\\n','')= REPLACE(UPPER(TRIM(ra.MOTOR_USAGE_DESC)),'\\r\\n','') AND ( section_id = ra.section_id OR section_id = '99999' ) AND ( BRANCH_CODE = ra.BRANCH_CODE OR BRANCH_CODE = '99999' ) AND STATUS = 'Y' AND SYSDATE() BETWEEN effective_date_start AND effective_date_end AND company_id = ra.company_id ) LIMIT 1 ) WHERE ra.company_id =?1 AND ra.product_id =?2 AND ra.typeid =?3 AND ra.request_reference_no =?4",nativeQuery=true)
+	@Query(value="UPDATE eservice_motor_details_raw ra SET motor_usage_id =( SELECT distinct vehicle_usage_id FROM Motor_VehicleUsage_master WHERE REPLACE( UPPER( TRIM(VEHICLE_USAGE_DESC)), '\\r\\n', '' )= REPLACE( UPPER( TRIM(ra.MOTOR_USAGE_DESC) ), '\\\\r\\\\n', '' ) AND( section_id = ra.section_id OR section_id = '99999' ) AND( BRANCH_CODE = ra.BRANCH_CODE OR BRANCH_CODE = '99999' ) AND STATUS = 'Y' AND (SELECT CURRENT_DATE FROM DUAL) BETWEEN effective_date_start AND effective_date_end AND company_id = ra.company_id AND amend_id = ( SELECT MAX(amend_id) FROM Motor_VehicleUsage_master WHERE REPLACE( UPPER( TRIM(VEHICLE_USAGE_DESC) ), '\\\\r\\\\n', '' )= REPLACE( UPPER( TRIM(ra.MOTOR_USAGE_DESC) ), '\\\\r\\\\n', '' ) AND ( section_id = ra.section_id OR section_id = '99999' ) AND ( BRANCH_CODE = ra.BRANCH_CODE OR BRANCH_CODE = '99999' ) AND STATUS = 'Y' AND (SELECT CURRENT_DATE FROM DUAL) BETWEEN effective_date_start AND effective_date_end AND company_id = ra.company_id )) WHERE ra.company_id = ?1 AND ra.product_id = ?2 AND ra.typeid = ?3 AND ra.request_reference_no = ?4",nativeQuery=true)
 	Integer updateMotorUsageId(Integer companyId,Integer productId,Integer typeId,String requestRefNo );
 	
 	
 	@Modifying
 	@Transactional
-	@Query(value="UPDATE eservice_motor_details_raw raw SET INSURANCE_CLASS_ID =( SELECT policy_type_id FROM Policy_Type_Master WHERE TRIM( UPPER(policy_type_name))= TRIM( UPPER(raw.insurance_class_desc) ) AND product_id = raw.product_id AND STATUS = 'Y' AND SYSDATE() BETWEEN effective_date_start AND effective_date_end AND company_id = raw.company_id AND AMEND_ID =( SELECT MAX(amend_id) FROM Policy_Type_Master WHERE UPPER(policy_type_name)= UPPER(raw.insurance_class_desc) AND product_id = raw.product_id AND STATUS = 'Y' AND SYSDATE() BETWEEN effective_date_start AND effective_date_end ) ) WHERE raw.company_id =?1 AND raw.product_id =?2 AND raw.typeid =?3 AND raw.request_reference_no =?4",nativeQuery=true)
+	//@Query(value="UPDATE eservice_motor_details_raw ra SET INSURANCE_CLASS_ID =( SELECT policy_type_id FROM Policy_Type_Master WHERE TRIM( UPPER(policy_type_name))= TRIM( UPPER(ra.insurance_class_desc) ) AND product_id = ra.product_id AND STATUS = 'Y' AND SYSDATE() BETWEEN effective_date_start AND effective_date_end AND company_id = ra.company_id AND AMEND_ID =( SELECT MAX(amend_id) FROM Policy_Type_Master WHERE UPPER(policy_type_name)= UPPER(ra.insurance_class_desc) AND product_id = ra.product_id AND STATUS = 'Y' AND SYSDATE() BETWEEN effective_date_start AND effective_date_end ) ) WHERE ra.company_id =?1 AND ra.product_id =?2 AND ra.typeid =?3 AND ra.request_reference_no =?4",nativeQuery=true)
+	@Query(value="UPDATE eservice_motor_details_raw ra SET INSURANCE_CLASS_ID =( SELECT distinct policy_type_id FROM Policy_Type_Master WHERE TRIM( UPPER(policy_type_name))= TRIM( UPPER(ra.insurance_class_desc) ) AND product_id = ra.product_id AND STATUS = 'Y' AND(SELECT CURRENT_DATE FROM DUAL) BETWEEN effective_date_start AND effective_date_end AND company_id = ra.company_id AND AMEND_ID =( SELECT MAX(amend_id) FROM Policy_Type_Master WHERE UPPER(policy_type_name)= UPPER(ra.insurance_class_desc) AND product_id = ra.product_id AND STATUS = 'Y' AND (SELECT CURRENT_DATE FROM DUAL) BETWEEN effective_date_start AND effective_date_end )) WHERE ra.company_id = ?1 AND ra.product_id = ?2 AND ra.typeid = ?3 AND ra.request_reference_no = ?4",nativeQuery=true)
 	Integer updateInsuranceClassId(Integer companyId,Integer productId,Integer typeId,String requestRefNo );
 	
 	
 	@Modifying
 	@Transactional
-	@Query(value ="UPDATE eservice_motor_details_raw SET error_desc=CONCAT(error_desc,\"\", CASE WHEN(TRIM(UPPER(INSURANCE_TYPE_DESC))=TRIM(UPPER('Comprehensive')) OR TRIM(UPPER(INSURANCE_TYPE_DESC))=TRIM(UPPER('TPFT'))) AND (VEHICLE_SUMINSURED='' OR VEHICLE_SUMINSURED IS NULL OR ACCESSORIES_SUMINSURED='' OR ACCESSORIES_SUMINSURED IS NULL OR WINDSHIELD_SUMINSURED='' OR WINDSHIELD_SUMINSURED IS NULL OR EXTENDED_SUMINSURED='' OR EXTENDED_SUMINSURED IS NULL) THEN '~vehicle or winshield or accessories or tppd suminsured is mandatory for comprehensive or TPFT insurance' ELSE '' END), STATUS=CASE WHEN error_desc IS NOT NULL AND error_desc!='' THEN 'E' ELSE 'Y' END WHERE company_id=?1 AND product_id=?2 AND typeid=?3 AND request_reference_no =?4",nativeQuery=true)
+	///@Query(value ="UPDATE eservice_motor_details_raw SET error_desc=CONCAT(error_desc,\"\", CASE WHEN(TRIM(UPPER(INSURANCE_TYPE_DESC))=TRIM(UPPER('Comprehensive')) OR TRIM(UPPER(INSURANCE_TYPE_DESC))=TRIM(UPPER('TPFT'))) AND (VEHICLE_SUMINSURED='' OR VEHICLE_SUMINSURED IS NULL OR ACCESSORIES_SUMINSURED='' OR ACCESSORIES_SUMINSURED IS NULL OR WINDSHIELD_SUMINSURED='' OR WINDSHIELD_SUMINSURED IS NULL OR EXTENDED_SUMINSURED='' OR EXTENDED_SUMINSURED IS NULL) THEN '~vehicle or winshield or accessories or tppd suminsured is mandatory for comprehensive or TPFT insurance' ELSE '' END), STATUS=CASE WHEN error_desc IS NOT NULL AND error_desc!='' THEN 'E' ELSE 'Y' END WHERE company_id=?1 AND product_id=?2 AND typeid=?3 AND request_reference_no =?4",nativeQuery=true)
+	@Query(value="UPDATE eservice_motor_details_raw SET error_desc = CONCAT( COALESCE(error_desc, ''), CASE WHEN( TRIM( UPPER(INSURANCE_TYPE_DESC))= TRIM( UPPER('Comprehensive') ) OR TRIM( UPPER(INSURANCE_TYPE_DESC) )= TRIM( UPPER('TPFT') ) ) AND( VEHICLE_SUMINSURED = '' OR VEHICLE_SUMINSURED IS NULL OR ACCESSORIES_SUMINSURED = '' OR ACCESSORIES_SUMINSURED IS NULL OR WINDSHIELD_SUMINSURED = '' OR WINDSHIELD_SUMINSURED IS NULL OR EXTENDED_SUMINSURED = '' OR EXTENDED_SUMINSURED IS NULL ) THEN '~vehicle or winshield or accessories or tppd suminsured is mandatory for comprehensive or TPFT insurance' ELSE error_desc END ), STATUS = CASE WHEN error_desc IS NOT NULL AND error_desc!='' THEN 'E' ELSE 'Y' END WHERE company_id = ?1 AND product_id = ?2 AND typeid = ?3 AND request_reference_no = ?4",nativeQuery=true)
 	Integer updateSuminsuredValidationByPolicyType(Integer companyId,Integer productId,Integer typeId,String requestRefNo );
 	
 	
 	@Modifying
 	@Transactional
-	@Query(value ="UPDATE eservice_motor_details_raw SET error_desc =CONCAT(error_desc,\"\",CASE WHEN TRIM(UPPER(COLLATERAL))=TRIM(UPPER('YES')) AND(BORROWER_TYPE IS NULL OR BORROWER_TYPE='' OR FIRST_LOSS_PAYEE IS NULL OR FIRST_LOSS_PAYEE ='') THEN '~Borrower Type and First loss peyee is mandatory if you selected collateral is YES' ELSE '' END), STATUS =CASE WHEN error_desc IS NOT NULL AND error_desc!='' THEN 'E' ELSE 'Y' END WHERE company_id =?1 AND product_id =?2 AND typeid =?3 AND request_reference_no =?4",nativeQuery=true)
+	//@Query(value ="UPDATE eservice_motor_details_raw SET error_desc =CONCAT(error_desc,\"\",CASE WHEN TRIM(UPPER(COLLATERAL))=TRIM(UPPER('YES')) AND(BORROWER_TYPE IS NULL OR BORROWER_TYPE='' OR FIRST_LOSS_PAYEE IS NULL OR FIRST_LOSS_PAYEE ='') THEN '~Borrower Type and First loss peyee is mandatory if you selected collateral is YES' ELSE '' END), STATUS =CASE WHEN error_desc IS NOT NULL AND error_desc!='' THEN 'E' ELSE 'Y' END WHERE company_id =?1 AND product_id =?2 AND typeid =?3 AND request_reference_no =?4",nativeQuery=true)
+	@Query(value="UPDATE eservice_motor_details_raw SET error_desc = CONCAT( COALESCE(error_desc, ''), CASE WHEN TRIM( UPPER(COLLATERAL))= TRIM( UPPER('YES') ) AND( BORROWER_TYPE IS NULL OR BORROWER_TYPE = '' OR FIRST_LOSS_PAYEE IS NULL OR FIRST_LOSS_PAYEE = '' ) THEN '~Borrower Type and First loss peyee is mandatory if you selected collateral is YES' ELSE error_desc END ), STATUS = CASE WHEN error_desc IS NOT NULL AND error_desc!='' THEN 'E' ELSE 'Y' END WHERE company_id = ?1 AND product_id = ?2 AND typeid = ?3 AND request_reference_no = ?4 ",nativeQuery=true)
 	Integer updateCollateralValidation(Integer companyId,Integer productId,Integer typeId,String requestRefNo );
-
 
 	List<EserviceMotorDetailsRaw> findByCompanyIdAndProductIdAndRequestReferenceNoAndStatusIgnoreCase(Integer companyId,
 			Integer productId, String requestRefNo, String status);
@@ -95,12 +101,15 @@ public interface EserviceMotorDetailsRawRepository  extends JpaRepository<Eservi
 
 	@Modifying
 	@Transactional
-	@Query(value ="UPDATE eservice_motor_details_raw SET error_desc = CASE WHEN(SECTION_ID IS NULL OR SECTION_ID = '') THEN '~Sectionid not found' WHEN INSURANCE_TYPE_ID IS NULL OR INSURANCE_TYPE_ID = '' THEN '~InsuranceType id not found' WHEN INSURANCE_CLASS_ID IS NULL OR INSURANCE_CLASS_ID = '' THEN '~InsuranceClass id not found' WHEN BODY_TYPE_ID IS NULL OR BODY_TYPE_ID = '' THEN '~BodyType id not found' WHEN MOTOR_USAGE_ID IS NULL OR MOTOR_USAGE_ID = '' THEN '~MotorUsageId not found' ELSE '' END, STATUS = CASE WHEN error_desc IS NOT NULL AND error_desc!='' THEN 'E' ELSE 'Y' END WHERE company_id =?1 AND product_id = ?2 AND typeid =?3 AND request_reference_no =?4",nativeQuery=true)
+	//@Query(value ="UPDATE eservice_motor_details_raw SET error_desc = CASE WHEN(SECTION_ID IS NULL OR SECTION_ID = '') THEN '~Sectionid not found' WHEN INSURANCE_TYPE_ID IS NULL OR INSURANCE_TYPE_ID = '' THEN '~InsuranceType id not found' WHEN INSURANCE_CLASS_ID IS NULL OR INSURANCE_CLASS_ID = '' THEN '~InsuranceClass id not found' WHEN BODY_TYPE_ID IS NULL OR BODY_TYPE_ID = '' THEN '~BodyType id not found' WHEN MOTOR_USAGE_ID IS NULL OR MOTOR_USAGE_ID = '' THEN '~MotorUsageId not found' ELSE '' END, STATUS = CASE WHEN error_desc IS NOT NULL AND error_desc!='' THEN 'E' ELSE 'Y' END WHERE company_id =?1 AND product_id = ?2 AND typeid =?3 AND request_reference_no =?4",nativeQuery=true)
+	@Query(value="UPDATE eservice_motor_details_raw SET error_desc = CASE WHEN(motor_usage_id IS NULL) THEN '~motor_usage_id not found' ELSE error_desc END, status =decode(error_desc,'','E','Y')"
+			+ " WHERE company_id = ?1 AND product_id = ?2 AND typeid = ?3 AND request_reference_no = ?4",nativeQuery=true)
 	Integer updateMasterIdEmptyValidation(Integer companyId, Integer productId, Integer typeId, String requestReferenceNo);
 
 	@Modifying
 	@Transactional
-	@Query(value="UPDATE eservice_motor_details_raw RAW SET STATUS='E', ERROR_DESC=CONCAT(ERROR_DESC,'~DUPLICATE SEARCH BY DATA IS FOUND') WHERE SEARCH_BY_DATA IN(SELECT SEARCH_BY_DATA FROM (SELECT SEARCH_BY_DATA FROM eservice_motor_details_raw WHERE company_id =?1 AND product_id =?2 AND typeid =?3 AND request_reference_no =?4 and status='Y' and tira_status='Y' and (api_status in('Y','') or api_status is null) GROUP BY SEARCH_BY_DATA HAVING COUNT(*)>1)X) AND raw.company_id =?1 AND raw.product_id =?2 AND raw.typeid =?3 AND raw.request_reference_no =?4 and raw.status='Y' and raw.tira_status='Y' and (raw.api_status in('Y','') or raw.api_status is null) ",nativeQuery=true)
+	//@Query(value="UPDATE eservice_motor_details_raw RAW SET STATUS='E', ERROR_DESC=CONCAT(ERROR_DESC,'~DUPLICATE SEARCH BY DATA IS FOUND') WHERE SEARCH_BY_DATA IN(SELECT SEARCH_BY_DATA FROM (SELECT SEARCH_BY_DATA FROM eservice_motor_details_raw WHERE company_id =?1 AND product_id =?2 AND typeid =?3 AND request_reference_no =?4 and status='Y' and tira_status='Y' and (api_status in('Y','') or api_status is null) GROUP BY SEARCH_BY_DATA HAVING COUNT(*)>1)X) AND raw.company_id =?1 AND raw.product_id =?2 AND raw.typeid =?3 AND raw.request_reference_no =?4 and raw.status='Y' and raw.tira_status='Y' and (raw.api_status in('Y','') or raw.api_status is null) ",nativeQuery=true)
+	@Query(value="UPDATE eservice_motor_details_raw ra SET status = 'E', error_desc = concat(error_desc,'~DUPLICATE SEARCH BY DATA IS FOUND') WHERE search_by_data IN( SELECT search_by_data FROM ( SELECT search_by_data FROM eservice_motor_details_raw WHERE company_id =?1 AND product_id = ?2 AND typeid = ?3 AND request_reference_no = ?4 AND status = 'Y' AND tira_status = 'Y' AND ( api_status IN ( 'Y', '') OR api_status IS NULL ) GROUP BY search_by_data HAVING COUNT(*) > 1 ) x ) AND ra.company_id = ?1 AND ra.product_id = ?2 AND ra.typeid = ?3 AND ra.request_reference_no = ?4 AND ra.status = 'Y' AND ra.tira_status = 'Y' AND ( ra.api_status IN ( 'Y', '' ) OR ra.api_status IS NULL )",nativeQuery=true)
 	Integer updateDupicateSearchBydata(Integer companyId,Integer productId,Integer typeId,String refNo);
 
 
@@ -116,7 +125,8 @@ public interface EserviceMotorDetailsRawRepository  extends JpaRepository<Eservi
 	
 	@Modifying
 	@Transactional
-	@Query(value="UPDATE eservice_motor_details_raw RAW SET STATUS='X', ERROR_DESC =concat(ERROR_DESC,'~Data has been overridden') WHERE SEARCH_BY_DATA IN(SELECT SEARCH_BY_DATA FROM ( SELECT SEARCH_BY_DATA FROM eservice_motor_details_raw WHERE TYPEID=?1 AND REQUEST_REFERENCE_NO=?2 AND COMPANY_ID=?3 AND PRODUCT_ID=?4 AND STATUS='Y' GROUP BY SEARCH_BY_DATA)X) AND RAW.TYPEID=?1 AND RAW.REQUEST_REFERENCE_NO=?2 AND RAW.COMPANY_ID=?3 AND RAW.PRODUCT_ID=?4 AND STATUS='E' ",nativeQuery=true)
+	//@Query(value="UPDATE eservice_motor_details_raw RAW SET STATUS='X', ERROR_DESC =concat(ERROR_DESC,'~Data has been overridden') WHERE SEARCH_BY_DATA IN(SELECT SEARCH_BY_DATA FROM ( SELECT SEARCH_BY_DATA FROM eservice_motor_details_raw WHERE TYPEID=?1 AND REQUEST_REFERENCE_NO=?2 AND COMPANY_ID=?3 AND PRODUCT_ID=?4 AND STATUS='Y' GROUP BY SEARCH_BY_DATA)X) AND RAW.TYPEID=?1 AND RAW.REQUEST_REFERENCE_NO=?2 AND RAW.COMPANY_ID=?3 AND RAW.PRODUCT_ID=?4 AND STATUS='E' ",nativeQuery=true)
+	@Query(value="UPDATE eservice_motor_details_raw ra SET status = 'X', error_desc = concat(error_desc,'~Data has been overridden') WHERE search_by_data IN( SELECT search_by_data FROM ( SELECT search_by_data FROM eservice_motor_details_raw WHERE typeid =?1 AND request_reference_no =?2 AND company_id =?3 AND product_id = ?4 AND status = 'Y' GROUP BY search_by_data) x ) AND ra.typeid =?1 AND ra.request_reference_no = ?2 AND ra.company_id =?3 AND ra.product_id = ?4 AND status = 'E'",nativeQuery=true)
 	Integer overrideExistingErrorRecord(Integer typeId,String refNo,Integer companyId,Integer productId);
 
 
@@ -131,4 +141,37 @@ public interface EserviceMotorDetailsRawRepository  extends JpaRepository<Eservi
 	@Transactional
 	void deleteByRequestReferenceNo(String requestReferenceNo);
 	
+	@Modifying
+	@Transactional
+	@Query(value="UPDATE eservice_motor_details_raw SET error_desc = CASE WHEN( section_id IS NULL OR section_id = '') THEN '~Sectionid not found' WHEN insurance_type_id IS NULL OR insurance_type_id = '' THEN '~InsuranceType id not found' WHEN insurance_class_id IS NULL OR insurance_class_id = '' THEN '~InsuranceClass id not found' WHEN body_type_id IS NULL OR body_type_id = '' THEN '~BodyType id not found' WHEN motor_usage_id IS NULL OR motor_usage_id = '' THEN '~MotorUsageId not found' ELSE error_desc END WHERE company_id =?1 AND product_id =?2 AND typeid =?3 AND request_reference_no =?4" ,nativeQuery=true)
+	Integer updateEmptyErrorDesc(Integer companyId, Integer productId, Integer typeId, String requestReferenceNo);
+	
+	@Modifying
+	@Transactional
+	@Query(value="UPDATE eservice_motor_details_raw SET STATUS = CASE WHEN   error_desc != '' OR error_desc IS NOT NULL THEN 'E' ELSE 'Y' END WHERE company_id =?1 AND product_id =?2 AND typeid = ?3 AND request_reference_no = ?4" ,nativeQuery=true)
+	Integer updateEmptyErrorStatus(Integer companyId, Integer productId, Integer typeId, String requestReferenceNo);
+
+
+	@Modifying
+	@Transactional
+	@Query("delete from EserviceMotorDetails  em where em.requestReferenceNo=?1")
+	Integer deleteMotorDetailsByRefNo(String requestReferenceNo);
+	
+	@Modifying
+	@Transactional
+	@Query("delete from FactorRateRequestDetails f where f.requestReferenceNo=?1")
+	Integer deleteFactorByRefNo(String requestReferenceNo);
+	
+	@Modifying
+	@Transactional
+	@Query(value="DELETE FROM master_referral_details WHERE REQUEST_REFERENCE_NO=?1",nativeQuery=true)
+	Integer deleteMaster_referral_detailsByRefNo(String requestReferenceNo);
+	
+	@Modifying
+	@Transactional
+	@Query("delete from UwQuestionsDetails u where u.requestReferenceNo=?1")
+	Integer deleteUwQuestionsDetailsByRefNo(String requestReferenceNo);
+	
 }
+	
+

@@ -24,6 +24,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -41,6 +42,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -117,6 +119,9 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 	private SeqRefnoRepository sequence;
 	@Autowired
 	private VehicleAsynchronousProcess asyncProcess;
+	
+	@Autowired
+	private CriteriaQueryServiceImpl criteriaQuery;
 	
 	@Autowired
     JobLauncher jobLauncher;
@@ -337,11 +342,15 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			ObjectMapper mapper = new ObjectMapper();
 			String ewayBatchReq=mapper.writerWithDefaultPrettyPrinter().writeValueAsString(request);
 			
-			//String uploadType =StringUtils.isBlank(uploadResponse.getUploadType())?"":uploadResponse.getUploadType();
+			String uploadType =StringUtils.isBlank(uploadResponse.getUploadType())?"":uploadResponse.getUploadType();
 			
-			//if("NEW".equalsIgnoreCase(uploadType)) {
-				//eserviceRepository.deleteByRequestReferenceNo(uploadResponse.getRequestReferenceNo());
-			//}
+			if("Add".equalsIgnoreCase(uploadType)) {
+				eserviceRepository.deleteByRequestReferenceNo(uploadResponse.getRequestReferenceNo());
+				eserviceRepository.deleteMotorDetailsByRefNo(uploadResponse.getRequestReferenceNo());
+				eserviceRepository.deleteUwQuestionsDetailsByRefNo(uploadResponse.getRequestReferenceNo());
+				eserviceRepository.deleteMotorDetailsByRefNo(uploadResponse.getRequestReferenceNo());
+				eserviceRepository.deleteMaster_referral_detailsByRefNo(uploadResponse.getRequestReferenceNo());
+			}
 			
 			JobParameters jobParameters = new JobParametersBuilder()
 			     	.addLong("time", System.currentTimeMillis())
@@ -430,17 +439,28 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 					comFutures.toArray(array);
 					CompletableFuture.allOf(array).join();
 				}
-				eserviceRepository.updateInsuranceTypeId(companyId, productId, typeId, requestReferenceNo);
-				eserviceRepository.updateSectionIdByRequestRefNo(companyId, productId, typeId, requestReferenceNo);
-				eserviceRepository.updateBodyTypeId(companyId, productId, typeId, requestReferenceNo);
-				eserviceRepository.updateInsuranceClassId(companyId, productId, typeId, requestReferenceNo);
-				eserviceRepository.updateMotorUsageId(companyId, productId, typeId, requestReferenceNo);
-				eserviceRepository.updateSuminsuredValidationByPolicyType(companyId, productId, typeId, requestReferenceNo);
-				eserviceRepository.updateCollateralValidation(companyId, productId, typeId, requestReferenceNo);
-				eserviceRepository.updateMasterIdEmptyValidation(companyId, productId, typeId, requestReferenceNo);
+				//eserviceRepository.updateInsuranceTypeId(companyId, productId, typeId, requestReferenceNo);
+				criteriaQuery.updateInsuranceType(companyId, productId, typeId, requestReferenceNo);
+				//eserviceRepository.updateSectionIdByRequestRefNo(companyId, productId, typeId, requestReferenceNo);
+				//criteriaQuery.updateSectionId(companyId, productId, typeId, requestReferenceNo);
+				//eserviceRepository.updateBodyTypeId(companyId, productId, typeId, requestReferenceNo);
+				criteriaQuery.updateBodyTypeId(companyId, productId, typeId, requestReferenceNo);
+				//eserviceRepository.updateInsuranceClassId(companyId, productId, typeId, requestReferenceNo);
+				criteriaQuery.updateInsuranceClassId(companyId, productId, typeId, requestReferenceNo);
+				//eserviceRepository.updateMotorUsageId(companyId, productId, typeId, requestReferenceNo);
+				criteriaQuery.updateMotorUsageId(companyId, productId, typeId, requestReferenceNo);
+				//eserviceRepository.updateSuminsuredValidationByPolicyType(companyId, productId, typeId, requestReferenceNo);
+				criteriaQuery.updateSuminsuredValidation(companyId, productId, typeId, requestReferenceNo);
+				//eserviceRepository.updateCollateralValidation(companyId, productId, typeId, requestReferenceNo);
+				criteriaQuery.updateColleteralValidation(companyId, productId, typeId, requestReferenceNo);
+				//eserviceRepository.updateMasterIdEmptyValidation(companyId, productId, typeId, requestReferenceNo);
+				criteriaQuery.updateEmptyDataError(companyId, productId, typeId, requestReferenceNo);
+				criteriaQuery.updateErrorStatus(companyId, productId, typeId, requestReferenceNo);
+				//eserviceRepository.updateEmptyErrorStatus(companyId, productId, typeId, requestReferenceNo);
 				eserviceRepository.updateDupicateSearchBydata(companyId, productId, typeId, requestReferenceNo);
+				//criteriaQuery.updateDuplicateData(companyId, productId, typeId, requestReferenceNo);
 				eserviceRepository.overrideExistingErrorRecord(typeId, requestReferenceNo, companyId, productId);		
-				
+				//criteriaQuery.overirdeExistingErrorRecord(typeId, requestReferenceNo, companyId, productId);
 				List<EserviceMotorDetailsRaw> dlist =eserviceRepository.findByCompanyIdAndProductIdAndRequestReferenceNo(companyId,productId,requestReferenceNo);
 				validRecords =dlist.stream().filter(p ->"Y".equals(p.getStatus()) && "Y".equals(p.getTiraStatus())).count();
 				errorRecords =dlist.stream().filter(p ->"E".equals(p.getStatus()) ||  "E".equals(p.getTiraStatus())).count();
@@ -1057,4 +1077,8 @@ public synchronized String generateRefNo() {
      }
     
 }
+
+
+
+
 }

@@ -42,5 +42,11 @@ public interface TravelPolicyTypeRepository  extends JpaRepository<TravelPolicyT
 	List<TravelPolicyType> findByPolicyTypeIdAndPlanTypeIdAndCoverId(Integer valueOf, Integer valueOf2,
 			Integer valueOf3);
 
+	TravelPolicyType findTopByOrderByCoverIdDesc();
+
+	TravelPolicyType findTopByOrderBySubCoverIdDesc();
+
+	List<TravelPolicyType> findByPolicyTypeDescAndPlanTypeDesc(String policyTypeDesc, String planTypeDesc);
+
 
 }

@@ -1655,8 +1655,8 @@ public Integer getMasterTableCount(String companyId , String branchCode) {
 					 fParam.setParam6( data.getParam6()==null?"" : data.getParam6().toPlainString());
 					 fParam.setParam7( data.getParam7()==null?"" : data.getParam7().toPlainString());
 					 fParam.setParam8( data.getParam8()==null?"" : data.getParam8().toPlainString());
-					 fParam.setSno(data.getSNo().toString());
-					fParam.setRate(data.getRate().toString());
+					 fParam.setSno(data.getSNo()==null?"" : data.getSNo().toPlainString());
+					fParam.setRate(data.getRate()==null?"" : data.getRate().toPlainString());
 					fParam.setCalType(data.getCalcType());
 					fParam.setMinimumPremium(data.getMinPremium() == null ? null : minPreFormat.format(data.getMinPremium()));
 					factorParams.add(fParam);

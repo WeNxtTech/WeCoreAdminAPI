@@ -65,6 +65,10 @@ private static final long serialVersionUID = 1L;
     private Integer    vehicleId ;
 
     @Id
+    @Column(name="INDIVIDUAL_ID", nullable=false)
+    private Integer    individualId ;
+    
+    @Id
     @Column(name="PRODUCT_ID", nullable=false)
     private Integer    productId ;
 

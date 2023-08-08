@@ -114,6 +114,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="MASTER_CHECK_FIELD", length=100)
     private String     masterCheckField ;
 
+    @Column(name="DATA_RANGE", length=100)
+    private String     dataRange ;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 

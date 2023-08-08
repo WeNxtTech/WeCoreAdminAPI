@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.StringJoiner;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -139,7 +140,6 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
   
     private static  MediaType mediaType =MediaType.parse("application/json");
 
-    
     private static SimpleDateFormat sdf =new SimpleDateFormat("dd/MM/yyyy");
     
 	@Override
@@ -276,6 +276,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 		try {
 			String typeId = "",uploadedTranId="",rawTable="",mainTable="",errorTable="",fileUploadTypeId="";
 			String mandatoryDetails="",dataTypeList="",dateFormatList="",duplicateColumnList="",duplicateExcelColumnList="",newVehMandatoryDetails="";
+		
 			EwayUploadTypeMaster uploadData = uploadTypeMaster;
         	typeId=uploadData.getTypeid()==null?"":uploadData.getTypeid().toString();
 			uploadedTranId=uploadResponse.getRequestReferenceNo();
@@ -294,6 +295,9 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 		    }
 			String rawtablecolumnslist="",rawtablecolumns="";
 			List<XlConfigData> datas =new ArrayList<XlConfigData>();
+			StringJoiner dataFieldLength = new StringJoiner("~");
+			StringJoiner dataRangeList = new StringJoiner("~");
+
 			for(int i=0;i<xlConfigData.size();i++) {
 				EwayXlconfigMaster updatedData = xlConfigData.get(i);
 		    	rawtablecolumns = updatedData.getFieldNameRaw()==null?"":updatedData.getFieldNameRaw();
@@ -304,6 +308,9 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 		    		//String newVehMandatoryYN = updatedData.getv()==null?"N":updatedData.getNewvehiclemandatoryyn();
 		    		String dataType= updatedData.getDataType()==null?"":updatedData.getDataType();
 		    		String dateformat= updatedData.getDateFormat()==null?"":updatedData.getDateFormat();
+		    		String fieldLength= updatedData.getFieldLength()==null?"":updatedData.getFieldLength().toString();
+		    		String dataRange= updatedData.getDataRange()==null?"":updatedData.getDataRange().toString();
+
 		    		mandatoryDetails +=mandatoryYN+"~";
 		    		//newVehMandatoryDetails +=newVehMandatoryYN+"~";
 		    		if(dataType==null || dataType.isEmpty()) {
@@ -312,6 +319,9 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 		    			dataTypeList +=dataType+"~";
 
 		    		}
+		    		
+		    		dataFieldLength.add(StringUtils.isBlank(fieldLength)?"0":fieldLength);
+		    		dataRangeList.add(StringUtils.isBlank(dataRange)?"0":dataRange);
 		    		dateFormatList +=dateformat+"~";
 		    		String duplicateColumn= updatedData.getDublicateCheck()==null?"":updatedData.getDublicateCheck();
 				    	if(StringUtils.isNotBlank(duplicateColumn)&&duplicateColumn.equalsIgnoreCase("Y")) {
@@ -335,6 +345,8 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			uploadResponse.setTableColumnsDataType(dataTypeList); 
 			uploadResponse.setExceldateformatlist(dateFormatList); 
 			uploadResponse.setExcelHeaderColumns(headerList);
+			uploadResponse.setDataFieldLength(dataFieldLength.toString());
+			uploadResponse.setDataRange(dataRangeList.toString());
 			uploadResponse.setDuplicatecheckcolumns(StringUtils.chop(duplicateColumnList));
 			uploadResponse.setDuplicatecheckexcelcolumns(StringUtils.chop(duplicateExcelColumnList));
 			request.setEwayUploadRes(uploadResponse); 
@@ -343,13 +355,20 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			String ewayBatchReq=mapper.writerWithDefaultPrettyPrinter().writeValueAsString(request);
 			
 			String uploadType =StringUtils.isBlank(uploadResponse.getUploadType())?"":uploadResponse.getUploadType();
-			
+			String productId =StringUtils.isBlank(uploadResponse.getProductId())?"":uploadResponse.getProductId();
+			String quoteNo =StringUtils.isBlank(uploadResponse.getQuoteNo())?"":uploadResponse.getQuoteNo();
+
 			if("Add".equalsIgnoreCase(uploadType)) {
-				eserviceRepository.deleteByRequestReferenceNo(uploadResponse.getRequestReferenceNo());
-				eserviceRepository.deleteMotorDetailsByRefNo(uploadResponse.getRequestReferenceNo());
-				eserviceRepository.deleteUwQuestionsDetailsByRefNo(uploadResponse.getRequestReferenceNo());
-				eserviceRepository.deleteMotorDetailsByRefNo(uploadResponse.getRequestReferenceNo());
-				eserviceRepository.deleteMaster_referral_detailsByRefNo(uploadResponse.getRequestReferenceNo());
+				if("5".equals(productId)) {
+					eserviceRepository.deleteByRequestReferenceNo(uploadResponse.getRequestReferenceNo());
+					eserviceRepository.deleteMotorDetailsByRefNo(uploadResponse.getRequestReferenceNo());
+					eserviceRepository.deleteUwQuestionsDetailsByRefNo(uploadResponse.getRequestReferenceNo());
+					eserviceRepository.deleteMotorDetailsByRefNo(uploadResponse.getRequestReferenceNo());
+					eserviceRepository.deleteMaster_referral_detailsByRefNo(uploadResponse.getRequestReferenceNo());
+				}else if("14".equals(productId) || "15".equals(productId) || "32".equals(productId)) {
+					eserviceRepository.deleteProductEmployeeDetails(quoteNo);
+					eserviceRepository.deleteProductEmployeeDetails(uploadResponse.getRequestReferenceNo(),quoteNo);
+				}
 			}
 			
 			JobParameters jobParameters = new JobParametersBuilder()
@@ -471,8 +490,11 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			// For Employee validation block
 			else if("14".equals(product) || "15".equals(product) || "32".equals(product)) {
 				
-				employeeRawRepo.updateOccupationId(companyId,productId,
-						Integer.valueOf(uploadResponse.getRiskId()),requestReferenceNo,quoteNo);
+				//employeeRawRepo.updateOccupationId(companyId,productId,
+						//Integer.valueOf(uploadResponse.getRiskId()),requestReferenceNo,quoteNo);
+				criteriaQuery.updateOccupationId(companyId, productId, quoteNo, requestReferenceNo);
+				criteriaQuery.updateEmpErrorDesc(companyId, productId, quoteNo, requestReferenceNo);
+				criteriaQuery.updateErrorStatus(companyId, productId, typeId, requestReferenceNo);
 				
 				employeeRawRepo.updateDuplicateNationalityId(companyId,productId,requestReferenceNo,quoteNo);
 				String sectionId =StringUtils.isBlank(uploadResponse.getSectionId())?"":uploadResponse.getSectionId();
@@ -485,15 +507,13 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 				Map<String,Object> response =asyncProcess.callApi(request, uploadResponse.getToken(), mediaType, employeeCountApi);
 				log.info("Employee cout response || requestReferenceNo : "+requestReferenceNo+" || "+printReq.toJson(response));
 				Map<String,Object> result =response.get("Result")==null?null:(Map<String,Object>) response.get("Result");
+				Long expectedCount =result.get("ExpectedCount")==null?0L:Long.valueOf(result.get("ExpectedCount").toString());
 				Long actualCount =result.get("ActualCount")==null?0L:Long.valueOf(result.get("ActualCount").toString());
-				//Long actualCount =result.get("ActualCount")==null?0L:Long.valueOf(result.get("ActualCount").toString());
-
-				Long existsEmpCount =10L;
-                Long total =15L;		
 				Long newEmpCount =employeeRawRepo.getCountRecords(companyId,productId,requestReferenceNo);
-				Long totalEmpCount =existsEmpCount + newEmpCount;
-				if(totalEmpCount>total) {
-					Integer updateCount=employeeRawRepo.updateEmployeeExceededCount(companyId,productId,requestReferenceNo);
+				Long totalEmpCount =actualCount + newEmpCount;
+				if(totalEmpCount>expectedCount) {
+				    String errorMsg="The employees limt has exceeded more than hundred ("+expectedCount+")";
+					Integer updateCount=employeeRawRepo.updateEmployeeExceededCount(errorMsg,companyId,productId,requestReferenceNo);
 					log.info("validateRawTableRecords :: updateEmployeeExceededCount : "+updateCount);
 				}
 				

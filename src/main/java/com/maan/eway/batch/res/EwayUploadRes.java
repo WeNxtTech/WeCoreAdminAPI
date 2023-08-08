@@ -153,4 +153,10 @@ public class EwayUploadRes {
 	
 	@JsonProperty("UploadType")
 	private String uploadType;
+	
+	@JsonProperty("DataFieldLength")
+	private String dataFieldLength;
+	
+	@JsonProperty("DataRange")
+	private String DataRange;
 }

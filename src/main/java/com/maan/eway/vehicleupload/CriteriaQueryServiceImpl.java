@@ -5,6 +5,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
@@ -15,8 +16,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.batch.entity.EserviceMotorDetailsRaw;
+import com.maan.eway.batch.entity.EwayEmplyeeDetailRaw;
 import com.maan.eway.bean.MotorBodyTypeMaster;
 import com.maan.eway.bean.MotorVehicleUsageMaster;
+import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.bean.PolicyTypeMaster;
 import com.maan.eway.bean.ProductSectionMaster;
 
@@ -716,5 +719,94 @@ public class CriteriaQueryServiceImpl {
 			   e.printStackTrace();
 				log.error(e);
 		}
-	   }
+	   
+	  }
+	   
+	  public Integer updateOccupationId(Object companyId,Object productId,Object quoteNo,Object refNo) {
+		  try {
+			  CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+			  CriteriaUpdate<EwayEmplyeeDetailRaw> criteriaUpdate =cb.createCriteriaUpdate(EwayEmplyeeDetailRaw.class);
+			  Root<EwayEmplyeeDetailRaw> root =criteriaUpdate.from(EwayEmplyeeDetailRaw.class);
+			
+			  Subquery<Integer> occupationId= criteriaUpdate.subquery(Integer.class);
+			  Root<OccupationMaster> occuRoot =occupationId.from(OccupationMaster.class);
+			  Subquery<Integer> amendId =occupationId.subquery(Integer.class);
+			  Root<OccupationMaster> amendRoot =amendId.from(OccupationMaster.class);
+			  
+			  amendId.select(cb.max(amendRoot.get("amendId"))).where(
+					  cb.equal(occuRoot.get("status"), "Y"),cb.equal(occuRoot.get("companyId"), amendRoot.get("companyId")),
+					  cb.equal(occuRoot.get("productId"), amendRoot.get("productId")),
+					  cb.equal(cb.trim(cb.upper(occuRoot.get("occupationName"))), cb.trim(cb.upper(amendRoot.get("occupationName")))),
+					  cb.between(cb.currentDate(), occuRoot.get("effectiveDateStart"), amendRoot.get("effectiveDateEnd"))
+					  
+					  );
+			  occupationId.select(occuRoot.get("occupationId")).where(
+					  cb.equal(occuRoot.get("status"), "Y"),cb.equal(occuRoot.get("companyId"), root.get("companyId")),
+					  cb.equal(occuRoot.get("productId"), root.get("productId")),
+					  cb.equal(cb.trim(cb.upper(occuRoot.get("occupationName"))), cb.trim(cb.upper(root.get("occupatonDesc")))),
+					  cb.between(cb.currentDate(), occuRoot.get("effectiveDateStart"), occuRoot.get("effectiveDateEnd")),
+					  cb.equal(occuRoot.get("amendId"), amendId)
+					  );
+			  criteriaUpdate.set(root.<Integer>get("occupationId"), occupationId)
+			  .where(
+					  cb.equal(root.get("companyId"), companyId), cb.equal(root.get("productId"), productId), cb.equal(root.get("requestReferenceNo"), refNo),
+					  cb.equal(root.get("status"), "Y"),cb.isNull(root.get("apiStatus")),cb.equal(root.get("quoteNo"), quoteNo)
+					  );
+			  
+			  entityManager.createQuery(criteriaUpdate).executeUpdate();
+			  
+			  
+		  }catch (Exception e) {
+			  e.printStackTrace();
+				log.error(e);
+		 }
+		  return null;
+	  }
+	   
+	  public Integer updateEmpErrorDesc(Object companyId,Object productId,Object quoteNo,Object refNo) {
+		  try {
+			  CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+			  CriteriaUpdate<EwayEmplyeeDetailRaw> criteriaUpdate =cb.createCriteriaUpdate(EwayEmplyeeDetailRaw.class);
+			  Root<EwayEmplyeeDetailRaw> root =criteriaUpdate.from(EwayEmplyeeDetailRaw.class);
+			  Expression<String> caseCon =cb.selectCase().when(cb.isNull(root.<Integer>get("occupationId")), "Occupation id not found").otherwise(root.get("errorDesc")).as(String.class);
+			  criteriaUpdate.set(root.<String>get("errorDesc"), caseCon)
+			  .where(
+					  cb.equal(root.get("companyId"), companyId), cb.equal(root.get("productId"), productId), cb.equal(root.get("requestReferenceNo"), refNo),
+					  cb.equal(root.get("status"), "Y"), cb.isNull(root.get("apiStatus")),cb.equal(root.get("quoteNo"), quoteNo)
+					 
+					);
+			  entityManager.createQuery(criteriaUpdate).executeUpdate();
+		  }catch (Exception e) {
+			  e.printStackTrace();
+				log.error(e);
+		}
+		 
+		  return null;
+		  
+	  }
+	   
+	  public Integer updateEmpErrorStatus(Object companyId,Object productId,Object quoteNo,Object refNo) {
+		  try {
+			  CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+			  CriteriaUpdate<EwayEmplyeeDetailRaw> criteriaUpdate =cb.createCriteriaUpdate(EwayEmplyeeDetailRaw.class);
+			  Root<EwayEmplyeeDetailRaw> root =criteriaUpdate.from(EwayEmplyeeDetailRaw.class);
+			  Expression<String> caseCon =cb.selectCase().when(cb.isNotNull(root.get("errorDesc")), "E").otherwise("Y").as(String.class);
+			  criteriaUpdate.set(root.<String>get("status"), caseCon)
+			  .where(
+					  cb.equal(root.get("companyId"), companyId), cb.equal(root.get("productId"), productId), cb.equal(root.get("requestReferenceNo"), refNo),
+					  cb.equal(root.get("status"), "Y"), cb.isNull(root.get("apiStatus")),cb.equal(root.get("quoteNo"), quoteNo)
+					 
+					);
+			  entityManager.createQuery(criteriaUpdate).executeUpdate();
+		  }catch (Exception e) {
+			  e.printStackTrace();
+				log.error(e);
+		}
+		 
+		  return null;
+		  
+	  }
+	   
+	  
+	  
 }

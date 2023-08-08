@@ -1,15 +1,20 @@
 package com.maan.eway.vehicleupload;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.StringJoiner;
 
+import org.apache.commons.lang3.Range;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -275,6 +280,8 @@ private String validateDetails(Record items, EwayUploadRes response) {
 		String[] dateformatList = response.getExceldateformatlist().replaceAll("\\~$","").split("\\~",-1);//.split("~")
 		String[] excelHeaderList = response.getExcelHeaderColumns().split(",");
 		String[] mandatoryList = response.getExcelmandatorylist().split("~");
+		String[] fieldLength = response.getDataFieldLength().split("~");
+		String[] rangeColumn = response.getDataRange().split("~");
 
 		for(int i=0;i<excelValueList.length;i++) {
 			String errors = "";
@@ -283,6 +290,9 @@ private String validateDetails(Record items, EwayUploadRes response) {
 			String mandatoryYn = mandatoryList.length>0?mandatoryList[i]:"";
 			String datatype = datatypeList.length>0?datatypeList[i]:"";
 			String dateFormat = dateformatList.length>0?dateformatList[i]:"";
+			String dataLength =fieldLength.length>0?fieldLength[i]:"";
+			String rangeCondition =rangeColumn.length>0?rangeColumn[i]:"";
+
 			if(StringUtils.isNotBlank(mandatoryYn)&&mandatoryYn.equalsIgnoreCase("Y")&&StringUtils.isBlank(excelValue)) {
 				errors = headername + " value is Mandatory";
 			}else if(StringUtils.isNotBlank(excelValue)) {
@@ -290,19 +300,60 @@ private String validateDetails(Record items, EwayUploadRes response) {
 					String excelCellValue =excelValue.replaceAll(",", "").trim();
 					if(!StringUtils.isNumeric(excelCellValue)) {
 						errors = headername + " value is Must be Numeric";
+					}else {
+						 if(!"0".equals(dataLength)) {
+							Integer number =new BigDecimal(excelValue).toPlainString().length();
+							errors =number>Integer.valueOf(dataLength)?""+headername + " value length should be in range of "+dataLength+" digits":"";
+							
+						}if(!"0".equals(rangeCondition)) {
+							String[] rangeVal =rangeCondition.split("-");
+							Range<Long> range =Range.between(Long.valueOf(rangeVal[0]), Long.valueOf(rangeVal[1]));
+							if(!range.contains(Long.valueOf(excelValue))) {
+								errors = headername + " value should between this range " +rangeCondition+"";
+							}
+						}
 					}
 				}else if("DOUBLE".equalsIgnoreCase(datatype)) {
 					String excelCellValue =excelValue.replaceAll(",", "").trim();
 					if(!isDouble(excelCellValue)) {
 						errors = headername + " value is Must be Double or Numeric";
+					}else {
+						if(!"0".equals(dataLength)) {	
+							errors =excelValue.length()>Integer.valueOf(dataLength)?headername + " value length should be in range of "+dataLength+" digits"
+									:"";
+						}if(!"0".equals(rangeCondition)) {
+							String[] rangeVal =rangeCondition.split("-");
+							Range<Double> range =Range.between(Double.valueOf(rangeVal[0]), Double.valueOf(rangeVal[1]));
+							if(!range.contains(Double.valueOf(excelValue))) {
+								errors = headername + " value should between this range " +rangeCondition+"";
+							}
+						}
 					}
 				}
-				else if(StringUtils.isNotBlank(dateFormat)) {
+				if("DATE".equalsIgnoreCase(datatype)) {
+					if(!excelValue.matches("([0-9]{2})/([0-9]{2})/([0-9]{4})")) {
+						errors="Please Enter Valid Date format in "+ headername + ": Given Value is - >  " + excelValue +"Excepted date fromat is DD/MM/YYYY";
+				   }else if(!"0".equals(rangeCondition)){
+						LocalDate sysdate =LocalDate.now();
+						LocalDate dateOfbirth =LocalDate.parse(excelValue, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+						Integer years =Period.between(dateOfbirth,sysdate).getYears();
+						String[] rangeVal =rangeCondition.split("-");
+						Range<Integer> range =Range.between(Integer.valueOf(rangeVal[0]), Integer.valueOf(rangeVal[1]));
+						if(!range.contains(Integer.valueOf(years))) {
+							errors = headername + " value should between this age range " +rangeCondition+"";
+						}
+					}
+							
+					
+				}else if("VARCHAR".equalsIgnoreCase(datatype)) {
 					if(StringUtils.isNotBlank(excelValue)) {
-						if("DATE".equalsIgnoreCase(datatype)) {
-							if(!excelValue.matches("([0-9]{2})/([0-9]{2})/([0-9]{4})")) {
-								errors="Please Enter Valid Date fromat in "+ headername + ": Given Value is - >  " + excelValue +"Excepted date fromat is 05/11/1996";
-							}				
+						//if(excelValue.matches("[$&+,:;=?@#|]")) {
+							//errors="Special characters is not allowed in "+ headername + ": Given Value is - >  " + excelValue +" ";
+						//}
+						if(!"0".equals(dataLength)) {							
+							if(excelValue.length()>Long.valueOf(dataLength)) {
+								errors = headername + " value length should be in range of " +dataLength+"character";
+							}
 						}
 					}
 				}
@@ -310,6 +361,7 @@ private String validateDetails(Record items, EwayUploadRes response) {
 			if(StringUtils.isNotBlank(errors)) {
 				errorDesc +=errors+"~";
 			}
+		
 		}								
 	}catch (Exception e) {
 		e.printStackTrace();

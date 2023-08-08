@@ -36,7 +36,7 @@ public interface EwayEmplyeeDetailRawRepository extends JpaRepository<EwayEmplye
 	
 	@Modifying
 	@Transactional
-	@Query(value="UPDATE eway_employee_details_raw SET STATUS='E',error_desc=CONCAT(COALESCE(error_desc,'~'),'Duplicate nationalityId found',nationality_id) WHERE(company_id,product_id,request_reference_no,quote_no,nationality_id) IN (SELECT company_id,product_id,request_reference_no,quote_no,nationality_id FROM(SELECT company_id,product_id,request_reference_no,quote_no,nationality_id FROM eway_employee_details_raw WHERE company_id=?1 AND product_id=?2 AND request_reference_no=?3 AND quote_no=?4 AND STATUS ='Y' AND (api_status IS NULL OR api_status='') and employee_type='E' GROUP BY company_id,product_id,request_reference_no,quote_no,nationality_id HAVING COUNT(*)>1)X) AND employee_type='E'  ",nativeQuery=true)
+	@Query(value="UPDATE eway_employee_details_raw SET STATUS='E',error_desc=CONCAT(COALESCE(error_desc,'~'),'Duplicate nationalityId found',nationality_id) WHERE(company_id,product_id,request_reference_no,quote_no,nationality_id) IN (SELECT company_id,product_id,request_reference_no,quote_no,nationality_id FROM(SELECT company_id,product_id,request_reference_no,quote_no,nationality_id FROM eway_employee_details_raw WHERE company_id=?1 AND product_id=?2 AND request_reference_no=?3 AND quote_no=?4 AND STATUS ='Y' AND (api_status IS NULL OR api_status='') GROUP BY company_id,product_id,request_reference_no,quote_no,nationality_id HAVING COUNT(*)>1)X)",nativeQuery=true)
 	Integer updateDuplicateNationalityId(Integer companyId,Integer productId,String refNo,String quoteNo);
 
 	List<EwayEmplyeeDetailRaw> findByCompanyIdAndProductIdAndRequestReferenceNoAndQuoteNoAndRiskIdAndStatusIgnoreCase(
@@ -78,8 +78,8 @@ public interface EwayEmplyeeDetailRawRepository extends JpaRepository<EwayEmplye
 
 	@Modifying
 	@Transactional
-	@Query("update EwayEmplyeeDetailRaw emp set emp.status='E',emp.errorDesc='The employee count has exceeded more than your setup' where emp.companyId=?1 and emp.productId=?2 and emp.requestReferenceNo=?3 and emp.status='Y'")
-	Integer updateEmployeeExceededCount(Integer companyId, Integer productId, String requestReferenceNo);
+	@Query("update EwayEmplyeeDetailRaw emp set emp.status='E',emp.errorDesc=?1 where emp.companyId=?2 and emp.productId=?3 and emp.requestReferenceNo=?4 and emp.status='Y'")
+	Integer updateEmployeeExceededCount(String errorMsg,Integer companyId, Integer productId, String requestReferenceNo);
 
 	
 }

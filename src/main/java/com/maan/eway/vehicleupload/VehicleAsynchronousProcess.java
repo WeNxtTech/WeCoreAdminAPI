@@ -450,10 +450,10 @@ public class VehicleAsynchronousProcess {
             */
 			String apiRequest =print.toJson(request);
 			//log.info("createEmployee ||employeeSaveRequest "+apiRequest);
-			System.out.println("Start Time"+LocalDateTime.now());
+			System.out.println("Employee creation Start Time"+LocalDateTime.now());
 			apiResponse=callApi(apiRequest, auth, mediaType, employeeSaveApi);
-			System.out.println("End Time"+LocalDateTime.now());
-			log.info("createEmployee ||employeeSaveRequest "+print.toJson(apiResponse));
+			System.out.println("Employee creation End Time"+LocalDateTime.now());
+			log.info("createEmployee ||employeeSaveRequest "+print.toJson(apiRequest));
 			ewayEmployeeRepo.updateEmployeeStatus("Y", "", null,"",request.get("InsuranceId").toString(), 
 					request.get("ProductId").toString(), request.get("RequestReferenceNo").toString());
 		}catch (Exception e) {

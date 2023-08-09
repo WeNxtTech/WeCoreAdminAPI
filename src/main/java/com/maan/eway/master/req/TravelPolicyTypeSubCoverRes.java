@@ -35,8 +35,7 @@ public class TravelPolicyTypeSubCoverRes {
 	@JsonProperty("Status")
     private String  status;
 
-	@JsonProperty("Remarks")
-    private String  remarks;
+
 
 
 }

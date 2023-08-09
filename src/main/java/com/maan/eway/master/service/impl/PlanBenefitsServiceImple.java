@@ -90,6 +90,12 @@ public class PlanBenefitsServiceImple implements PlanBenefitsService {
 				errorList.add(new Error("02", "PlanTypeId", "Please Enter PlanTypeId"));
 			}
 			
+			if (StringUtils.isBlank(req.getRemarks()) ) {
+				errorList.add(new Error("03", "Remark", "Please Select Remark "));
+			}else if (req.getRemarks().length() > 100){
+				errorList.add(new Error("03","Remark", "Please Enter Remark within 100 Characters")); 
+			}
+			
 		//	List<TravelPolicyType> poltype = travelRepo.findByPolicyTypeDescAndPlanTypeDesc(req.getPolicyTypeDesc(), req.getPlanTypeDesc());
 			
 			List<DuplicationCheck> dup = new ArrayList<DuplicationCheck>();
@@ -167,19 +173,16 @@ public class PlanBenefitsServiceImple implements PlanBenefitsService {
 								errorList.add(new Error("05", "SubCover Status", "Please Select Valid SubCover Status - 1 Character Only Allwed"));
 							}
 							
-							if (StringUtils.isBlank(sub.getRemarks()) ) {
-								errorList.add(new Error("03", "Remark", "Please Select Remark "));
-							}else if (sub.getRemarks().length() > 100){
-								errorList.add(new Error("03","Remark", "Please Enter Remark within 100 Characters")); 
-							}
+							
 						}
+					} else {
+						errorList.add(new Error("05", "SubCover", "Please Enter SubCover Details"));
 					}
-					
-					
-				
 					
 				}
 				
+			} else {
+				errorList.add(new Error("05", "Cover", "Please Enter Cover Details"));
 			}
 				
 		} catch (Exception e) {
@@ -253,7 +256,7 @@ public class PlanBenefitsServiceImple implements PlanBenefitsService {
 						saveData.setSubCoverId(maxsubcoverid);
 						saveData.setCurrency(sub.getCurrency());
 						saveData.setExcessAmt(sub.getExcess());
-						saveData.setRemarks(sub.getRemarks());
+						saveData.setRemarks(req.getRemarks());
 						saveData.setStatus(sub.getStatus());
 						saveData.setSubCoverDesc(sub.getSubCoverDesc());
 						saveData.setSumInsured(sub.getSumInsured());

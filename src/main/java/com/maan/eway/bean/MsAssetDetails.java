@@ -459,5 +459,19 @@ public class MsAssetDetails implements Serializable {
 
 	@Column(name = "GENSETS_SI_LC")
 	private BigDecimal gensetsSiLC;
+	@Column(name = "CASH_IN_HAND_EMPLOYEES_LC  ")
+	private BigDecimal cashInHandEmployeesLc;
+
+	@Column(name = "CASH_IN_SAFE_LC  ")
+	private BigDecimal cashInSafeLc;
+
+	@Column(name = "CASH_IN_TRANSIT_LC  ")
+	private BigDecimal cashInTransitLc;
+
+	@Column(name = "MONEY_OUT_SAFE_BUSINESS_LC")
+	private BigDecimal moneyOutSafeBusinessLc;
+
+	@Column(name = "MONEY_IN_PREMISES_LC")
+	private BigDecimal moneyInPremisesLc;
 
 }

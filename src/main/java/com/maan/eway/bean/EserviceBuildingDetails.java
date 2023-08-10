@@ -743,7 +743,37 @@ private static final long serialVersionUID = 1L;
       @Column(name="GENSETS_SI_LC")
       private BigDecimal gensetsSiLC;
 
+      @Column(name="STOCK_IN_TRADE_SI_LC")
+      private BigDecimal stockInTradeSiLc;
       
+      
+      @Column(name="GOODS_SI_LC ")
+      private BigDecimal goodsSiLc ;
+
+      @Column(name="FURNITURE_SI_LC ")
+      private BigDecimal furnitureSiLc ;
+
+      @Column(name="APPLIANCE_SI_LC ")
+      private BigDecimal applianceSiLc ;
+      
+      @Column(name="CASH_VALUEABLES_SI_LC")
+      private BigDecimal cashValueablesSiLc;
+      
+      @Column(name="CASH_IN_HAND_EMPLOYEES_LC  ")
+      private BigDecimal cashInHandEmployeesLc  ;
+
+      @Column(name="CASH_IN_SAFE_LC  ")
+      private BigDecimal cashInSafeLc  ;
+
+      @Column(name="CASH_IN_TRANSIT_LC  ")
+      private BigDecimal cashInTransitLc  ;
+      
+      @Column(name="MONEY_OUT_SAFE_BUSINESS_LC")
+      private BigDecimal moneyOutSafeBusinessLc;
+      
+      @Column(name="MONEY_IN_PREMISES_LC")
+      private BigDecimal moneyInPremisesLc;
+
       
       
       

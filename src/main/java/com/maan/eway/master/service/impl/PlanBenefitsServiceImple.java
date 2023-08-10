@@ -58,10 +58,10 @@ public class PlanBenefitsServiceImple implements PlanBenefitsService {
 			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
 			today = cal.getTime();
 			if (req.getEffectiveDateStart() == null ) {
-				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
+				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date"));
 	
 			} else if (req.getEffectiveDateStart().before(today)) {
-				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date as Future Date"));
 			} 
 			
 		

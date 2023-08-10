@@ -25,7 +25,7 @@ public class TravelPolicyTypeSubCoverRes {
 	@JsonProperty("SumInsured")
     private String   sumInsured;
 
-	@JsonProperty("Excess")
+	@JsonProperty("ExcessAmt")
     private String  excess;
 
 	@JsonFormat(pattern="dd/MM/yyyy")

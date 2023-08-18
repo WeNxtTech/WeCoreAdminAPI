@@ -134,6 +134,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="UPDATED_DATE")
     private Date      updatedDate ;
 
+    @Column(name="COUNTRY_ID", length=50)
+    private String     countryId ;
 
 }
 

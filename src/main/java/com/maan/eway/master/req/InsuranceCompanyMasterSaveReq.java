@@ -8,6 +8,8 @@ package com.maan.eway.master.req;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Column;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.maan.eway.bean.BranchMaster;
@@ -83,6 +85,9 @@ public class InsuranceCompanyMasterSaveReq {
 	
 	@JsonProperty("CurrencyId")
 	private String currencyId;
+
+	@JsonProperty("CountryId")
+	private String countryId;
 	
   
 }

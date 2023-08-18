@@ -78,5 +78,7 @@ public class InsuranceCompanyMasterRes implements Serializable {
 	@JsonProperty("UpdatedDate")
     private Date   updatedDate;
 	
+	@JsonProperty("CountryId")
+	private String countryId;
 	
 }

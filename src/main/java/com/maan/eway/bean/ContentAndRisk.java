@@ -177,4 +177,6 @@ public class ContentAndRisk implements Serializable {
 	@Column(name = "SUM_INSURED_LC")
 	private BigDecimal sumInsuredLc;
 
+   @Column(name="MANUFACTURE_YEAR", length=100)
+   private String     manufactureYear;
 }

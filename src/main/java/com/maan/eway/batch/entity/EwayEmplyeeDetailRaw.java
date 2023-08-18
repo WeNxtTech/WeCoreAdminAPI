@@ -100,5 +100,13 @@ public class EwayEmplyeeDetailRaw {
 	@Column(name ="SECTION_ID")
 	private String sectionId;
 
+	@Column(name ="RELATION_DESC")
+	private String relationDesc;
+	
+	@Column(name ="PASS_RELATION_ID")
+	private String passRelationId;
+	
+	@Column(name ="GENDER")
+	private String gender;
 }
 

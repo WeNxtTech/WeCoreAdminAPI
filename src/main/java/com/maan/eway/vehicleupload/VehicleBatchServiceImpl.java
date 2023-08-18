@@ -208,7 +208,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			uploadRes.setSectionId(StringUtils.isBlank(req.getSectionId())?"":req.getSectionId());
 			uploadRes.setRelationId(StringUtils.isBlank(req.getRelationId())?"":req.getRelationId());
 			uploadRes.setStateCode(StringUtils.isBlank(req.getStateCode())?"":req.getStateCode());
-			uploadRes.setUploadType(StringUtils.isBlank(req.getUploadType())?"":req.getUploadType());
+			uploadRes.setUploadType(StringUtils.isBlank(req.getUploadType())?"Add":req.getUploadType());
 			
 			LocalDateTime dateTime =LocalDateTime.now();
 			String excelFilePath=filePath+fileName+dateTime.getNano()+"."+extension;
@@ -356,18 +356,21 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			
 			String uploadType =StringUtils.isBlank(uploadResponse.getUploadType())?"":uploadResponse.getUploadType();
 			String productId =StringUtils.isBlank(uploadResponse.getProductId())?"":uploadResponse.getProductId();
-			String quoteNo =StringUtils.isBlank(uploadResponse.getQuoteNo())?"":uploadResponse.getQuoteNo();
+			String requestReferenceNo =StringUtils.isBlank(uploadResponse.getRequestReferenceNo())?"":uploadResponse.getRequestReferenceNo();
 
 			if("Add".equalsIgnoreCase(uploadType)) {
 				if("5".equals(productId)) {
-					eserviceRepository.deleteByRequestReferenceNo(uploadResponse.getRequestReferenceNo());
-					eserviceRepository.deleteMotorDetailsByRefNo(uploadResponse.getRequestReferenceNo());
-					eserviceRepository.deleteUwQuestionsDetailsByRefNo(uploadResponse.getRequestReferenceNo());
-					eserviceRepository.deleteMotorDetailsByRefNo(uploadResponse.getRequestReferenceNo());
-					eserviceRepository.deleteMaster_referral_detailsByRefNo(uploadResponse.getRequestReferenceNo());
-				}else if("14".equals(productId) || "15".equals(productId) || "32".equals(productId)) {
-					eserviceRepository.deleteProductEmployeeDetails(quoteNo);
-					eserviceRepository.deleteProductEmployeeDetails(uploadResponse.getRequestReferenceNo(),quoteNo);
+					eserviceRepository.deleteByRequestReferenceNo(requestReferenceNo);
+					eserviceRepository.deleteMotorDetailsByRefNo(requestReferenceNo);
+					eserviceRepository.deleteUwQuestionsDetailsByRefNo(requestReferenceNo);
+					eserviceRepository.deleteMotorDetailsByRefNo(requestReferenceNo);
+					eserviceRepository.deleteMaster_referral_detailsByRefNo(requestReferenceNo);
+				}else if("14".equals(productId) || "15".equals(productId) || "32".equals(productId)){
+					eserviceRepository.deleteProductEmployeeDetails(requestReferenceNo);
+					eserviceRepository.deleteRawEmployeeDetails(requestReferenceNo);
+				}else if("4".equals(productId)){
+					eserviceRepository.deleteRawEmployeeDetails(requestReferenceNo);
+					eserviceRepository.deletePassengerDetails(requestReferenceNo);
 				}
 			}
 			
@@ -512,7 +515,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 				Long newEmpCount =employeeRawRepo.getCountRecords(companyId,productId,requestReferenceNo);
 				Long totalEmpCount =actualCount + newEmpCount;
 				if(totalEmpCount>expectedCount) {
-				    String errorMsg="The employees limt has exceeded more than hundred ("+expectedCount+")";
+				    String errorMsg="The employees limt has exceeded more than your setup ("+expectedCount+")";
 					Integer updateCount=employeeRawRepo.updateEmployeeExceededCount(errorMsg,companyId,productId,requestReferenceNo);
 					log.info("validateRawTableRecords :: updateEmployeeExceededCount : "+updateCount);
 				}
@@ -536,7 +539,10 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			else if("4".equals(product)) {
 				
 				employeeRawRepo.updateDuplicatePassportNo(companyId.toString(), productId.toString(), requestReferenceNo, quoteNo);
-				employeeRawRepo.updateDuplicateCivilId(companyId.toString(), productId.toString(), requestReferenceNo, quoteNo);
+				employeeRawRepo.updateNationlityId(companyId, productId,requestReferenceNo);
+				criteriaQuery.updateRelationId(companyId, productId, quoteNo, requestReferenceNo);
+				criteriaQuery.updateEmpErrorDesc(companyId, productId, quoteNo, requestReferenceNo);
+				criteriaQuery.updateErrorStatus(companyId, productId, typeId, requestReferenceNo);
 				List<EwayEmplyeeDetailRaw> passList=employeeRawRepo.findByCompanyIdAndProductIdAndRequestReferenceNo(companyId, productId, requestReferenceNo);
 				if(!CollectionUtils.isEmpty(passList)) {
 					
@@ -812,37 +818,33 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 				}else{
 					res.setCommonResponse(errors);
 					res.setMessage("FAILED");
-				}
-				// made the partitions based by 10
-				/*List<List<Map<String,Object>>> partitions_list =nPartition(list,list.size()>10?list.size()/10:10);
-				// delete employee 
-				Map<String,Object> map =new LinkedHashMap<String, Object>();
-				map.put("QuoteNo", list.get(0).get("QUOTE_NO")==null?"":list.get(0).get("QUOTE_NO"));
-				map.put("SectionId", list.get(0).get("SECTION_ID")==null?"":list.get(0).get("SECTION_ID"));
-				String deleteReq =new Gson().toJson(map);
-				log.info("Delete employee request "+deleteReq);
-				asyncProcess.callApi(deleteReq, auth, null, empDeleteApi);
-				System.out.println("Start Time ================"+new Date());
-				for (List<Map<String,Object>> e : partitions_list) {
-						
-					//parallel calling
-					List<CompletableFuture<String>> comFutures =e.parallelStream()
-							.map(m -> asyncProcess.createEmployee(m,auth))
-							.collect(Collectors.toList());
-						
-					@SuppressWarnings("unchecked")
-					CompletableFuture<Object> [] coFuturesArray =new CompletableFuture [comFutures.size()];
-					comFutures.toArray(coFuturesArray);
-					CompletableFuture.allOf(coFuturesArray).join();
-				}	
-				System.out.println("End Time ================"+new Date());*/
-	
-				
+				}				
 			}else {
 				res.setCommonResponse("FAILED");
 				res.setMessage("FAILED");
 			}
-		}
+			
+		// Travel data insert block	
+		 }else if("4".equals(req.getProductId())){
+			 List<Map<String,Object>> list =employeeRawRepo.getPassengersList(req.getCompanyId(),req.getProductId(),
+						req.getRequestRefNo());			 
+			 if(!CollectionUtils.isEmpty(list)) {
+				 Map<String,Object> apiResponse=asyncProcess.createPassenger(list,auth);
+				 List<Map<String,Object>> errors =apiResponse.get("ErrorMessage")==null?null:(List<Map<String,Object>>)apiResponse.get("ErrorMessage");
+					if(CollectionUtils.isEmpty(errors)) {
+						res.setCommonResponse("SUCCESS");
+						res.setMessage("SUCCESS");
+					}else{
+						res.setCommonResponse(errors);
+						res.setMessage("FAILED");
+					}	
+					res.setCommonResponse("SUCCESS");
+					res.setMessage("SUCCESS");
+			 }else{
+					res.setCommonResponse("FAILED");
+					res.setMessage("FAILED");
+			 }	
+		 }
 		}catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();

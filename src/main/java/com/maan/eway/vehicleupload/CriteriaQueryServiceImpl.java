@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.batch.entity.EserviceMotorDetailsRaw;
 import com.maan.eway.batch.entity.EwayEmplyeeDetailRaw;
+import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.MotorBodyTypeMaster;
 import com.maan.eway.bean.MotorVehicleUsageMaster;
 import com.maan.eway.bean.OccupationMaster;
@@ -807,6 +808,54 @@ public class CriteriaQueryServiceImpl {
 		  
 	  }
 	   
+	  public Integer updateRelationId(Object companyId,Object productId,Object quoteNo,Object refNo) {
+		  Integer count=0;
+		  try {
+			  CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+			  CriteriaUpdate<EwayEmplyeeDetailRaw> criteriaUpdate = criteriaBuilder.createCriteriaUpdate(EwayEmplyeeDetailRaw.class);
+
+			  Root<EwayEmplyeeDetailRaw> root = criteriaUpdate.from(EwayEmplyeeDetailRaw.class);
+
+			  // Subquery to select ITEM_CODE from EWAY_LIST_ITEM_VALUE
+			  Subquery<String> subquery = criteriaUpdate.subquery(String.class);
+			  Root<ListItemValue> subqueryRoot = subquery.from(ListItemValue.class);
+
+			  Expression<String> trimmedItemValue = criteriaBuilder.trim(criteriaBuilder.upper(subqueryRoot.get("itemValue")));
+			  Expression<String> trimmedRelationDesc = criteriaBuilder.trim(criteriaBuilder.upper(root.get("relationDesc")));
+			  Expression<String> trimmedParam1 = criteriaBuilder.trim(criteriaBuilder.upper(subqueryRoot.get("param1")));
+			  Expression<String> trimmedGender = criteriaBuilder.trim(criteriaBuilder.upper(criteriaBuilder.substring(root.get("gender"), 1, 1)));
+
+			  subquery.select(subqueryRoot.get("itemCode"))
+			          .where(
+			              criteriaBuilder.and(
+			                  criteriaBuilder.equal(trimmedItemValue, trimmedRelationDesc),
+			                  criteriaBuilder.equal(trimmedParam1, trimmedGender),
+			                  criteriaBuilder.or(
+			                      criteriaBuilder.equal(subqueryRoot.get("companyId"), root.get("companyId")),
+			                      criteriaBuilder.equal(subqueryRoot.get("companyId"), "99999")
+			                  )
+			              )
+			          );
+
+			  // Set the value of PASS_RELATION_ID using the subquery
+			  criteriaUpdate.set(root.<Integer>get("passRelationId"), subquery.as(Integer.class));
+
+			  // Apply the WHERE clause
+			  Predicate whereClause =criteriaBuilder.and(criteriaBuilder.equal(root.get("companyId"), companyId),
+					  criteriaBuilder.equal(root.get("productId"), productId),
+					  criteriaBuilder.equal(root.get("requestReferenceNo"), refNo),
+					  criteriaBuilder.equal(root.get("quoteNo"), quoteNo)
+					  );
+			  criteriaUpdate.where(whereClause);
+
+			  // Execute the update query
+			   count = entityManager.createQuery(criteriaUpdate).executeUpdate();
+		  }catch (Exception e) {
+			  e.printStackTrace();
+				log.error(e);
+		}
+		  return count;
+	  }
 	  
 	  
 }

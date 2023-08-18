@@ -196,7 +196,7 @@ protected int[][] batchInsert_2(List<Record> records, JdbcTemplate jdbcTemplate,
 		String prepareValues =map.get("PREPARE_VALUES").toString();
 					
 		String finalquery = "INSERT INTO " + excelTableName + "(COMPANY_ID,PRODUCT_ID,REQUEST_REFERENCE_NO,TYPEID,RISK_ID,"
-				+ "QUOTE_NO,CREATED_BY,ERROR_DESC,STATUS,SECTION_ID,PASS_STATE_CODE,ENDORSEMENT_TYPE,EMPLOYEE_TYPE,"+ rawTableFields + ") VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,"+prepareValues + ")";					
+				+ "QUOTE_NO,CREATED_BY,ERROR_DESC,STATUS,SECTION_ID,PASS_STATE_CODE,ENDORSEMENT_TYPE,EMPLOYEE_TYPE,UPLOAD_TYPE,"+ rawTableFields + ") VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,"+prepareValues + ")";					
 		
 		
 			int[][] updateCounts = jdbcTemplate.batchUpdate(finalquery, records, batchSize,
@@ -219,8 +219,9 @@ protected int[][] batchInsert_2(List<Record> records, JdbcTemplate jdbcTemplate,
 						ps.setString(11, StringUtils.isBlank(response.getStateCode()) ?null:response.getStateCode());
 						ps.setString(12, response.getEndorsementYn());
 						ps.setString(13, "N");
+						ps.setString(14,response.getUploadType());
 						for (int i = 1; i <= length; i++) {
-							ps.setString(i + 13, argument.getColumnByIndex(i - 1) == null ? null
+							ps.setString(i + 14, argument.getColumnByIndex(i - 1) == null ? null
 									: argument.getColumnByIndex(i - 1).toString().trim());
 							log.info("rowid: "+i+", rowvalue : "+argument.getColumnByIndex(i - 1) );
 						}

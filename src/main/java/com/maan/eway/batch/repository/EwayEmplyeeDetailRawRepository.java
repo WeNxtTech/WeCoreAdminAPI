@@ -22,7 +22,7 @@ public interface EwayEmplyeeDetailRawRepository extends JpaRepository<EwayEmplye
 	List<EwayEmplyeeDetailRaw> findByCompanyIdAndProductIdAndRequestReferenceNo(Integer companyId, Integer productId,
 			String requestRefNo);
 
-	@Query(value=" SELECT ROW_NUMBER() OVER(PARTITION BY request_reference_no ORDER BY request_reference_no DESC) AS EMPLOYEE_ID,r.* FROM EWAY_EMPLOYEE_DETAILS_RAW r WHERE company_Id=?1 AND product_id=?2 AND request_reference_no=?3 AND STATUS ='Y' AND (API_STATUS IS NULL or API_STATUS='') ORDER BY 1 ASC",nativeQuery=true)
+	@Query(value=" SELECT ROW_NUMBER() OVER(PARTITION BY request_reference_no ORDER BY request_reference_no DESC) AS EMPLOYEE_ID,r.* FROM EWAY_EMPLOYEE_DETAILS_RAW r WHERE company_Id=?1 AND product_id=?2 AND request_reference_no=?3 AND STATUS ='Y' AND (API_STATUS IS NULL or API_STATUS='N') ORDER BY 1 ASC",nativeQuery=true)
 	List<Map<String,Object>> getEmployeRawDetails(Object companyId,Object productId,Object refNo );
 	
 	List<EwayEmplyeeDetailRaw> findByCompanyIdAndProductIdAndQuoteNoAndRiskIdAndRequestReferenceNo(Integer companyId,Integer productId,
@@ -73,7 +73,7 @@ public interface EwayEmplyeeDetailRawRepository extends JpaRepository<EwayEmplye
 	@Query(value="UPDATE eway_employee_details_raw SET STATUS='E',ERROR_DESC=CONCAT(COALESCE(error_desc,'~'),'duplicate civilId number found for this : ',civil_id) WHERE(request_reference_no,civil_id)IN (SELECT request_reference_no,civil_id FROM(SELECT a.request_reference_no,a.civil_id FROM eway_employee_details_raw a,eway_employee_details_raw b WHERE a.rownum=b.rownum AND a.company_id=b.company_id AND a.product_id=b.product_id AND a.request_reference_no =b.request_reference_no AND a.quote_no=b.quote_no AND a.company_id=?1 AND a.product_id=?2 AND a.request_reference_no=?3 AND a.quote_no=?4 GROUP BY a.request_reference_no ,a.civil_id HAVING COUNT(*) >1)X) and status='Y' and api_status is null",nativeQuery=true)
 	Integer updateDuplicateCivilId(String companyId,String productId,String refno,String quoteNo);
 
-	@Query("select count(emp) from EwayEmplyeeDetailRaw emp where emp.companyId=?1 and emp.productId=?2 and emp.requestReferenceNo=?3 and emp.status='Y'")
+	@Query("select count(emp) from EwayEmplyeeDetailRaw emp where emp.companyId=?1 and emp.productId=?2 and emp.requestReferenceNo=?3 and emp.status='Y' and emp.apiStatus is null ")
 	Long getCountRecords(Integer companyId, Integer productId, String requestReferenceNo);
 
 	@Modifying
@@ -81,5 +81,12 @@ public interface EwayEmplyeeDetailRawRepository extends JpaRepository<EwayEmplye
 	@Query("update EwayEmplyeeDetailRaw emp set emp.status='E',emp.errorDesc=?1 where emp.companyId=?2 and emp.productId=?3 and emp.requestReferenceNo=?4 and emp.status='Y'")
 	Integer updateEmployeeExceededCount(String errorMsg,Integer companyId, Integer productId, String requestReferenceNo);
 
+	@Query(value ="SELECT COMPANY_ID,PRODUCT_ID,QUOTE_NO,REQUEST_REFERENCE_NO,PASSPORT_NO,FIRST_NAME,LAST_NAME,DATE_OF_BIRTH,PASS_RELATION_ID,CREATED_BY,NATIONALITY_ID,GENDER FROM eway_employee_details_raw WHERE COMPANY_ID=?1 AND PRODUCT_ID=?2 AND REQUEST_REFERENCE_NO=?3 AND STATUS='Y' AND (api_status IS NULL or api_status='N') ",nativeQuery=true)
+	List<Map<String,Object>> getPassengersList(String companyId,String productId,String refno);
+	
+	@Modifying
+	@Transactional
+	@Query(value="UPDATE eway_employee_details_raw REL SET NATIONALITY_ID =( SELECT COUNTRY_ID FROM EWAY_COUNTRY_MASTER WHERE TRIM( UPPER(COUNTRY_NAME)) = TRIM( UPPER(REL.PASSENGER_NATIONALITY) ) AND STATUS = 'Y' AND ( REL.COMPANY_ID = COMPANY_ID OR COMPANY_ID = '99999' ) AND ( SELECT CURRENT_DATE FROM DUAL ) BETWEEN EFFECTIVE_DATE_START AND EFFECTIVE_DATE_END AND AMEND_ID = ( SELECT MAX(AMEND_ID) FROM EWAY_COUNTRY_MASTER WHERE STATUS = 'Y' AND TRIM( UPPER(COUNTRY_NAME) ) = TRIM( UPPER(REL.PASSENGER_NATIONALITY) ) ) ) WHERE COMPANY_ID=?1 AND PRODUCT_ID=?2 AND REQUEST_REFERENCE_NO =?3",nativeQuery=true)
+	Integer updateNationlityId(Integer companyId,Integer productId,String refNo);
 	
 }

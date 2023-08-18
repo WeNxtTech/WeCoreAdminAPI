@@ -159,4 +159,5 @@ public class EwayUploadRes {
 	
 	@JsonProperty("DataRange")
 	private String DataRange;
+	
 }

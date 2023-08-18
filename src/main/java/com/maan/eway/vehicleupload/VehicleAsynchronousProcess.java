@@ -26,12 +26,10 @@ import com.maan.eway.batch.entity.EserviceMotorDetailsRaw;
 import com.maan.eway.batch.repository.EserviceMotorDetailsRawRepository;
 import com.maan.eway.batch.repository.EwayEmplyeeDetailRawRepository;
 import com.maan.eway.batch.repository.ProductEmployeesDetailsRepository;
-import com.maan.eway.batch.repository.TransactionControlDetailsRepository;
 import com.maan.eway.batch.req.ProductEmployeeSaveReq;
 import com.maan.eway.batch.res.EwayUploadRes;
 import com.maan.eway.bean.ProductEmployeeDetails;
 import com.maan.eway.res.CommonRes;
-import com.maan.eway.springbatch.TransactionControlDetails;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -47,28 +45,28 @@ public class VehicleAsynchronousProcess {
 	Logger log =LogManager.getLogger(VehicleAsynchronousProcess.class);
 	
 	@Value("${tira.api}")
-	private String tiraApi;
+	private  String tiraApi;
 	
 	@Value("${save.vehicle.api}")
-	private String vehicleApi;
+	private  String vehicleApi;
 	
 	@Value("${premium.calc.api}")
-	private String calcApi;
-	
-	@Value("${employee.save.api}")
-	private String employeeSaveApi;
+	private  String calcApi;
 	
 	@Value("${employee.validation.api}")
-	private String employeeValidationApi;
+	private  String employeeValidationApi;
 	
 	@Value("${employee.delete.api}")
-	private String employeeDeleteApi;
+	private  String employeeDeleteApi;
+	
+	@Value("${employee.merge.api}")
+	private  String employeeMergeApi;
+	
+	@Value("${passenger.save.api}")
+	private  String travelSaveApi;
 	
 	@Autowired
 	private EserviceMotorDetailsRawRepository eserviceRepository;
-	
-	@Autowired
-	private TransactionControlDetailsRepository transactionRepo;
 	
 	@Autowired
 	private EwayEmplyeeDetailRawRepository ewayEmployeeRepo;
@@ -356,6 +354,7 @@ public class VehicleAsynchronousProcess {
 		Map<String,Object> apiResponse=null;
 		try {
 			Map<String,Object> request = new LinkedHashMap<String,Object>();
+			String uploadType =employeeList.get(0).get("UPLOAD_TYPE")==null?"Add":employeeList.get(0).get("UPLOAD_TYPE").toString();
 			List<Map<String,Object>> parallelStream =employeeList.parallelStream()
 					.map(data ->{
 						Map<String,Object> object =new LinkedHashMap<String,Object>();
@@ -370,7 +369,7 @@ public class VehicleAsynchronousProcess {
 						object.put("DateOfJoiningYear", data.get("DATE_OF_JOINING")==null?"":data.get("DATE_OF_JOINING"));
 						object.put("DateOfJoiningMonth", data.get("DATE_OF_JOIN_MONTH")==null?"":data.get("DATE_OF_JOIN_MONTH"));
 						object.put("DateOfBirth", data.get("DATE_OF_BIRTH")==null?"":data.get("DATE_OF_BIRTH"));
-						object.put("EmployeeId", data.get("EMPLOYEE_ID")==null?"":data.get("EMPLOYEE_ID"));
+						object.put("EmployeeId","");// data.get("EMPLOYEE_ID")==null?"":data.get("EMPLOYEE_ID"));
 						object.put("Address", data.get("ADDRESS")==null?"":data.get("ADDRESS"));
 						object.put("LocationId", data.get("RISK_ID")==null?"":data.get("RISK_ID"));
 						object.put("QuoteNo", data.get("QUOTE_NO")==null?"":data.get("QUOTE_NO"));
@@ -390,71 +389,18 @@ public class VehicleAsynchronousProcess {
 			request.put("SectionId", employeeList.get(0).get("SECTION_ID")==null?"":employeeList.get(0).get("SECTION_ID").toString());
 			request.put("ProductEmployeeSaveReq", parallelStream);
 			log.info("Employee count "+parallelStream.size());
-			/*Map<String,Object> object =new LinkedHashMap<String,Object>();
-			List<Map<String,Object>> list =new ArrayList<Map<String,Object>>();
-			String companyId =data.get("COMPANY_ID")==null?"":data.get("COMPANY_ID").toString();
-			String productId =data.get("PRODUCT_ID")==null?"":data.get("PRODUCT_ID").toString();
-			String refNo =data.get("REQUEST_REFERENCE_NO")==null?"":data.get("REQUEST_REFERENCE_NO").toString();
-			String rowNum =data.get("ROWNUM")==null?"":data.get("ROWNUM").toString();
-			String createdBy =data.get("CREATED_BY")==null?"":data.get("CREATED_BY").toString();
-			map.put("EmployeeName", data.get("EMPLOYEE_NAME")==null?"":data.get("EMPLOYEE_NAME"));
-			map.put("Createdby", createdBy);
-			map.put("InsuranceId", companyId);
-			map.put("OccupationDesc",data.get("OCCUPATION_DESC")==null?"":data.get("OCCUPATION_DESC"));
-			map.put("OccupationId",data.get("OCCUPATION_ID")==null?"":data.get("OCCUPATION_ID"));
-			map.put("RiskId", data.get("RISK_ID")==null?"":data.get("RISK_ID"));
-			map.put("Salary",data.get("SALARY")==null?"":data.get("SALARY"));
-			map.put("NationalityId", data.get("NATIONALITY_ID")==null?"":data.get("NATIONALITY_ID"));
-			map.put("DateOfJoiningYear", data.get("DATE_OF_JOINING")==null?"":data.get("DATE_OF_JOINING"));
-			map.put("DateOfJoiningMonth", data.get("DATE_OF_JOIN_MONTH")==null?"":data.get("DATE_OF_JOIN_MONTH"));
-			map.put("DateOfBirth", data.get("DATE_OF_BIRTH")==null?"":data.get("DATE_OF_BIRTH"));
-			map.put("EmployeeId", data.get("EMPLOYEE_ID")==null?"":data.get("EMPLOYEE_ID"));
-			map.put("Address", data.get("ADDRESS")==null?"":data.get("ADDRESS"));
-			map.put("LocationId", data.get("RISK_ID")==null?"":data.get("RISK_ID"));
-			map.put("QuoteNo", data.get("QUOTE_NO")==null?"":data.get("QUOTE_NO"));
-			map.put("RequestReferenceNo", "EMP-05075");
-			map.put("SectionId", data.get("SECTION_ID")==null?"":data.get("SECTION_ID"));
-			list.add(map);
-			
-			object.put("Createdby", createdBy);
-			object.put("EmpcountSIvalidYN", "Y");
-			object.put("ExcelUploadYN", "N");
-			object.put("InsuranceId", companyId);
-			object.put("ProductId", productId);
-			object.put("QuoteNo", data.get("QUOTE_NO")==null?"":data.get("QUOTE_NO"));
-			object.put("RequestReferenceNo", refNo);
-			object.put("SectionId", data.get("SECTION_ID")==null?"":data.get("SECTION_ID"));
-			object.put("ProductEmployeeSaveReq", list);
-			
-			String validationReq =print.toJson(object);
-			log.info("createEmployee || validation request "+validationReq);
-			MediaType mediaType =MediaType.parse("application/json");
-			String employeeSaveReq ="";
-			// call validation api
-			Map<String,Object> validationRes =callApi(validationReq, auth, mediaType, employeeValidationApi);
-			@SuppressWarnings("unchecked")
-			List<Map<String,Object>> errors =validationRes.get("ErrorMessage")==null?null:(List<Map<String,Object>>)validationRes.get("ErrorMessage");
-			if(CollectionUtils.isEmpty(errors)) {
-				// call saveemployee api
-				object.replace("ExcelUploadYN","N","Y");
-				employeeSaveReq =print.toJson(object);
-				log.info("createEmployee ||employeeSaveRequest "+employeeSaveReq);
-				Map<String,Object> apiRes =callApi(employeeSaveReq, auth, mediaType, employeeSaveApi);
-				log.info("createEmployee || response "+apiRes);
-				String apiResponse =print.toJson(apiRes);
-				ewayEmployeeRepo.updateEmployeeStatus("Y", null, apiResponse,employeeSaveReq,"Y",companyId, productId, refNo, rowNum);
-			}else {
-				String errorRes =print.toJson(errors);
-				ewayEmployeeRepo.updateEmployeeStatus("Y", errorRes, null,employeeSaveReq,"E",companyId, productId, refNo, rowNum);
-			}
-            */
 			String apiRequest =print.toJson(request);
-			//log.info("createEmployee ||employeeSaveRequest "+apiRequest);
-			System.out.println("Employee creation Start Time"+LocalDateTime.now());
-			apiResponse=callApi(apiRequest, auth, mediaType, employeeSaveApi);
-			System.out.println("Employee creation End Time"+LocalDateTime.now());
-			log.info("createEmployee ||employeeSaveRequest "+print.toJson(apiRequest));
-			ewayEmployeeRepo.updateEmployeeStatus("Y", "", null,"",request.get("InsuranceId").toString(), 
+			log.info("createEmployee ||employeeSaveRequest "+apiRequest);
+			apiResponse=callApi(apiRequest, auth, mediaType, employeeMergeApi);
+			log.info("createEmployee ||employeeSaveResponse "+apiResponse);
+			List<Map<String,Object>> errors =apiResponse.get("ErrorMessage")==null?null:(List<Map<String,Object>>)apiResponse.get("ErrorMessage");
+			String status ="N";
+			if(CollectionUtils.isEmpty(errors))
+				status ="Y";
+			else
+				status ="N";
+			
+			ewayEmployeeRepo.updateEmployeeStatus(status, "", null,"",request.get("InsuranceId").toString(), 
 					request.get("ProductId").toString(), request.get("RequestReferenceNo").toString());
 		}catch (Exception e) {
 			log.error(e);
@@ -499,6 +445,54 @@ public class VehicleAsynchronousProcess {
 			e.printStackTrace();
 		}
 		return CompletableFuture.completedFuture(result);
+	}
+
+	public Map<String,Object> createPassenger(List<Map<String, Object>> list,String auth) {
+		Map<String,Object> apiResponse =null;
+		try {
+			LinkedHashMap<String,Object> map =new LinkedHashMap<String,Object>();
+			List<LinkedHashMap<String,String>> passengerList =list.parallelStream().map(d ->{
+				LinkedHashMap<String,String> data =new LinkedHashMap<String,String>();
+				data.put("Dob", d.get("DATE_OF_BIRTH")==null?"":d.get("DATE_OF_BIRTH").toString()); 
+				String gender =d.get("GENDER")==null?"M":d.get("GENDER").toString(); 
+				data.put("GenderId", "Male".equalsIgnoreCase(gender)?"M":"F"); 
+				data.put("Nationality", d.get("NATIONALITY_ID")==null?"TZA":d.get("NATIONALITY_ID").toString()); 
+				data.put("PassengerFirstName", d.get("FIRST_NAME")==null?"":d.get("FIRST_NAME").toString()); 
+				data.put("PassengerLastName", d.get("LAST_NAME")==null?"":d.get("LAST_NAME").toString()); 
+				data.put("PassportNo",  d.get("PASSPORT_NO")==null?"":d.get("PASSPORT_NO").toString()); 
+				data.put("RelationId", d.get("PASS_RELATION_ID")==null?"":d.get("PASS_RELATION_ID").toString()); 
+				return data;
+			}).collect(Collectors.toList());
+			
+			String productId =list.get(0).get("PRODUCT_ID")==null?"":list.get(0).get("PRODUCT_ID").toString();
+			String quoteNo =list.get(0).get("QUOTE_NO")==null?"":list.get(0).get("QUOTE_NO").toString();
+			String requestRefNo=list.get(0).get("REQUEST_REFERENCE_NO")==null?"":list.get(0).get("REQUEST_REFERENCE_NO").toString();
+			String companyId =list.get(0).get("COMPANY_ID")==null?"":list.get(0).get("COMPANY_ID").toString();
+			String createdBy =list.get(0).get("CREATED_BY")==null?"":list.get(0).get("CREATED_BY").toString();
+			map.put("CreatedBy", createdBy);
+			map.put("QuoteNo", quoteNo);
+			map.put("PassengerList", passengerList);
+			log.info("Employee count "+passengerList.size());
+			String apiRequest =print.toJson(map);
+			log.info("createPassenger ||passengerSaveRequest "+apiRequest);
+			apiResponse=callApi(apiRequest, auth, mediaType, travelSaveApi);
+			log.info("createPassenger ||passenger SaveResponse "+apiResponse);
+			List<Map<String,Object>> errors =apiResponse.get("ErrorMessage")==null?null:(List<Map<String,Object>>)apiResponse.get("ErrorMessage");
+			String status ="N";
+			if(CollectionUtils.isEmpty(errors))
+				status ="Y";
+			else
+				status ="N";
+			
+			ewayEmployeeRepo.updateEmployeeStatus(status, "", null,"",companyId, 
+					productId, requestRefNo);
+
+		}catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+		}
+		return apiResponse ;
+		
 	}
 	
 }

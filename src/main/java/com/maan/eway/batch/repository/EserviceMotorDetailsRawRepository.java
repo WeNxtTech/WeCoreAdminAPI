@@ -174,14 +174,20 @@ public interface EserviceMotorDetailsRawRepository  extends JpaRepository<Eservi
 	
 	@Modifying
 	@Transactional
-	@Query("delete from ProductEmployeeDetails p where p.quoteNo=?1")
-	Integer deleteProductEmployeeDetails(String quoteNo);
+	@Query("delete from ProductEmployeeDetails p where p.requestReferenceNo=?1")
+	Integer deleteProductEmployeeDetails(String requestReferenceNo);
 	
 	
 	@Modifying
 	@Transactional
-	@Query(value="delete from EwayEmplyeeDetailRaw r where r.requestReferenceNo=:requestReferenceNo and r.quoteNo=:quoteNo")
-	Integer deleteProductEmployeeDetails(@Param("requestReferenceNo") String reNo,@Param("quoteNo") String quoteNo);
+	@Query(value="delete from EwayEmplyeeDetailRaw r where r.requestReferenceNo=:requestReferenceNo")
+	Integer deleteRawEmployeeDetails(@Param("requestReferenceNo") String reNo);
+
+
+	@Modifying
+	@Transactional
+	@Query(value="DELETE FROM Travel_Passenger_Details WHERE REQUEST_REFERENCE_NO=:refNo",nativeQuery=true)
+	Integer deletePassengerDetails(@Param("refNo")String requestReferenceNo);
 	
 }
 	

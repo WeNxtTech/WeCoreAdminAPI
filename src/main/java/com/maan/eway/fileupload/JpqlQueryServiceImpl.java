@@ -53,7 +53,7 @@ public class JpqlQueryServiceImpl {
 				factorId =StringUtils.isBlank(sectionMaster.get(0).getFactorTypeId().toString())?"":sectionMaster.get(0).getFactorTypeId().toString();
 				log.info("FactorTypeId : "+factorId);
 				query=em.createQuery("select f from FactorTypeDetails f where f.companyId=:companyId and f.productId=:productId and f.factorTypeId=:factorTypeId and sysdate() between effectiveDateStart and effectiveDateEnd"
-						+ " and f.amendId =(select max(amendId) from FactorTypeDetails where companyId=f.companyId and productId=f.productId and factorTypeId=f.factorTypeId and  sysdate() between effectiveDateStart and effectiveDateEnd ) order by columnsId desc");
+						+ " and f.amendId =(select max(amendId) from FactorTypeDetails where companyId=f.companyId and productId=f.productId and factorTypeId=f.factorTypeId and  sysdate() between effectiveDateStart and effectiveDateEnd ) order by columnsId asc");
 				query.setParameter("companyId", req.getCompanyId());
 				query.setParameter("productId", Integer.valueOf(req.getProductId()));
 				query.setParameter("factorTypeId", Integer.valueOf(factorId));
@@ -116,7 +116,7 @@ public class JpqlQueryServiceImpl {
 		try {
 			query=em.createQuery("select f from FactorTypeDetails f where f.companyId=:companyId and f.productId=:productId and f.factorTypeId=:factorTypeId"
 					+ " and sysdate() between f.effectiveDateStart and f.effectiveDateEnd and f.amendId=(select max(amendId) from FactorTypeDetails where "
-					+ " companyId=f.companyId and productId=f.productId and factorTypeId=f.factorTypeId and ratingFieldId=f.ratingFieldId) order by f.columnsId desc");
+					+ " companyId=f.companyId and productId=f.productId and factorTypeId=f.factorTypeId and ratingFieldId=f.ratingFieldId) order by f.columnsId asc");
 		
 			query.setParameter("companyId", req.getInsuranceId());
 			query.setParameter("productId", Integer.valueOf(req.getProductId()));

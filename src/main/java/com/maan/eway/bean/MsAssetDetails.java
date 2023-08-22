@@ -473,5 +473,8 @@ public class MsAssetDetails implements Serializable {
 
 	@Column(name = "MONEY_IN_PREMISES_LC")
 	private BigDecimal moneyInPremisesLc;
+	
+    @Column(name="LOADING_PERCENT")
+    private BigDecimal     loadingPercent;    
 
 }

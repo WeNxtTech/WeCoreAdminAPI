@@ -12,17 +12,26 @@
 
 package com.maan.eway.bean;
 
+import java.io.Serializable;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
-import lombok.*;
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.List;
-
-import java.util.Date;
-import javax.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 
 
@@ -43,7 +52,7 @@ import javax.persistence.*;
 @DynamicUpdate
 @Builder
 @Table(name="one_time_table_details")
-
+@IdClass(OneTimeTableDetailsId.class)
 
 public class OneTimeTableDetails implements Serializable {
  
@@ -53,7 +62,16 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="PARENT_ID", nullable=false)
     private Integer    parentId ;
+    
+    @Id
+    @Column(name="AMEND_ID", nullable=false)
+    private Integer    amendId ;
+    
+    @Id
+    @Column(name="COMPANY_ID", nullable=false, length=300)
+    private String     companyId ;
 
+    
     //--- ENTITY DATA FIELDS 
     @Column(name="ITEM_ID", nullable=false)
     private Integer    itemId ;
@@ -76,6 +94,26 @@ private static final long serialVersionUID = 1L;
     @Temporal(TemporalType.DATE)
     @Column(name="ENTRY_DATE")
     private Date       entryDate ;
+    
+
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EFFECTIVE_DATE_START")
+    private Date       effectiveDateStart ;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EFFECTIVE_DATE_END")
+    private Date       effectiveDateEnd ;
+
+    @Column(name="CREATED_BY")
+    private String     createdBy ;
+
+    @Column(name="UPDATED_BY", length=100)
+    private String     updatedBy ;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="UPDATED_DATE")
+    private Date  updatedDate ;
 
 
     //--- ENTITY LINKS ( RELATIONSHIP )

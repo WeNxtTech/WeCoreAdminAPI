@@ -7,13 +7,29 @@ package com.maan.eway.master.service;
 
 import java.util.List;
 
+import com.maan.eway.error.Error;
 import com.maan.eway.master.req.ColumnNameDropDownlReq;
+import com.maan.eway.master.req.GetAllOneTimeTableDetailsReq;
+import com.maan.eway.master.req.GetOneTimeTableDetailsReq;
+import com.maan.eway.master.req.InsertOneTimeTableReq;
+import com.maan.eway.master.res.GetAllOneTimeTableDetailsRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.SuccessRes2;
 
 public interface OneTimeTableDetailsService  {
 
 	List<DropDownRes> tableName();
 
 	List<DropDownRes> columnName(ColumnNameDropDownlReq req);
+
+	List<GetAllOneTimeTableDetailsRes> getAllOneTimeTableDetails(GetAllOneTimeTableDetailsReq req);
+
+	GetAllOneTimeTableDetailsRes getOneTimeTableDetails(GetOneTimeTableDetailsReq req);
+
+	List<GetAllOneTimeTableDetailsRes> getActiveOneTimeTableDetails(GetAllOneTimeTableDetailsReq req);
+
+	List<Error> insertOneTimeTableVali(InsertOneTimeTableReq req);
+
+	SuccessRes2 insertOneTimeTable(InsertOneTimeTableReq req);
 
 }

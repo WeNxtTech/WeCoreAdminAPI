@@ -28,7 +28,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping("/master")
+@RequestMapping("/dropdown")
 @Api(tags = "MASTER : One Time Table Details Controller", description = "API's")
 
 public class OneTimeTableDetailsController {

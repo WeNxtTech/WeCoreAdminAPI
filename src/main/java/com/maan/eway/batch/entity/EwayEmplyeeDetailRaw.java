@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 public class EwayEmplyeeDetailRaw {
 	
 	@Id
-	@Column(name ="ROWNUM")
+	@Column(name ="ROWNUM_")
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer rowNum;
 

@@ -36,7 +36,7 @@ public interface EwayEmplyeeDetailRawRepository extends JpaRepository<EwayEmplye
 	
 	@Modifying
 	@Transactional
-	@Query(value="UPDATE eway_employee_details_raw SET STATUS='E',error_desc=CONCAT(COALESCE(error_desc,'~'),'Duplicate nationalityId found',nationality_id) WHERE(company_id,product_id,request_reference_no,quote_no,nationality_id) IN (SELECT company_id,product_id,request_reference_no,quote_no,nationality_id FROM(SELECT company_id,product_id,request_reference_no,quote_no,nationality_id FROM eway_employee_details_raw WHERE company_id=?1 AND product_id=?2 AND request_reference_no=?3 AND quote_no=?4 AND STATUS ='Y' AND (api_status IS NULL OR api_status='') GROUP BY company_id,product_id,request_reference_no,quote_no,nationality_id HAVING COUNT(*)>1)X)",nativeQuery=true)
+	@Query(value="UPDATE eway_employee_details_raw SET STATUS='E',error_desc=CONCAT(COALESCE(error_desc,'~'),'Duplicate nationalityId found') WHERE(company_id,product_id,request_reference_no,quote_no,nationality_id) IN (SELECT company_id,product_id,request_reference_no,quote_no,nationality_id FROM(SELECT company_id,product_id,request_reference_no,quote_no,nationality_id FROM eway_employee_details_raw WHERE company_id=?1 AND product_id=?2 AND request_reference_no=?3 AND quote_no=?4 AND STATUS ='Y' AND (api_status IS NULL OR api_status='') GROUP BY company_id,product_id,request_reference_no,quote_no,nationality_id HAVING COUNT(*)>1)X)",nativeQuery=true)
 	Integer updateDuplicateNationalityId(Integer companyId,Integer productId,String refNo,String quoteNo);
 
 	List<EwayEmplyeeDetailRaw> findByCompanyIdAndProductIdAndRequestReferenceNoAndQuoteNoAndRiskIdAndStatusIgnoreCase(
@@ -73,7 +73,7 @@ public interface EwayEmplyeeDetailRawRepository extends JpaRepository<EwayEmplye
 	@Query(value="UPDATE eway_employee_details_raw SET STATUS='E',ERROR_DESC=CONCAT(COALESCE(error_desc,'~'),'duplicate civilId number found for this : ',civil_id) WHERE(request_reference_no,civil_id)IN (SELECT request_reference_no,civil_id FROM(SELECT a.request_reference_no,a.civil_id FROM eway_employee_details_raw a,eway_employee_details_raw b WHERE a.rownum=b.rownum AND a.company_id=b.company_id AND a.product_id=b.product_id AND a.request_reference_no =b.request_reference_no AND a.quote_no=b.quote_no AND a.company_id=?1 AND a.product_id=?2 AND a.request_reference_no=?3 AND a.quote_no=?4 GROUP BY a.request_reference_no ,a.civil_id HAVING COUNT(*) >1)X) and status='Y' and api_status is null",nativeQuery=true)
 	Integer updateDuplicateCivilId(String companyId,String productId,String refno,String quoteNo);
 
-	@Query("select count(emp) from EwayEmplyeeDetailRaw emp where emp.companyId=?1 and emp.productId=?2 and emp.requestReferenceNo=?3 and emp.status='Y' and emp.apiStatus is null ")
+	@Query(value ="select count(*) from Eway_Employee_Details_Raw emp where emp.company_Id=?1 and emp.product_Id=?2 and emp.request_Reference_No=?3 and emp.status='Y' and emp.api_Status is null",nativeQuery=true)
 	Long getCountRecords(Integer companyId, Integer productId, String requestReferenceNo);
 
 	@Modifying

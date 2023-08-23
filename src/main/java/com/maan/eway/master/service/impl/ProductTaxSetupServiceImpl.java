@@ -127,6 +127,7 @@ public class ProductTaxSetupServiceImpl implements ProductTaxSetupService {
 					// set the root class
 					Root<ProductTaxSetup> m = update.from(ProductTaxSetup.class);
 					// set update and where clause
+					
 					update.set("updatedBy", req.getCreatedBy());
 					update.set("updatedDate", entryDate);
 					update.set("effectiveDateEnd", oldEndDate);
@@ -137,6 +138,8 @@ public class ProductTaxSetupServiceImpl implements ProductTaxSetupService {
 					n4 = cb.equal(m.get("taxFor"), req.getTaxFor() );
 					n5 = cb.equal(m.get("amendId"), list.get(0).getAmendId());
 					n6 = cb.equal(m.get("productId"), req.getProductId());
+					
+					query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);
 					// perform update
 					em.createQuery(update).executeUpdate();
 					

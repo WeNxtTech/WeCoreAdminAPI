@@ -371,7 +371,7 @@ public class VehicleAsynchronousProcess {
 						object.put("DateOfBirth", data.get("DATE_OF_BIRTH")==null?"":data.get("DATE_OF_BIRTH"));
 						object.put("EmployeeId","");// data.get("EMPLOYEE_ID")==null?"":data.get("EMPLOYEE_ID"));
 						object.put("Address", data.get("ADDRESS")==null?"":data.get("ADDRESS"));
-						object.put("LocationId", data.get("RISK_ID")==null?"":data.get("RISK_ID"));
+						object.put("LocationId", data.get("LOCATION_ID")==null?"":data.get("LOCATION_ID"));
 						object.put("QuoteNo", data.get("QUOTE_NO")==null?"":data.get("QUOTE_NO"));
 						object.put("RequestReferenceNo",employeeList.get(0).get("REQUEST_REFERENCE_NO")==null?"":employeeList.get(0).get("REQUEST_REFERENCE_NO").toString());
 						object.put("SectionId", data.get("SECTION_ID")==null?"":data.get("SECTION_ID"));
@@ -472,9 +472,8 @@ public class VehicleAsynchronousProcess {
 			map.put("CreatedBy", createdBy);
 			map.put("QuoteNo", quoteNo);
 			map.put("PassengerList", passengerList);
-			log.info("Employee count "+passengerList.size());
 			String apiRequest =print.toJson(map);
-			log.info("createPassenger ||passengerSaveRequest "+apiRequest);
+			log.info("createPassenger ||passengerSaveRequest count "+passengerList.size());
 			apiResponse=callApi(apiRequest, auth, mediaType, travelSaveApi);
 			log.info("createPassenger ||passenger SaveResponse "+apiResponse);
 			List<Map<String,Object>> errors =apiResponse.get("ErrorMessage")==null?null:(List<Map<String,Object>>)apiResponse.get("ErrorMessage");

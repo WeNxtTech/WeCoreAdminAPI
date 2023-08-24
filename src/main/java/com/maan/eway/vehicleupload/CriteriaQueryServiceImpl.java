@@ -769,7 +769,11 @@ public class CriteriaQueryServiceImpl {
 			  CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 			  CriteriaUpdate<EwayEmplyeeDetailRaw> criteriaUpdate =cb.createCriteriaUpdate(EwayEmplyeeDetailRaw.class);
 			  Root<EwayEmplyeeDetailRaw> root =criteriaUpdate.from(EwayEmplyeeDetailRaw.class);
-			  Expression<String> caseCon =cb.selectCase().when(cb.isNull(root.<Integer>get("occupationId")), "Occupation id not found").otherwise(root.get("errorDesc")).as(String.class);
+			  Expression<String> caseCon =cb.selectCase()
+					  .when(cb.isNull(root.<Integer>get("occupationId")), "Occupation not found")
+					  .when(cb.isNull(root.get("locationId")), "Location Not Found")
+					  .when(cb.isNull(root.get("dateOfJoiningMonth")), "Joining Month Not Found")
+					  .otherwise(root.get("errorDesc")).as(String.class);
 			  criteriaUpdate.set(root.<String>get("errorDesc"), caseCon)
 			  .where(
 					  cb.equal(root.get("companyId"), companyId), cb.equal(root.get("productId"), productId), cb.equal(root.get("requestReferenceNo"), refNo),

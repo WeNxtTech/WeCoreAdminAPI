@@ -490,15 +490,16 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			}
 			                                            
 			
-			// For Employee validation block
+			// For Employee MASTER validation block
 			else if("14".equals(product) || "15".equals(product) || "32".equals(product)) {
 				
 				//employeeRawRepo.updateOccupationId(companyId,productId,
 						//Integer.valueOf(uploadResponse.getRiskId()),requestReferenceNo,quoteNo);
 				criteriaQuery.updateOccupationId(companyId, productId, quoteNo, requestReferenceNo);
+				employeeRawRepo.updateDateOfMonth(companyId, productId, quoteNo, requestReferenceNo);
+				employeeRawRepo.updateLocationId(requestReferenceNo);
 				criteriaQuery.updateEmpErrorDesc(companyId, productId, quoteNo, requestReferenceNo);
 				criteriaQuery.updateErrorStatus(companyId, productId, typeId, requestReferenceNo);
-				
 				employeeRawRepo.updateDuplicateNationalityId(companyId,productId,requestReferenceNo,quoteNo);
 				String sectionId =StringUtils.isBlank(uploadResponse.getSectionId())?"":uploadResponse.getSectionId();
 				Map<String,String> map =new HashMap<String,String>();

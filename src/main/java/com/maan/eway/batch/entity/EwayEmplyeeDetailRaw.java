@@ -106,6 +106,15 @@ public class EwayEmplyeeDetailRaw {
 	@Column(name ="PASS_RELATION_ID")
 	private String passRelationId;
 	
+	@Column(name ="LOCATION_ID")
+	private String locationId;
+	
+	@Column(name ="DATE_OF_JOIN_MONTH_YEAR")
+	private String dateOfJoinMothYear;
+	
+	@Column(name ="LOCATION_DESC")
+	private String locationDesc;
+	
 	@Column(name ="GENDER")
 	private String gender;
 }

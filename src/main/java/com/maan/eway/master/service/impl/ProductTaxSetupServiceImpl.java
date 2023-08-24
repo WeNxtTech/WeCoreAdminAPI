@@ -139,7 +139,7 @@ public class ProductTaxSetupServiceImpl implements ProductTaxSetupService {
 					n5 = cb.equal(m.get("amendId"), list.get(0).getAmendId());
 					n6 = cb.equal(m.get("productId"), req.getProductId());
 					
-					query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);
+					update.where(n1,n2,n3,n4,n5,n6);
 					// perform update
 					em.createQuery(update).executeUpdate();
 					

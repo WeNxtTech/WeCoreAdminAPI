@@ -19,6 +19,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
  
@@ -123,9 +124,16 @@ private static final long serialVersionUID = 1L;
     private String    textValue;
     
     @Column(name="LOADING")
-    private Integer     loading ;
-
-
+    private BigDecimal     loading ;
+    
+    @Column(name="VD_REFNO")
+    private Integer     vdRefNo ;
+    
+    @Column(name="CD_REFNO")
+    private Integer     cdRefno;
+    
+    @Column(name="MS_REFNO")
+    private Integer     msRefno ;
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

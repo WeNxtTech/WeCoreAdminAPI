@@ -694,8 +694,8 @@ public class CriteriaQueryServiceImpl {
 	   public void updateErrorStatus(Object companyId, Object productId, Object typeId, Object referenceNo) {
 		   try {
 			   CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-		        CriteriaUpdate<EserviceMotorDetailsRaw> updateQuery = criteriaBuilder.createCriteriaUpdate(EserviceMotorDetailsRaw.class);
-		        Root<EserviceMotorDetailsRaw> root = updateQuery.from(EserviceMotorDetailsRaw.class);
+		        CriteriaUpdate<EwayEmplyeeDetailRaw> updateQuery = criteriaBuilder.createCriteriaUpdate(EwayEmplyeeDetailRaw.class);
+		        Root<EwayEmplyeeDetailRaw> root = updateQuery.from(EwayEmplyeeDetailRaw.class);
 		        //Set the status column based on the error_desc value using another CASE expression
 		        updateQuery.set(
 		            root.<String>get("status"),

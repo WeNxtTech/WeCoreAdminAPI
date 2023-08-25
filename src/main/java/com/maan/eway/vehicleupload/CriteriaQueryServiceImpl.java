@@ -777,7 +777,7 @@ public class CriteriaQueryServiceImpl {
 			  criteriaUpdate.set(root.<String>get("errorDesc"), caseCon)
 			  .where(
 					  cb.equal(root.get("companyId"), companyId), cb.equal(root.get("productId"), productId), cb.equal(root.get("requestReferenceNo"), refNo),
-					  cb.equal(root.get("status"), "Y"), cb.isNull(root.get("apiStatus")),cb.equal(root.get("quoteNo"), quoteNo)
+					  cb.equal(root.get("status"), "Y"), cb.or(cb.isNull(root.get("apiStatus")),cb.isNull(root.get("apiStatus"))),cb.equal(root.get("quoteNo"), quoteNo)
 					 
 					);
 			  entityManager.createQuery(criteriaUpdate).executeUpdate();

@@ -400,7 +400,7 @@ public class VehicleAsynchronousProcess {
 			else
 				status ="N";
 			
-			ewayEmployeeRepo.updateEmployeeStatus(status, "", null,"",request.get("InsuranceId").toString(), 
+			ewayEmployeeRepo.updateEmployeeStatus(status, null, null,null,request.get("InsuranceId").toString(), 
 					request.get("ProductId").toString(), request.get("RequestReferenceNo").toString());
 		}catch (Exception e) {
 			log.error(e);
@@ -483,7 +483,7 @@ public class VehicleAsynchronousProcess {
 			else
 				status ="N";
 			
-			ewayEmployeeRepo.updateEmployeeStatus(status, "", null,"",companyId, 
+			ewayEmployeeRepo.updateEmployeeStatus(status, null, null,null,companyId, 
 					productId, requestRefNo);
 
 		}catch (Exception e) {

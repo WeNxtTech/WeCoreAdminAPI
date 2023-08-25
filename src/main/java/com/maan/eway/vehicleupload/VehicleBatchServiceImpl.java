@@ -710,6 +710,42 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 					res.setMessage("FAILED");
 				}
 				
+			}else if("4".equals(req.getProductId())) {
+				List<EwayEmplyeeDetailRaw> list =new ArrayList<EwayEmplyeeDetailRaw>();
+				
+				if("E".equalsIgnoreCase(req.getStatus())) {
+					list =employeeRawRepo.findByCompanyIdAndProductIdAndRequestReferenceNoAndQuoteNoAndRiskIdAndStatusIgnoreCase(
+							Integer.valueOf(req.getCompanyId()),Integer.valueOf(req.getProductId()),req.getRequestRefNo(),
+							req.getQuoteNo(),Integer.valueOf(req.getRiskId()),req.getStatus());
+				}
+				
+				ArrayList<GetEmployeeDetailsRes> arrayList2 =new ArrayList<GetEmployeeDetailsRes>();
+				
+				if(!CollectionUtils.isEmpty(list)) {
+					list.forEach(p ->{
+						GetEmployeeDetailsRes recordsRes =GetEmployeeDetailsRes.builder()
+								.companyId(p.getCompanyId().toString())
+								.productId(p.getProductId().toString())
+								.requestRefNo(p.getRequestReferenceNo())
+								.firstName(StringUtils.isBlank(p.getFirstName())?"":p.getFirstName())
+								.lastName(StringUtils.isBlank(p.getLastName())?"":p.getLastName())
+								.passportNumber(StringUtils.isBlank(p.getPassportNo())?"":p.getPassportNo())
+								.relation(StringUtils.isBlank(p.getRelationDesc())?"":p.getRelationDesc())
+								.dateOfBirth(StringUtils.isBlank(p.getDateOfBirth())?"":p.getDateOfBirth())
+								.status(p.getStatus())
+								.errorDesc(StringUtils.isBlank(p.getErrorDesc())?"":p.getErrorDesc())
+								.rowNum(p.getRowNum().toString())
+								.quoteNo(p.getQuoteNo())
+								.riskId(p.getRiskId().toString())
+								.build();	
+						arrayList2.add(recordsRes);
+					});
+					res.setCommonResponse(arrayList2);
+					res.setMessage("SUCCESS");
+				}else {
+					res.setCommonResponse(null);
+					res.setMessage("FAILED");
+				}
 			}
 		}catch (Exception e) {
 			log.error(e);

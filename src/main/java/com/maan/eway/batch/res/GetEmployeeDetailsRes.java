@@ -58,7 +58,18 @@ public class GetEmployeeDetailsRes {
 	@JsonProperty("RiskId")
 	private String riskId;
 	
-
+	@JsonProperty("FirstName")
+	private String firstName;
+	
+	@JsonProperty("LastName")
+	private String lastName;
+	
+	@JsonProperty("PassportNumber")
+	private String passportNumber;
+	
+	@JsonProperty("Relation")
+	private String relation;
+	
 	@JsonProperty("DateOfJoiningMonth")
 	private String dateOfJoiningMonth;
 }

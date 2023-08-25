@@ -770,9 +770,9 @@ public class CriteriaQueryServiceImpl {
 			  CriteriaUpdate<EwayEmplyeeDetailRaw> criteriaUpdate =cb.createCriteriaUpdate(EwayEmplyeeDetailRaw.class);
 			  Root<EwayEmplyeeDetailRaw> root =criteriaUpdate.from(EwayEmplyeeDetailRaw.class);
 			  Expression<String> caseCon =cb.selectCase()
-					  .when(cb.isNull(root.<Integer>get("occupationId")), "Occupation not found")
-					  .when(cb.isNull(root.get("locationId")), "Location Not Found")
-					  .when(cb.isNull(root.get("dateOfJoiningMonth")), "Joining Month Not Found")
+					  .when(cb.isNull(root.<Integer>get("occupationId")), "Please enter valid Occupation")
+					  .when(cb.isNull(root.get("locationId")), "Please enter valid Location")
+					  .when(cb.isNull(root.get("dateOfJoiningMonth")), "Pleae enter valid Joining Period")
 					  .otherwise(root.get("errorDesc")).as(String.class);
 			  criteriaUpdate.set(root.<String>get("errorDesc"), caseCon)
 			  .where(
@@ -861,5 +861,28 @@ public class CriteriaQueryServiceImpl {
 		  return count;
 	  }
 	  
-	  
+	  public Integer updateTravelErrorDesc(Object companyId,Object productId,Object quoteNo,Object refNo) {
+		  try {
+			  CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+			  CriteriaUpdate<EwayEmplyeeDetailRaw> criteriaUpdate =cb.createCriteriaUpdate(EwayEmplyeeDetailRaw.class);
+			  Root<EwayEmplyeeDetailRaw> root =criteriaUpdate.from(EwayEmplyeeDetailRaw.class);
+			  Expression<String> caseCon =cb.selectCase()
+					  .when(cb.isNull(root.get("nationalityId")), "Please enter valid Nationality")
+					  .when(cb.isNull(root.get("passRelationId")), "Please enter valid RelationShip")
+					  .otherwise(root.get("errorDesc")).as(String.class);
+			  criteriaUpdate.set(root.<String>get("errorDesc"), caseCon)
+			  .where(
+					  cb.equal(root.get("companyId"), companyId), cb.equal(root.get("productId"), productId), cb.equal(root.get("requestReferenceNo"), refNo),
+					  cb.equal(root.get("status"), "Y"), cb.or(cb.isNull(root.get("apiStatus")),cb.isNull(root.get("apiStatus"))),cb.equal(root.get("quoteNo"), quoteNo)
+					 
+					);
+			  entityManager.createQuery(criteriaUpdate).executeUpdate();
+		  }catch (Exception e) {
+			  e.printStackTrace();
+				log.error(e);
+		}
+		 
+		  return null;
+		  
+	  }
 }

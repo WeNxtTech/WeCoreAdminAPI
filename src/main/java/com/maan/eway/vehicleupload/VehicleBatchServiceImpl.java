@@ -542,7 +542,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 				employeeRawRepo.updateDuplicatePassportNo(companyId.toString(), productId.toString(), requestReferenceNo, quoteNo);
 				employeeRawRepo.updateNationlityId(companyId, productId,requestReferenceNo);
 				criteriaQuery.updateRelationId(companyId, productId, quoteNo, requestReferenceNo);
-				criteriaQuery.updateEmpErrorDesc(companyId, productId, quoteNo, requestReferenceNo);
+				criteriaQuery.updateTravelErrorDesc(companyId, productId, quoteNo, requestReferenceNo);
 				criteriaQuery.updateErrorStatus(companyId, productId, typeId, requestReferenceNo);
 				List<EwayEmplyeeDetailRaw> passList=employeeRawRepo.findByCompanyIdAndProductIdAndRequestReferenceNo(companyId, productId, requestReferenceNo);
 				if(!CollectionUtils.isEmpty(passList)) {

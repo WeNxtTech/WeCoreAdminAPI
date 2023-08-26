@@ -372,6 +372,9 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 					eserviceRepository.deleteRawEmployeeDetails(requestReferenceNo);
 					eserviceRepository.deletePassengerDetails(requestReferenceNo);
 				}
+			}else {
+				eserviceRepository.deleteByRequestReferenceNo(requestReferenceNo,"E");
+
 			}
 			
 			JobParameters jobParameters = new JobParametersBuilder()

@@ -1,6 +1,8 @@
 package com.maan.eway.vehicleupload;
 
 
+import java.sql.Date;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -737,14 +739,17 @@ public class CriteriaQueryServiceImpl {
 			  amendId.select(cb.max(amendRoot.get("amendId"))).where(
 					  cb.equal(occuRoot.get("status"), "Y"),cb.equal(occuRoot.get("companyId"), amendRoot.get("companyId")),
 					  cb.equal(occuRoot.get("productId"), amendRoot.get("productId")),
-					  cb.equal(cb.trim(cb.upper(occuRoot.get("occupationName"))), cb.trim(cb.upper(amendRoot.get("occupationName")))),
-					  cb.between(cb.currentDate(), occuRoot.get("effectiveDateStart"), amendRoot.get("effectiveDateEnd"))
+					  cb.equal(cb.function("replace", String.class,(cb.upper(occuRoot.get("occupationName"))),cb.literal(" "),cb.literal(""))
+							  ,cb.function("replace", String.class,cb.upper(amendRoot.get("occupationName")),cb.literal(" "),cb.literal(""))),
+					  cb.between(cb.currentDate(), amendRoot.get("effectiveDateStart"), amendRoot.get("effectiveDateEnd"))
+
 					  
 					  );
 			  occupationId.select(occuRoot.get("occupationId")).where(
 					  cb.equal(occuRoot.get("status"), "Y"),cb.equal(occuRoot.get("companyId"), root.get("companyId")),
 					  cb.equal(occuRoot.get("productId"), root.get("productId")),
-					  cb.equal(cb.trim(cb.upper(occuRoot.get("occupationName"))), cb.trim(cb.upper(root.get("occupatonDesc")))),
+					  cb.equal(cb.function("replace", String.class,(cb.upper(root.get("occupatonDesc"))),cb.literal(" "),cb.literal(""))
+							  ,cb.function("replace", String.class,cb.upper(occuRoot.get("occupationName")),cb.literal(" "),cb.literal(""))),
 					  cb.between(cb.currentDate(), occuRoot.get("effectiveDateStart"), occuRoot.get("effectiveDateEnd")),
 					  cb.equal(occuRoot.get("amendId"), amendId)
 					  );
@@ -824,10 +829,10 @@ public class CriteriaQueryServiceImpl {
 			  Subquery<String> subquery = criteriaUpdate.subquery(String.class);
 			  Root<ListItemValue> subqueryRoot = subquery.from(ListItemValue.class);
 
-			  Expression<String> trimmedItemValue = criteriaBuilder.trim(criteriaBuilder.upper(subqueryRoot.get("itemValue")));
-			  Expression<String> trimmedRelationDesc = criteriaBuilder.trim(criteriaBuilder.upper(root.get("relationDesc")));
-			  Expression<String> trimmedParam1 = criteriaBuilder.trim(criteriaBuilder.upper(subqueryRoot.get("param1")));
-			  Expression<String> trimmedGender = criteriaBuilder.trim(criteriaBuilder.upper(criteriaBuilder.substring(root.get("gender"), 1, 1)));
+			  Expression<String> trimmedItemValue = criteriaBuilder.function("replace", String.class,(criteriaBuilder.upper(subqueryRoot.get("itemValue"))),criteriaBuilder.literal(" "),criteriaBuilder.literal(""));
+			  Expression<String> trimmedRelationDesc = criteriaBuilder.function("replace", String.class,(criteriaBuilder.upper(root.get("relationDesc"))),criteriaBuilder.literal(" "),criteriaBuilder.literal(""));
+			  Expression<String> trimmedParam1 = criteriaBuilder.function("replace", String.class,(criteriaBuilder.upper(subqueryRoot.get("param1"))),criteriaBuilder.literal(" "),criteriaBuilder.literal(""));
+			  Expression<String> trimmedGender = criteriaBuilder.function("replace", String.class,(criteriaBuilder.upper(criteriaBuilder.substring(root.get("gender"), 1, 1))),criteriaBuilder.literal(" "),criteriaBuilder.literal(""));
 
 			  subquery.select(subqueryRoot.get("itemCode"))
 			          .where(

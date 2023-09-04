@@ -15,6 +15,9 @@ public class BrokerCustCodeRes {
 
 	@JsonProperty("CustomerCode")
 	private String customerCode;
+	
+	@JsonProperty("CustomerName")
+	private String customerName;
 
 	@JsonProperty("Status")
 	private String status;

@@ -283,6 +283,7 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 						res.setCode(data.getBrokerBranchCode());
 						res.setCodeDesc(data.getBrokerBranchName());
 						res.setCustomerCode(data.getCustomerCode());
+						res.setCustomerName(data.getCustomerName());
 						resList.add(res);
 						
 					}

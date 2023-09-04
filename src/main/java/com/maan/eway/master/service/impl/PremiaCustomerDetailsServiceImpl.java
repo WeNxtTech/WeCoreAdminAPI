@@ -51,6 +51,7 @@ import com.maan.eway.master.res.PremiaCustomerDetailsRes;
 import com.maan.eway.master.service.PremiaCustomerDetailsService;
 import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.PremiaCustomerDetailsRepository;
+import com.maan.eway.res.BrokerCustCodeRes;
 import com.maan.eway.res.CustomerDetailsCriteriaRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
@@ -272,15 +273,16 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 	}
 
 	@Override
-	public List<DropDownRes> getBrokerBranches(PremiaDropDownReq req) {
-		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+	public List<BrokerCustCodeRes> getBrokerBranches(PremiaDropDownReq req) {
+		List<BrokerCustCodeRes> resList = new ArrayList<BrokerCustCodeRes>();
 			try {
 				List<LoginBranchMaster> lb = lbRepo.findByAgencyCodeAndStatusAndBranchCodeAndEffectiveDateStartLessThanEqual(Integer.valueOf(req.getBrokerCode()) , "Y" ,req.getBranchCode(), new Date());
 					for (LoginBranchMaster data : lb ) {
 						// Response 
-						DropDownRes res = new DropDownRes(); 
+						BrokerCustCodeRes res = new BrokerCustCodeRes(); 
 						res.setCode(data.getBrokerBranchCode());
 						res.setCodeDesc(data.getBrokerBranchName());
+						res.setCustomerCode(data.getCustomerCode());
 						resList.add(res);
 						
 					}
@@ -291,6 +293,72 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 					return null;
 					}
 	 		return resList;
+		}
+
+	@Override
+	public List<PremiaCustomerDetailsRes> searchPremiaBrokerCustomerCode(PremiaDropDownReq req) {
+		List<PremiaCustomerDetailsRes> res = new ArrayList<PremiaCustomerDetailsRes>();
+//		List<PremiaCustomerDetailsCriteriaRes> resList=new ArrayList<PremiaCustomerDetailsCriteriaRes>();
+			Long orderId = 0L ;
+			try {
+				if(StringUtils.isNotBlank(req.getBranchCode()) ){
+						List<PremiaCustomerDetails> customerDetailsList=new ArrayList<PremiaCustomerDetails>(); 
+						
+						CriteriaBuilder cb = em.getCriteriaBuilder();
+						CriteriaQuery<PremiaCustomerDetails> query = cb.createQuery(PremiaCustomerDetails.class);
+						
+						Root<PremiaCustomerDetails> c = query.from(PremiaCustomerDetails.class);
+						
+						query.select( c
+								);
+					
+						// Order By
+						List<Order> orderList = new ArrayList<Order>();
+					    orderList.add(cb.asc(c.get("customerCode")));
+					    
+						// Where 
+		//			    Predicate n1 = cb.equal(c.get("customerAttachedTo"),agencyCode);
+		//				Predicate n2 = cb.equal(c.get("customerAttachedTo"), null);
+		//				Predicate n3 = cb.or(n1,n2);
+					    Predicate n3 = cb.equal(c.get("companyId"),req.getCompanyId());
+						Predicate n4 = cb.like(c.get("customerCode"),"%" + req.getSearchvalue() + "%" ) ;
+						Predicate n5 = cb.like(cb.lower(c.get("customerName")),"%" + req.getSearchvalue().toLowerCase() + "%" ) ;
+						Predicate n6 = cb.or(n4,n5);
+						Predicate n7 = cb.equal(c.get("status"),"Y");
+						Predicate n8 = cb.equal(c.get("branchCode"),req.getBranchCode());
+					//	Predicate n9 = c.get("customerType").in("001");
+						query.where(n3,n6,n7,n8).orderBy(orderList);
+						
+						// Get Result
+						TypedQuery<PremiaCustomerDetails> result = em.createQuery(query);
+						customerDetailsList = result.getResultList();
+						
+					//	customerDetailsList=whatsappRepo.customerDetailsList(req.getDivisioncode(),req.getSearchvalue()+"%",req.getLoginid());
+						if(customerDetailsList.size()>0 && customerDetailsList!=null) {
+							for (PremiaCustomerDetails data : customerDetailsList) {
+								// Response 
+								orderId = orderId + 1 ;
+								PremiaCustomerDetailsRes resList = new PremiaCustomerDetailsRes();
+								resList.setCustomercode(data.getCustomerCode());
+								resList.setCustomername(data.getCustomerName());
+								resList.setBrokerBranchCode(data.getBranchCode());
+								resList.setOrderId(orderId);
+								res.add(resList);
+							}
+						}else {
+							res = new ArrayList<PremiaCustomerDetailsRes>();
+							PremiaCustomerDetailsRes errRes = new PremiaCustomerDetailsRes();
+							errRes.setCustomername("No Record Found");
+							res.add(errRes);
+						}
+					
+				}
+			}catch(Exception e) {
+					e.printStackTrace();
+					log.info("Exception is --->"+e.getMessage());
+					return null;
+					}
+	 		return res;
 		}
 		
 }

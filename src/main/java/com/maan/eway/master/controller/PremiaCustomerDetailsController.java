@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.maan.eway.master.req.PremiaDropDownReq;
 import com.maan.eway.master.res.PremiaCustomerDetailsRes;
 import com.maan.eway.master.service.PremiaCustomerDetailsService;
+import com.maan.eway.res.BrokerCustCodeRes;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.service.PrintReqService;
@@ -92,7 +93,30 @@ public class PremiaCustomerDetailsController {
 		CommonRes data = new CommonRes();
 
 		// Search
-		List<DropDownRes> res = service.getBrokerBranches(req);
+		List<BrokerCustCodeRes> res = service.getBrokerBranches(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
+	@PostMapping("/search/premiabrokercustomercode")
+	@ApiOperation(value = "This method is Search Premia ")
+
+	public ResponseEntity<CommonRes> searchPremiaBrokerCustomerCode(@RequestBody  PremiaDropDownReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+
+		// Search
+		List<PremiaCustomerDetailsRes> res = service.searchPremiaBrokerCustomerCode(req);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());

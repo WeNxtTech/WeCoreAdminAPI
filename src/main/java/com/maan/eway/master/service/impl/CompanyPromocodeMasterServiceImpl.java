@@ -585,9 +585,9 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 			
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("companyId"), companyId);
-			Predicate n3 = cb.equal(b.get("companyId"), "99999");
-			Predicate n4 = cb.or(n2,n3);
-			query.where(n1,n2,n4).orderBy(orderList);
+		//	Predicate n3 = cb.equal(b.get("companyId"), "99999");
+		//	Predicate n4 = cb.or(n2,n3);
+			query.where(n1,n2).orderBy(orderList);
 			
 			// Get Result
 		TypedQuery<CompanyPromocodeMaster> result = em.createQuery(query);

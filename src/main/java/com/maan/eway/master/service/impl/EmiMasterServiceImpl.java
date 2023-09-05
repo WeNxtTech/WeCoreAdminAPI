@@ -381,9 +381,9 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("companyId"), companyId);
-			Predicate n3 = cb.equal(b.get("companyId"), "99999");
-			Predicate n4 = cb.or(n2,n3);
-			query.where(n1,n2,n4).orderBy(orderList);
+//			Predicate n3 = cb.equal(b.get("companyId"), "99999");
+//			Predicate n4 = cb.or(n2,n3);
+			query.where(n1,n2).orderBy(orderList);
 			
 			// Get Result
 		TypedQuery<EmiMaster> result = em.createQuery(query);
@@ -502,9 +502,9 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
 			Predicate n4 = cb.equal(b.get("emiId"), req.getEmiId());
-			Predicate n6 = cb.equal(b.get("companyId"), "99999");
-			Predicate n7 = cb.or(n2,n6);
-			query.where(n1,n4,n7).orderBy(orderList);
+//			Predicate n6 = cb.equal(b.get("companyId"), "99999");
+//			Predicate n7 = cb.or(n2,n6);
+			query.where(n1,n4,n2).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<EmiMaster> result = em.createQuery(query);
@@ -562,10 +562,10 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
-			Predicate n3 = cb.equal(b.get("companyId"), "99999");
-			Predicate n5 = cb.or(n3,n2);
+//			Predicate n3 = cb.equal(b.get("companyId"), "99999");
+//			Predicate n5 = cb.or(n3,n2);
 			Predicate n6 = cb.equal(b.get("productId"), req.getProductId());
-			query.where(n1,n5,n6).orderBy(orderList);
+			query.where(n1,n2,n6).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<EmiMaster> result = em.createQuery(query);
@@ -634,11 +634,11 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
-			Predicate n3 = cb.equal(b.get("companyId"), "99999");
-			Predicate n5 = cb.or(n3,n2);
+//			Predicate n3 = cb.equal(b.get("companyId"), "99999");
+//			Predicate n5 = cb.or(n3,n2);
 			Predicate n4 = cb.equal(b.get("status"), "Y");
 			Predicate n6 = cb.equal(b.get("productId"), req.getProductId());
-			query.where(n1,n5,n4,n6).orderBy(orderList);
+			query.where(n1,n2,n4,n6).orderBy(orderList);
 			
 			
 			// Get Result
@@ -697,10 +697,10 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("emiId"), Integer.valueOf(req.getEmiId()));
 			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
-			Predicate n4 = cb.equal(b.get("companyId"), "99999");
-			Predicate n5 = cb.or(n3,n4);
+//			Predicate n4 = cb.equal(b.get("companyId"), "99999");
+//			Predicate n5 = cb.or(n3,n4);
 			
-			query.where(n1,n2,n5).orderBy(orderList);
+			query.where(n1,n2,n3).orderBy(orderList);
 			
 			// Get Result 
 			TypedQuery<EmiMaster> result = em.createQuery(query);

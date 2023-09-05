@@ -319,9 +319,9 @@ public List<Error> validateCompanyProrata(CompanyProrataSaveReq req) {
 			
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("insuranceid"), insuranceid);
-			Predicate n3 = cb.equal(b.get("insuranceid"), "99999");
-			Predicate n4 = cb.or(n2,n3);
-			query.where(n1,n2,n4).orderBy(orderList);
+		//	Predicate n3 = cb.equal(b.get("insuranceid"), "99999");
+		//	Predicate n4 = cb.or(n2,n3);
+			query.where(n1,n2).orderBy(orderList);
 			
 			// Get Result
 		TypedQuery<CompanyProrataMaster> result = em.createQuery(query);
@@ -601,11 +601,11 @@ public List<Error> validateCompanyProrata(CompanyProrataSaveReq req) {
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n3 = cb.equal(b.get("insuranceid"), req.getCompanyId());
 			Predicate n4 = cb.equal(b.get("sno"), req.getSno());
-			Predicate n5 = cb.equal(b.get("insuranceid"), "99999");
-			Predicate n6 = cb.or(n3,n5);
+		//	Predicate n5 = cb.equal(b.get("insuranceid"), "99999");
+		//	Predicate n6 = cb.or(n3,n5);
 			Predicate n7 = cb.equal(b.get("productid"), req.getProductId() );
 					
-			query.where(n1,n4,n6,n7).orderBy(orderList);
+			query.where(n1,n4,n3,n7).orderBy(orderList);
 	
 			// Get Result 
 			TypedQuery<CompanyProrataMaster> result = em.createQuery(query);

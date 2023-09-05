@@ -598,7 +598,11 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 			Date today = new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
 			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
 			Date todayEnd = cal.getTime();
 			
 			// Criteria
@@ -643,7 +647,15 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 			Predicate n8 = cb.or(n4,n5);
 			Predicate n9 = cb.or(n6,n7);
 			Predicate n10 = cb.equal(c.get("itemType"),itemType);
-			query.where(n12,n2,n3,n8,n9,n10).orderBy(orderList);
+			
+			if(itemType.equalsIgnoreCase("DOCUMENT_APPLICABLE")) {
+				
+				query.where(n12,n2,n3,n9,n10,n8).orderBy(orderList);
+				
+			}else {
+			
+			query.where(n12,n2,n3,n4,n9,n10).orderBy(orderList);
+			}
 			// Get Result
 			TypedQuery<ListItemValue> result = em.createQuery(query);
 			list = result.getResultList();

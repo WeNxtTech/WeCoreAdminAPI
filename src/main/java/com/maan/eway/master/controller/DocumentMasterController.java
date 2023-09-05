@@ -175,7 +175,7 @@ public class DocumentMasterController {
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 		@PostMapping(value="/dropdown/document",produces = "application/json")
 		@ApiOperation(value="This Method is to Drop Down Document")
-		public ResponseEntity<DropdownCommonRes> getDocumentDropdown(LovDropDownReq req)
+		public ResponseEntity<DropdownCommonRes> getDocumentDropdown(@RequestBody LovDropDownReq req)
 		{
 			DropdownCommonRes data = new DropdownCommonRes();
 			List<DropDownRes> res = documentservice.getDocumentDropDown(req);

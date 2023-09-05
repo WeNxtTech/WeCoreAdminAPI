@@ -382,14 +382,14 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 			Predicate n4 = cb.equal(c.get("companyId"), insuranceId);
-			Predicate n5 = cb.equal(c.get("companyId"), "99999");
+			//Predicate n5 = cb.equal(c.get("companyId"), "99999");
 			Predicate n6 = cb.equal(c.get("branchCode"), branchCode);
 			Predicate n7 = cb.equal(c.get("branchCode"), "99999");
-			Predicate n8 = cb.or(n4, n5);
+		//	Predicate n8 = cb.or(n4, n5);
 			Predicate n9 = cb.or(n6, n7);
 			Predicate n10 = cb.equal(c.get("itemType"), itemType);
 			Predicate n11 = cb.equal(c.get("itemCode"), itemCode);
-			query.where(n13, n2, n3, n8, n9, n10, n11).orderBy(orderList);
+			query.where(n13, n2, n3, n4, n9, n10, n11).orderBy(orderList);
 			// Get Result
 			TypedQuery<ListItemValue> result = em.createQuery(query);
 			list = result.getResultList();
@@ -448,13 +448,13 @@ public synchronized List<ListItemValue> getCalcType(String insuranceId , String 
 		Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 		Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
 		Predicate n4 = cb.equal(c.get("companyId"), insuranceId);
-		Predicate n5 = cb.equal(c.get("companyId"), "99999");
+	//	Predicate n5 = cb.equal(c.get("companyId"), "99999");
 		Predicate n6 = cb.equal(c.get("branchCode"), branchCode);
 		Predicate n7 = cb.equal(c.get("branchCode"), "99999");
-		Predicate n8 = cb.or(n4,n5);
+	//	Predicate n8 = cb.or(n4,n5);
 		Predicate n9 = cb.or(n6,n7);
 		Predicate n10 = cb.equal(c.get("itemType"),itemType );
-		query.where(n12,n2,n3,n8,n9,n10).orderBy(orderList);
+		query.where(n12,n2,n3,n4,n9,n10).orderBy(orderList);
 		// Get Result
 		TypedQuery<ListItemValue> result = em.createQuery(query);
 		list = result.getResultList();
@@ -498,9 +498,9 @@ public synchronized List<ListItemValue> getCalcType(String insuranceId , String 
 		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 		//Predicate n2 = cb.equal(b.get("companyId"), companyId);
 		Predicate n3 = cb.equal(b.get("companyId"), companyId);
-		Predicate n4 = cb.equal(b.get("companyId"), "99999");
-		Predicate n5 = cb.or(n3,n4);
-		query.where(n1,n5).orderBy(orderList);
+//		Predicate n4 = cb.equal(b.get("companyId"), "99999");
+//		Predicate n5 = cb.or(n3,n4);
+		query.where(n1,n3).orderBy(orderList);
 		
 		
 		
@@ -785,11 +785,11 @@ public synchronized List<ListItemValue> getCalcType(String insuranceId , String 
 			//Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
 			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
 			Predicate n4 = cb.equal(b.get("taxId"), req.getTaxId());
-			Predicate n5 = cb.equal(b.get("companyId"), "99999");
-			Predicate n6 = cb.or(n3,n5);
+		//	Predicate n5 = cb.equal(b.get("companyId"), "99999");
+		//	Predicate n6 = cb.or(n3,n5);
 			Predicate n7 = cb.equal(b.get("productId"), req.getProductId() );
 					
-			query.where(n1,n4,n6,n7).orderBy(orderList);
+			query.where(n1,n4,n3,n7).orderBy(orderList);
 	
 			// Get Result 
 			TypedQuery<CompanyTaxSetup> result = em.createQuery(query);

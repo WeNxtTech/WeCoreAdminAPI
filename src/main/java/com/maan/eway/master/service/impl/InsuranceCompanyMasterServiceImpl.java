@@ -262,7 +262,19 @@ this.repository = repo;
 		{
 		errors.add(new Error("06", "Mobile Number", "Please Enter Mobile Number only in numbers"));
 		}
+		
+		if (StringUtils.isBlank(req.getVrnNumber())) {
+			errors.add(new Error("06", "VrnNumber", "Please Enter Vrn Number"));
+		} else if (req.getVrnNumber().length() > 100) {
+			errors.add(new Error("06", "VrnNumber", "Vrn Number under 100 VrnNumber only allowed"));
+		}
 
+		if (StringUtils.isBlank(req.getTinNumber())) {
+			errors.add(new Error("06", "TinNumber", "Please Enter Tin Number"));
+		} else if (req.getTinNumber().length() > 100) {
+			errors.add(new Error("06", "TinNumber", "Vrn Number under 100 Tin Number only allowed"));
+		}
+		
 		/*
 		if (StringUtils.isBlank(req.getRegards())) {
 			errors.add(new Error("07", "Regards", "Please Enter Company Regards"));

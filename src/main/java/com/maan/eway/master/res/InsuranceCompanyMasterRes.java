@@ -81,4 +81,10 @@ public class InsuranceCompanyMasterRes implements Serializable {
 	@JsonProperty("CountryId")
 	private String countryId;
 	
+	@JsonProperty("VrnNumber")
+	private String vrnNumber;
+	
+	@JsonProperty("TinNumber")
+	private String tinNumber;
+	
 }

@@ -17,10 +17,10 @@ public class PremiaCustomerDetailsRes {
 	private Long orderId;
 	
 	@JsonProperty("Code")
-	private String customercode;
+	private String code;
 
 	@JsonProperty("Name")
-	private String customername;
+	private String name;
 	
 	@JsonProperty("LoginId")
 	private String loginId;
@@ -30,6 +30,12 @@ public class PremiaCustomerDetailsRes {
 	
 	@JsonProperty("BrokerBrachName")
 	private String brokerBranchName;
+	
+	@JsonProperty("CustomerCode")
+	private String customerCode;
+	
+	@JsonProperty("CustomerName")
+	private String customerName;
 	
 //	@JsonProperty("CustomerTypeDesc")
 //	private String customertypedesc;

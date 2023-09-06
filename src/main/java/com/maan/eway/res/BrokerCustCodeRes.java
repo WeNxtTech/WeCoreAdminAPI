@@ -13,11 +13,11 @@ public class BrokerCustCodeRes {
 	@JsonProperty("CodeDesc")
 	private String codeDesc;
 
-	@JsonProperty("CustomerCode")
-	private String customerCode;
-	
-	@JsonProperty("CustomerName")
-	private String customerName;
+//	@JsonProperty("CustomerCode")
+//	private String customerCode;
+//	
+//	@JsonProperty("CustomerName")
+//	private String customerName;
 
 	@JsonProperty("Status")
 	private String status;

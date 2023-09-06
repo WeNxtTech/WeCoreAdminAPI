@@ -193,6 +193,16 @@ private static final long serialVersionUID = 1L;
     @Column(name="CREDIT_LIMIT", length=20)
     private BigDecimal creditLimit ;
 
+
+    @Column(name="CUSTOMER_CODE", length=100)
+    private String    customerCode;
+    
+    
+    @Column(name="CUSTOMER_NAME", length=100)
+    private String    customerName;
+
+    @Column(name="REGULATORY_CODE", length=100)
+    private String    regulatoryCode;
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

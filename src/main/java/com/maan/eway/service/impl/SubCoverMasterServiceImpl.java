@@ -503,14 +503,18 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 				Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
 				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-				effectiveDate.where(a1,a2);
+				Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
+				Predicate a6 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
+				effectiveDate.where(a1,a2,a5,a6);
 				// Effective Date End Max Filter
 				Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 				Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
 				effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
 				Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
+				Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
+				Predicate a8 = cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
 				Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-				effectiveDate2.where(a3,a4);
+				effectiveDate2.where(a3,a4,a7,a8);
 							
 				// Where
 				Predicate n1 = cb.equal(c.get("status"),"Y");

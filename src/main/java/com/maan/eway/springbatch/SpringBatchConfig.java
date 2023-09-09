@@ -63,7 +63,7 @@ public class SpringBatchConfig {
 	    reader.setName("CSV_FILE_READER");
 	    reader.setLinesToSkip(1);
 	    
-	    @SuppressWarnings({ "rawtypes", "unchecked" })
+		@SuppressWarnings("unchecked")
 		DefaultLineMapper<FactorRateRawInsert> lineMapper = new DefaultLineMapper();
 	    DelimitedLineTokenizer tokenizer = new DelimitedLineTokenizer();
 	    tokenizer.setDelimiter(DELIMITER);

@@ -87,7 +87,7 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 				String columns =object.get("QUERY_COLUMNS").toString();
 				String factorId =object.get("FACTOR_ID").toString();
 				String defaultColumns =",Rate,CalcType,MinimumPremium,RegulatoryCode,Status";
-				String xlColumns =object.get("XL_COLUMNS").toString()+defaultColumns;
+				String xlColumns ="AgencyCode,"+object.get("XL_COLUMNS").toString()+defaultColumns;
 				List<Object[][]> obj =queryService.getFactorRateDetails(req, columns, factorId);
 				
 					

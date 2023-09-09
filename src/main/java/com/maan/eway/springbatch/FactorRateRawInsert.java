@@ -196,6 +196,8 @@ public class FactorRateRawInsert {
 	    @Column(name="ERROR_STATUS", length=20)
 	    private String   errorStatus;
     
-   
+	    @Column(name="XL_AGENCY_CODE", length=20)
+	    private String   xlAgencyCode;
+    
 
 }

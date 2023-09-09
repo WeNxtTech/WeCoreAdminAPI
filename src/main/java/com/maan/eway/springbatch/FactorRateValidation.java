@@ -61,6 +61,7 @@ public class FactorRateValidation {
 					factor.setParam10(p.getParam10()==null?"0":new BigDecimal(p.getParam10()).toPlainString());
 					factor.setParam11(p.getParam11()==null?"0":new BigDecimal(p.getParam11()).toPlainString());
 					factor.setParam12(p.getParam12()==null?"0":new BigDecimal(p.getParam12()).toPlainString());
+					factor.setXlAgencyCode(StringUtils.isBlank(p.getXlAgencyCode())?"":p.getXlAgencyCode());
 					return factor;
 				}).collect(Collectors.toList());
 				

@@ -94,7 +94,7 @@ public class VehicleAsynchronousProcess {
 		try {
 			log.info("Thread Name :"+Thread.currentThread().getName());
 			String searchByValue =StringUtils.isBlank(rawData.getTiraSearchByDesc())?"":rawData.getTiraSearchByDesc().replaceAll("\\s", "");
-			String regNo ="RegistrationNumber".equalsIgnoreCase(searchByValue)?rawData.getSearchByData():"";
+			String regNo ="RegisterNumber".equalsIgnoreCase(searchByValue)?rawData.getSearchByData():"";
 			String chassisNo ="ChassisNumber".equalsIgnoreCase(searchByValue)?rawData.getSearchByData():"";
 			String josnString ="{\"ReqRegNumber\":\"{REG_NO}\",\"ReqChassisNumber\":\"{CHASSIS_NO}\"}";
 			String request =josnString.replace("{REG_NO}", regNo).replace("{CHASSIS_NO}", chassisNo);

@@ -67,4 +67,7 @@ public class FactorParamsInsert {
     @JsonProperty("ApiUrl" )
     private String apiUrl;
     
+    @JsonProperty("xlAgencyCode" )
+    private String xlAgencyCode;
+    
 }

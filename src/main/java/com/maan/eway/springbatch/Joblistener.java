@@ -28,8 +28,8 @@ public class Joblistener extends JobExecutionListenerSupport implements ChunkLis
 			    try {
 			    	factorData = mapper.readValue(data, SpringBatchMapperResponse.class);
 			    	tranId =factorData.getTranId();
+			    	service.updateMasterValidation(factorData);
 			    	service.updateFactorRawRecordByTranId(tranId,factorData.getDiscreteColumn(),factorData.getAuthorization());
-			    	//status =service.doMainJob(tranId,factorData.getTotalRecordsCount());
 				} catch (Exception e) {
 					service.updateBatchTransaction (tranId, e.getMessage() ,"","Failed","E");
 					e.printStackTrace();
@@ -43,7 +43,9 @@ public class Joblistener extends JobExecutionListenerSupport implements ChunkLis
 
 			}
 
-		}catch(Exception e) {e.printStackTrace();}
+		}catch(Exception e) {
+			service.updateBatchTransaction(tranId, e.getMessage() ,"Error","Error","E");
+			e.printStackTrace();}
 	}
 
 	@Override

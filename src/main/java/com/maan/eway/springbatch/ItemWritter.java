@@ -51,7 +51,7 @@ public class ItemWritter  implements ItemWriter<FactorBatchRecordRes> {
 			if(isExeute) {
 				req=mapper.map(items.get(0), FactorRateSaveReq.class);
 				amendId=service.upadateOldFactor(req);
-				itemValues=service.getListItem(req.getCompanyId(),req.getBranchCode(),"CALCULATION_TYPE");
+				itemValues=service.getListItem("99999",req.getBranchCode(),"CALCULATION_TYPE");
 				Map<String,Object> coverDetails=service.coverMasterDetails(req);
 				map.put("amend_id", amendId);
 				map.put("ListItemValue", itemValues);

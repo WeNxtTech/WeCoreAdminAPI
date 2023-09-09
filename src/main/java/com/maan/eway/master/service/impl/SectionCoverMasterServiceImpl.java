@@ -1193,8 +1193,8 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 		SimpleDateFormat sdf= new SimpleDateFormat("dd/MM/yyyy");
 		DozerBeanMapper dozerMapper = new DozerBeanMapper(); 
 		try {
-			List<ListItemValue> calcTypes = getListItem(req.getCompanyId() , req.getBranchCode() , "CALCULATION_TYPE");
-			List<ListItemValue> coverageTypes = getListItem(req.getCompanyId() , req.getBranchCode() , "COVERAGE_TYPE");
+			List<ListItemValue> calcTypes = getListItem("99999" , req.getBranchCode() , "CALCULATION_TYPE");
+			List<ListItemValue> coverageTypes = getListItem("99999" , req.getBranchCode() , "COVERAGE_TYPE");
 			List<ListItemValue> taxExcemptionType = getListItem(req.getCompanyId() , req.getBranchCode() , "TAX_EXEMPTION_TYPE");
 			Integer amendId = 0 ;
 			Date entryDate = null ;
@@ -1455,14 +1455,14 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate n12 = cb.or(n1,n11);
 			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
-		//	Predicate n4 = cb.equal(c.get("companyId"),insuranceId);
-			Predicate n5 = cb.equal(c.get("companyId"), "99999");
+			Predicate n4 = cb.equal(c.get("companyId"),insuranceId);
+		//	Predicate n5 = cb.equal(c.get("companyId"), "99999");
 			Predicate n6 = cb.equal(c.get("branchCode"),branchCode);
 			Predicate n7 = cb.equal(c.get("branchCode"), "99999");
 			//Predicate n8 = cb.or(n6,n7);
 			Predicate n9 = cb.or(n6,n7);
 			Predicate n10 = cb.equal(c.get("itemType"),itemType);
-			query.where(n12,n2,n3,n5,n9,n10).orderBy(orderList);
+			query.where(n12,n2,n3,n4,n9,n10).orderBy(orderList);
 			// Get Result
 			TypedQuery<ListItemValue> result = em.createQuery(query);
 			list = result.getResultList();

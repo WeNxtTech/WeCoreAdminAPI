@@ -198,7 +198,7 @@ public class EwaySpringBatchServiceImpl implements EwaySpringBatchService {
 				factorTypes  = result2.getResultList();
 			}
 			
-			List<ListItemValue> calcTypes =  getListItem(req.getCompanyId() , req.getBranchCode()   ,"CALCULATION_TYPE"); // listRepo.findByItemTypeAndStatus("CALCULATION_TYPE" , "Y");
+			List<ListItemValue> calcTypes =  getListItem("99999" , req.getBranchCode()   ,"CALCULATION_TYPE"); // listRepo.findByItemTypeAndStatus("CALCULATION_TYPE" , "Y");
 		//	cal.setTime(today);  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 50) ;
 		//	today = cal.getTime();
 			
@@ -331,14 +331,19 @@ public class EwaySpringBatchServiceImpl implements EwaySpringBatchService {
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			effectiveDate.where(a1,a2);
+			Predicate b1= cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
+			Predicate b2 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
+			effectiveDate.where(a1,a2,b1,b2);
+			
 			// Effective Date End Max Filter
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
 			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
 			Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-			effectiveDate2.where(a3,a4);
+			Predicate b3= cb.equal(c.get("companyId"),ocpm2.get("companyId"));
+			Predicate b4= cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
+			effectiveDate2.where(a3,a4,b3,b4);
 						
 			// Where
 			Predicate n1 = cb.equal(c.get("status"),"Y");

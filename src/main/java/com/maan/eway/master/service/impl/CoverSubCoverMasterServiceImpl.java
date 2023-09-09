@@ -913,9 +913,9 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		SectionCoverMaster saveData = new SectionCoverMaster();
 		try {
-			List<ListItemValue> calcTypes = getListItem(req.getCompanyId() , req.getBranchCode() , "CALCULATION_TYPE");
-			List<ListItemValue> coverageTypes = getListItem(req.getCompanyId() , req.getBranchCode() , "COVERAGE_TYPE");
-			List<ListItemValue> taxExcemptionType = getListItem(req.getCompanyId() , req.getBranchCode() , "TAX_EXEMPTION_TYPE");
+			List<ListItemValue> calcTypes = getListItem("99999" , req.getBranchCode() , "CALCULATION_TYPE");
+			List<ListItemValue> coverageTypes = getListItem("99999" , req.getBranchCode() , "COVERAGE_TYPE");
+			List<ListItemValue> taxExcemptionType = getListItem("99999" , req.getBranchCode() , "TAX_EXEMPTION_TYPE");
 			List<SectionCoverMaster> list = new ArrayList<SectionCoverMaster>();
 			Integer amendId = 0;
 			Date entryDate = null ;

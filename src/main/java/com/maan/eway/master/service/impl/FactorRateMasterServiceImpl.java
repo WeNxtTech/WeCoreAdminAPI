@@ -928,7 +928,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 			Integer sNo = 0 ;
 			
 			// Calc Type
-			List<ListItemValue> calcTypes =  getListItem(req.getCompanyId() , req.getBranchCode()   ,"CALCULATION_TYPE"); 
+			List<ListItemValue> calcTypes =  getListItem("99999" , req.getBranchCode()   ,"CALCULATION_TYPE"); 
 			
 			// Cover Master Details
 			Map<String,Object> coverMD = coverMasterDetails(req );

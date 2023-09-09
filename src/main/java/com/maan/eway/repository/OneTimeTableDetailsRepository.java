@@ -61,5 +61,8 @@ public interface OneTimeTableDetailsRepository  extends JpaRepository<OneTimeTab
 	List<OneTimeTableDetails> findByCompanyIdAndParentIdOrderByAmendIdDesc(String companyId, Integer valueOf);
 
 
+	OneTimeTableDetails findByItemTypeAndItemCodeAndCompanyId(String string, String inputTable, String string2);
+
+
 
 }

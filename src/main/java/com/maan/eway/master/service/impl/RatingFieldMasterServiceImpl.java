@@ -191,7 +191,7 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 			String createdBy = "" ;
 			String factorId = "";
 			
-			OneTimeTableDetails tablename = oneTimeRepo.findByItemTypeAndItemCode("ONE_TIME_TABLE",req.getInputTable());
+			OneTimeTableDetails tablename = oneTimeRepo.findByItemTypeAndItemCodeAndCompanyId("ONE_TIME_TABLE",req.getInputTable(), "99999");
 		//	OneTimeTableDetails columnname = oneTimeRepo.findByItemTypeAndItemCode(tablename.getItemValue(),req.getInputColumn());
 			if (StringUtils.isBlank(req.getRatingId())) {
 				// Save

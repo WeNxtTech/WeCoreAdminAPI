@@ -165,7 +165,7 @@ public class UtilityServiceImpl {
 			}
 			
 			int toltalNoRows=csvConvertion(request ,csvFilePath);
-			log.info("ConvertToCsvFile || toltalNoRows || :" +toltalNoRows);
+		 	log.info("ConvertToCsvFile || toltalNoRows || :" +toltalNoRows);
 			totalRecordCount=toltalNoRows;
 			//CSV File convertion end
 			request.setCsvFilePath(csvFilePath);
@@ -671,7 +671,9 @@ public class UtilityServiceImpl {
 			  AtomicInteger uniqueId =new AtomicInteger(0);
 
 			  List<FactorRateRawInsert> errorList = rawMasterRepository.findByTranIdAndStatus(tranId,"E");
+			  
 			  if(errorList.size()==0 && errorList.isEmpty()) {
+				  
 				  List<FactorRateRawInsert> list = rawMasterRepository.findByTranId(tranId);
 
 				  Map<String,List<DropDownRes>> dropDownList =new HashMap<String,List<DropDownRes>>();
@@ -765,12 +767,6 @@ public class UtilityServiceImpl {
 						 List<List<FactorRateRawInsert>> data =loadList.entrySet().stream()
 								  .map(p -> p.getValue())
 								  .collect(Collectors.toList());
-						  
-						 /*List<FactorRateRawInsert> flat = 
-								    ff.stream()
-								        .flatMap(List::stream)
-								        .collect(Collectors.toList());
-						 System.out.println("==================>"+flat.size());*/
 						  
 						processThread.asyncProcess(data, discreateColumns,auth,dropDownList);
 						

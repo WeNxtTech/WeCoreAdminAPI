@@ -14,7 +14,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -97,8 +96,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="P_WS_ERROR", length=500)
     private String     pWsError ;
 
-    @Column(name="P_WS_RESPONSE_ERROR", length=500)
-    private String     pWsResponseError ;
+    @Column(name="P_WS_RESPONSE_ERROR_DESC", length=500)
+    private String     pWsResponseErrorDesc ;
 
     @Column(name="PRODUCT", length=12)
     private String   product;

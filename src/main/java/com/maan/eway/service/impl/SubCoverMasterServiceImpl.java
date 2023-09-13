@@ -175,10 +175,16 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 			errorList.add(new Error("09", "CoverageType", "Please Select CoverageType"));
 		}
 		
-		if (StringUtils.isBlank(req.getCoverageLimit())) {
+		if (StringUtils.isBlank(req.getSumInsuredStart())) {
+			errorList.add(new Error("09", "SumInsuredStart", "Please Enter Min Sum"));
+		} else if (! req.getSumInsuredStart().matches("[0-9.]+") ) {
+			errorList.add(new Error("09", "SumInsuredStart", "Please Enter Valid Number In CoverageLimit "));
+		} else if (StringUtils.isBlank(req.getCoverageLimit())) {
 			errorList.add(new Error("09", "CoverageLimit", "Please Enter CoverageLimit"));
 		} else if (! req.getCoverageLimit().matches("[0-9.]+") ) {
 			errorList.add(new Error("09", "CoverageLimit", "Please Enter Valid Number In CoverageLimit "));
+		} else if (  Double.valueOf(req.getSumInsuredStart()) > Double.valueOf(req.getCoverageLimit()) ) {
+			errorList.add(new Error("09", "CoverageLimit", "Min Suminsured Greater Than CoverageLimit Not Allowed "));
 		}
 		
 		if (StringUtils.isBlank(req.getExcessPercent())) {
@@ -250,12 +256,13 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 			} else if (! req.getBaseRate().matches("[0-9.]+") ) {
 				errorList.add(new Error("09", "BaseRate", "Please Enter Valid Number In BaseRate"));
 			}
-			
-			if (StringUtils.isBlank(req.getSumInsuredStart())) {
-				errorList.add(new Error("09", "SumInsuredStart", "Please Enter SumInsuredStart"));
-			} else if (! req.getSumInsuredStart().matches("[0-9.]+") ) {
-				errorList.add(new Error("09", "SumInsuredStart", "Please Enter Valid Number In SumInsuredStart"));
-			} else if (StringUtils.isBlank(req.getSumInsuredEnd())) {
+//			
+//			if (StringUtils.isBlank(req.getSumInsuredStart())) {
+//				errorList.add(new Error("09", "SumInsuredStart", "Please Enter SumInsuredStart"));
+//			} else if (! req.getSumInsuredStart().matches("[0-9.]+") ) {
+//				errorList.add(new Error("09", "SumInsuredStart", "Please Enter Valid Number In SumInsuredStart"));
+//			} 
+			/*else if (StringUtils.isBlank(req.getSumInsuredEnd())) {
 				errorList.add(new Error("09", "SumInsuredEnd", "Please Enter SumInsuredEnd"));
 			} else if (! req.getSumInsuredEnd().matches("[0-9.]+") ) {
 				errorList.add(new Error("09", "SumInsuredEnd", "Please Enter Valid Number In SumInsuredEnd"));
@@ -421,6 +428,8 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 				saveData.setAmendId(amendId);
 				saveData.setCoreAppCode(req.getCoreAppCode());
 				saveData.setSubCoverYn("Y");
+				saveData.setMinSuminsured(StringUtils.isBlank(req.getSumInsuredStart())? BigDecimal.ZERO : new BigDecimal(req.getSumInsuredStart()));
+				saveData.setCoverageLimit(StringUtils.isBlank(req.getCoverageLimit())? BigDecimal.ZERO : new BigDecimal(req.getCoverageLimit()));
 				
 				// Amount Details
 			if(req.getCalcType().equalsIgnoreCase("F")  ) {
@@ -431,15 +440,15 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 				// Amount 
 				saveData.setBaseRate(StringUtils.isBlank(req.getBaseRate())? BigDecimal.ZERO :new BigDecimal(req.getBaseRate()));
 				saveData.setMinPremium(StringUtils.isBlank(req.getMinimumPremium())? BigDecimal.ZERO :new BigDecimal(req.getMinimumPremium()));
-				saveData.setMaxSuminsured(StringUtils.isBlank(req.getSumInsuredEnd())?BigDecimal.ZERO :new BigDecimal(req.getSumInsuredEnd()));
-				saveData.setMinSuminsured(StringUtils.isBlank(req.getSumInsuredStart())? BigDecimal.ZERO :new BigDecimal(req.getSumInsuredStart()));
+				//saveData.setMaxSuminsured(StringUtils.isBlank(req.getSumInsuredEnd())?BigDecimal.ZERO :new BigDecimal(req.getSumInsuredEnd()));
+				//saveData.setMinSuminsured(StringUtils.isBlank(req.getSumInsuredStart())? BigDecimal.ZERO :new BigDecimal(req.getSumInsuredStart()));
 					
 			} else {
 				
 				saveData.setBaseRate(StringUtils.isBlank(req.getBaseRate())? BigDecimal.ZERO :new BigDecimal(req.getBaseRate()));
 				saveData.setMinPremium(StringUtils.isBlank(req.getMinimumPremium())? BigDecimal.ZERO :new BigDecimal(req.getMinimumPremium()));
-				saveData.setMaxSuminsured(StringUtils.isBlank(req.getSumInsuredEnd())? BigDecimal.ZERO :new BigDecimal(req.getSumInsuredEnd()));
-				saveData.setMinSuminsured(StringUtils.isBlank(req.getSumInsuredStart())? BigDecimal.ZERO :new BigDecimal(req.getSumInsuredStart()));		
+				//saveData.setMaxSuminsured(StringUtils.isBlank(req.getSumInsuredEnd())? BigDecimal.ZERO :new BigDecimal(req.getSumInsuredEnd()));
+				//saveData.setMinSuminsured(StringUtils.isBlank(req.getSumInsuredStart())? BigDecimal.ZERO :new BigDecimal(req.getSumInsuredStart()));		
 			}
 			
 			saveData.setCoverageLimit(StringUtils.isBlank(req.getCoverageLimit())? BigDecimal.ZERO :new BigDecimal(req.getCoverageLimit()));
@@ -741,7 +750,7 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 		res.setExcessAmount(list.get(0).getExcessAmount() == null ? "" :df.format(list.get(0).getExcessAmount()));
 		res.setExcessDesc(list.get(0).getExcessDesc() == null ? "" :list.get(0).getExcessDesc());
 		res.setMinimumPremium(list.get(0).getMinPremium() == null ? "" :df.format(list.get(0).getMinPremium()));
-		res.setSumInsuredEnd(list.get(0).getMaxSuminsured() == null ? "" :df.format(list.get(0).getMaxSuminsured()));
+		res.setSumInsuredStart(list.get(0).getMinSuminsured() == null ? "" :df.format(list.get(0).getMinSuminsured()));
 		res.setBaseRate(list.get(0).getBaseRate() == null ? "" : df.format(list.get(0).getBaseRate()));
 		res.setCoverageLimit(list.get(0).getCoverageLimit() == null ? "" : df.format(list.get(0).getCoverageLimit()));
 			

@@ -424,9 +424,11 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			res.setExcessAmount(list.get(0).getExcessAmount() == null ? "" :df.format(list.get(0).getExcessAmount()));
 			res.setExcessDesc(list.get(0).getExcessDesc() == null ? "" :list.get(0).getExcessDesc());
 			res.setMinimumPremium(list.get(0).getMinPremium() == null ? "" :df.format(list.get(0).getMinPremium()));
-			res.setSumInsuredEnd(list.get(0).getMaxSuminsured() == null ? "" :df.format(list.get(0).getMaxSuminsured()));
+		//	res.setSumInsuredEnd(list.get(0).getMaxSuminsured() == null ? "" :df.format(list.get(0).getMaxSuminsured()));
+			res.setSumInsuredStart(list.get(0).getMinSuminsured() == null ? "" :df.format(list.get(0).getMinSuminsured()));
+			res.setCoverageLimit(list.get(0).getCoverageLimit() == null ? "" :df.format(list.get(0).getCoverageLimit()));
+			
 			res.setBaseRate(list.get(0).getBaseRate() == null ? "" : df.format(list.get(0).getBaseRate()));
-			res.setCoverageLimit(list.get(0).getCoverageLimit() == null ? "" : df.format(list.get(0).getCoverageLimit()));
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -802,10 +804,16 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 				errorList.add(new Error("09", "CoverageType", "Please Select CoverageType"));
 			}
 
-			if (StringUtils.isBlank(req.getCoverageLimit())) {
+			if (StringUtils.isBlank(req.getSumInsuredStart())) {
+				errorList.add(new Error("09", "SumInsuredStart", "Please Enter Min Sum"));
+			} else if (! req.getSumInsuredStart().matches("[0-9.]+") ) {
+				errorList.add(new Error("09", "SumInsuredStart", "Please Enter Valid Number In CoverageLimit "));
+			} else if (StringUtils.isBlank(req.getCoverageLimit())) {
 				errorList.add(new Error("09", "CoverageLimit", "Please Enter CoverageLimit"));
-			} else if (!req.getCoverageLimit().matches("[0-9.]+")) {
+			} else if (! req.getCoverageLimit().matches("[0-9.]+") ) {
 				errorList.add(new Error("09", "CoverageLimit", "Please Enter Valid Number In CoverageLimit "));
+			} else if (  Double.valueOf(req.getSumInsuredStart()) > Double.valueOf(req.getCoverageLimit()) ) {
+				errorList.add(new Error("09", "CoverageLimit", "Min Suminsured Greater Than CoverageLimit Not Allowed "));
 			}
 
 			if (StringUtils.isBlank(req.getExcessPercent())) {
@@ -1061,6 +1069,8 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			saveData.setMultiSelectYn(coverDetails.getMultiSelectYn());
 			saveData.setAgencyCode(StringUtils.isNotBlank(req.getAgencyCode()) ? req.getAgencyCode() : "99999") ;
 			saveData.setBranchCode(StringUtils.isNotBlank(req.getBranchCode()) ? req.getBranchCode() : "99999");
+			saveData.setMinSuminsured(StringUtils.isBlank(req.getSumInsuredStart())? BigDecimal.ZERO : new BigDecimal(req.getSumInsuredStart()));
+			saveData.setCoverageLimit(StringUtils.isBlank(req.getCoverageLimit())? BigDecimal.ZERO : new BigDecimal(req.getCoverageLimit()));
 			
 			// Amount Details
 			if (req.getCalcType().equalsIgnoreCase("F")) {
@@ -1072,22 +1082,19 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 				// Amount 
 				saveData.setBaseRate(StringUtils.isBlank(req.getBaseRate())? BigDecimal.ZERO :new BigDecimal(req.getBaseRate()));
 				saveData.setMinPremium(StringUtils.isBlank(req.getMinimumPremium())? BigDecimal.ZERO :new BigDecimal(req.getMinimumPremium()));
-				saveData.setMaxSuminsured(StringUtils.isBlank(req.getSumInsuredEnd())? BigDecimal.ZERO :new BigDecimal(req.getSumInsuredEnd()));
-				saveData.setMinSuminsured(StringUtils.isBlank(req.getSumInsuredStart())? BigDecimal.ZERO :new BigDecimal(req.getSumInsuredStart()));
+			//	saveData.setMaxSuminsured(StringUtils.isBlank(req.getSumInsuredEnd())? BigDecimal.ZERO :new BigDecimal(req.getSumInsuredEnd()));
+			//	saveData.setMinSuminsured(StringUtils.isBlank(req.getSumInsuredStart())? BigDecimal.ZERO :new BigDecimal(req.getSumInsuredStart()));
 				
 			} else {
 
 				saveData.setBaseRate(StringUtils.isBlank(req.getBaseRate()) ? BigDecimal.ZERO :new BigDecimal(req.getBaseRate()));
 				saveData.setMinPremium(
 						StringUtils.isBlank(req.getMinimumPremium()) ? BigDecimal.ZERO :new BigDecimal(req.getMinimumPremium()));
-				saveData.setMaxSuminsured(
-						StringUtils.isBlank(req.getSumInsuredEnd()) ? BigDecimal.ZERO :new BigDecimal(req.getSumInsuredEnd()));
-				saveData.setMinSuminsured(
-						StringUtils.isBlank(req.getSumInsuredStart()) ?BigDecimal.ZERO :new BigDecimal(req.getSumInsuredStart()));
+				//saveData.setMaxSuminsured(	StringUtils.isBlank(req.getSumInsuredEnd()) ? BigDecimal.ZERO :new BigDecimal(req.getSumInsuredEnd()));
+				//saveData.setMinSuminsured(StringUtils.isBlank(req.getSumInsuredStart()) ?BigDecimal.ZERO :new BigDecimal(req.getSumInsuredStart()));
 			}
 
-			saveData.setCoverageLimit(
-					StringUtils.isBlank(req.getCoverageLimit()) ? BigDecimal.ZERO :new BigDecimal(req.getCoverageLimit()));
+			//saveData.setCoverageLimit(StringUtils.isBlank(req.getCoverageLimit()) ? BigDecimal.ZERO :new BigDecimal(req.getCoverageLimit()));
 			saveData.setExcessAmount(StringUtils.isBlank(req.getExcessAmount())?BigDecimal.ZERO : new BigDecimal(req.getExcessAmount()));
 			saveData.setExcessPercent(StringUtils.isBlank(req.getExcessPercent())? BigDecimal.ZERO : new BigDecimal(req.getExcessPercent()));
 			saveData.setExcessDesc(StringUtils.isBlank(req.getExcessDesc())?"":req.getExcessDesc());			

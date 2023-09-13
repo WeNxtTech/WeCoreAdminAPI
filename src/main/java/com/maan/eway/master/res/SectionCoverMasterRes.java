@@ -83,8 +83,8 @@ public class SectionCoverMasterRes {
 	@JsonProperty("BaseRate")
 	private String baseRate;
 	
-	@JsonProperty("SumInsuredEnd")
-	private String sumInsuredEnd;
+//	@JsonProperty("SumInsuredEnd")
+//	private String sumInsuredEnd;
 	
 	@JsonProperty("MinimumPremium")
 	private String minimumPremium;

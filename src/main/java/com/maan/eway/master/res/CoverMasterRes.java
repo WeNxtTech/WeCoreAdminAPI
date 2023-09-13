@@ -101,8 +101,8 @@ public class CoverMasterRes implements Serializable {
 	@JsonProperty("BaseRate")
 	private String baseRate;
 	
-	@JsonProperty("SumInsuredEnd")
-	private String sumInsuredEnd;
+	@JsonProperty("SumInsuredStart")
+	private String sumInsuredStart;
 	
 	@JsonProperty("MinimumPremium")
 	private String minimumPremium;

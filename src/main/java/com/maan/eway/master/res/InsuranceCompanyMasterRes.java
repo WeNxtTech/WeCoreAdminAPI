@@ -87,4 +87,7 @@ public class InsuranceCompanyMasterRes implements Serializable {
 	@JsonProperty("TinNumber")
 	private String tinNumber;
 	
+	@JsonProperty("PoBox")
+	private String poBox;
+	
 }

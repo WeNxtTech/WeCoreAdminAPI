@@ -95,4 +95,8 @@ public class InsuranceCompanyMasterSaveReq {
 	@JsonProperty("TinNumber")
 	private String tinNumber;
 	
+	@JsonProperty("PoBox")
+	private String poBox;
+	
+
 }

@@ -444,7 +444,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 				Predicate n10 = cb.equal(c.get("itemType"),itemType); 
 				
 				//Not company based
-				if(itemType.equalsIgnoreCase("TAX_FOR_DESC") ||itemType.equalsIgnoreCase("TERMS_TYPE")
+				if(itemType.equalsIgnoreCase("TAX_FOR_DESC") ||itemType.equalsIgnoreCase("TERMS_TYPE") || itemType.equalsIgnoreCase("DOC_TYPE") 
 						||itemType.equalsIgnoreCase("POLICY_HOLDER_TYPE") ||
 						itemType.equalsIgnoreCase("CALCULATION_TYPE") || itemType.equalsIgnoreCase("COVERAGE_TYPE") || 
 						itemType.equalsIgnoreCase("PRODUCT_CATEGORY") || 

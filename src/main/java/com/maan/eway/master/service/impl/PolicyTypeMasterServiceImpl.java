@@ -534,6 +534,7 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 			List<PolicyTypeMaster> list = new ArrayList<PolicyTypeMaster>();
 			if(StringUtils.isNotBlank(req.getLoginId()) && ! req.getLoginId().equalsIgnoreCase("guest") ) {
 				// Criteria
+				{
 				CriteriaBuilder cb = em.getCriteriaBuilder();
 				CriteriaQuery<PolicyTypeMaster> query=  cb.createQuery(PolicyTypeMaster.class);
 				
@@ -587,6 +588,55 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 				// Get Result
 				TypedQuery<PolicyTypeMaster> result = em.createQuery(query);
 				list = result.getResultList();
+				}
+				
+				if( list.size() <= 0 ) {
+					// Criteria
+					CriteriaBuilder cb = em.getCriteriaBuilder();
+					CriteriaQuery<PolicyTypeMaster> query=  cb.createQuery(PolicyTypeMaster.class);
+					
+					
+					// Find All
+					Root<PolicyTypeMaster> c = query.from(PolicyTypeMaster.class);
+					//Select
+					query.select(c);
+					// Order By
+					List<Order> orderList = new ArrayList<Order>();
+					orderList.add(cb.asc(c.get("policyTypeId")));
+					
+					// Effective Date Start Max Filter
+					Subquery<Long> effectiveDate = query.subquery(Long.class);
+					Root<PolicyTypeMaster> ocpm1 = effectiveDate.from(PolicyTypeMaster.class);
+					effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+					Predicate a1 = cb.equal(c.get("policyTypeId"),ocpm1.get("policyTypeId"));
+					Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+					Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
+					Predicate a7 = cb.equal(c.get("productId"),ocpm1.get("productId"));
+					effectiveDate.where(a1,a2,a5,a7);
+					// Effective Date End Max Filter
+					Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+					Root<PolicyTypeMaster> ocpm2 = effectiveDate2.from(PolicyTypeMaster.class);
+					effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+					Predicate a3 = cb.equal(c.get("policyTypeId"),ocpm2.get("policyTypeId"));
+					Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+					Predicate a6 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
+					Predicate a8 = cb.equal(c.get("productId"),ocpm2.get("productId"));
+					effectiveDate2.where(a3,a4,a6,a8);
+					// Where
+					Predicate n1 = cb.equal(c.get("status"),"Y");
+					Predicate n11 = cb.equal(c.get("status"),"R");
+					Predicate n12 = cb.or(n1,n11);
+					Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
+					Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
+					Predicate n4 = cb.equal(c.get("companyId"),req.getInsuranceId());
+					Predicate n5 = cb.equal(c.get("productId"),req.getProductId());
+					
+					
+					query.where(n12,n2,n3,n4,n5).orderBy(orderList);
+					// Get Result
+					TypedQuery<PolicyTypeMaster> result = em.createQuery(query);
+					list = result.getResultList();
+				}
 			} else {
 				// Criteria
 				CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -633,7 +683,10 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 				// Get Result
 				TypedQuery<PolicyTypeMaster> result = em.createQuery(query);
 				list = result.getResultList();
+				
+				
 			}
+			
 			
 			for (PolicyTypeMaster data : list) {
 				// Response 

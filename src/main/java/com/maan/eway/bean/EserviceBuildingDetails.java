@@ -678,6 +678,9 @@ private static final long serialVersionUID = 1L;
       
       @Column(name="MONEY_MAJOR_LOSS_LC")
       private BigDecimal     moneyMajorLossLc;
+      
+      @Column(name="CUSTOMER_NAME")
+      private String     customerName ;
 
 }
 

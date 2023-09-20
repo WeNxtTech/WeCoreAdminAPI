@@ -119,7 +119,9 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 						tablename="MsHumanDetails";
 					else if(oneProduct.equals("A"))
 						tablename="MsAssetDetails";
-						
+					else if(oneProduct.equals("L"))
+						tablename="MsLifeDetails";
+					
 						req.setTableName(tablename);
 				}  
 				

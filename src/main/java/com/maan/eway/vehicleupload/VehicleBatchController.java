@@ -1,7 +1,10 @@
 package com.maan.eway.vehicleupload;
 
+import java.util.ArrayList;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -16,8 +19,12 @@ import com.maan.eway.batch.req.EditRecordReq;
 import com.maan.eway.batch.req.EwayUploadReq;
 import com.maan.eway.batch.req.GetRecordsReq;
 import com.maan.eway.batch.req.GetUploadTransactionReq;
+import com.maan.eway.batch.req.GetUploadTypeReq;
+import com.maan.eway.batch.req.MoveRecordsReq;
 import com.maan.eway.batch.req.SamplFileDownloadReq;
+import com.maan.eway.batch.req.SaveUploadTypeReq;
 import com.maan.eway.batch.req.UpdateRecordReq;
+import com.maan.eway.batch.res.EwayDropDownRes;
 import com.maan.eway.batch.res.EwayUploadRes;
 import com.maan.eway.res.CommonRes;
 
@@ -89,6 +96,32 @@ public class VehicleBatchController {
 		return service.sampleDownload(req);
 	}
 	
+	@PostMapping("/save/upload/master")
+	public CommonRes saveUploadMaster(@RequestBody SaveUploadTypeReq req) {
+		return service.saveUploadMaster(req);
+	}
 	
+	@PostMapping("/get/upload/master")
+	public CommonRes getUploadMaster(@RequestBody GetUploadTypeReq req) {
+		return service.getUploadMaster(req);
+	}
+	
+   // @GetMapping("/get/table/dropdown")
+    public CommonRes getTableDropDown() {
+    	CommonRes returnRes =new CommonRes();
+    	ArrayList<EwayDropDownRes> list = new ArrayList<EwayDropDownRes>();
+    	list.add(new EwayDropDownRes("1","EWAY_EMPLOYEE_DETAILS_RAW"));
+    	list.add(new EwayDropDownRes("2","ESERVICE_MOTOR_DETAILS_RAW"));
+    	returnRes.setCommonResponse(list);
+    	returnRes.setMessage("SUCCESS");
+    	return returnRes ;
+    }
+    
+    
+   // @PostMapping("/insert/records")
+    public CommonRes moveRecords(@RequestBody MoveRecordsReq req,@RequestHeader("Authorization") String token) {
+    	return service.moveRecords(req,token.replaceAll("Bearer ", "").split(",")[0]);
+    }
+    
 
 }

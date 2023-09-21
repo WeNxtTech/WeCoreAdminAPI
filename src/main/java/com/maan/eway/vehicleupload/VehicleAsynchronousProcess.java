@@ -205,8 +205,7 @@ public class VehicleAsynchronousProcess {
 			vehicleRequest.put("CustomerCode",StringUtils.isBlank(p.getCustomerCode())?"":p.getCustomerCode());
 			vehicleRequest.put("ClaimYn", StringUtils.isBlank(p.getClaimYn())?"N":p.getClaimYn());
 			vehicleRequest.put("CustomerName",StringUtils.isBlank(p.getCustomerName())?"":p.getCustomerName());
-			vehicleRequest.put("BdmCode", StringUtils.isBlank(p.getBdmCode())?"N":p.getBdmCode());
-			
+			vehicleRequest.put("BdmCode", StringUtils.isBlank(p.getBdmCode())?"":p.getBdmCode());
 			String EndorsementYn =StringUtils.isBlank(p.getEndorsementYn())?"N":p.getEndorsementYn();
 			String claimYn =StringUtils.isBlank(p.getClaimYn())?"N":p.getClaimYn();
 			String collateralYn =StringUtils.isBlank(p.getCollateral())?"NO":p.getCollateral();
@@ -342,8 +341,11 @@ public class VehicleAsynchronousProcess {
 			
 			response =httpClient.newCall(request).execute();
 			String responseString =response.body().string();
+			Integer statusCode =response.code();
 			@SuppressWarnings("unchecked")
 			Map<String,Object> resMap =mapper.readValue(responseString, Map.class);
+			
+			resMap.put("StatusCode", statusCode);
 			return resMap;
 		}catch (Exception e) {
 			log.error(e);

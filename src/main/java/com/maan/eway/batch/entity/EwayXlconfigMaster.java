@@ -117,9 +117,42 @@ private static final long serialVersionUID = 1L;
     @Column(name="DATA_RANGE", length=100)
     private String     dataRange ;
 
+  /*  @Column(name="ISMAIN_DEFAU_VAL", length=100)
+    private String     isMainDefauVal ;
+    
+    @Column(name="API_JSON_KEY", length=100)
+    private String     apiJsonKey ;
+    
+    @Column(name="SEL_COL_NAME", length=100)
+    private String     selColName ;
+    
+    @Column(name="IS_MAIN_COL_IDX", length=100)
+    private Integer     isMainColIdx ;
+    
+    
+    @Column(name="IS_OBJECT", length=100)
+    private String     isObject ;
+    
+    
+    @Column(name="IS_ARRAY", length=100)
+    private String     isArray ;
+    
+    
+    @Column(name="OBJ_APIJSON_KEY", length=100)
+    private String     objApiJsonKey ;
+    
+    @Column(name="OBJ_SELCOL_KEY", length=100)
+    private String     objSelcolKey ;
+    
+    @Column(name="OBJ_DEFAUL_VAL", length=100)
+    private String     objDefaulVal ;
+    
+    @Column(name="ISMAIN_MOVE", length=100)
+    private String     isMainMove ;
+    
     //--- ENTITY LINKS ( RELATIONSHIP )
 
-
+*/
 }
 
 

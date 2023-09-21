@@ -7,7 +7,10 @@ import com.maan.eway.batch.req.EditRecordReq;
 import com.maan.eway.batch.req.EwayUploadReq;
 import com.maan.eway.batch.req.GetRecordsReq;
 import com.maan.eway.batch.req.GetUploadTransactionReq;
+import com.maan.eway.batch.req.GetUploadTypeReq;
+import com.maan.eway.batch.req.MoveRecordsReq;
 import com.maan.eway.batch.req.SamplFileDownloadReq;
+import com.maan.eway.batch.req.SaveUploadTypeReq;
 import com.maan.eway.batch.req.UpdateRecordReq;
 import com.maan.eway.batch.res.EwayUploadRes;
 import com.maan.eway.res.CommonRes;
@@ -31,5 +34,11 @@ public interface VehicleBatchService {
 	CommonRes deleteRecords(DeleteRecordReq req);
 
 	CommonRes sampleDownload(SamplFileDownloadReq req);
+
+	CommonRes saveUploadMaster(SaveUploadTypeReq req);
+
+	CommonRes getUploadMaster(GetUploadTypeReq req);
+
+	CommonRes moveRecords(MoveRecordsReq req, String token);
 
 }

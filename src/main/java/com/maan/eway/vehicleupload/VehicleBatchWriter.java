@@ -69,8 +69,7 @@ public ItemWriter<Record> itemWriter(TransactionControlDetailsRepository fleetTe
 				log.info("Eway batch write start with productId:" +productId);
 				if("5".equals(productId)){
 					batchInsert_1(recordsList, jdbcTemplate, response,fleetTempRepo);
-				}else if("14".equals(productId) || "15".equals(productId) || "32".equals(productId)
-						||"4".equals(productId)) {
+				}else {
 					batchInsert_2(recordsList, jdbcTemplate, response,fleetTempRepo);
 				}
 				log.info("Eway batch write endwith productId:" +productId);
@@ -106,7 +105,7 @@ protected int[][] batchInsert_1(List<Record> records, JdbcTemplate jdbcTemplate,
 				+ "ENDT_PREV_POLICYNO,ENDT_STATUS,IS_FINANCE_ENDT,ORGINAL_POLICYNO,EXCHANGE_RATE,HAVE_PROMOCODE,NO_OF_VEHICLES,"
 				+ "POLICY_START_DATE,POLICY_END_DATE,PROMOCODE,CURRENCY,BRANCH_CODE,AGENCY_CODE,ID_NUMBER,USER_TYPE,NCD_YN,SOURCE_TYPE,CUSTOMER_CODE,CUSTOMER_NAME,BDM_CODE,"
 				+ "" + rawTableFields + ") VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,"
-				+ "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?"
+				+ "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,"
 				+prepareValues + ")";
 		
 			int[][] updateCounts = jdbcTemplate.batchUpdate(finalquery, records, batchSize,
@@ -154,10 +153,10 @@ protected int[][] batchInsert_1(List<Record> records, JdbcTemplate jdbcTemplate,
 						ps.setString(36, StringUtils.isBlank(response.getIdnumber())?null:response.getIdnumber());
 						ps.setString(37, StringUtils.isBlank(response.getUserType())?null:response.getUserType());
 						ps.setString(38, response.getNcdYn());
-						ps.setString(39, StringUtils.isBlank(response.getSourceType())?"":response.getSourceType());
-						ps.setString(40, StringUtils.isBlank(response.getCustomerCode())?"":response.getCustomerCode());
-						ps.setString(41, StringUtils.isBlank(response.getCustomerName())?"":response.getCustomerName());
-						ps.setString(42, StringUtils.isBlank(response.getBdmCode())?"":response.getBdmCode());
+						ps.setString(39, StringUtils.isBlank(response.getSourceType())?null:response.getSourceType());
+						ps.setString(40, StringUtils.isBlank(response.getCustomerCode())?null:response.getCustomerCode());
+						ps.setString(41, StringUtils.isBlank(response.getCustomerName())?null:response.getCustomerName());
+						ps.setString(42, StringUtils.isBlank(response.getBdmCode())?null:response.getBdmCode());
 						
 						for (int i = 1; i <= length; i++) {
 							ps.setString(i + 42, argument.getColumnByIndex(i - 1) == null ? null

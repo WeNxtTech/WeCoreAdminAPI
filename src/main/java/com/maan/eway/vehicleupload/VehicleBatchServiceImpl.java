@@ -12,6 +12,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -20,21 +21,24 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
+import javax.transaction.Transactional;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.query.NativeQuery;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -42,8 +46,8 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -52,11 +56,14 @@ import com.google.gson.Gson;
 import com.maan.eway.batch.entity.EserviceMotorDetailsRaw;
 import com.maan.eway.batch.entity.EwayEmplyeeDetailRaw;
 import com.maan.eway.batch.entity.EwayUploadTypeMaster;
+import com.maan.eway.batch.entity.EwayUploadTypeMasterV1;
 import com.maan.eway.batch.entity.EwayXlconfigMaster;
 import com.maan.eway.batch.entity.SqlSeqNumber;
 import com.maan.eway.batch.repository.EserviceMotorDetailsRawRepository;
 import com.maan.eway.batch.repository.EwayEmplyeeDetailRawRepository;
 import com.maan.eway.batch.repository.EwayUploadTypeMasterRepository;
+import com.maan.eway.batch.repository.EwayUploadTypeMasterRepositoryV2;
+import com.maan.eway.batch.repository.EwayXlconfigMasterRepository;
 import com.maan.eway.batch.repository.ProductEmployeesDetailsRepository;
 import com.maan.eway.batch.repository.SeqRefnoRepository;
 import com.maan.eway.batch.repository.TransactionControlDetailsRepository;
@@ -67,14 +74,18 @@ import com.maan.eway.batch.req.EwayBatchReq;
 import com.maan.eway.batch.req.EwayUploadReq;
 import com.maan.eway.batch.req.GetRecordsReq;
 import com.maan.eway.batch.req.GetUploadTransactionReq;
+import com.maan.eway.batch.req.GetUploadTypeReq;
 import com.maan.eway.batch.req.MotorUpdateReq;
+import com.maan.eway.batch.req.MoveRecordsReq;
 import com.maan.eway.batch.req.SamplFileDownloadReq;
+import com.maan.eway.batch.req.SaveUploadTypeReq;
 import com.maan.eway.batch.req.UpdateRecordReq;
 import com.maan.eway.batch.res.EwayUploadRes;
 import com.maan.eway.batch.res.GetEmployeeDetailsRes;
 import com.maan.eway.batch.res.GetRecordsRes;
 import com.maan.eway.batch.res.GetTransactionStatusRes;
 import com.maan.eway.batch.res.GetUploadTransactionRes;
+import com.maan.eway.batch.res.GetUploadTypeMasterRes;
 import com.maan.eway.batch.res.XlConfigData;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.ProductEmployeeDetails;
@@ -104,6 +115,9 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 	@Autowired
 	private ProductEmployeesDetailsRepository employeesDetailsRepository;
 	
+	@Autowired
+	private EwayUploadTypeMasterRepositoryV2 uploadTypeMasterRepositoryV2;
+	
 	Logger log =LogManager.getLogger(VehicleBatchServiceImpl.class);
 
 	@Autowired
@@ -120,6 +134,8 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 	private SeqRefnoRepository sequence;
 	@Autowired
 	private VehicleAsynchronousProcess asyncProcess;
+	@Autowired
+	private EwayXlconfigMasterRepository xlConfigMaster;
 	
 	@Autowired
 	private CriteriaQueryServiceImpl criteriaQuery;
@@ -209,8 +225,8 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			uploadRes.setRelationId(StringUtils.isBlank(req.getRelationId())?"":req.getRelationId());
 			uploadRes.setStateCode(StringUtils.isBlank(req.getStateCode())?"":req.getStateCode());
 			uploadRes.setUploadType(StringUtils.isBlank(req.getUploadType())?"Add":req.getUploadType());
-			uploadRes.setCustomerName(StringUtils.isBlank(req.getCustomerName())?"":req.getCustomerName());;
-			uploadRes.setBdmCode(StringUtils.isBlank(req.getBdmCode())?"":req.getBdmCode());;
+			uploadRes.setCustomerName(StringUtils.isBlank(req.getCustomerName())?"":req.getCustomerName());
+			uploadRes.setBdmCode(StringUtils.isBlank(req.getBdmCode())?"":req.getBdmCode());
 			LocalDateTime dateTime =LocalDateTime.now();
 			String excelFilePath=filePath+fileName+dateTime.getNano()+"."+extension;
 			Path path =Paths.get(excelFilePath);
@@ -1152,7 +1168,202 @@ public synchronized String generateRefNo() {
     
 }
 
+@Override
+public CommonRes saveUploadMaster(SaveUploadTypeReq req) {
+	CommonRes returnRes = new CommonRes();
+	try {
+		Integer companyId =Integer.valueOf(req.getCompanyId());
+		Integer productId =Integer.valueOf(req.getProductId());
+		Integer typeId =uploadTypeMasterRepositoryV2.getTypeIdByCompanyIdAndProduyctId(companyId, productId);
+	    Integer type_id =StringUtils.isBlank(req.getRawTableId())?typeId==null?101:typeId :Integer.valueOf(req.getRawTableId());
+		
+	    EwayUploadTypeMasterV1 uploadMaster =EwayUploadTypeMasterV1.builder()
+	    		.companyId(companyId)
+	    		.productId(productId)
+	    		.typeid(type_id)
+	    		.filePath(req.getSampleXlFilePath())
+	    		.typename(req.getFileName())
+	    		.sectionId(0)
+	    		.entryDate(new Date())
+	    		.status(StringUtils.isBlank(req.getStatus())?"N":req.getStatus())
+	    		.productDesc(StringUtils.isBlank(req.getProductDesc())?null:req.getProductDesc())
+	    		.rawTableId(Integer.valueOf(req.getRawTableId()))
+	    		.rawTableName(req.getRawTableName())
+	    		.build();
+	    uploadTypeMasterRepositoryV2.save(uploadMaster);
+	    returnRes.setMessage("SUCCESS");
+	}catch (Exception e) {
+		e.printStackTrace();
+		log.info( "Exception is ---> " + e);
+	    returnRes.setMessage("FAILED");
+
+	}
+	return returnRes;
+}
+
+@Override
+public CommonRes getUploadMaster(GetUploadTypeReq req) {
+	CommonRes returnRes = new CommonRes();
+	try {
+		ArrayList<GetUploadTypeMasterRes> returnList =new ArrayList<GetUploadTypeMasterRes>();
+		List<EwayUploadTypeMasterV1> list =uploadTypeMasterRepositoryV2.findAll(Sort.by("entryDate").descending());
+		if(list.size()>0 && !list.isEmpty()) {
+			list.forEach(p ->{
+				GetUploadTypeMasterRes response = GetUploadTypeMasterRes.builder()
+						.companyId(p.getCompanyId().toString())
+						.fileName(p.getTypename())
+						.typeId(p.getTypeid().toString())
+						.productDesc(StringUtils.isBlank(p.getProductDesc())?"":p.getProductDesc())
+						.productId(p.getProductId().toString())
+						.status(p.getStatus())
+						.rawTableId(p.getRawTableId().toString())
+						.rawTableName(p.getRawTableName())
+						.sampleExcelFilePath(p.getFilePath())
+						.entryDate(new SimpleDateFormat("dd/MM/yyyy").format(p.getEntryDate()))
+						.build();
+				returnList.add(response);
+			});
+			returnRes.setCommonResponse(returnList);
+			returnRes.setMessage("SUCCESS");
+		}
+	}catch (Exception e) {
+		e.printStackTrace();
+		log.info( "Exception is ---> " + e);
+		returnRes.setCommonResponse(null);
+		returnRes.setMessage("FAILED");
+	}
+	return returnRes;
+}
 
 
 
+@Override
+@Transactional
+ public  CommonRes moveRecords(MoveRecordsReq req, String token) {
+	LinkedHashMap<Object,Object> request =new LinkedHashMap<Object,Object>();
+	CommonRes response = new CommonRes();
+	/*try {
+		 Integer companyId=Integer.valueOf(req.getCompanyId());
+		 Integer productId=Integer.valueOf(req.getProductId());
+		 Integer typeId=Integer.valueOf(req.getTypeId());
+		 List<EwayXlconfigMaster> list =xlConfigMaster.findByCompanyIdAndProductIdAndTypeidAndIsMainMoveOrderByIsMainColIdx(companyId,productId,typeId,"Y");
+		 
+		 List<EwayXlconfigMaster> mainData =list.stream()
+				 .filter(p ->StringUtils.isNotBlank(p.getSelColName()))
+				 .collect(Collectors.toList());
+		 
+		 StringJoiner arrayDynQuery=new StringJoiner(",");
+		 StringJoiner arrayJsonFields=new StringJoiner(",");
+		 StringJoiner objectDynQuery=new StringJoiner(",");
+		 StringJoiner objectJsonKey=new StringJoiner(",");
+		 StringJoiner objectListJsonKey=new StringJoiner(",");
+		
+         for(EwayXlconfigMaster config : mainData) {
+        	 if("Y".equalsIgnoreCase(config.getIsArray()) ) {
+	        	 if("Y".equalsIgnoreCase(config.getIsMainDefauVal())) {
+	        		 arrayDynQuery.add("'"+config.getSelColName()+"' as "+config.getApiJsonKey()+"");
+	        	 }else {
+	        		 arrayDynQuery.add(config.getSelColName());
+	        	 }
+	        	 arrayJsonFields.add(config.getApiJsonKey());
+        	 }if("Y".equalsIgnoreCase(config.getIsObject())) {
+        		 if("Y".equalsIgnoreCase(config.getObjDefaulVal())) {
+        			 objectDynQuery.add("'"+config.getObjSelcolKey()+"' as "+config.getObjApiJsonKey()+"");
+	        	 }else {
+	        		 objectDynQuery.add(config.getObjSelcolKey());
+	        	 }
+        		 objectJsonKey.add(config.getObjApiJsonKey());
+        	 }else if("L".equalsIgnoreCase(config.getIsObject())) {
+        		 objectListJsonKey.add(config.getObjApiJsonKey());
+        	 }
+         }
+		 
+		 EwayUploadTypeMaster typeMaster= uploadTypeRepo.findByCompanyIdAndProductIdAndTypeidAndStatus(companyId, productId, typeId, "Y");
+         String rawTableName =typeMaster.getRawTableName().trim();
+         String apiUrl =typeMaster.getApiName().trim();
+         String method ="";//typeMaster.getApiMethod();
+         ArrayList<LinkedHashMap<Object,Object>> arrayList =new ArrayList<LinkedHashMap<Object,Object>>();
+         if(StringUtils.isNotBlank(arrayDynQuery.toString())) {
+			 String [] apiJsonFields=arrayJsonFields.toString().split(",");
+	         String  selectCol ="select "+arrayDynQuery.toString()+" from "+rawTableName+" where REQUEST_REFERENCE_NO=?1 and STATUS='Y'";
+	         log.info("Array query select columns || "+selectCol);
+	         log.info("Array json key columns || "+arrayJsonFields);
+	         Query query =em.createNativeQuery(selectCol);
+	         query.setParameter(1, req.getRequestRefNo());
+	         @SuppressWarnings("unchecked")
+			 List<Object[]> queryResult =query.getResultList();
+	         Object[][] resultArray = new Object[queryResult.size()][];
+	         for (int i = 0; i < queryResult.size(); i++) {
+	             resultArray[i] = queryResult.get(i);
+	         }
+	         
+	         for (Object [] ar :resultArray) {
+	    		 LinkedHashMap<Object,Object> map = new LinkedHashMap<Object,Object>();
+	    		 int key=0;
+	        	 for(Object obj :ar) {
+	        		 map.put(apiJsonFields[key], obj==null?"":obj.toString());
+	        		 key++;
+	        	 }
+	        	 arrayList.add(map); 
+	         }
+         }if(StringUtils.isNotBlank(objectDynQuery.toString())){
+        	 
+        	 String [] apiJsonFields=objectJsonKey.toString().split(",");
+	         String  selectCol ="select "+objectDynQuery.toString()+" from "+rawTableName+" where REQUEST_REFERENCE_NO=?1 and STATUS='Y'";
+	         log.info("Object query select columns || "+selectCol);
+	         log.info("Object json query columns || "+objectDynQuery);
+	         Query query =em.createNativeQuery(selectCol);
+	         query.setParameter(1, req.getRequestRefNo());
+	         @SuppressWarnings("unchecked")
+			 List<Object[]> queryResult =query.getResultList();
+			 Object [] array = new Object[1];
+			 if(queryResult.get(0) instanceof Object[]) {
+				 array=queryResult.get(0);
+			 }else {
+				 Object objString=(Object)queryResult.get(0);
+				 array[0]=objString;
+			 }
+			 int key =0;
+			 for(Object o : array) {
+				 request.put(apiJsonFields[key], o==null?"":o.toString());
+				 key++;
+			 }
+	         
+         }
+         if(arrayList.size()>0) {
+        	 request.put(objectListJsonKey.toString(), arrayList);
+         }
+         
+        String apiReq =printReq.toJson(request);
+         
+        Map<String,Object> apiRes= asyncProcess.callApi(apiReq, token, mediaType, apiUrl);
+        log.info("Api Response ==>" +printReq.toJson(apiRes));
+        String statusCode=apiRes.get("StatusCode")==null?"": apiRes.get("StatusCode").toString();
+		String status ="N";
+		if("201".equals(statusCode))
+			status ="Y";
+		else
+			status ="N";
+		
+		 String updateQuery ="update "+rawTableName+" set API_STATUS=?1 where REQUEST_REFERENCE_NO=?2";
+		 Integer count= em.createNativeQuery(updateQuery)
+		.setParameter(1, status)
+		.setParameter(2, req.getRequestRefNo())
+		.executeUpdate();
+		
+		log.info("updated employee count "+count);
+		
+	 }catch (Exception e) {
+		e.printStackTrace();
+		response.setMessage("FAILED");
+		return response;
+	}*/
+
+	 response.setMessage("SUCCESS");
+	 return response;
+	 
+ }
+ 
+
+   
 }

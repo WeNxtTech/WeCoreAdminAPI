@@ -35,4 +35,7 @@ public interface EwayXlconfigMasterRepository  extends JpaRepository<EwayXlconfi
 	List<EwayXlconfigMaster> findByCompanyIdAndProductIdAndTypeidAndStatusIgnoreCaseOrderByExcelColumnIndex(Integer companyId,
 			Integer productId, Integer typeId, String status);
 
+
+	//List<EwayXlconfigMaster> findByCompanyIdAndProductIdAndTypeidAndIsMainMoveOrderByIsMainColIdx(Integer companyId, Integer productId, Integer typeId,String status);
+
 }

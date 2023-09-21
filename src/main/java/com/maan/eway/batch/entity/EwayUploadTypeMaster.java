@@ -88,10 +88,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="FILE_PATH", length=100)
     private String     filePath ;
 
+   // @Column(name="API_METHOD", length=100)
+  //  private String     apiMethod ;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 
-
+    
 }
 
 

@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -88,6 +89,9 @@ public class VehicleCSVFileConvertion {
 						List<EwayXlconfigMaster> xlConfigData = xlConfigMaster.findByCompanyIdAndProductIdAndTypeidAndStatusIgnoreCaseOrderByExcelColumnIndex(
 								Integer.valueOf(uploadRes.getCompanyId()),Integer.valueOf(uploadRes.getProductId()),Integer.valueOf(uploadRes.getTypeId()),
 								"Y");
+						//List<EwayXlconfigMaster> xlConfigData =list.stream().filter(p ->StringUtils.isNotBlank(p.getExcelheaderName()))
+								//.filter(p ->StringUtils.isNotBlank(p.getFieldNameRaw()))
+								//.collect(Collectors.toList());
 						
 						if(xlConfigData!=null&&xlConfigData.size()>0) {
 							Map<String,Object> errorList = getRecordsList(csvFile,xlConfigData,uploadRes.getRequestReferenceNo());

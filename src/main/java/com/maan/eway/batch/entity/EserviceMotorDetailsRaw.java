@@ -392,6 +392,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="CALC_ERROR_DESC")
     private String       calcErrorDesc ;
     
+    @Column(name="CUSTOMER_NAME")
+    private String       customerName ;
+    
+    @Column(name="BDM_CODE")
+    private String       bdmCode ;
+    
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

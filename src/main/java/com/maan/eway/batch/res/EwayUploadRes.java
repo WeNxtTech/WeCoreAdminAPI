@@ -160,4 +160,8 @@ public class EwayUploadRes {
 	@JsonProperty("DataRange")
 	private String DataRange;
 	
+	@JsonProperty("CustomerName")
+	private String customerName;
+	@JsonProperty("BdmCode")
+	private String bdmCode;
 }

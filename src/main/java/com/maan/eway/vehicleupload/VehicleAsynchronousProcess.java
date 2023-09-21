@@ -204,6 +204,9 @@ public class VehicleAsynchronousProcess {
 			vehicleRequest.put("SourceType",StringUtils.isBlank(p.getSourceType())?"":p.getSourceType()); 
 			vehicleRequest.put("CustomerCode",StringUtils.isBlank(p.getCustomerCode())?"":p.getCustomerCode());
 			vehicleRequest.put("ClaimYn", StringUtils.isBlank(p.getClaimYn())?"N":p.getClaimYn());
+			vehicleRequest.put("CustomerName",StringUtils.isBlank(p.getCustomerName())?"":p.getCustomerName());
+			vehicleRequest.put("BdmCode", StringUtils.isBlank(p.getBdmCode())?"N":p.getBdmCode());
+			
 			String EndorsementYn =StringUtils.isBlank(p.getEndorsementYn())?"N":p.getEndorsementYn();
 			String claimYn =StringUtils.isBlank(p.getClaimYn())?"N":p.getClaimYn();
 			String collateralYn =StringUtils.isBlank(p.getCollateral())?"NO":p.getCollateral();

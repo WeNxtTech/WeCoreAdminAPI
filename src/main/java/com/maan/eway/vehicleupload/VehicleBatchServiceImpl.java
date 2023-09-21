@@ -209,7 +209,8 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			uploadRes.setRelationId(StringUtils.isBlank(req.getRelationId())?"":req.getRelationId());
 			uploadRes.setStateCode(StringUtils.isBlank(req.getStateCode())?"":req.getStateCode());
 			uploadRes.setUploadType(StringUtils.isBlank(req.getUploadType())?"Add":req.getUploadType());
-			
+			uploadRes.setCustomerName(StringUtils.isBlank(req.getCustomerName())?"":req.getCustomerName());;
+			uploadRes.setBdmCode(StringUtils.isBlank(req.getBdmCode())?"":req.getBdmCode());;
 			LocalDateTime dateTime =LocalDateTime.now();
 			String excelFilePath=filePath+fileName+dateTime.getNano()+"."+extension;
 			Path path =Paths.get(excelFilePath);

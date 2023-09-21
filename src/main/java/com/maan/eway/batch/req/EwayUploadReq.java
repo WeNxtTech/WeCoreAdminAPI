@@ -97,4 +97,8 @@ public class EwayUploadReq {
 	private String stateCode;
 	@JsonProperty("UploadType")
 	private String uploadType;
+	@JsonProperty("CustomerName")
+	private String customerName;
+	@JsonProperty("BdmCode")
+	private String bdmCode;
 }

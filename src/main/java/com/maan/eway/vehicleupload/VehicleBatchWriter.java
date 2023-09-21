@@ -104,9 +104,9 @@ protected int[][] batchInsert_1(List<Record> records, JdbcTemplate jdbcTemplate,
 				+ "BROKER_BRANCHCODE,AC_EXECUTIVEID,BROKER_CODE,LOGIN_ID,SUB_USERTYPE,APPLICATION_ID,CUSTOMER_REFERENCENO,ENDORSEMENT_YN,"
 				+ "ENDORSEMENT_DATE,ENDORSEMENT_EFFECTIVE_DATE,ENDORSEMENT_REMARKS,ENDORSEMENT_TYPE,ENDORSEMENT_TYPE_DESC,ENDT_CATEGORY_DESC,ENDT_COUNT,"
 				+ "ENDT_PREV_POLICYNO,ENDT_STATUS,IS_FINANCE_ENDT,ORGINAL_POLICYNO,EXCHANGE_RATE,HAVE_PROMOCODE,NO_OF_VEHICLES,"
-				+ "POLICY_START_DATE,POLICY_END_DATE,PROMOCODE,CURRENCY,BRANCH_CODE,AGENCY_CODE,ID_NUMBER,USER_TYPE,NCD_YN,SOURCE_TYPE,CUSTOMER_CODE,"
+				+ "POLICY_START_DATE,POLICY_END_DATE,PROMOCODE,CURRENCY,BRANCH_CODE,AGENCY_CODE,ID_NUMBER,USER_TYPE,NCD_YN,SOURCE_TYPE,CUSTOMER_CODE,CUSTOMER_NAME,BDM_CODE,"
 				+ "" + rawTableFields + ") VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,"
-				+ "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,"
+				+ "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?"
 				+prepareValues + ")";
 		
 			int[][] updateCounts = jdbcTemplate.batchUpdate(finalquery, records, batchSize,
@@ -156,8 +156,11 @@ protected int[][] batchInsert_1(List<Record> records, JdbcTemplate jdbcTemplate,
 						ps.setString(38, response.getNcdYn());
 						ps.setString(39, StringUtils.isBlank(response.getSourceType())?"":response.getSourceType());
 						ps.setString(40, StringUtils.isBlank(response.getCustomerCode())?"":response.getCustomerCode());
+						ps.setString(41, StringUtils.isBlank(response.getCustomerName())?"":response.getCustomerName());
+						ps.setString(42, StringUtils.isBlank(response.getBdmCode())?"":response.getBdmCode());
+						
 						for (int i = 1; i <= length; i++) {
-							ps.setString(i + 40, argument.getColumnByIndex(i - 1) == null ? null
+							ps.setString(i + 42, argument.getColumnByIndex(i - 1) == null ? null
 									: argument.getColumnByIndex(i - 1).toString().trim());
 							log.info("rowid: "+i+", rowvalue : "+argument.getColumnByIndex(i - 1) );
 						}

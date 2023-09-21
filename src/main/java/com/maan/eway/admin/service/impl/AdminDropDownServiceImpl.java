@@ -124,10 +124,14 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					
 						req.setTableName(tablename);
 				}  
-				
+				Class<?> forName =null;
+			try {	
 			String entityName = "com.maan.eway.bean."+req.getTableName();//entityName + ".class" ;
-				 Class<?> forName = Class.forName(entityName);//forName(entityName);
-				
+				forName = Class.forName(entityName);//forName(entityName);
+			}catch(Exception e) {//Spring Batch
+				String entityName = "com.maan.eway.batch.entity."+req.getTableName();//entityName + ".class" ;
+				 forName = Class.forName(entityName);//forName(entityName);
+			}
 
 			//	Class table = (Class) entityName ;
 				

@@ -205,7 +205,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 						// Issuer
 						if (loginData.getUserType().equalsIgnoreCase("Issuer")  ) {
 							
-							if(  loginData.getSubUserType().equalsIgnoreCase("both")  &&  (data.getItemValue().equalsIgnoreCase("low") || data.getItemValue().equalsIgnoreCase("high")))  {
+							if(  loginData.getSubUserType().equalsIgnoreCase("both")  &&  (data.getItemCode().equalsIgnoreCase("low") || data.getItemCode().equalsIgnoreCase("high")))  {
 								
 								if(! data.getItemCode().equalsIgnoreCase("both") ) {
 									res.setCode(data.getItemCode());
@@ -216,7 +216,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 								}
 								
 							} else  {
-								if(loginData.getSubUserType().equalsIgnoreCase(data.getItemValue()) ) {
+								if(loginData.getSubUserType().equalsIgnoreCase(data.getItemCode()) ) {
 									if(! data.getItemCode().equalsIgnoreCase("both") ) {
 										res.setCode(data.getItemCode());
 										res.setCodeDesc(data.getItemValue());
@@ -227,7 +227,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 								}
 							}
 						}  else  {
-							if(loginData.getSubUserType().equalsIgnoreCase(data.getItemValue()) ) {
+							if(loginData.getSubUserType().equalsIgnoreCase(data.getItemCode()) ) {
 								res.setCode(data.getItemCode());
 								res.setCodeDesc(data.getItemValue());
 								res.setDisplayName(data.getParam1());

@@ -1,0 +1,552 @@
+package com.maan.eway.excelconfig2;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.dozer.DozerBeanMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.maan.eway.bean.OneTimeTableDetails;
+import com.maan.eway.master.req.ColumnNameDropDownlReq;
+import com.maan.eway.res.DropDownRes;
+
+import net.bytebuddy.asm.Advice.Return;
+
+@Service
+public class XLConfigMasterServiceImpl {
+
+	@Autowired
+	XLConfigMasterRepo configRepo;
+
+	public List<Errors> validate(List<XLConfigMasterSaveReq> xlConfigList) {
+
+		List<Errors> eList = new ArrayList<>();
+
+		Integer code = 1;
+
+		for (XLConfigMasterSaveReq req : xlConfigList) {
+
+			if (!StringUtils.isBlank(req.getCompanyId())) {
+				if (!NumberUtils.isCreatable(req.getCompanyId())) {
+					eList.add(new Errors(code.toString(), "Company id", "Company id should be a numarical value"));
+				}
+			} else {
+				eList.add(new Errors(code.toString(), "Company id", "Company id is blank"));
+			}
+
+			if (!StringUtils.isBlank(req.getProductId())) {
+				if (!NumberUtils.isCreatable(req.getProductId())) {
+					eList.add(new Errors(code.toString(), "Product id", "Product id should be a numerical value"));
+				}
+			} else {
+				eList.add(new Errors(code.toString(), "Product id", "Product id is blank"));
+			}
+
+			if (!StringUtils.isBlank(req.getSectionId())) {
+				if (!NumberUtils.isCreatable(req.getSectionId())) {
+					eList.add(new Errors(code.toString(), "Section id", "Section id should be a numerical value"));
+				}
+			}
+			// else
+			// eList.add(new Errors("3", "Section Id", "Section Id is blank"));
+
+			if (!StringUtils.isBlank(req.getTypeId())) {
+				if (!NumberUtils.isCreatable(req.getTypeId()))
+					eList.add(new Errors(code.toString(), "Type id", "Type id should be a numerical value"));
+			} else {
+				eList.add(new Errors(code.toString(), "Type id", "Type id is blank"));
+
+//						if(upload==null) {
+//							eList.add(new Errors("4", "Type id", "Cannot find any record for this given information"));
+//						}
+			}
+
+			if (!StringUtils.isBlank(req.getFieldId())) {
+				if (!NumberUtils.isCreatable(req.getFieldId())) {
+					eList.add(new Errors(code.toString(), "Field Id", "Field Id should be a numerical value"));
+				} else {
+					XLConfigMaster xlConfig = configRepo.findByPK(req.getCompanyId(), req.getProductId(),
+							req.getTypeId(), req.getFieldId());
+					if (xlConfig != null) {
+						eList.add(new Errors(code.toString(), "Field Id", "Field Id already exists"));
+					}
+				}
+			} else
+				eList.add(new Errors("5", "Field Id", "Field Id is blank"));
+			
+
+			if (!StringUtils.isBlank(req.getExcelHeaderName())) {
+				if (req.getExcelHeaderName().length() > 200)
+					eList.add(new Errors(code.toString(), "Excel Header Name", "Excel Header Name is too long"));
+			}
+			/*
+			 * else { eList.add(new Errors(code.toString(), "Excel Header Name",
+			 * "Excel Header Name is blank")); }
+			 */
+
+			if (!StringUtils.isBlank(req.getMandatoryYn())) {
+				if (req.getMandatoryYn().length() != 1) {
+					eList.add(new Errors(code.toString(), "Mandatory YN", "Mandatory YN should be 'Y' or 'N'"));
+				} else if (!(req.getMandatoryYn().equalsIgnoreCase("y")
+						|| req.getMandatoryYn().equalsIgnoreCase("n"))) {
+					eList.add(new Errors(code.toString(), "Mandatory YN", "Mandatory YN should be 'Y' or 'N'"));
+				}
+			}
+			/*
+			 * else eList.add(new Errors(code.toString(), "Mandatory YN",
+			 * "Mandatory YN is blank"));
+			 */
+
+			if (!StringUtils.isBlank(req.getDataType())) {
+				if (req.getDataType().length() > 200)
+					eList.add(new Errors(code.toString(), "Data Type", "Data Type is too long"));
+			}
+			/*
+			 * else { eList.add(new Errors(code.toString(), "Data Type",
+			 * "Data Type is blank")); }
+			 */
+
+//				if (!StringUtils.isBlank(req.getDateFormat())) {
+//					if (req.getDateFormat().length() > 200)
+//						eList.add(new Errors("9", "Date Format", "Date Format is too long"));
+//				} else {
+//					eList.add(new Errors("9", "Date Format", "Date Format is blank"));
+//				}
+			//
+			if (!StringUtils.isBlank(req.getStatus())) {
+				if (req.getStatus().length() != 1) {
+					eList.add(new Errors("10", "Status", "Status should be 'Y' or 'N'"));
+				} else if (!(req.getStatus().equalsIgnoreCase("y") || req.getStatus().equalsIgnoreCase("n"))) {
+					eList.add(new Errors("10", "Status", "Status should be 'Y' or 'N'"));
+				}
+			} else
+				eList.add(new Errors("10", "Status", "Status is blank"));
+			//
+//				if (!StringUtils.isBlank(req.getExcelColumnIndex())) {
+//					if (!NumberUtils.isCreatable(req.getExcelColumnIndex())) {
+//						eList.add(new Errors("11", "Excel Column Index", "Excel Column Index should be a numerical value"));
+//					}
+//				} else
+//					eList.add(new Errors("11", "Excel Column Index", "Excel Column Index is blank"));
+
+			if (!StringUtils.isBlank(req.getFieldNameRaw())) {
+				if (req.getFieldNameRaw().length() > 200)
+					eList.add(new Errors(code.toString(), "Field Name Raw", "Field Name Raw is too long"));
+			}
+			/*
+			 * else { eList.add(new Errors(code.toString(), "Field Name Raw ",
+			 * "Field Name Raw is blank")); }
+			 */
+
+//				if (!StringUtils.isBlank(req.getFieldNameMain())) {
+//					if (req.getFieldNameMain().length() > 200)
+//						eList.add(new Errors("13", "Field Name Main", "Field Name Main is too long"));
+//				} else {
+//					eList.add(new Errors("13", "Field Name Main", "Field Name Main is blank"));
+//				}
+			//
+//				if (!StringUtils.isBlank(req.getFieldNameError())) {
+//					if (req.getFieldNameError().length() > 200)
+//						eList.add(new Errors("14", "Field Name Error", "Field Name Error is too long"));
+//				} else {
+//					eList.add(new Errors("14", "Field Name Error", "Field Name Error is blank"));
+//				}
+			//
+//				if (!StringUtils.isBlank(req.getExcelColumnYn())) {
+//					if (req.getExcelColumnYn().length() > 200)
+//						eList.add(new Errors("15", "Excel Column Yn", "Excel Column Yn is too long"));
+//				} else {
+//					eList.add(new Errors("15", "Excel Column Yn", "Excel Column Yn is blank"));
+//				}
+			//
+//				if (!StringUtils.isBlank(req.getDublicateCheck())) {
+//					if (req.getDublicateCheck().length() > 200)
+//						eList.add(new Errors("16", "Duplicate Check", "Duplicate Check is too long"));
+//				} else {
+//					eList.add(new Errors("16", "Duplicate Check", "Duplicate Check is blank"));
+//				}
+
+			if (!StringUtils.isBlank(req.getFieldLength())) {
+				if (!NumberUtils.isCreatable(req.getFieldLength())) {
+					eList.add(new Errors(code.toString(), "Field Length", "Field Length should be a numerical value"));
+				}
+			}
+			/*
+			 * else eList.add(new Errors(code.toString(), "Field Length",
+			 * "Field Length is blank"));
+			 */
+
+//				if (!StringUtils.isBlank(req.getMasterCheck())) {
+//					if (req.getMasterCheck().length() > 200)
+//						eList.add(new Errors("18", "Master Check", "Master Check is too long"));
+//				} else {
+//					eList.add(new Errors("18", "Master Check", "Master Check is blank"));
+//				}
+			//
+//				if (!StringUtils.isBlank(req.getMasterCheckField())) {
+//					if (req.getMasterCheckField().length() > 200)
+//						eList.add(new Errors("19", "Master Check Field", "Master Check Field is too long"));
+//				} else {
+//					eList.add(new Errors("19", "Master Check Field", "Master Check Field is blank"));
+//				}
+
+			/*
+			 * Temprory comment if (!StringUtils.isBlank(req.getDataRange())) { if
+			 * (req.getDataRange().length() > 200) eList.add(new Errors(code.toString(),
+			 * "Data Range", "Data Range is too long")); } else { eList.add(new
+			 * Errors(code.toString(), "Data Range ", "Data Range is blank")); }
+			 */
+
+			/*
+			 * if (!StringUtils.isBlank(req.getIsMainDefauVal())) { if
+			 * (req.getIsMainDefauVal().length() != 1) { eList.add(new
+			 * Errors(code.toString(), "IsMainDefauVal",
+			 * "IsMainDefauVal should be 'Y' or 'N'")); } else if
+			 * (!(req.getIsMainDefauVal().equalsIgnoreCase("y") ||
+			 * req.getIsMainDefauVal().equalsIgnoreCase("n"))) { eList.add(new
+			 * Errors(code.toString(), "IsMainDefauVal",
+			 * "IsMainDefauVal should be 'Y' or 'N'")); } } else eList.add(new
+			 * Errors(code.toString(), "IsMainDefauVal", "IsMainDefauVal is blank"));
+			 */
+
+			if (!StringUtils.isBlank(req.getApiJsonKey())) {
+				if (req.getApiJsonKey().length() > 200)
+					eList.add(new Errors(code.toString(), "Api Json Key", "Api Json Key is too long"));
+			} else {
+				eList.add(new Errors(code.toString(), "Api Json Key", "Api Json Key is blank"));
+			}
+
+			if (!StringUtils.isBlank(req.getSelColName())) {
+				if (req.getSelColName().length() > 200)
+					eList.add(new Errors(code.toString(), "SelColName", "SelColName is too long"));
+			} else {
+				eList.add(new Errors(code.toString(), "SelColName", "SelColName is blank"));
+			}
+
+//				if (!StringUtils.isBlank(req.getIsMainColIdx())) {
+//					if (!NumberUtils.isCreatable(req.getIsMainColIdx())) {
+//						eList.add(new Errors("24", "IsMainColIdx", "IsMainColIdx should be a numerical value"));
+//					}
+//				} else
+//					eList.add(new Errors("24", "IsMainColIdx", "IsMainColIdx is blank"));
+
+			if (!StringUtils.isBlank(req.getIsObject())) {
+				if (req.getIsObject().length() != 1) {
+					eList.add(new Errors(code.toString(), "Is Object", "Is Object should be 'Y' or 'N'"));
+				} else if (!(req.getIsObject().equalsIgnoreCase("y") || req.getIsObject().equalsIgnoreCase("n")
+						|| req.getIsObject().equalsIgnoreCase("l"))) {
+					eList.add(new Errors(code.toString(), "Is Object", "Is Object should be 'Y' or 'N' or 'L'"));
+				}
+			}
+			/*
+			 * else eList.add(new Errors(code.toString(), "Is Object",
+			 * "Is Object is blank"));
+			 */
+			if (!StringUtils.isBlank(req.getIsArray())) {
+				if (req.getIsArray().length() != 1) {
+					eList.add(new Errors(code.toString(), "Is Array", "Is Array should be 'Y' or 'N'"));
+				} else if (!(req.getIsArray().equalsIgnoreCase("y") || req.getIsArray().equalsIgnoreCase("n"))) {
+					eList.add(new Errors(code.toString(), "Is Array", "Is Array should be 'Y' or 'N'"));
+				}
+			} else
+				eList.add(new Errors(code.toString(), "Is Array", "Is Array is blank"));
+
+			if (!StringUtils.isBlank(req.getObjApijsonKey())) {
+				if (req.getObjApijsonKey().length() > 200)
+					eList.add(new Errors(code.toString(), "ObjApijsonKey", "ObjApijsonKey is too long"));
+			}
+			/*
+			 * else { eList.add(new Errors(code.toString(), "ObjApijsonKey",
+			 * "ObjApijsonKey is blank")); }
+			 */
+
+			/*
+			 * if (!StringUtils.isBlank(req.getObjSelcolKey())) { if
+			 * (req.getObjSelcolKey().length() > 200) eList.add(new Errors(code.toString(),
+			 * "ObjSelcolKey", "ObjSelcolKey is too long")); } else { eList.add(new
+			 * Errors(code.toString(), "ObjSelcolKey", "ObjSelcolKey is blank")); }
+			 */
+
+			/*
+			 * Temrory comment if (!StringUtils.isBlank(req.getObjDefaulVal())) { if
+			 * (req.getObjDefaulVal().length() != 1) { eList.add(new Errors(code.toString(),
+			 * "ObjDefaulVal", "ObjDefaulVal should be one character")); } else if
+			 * (!(req.getObjDefaulVal().equalsIgnoreCase("y") ||
+			 * req.getObjDefaulVal().equalsIgnoreCase("n"))) { eList.add(new
+			 * Errors(code.toString(), "ObjDefaulVal",
+			 * "ObjDefaulVal should be 'Y' or 'N'")); }
+			 * 
+			 * 
+			 * } else { eList.add(new Errors(code.toString(), "ObjDefaulVal",
+			 * "ObjDefaulVal is blank")); }
+			 */
+
+			code++;
+		}
+
+		return eList;
+		// return null;
+
+	}
+
+	public SuccessResponse saveXLConfig(XLConfigMasterSaveReq req) {
+
+		DozerBeanMapper mapper = new DozerBeanMapper();
+
+		XLConfigMaster xlConfig = new XLConfigMaster();
+
+		XLConfigMasterPK pk = new XLConfigMasterPK();
+
+		SuccessResponse sRes = new SuccessResponse();
+
+		// save
+//		if (StringUtils.isBlank(req.getFieldId())) {
+//
+//			Integer maxOfFieldId = configRepo.findMaxOfFieldId(req.getCompanyId(), req.getProductId(), req.getTypeId());
+
+		mapper.map(req, pk);
+
+//			pk.setFieldId(maxOfFieldId + 1);
+
+		pk.setSectionId(Integer.valueOf(StringUtils.isBlank(req.getSectionId()) ? "0" : req.getSectionId()));
+
+		xlConfig.setPk(pk);
+
+		mapper.map(req, xlConfig);
+
+		xlConfig.setExcelColumnIndex(Integer.valueOf(req.getFieldId()));
+
+		xlConfig.setIsMainColIdx(Integer.valueOf(req.getFieldId()));
+
+		configRepo.save(xlConfig);
+
+		sRes.setSuccessCode(req.getCompanyId());
+
+		sRes.setSuccessMessage("Inserted Successfully");
+
+		return sRes;
+//		} else {
+//
+//			XLConfigMaster config = configRepo.findXLConfigMasterByPk(req.getCompanyId(), req.getProductId(),
+//					req.getTypeId(), req.getFieldId());
+//
+//			// mapper.map(req, pk);
+//
+////			xlConfig.setPk(pk);
+//
+//			mapper.map(req, config);
+//
+//			configRepo.save(config);
+//
+//			sRes.setSuccessCode(req.getCompanyId());
+//
+//			sRes.setSuccessMessage("Updated Successfully");
+//
+//			return sRes;
+//		}
+
+	}
+
+//	public List<XLConfigMasterSaveReq> getList(List<Map<String, Object>> reqList) {
+//
+//		List<XLConfigMasterSaveReq> xlConfigList = new ArrayList<>();
+//
+//		if (reqList.size() > 0) {
+//
+//			for (Map<String, Object> map : reqList) {
+//
+//				XLConfigMasterSaveReq save = new XLConfigMasterSaveReq();
+//
+//				save.setCompanyId((String) map.get("CompanyId"));
+//				save.setProductId((String) map.get("ProductId"));
+//				save.setSectionId((String) map.get("SectionId"));
+//				save.setTypeId((String) map.get("TypeId"));
+//				save.setFieldId((String) map.get("FieldId"));
+//				save.setExcelHeaderName((String) map.get("ExcelHeaderName"));
+//				save.setMandatoryYn((String) map.get("MandatoryYn"));
+//				save.setDataType((String) map.get("DataType"));
+//				save.setFieldNameRaw((String) map.get("FieldNameRaw"));
+//				save.setFieldLength((String) map.get("FieldLength"));
+//				save.setDataRange((String) map.get("DataRange"));
+//				save.setIsMainDefauVal((String) map.get("IsMainDefauVal"));
+//				save.setApiJsonKey((String) map.get("ApiJsonKey"));
+//				save.setSelColName((String) map.get("SelColName"));
+//				save.setIsObject((String) map.get("IsObject"));
+//				save.setIsArray((String) map.get("IsArray"));
+//				save.setObjApijsonKey((String) map.get("ObjApijsonKey"));
+//				save.setObjSelcolKey((String) map.get("ObjSelcolKey"));
+//				save.setObjDefaulVal((String) map.get("ObjDefaulVal"));
+//
+//				xlConfigList.add(save);
+//			}
+//			return xlConfigList;
+//		} else
+//			return null;
+//	}
+
+//	public List<List<Errors>> validateList(List<XLConfigMasterSaveReq> xlConfigList) {
+//
+//		List<List<Errors>> massError = new ArrayList<>();
+//
+//		for (XLConfigMasterSaveReq req : xlConfigList) {
+//			List<Errors> elist = validate(req);
+//			massError.add(elist);
+//		}
+//
+//		return massError;
+//	}
+
+	public SuccessResponse saveList(List<XLConfigMasterSaveReq> xlConfigList) {
+
+		SuccessResponse sRes = new SuccessResponse();
+
+		List<XLConfigMaster> lastData = configRepo.findXLConfigMasterByPk(xlConfigList.get(0).getCompanyId(),
+				xlConfigList.get(0).getProductId(), xlConfigList.get(0).getTypeId());
+
+		if (lastData.size() > 0) {
+			for (XLConfigMaster xl : lastData) {
+				configRepo.delete(xl);
+			}
+		}
+
+		for (XLConfigMasterSaveReq save : xlConfigList) {
+			sRes = saveXLConfig(save);
+		}
+
+		return sRes;
+	}
+
+	public XLConfigMasterResponse getByPK(XLConfigGetReq req) {
+
+		XLConfigMaster xlConfig = configRepo.findByPK(req.getCompanyId(), req.getProductId(), req.getTypeId(),
+				req.getFieldId());
+
+		XLConfigMasterResponse resp = new XLConfigMasterResponse();
+
+		DozerBeanMapper mapper = new DozerBeanMapper();
+
+		if (xlConfig != null) {
+
+			XLConfigMasterPK pk = new XLConfigMasterPK();
+
+			mapper.map(xlConfig.getPk(), pk);
+
+			mapper.map(xlConfig, resp);
+
+			resp.setCompanyId(pk.getCompanyId().toString());
+			resp.setProductId(pk.getProductId().toString());
+			resp.setSectionId(pk.getSectionId().toString());
+			resp.setTypeId(pk.getTypeId().toString());
+			resp.setFieldId(pk.getFieldId().toString());
+
+			return resp;
+		} else
+			return null;
+	}
+
+	public List<XLConfigMasterResponse> getAll(XLConfigGetReq req) {
+
+		List<XLConfigMaster> xlConfigList = configRepo.findXLConfigMasterByPk(req.getCompanyId(), req.getProductId(),
+				req.getTypeId());
+
+		List<XLConfigMasterResponse> respList = new ArrayList<XLConfigMasterResponse>();
+
+		DozerBeanMapper mapper = new DozerBeanMapper();
+
+		if (xlConfigList.size() != 0) {
+
+			for (XLConfigMaster xlConfig : xlConfigList) {
+
+				XLConfigMasterResponse resp = new XLConfigMasterResponse();
+
+				XLConfigMasterPK pk = new XLConfigMasterPK();
+
+				mapper.map(xlConfig.getPk(), pk);
+
+				mapper.map(xlConfig, resp);
+
+				resp.setCompanyId(pk.getCompanyId().toString());
+				resp.setProductId(pk.getProductId().toString());
+				resp.setSectionId(pk.getSectionId().toString());
+				resp.setTypeId(pk.getTypeId().toString());
+				resp.setFieldId(pk.getFieldId().toString());
+
+				respList.add(resp);
+			}
+
+			return respList;
+		} else
+			return null;
+	}
+
+	public List<DataType> getDataType() {
+
+		List<Map<String, String>> list = configRepo.getDataType();
+
+		List<DataType> dataTypeList = new ArrayList<>();
+
+		if (list.size() != 0) {
+
+			for (Map<String, String> map : list) {
+
+				DataType dataType = new DataType();
+				dataType.setItemCode(map.get("item_code"));
+				dataType.setItemValue(map.get("item_value"));
+
+				dataTypeList.add(dataType);
+			}
+
+			return dataTypeList;
+		}
+		return null;
+	}
+
+	public List<DropDownRes> columnName(ColumnNameDropDownlReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			List<OneTimeTableDetails> getList = configRepo.findColumn(Integer.valueOf(req.getItemId()), "Y");
+			for (OneTimeTableDetails data : getList) {
+				if (!data.getItemType().equalsIgnoreCase("ONE_TIME_TABLE")) {
+					DropDownRes res = new DropDownRes();
+					res.setCode(data.getItemCode());
+					res.setCodeDesc(data.getDisplayName());
+					res.setStatus(data.getStatus());
+					resList.add(res);
+				}
+			}
+		} catch (Exception e) {
+
+			return null;
+		}
+		return resList;
+	}
+
+	public SuccessResponse deleteByPk(XLConfigGetReq req) {
+
+		XLConfigMaster xlConfig = configRepo.findByPK(req.getCompanyId(), req.getProductId(), req.getTypeId(),
+				req.getFieldId());
+
+		SuccessResponse sRes = new SuccessResponse();
+
+		if (xlConfig != null) {
+
+			sRes.setSuccessCode(xlConfig.getPk().getFieldId().toString());
+
+			configRepo.delete(xlConfig);
+
+			sRes.setSuccessMessage("Deleted");
+
+			return sRes;
+
+		} else {
+
+			return null;
+		}
+
+	}
+
+}

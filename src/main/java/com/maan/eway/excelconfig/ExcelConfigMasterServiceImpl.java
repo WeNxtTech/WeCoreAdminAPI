@@ -11,13 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.maan.eway.batch.entity.EwayUploadTypeMaster;
+import com.maan.eway.batch.repository.EwayUploadTypeMasterRepository;
 import com.maan.eway.excelconfig2.DataType;
 
 @Service
 public class ExcelConfigMasterServiceImpl implements ExcelConfigMasterService {
 
 	@Autowired
-	UploadTypeRepo repo;
+	private EwayUploadTypeMasterRepository typeMasterRepository;
 
 	public List<Errors> validate(UploadTypeSaveReq req) {
 
@@ -51,7 +53,7 @@ public class ExcelConfigMasterServiceImpl implements ExcelConfigMasterService {
 			if (!NumberUtils.isCreatable(req.getTypeId())) {
 				eList.add(new Errors("4", "Type id", "Type id should be a numerical value"));
 			} else {
-				UploadType upload = repo.findBy(req.getCompanyId(), req.getProductId(), req.getTypeId(),
+				EwayUploadTypeMaster upload = typeMasterRepository.findBy(req.getCompanyId(), req.getProductId(), req.getTypeId(),
 						StringUtils.isBlank(req.getSectionId())?"0":req.getSectionId());
 				if (upload == null) {
 					eList.add(new Errors("4", "Type id", "Cannot find any record for this given information"));
@@ -140,33 +142,30 @@ public class ExcelConfigMasterServiceImpl implements ExcelConfigMasterService {
 		// insert
 		if (StringUtils.isBlank(req.getTypeId())) {
 
-			UploadType upload = new UploadType();
+			EwayUploadTypeMaster upload = new EwayUploadTypeMaster();
 
-			UploadTypePK pk = new UploadTypePK();
 
-			Integer typeId = repo.getLastNo(req.getCompanyId());
+			Integer typeId = typeMasterRepository.getLastNo(req.getCompanyId());
 
-			pk.setTypeId(typeId != null ? typeId + 1 : 101);
-			pk.setCompanyId(Integer.valueOf(req.getCompanyId()));
-			pk.setProductId(Integer.valueOf(req.getProductId()));
-			pk.setSectionId(Integer.valueOf(StringUtils.isBlank(req.getSectionId())?"0":req.getSectionId()));
+			upload.setTypeid(typeId != null ? typeId + 1 : 101);
+			upload.setCompanyId(Integer.valueOf(req.getCompanyId()));
+			upload.setProductId(Integer.valueOf(req.getProductId()));
+			upload.setSectionId(Integer.valueOf(StringUtils.isBlank(req.getSectionId())?"0":req.getSectionId()));
 			
 			mapper.map(req, upload);
 
-			upload.setPk(pk);
-
-			upload.setTypeName(req.getTypeName().trim());
-			upload.setStatus(req.getStatus().toUpperCase().charAt(0));
+			upload.setTypename(req.getTypeName().trim());
+			upload.setStatus(req.getStatus().toUpperCase());
 			upload.setRawTableName(req.getRawTableName());
 			upload.setApiName(req.getApiName().trim());
 			upload.setProductDesc(req.getProductDesc());
 			upload.setFilePath(req.getFilePath().trim());
 			upload.setRawTableId(req.getRawTableId());
-			upload.setIsMainStatus(req.getIsMainStatus().toUpperCase().charAt(0));
+			//upload.setIsMainStatus(req.getIsMainStatus().toUpperCase().charAt(0));
 			upload.setApiMethod(req.getApiMethod());
 
 			// UploadType.builder().pk(pk).section_id(Integer.valueOf(req.getSectionid())).typename(req.getTypename()).status(req.getStatus()).build();
-			repo.save(upload);
+			typeMasterRepository.save(upload);
 
 			sRes.setSuccessMessage("Saved Successfully");
 			sRes.setSuccessCode(req.getCompanyId());
@@ -175,7 +174,7 @@ public class ExcelConfigMasterServiceImpl implements ExcelConfigMasterService {
 		} // update
 		else {
 
-			UploadType lastUpload = repo.findBy(req.getCompanyId(), req.getProductId(), req.getTypeId(),
+			EwayUploadTypeMaster lastUpload = typeMasterRepository.findBy(req.getCompanyId(), req.getProductId(), req.getTypeId(),
 					StringUtils.isBlank(req.getSectionId())?"0":req.getSectionId());
 
 			if (lastUpload != null) {
@@ -191,16 +190,16 @@ public class ExcelConfigMasterServiceImpl implements ExcelConfigMasterService {
 //				upload.setPk(pk);
 
 //				lastUpload.setSectionId(Integer.valueOf(StringUtils.isBlank(req.getSectionId())?"0":req.getSectionId()));
-				lastUpload.setTypeName(req.getTypeName());
-				lastUpload.setStatus(req.getStatus().toUpperCase().charAt(0));
+				lastUpload.setTypename(req.getTypeName().trim());
+				lastUpload.setStatus(req.getStatus().toUpperCase());
 				lastUpload.setRawTableName(req.getRawTableName());
 				lastUpload.setApiName(req.getApiName());
 				lastUpload.setProductDesc(req.getProductDesc());
 				lastUpload.setFilePath(req.getFilePath());
 				lastUpload.setRawTableId(req.getRawTableId());
-				lastUpload.setIsMainStatus(req.getIsMainStatus().toUpperCase().charAt(0));
+				//lastUpload.setIsMainStatus(req.getIsMainStatus().toUpperCase().charAt(0));
 				lastUpload.setApiMethod(req.getApiMethod());
-				repo.save(lastUpload);
+				typeMasterRepository.save(lastUpload);
 
 				sRes.setSuccessMessage("Updated Successfully");
 				sRes.setSuccessCode(req.getCompanyId());
@@ -217,17 +216,18 @@ public class ExcelConfigMasterServiceImpl implements ExcelConfigMasterService {
 
 			DozerBeanMapper mapper = new DozerBeanMapper();
 
-			UploadType upload = repo.findBy(req.getCompanyId(), req.getProductId(), req.getTypeId(),
+			EwayUploadTypeMaster upload = typeMasterRepository.findBy(req.getCompanyId(), req.getProductId(), req.getTypeId(),
 					StringUtils.isBlank(req.getSectionId())?"0":req.getSectionId());
 
 			if (upload != null) {
 
 				UploadTypeResponse resp = new UploadTypeResponse();
-
-				resp.setCompanyId(upload.getPk().getCompanyId().toString());
-				resp.setProductId(upload.getPk().getProductId().toString());
-				resp.setSectionId(upload.getPk().getProductId().toString());
-				resp.setTypeId(upload.getPk().getTypeId().toString());
+				
+				resp.setTypeName(upload.getTypename());
+				resp.setCompanyId(upload.getCompanyId().toString());
+				resp.setProductId(upload.getProductId().toString());
+				resp.setSectionId(upload.getProductId().toString());
+				resp.setTypeId(upload.getTypeid().toString());
 
 				mapper.map(upload, resp);
 
@@ -241,7 +241,7 @@ public class ExcelConfigMasterServiceImpl implements ExcelConfigMasterService {
 
 	public List<UploadTypeResponse> getAll(UploadTypeGetAllReq req) {
 
-		List<UploadType> list = repo.findByCompanyId(req.getCompanyId());
+		List<EwayUploadTypeMaster> list = typeMasterRepository.findByCompanyId(req.getCompanyId());
 		
 		if (list.size() > 0) {
 			
@@ -249,13 +249,15 @@ public class ExcelConfigMasterServiceImpl implements ExcelConfigMasterService {
 
 			DozerBeanMapper mapper = new DozerBeanMapper();
 
-			for (UploadType upload : list) {
+			for (EwayUploadTypeMaster upload : list) {
 
 				UploadTypeResponse res = new UploadTypeResponse();
-
-				res.setCompanyId(upload.getPk().getCompanyId().toString());
-				res.setProductId(upload.getPk().getProductId().toString());
-				res.setTypeId(upload.getPk().getTypeId().toString());
+				
+				
+				res.setTypeName(upload.getTypename());
+				res.setCompanyId(upload.getCompanyId().toString());
+				res.setProductId(upload.getProductId().toString());
+				res.setTypeId(upload.getTypeid().toString());
 
 				mapper.map(upload, res);
 
@@ -277,13 +279,13 @@ public class ExcelConfigMasterServiceImpl implements ExcelConfigMasterService {
 //		pk.setProduct_id(Integer.valueOf(req.getProductid()));
 //		pk.setTypeid(Integer.valueOf(req.getTypeid()));
 
-		UploadType upload = repo.findBy(req.getCompanyId(), req.getProductId(), req.getTypeId(), req.getSectionId());
+		EwayUploadTypeMaster upload = typeMasterRepository.findBy(req.getCompanyId(), req.getProductId(), req.getTypeId(), req.getSectionId());
 
 		if (upload != null) {
 
-			repo.delete(upload);
+			typeMasterRepository.delete(upload);
 
-			sRes.setSuccessCode(upload.getPk().getCompanyId().toString());
+			sRes.setSuccessCode(upload.getCompanyId().toString());
 			sRes.setSuccessMessage("Deleted Successfully");
 			return sRes;
 

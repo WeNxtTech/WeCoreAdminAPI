@@ -32,6 +32,9 @@ public class SaveUploadTypeReq {
 	@JsonProperty("ProductDesc")
 	public String productDesc;
 	
+	@JsonProperty("ApiMethod")
+	public String apiMethod;
+	
 	
 	
 

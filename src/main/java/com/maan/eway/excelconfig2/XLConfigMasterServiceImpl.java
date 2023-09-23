@@ -10,6 +10,8 @@ import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.maan.eway.batch.entity.EwayXlconfigMaster;
+import com.maan.eway.batch.repository.EwayXlconfigMasterRepository;
 import com.maan.eway.bean.OneTimeTableDetails;
 import com.maan.eway.master.req.ColumnNameDropDownlReq;
 import com.maan.eway.res.DropDownRes;
@@ -20,7 +22,7 @@ import net.bytebuddy.asm.Advice.Return;
 public class XLConfigMasterServiceImpl {
 
 	@Autowired
-	XLConfigMasterRepo configRepo;
+	EwayXlconfigMasterRepository configRepo;
 
 	public List<Errors> validate(List<XLConfigMasterSaveReq> xlConfigList) {
 
@@ -69,7 +71,7 @@ public class XLConfigMasterServiceImpl {
 				if (!NumberUtils.isCreatable(req.getFieldId())) {
 					eList.add(new Errors(code.toString(), "Field Id", "Field Id should be a numerical value"));
 				} else {
-					XLConfigMaster xlConfig = configRepo.findByPK(req.getCompanyId(), req.getProductId(),
+					EwayXlconfigMaster xlConfig = configRepo.findByPK(req.getCompanyId(), req.getProductId(),
 							req.getTypeId(), req.getFieldId());
 					if (xlConfig != null) {
 						eList.add(new Errors(code.toString(), "Field Id", "Field Id already exists"));
@@ -297,9 +299,8 @@ public class XLConfigMasterServiceImpl {
 
 		DozerBeanMapper mapper = new DozerBeanMapper();
 
-		XLConfigMaster xlConfig = new XLConfigMaster();
+		EwayXlconfigMaster xlConfig = new EwayXlconfigMaster();
 
-		XLConfigMasterPK pk = new XLConfigMasterPK();
 
 		SuccessResponse sRes = new SuccessResponse();
 
@@ -308,16 +309,19 @@ public class XLConfigMasterServiceImpl {
 //
 //			Integer maxOfFieldId = configRepo.findMaxOfFieldId(req.getCompanyId(), req.getProductId(), req.getTypeId());
 
-		mapper.map(req, pk);
+//		mapper.map(req, pk);
 
 //			pk.setFieldId(maxOfFieldId + 1);
 
-		pk.setSectionId(Integer.valueOf(StringUtils.isBlank(req.getSectionId()) ? "0" : req.getSectionId()));
-
-		xlConfig.setPk(pk);
+//		pk.setSectionId(Integer.valueOf(StringUtils.isBlank(req.getSectionId()) ? "0" : req.getSectionId()));
+//
+//		xlConfig.setPk(pk);
 
 		mapper.map(req, xlConfig);
 
+		xlConfig.setSectionId(Integer.valueOf(StringUtils.isBlank(req.getSectionId()) ? "0" : req.getSectionId()));
+
+		
 		xlConfig.setExcelColumnIndex(Integer.valueOf(req.getFieldId()));
 
 		xlConfig.setIsMainColIdx(Integer.valueOf(req.getFieldId()));
@@ -404,11 +408,11 @@ public class XLConfigMasterServiceImpl {
 
 		SuccessResponse sRes = new SuccessResponse();
 
-		List<XLConfigMaster> lastData = configRepo.findXLConfigMasterByPk(xlConfigList.get(0).getCompanyId(),
+		List<EwayXlconfigMaster> lastData = configRepo.findXLConfigMasterByPk(xlConfigList.get(0).getCompanyId(),
 				xlConfigList.get(0).getProductId(), xlConfigList.get(0).getTypeId());
 
 		if (lastData.size() > 0) {
-			for (XLConfigMaster xl : lastData) {
+			for (EwayXlconfigMaster xl : lastData) {
 				configRepo.delete(xl);
 			}
 		}
@@ -422,7 +426,7 @@ public class XLConfigMasterServiceImpl {
 
 	public XLConfigMasterResponse getByPK(XLConfigGetReq req) {
 
-		XLConfigMaster xlConfig = configRepo.findByPK(req.getCompanyId(), req.getProductId(), req.getTypeId(),
+		EwayXlconfigMaster xlConfig = configRepo.findByPK(req.getCompanyId(), req.getProductId(), req.getTypeId(),
 				req.getFieldId());
 
 		XLConfigMasterResponse resp = new XLConfigMasterResponse();
@@ -431,17 +435,17 @@ public class XLConfigMasterServiceImpl {
 
 		if (xlConfig != null) {
 
-			XLConfigMasterPK pk = new XLConfigMasterPK();
+//			XLConfigMasterPK pk = new XLConfigMasterPK();
 
-			mapper.map(xlConfig.getPk(), pk);
+//			mapper.map(xlConfig.getPk(), pk);
 
 			mapper.map(xlConfig, resp);
 
-			resp.setCompanyId(pk.getCompanyId().toString());
-			resp.setProductId(pk.getProductId().toString());
-			resp.setSectionId(pk.getSectionId().toString());
-			resp.setTypeId(pk.getTypeId().toString());
-			resp.setFieldId(pk.getFieldId().toString());
+			resp.setCompanyId(xlConfig.getCompanyId().toString());
+			resp.setProductId(xlConfig.getProductId().toString());
+			resp.setSectionId(xlConfig.getSectionId().toString());
+			resp.setTypeId(xlConfig.getTypeid().toString());
+			resp.setFieldId(xlConfig.getFieldid().toString());
 
 			return resp;
 		} else
@@ -450,7 +454,7 @@ public class XLConfigMasterServiceImpl {
 
 	public List<XLConfigMasterResponse> getAll(XLConfigGetReq req) {
 
-		List<XLConfigMaster> xlConfigList = configRepo.findXLConfigMasterByPk(req.getCompanyId(), req.getProductId(),
+		List<EwayXlconfigMaster> xlConfigList = configRepo.findXLConfigMasterByPk(req.getCompanyId(), req.getProductId(),
 				req.getTypeId());
 
 		List<XLConfigMasterResponse> respList = new ArrayList<XLConfigMasterResponse>();
@@ -459,21 +463,21 @@ public class XLConfigMasterServiceImpl {
 
 		if (xlConfigList.size() != 0) {
 
-			for (XLConfigMaster xlConfig : xlConfigList) {
+			for (EwayXlconfigMaster xlConfig : xlConfigList) {
 
 				XLConfigMasterResponse resp = new XLConfigMasterResponse();
 
-				XLConfigMasterPK pk = new XLConfigMasterPK();
+//				XLConfigMasterPK pk = new XLConfigMasterPK();
 
-				mapper.map(xlConfig.getPk(), pk);
+//				mapper.map(xlConfig.getPk(), pk);
 
 				mapper.map(xlConfig, resp);
 
-				resp.setCompanyId(pk.getCompanyId().toString());
-				resp.setProductId(pk.getProductId().toString());
-				resp.setSectionId(pk.getSectionId().toString());
-				resp.setTypeId(pk.getTypeId().toString());
-				resp.setFieldId(pk.getFieldId().toString());
+				resp.setCompanyId(xlConfig.getCompanyId().toString());
+				resp.setProductId(xlConfig.getProductId().toString());
+				resp.setSectionId(xlConfig.getSectionId().toString());
+				resp.setTypeId(xlConfig.getTypeid().toString());
+				resp.setFieldId(xlConfig.getFieldid().toString());
 
 				respList.add(resp);
 			}
@@ -527,14 +531,14 @@ public class XLConfigMasterServiceImpl {
 
 	public SuccessResponse deleteByPk(XLConfigGetReq req) {
 
-		XLConfigMaster xlConfig = configRepo.findByPK(req.getCompanyId(), req.getProductId(), req.getTypeId(),
+		EwayXlconfigMaster xlConfig = configRepo.findByPK(req.getCompanyId(), req.getProductId(), req.getTypeId(),
 				req.getFieldId());
 
 		SuccessResponse sRes = new SuccessResponse();
 
 		if (xlConfig != null) {
 
-			sRes.setSuccessCode(xlConfig.getPk().getFieldId().toString());
+			sRes.setSuccessCode(xlConfig.getFieldid().toString());
 
 			configRepo.delete(xlConfig);
 

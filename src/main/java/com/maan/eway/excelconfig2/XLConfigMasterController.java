@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.maan.eway.excelconfig2.CommonResponse;
+import com.maan.eway.batch.repository.EwayXlconfigMasterRepository;
 import com.maan.eway.master.req.ColumnNameDropDownlReq;
 import com.maan.eway.res.DropDownRes;
 
@@ -26,7 +26,7 @@ public class XLConfigMasterController {
 	XLConfigMasterServiceImpl service;
 
 	@Autowired
-	XLConfigMasterRepo repo;
+	EwayXlconfigMasterRepository repo;
 
 	@PostMapping("/save")
 	public ResponseEntity<CommonResponse> save(@RequestBody List<XLConfigMasterSaveReq> req) {

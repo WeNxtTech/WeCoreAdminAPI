@@ -13,16 +13,24 @@
 package com.maan.eway.batch.entity;
 
 
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
+import java.io.Serializable;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 
-import lombok.*;
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.List;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 
 
@@ -88,8 +96,14 @@ private static final long serialVersionUID = 1L;
     @Column(name="FILE_PATH", length=100)
     private String     filePath ;
 
-   // @Column(name="API_METHOD", length=100)
-  //  private String     apiMethod ;
+    @Column(name="API_METHOD", length=100)
+    private String     apiMethod ;
+    
+    @Column(name="RAW_TABLE_ID", length=100)
+    private String     rawTableId ;
+    
+    @Column(name="ENTRY_DATE", length=100)
+    private Date     entryDate ;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 

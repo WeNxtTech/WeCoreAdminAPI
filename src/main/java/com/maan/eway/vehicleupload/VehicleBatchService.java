@@ -1,5 +1,7 @@
 package com.maan.eway.vehicleupload;
 
+import java.util.List;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import com.maan.eway.batch.req.DeleteRecordReq;
@@ -13,6 +15,7 @@ import com.maan.eway.batch.req.SamplFileDownloadReq;
 import com.maan.eway.batch.req.SaveUploadTypeReq;
 import com.maan.eway.batch.req.UpdateRecordReq;
 import com.maan.eway.batch.res.EwayUploadRes;
+import com.maan.eway.batch.res.SaveXlConfigReq;
 import com.maan.eway.res.CommonRes;
 
 public interface VehicleBatchService {
@@ -40,5 +43,7 @@ public interface VehicleBatchService {
 	CommonRes getUploadMaster(GetUploadTypeReq req);
 
 	CommonRes moveRecords(MoveRecordsReq req, String token);
+
+	CommonRes saveExcelField(List<SaveXlConfigReq> req);
 
 }

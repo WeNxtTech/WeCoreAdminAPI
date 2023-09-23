@@ -15,7 +15,6 @@ package com.maan.eway.batch.entity;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -117,42 +116,61 @@ private static final long serialVersionUID = 1L;
     @Column(name="DATA_RANGE", length=100)
     private String     dataRange ;
 
-  /*  @Column(name="ISMAIN_DEFAU_VAL", length=100)
-    private String     isMainDefauVal ;
+    @Column(name="ARRAY_JSONDEFAULT_VAL", length=100)
+    private String     arrayJsonDefaultVal ;
     
-    @Column(name="API_JSON_KEY", length=100)
-    private String     apiJsonKey ;
+    @Column(name="ARRAY_JSON_KEY", length=100)
+    private String     arrayJsonKey ;
     
-    @Column(name="SEL_COL_NAME", length=100)
-    private String     selColName ;
+    @Column(name="ARRAY_TABLE_COL", length=100)
+    private String     arrayTableCol ;
     
-    @Column(name="IS_MAIN_COL_IDX", length=100)
-    private Integer     isMainColIdx ;
+    @Column(name="IS_ARRAY_VAL", length=100)
+    private String     isArrayVal ;
     
+    @Column(name="OBJ_JSONDEFAULT_VAL", length=100)
+    private String     objJsonDefaultVal ;
     
-    @Column(name="IS_OBJECT", length=100)
-    private String     isObject ;
+    @Column(name="OBJ_JSON_KEY", length=100)
+    private String     objJsonKey ;
     
+    @Column(name="OBJ_TABLE_COL", length=100)
+    private String     objTableCol ;
     
-    @Column(name="IS_ARRAY", length=100)
-    private String     isArray ;
-    
-    
-    @Column(name="OBJ_APIJSON_KEY", length=100)
-    private String     objApiJsonKey ;
-    
-    @Column(name="OBJ_SELCOL_KEY", length=100)
-    private String     objSelcolKey ;
-    
-    @Column(name="OBJ_DEFAUL_VAL", length=100)
-    private String     objDefaulVal ;
-    
-    @Column(name="ISMAIN_MOVE", length=100)
-    private String     isMainMove ;
+    @Column(name="IS_OBJECT_VAL", length=100)
+    private String     isObjectVal ;
     
     //--- ENTITY LINKS ( RELATIONSHIP )
 
-*/
+    @Column(name="ISMAIN_DEFAU_VAL")
+	private String isMainDefauVal;
+	
+	@Column(name="API_JSON_KEY")
+	private String apiJsonKey;
+	
+	@Column(name="SEL_COL_NAME")
+	private String selColName;
+	
+	@Column(name="IS_MAIN_COL_IDX")
+	private Integer isMainColIdx;
+	
+	@Column(name="IS_OBJECT")
+	private String isObject;
+	
+	@Column(name="IS_ARRAY")
+	private String isArray;
+	
+	@Column(name="OBJ_APIJSON_KEY")
+	private String objApijsonKey;
+	
+	@Column(name="OBJ_SELCOL_KEY")
+	private String objSelcolKey;
+	
+	@Column(name="OBJ_DEFAUL_VAL")
+	private String objDefaulVal;
+	
+	@Column(name="ISMAIN_MOVE")
+	private String ismainMove;
 }
 
 

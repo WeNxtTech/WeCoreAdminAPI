@@ -21,10 +21,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -38,7 +36,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.query.NativeQuery;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -56,13 +53,11 @@ import com.google.gson.Gson;
 import com.maan.eway.batch.entity.EserviceMotorDetailsRaw;
 import com.maan.eway.batch.entity.EwayEmplyeeDetailRaw;
 import com.maan.eway.batch.entity.EwayUploadTypeMaster;
-import com.maan.eway.batch.entity.EwayUploadTypeMasterV1;
 import com.maan.eway.batch.entity.EwayXlconfigMaster;
 import com.maan.eway.batch.entity.SqlSeqNumber;
 import com.maan.eway.batch.repository.EserviceMotorDetailsRawRepository;
 import com.maan.eway.batch.repository.EwayEmplyeeDetailRawRepository;
 import com.maan.eway.batch.repository.EwayUploadTypeMasterRepository;
-import com.maan.eway.batch.repository.EwayUploadTypeMasterRepositoryV2;
 import com.maan.eway.batch.repository.EwayXlconfigMasterRepository;
 import com.maan.eway.batch.repository.ProductEmployeesDetailsRepository;
 import com.maan.eway.batch.repository.SeqRefnoRepository;
@@ -86,6 +81,7 @@ import com.maan.eway.batch.res.GetRecordsRes;
 import com.maan.eway.batch.res.GetTransactionStatusRes;
 import com.maan.eway.batch.res.GetUploadTransactionRes;
 import com.maan.eway.batch.res.GetUploadTypeMasterRes;
+import com.maan.eway.batch.res.SaveXlConfigReq;
 import com.maan.eway.batch.res.XlConfigData;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.ProductEmployeeDetails;
@@ -114,9 +110,6 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 	
 	@Autowired
 	private ProductEmployeesDetailsRepository employeesDetailsRepository;
-	
-	@Autowired
-	private EwayUploadTypeMasterRepositoryV2 uploadTypeMasterRepositoryV2;
 	
 	Logger log =LogManager.getLogger(VehicleBatchServiceImpl.class);
 
@@ -1174,10 +1167,10 @@ public CommonRes saveUploadMaster(SaveUploadTypeReq req) {
 	try {
 		Integer companyId =Integer.valueOf(req.getCompanyId());
 		Integer productId =Integer.valueOf(req.getProductId());
-		Integer typeId =uploadTypeMasterRepositoryV2.getTypeIdByCompanyIdAndProduyctId(companyId, productId);
+		Integer typeId =uploadTypeRepo.findByCompanyIdAndProductId(companyId, productId);
 	    Integer type_id =StringUtils.isBlank(req.getRawTableId())?typeId==null?101:typeId :Integer.valueOf(req.getRawTableId());
 		
-	    EwayUploadTypeMasterV1 uploadMaster =EwayUploadTypeMasterV1.builder()
+	    EwayUploadTypeMaster uploadMaster =EwayUploadTypeMaster.builder()
 	    		.companyId(companyId)
 	    		.productId(productId)
 	    		.typeid(type_id)
@@ -1187,10 +1180,11 @@ public CommonRes saveUploadMaster(SaveUploadTypeReq req) {
 	    		.entryDate(new Date())
 	    		.status(StringUtils.isBlank(req.getStatus())?"N":req.getStatus())
 	    		.productDesc(StringUtils.isBlank(req.getProductDesc())?null:req.getProductDesc())
-	    		.rawTableId(Integer.valueOf(req.getRawTableId()))
+	    		.rawTableId(req.getRawTableId())
+	    		.apiMethod(req.getApiMethod())
 	    		.rawTableName(req.getRawTableName())
 	    		.build();
-	    uploadTypeMasterRepositoryV2.save(uploadMaster);
+	    uploadTypeRepo.save(uploadMaster);
 	    returnRes.setMessage("SUCCESS");
 	}catch (Exception e) {
 		e.printStackTrace();
@@ -1206,7 +1200,7 @@ public CommonRes getUploadMaster(GetUploadTypeReq req) {
 	CommonRes returnRes = new CommonRes();
 	try {
 		ArrayList<GetUploadTypeMasterRes> returnList =new ArrayList<GetUploadTypeMasterRes>();
-		List<EwayUploadTypeMasterV1> list =uploadTypeMasterRepositoryV2.findAll(Sort.by("entryDate").descending());
+		List<EwayUploadTypeMaster> list =uploadTypeRepo.findByCompanyIdAndStatus(Integer.valueOf(req.getCompanyId()),"Y");
 		if(list.size()>0 && !list.isEmpty()) {
 			list.forEach(p ->{
 				GetUploadTypeMasterRes response = GetUploadTypeMasterRes.builder()
@@ -1241,8 +1235,8 @@ public CommonRes getUploadMaster(GetUploadTypeReq req) {
 @Transactional
  public  CommonRes moveRecords(MoveRecordsReq req, String token) {
 	LinkedHashMap<Object,Object> request =new LinkedHashMap<Object,Object>();
-	CommonRes response = new CommonRes();
-	/*try {
+	/*CommonRes response = new CommonRes();
+	try {
 		 Integer companyId=Integer.valueOf(req.getCompanyId());
 		 Integer productId=Integer.valueOf(req.getProductId());
 		 Integer typeId=Integer.valueOf(req.getTypeId());
@@ -1359,10 +1353,69 @@ public CommonRes getUploadMaster(GetUploadTypeReq req) {
 		return response;
 	}*/
 
-	 response.setMessage("SUCCESS");
-	 return response;
+	// response.setMessage("SUCCESS");
+	 return null;
 	 
  }
+
+@Override
+public CommonRes saveExcelField(List<SaveXlConfigReq> req) {
+	CommonRes response = new CommonRes();
+	try {
+		//List<Error> validation =validateInputFields(req);
+		Integer companyId =Integer.valueOf(req.get(0).getCompanyId());
+		Integer productId =Integer.valueOf(req.get(0).getProductId());
+		Integer typeId =Integer.valueOf(req.get(0).getTypeId());
+		uploadTypeRepo.deleteByCompanyIdAndProductIdAndTypeid(companyId,productId,typeId);
+	    List<EwayXlconfigMaster> list =req.stream().map(p ->{
+	    	EwayXlconfigMaster m = EwayXlconfigMaster.builder()
+	    			.companyId(companyId)
+	    			.productId(productId)
+	    			.sectionId(0)
+	    			.typeid(typeId)
+	    			.fieldid(Integer.valueOf(p.getSno()))
+	    			.excelheaderName(StringUtils.isBlank(p.getExcelHeaderName())?null:p.getExcelHeaderName())
+	    			.mandatoryyn(StringUtils.isBlank(p.getMandatoryYn())?null:p.getMandatoryYn())
+	    			.dataType(StringUtils.isBlank(p.getDataType())?null:p.getDataType())
+	    			.status(StringUtils.isBlank(p.getStatus())?"Y":p.getStatus())
+	    			.excelColumnIndex(Integer.valueOf(p.getSno()))
+	    			.fieldNameRaw(StringUtils.isBlank(p.getRawColumnName())?null:p.getRawColumnName())
+	    			.fieldLength(StringUtils.isBlank(p.getFieldLength())?null:Integer.valueOf(p.getFieldLength()))
+	    			.dataRange(StringUtils.isBlank(p.getDataRange())?null:p.getDataRange())
+	    			.arrayJsonDefaultVal(StringUtils.isBlank(p.getArrayDefaultValYn())?null:p.getArrayDefaultValYn())
+	    			.arrayJsonKey(StringUtils.isBlank(p.getArrayJsonKey())?null:p.getArrayJsonKey())
+	    			.arrayTableCol(StringUtils.isBlank(p.getArrayTableColumn())?null:p.getArrayTableColumn())
+	    			.isArrayVal(StringUtils.isBlank(p.getIsArrayYn())?null:p.getIsArrayYn())
+	    			.isObjectVal(StringUtils.isBlank(p.getIsObjectYn())?null:p.getIsObjectYn())
+	    			.objJsonKey(StringUtils.isBlank(p.getObjectJsonKey())?null:p.getObjectJsonKey())
+	    			.objJsonDefaultVal(StringUtils.isBlank(p.getObjectDefaultValYn())?null:p.getObjectDefaultValYn())
+	    			.objTableCol(StringUtils.isBlank(p.getObjectTablecolumn())?null:p.getObjectTablecolumn())
+	    			.build();
+	    	
+	    	return xlConfigMaster.save(m);
+	    }).collect(Collectors.toList());
+	
+	    Integer inputSize=req.size();
+	    Integer saveSize =list.size();
+	    
+	    if(inputSize==saveSize) {
+	    	response.setCommonResponse("SUCCESS");
+	    	response.setMessage("Records saved successfully..");
+	    }else {
+	    	response.setCommonResponse("FAILED");
+	    	response.setMessage("Records saved failed.. Contact Admin..");
+	    }
+	    
+	}catch (Exception e) {
+		e.printStackTrace();
+		log.error(e);
+    	response.setCommonResponse("FAILED");
+    	response.setMessage(e.getMessage());
+	}
+	return response;
+}
+
+ 
  
 
    

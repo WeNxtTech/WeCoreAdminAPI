@@ -26,9 +26,12 @@ import java.util.List;
 @Builder
 public class EwayUploadTypeMasterId implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -8706074853329504827L;
 
-    //--- ENTITY KEY ATTRIBUTES 
+	//--- ENTITY KEY ATTRIBUTES 
     private Integer    productId ;
     
     private Integer    typeid ;

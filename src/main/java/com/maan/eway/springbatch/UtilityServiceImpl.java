@@ -187,8 +187,8 @@ public class UtilityServiceImpl {
         	StringJoiner discreateColumns =new StringJoiner("~");
         	
         	entityColumns.add("sNo");
-        	xlheaderCol.add("AgencyCode");
-        	entityColumns.add("xlAgencyCode");
+        	xlheaderCol.add("AgencyCode");// default XL columns
+        	entityColumns.add("xlAgencyCode");// default entity columns
         	for(int i=0;i<flist.size();i++) {	            		
         		FactorTypeDetails fac =flist.get(i);	            	
         		if(fac.getRangeYn().equalsIgnoreCase("Y")) {
@@ -202,13 +202,13 @@ public class UtilityServiceImpl {
         			discreateColumns.add(fac.getDiscreteColumn());
         		}	
         	}
-        	// entity columns
+        	// entity columns,// default entity columns
         	entityColumns.add("rate");
         	entityColumns.add("calcType");
         	entityColumns.add("minPremium");
         	entityColumns.add("regulatoryCode");
         	
-        	// xl headercolumns
+        	// default xl headercolumns
         	xlheaderCol.add("Rate");
         	xlheaderCol.add("CalcType");
         	xlheaderCol.add("MinimumPremium");

@@ -6,11 +6,13 @@ import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.listener.JobExecutionListenerSupport;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@Component(value="FactorListener")
+@Component
+@Qualifier(value="FactorListener")
 public class Joblistener extends JobExecutionListenerSupport implements ChunkListener {
 
 	@Autowired

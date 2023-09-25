@@ -299,7 +299,7 @@ public class XLConfigMasterServiceImpl {
 
 		DozerBeanMapper mapper = new DozerBeanMapper();
 
-		EwayXlconfigMaster xlConfig = new EwayXlconfigMaster();
+//		EwayXlconfigMaster xlConfig = new EwayXlconfigMaster();
 
 
 		SuccessResponse sRes = new SuccessResponse();
@@ -317,15 +317,43 @@ public class XLConfigMasterServiceImpl {
 //
 //		xlConfig.setPk(pk);
 
-		mapper.map(req, xlConfig);
-
-		xlConfig.setSectionId(Integer.valueOf(StringUtils.isBlank(req.getSectionId()) ? "0" : req.getSectionId()));
-
+//		mapper.map(req, xlConfig);
 		
-		xlConfig.setExcelColumnIndex(Integer.valueOf(req.getFieldId()));
+//		xlConfig.setSectionId(Integer.valueOf(req.getSectionId()));
 
-		xlConfig.setIsMainColIdx(Integer.valueOf(req.getFieldId()));
+//		xlConfig.setSectionId();
+		
+//		xlConfig.setTypeid(Integer.valueOf(req.getTypeId()));
+		
+//		xlConfig.setFieldid(Integer.valueOf(req.getFieldId()));
+		
+//		xlConfig.setExcelColumnIndex(Integer.valueOf(req.getFieldId()));
+//
+//		xlConfig.setIsMainColIdx();
 
+		EwayXlconfigMaster xlConfig =EwayXlconfigMaster.builder().companyId(Integer.valueOf(req.getCompanyId()))
+		.productId(Integer.valueOf(req.getProductId()))
+		.sectionId(Integer.valueOf(StringUtils.isBlank(req.getSectionId()) ? "0" : req.getSectionId()))
+		.typeid(Integer.valueOf(req.getTypeId()))
+		.fieldid(Integer.valueOf(req.getFieldId()))
+		.excelColumnIndex(Integer.valueOf(req.getFieldId()))
+		.isMainColIdx(Integer.valueOf(req.getFieldId()))
+		.excelheaderName(req.getExcelHeaderName())
+		.mandatoryyn(req.getMandatoryYn())
+		.dataType(req.getDataType())
+		.fieldNameRaw(req.getFieldNameRaw())
+		.fieldLength(Integer.valueOf(req.getFieldLength()))
+		.dataRange(req.getDataRange())
+		.isMainDefauVal(req.getIsMainDefauVal())
+		.apiJsonKey(req.getApiJsonKey())
+		.selColName(req.getSelColName())
+		.isObject(req.getIsObject())
+		.isArray(req.getIsArray())
+		.objApijsonKey(req.getObjApijsonKey())
+		.objSelcolKey(req.getObjSelcolKey())
+		.objDefaulVal(req.getObjDefaulVal())
+		.build();
+		
 		configRepo.save(xlConfig);
 
 		sRes.setSuccessCode(req.getCompanyId());

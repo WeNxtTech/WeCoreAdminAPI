@@ -49,18 +49,18 @@ public class SpringBatchConfig_2 {
 	}
 	
 	
-	 @Bean
-	 public TaskExecutor taskExecutor(){
-		 ThreadPoolTaskExecutor asyncTaskExecutor=new ThreadPoolTaskExecutor();
-		 	asyncTaskExecutor.setCorePoolSize(100);
-		 	asyncTaskExecutor.setMaxPoolSize(200);
-		 	asyncTaskExecutor.setWaitForTasksToCompleteOnShutdown(true);
-		 	asyncTaskExecutor.setAwaitTerminationSeconds(15);	
-		 	asyncTaskExecutor.setQueueCapacity(1000);
-		 	asyncTaskExecutor.setThreadNamePrefix("eway_main_table");
-		 	asyncTaskExecutor.initialize();
-    	return asyncTaskExecutor;
-	 }
+//	 @Bean
+//	 public TaskExecutor taskExecutor(){
+//		 ThreadPoolTaskExecutor asyncTaskExecutor=new ThreadPoolTaskExecutor();
+//		 	asyncTaskExecutor.setCorePoolSize(100);
+//		 	asyncTaskExecutor.setMaxPoolSize(200);
+//		 	asyncTaskExecutor.setWaitForTasksToCompleteOnShutdown(true);
+//		 	asyncTaskExecutor.setAwaitTerminationSeconds(15);	
+//		 	asyncTaskExecutor.setQueueCapacity(1000);
+//		 	asyncTaskExecutor.setThreadNamePrefix("eway_main_table");
+//		 	asyncTaskExecutor.initialize();
+//    	return asyncTaskExecutor;
+//	 }
 	
 
 }

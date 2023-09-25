@@ -146,14 +146,14 @@ public class ExcelConfigMasterServiceImpl implements ExcelConfigMasterService {
 
 
 			Integer typeId = typeMasterRepository.getLastNo(req.getCompanyId());
-
+			
+			mapper.map(req, upload);
+			
 			upload.setTypeid(typeId != null ? typeId + 1 : 101);
 			upload.setCompanyId(Integer.valueOf(req.getCompanyId()));
 			upload.setProductId(Integer.valueOf(req.getProductId()));
 			upload.setSectionId(Integer.valueOf(StringUtils.isBlank(req.getSectionId())?"0":req.getSectionId()));
 			
-			mapper.map(req, upload);
-
 			upload.setTypename(req.getTypeName().trim());
 			upload.setStatus(req.getStatus().toUpperCase());
 			upload.setRawTableName(req.getRawTableName());

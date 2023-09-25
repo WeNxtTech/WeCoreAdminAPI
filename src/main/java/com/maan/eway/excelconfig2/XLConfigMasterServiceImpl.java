@@ -30,6 +30,35 @@ public class XLConfigMasterServiceImpl {
 
 		Integer code = 1;
 
+		for (int i = 0; i < xlConfigList.size(); i++) {
+
+			for (int j = i + 1; j < xlConfigList.size(); j++) {
+
+				String eCode = String.valueOf(j + 1);
+
+				if (xlConfigList.get(i).getFieldId() != null && xlConfigList.get(j).getFieldId() != null
+						&& !xlConfigList.get(i).getFieldId().equalsIgnoreCase("99999")) {
+
+					if (xlConfigList.get(i).getFieldId().trim()
+							.equalsIgnoreCase(xlConfigList.get(j).getFieldId().trim())) {
+						xlConfigList.get(j).setFieldId("99999");
+						eList.add(new Errors(eCode, "Field Id", "Field Id is already exist"));
+					}
+				}
+
+				if (xlConfigList.get(i).getExcelHeaderName() != null && xlConfigList.get(j).getExcelHeaderName() != null
+						&& !xlConfigList.get(i).getExcelHeaderName().equalsIgnoreCase("zzzzzz")) {
+					if (xlConfigList.get(i).getExcelHeaderName().trim()
+							.equalsIgnoreCase(xlConfigList.get(j).getExcelHeaderName().trim())) {
+						xlConfigList.get(j).setExcelHeaderName("zzzzzz");
+						eList.add(new Errors(eCode, "ExcelHeader Name", "ExcelHeader Name is already present"));
+					}
+				}
+				
+			}
+
+		}
+
 		for (XLConfigMasterSaveReq req : xlConfigList) {
 
 			if (!StringUtils.isBlank(req.getCompanyId())) {
@@ -70,16 +99,16 @@ public class XLConfigMasterServiceImpl {
 			if (!StringUtils.isBlank(req.getFieldId())) {
 				if (!NumberUtils.isCreatable(req.getFieldId())) {
 					eList.add(new Errors(code.toString(), "Field Id", "Field Id should be a numerical value"));
-				} else {
-					EwayXlconfigMaster xlConfig = configRepo.findByPK(req.getCompanyId(), req.getProductId(),
-							req.getTypeId(), req.getFieldId());
-					if (xlConfig != null) {
-						eList.add(new Errors(code.toString(), "Field Id", "Field Id already exists"));
-					}
 				}
+//				else {
+//					EwayXlconfigMaster xlConfig = configRepo.findByPK(req.getCompanyId(), req.getProductId(),
+//							req.getTypeId(), req.getFieldId());
+//					if (xlConfig != null) {
+//						eList.add(new Errors(code.toString(), "Field Id", "Field Id already exists"));
+//					}
+//				}
 			} else
 				eList.add(new Errors("5", "Field Id", "Field Id is blank"));
-			
 
 			if (!StringUtils.isBlank(req.getExcelHeaderName())) {
 				if (req.getExcelHeaderName().length() > 200)
@@ -301,7 +330,6 @@ public class XLConfigMasterServiceImpl {
 
 //		EwayXlconfigMaster xlConfig = new EwayXlconfigMaster();
 
-
 		SuccessResponse sRes = new SuccessResponse();
 
 		// save
@@ -318,42 +346,32 @@ public class XLConfigMasterServiceImpl {
 //		xlConfig.setPk(pk);
 
 //		mapper.map(req, xlConfig);
-		
+
 //		xlConfig.setSectionId(Integer.valueOf(req.getSectionId()));
 
 //		xlConfig.setSectionId();
-		
+
 //		xlConfig.setTypeid(Integer.valueOf(req.getTypeId()));
-		
+
 //		xlConfig.setFieldid(Integer.valueOf(req.getFieldId()));
-		
+
 //		xlConfig.setExcelColumnIndex(Integer.valueOf(req.getFieldId()));
 //
 //		xlConfig.setIsMainColIdx();
 
-		EwayXlconfigMaster xlConfig =EwayXlconfigMaster.builder().companyId(Integer.valueOf(req.getCompanyId()))
-		.productId(Integer.valueOf(req.getProductId()))
-		.sectionId(Integer.valueOf(StringUtils.isBlank(req.getSectionId()) ? "0" : req.getSectionId()))
-		.typeid(Integer.valueOf(req.getTypeId()))
-		.fieldid(Integer.valueOf(req.getFieldId()))
-		.excelColumnIndex(Integer.valueOf(req.getFieldId()))
-		.isMainColIdx(Integer.valueOf(req.getFieldId()))
-		.excelheaderName(req.getExcelHeaderName())
-		.mandatoryyn(req.getMandatoryYn())
-		.dataType(req.getDataType())
-		.fieldNameRaw(req.getFieldNameRaw())
-		.fieldLength(Integer.valueOf(req.getFieldLength()))
-		.dataRange(req.getDataRange())
-		.isMainDefauVal(req.getIsMainDefauVal())
-		.apiJsonKey(req.getApiJsonKey())
-		.selColName(req.getSelColName())
-		.isObject(req.getIsObject())
-		.isArray(req.getIsArray())
-		.objApijsonKey(req.getObjApijsonKey())
-		.objSelcolKey(req.getObjSelcolKey())
-		.objDefaulVal(req.getObjDefaulVal())
-		.build();
-		
+		EwayXlconfigMaster xlConfig = EwayXlconfigMaster.builder().companyId(Integer.valueOf(req.getCompanyId()))
+				.productId(Integer.valueOf(req.getProductId()))
+				.sectionId(Integer.valueOf(StringUtils.isBlank(req.getSectionId()) ? "0" : req.getSectionId()))
+				.typeid(Integer.valueOf(req.getTypeId())).fieldid(Integer.valueOf(req.getFieldId().trim()))
+				.excelColumnIndex(Integer.valueOf(req.getFieldId())).isMainColIdx(Integer.valueOf(req.getFieldId()))
+				.excelheaderName(req.getExcelHeaderName().trim()).mandatoryyn(req.getMandatoryYn())
+				.dataType(req.getDataType()).fieldNameRaw(req.getFieldNameRaw())
+				.fieldLength(Integer.valueOf(req.getFieldLength().trim())).dataRange(req.getDataRange().trim())
+				.isMainDefauVal(req.getIsMainDefauVal()).apiJsonKey(req.getApiJsonKey().trim())
+				.selColName(req.getSelColName()).isObject(req.getIsObject()).isArray(req.getIsArray())
+				.objApijsonKey(req.getObjApijsonKey().trim()).objSelcolKey(req.getObjSelcolKey())
+				.objDefaulVal(req.getObjDefaulVal()).build();
+
 		configRepo.save(xlConfig);
 
 		sRes.setSuccessCode(req.getCompanyId());
@@ -482,8 +500,8 @@ public class XLConfigMasterServiceImpl {
 
 	public List<XLConfigMasterResponse> getAll(XLConfigGetReq req) {
 
-		List<EwayXlconfigMaster> xlConfigList = configRepo.findXLConfigMasterByPk(req.getCompanyId(), req.getProductId(),
-				req.getTypeId());
+		List<EwayXlconfigMaster> xlConfigList = configRepo.findXLConfigMasterByPk(req.getCompanyId(),
+				req.getProductId(), req.getTypeId());
 
 		List<XLConfigMasterResponse> respList = new ArrayList<XLConfigMasterResponse>();
 

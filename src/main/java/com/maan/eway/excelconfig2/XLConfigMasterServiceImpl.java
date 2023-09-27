@@ -536,7 +536,7 @@ public class XLConfigMasterServiceImpl {
 				resp.setDataType(StringUtils.isBlank(xlConfig.getDataType())?"":xlConfig.getDataType());
 				resp.setStatus(StringUtils.isBlank(xlConfig.getStatus())?"":xlConfig.getStatus());
 				resp.setFieldNameRaw(StringUtils.isBlank(xlConfig.getFieldNameRaw())?"":xlConfig.getFieldNameRaw());
-				resp.setFieldLength(StringUtils.isBlank(xlConfig.getFieldLength().toString())?"":xlConfig.getFieldLength().toString());
+				resp.setFieldLength((xlConfig.getFieldLength()==null)?"":xlConfig.getFieldLength().toString());
 				resp.setDataRange(StringUtils.isBlank(xlConfig.getDataRange())?"":xlConfig.getDataRange());
 				resp.setIsMainDefauVal(StringUtils.isBlank(xlConfig.getIsMainDefauVal())?"":xlConfig.getIsMainDefauVal());
 				resp.setApiJsonKey(StringUtils.isBlank(xlConfig.getApiJsonKey())?"":xlConfig.getApiJsonKey());

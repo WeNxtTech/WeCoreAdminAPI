@@ -102,7 +102,13 @@ public class XLConfigMasterController {
 
 			return new ResponseEntity<CommonResponse>(res, HttpStatus.OK);
 		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			
+			res.setError(false);
+			res.setMessage("Details Not Found");
+			res.setErrorMessage(Collections.emptyList());
+			res.setResult(null);
+			
+			return new ResponseEntity<CommonResponse>(res, HttpStatus.BAD_REQUEST);
 		}
 	}
 

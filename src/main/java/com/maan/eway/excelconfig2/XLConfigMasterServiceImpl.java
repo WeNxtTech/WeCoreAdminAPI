@@ -63,23 +63,26 @@ public class XLConfigMasterServiceImpl {
 
 			if (!StringUtils.isBlank(req.getCompanyId())) {
 				if (!NumberUtils.isCreatable(req.getCompanyId())) {
-					eList.add(new Errors(code.toString(), "Company id", "Company id should be a numarical value"));
+					eList.add(new Errors(code.toString(), "Company id",
+							code.toString() + " Company id should be a numarical value"));
 				}
 			} else {
-				eList.add(new Errors(code.toString(), "Company id", "Company id is blank"));
+				eList.add(new Errors(code.toString(), "Company id", code.toString() + " Company id is blank"));
 			}
 
 			if (!StringUtils.isBlank(req.getProductId())) {
 				if (!NumberUtils.isCreatable(req.getProductId())) {
-					eList.add(new Errors(code.toString(), "Product id", "Product id should be a numerical value"));
+					eList.add(new Errors(code.toString(), "Product id",
+							code.toString() + " Product id should be a numerical value"));
 				}
 			} else {
-				eList.add(new Errors(code.toString(), "Product id", "Product id is blank"));
+				eList.add(new Errors(code.toString(), "Product id", code.toString() + " Product id is blank"));
 			}
 
 			if (!StringUtils.isBlank(req.getSectionId())) {
 				if (!NumberUtils.isCreatable(req.getSectionId())) {
-					eList.add(new Errors(code.toString(), "Section id", "Section id should be a numerical value"));
+					eList.add(new Errors(code.toString(), "Section id",
+							code.toString() + " Section id should be a numerical value"));
 				}
 			}
 			// else
@@ -87,9 +90,10 @@ public class XLConfigMasterServiceImpl {
 
 			if (!StringUtils.isBlank(req.getTypeId())) {
 				if (!NumberUtils.isCreatable(req.getTypeId()))
-					eList.add(new Errors(code.toString(), "Type id", "Type id should be a numerical value"));
+					eList.add(new Errors(code.toString(), "Type id",
+							code.toString() + " Type id should be a numerical value"));
 			} else {
-				eList.add(new Errors(code.toString(), "Type id", "Type id is blank"));
+				eList.add(new Errors(code.toString(), "Type id", code.toString() + " Type id is blank"));
 
 //						if(upload==null) {
 //							eList.add(new Errors("4", "Type id", "Cannot find any record for this given information"));
@@ -98,7 +102,8 @@ public class XLConfigMasterServiceImpl {
 
 			if (!StringUtils.isBlank(req.getFieldId())) {
 				if (!NumberUtils.isCreatable(req.getFieldId())) {
-					eList.add(new Errors(code.toString(), "Field Id", "Field Id should be a numerical value"));
+					eList.add(new Errors(code.toString(), "Field Id",
+							code.toString() + " Field Id should be a numerical value"));
 				}
 //				else {
 //					EwayXlconfigMaster xlConfig = configRepo.findByPK(req.getCompanyId(), req.getProductId(),
@@ -108,7 +113,7 @@ public class XLConfigMasterServiceImpl {
 //					}
 //				}
 			} else
-				eList.add(new Errors("5", "Field Id", "Field Id is blank"));
+				eList.add(new Errors("5", "Field Id", code.toString() + " Field Id is blank"));
 
 //				if (!StringUtils.isBlank(req.getDateFormat())) {
 //					if (req.getDateFormat().length() > 200)
@@ -119,147 +124,293 @@ public class XLConfigMasterServiceImpl {
 			//
 			if (!StringUtils.isBlank(req.getStatus())) {
 				if (req.getStatus().length() != 1) {
-					eList.add(new Errors("10", "Status", "Status should be 'Y' or 'N'"));
+					eList.add(new Errors("10", "Status", code.toString() + " Status should be 'Y' or 'N'"));
 				} else if (!(req.getStatus().equalsIgnoreCase("y") || req.getStatus().equalsIgnoreCase("n"))) {
-					eList.add(new Errors("10", "Status", "Status should be 'Y' or 'N'"));
+					eList.add(new Errors("10", "Status", code.toString() + " Status should be 'Y' or 'N'"));
 				} else if (req.getStatus().equalsIgnoreCase("y")) {
 
 					if (!StringUtils.isBlank(req.getExcelHeaderName())) {
 						if (req.getExcelHeaderName().length() > 200)
-							eList.add(
-									new Errors(code.toString(), "Excel Header Name", "Excel Header Name is too long"));
+							eList.add(new Errors(code.toString(), "Excel Header Name",
+									code.toString() + " Excel Header Name is too long"));
 					} else {
-						eList.add(new Errors(code.toString(), "Excel Header Name", "Excel Header Name is blank"));
+						eList.add(new Errors(code.toString(), "Excel Header Name",
+								code.toString() + " Excel Header Name is blank"));
 					}
 
 					if (!StringUtils.isBlank(req.getFieldNameRaw())) {
 						if (req.getFieldNameRaw().length() > 200)
-							eList.add(new Errors(code.toString(), "Field Name Raw", "Field Name Raw is too long"));
+							eList.add(new Errors(code.toString(), "RawColumnName",
+									code.toString() + " RawColumnName is too long"));
 					} else {
-						eList.add(new Errors(code.toString(), "Field Name Raw ", "Field Name Raw is blank"));
+						eList.add(new Errors(code.toString(), "RawColumnName",
+								code.toString() + " RawColumnName is blank"));
 					}
 
 					if (!StringUtils.isBlank(req.getMandatoryYn())) {
 						if (req.getMandatoryYn().length() != 1) {
-							eList.add(new Errors(code.toString(), "Mandatory YN", "Mandatory YN should be 'Y' or 'N'"));
+							eList.add(new Errors(code.toString(), "Mandatory YN",
+									code.toString() + " Mandatory YN should be 'Y' or 'N'"));
 						} else if (!(req.getMandatoryYn().equalsIgnoreCase("y")
 								|| req.getMandatoryYn().equalsIgnoreCase("n"))) {
-							eList.add(new Errors(code.toString(), "Mandatory YN", "Mandatory YN should be 'Y' or 'N'"));
+							eList.add(new Errors(code.toString(), "Mandatory YN",
+									code.toString() + " Mandatory YN should be 'Y' or 'N'"));
 						}
 					} else
-						eList.add(new Errors(code.toString(), "Mandatory YN", "Mandatory YN is blank"));
+						eList.add(new Errors(code.toString(), "Mandatory YN",
+								code.toString() + " Mandatory YN is blank"));
 
 					if (!StringUtils.isBlank(req.getDataType())) {
 						if (req.getDataType().length() > 200)
-							eList.add(new Errors(code.toString(), "Data Type", "Data Type is too long"));
+							eList.add(new Errors(code.toString(), "Data Type",
+									code.toString() + " Data Type is too long"));
 					} else {
-						eList.add(new Errors(code.toString(), "Data Type", "Data Type is blank"));
+						eList.add(new Errors(code.toString(), "Data Type", code.toString() + " Data Type is blank"));
 					}
 
 					if (!StringUtils.isBlank(req.getFieldLength())) {
 						if (!NumberUtils.isCreatable(req.getFieldLength())) {
 							eList.add(new Errors(code.toString(), "Field Length",
-									"Field Length should be a numerical value"));
+									code.toString() + " Field Length should be a numerical value"));
 						}
 					} else
-						eList.add(new Errors(code.toString(), "Field Length", "Field Length is blank"));
+						eList.add(new Errors(code.toString(), "Field Length",
+								code.toString() + " Field Length is blank"));
 
 					if (!StringUtils.isBlank(req.getDataRange())) {
 						if (req.getDataRange().length() > 200)
-							eList.add(new Errors(code.toString(), "Data Range", "Data Range is too long"));
+							eList.add(new Errors(code.toString(), "Data Range",
+									code.toString() + " Data Range is too long"));
 					} else {
-						eList.add(new Errors(code.toString(), "Data Range ", "Data Range is blank"));
+						eList.add(new Errors(code.toString(), "Data Range ", code.toString() + " Data Range is blank"));
 					}
 
 					// ISOBJECTYN
 					if (!StringUtils.isBlank(req.getIsObject())) {
 						if (req.getIsObject().length() != 1) {
-							eList.add(new Errors(code.toString(), "Is Object", "Is Object should be 'Y' or 'N'"));
+							eList.add(new Errors(code.toString(), "Is Object",
+									code.toString() + " Is Object should be 'Y' or 'N'"));
 						} else if (!(req.getIsObject().equalsIgnoreCase("y") || req.getIsObject().equalsIgnoreCase("n")
 								|| req.getIsObject().equalsIgnoreCase("l"))) {
-							eList.add(
-									new Errors(code.toString(), "Is Object", "Is Object should be 'Y' or 'N' or 'L'"));
+							eList.add(new Errors(code.toString(), "Is Object",
+									code.toString() + " Is Object should be 'Y' or 'N' or 'L'"));
 						} else if (req.getIsObject().equalsIgnoreCase("y") || req.getIsObject().equalsIgnoreCase("l")) {
 
 							// ObjectJsonKey
 							if (!StringUtils.isBlank(req.getObjApijsonKey())) {
 								if (req.getObjApijsonKey().length() > 200)
-									eList.add(
-											new Errors(code.toString(), "ObjApijsonKey", "ObjApijsonKey is too long"));
+									eList.add(new Errors(code.toString(), "ObjectJsonKey",
+											code.toString() + " ObjectJsonKey is too long"));
 							} else {
-								eList.add(new Errors(code.toString(), "ObjApijsonKey", "ObjApijsonKey is blank"));
+								eList.add(new Errors(code.toString(), "ObjectJsonKey",
+										code.toString() + " ObjectJsonKey is blank"));
 							}
 
 							// ObjectTableColumn
 							if (!StringUtils.isBlank(req.getObjSelcolKey())) {
 								if (req.getObjSelcolKey().length() > 200)
-									eList.add(new Errors(code.toString(), "ObjSelcolKey", "ObjSelcolKey is too long"));
+									eList.add(new Errors(code.toString(), "ObjectTableColumn",
+											code.toString() + " ObjectTableColumn is too long"));
 							} else {
-								eList.add(new Errors(code.toString(), "ObjSelcolKey", "ObjSelcolKey is blank"));
+								eList.add(new Errors(code.toString(), "ObjectTableColumn",
+										code.toString() + " ObjectTableColumn is blank"));
 							}
 
 							// ObjectDefaultCol
 							if (!StringUtils.isBlank(req.getObjDefaulVal())) {
 								if (req.getObjDefaulVal().length() != 1) {
-									eList.add(new Errors(code.toString(), "ObjDefaulVal",
-											"ObjDefaulVal should be one character"));
+									eList.add(new Errors(code.toString(), "ObjectDefaultCol",
+											code.toString() + " ObjectDefaultCol should be one character"));
 								} else if (!(req.getObjDefaulVal().equalsIgnoreCase("y")
 										|| req.getObjDefaulVal().equalsIgnoreCase("n"))) {
-									eList.add(new Errors(code.toString(), "ObjDefaulVal",
-											"ObjDefaulVal should be 'Y' or 'N'"));
+									eList.add(new Errors(code.toString(), "ObjectDefaultCol",
+											code.toString() + " ObjectDefaultCol should be 'Y' or 'N'"));
 								}
 							} else {
-								eList.add(new Errors(code.toString(), "ObjDefaulVal", "ObjDefaulVal is blank"));
+								eList.add(new Errors(code.toString(), "ObjectDefaultCol",
+										code.toString() + " ObjectDefaultCol is blank"));
 							}
 						}
 					} else
-						eList.add(new Errors(code.toString(), "Is Object", "Is Object is blank"));
+						eList.add(new Errors(code.toString(), "Is Object", code.toString() + " Is Object is blank"));
 
 					// ISARRAYYN
 					if (!StringUtils.isBlank(req.getIsArray())) {
 						if (req.getIsArray().length() != 1) {
-							eList.add(new Errors(code.toString(), "Is Array", "Is Array should be 'Y' or 'N'"));
+							eList.add(new Errors(code.toString(), "Is Array",
+									code.toString() + " Is Array should be 'Y' or 'N'"));
 						} else if (!(req.getIsArray().equalsIgnoreCase("y")
 								|| req.getIsArray().equalsIgnoreCase("n"))) {
-							eList.add(new Errors(code.toString(), "Is Array", "Is Array should be 'Y' or 'N'"));
+							eList.add(new Errors(code.toString(), "Is Array",
+									code.toString() + " Is Array should be 'Y' or 'N'"));
 						} else if (req.getIsArray().equalsIgnoreCase("y")) {
 
 							// ArrayJsonKey
 							if (!StringUtils.isBlank(req.getApiJsonKey())) {
 								if (req.getApiJsonKey().length() > 200)
-									eList.add(new Errors(code.toString(), "Api Json Key", "Api Json Key is too long"));
+									eList.add(new Errors(code.toString(), "ArrayJsonKey",
+											code.toString() + " ArrayJsonKey is too long"));
 							} else {
-								eList.add(new Errors(code.toString(), "Api Json Key", "Api Json Key is blank"));
+								eList.add(new Errors(code.toString(), "ArrayJsonKey",
+										code.toString() + " ArrayJsonKey is blank"));
 							}
 
 							// ArrayTableColumn
 							if (!StringUtils.isBlank(req.getSelColName())) {
 								if (req.getSelColName().length() > 200)
-									eList.add(new Errors(code.toString(), "SelColName", "SelColName is too long"));
+									eList.add(new Errors(code.toString(), "ArrayTableColumn",
+											code.toString() + " ArrayTableColumn is too long"));
 							} else {
-								eList.add(new Errors(code.toString(), "SelColName", "SelColName is blank"));
+								eList.add(new Errors(code.toString(), "ArrayTableColumn",
+										code.toString() + " ArrayTableColumn is blank"));
 							}
 
 							// ArrayDefaultVal
 							if (!StringUtils.isBlank(req.getIsMainDefauVal())) {
 								if (req.getIsMainDefauVal().length() != 1) {
-									eList.add(new Errors(code.toString(), "IsMainDefauVal",
-											"IsMainDefauVal should be 'Y' or 'N'"));
+									eList.add(new Errors(code.toString(), "ArrayDefaultVal",
+											code.toString() + " ArrayDefaultVal should be 'Y' or 'N'"));
 								} else if (!(req.getIsMainDefauVal().equalsIgnoreCase("y")
 										|| req.getIsMainDefauVal().equalsIgnoreCase("n"))) {
-									eList.add(new Errors(code.toString(), "IsMainDefauVal",
-											"IsMainDefauVal should be 'Y' or 'N'"));
+									eList.add(new Errors(code.toString(), "ArrayDefaultVal",
+											code.toString() + " ArrayDefaultVal should be 'Y' or 'N'"));
 								}
 							} else
-								eList.add(new Errors(code.toString(), "IsMainDefauVal", "IsMainDefauVal is blank"));
+								eList.add(new Errors(code.toString(), "ArrayDefaultVal",
+										code.toString() + " IsMainDefauVal is blank"));
 						}
 
 					} else
-						eList.add(new Errors(code.toString(), "Is Array", "Is Array is blank"));
+						eList.add(new Errors(code.toString(), "Is Array", code.toString() + " Is Array is blank"));
+
+				} else if (req.getStatus().equalsIgnoreCase("n")) {
+
+					if (!StringUtils.isBlank(req.getExcelHeaderName())) {
+						if (req.getExcelHeaderName().length() > 200)
+							eList.add(new Errors(code.toString(), "Excel Header Name",
+									code.toString() + " Excel Header Name is too long"));
+					}
+
+					if (!StringUtils.isBlank(req.getFieldNameRaw())) {
+						if (req.getFieldNameRaw().length() > 200)
+							eList.add(new Errors(code.toString(), "RawColumnName",
+									code.toString() + " RawColumnName is too long"));
+					}
+
+					if (!StringUtils.isBlank(req.getMandatoryYn())) {
+						if (req.getMandatoryYn().length() != 1) {
+							eList.add(new Errors(code.toString(), "Mandatory YN",
+									code.toString() + " Mandatory YN should be 'Y' or 'N'"));
+						} else if (!(req.getMandatoryYn().equalsIgnoreCase("y")
+								|| req.getMandatoryYn().equalsIgnoreCase("n"))) {
+							eList.add(new Errors(code.toString(), "Mandatory YN",
+									code.toString() + " Mandatory YN should be 'Y' or 'N'"));
+						}
+					}
+
+					if (!StringUtils.isBlank(req.getDataType())) {
+						if (req.getDataType().length() > 200)
+							eList.add(new Errors(code.toString(), "Data Type",
+									code.toString() + " Data Type is too long"));
+					}
+
+					if (!StringUtils.isBlank(req.getFieldLength())) {
+						if (!NumberUtils.isCreatable(req.getFieldLength())) {
+							eList.add(new Errors(code.toString(), "Field Length",
+									code.toString() + " Field Length should be a numerical value"));
+						}
+					}
+
+					if (!StringUtils.isBlank(req.getDataRange())) {
+						if (req.getDataRange().length() > 200)
+							eList.add(new Errors(code.toString(), "Data Range",
+									code.toString() + " Data Range is too long"));
+					}
+
+					// ISOBJECTYN
+					if (!StringUtils.isBlank(req.getIsObject())) {
+						if (req.getIsObject().length() != 1) {
+							eList.add(new Errors(code.toString(), "Is Object",
+									code.toString() + " Is Object should be 'Y' or 'N'"));
+						} else if (!(req.getIsObject().equalsIgnoreCase("y") || req.getIsObject().equalsIgnoreCase("n")
+								|| req.getIsObject().equalsIgnoreCase("l"))) {
+							eList.add(new Errors(code.toString(), "Is Object",
+									code.toString() + " Is Object should be 'Y' or 'N' or 'L'"));
+						} else if (req.getIsObject().equalsIgnoreCase("y") || req.getIsObject().equalsIgnoreCase("l")) {
+
+						}
+					}
+
+					// ObjectJsonKey
+					if (!StringUtils.isBlank(req.getObjApijsonKey())) {
+						if (req.getObjApijsonKey().length() > 200)
+							eList.add(new Errors(code.toString(), "ObjectJsonKey",
+									code.toString() + " ObjectJsonKey is too long"));
+					}
+
+					// ObjectTableColumn
+					if (!StringUtils.isBlank(req.getObjSelcolKey())) {
+						if (req.getObjSelcolKey().length() > 200)
+							eList.add(new Errors(code.toString(), "ObjectTableColumn",
+									code.toString() + " ObjectTableColumn is too long"));
+					}
+
+					// ObjectDefaultCol
+					if (!StringUtils.isBlank(req.getObjDefaulVal())) {
+						if (req.getObjDefaulVal().length() != 1) {
+							eList.add(new Errors(code.toString(), "ObjectDefaultCol",
+									code.toString() + " ObjectDefaultCol should be one character"));
+						} else if (!(req.getObjDefaulVal().equalsIgnoreCase("y")
+								|| req.getObjDefaulVal().equalsIgnoreCase("n"))) {
+							eList.add(new Errors(code.toString(), "ObjectDefaultCol",
+									code.toString() + " ObjectDefaultCol should be 'Y' or 'N'"));
+						}
+					}
+
+					// ISARRAYYN
+					if (!StringUtils.isBlank(req.getIsArray())) {
+						if (req.getIsArray().length() != 1) {
+							eList.add(new Errors(code.toString(), "Is Array",
+									code.toString() + " Is Array should be 'Y' or 'N'"));
+						} else if (!(req.getIsArray().equalsIgnoreCase("y")
+								|| req.getIsArray().equalsIgnoreCase("n"))) {
+							eList.add(new Errors(code.toString(), "Is Array",
+									code.toString() + " Is Array should be 'Y' or 'N'"));
+						} else if (req.getIsArray().equalsIgnoreCase("y")) {
+
+						}
+
+					}
+
+					// ArrayJsonKey
+					if (!StringUtils.isBlank(req.getApiJsonKey())) {
+						if (req.getApiJsonKey().length() > 200)
+							eList.add(new Errors(code.toString(), "ArrayJsonKey",
+									code.toString() + " ArrayJsonKey is too long"));
+					}
+
+					// ArrayTableColumn
+					if (!StringUtils.isBlank(req.getSelColName())) {
+						if (req.getSelColName().length() > 200)
+							eList.add(new Errors(code.toString(), "ArrayTableColumn",
+									code.toString() + " ArrayTableColumn is too long"));
+					}
+
+					// ArrayDefaultVal
+					if (!StringUtils.isBlank(req.getIsMainDefauVal())) {
+						if (req.getIsMainDefauVal().length() != 1) {
+							eList.add(new Errors(code.toString(), "ArrayDefaultVal",
+									code.toString() + " ArrayDefaultVal should be 'Y' or 'N'"));
+						} else if (!(req.getIsMainDefauVal().equalsIgnoreCase("y")
+								|| req.getIsMainDefauVal().equalsIgnoreCase("n"))) {
+							eList.add(new Errors(code.toString(), "ArrayDefaultVal",
+									code.toString() + " ArrayDefaultVal should be 'Y' or 'N'"));
+						}
+					}
 
 				}
 			} else
-				eList.add(new Errors("10", "Status", "Status is blank"));
+				eList.add(new Errors("10", "Status", code.toString() + " Status is blank"));
 			//
 //				if (!StringUtils.isBlank(req.getExcelColumnIndex())) {
 //					if (!NumberUtils.isCreatable(req.getExcelColumnIndex())) {

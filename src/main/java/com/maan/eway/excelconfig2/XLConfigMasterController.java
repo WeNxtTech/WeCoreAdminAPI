@@ -1,5 +1,6 @@
 package com.maan.eway.excelconfig2;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -35,7 +36,8 @@ public class XLConfigMasterController {
 
 //		List<List<Errors>> eList = service.validateList(saveList);
 
-		List<Errors> eList = service.validate(req);
+		List<Errors> eList = new ArrayList<>();
+//				service.validate(req);
 
 		CommonResponse res = new CommonResponse();
 

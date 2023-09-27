@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.batch.entity.EwayUploadTypeMaster;
 import com.maan.eway.excelconfig.ItemDropDown;
 import com.maan.eway.excelconfig2.DataType;
 
@@ -97,10 +98,9 @@ public class ExcelConfigMasterController {
 
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
-
 	}
 
-	@DeleteMapping("/delete")
+	@PostMapping("/delete")
 	public ResponseEntity<CommonResponse> deleteUploadType(@RequestBody UploadTypeDeleteReq req) {
 
 		SuccessResponse sRes = service.deleteUploadType(req);
@@ -113,15 +113,19 @@ public class ExcelConfigMasterController {
 		comRes.setResult(sRes);
 
 		if (sRes != null) {
-
 			return new ResponseEntity<CommonResponse>(comRes, HttpStatus.OK);
 		} else {
-
-			return new ResponseEntity<>(null, HttpStatus.BAD_GATEWAY);
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
-
 	}
 
-	
-	
+//	@GetMapping("/")
+//	public List<EwayUploadTypeMaster> get(){
+//		return service.getCriteria();
+//	}
+//	
+//	@GetMapping("/criteria")
+//	public List<EwayUploadTypeMaster> getAll(){
+//		return service.get2Criteria();
+//	}
 }

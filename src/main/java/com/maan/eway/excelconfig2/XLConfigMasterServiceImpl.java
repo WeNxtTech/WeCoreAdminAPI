@@ -517,8 +517,25 @@ public class XLConfigMasterServiceImpl {
 
 //				mapper.map(xlConfig.getPk(), pk);
 
-				mapper.map(xlConfig, resp);
+//				mapper.map(xlConfig, resp);
 
+				resp.setExcelHeaderName(StringUtils.isBlank(xlConfig.getExcelheaderName())?"":xlConfig.getExcelheaderName());
+				resp.setMandatoryYn(StringUtils.isBlank(xlConfig.getMandatoryyn())?"":xlConfig.getMandatoryyn());
+				resp.setDataType(StringUtils.isBlank(xlConfig.getDataType())?"":xlConfig.getDataType());
+				resp.setStatus(StringUtils.isBlank(xlConfig.getStatus())?"":xlConfig.getStatus());
+				resp.setFieldNameRaw(StringUtils.isBlank(xlConfig.getFieldNameRaw())?"":xlConfig.getFieldNameRaw());
+				resp.setFieldLength(StringUtils.isBlank(xlConfig.getFieldLength().toString())?"":xlConfig.getFieldLength().toString());
+				resp.setDataRange(StringUtils.isBlank(xlConfig.getDataRange())?"":xlConfig.getDataRange());
+				resp.setIsMainDefauVal(StringUtils.isBlank(xlConfig.getIsMainDefauVal())?"":xlConfig.getIsMainDefauVal());
+				resp.setApiJsonKey(StringUtils.isBlank(xlConfig.getApiJsonKey())?"":xlConfig.getApiJsonKey());
+				resp.setSelColName(StringUtils.isBlank(xlConfig.getSelColName())?"":xlConfig.getSelColName());
+				resp.setIsObject(StringUtils.isBlank(xlConfig.getIsObject())?"":xlConfig.getIsObject());
+				resp.setIsArray(StringUtils.isBlank(xlConfig.getIsArray())?"":xlConfig.getIsArray());
+				resp.setObjApijsonKey(StringUtils.isBlank(xlConfig.getObjApijsonKey())?"":xlConfig.getObjApijsonKey());
+				resp.setObjSelcolKey(StringUtils.isBlank(xlConfig.getObjSelcolKey())?"":xlConfig.getObjSelcolKey());
+				resp.setObjDefaulVal(StringUtils.isBlank(xlConfig.getObjDefaulVal())?"":xlConfig.getObjDefaulVal());
+							
+						
 				resp.setCompanyId(xlConfig.getCompanyId().toString());
 				resp.setProductId(xlConfig.getProductId().toString());
 				resp.setSectionId(xlConfig.getSectionId().toString());

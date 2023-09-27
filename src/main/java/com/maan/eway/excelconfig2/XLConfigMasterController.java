@@ -36,8 +36,8 @@ public class XLConfigMasterController {
 
 //		List<List<Errors>> eList = service.validateList(saveList);
 
-		List<Errors> eList = new ArrayList<>();
-//				service.validate(req);
+		List<Errors> eList = service.validate(req);
+//				
 
 		CommonResponse res = new CommonResponse();
 

@@ -359,18 +359,30 @@ public class XLConfigMasterServiceImpl {
 //
 //		xlConfig.setIsMainColIdx();
 
-		EwayXlconfigMaster xlConfig = EwayXlconfigMaster.builder().companyId(Integer.valueOf(req.getCompanyId()))
+		EwayXlconfigMaster xlConfig = EwayXlconfigMaster.builder()
+				.companyId(Integer.valueOf(req.getCompanyId()))
 				.productId(Integer.valueOf(req.getProductId()))
 				.sectionId(Integer.valueOf(StringUtils.isBlank(req.getSectionId()) ? "0" : req.getSectionId()))
-				.typeid(Integer.valueOf(req.getTypeId())).fieldid(Integer.valueOf(req.getFieldId().trim()))
-				.excelColumnIndex(Integer.valueOf(req.getFieldId())).isMainColIdx(Integer.valueOf(req.getFieldId()))
-				.excelheaderName(req.getExcelHeaderName().trim()).mandatoryyn(req.getMandatoryYn())
-				.dataType(req.getDataType()).fieldNameRaw(req.getFieldNameRaw())
-				.fieldLength(Integer.valueOf(req.getFieldLength().trim())).dataRange(req.getDataRange().trim())
-				.isMainDefauVal(req.getIsMainDefauVal()).apiJsonKey(req.getApiJsonKey().trim())
-				.selColName(req.getSelColName()).isObject(req.getIsObject()).isArray(req.getIsArray())
-				.objApijsonKey(req.getObjApijsonKey().trim()).objSelcolKey(req.getObjSelcolKey())
-				.objDefaulVal(req.getObjDefaulVal()).build();
+				.typeid(Integer.valueOf(req.getTypeId()))
+				.fieldid(Integer.valueOf(req.getFieldId().trim()))
+				.excelColumnIndex(StringUtils.isBlank(req.getFieldId())?null: Integer.valueOf(req.getFieldId().trim()))
+				.isMainColIdx(StringUtils.isBlank(req.getFieldId())?null: Integer.valueOf(req.getFieldId().trim()))
+				.excelheaderName(StringUtils.isBlank(req.getExcelHeaderName())?null:req.getExcelHeaderName().trim())
+				.mandatoryyn(StringUtils.isBlank(req.getMandatoryYn())?"N":req.getMandatoryYn())
+				.dataType(StringUtils.isBlank(req.getDataType())?null:req.getDataType())
+				.status(StringUtils.isBlank(req.getStatus())?"N":req.getStatus())
+				.fieldNameRaw(StringUtils.isBlank(req.getFieldNameRaw())?null:req.getFieldNameRaw())
+				.fieldLength(StringUtils.isBlank(req.getFieldLength())?null: Integer.valueOf(req.getFieldLength().trim()))
+				.dataRange(StringUtils.isBlank(req.getDataRange())?null:req.getDataRange().trim())
+				.isMainDefauVal(StringUtils.isBlank(req.getIsMainDefauVal())?"N":req.getIsMainDefauVal())
+				.apiJsonKey(StringUtils.isBlank(req.getApiJsonKey())?null:req.getApiJsonKey().trim())
+				.selColName(StringUtils.isBlank(req.getSelColName())?null:req.getSelColName())
+				.isObject(StringUtils.isBlank(req.getIsObject())?"N":req.getIsObject())
+				.isArray(StringUtils.isBlank(req.getIsArray())?"N":req.getIsArray())
+				.objApijsonKey(StringUtils.isBlank(req.getObjApijsonKey())?null:req.getObjApijsonKey().trim())
+				.objSelcolKey(StringUtils.isBlank(req.getObjSelcolKey())?null:req.getObjSelcolKey())
+				.objDefaulVal(StringUtils.isBlank(req.getObjDefaulVal())?"N":req.getObjDefaulVal())
+				.build();
 
 		configRepo.save(xlConfig);
 

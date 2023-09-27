@@ -128,6 +128,11 @@ public class EwayEmplyeeDetailRaw {
 	private String lastName;
 	
 	
+	@Column(name ="GENDER_ID")
+	private String genderId;
+	
+	
+	
 }
 
 

@@ -328,7 +328,8 @@ public class VehicleAsynchronousProcess {
 			
 			if(mediaType==null)
 				mediaType=this.mediaType;
-			
+	        log.info("Api Request ==>" +req);
+
 			RequestBody requestBody =RequestBody.create(req,mediaType);
 			
 			Response response =null;
@@ -341,10 +342,12 @@ public class VehicleAsynchronousProcess {
 			
 			response =httpClient.newCall(request).execute();
 			String responseString =response.body().string();
+	        log.info("Api Response ==>" +responseString);
+
 			Integer statusCode =response.code();
 			@SuppressWarnings("unchecked")
-			Map<String,Object> resMap =mapper.readValue(responseString, Map.class);
 			
+			Map<String,Object> resMap =mapper.readValue(responseString, Map.class);
 			resMap.put("StatusCode", statusCode);
 			return resMap;
 		}catch (Exception e) {

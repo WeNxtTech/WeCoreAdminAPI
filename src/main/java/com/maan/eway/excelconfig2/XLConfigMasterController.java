@@ -36,16 +36,17 @@ public class XLConfigMasterController {
 
 //		List<List<Errors>> eList = service.validateList(saveList);
 
-		List<Errors> eList = service.validate(req);
+		//List<Errors> eList = Collections.emptyList();//service.validate(req);
 //				
+		List<Errors> errorList =service.validateConfigMaster(req);//service.validate(req);
 
 		CommonResponse res = new CommonResponse();
 
-		if (eList.size() != 0) {
+		if (errorList.size() != 0) {
 
 			res.setError(true);
 			res.setMessage("Insertion Failed");
-			res.setErrorMessage(eList);
+			res.setErrorMessage(errorList);
 			res.setResult(null);
 
 			return new ResponseEntity<CommonResponse>(res, HttpStatus.OK);

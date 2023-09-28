@@ -3,6 +3,7 @@ package com.maan.eway.excelconfig2;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -779,6 +780,77 @@ public class XLConfigMasterServiceImpl {
 			return null;
 		}
 
+	}
+
+	public List<Errors> validateConfigMaster(List<XLConfigMasterSaveReq> req) {
+		List<Errors> error =new ArrayList<>();
+		try {
+	
+				
+				for(int i=0;i<req.size();i++) {
+					
+					
+					XLConfigMasterSaveReq xl =req.get(i);
+					
+					if("Y".equalsIgnoreCase(xl.getStatus())) {
+					
+						if(StringUtils.isBlank(xl.getFieldId())) {
+							error.add(new Errors(""+i+"","FieldId","Please enter FieldId"));
+						}else if(!StringUtils.isNumeric(xl.getFieldId())) {
+							error.add(new Errors(""+i+"","FieldId","FieldId does allow only numeric digits"));
+	
+						}
+						
+						if(StringUtils.isBlank(xl.getExcelHeaderName())) {
+							error.add(new Errors(""+i+"","ExcelHeaderName","Please enter ExcelHeaderName"));
+						}if(StringUtils.isBlank(xl.getMandatoryYn())) {
+							error.add(new Errors(""+i+"","MandatoryYn","Please enter MandatoryYn"));
+						}if(StringUtils.isBlank(xl.getDataType())) {
+							error.add(new Errors(""+i+"","DataType","Please enter DataType"));
+						}if(StringUtils.isBlank(xl.getFieldNameRaw())) {
+							error.add(new Errors(""+i+"","FieldNameRaw","Please enter FieldNameRaw"));
+						}if(StringUtils.isNotBlank(xl.getDataRange())) {
+							
+							if(!xl.getDataRange().matches("[0-9]+-[0-9]+")) {
+								
+							}
+						}
+					}
+				
+				
+				
+				if("Y".equalsIgnoreCase(xl.getIsObject())) {
+								
+					if(StringUtils.isBlank(xl.getObjApijsonKey())) {
+						error.add(new Errors(""+i+"","ObjApijsonKey","Please enter ObjApijsonKey"));
+					}if(StringUtils.isBlank(xl.getObjSelcolKey())) {
+						error.add(new Errors(""+i+"","ObjSelcolKey","Please enter ObjSelcolKey"));
+					}if(StringUtils.isBlank(xl.getObjDefaulVal())) {
+						error.add(new Errors(""+i+"","ObjDefaulVal","Please enter ObjDefaulVal"));
+					}
+					
+				}
+				
+			
+	
+				if("Y".equalsIgnoreCase(xl.getIsArray())) {
+										
+					if(StringUtils.isBlank(xl.getSelColName())) {
+						error.add(new Errors(""+i+"","ArrayTableColumn","Please enter ArrayTableColumn"));
+					}if(StringUtils.isBlank(xl.getApiJsonKey())) {
+						error.add(new Errors(""+i+"","ArrayJsonKey","Please enter ArrayJsonKey"));
+					}if(StringUtils.isBlank(xl.getIsMainDefauVal())) {
+						error.add(new Errors(""+i+"","ArrayDefaultValue","Please enter ArrayDefaultValue"));
+					}
+					
+				}
+			
+			}
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return error;
 	}
 
 }

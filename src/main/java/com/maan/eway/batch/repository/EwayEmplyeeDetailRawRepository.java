@@ -91,6 +91,11 @@ public interface EwayEmplyeeDetailRawRepository extends JpaRepository<EwayEmplye
 
 	@Modifying
 	@Transactional
+	@Query(value="UPDATE eway_employee_details_raw SET GENDER_ID =(CASE WHEN UPPER(gender)=UPPER('Male') THEN 'M' WHEN UPPER(gender)=UPPER('female') THEN 'F' ELSE 'T' END) WHERE REQUEST_REFERENCE_NO=?1",nativeQuery=true)
+	Integer updateGender(String refNo);
+	
+	@Modifying
+	@Transactional
 	@Query(value="UPDATE eway_employee_details_raw EMP SET DATE_OF_JOIN_MONTH =( SELECT ITEM_CODE FROM EWAY_LIST_ITEM_VALUE WHERE REPLACE(UPPER(EMP.DATE_OF_JOIN_MONTH_YEAR),' ','')=REPLACE(UPPER(ITEM_VALUE),' ','') AND STATUS = 'Y' AND AMEND_ID =( SELECT MAX(AMEND_ID) FROM EWAY_LIST_ITEM_VALUE WHERE REPLACE(UPPER(ITEM_VALUE),' ','')= REPLACE(UPPER(EMP.DATE_OF_JOIN_MONTH_YEAR),' ','') AND STATUS = 'Y') ) WHERE COMPANY_ID =?1 AND PRODUCT_ID =?2 AND QUOTE_NO =?3 AND REQUEST_REFERENCE_NO =?4 ",nativeQuery=true)
 	Integer updateDateOfMonth(Integer companyId, Integer productId, String quoteNo, String requestReferenceNo);
 

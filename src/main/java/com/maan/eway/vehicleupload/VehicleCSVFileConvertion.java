@@ -86,12 +86,12 @@ public class VehicleCSVFileConvertion {
 				if(csvFile.exists() && csvFile.canRead()) {
 					if(uploadTypeMaster!=null) {
 						
-						List<EwayXlconfigMaster> xlConfigData = xlConfigMaster.findByCompanyIdAndProductIdAndTypeidAndStatusIgnoreCaseOrderByExcelColumnIndex(
+						List<EwayXlconfigMaster> list = xlConfigMaster.findByCompanyIdAndProductIdAndTypeidAndStatusIgnoreCaseOrderByExcelColumnIndex(
 								Integer.valueOf(uploadRes.getCompanyId()),Integer.valueOf(uploadRes.getProductId()),Integer.valueOf(uploadRes.getTypeId()),
 								"Y");
-						//List<EwayXlconfigMaster> xlConfigData =list.stream().filter(p ->StringUtils.isNotBlank(p.getExcelheaderName()))
-								//.filter(p ->StringUtils.isNotBlank(p.getFieldNameRaw()))
-								//.collect(Collectors.toList());
+						List<EwayXlconfigMaster> xlConfigData =list.stream().filter(p ->StringUtils.isNotBlank(p.getExcelheaderName()))
+								.filter(p ->StringUtils.isNotBlank(p.getFieldNameRaw()))
+								.collect(Collectors.toList());
 						
 						if(xlConfigData!=null&&xlConfigData.size()>0) {
 							Map<String,Object> errorList = getRecordsList(csvFile,xlConfigData,uploadRes.getRequestReferenceNo());

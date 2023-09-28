@@ -75,7 +75,7 @@ public class VehicleBatchController {
 		return service.editRecord(req);
 	}
 	
-	@PostMapping("/insert/records")
+	//@PostMapping("/insert/records")
 	public CommonRes insertRecords(@RequestBody GetRecordsReq req,@RequestHeader("Authorization") String Authorization) {
 		return service.insertRecords(req,Authorization.replaceAll("Bearer ", "").split(",")[0]);
 	}
@@ -105,13 +105,13 @@ public class VehicleBatchController {
 		return service.getUploadMaster(req);
 	}
 	
-    
+   
 	@PostMapping("/saveExcelField")
 	public CommonRes saveExcelField(@RequestBody List<SaveXlConfigReq> req) {
 		return service.saveExcelField(req);
 	}
 	
-   // @PostMapping("/insert/records")
+    @PostMapping("/insert/records")
     public CommonRes moveRecords(@RequestBody MoveRecordsReq req,@RequestHeader("Authorization") String token) {
     	return service.moveRecords(req,token.replaceAll("Bearer ", "").split(",")[0]);
     }

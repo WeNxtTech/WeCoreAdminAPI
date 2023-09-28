@@ -23,6 +23,7 @@ import java.util.stream.IntStream;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -43,7 +44,6 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -227,9 +227,10 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			
 			uploadRes.setExcelFilePath(excelFilePath);
 			
-			EwayUploadTypeMaster uploadTypeMaster=uploadTypeRepo.findByCompanyIdAndProductIdAndTypeidAndStatus(Integer.valueOf(req.getCompanyId()),Integer.valueOf(req.getProductId()),
-					Integer.valueOf(req.getTypeId()),"Y");
+			EwayUploadTypeMaster uploadTypeMaster=uploadTypeRepo.findByCompanyIdAndProductIdAndStatus(Integer.valueOf(req.getCompanyId()),Integer.valueOf(req.getProductId()),
+					"Y");
 			
+			uploadRes.setTypeId(uploadTypeMaster.getTypeid().toString());
 			saveUploadTransactionData(uploadRes);
 			
 			VehicleThread_CSV_Convertion thread = new VehicleThread_CSV_Convertion(uploadRes,csvFileConvertion,uploadTypeMaster);
@@ -260,10 +261,10 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 					.nationalityId(StringUtils.isBlank(p.getNationalityId())?"":p.getNationalityId())
 					.employeeName(StringUtils.isBlank(p.getEmployeeName())?"":p.getEmployeeName())
 					.dateOfJoining(p.getDateOfJoiningYear()==null?"":p.getDateOfJoiningYear().toString())
-					.dateOfJoiningMonth(p.getDateOfJoiningMonth()==null?"":p.getDateOfJoiningMonth().toLowerCase())
+					.dateOfJoinMonth(p.getDateOfJoiningMonth()==null?"":p.getDateOfJoiningMonth().toLowerCase())
 					.dateOfBirth(p.getDateOfBirth()==null?"":sdf.format(p.getDateOfBirth()))
 					.occupationId(StringUtils.isBlank(p.getOccupationId())?"":p.getOccupationId())
-					.occupatonDesc(StringUtils.isBlank(p.getOccupationDesc())?"":p.getOccupationDesc())
+					.occupationDesc(StringUtils.isBlank(p.getOccupationDesc())?"":p.getOccupationDesc())
 					.salary(p.getSalary()==null?"":p.getSalary().toString())
 					.endorsmentType(upReq.getEndorsementYn())
 					.address(StringUtils.isBlank(p.getAddress())?"":p.getAddress())
@@ -554,6 +555,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 				
 				employeeRawRepo.updateDuplicatePassportNo(companyId.toString(), productId.toString(), requestReferenceNo, quoteNo);
 				employeeRawRepo.updateNationlityId(companyId, productId,requestReferenceNo);
+				employeeRawRepo.updateGender(requestReferenceNo);
 				criteriaQuery.updateRelationId(companyId, productId, quoteNo, requestReferenceNo);
 				criteriaQuery.updateTravelErrorDesc(companyId, productId, quoteNo, requestReferenceNo);
 				criteriaQuery.updateErrorStatus(companyId, productId, typeId, requestReferenceNo);
@@ -704,8 +706,8 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 								.employeeName(StringUtils.isBlank(p.getEmployeeName())?"":p.getEmployeeName())
 								.dateOfBirth(StringUtils.isBlank(p.getDateOfBirth())?"":p.getDateOfBirth())
 								.dateOfJoiningYear(StringUtils.isBlank(p.getDateOfJoining())?"":p.getDateOfJoining())
-								.dateOfJoiningMonth(StringUtils.isBlank(p.getDateOfJoiningMonth())?"":p.getDateOfJoiningMonth())
-								.occupationDesc(StringUtils.isBlank(p.getOccupatonDesc())?"":p.getOccupatonDesc())
+								.dateOfJoiningMonth(StringUtils.isBlank(p.getDateOfJoinMonth())?"":p.getDateOfJoinMonth())
+								.occupationDesc(StringUtils.isBlank(p.getOccupationDesc())?"":p.getOccupationDesc())
 								.salary(StringUtils.isBlank(p.getSalary())?"":p.getSalary())
 								.occupationId(StringUtils.isBlank(p.getOccupationId())?"":p.getOccupationId())
 								.status(p.getStatus())
@@ -784,7 +786,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 							.employeeName(StringUtils.isBlank(p.getEmployeeName())?"":p.getEmployeeName())
 							.dateOfBirth(StringUtils.isBlank(p.getDateOfBirth())?"":p.getDateOfBirth())
 							.dateOfJoiningYear(StringUtils.isBlank(p.getDateOfJoining())?"":p.getDateOfJoining())
-							.occupationDesc(StringUtils.isBlank(p.getOccupatonDesc())?"":p.getOccupatonDesc())
+							.occupationDesc(StringUtils.isBlank(p.getOccupationDesc())?"":p.getOccupationDesc())
 							.salary(StringUtils.isBlank(p.getSalary())?"":p.getSalary())
 							.status(p.getStatus())
 							.errorDesc(StringUtils.isBlank(p.getErrorDesc())?"":p.getErrorDesc())
@@ -916,10 +918,10 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 						detailRaw.setEmployeeName(req.getEmployeeName());
 						detailRaw.setDateOfBirth(req.getDateOfBirth());
 						detailRaw.setDateOfJoining(req.getDateOfJoiningYear());
-						detailRaw.setDateOfJoiningMonth(req.getDateOfJoiningMonth());
+						detailRaw.setDateOfJoinMonth(req.getDateOfJoiningMonth());
 						detailRaw.setNationalityId(req.getNationalityId());
 						detailRaw.setOccupationId(req.getOccupationId());
-						detailRaw.setOccupatonDesc(req.getOccupationDesc());
+						detailRaw.setOccupationDesc(req.getOccupationDesc());
 						detailRaw.setSalary(req.getSalary());
 						detailRaw.setStatus("Y");
 						detailRaw.setErrorDesc("");
@@ -1235,126 +1237,167 @@ public CommonRes getUploadMaster(GetUploadTypeReq req) {
 @Transactional
  public  CommonRes moveRecords(MoveRecordsReq req, String token) {
 	LinkedHashMap<Object,Object> request =new LinkedHashMap<Object,Object>();
-	/*CommonRes response = new CommonRes();
+	CommonRes response = new CommonRes();
 	try {
+         log.info("MoveRecords request || "+printReq.toJson(req));
 		 Integer companyId=Integer.valueOf(req.getCompanyId());
 		 Integer productId=Integer.valueOf(req.getProductId());
-		 Integer typeId=Integer.valueOf(req.getTypeId());
-		 List<EwayXlconfigMaster> list =xlConfigMaster.findByCompanyIdAndProductIdAndTypeidAndIsMainMoveOrderByIsMainColIdx(companyId,productId,typeId,"Y");
-		 
-		 List<EwayXlconfigMaster> mainData =list.stream()
-				 .filter(p ->StringUtils.isNotBlank(p.getSelColName()))
-				 .collect(Collectors.toList());
-		 
-		 StringJoiner arrayDynQuery=new StringJoiner(",");
-		 StringJoiner arrayJsonFields=new StringJoiner(",");
-		 StringJoiner objectDynQuery=new StringJoiner(",");
-		 StringJoiner objectJsonKey=new StringJoiner(",");
-		 StringJoiner objectListJsonKey=new StringJoiner(",");
-		
-         for(EwayXlconfigMaster config : mainData) {
-        	 if("Y".equalsIgnoreCase(config.getIsArray()) ) {
-	        	 if("Y".equalsIgnoreCase(config.getIsMainDefauVal())) {
-	        		 arrayDynQuery.add("'"+config.getSelColName()+"' as "+config.getApiJsonKey()+"");
-	        	 }else {
-	        		 arrayDynQuery.add(config.getSelColName());
-	        	 }
-	        	 arrayJsonFields.add(config.getApiJsonKey());
-        	 }if("Y".equalsIgnoreCase(config.getIsObject())) {
-        		 if("Y".equalsIgnoreCase(config.getObjDefaulVal())) {
-        			 objectDynQuery.add("'"+config.getObjSelcolKey()+"' as "+config.getObjApiJsonKey()+"");
-	        	 }else {
-	        		 objectDynQuery.add(config.getObjSelcolKey());
-	        	 }
-        		 objectJsonKey.add(config.getObjApiJsonKey());
-        	 }else if("L".equalsIgnoreCase(config.getIsObject())) {
-        		 objectListJsonKey.add(config.getObjApiJsonKey());
-        	 }
-         }
-		 
-		 EwayUploadTypeMaster typeMaster= uploadTypeRepo.findByCompanyIdAndProductIdAndTypeidAndStatus(companyId, productId, typeId, "Y");
-         String rawTableName =typeMaster.getRawTableName().trim();
-         String apiUrl =typeMaster.getApiName().trim();
-         String method ="";//typeMaster.getApiMethod();
-         ArrayList<LinkedHashMap<Object,Object>> arrayList =new ArrayList<LinkedHashMap<Object,Object>>();
-         if(StringUtils.isNotBlank(arrayDynQuery.toString())) {
-			 String [] apiJsonFields=arrayJsonFields.toString().split(",");
-	         String  selectCol ="select "+arrayDynQuery.toString()+" from "+rawTableName+" where REQUEST_REFERENCE_NO=?1 and STATUS='Y'";
-	         log.info("Array query select columns || "+selectCol);
-	         log.info("Array json key columns || "+arrayJsonFields);
-	         Query query =em.createNativeQuery(selectCol);
-	         query.setParameter(1, req.getRequestRefNo());
-	         @SuppressWarnings("unchecked")
-			 List<Object[]> queryResult =query.getResultList();
-	         Object[][] resultArray = new Object[queryResult.size()][];
-	         for (int i = 0; i < queryResult.size(); i++) {
-	             resultArray[i] = queryResult.get(i);
-	         }
-	         
-	         for (Object [] ar :resultArray) {
-	    		 LinkedHashMap<Object,Object> map = new LinkedHashMap<Object,Object>();
-	    		 int key=0;
-	        	 for(Object obj :ar) {
-	        		 map.put(apiJsonFields[key], obj==null?"":obj.toString());
-	        		 key++;
-	        	 }
-	        	 arrayList.add(map); 
-	         }
-         }if(StringUtils.isNotBlank(objectDynQuery.toString())){
-        	 
-        	 String [] apiJsonFields=objectJsonKey.toString().split(",");
-	         String  selectCol ="select "+objectDynQuery.toString()+" from "+rawTableName+" where REQUEST_REFERENCE_NO=?1 and STATUS='Y'";
-	         log.info("Object query select columns || "+selectCol);
-	         log.info("Object json query columns || "+objectDynQuery);
-	         Query query =em.createNativeQuery(selectCol);
-	         query.setParameter(1, req.getRequestRefNo());
-	         @SuppressWarnings("unchecked")
-			 List<Object[]> queryResult =query.getResultList();
-			 Object [] array = new Object[1];
-			 if(queryResult.get(0) instanceof Object[]) {
-				 array=queryResult.get(0);
-			 }else {
-				 Object objString=(Object)queryResult.get(0);
-				 array[0]=objString;
-			 }
-			 int key =0;
-			 for(Object o : array) {
-				 request.put(apiJsonFields[key], o==null?"":o.toString());
-				 key++;
-			 }
-	         
-         }
-         if(arrayList.size()>0) {
-        	 request.put(objectListJsonKey.toString(), arrayList);
-         }
-         
-        String apiReq =printReq.toJson(request);
-         
-        Map<String,Object> apiRes= asyncProcess.callApi(apiReq, token, mediaType, apiUrl);
-        log.info("Api Response ==>" +printReq.toJson(apiRes));
-        String statusCode=apiRes.get("StatusCode")==null?"": apiRes.get("StatusCode").toString();
-		String status ="N";
-		if("201".equals(statusCode))
-			status ="Y";
-		else
-			status ="N";
-		
-		 String updateQuery ="update "+rawTableName+" set API_STATUS=?1 where REQUEST_REFERENCE_NO=?2";
-		 Integer count= em.createNativeQuery(updateQuery)
-		.setParameter(1, status)
-		.setParameter(2, req.getRequestRefNo())
-		.executeUpdate();
-		
-		log.info("updated employee count "+count);
-		
+		// Motor main table insert block
+		if("5".equalsIgnoreCase(req.getProductId())) {
+			List<EserviceMotorDetailsRaw> list =eserviceRepository.findByCompanyIdAndProductIdAndRequestReferenceNo(companyId,productId,req.getRequestRefNo());
+								
+			if(!CollectionUtils.isEmpty(list)) {
+							
+				// filter valid records
+			List<EserviceMotorDetailsRaw> data =list.stream()
+					.filter(p -> "Y".equalsIgnoreCase(p.getStatus()) )
+					.filter(p -> "Y".equalsIgnoreCase(p.getTiraStatus()))
+					.filter(p -> StringUtils.isBlank(p.getApiStatus()))
+					.collect(Collectors.toList());
+							
+			// made the partitions based by 10
+			List<List<EserviceMotorDetailsRaw>> partitions =nPartition(data, data.size()>10?data.size()/10:10);						
+			for(List<EserviceMotorDetailsRaw> eservice :partitions) {
+				List<CompletableFuture<Object>> comFuture = new ArrayList<CompletableFuture<Object>>();
+				Long maxVehId =transRepo.getVehicleId(eservice.get(0).getRequestReferenceNo(), eservice.get(0).getProductId().toString());
+				Long countVeh =1L;
+				for(EserviceMotorDetailsRaw raw :eservice) {
+					Long vehicleId =maxVehId+countVeh;
+					CompletableFuture<Object> asyncList =asyncProcess.createQuote(raw, token,vehicleId);
+					comFuture.add(asyncList);
+					countVeh++;
+				}							
+			@SuppressWarnings("unchecked")
+			CompletableFuture<Object>[] comArray =new CompletableFuture[comFuture.size()];
+			comFuture.toArray(comArray);
+			CompletableFuture.allOf(comArray).join();
+									
+			}
+								
+				response.setCommonResponse("SUCCESS");
+				response.setMessage("SUCCESS");
+			}else {
+				response.setCommonResponse("FAILED");
+				response.setMessage("FAILED");
+			}
+				
+			}else {	
+				 EwayUploadTypeMaster typeMaster=uploadTypeRepo.findByCompanyIdAndProductIdAndStatus(companyId, productId, "Y");
+				 Integer typeId =typeMaster.getTypeid();
+				 List<EwayXlconfigMaster> list =xlConfigMaster.findByCompanyIdAndProductIdAndTypeidOrderByFieldid(companyId,productId,typeId);
+				 
+				 List<EwayXlconfigMaster> mainData =list.stream()
+						 .filter(p ->StringUtils.isNotBlank(p.getSelColName()))
+						 .collect(Collectors.toList());
+				 
+				 StringJoiner arrayDynQuery=new StringJoiner(",");
+				 StringJoiner arrayJsonFields=new StringJoiner(",");
+				 StringJoiner objectDynQuery=new StringJoiner(",");
+				 StringJoiner objectJsonKey=new StringJoiner(",");
+				 StringJoiner objectListJsonKey=new StringJoiner(",");
+				
+		         for(EwayXlconfigMaster config : mainData) {
+		        	 if("Y".equalsIgnoreCase(config.getIsArray()) ) {
+			        	 if("Y".equalsIgnoreCase(config.getIsMainDefauVal())) {
+			        		 arrayDynQuery.add("'"+config.getSelColName()+"' as "+config.getApiJsonKey()+"");
+			        	 }else {
+			        		 arrayDynQuery.add(config.getSelColName());
+			        	 }
+			        	 arrayJsonFields.add(config.getApiJsonKey());
+		        	 }if("Y".equalsIgnoreCase(config.getIsObject())) {
+		        		 if("Y".equalsIgnoreCase(config.getObjDefaulVal())) {
+		        			 objectDynQuery.add("'"+config.getObjSelcolKey()+"' as "+config.getObjApijsonKey()+"");
+			        	 }else {
+			        		 objectDynQuery.add(config.getObjSelcolKey());
+			        	 }
+		        		 objectJsonKey.add(config.getObjApijsonKey());
+		        	 }else if("L".equalsIgnoreCase(config.getIsObject())) {
+		        		 objectListJsonKey.add(config.getObjApijsonKey());
+		        	 }
+		         }
+				 
+		         String rawTableName =typeMaster.getRawTableName().trim();
+		         String apiUrl =typeMaster.getApiName().trim();
+		         String method =StringUtils.isBlank(typeMaster.getApiMethod())?"POST":typeMaster.getApiMethod();
+		         ArrayList<LinkedHashMap<Object,Object>> arrayList =new ArrayList<LinkedHashMap<Object,Object>>();
+		         if(StringUtils.isNotBlank(arrayDynQuery.toString())) {
+					 String [] apiJsonFields=arrayJsonFields.toString().split(",");
+			         String  selectCol ="select "+arrayDynQuery.toString()+" from "+rawTableName+" where REQUEST_REFERENCE_NO=?1 and STATUS='Y'";
+			         log.info("Array query select columns || "+selectCol);
+			         log.info("Array json key columns || "+arrayJsonFields);
+			         Query query =em.createNativeQuery(selectCol);
+			         query.setParameter(1, req.getRequestRefNo());
+			         @SuppressWarnings("unchecked")
+					 List<Object[]> queryResult =query.getResultList();
+			         Object[][] resultArray = new Object[queryResult.size()][];
+			         for (int i = 0; i < queryResult.size(); i++) {
+			             resultArray[i] = queryResult.get(i);
+			         }
+			         
+			         for (Object [] ar :resultArray) {
+			    		 LinkedHashMap<Object,Object> map = new LinkedHashMap<Object,Object>();
+			    		 int key=0;
+			        	 for(Object obj :ar) {
+			        		 map.put(apiJsonFields[key], obj==null?"":obj.toString());
+			        		 key++;
+			        	 }
+			        	 arrayList.add(map); 
+			         }
+		         }if(StringUtils.isNotBlank(objectDynQuery.toString())){
+		        	 
+		        	 String [] apiJsonFields=objectJsonKey.toString().split(",");
+			         String  selectCol ="select "+objectDynQuery.toString()+" from "+rawTableName+" where REQUEST_REFERENCE_NO=?1 and STATUS='Y'";
+			         log.info("Object query select columns || "+selectCol);
+			         log.info("Object json query columns || "+objectDynQuery);
+			         Query query =em.createNativeQuery(selectCol);
+			         query.setParameter(1, req.getRequestRefNo());
+			         @SuppressWarnings("unchecked")
+					 List<Object[]> queryResult =query.getResultList();
+					 Object [] array = new Object[1];
+					 if(queryResult.get(0) instanceof Object[]) {
+						 array=queryResult.get(0);
+					 }else {
+						 Object objString=(Object)queryResult.get(0);
+						 array[0]=objString;
+					 }
+					 int key =0;
+					 for(Object o : array) {
+						 request.put(apiJsonFields[key], o==null?"":o.toString());
+						 key++;
+					 }
+			         
+		         }
+		         if(arrayList.size()>0) {
+		        	 request.put(objectListJsonKey.toString(), arrayList);
+		         }
+		         
+		        String apiReq =printReq.toJson(request);
+		        Map<String,Object> apiRes= asyncProcess.callApi(apiReq, token, mediaType, apiUrl);
+		        log.info("Api Response ==>" +printReq.toJson(apiRes));
+		        String statusCode=apiRes.get("StatusCode")==null?"": apiRes.get("StatusCode").toString();
+				String status ="N";
+				if("201".equals(statusCode))
+					status ="Y";
+				else
+					status ="N";
+				
+				 String updateQuery ="update "+rawTableName+" set API_STATUS=?1 where REQUEST_REFERENCE_NO=?2";
+				 Integer count= em.createNativeQuery(updateQuery)
+				.setParameter(1, status)
+				.setParameter(2, req.getRequestRefNo())
+				.executeUpdate();
+				
+				log.info("updated employee count "+count);
+				response.setCommonResponse("SUCCESS");
+				response.setMessage("SUCCESS");
+			}
 	 }catch (Exception e) {
 		e.printStackTrace();
 		response.setMessage("FAILED");
 		return response;
-	}*/
+	}
 
-	// response.setMessage("SUCCESS");
-	 return null;
+	return response;
 	 
  }
 

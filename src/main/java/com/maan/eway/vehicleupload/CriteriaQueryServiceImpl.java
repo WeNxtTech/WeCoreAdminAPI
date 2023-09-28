@@ -748,7 +748,7 @@ public class CriteriaQueryServiceImpl {
 			  occupationId.select(occuRoot.get("occupationId")).where(
 					  cb.equal(occuRoot.get("status"), "Y"),cb.equal(occuRoot.get("companyId"), root.get("companyId")),
 					  cb.equal(occuRoot.get("productId"), root.get("productId")),
-					  cb.equal(cb.function("replace", String.class,(cb.upper(root.get("occupatonDesc"))),cb.literal(" "),cb.literal(""))
+					  cb.equal(cb.function("replace", String.class,(cb.upper(root.get("occupationDesc"))),cb.literal(" "),cb.literal(""))
 							  ,cb.function("replace", String.class,cb.upper(occuRoot.get("occupationName")),cb.literal(" "),cb.literal(""))),
 					  cb.between(cb.currentDate(), occuRoot.get("effectiveDateStart"), occuRoot.get("effectiveDateEnd")),
 					  cb.equal(occuRoot.get("amendId"), amendId)
@@ -777,7 +777,7 @@ public class CriteriaQueryServiceImpl {
 			  Expression<String> caseCon =cb.selectCase()
 					  .when(cb.isNull(root.<Integer>get("occupationId")), "Please enter valid Occupation")
 					  .when(cb.isNull(root.get("locationId")), "Please enter valid Location")
-					  .when(cb.isNull(root.get("dateOfJoiningMonth")), "Pleae enter valid Joining Period")
+					  .when(cb.isNull(root.get("dateOfJoinMonth")), "Pleae enter valid Joining Period")
 					  .otherwise(root.get("errorDesc")).as(String.class);
 			  criteriaUpdate.set(root.<String>get("errorDesc"), caseCon)
 			  .where(

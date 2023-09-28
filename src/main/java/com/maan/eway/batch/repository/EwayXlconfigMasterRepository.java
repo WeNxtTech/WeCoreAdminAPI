@@ -56,6 +56,12 @@ public interface EwayXlconfigMasterRepository  extends JpaRepository<EwayXlconfi
 	@Query(nativeQuery = true, value="SELECT * FROM one_time_table_details WHERE Item_id=?1 AND STATUS=?2 ORDER BY Item_Code ASC")
 	List<OneTimeTableDetails> findColumn(Integer valueOf, String string);
 
+	List<EwayXlconfigMaster> findByCompanyIdAndProductIdAndTypeidAndStatusOrderByFieldid(Integer companyId,
+			Integer productId, Integer typeId, String status);
+
+	List<EwayXlconfigMaster> findByCompanyIdAndProductIdAndTypeidOrderByFieldid(Integer companyId, Integer productId,
+			Integer typeId);
+
 
 	//List<EwayXlconfigMaster> findByCompanyIdAndProductIdAndTypeidAndIsMainMoveOrderByIsMainColIdx(Integer companyId, Integer productId, Integer typeId,String status);
 

@@ -35,5 +35,6 @@ public class EserviceBuildingDetailsId implements Serializable {
     
     private String     customerReferenceNo ;
     
+    private String  sectionId;
      
 }

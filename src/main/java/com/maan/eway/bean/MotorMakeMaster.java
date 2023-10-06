@@ -54,6 +54,10 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="MAKE_ID", nullable=false)
     private Integer    makeId ;
+    
+    @Id
+    @Column(name="BODY_ID", nullable=false)
+    private Integer    bodyId ;
 
     @Id
     @Column(name="AMEND_ID", nullable=false)
@@ -106,6 +110,8 @@ private static final long serialVersionUID = 1L;
     private String     regulatoryCode ;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
+    @Column(name="BODY_NAME_EN",  length=20)
+    private String     bodyNameEn ;
 
 
 }

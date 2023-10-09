@@ -244,6 +244,8 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					}
 					
 				}
+				
+				resList.sort( Comparator.comparing(SubUserTypeDropDownRes :: getDisplayName ).reversed() );
 			} catch (Exception e) {
 				e.printStackTrace();
 				log.info("Exception is ---> " + e.getMessage());

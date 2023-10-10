@@ -34,6 +34,9 @@ public class CompanyProductGetAllRes {
 	@JsonProperty("PaymentYn")
 	private String paymentYn;
 
+	@JsonProperty("MotorYn")
+	private String motorYn;
+	
 	@JsonProperty("PaymentRedirUrl")
 	private String paymentRedirUrl;
 

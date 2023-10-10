@@ -27,6 +27,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -42,6 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.InsuranceCompanyMaster;
+import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CompanyChangeStatusReq;
@@ -49,9 +51,11 @@ import com.maan.eway.master.req.CompanyDropDownReq;
 import com.maan.eway.master.req.InsuranceCompanyMasterGetAllReq;
 import com.maan.eway.master.req.InsuranceCompanyMasterGetReq;
 import com.maan.eway.master.req.InsuranceCompanyMasterSaveReq;
+import com.maan.eway.master.req.SuperAdminDropDownReq;
 import com.maan.eway.master.res.InsuranceCompanyMasterRes;
 import com.maan.eway.master.service.InsuranceCompanyMasterService;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
+import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 /**
@@ -63,6 +67,11 @@ public class InsuranceCompanyMasterServiceImpl implements InsuranceCompanyMaster
 
 @Autowired
 private InsuranceCompanyMasterRepository repository;
+
+@Autowired
+private LoginMasterRepository loginRepo ;
+
+
 
 @PersistenceContext
 private EntityManager em;
@@ -927,6 +936,92 @@ this.repository = repo;
 			return null;
 		}
 		return res;
+	}
+
+
+	@Override
+	public List<DropDownRes> getSuperAdminCompanies(SuperAdminDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			
+			
+			List<String> comapanyIds = 	new ArrayList<String>() ;
+			LoginMaster loginData = loginRepo.findByLoginId(req.getLoginId());
+			if(loginData!=null && StringUtils.isNotBlank(loginData.getAttachedCompanies()) ) {
+				String[] array = loginData.getAttachedCompanies().split(",");
+				comapanyIds = 	new ArrayList<String>(Arrays.asList(array)) ;
+				comapanyIds = comapanyIds.stream().filter( o -> StringUtils.isNotBlank(o)  ).collect(Collectors.toList());			
+			}
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<InsuranceCompanyMaster> query = cb.createQuery(InsuranceCompanyMaster.class);
+			List<InsuranceCompanyMaster> list = new ArrayList<InsuranceCompanyMaster>();
+			
+			// Find All
+			Root<InsuranceCompanyMaster>    c = query.from(InsuranceCompanyMaster.class);		
+			
+			// Select
+			query.select(c );
+			
+		
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("companyName")));
+			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<InsuranceCompanyMaster> ocpm1 = effectiveDate.from(InsuranceCompanyMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2);
+			
+			// Effective Date End
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<InsuranceCompanyMaster> ocpm2 = effectiveDate2.from(InsuranceCompanyMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a3 = cb.equal(c.get("companyId"),ocpm2.get("companyId") );
+			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a3,a4);
+			
+			//In 
+			Expression<String>e0=c.get("companyId");
+			
+			// Where	
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n11 = cb.equal(c.get("status"),"R");
+			Predicate n12 = cb.or(n1,n11);
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n4 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n5 = e0.in(comapanyIds) ;
+			query.where(n12,n2,n4,n5).orderBy(orderList);
+			// Get Result
+			TypedQuery<InsuranceCompanyMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			
+			for(InsuranceCompanyMaster data : list ) {
+				// Response
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getCompanyId().toString());
+				res.setCodeDesc(data.getCompanyName());
+				resList.add(res);
+			}		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
 	}
 
 }

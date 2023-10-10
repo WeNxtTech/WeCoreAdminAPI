@@ -12,6 +12,7 @@ import com.maan.eway.master.req.InsuranceCompanyMasterGetAllReq;
 import com.maan.eway.master.req.InsuranceCompanyMasterGetReq;
 import com.maan.eway.master.req.InsuranceCompanyMasterSaveReq;
 import com.maan.eway.master.req.SubCoverChangeStatusReq;
+import com.maan.eway.master.req.SuperAdminDropDownReq;
 import com.maan.eway.master.res.BrokerCompanyRes;
 import com.maan.eway.master.res.InsuranceCompanyMasterRes;
 import com.maan.eway.bean.InsuranceCompanyMaster;
@@ -36,5 +37,6 @@ List<InsuranceCompanyMasterRes> getActiveInsCompanyDetails(InsuranceCompanyMaste
 InsuranceCompanyMasterRes getByCompanyId(InsuranceCompanyMasterGetReq req);
 List<DropDownRes> getInscompanyMasterDropdown(CompanyDropDownReq req);
 SuccessRes changeStatusOfCompany(CompanyChangeStatusReq req);
+List<DropDownRes> getSuperAdminCompanies(SuperAdminDropDownReq req);
 
 }

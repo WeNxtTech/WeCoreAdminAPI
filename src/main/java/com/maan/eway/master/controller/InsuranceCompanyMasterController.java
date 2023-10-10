@@ -23,6 +23,7 @@ import com.maan.eway.master.req.CompanyDropDownReq;
 import com.maan.eway.master.req.InsuranceCompanyMasterGetAllReq;
 import com.maan.eway.master.req.InsuranceCompanyMasterGetReq;
 import com.maan.eway.master.req.InsuranceCompanyMasterSaveReq;
+import com.maan.eway.master.req.SuperAdminDropDownReq;
 import com.maan.eway.master.res.InsuranceCompanyMasterRes;
 import com.maan.eway.master.service.InsuranceCompanyMasterService;
 import com.maan.eway.res.CommonRes;
@@ -202,4 +203,29 @@ public class InsuranceCompanyMasterController {
 			}
 
 		}
+	
+	
+	// Insurance Company Master Drop Down Type
+		@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
+			@PostMapping(value="/dropdown/superadmincompanies",produces = "application/json")
+			@ApiOperation(value = "This method is get Company Master Drop Down")
+
+			public ResponseEntity<DropdownCommonRes> getSuperAdminCompanies( @RequestBody SuperAdminDropDownReq req ) {
+
+				DropdownCommonRes data = new DropdownCommonRes();
+
+				// Save
+				List<DropDownRes> res = insService.getSuperAdminCompanies(req);
+				data.setCommonResponse(res);
+				data.setIsError(false);
+				data.setErrorMessage(Collections.emptyList());
+				data.setMessage("Success");
+
+				if (res != null) {
+					return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
+				} else {
+					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				}
+
+			}
 }

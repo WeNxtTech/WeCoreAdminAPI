@@ -69,7 +69,11 @@ public class ExcelConfigMasterController {
 		if (list != null) {
 			return new ResponseEntity<CommonResponse>(comRes, HttpStatus.OK);
 		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			comRes.setError(true);
+			comRes.setErrorMessage(Collections.emptyList());
+			comRes.setMessage("No Data Found");
+			comRes.setResult(Collections.emptyList());
+			return new ResponseEntity<CommonResponse>(comRes, HttpStatus.OK);
 		}
 	}
 

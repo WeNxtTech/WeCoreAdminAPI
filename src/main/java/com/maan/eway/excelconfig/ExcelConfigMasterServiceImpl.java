@@ -72,16 +72,16 @@ public class ExcelConfigMasterServiceImpl implements ExcelConfigMasterService {
 				EwayUploadTypeMaster upload = typeMasterRepository.findBy(req.getCompanyId(), req.getProductId(),
 						req.getTypeId(), StringUtils.isBlank(req.getSectionId()) ? "0" : req.getSectionId());
 				if (upload == null) {
-					eList.add(new Errors("4", "Type id", "Cannot find any record for this given information"));
+					eList.add(new Errors("4", "Type id", "You cannot change your Product here"/*"Cannot find any record for this given information"*/));
 				}
 			}
 		}
 
 		if (!StringUtils.isBlank(req.getTypeName())) {
 			if (req.getTypeName().length() > 200)
-				eList.add(new Errors("5", "Type name", "Type name is too long"));
+				eList.add(new Errors("5", "Sample File Name", "Sample File Name is too long"));
 		} else {
-			eList.add(new Errors("5", "Type name", "Type name is blank"));
+			eList.add(new Errors("5", "Sample File Name", "Sample File Name is blank"));
 		}
 
 		if (!StringUtils.isBlank(req.getStatus())) {
@@ -102,9 +102,9 @@ public class ExcelConfigMasterServiceImpl implements ExcelConfigMasterService {
 
 		if (!StringUtils.isBlank(req.getProductDesc())) {
 			if (req.getProductDesc().length() > 200)
-				eList.add(new Errors("8", "Product Desc", "Product Desc is too long"));
+				eList.add(new Errors("8", "Product Description", "Product Description is too long"));
 		} else {
-			eList.add(new Errors("8", "Product Desc", "Product Desc is blank"));
+			eList.add(new Errors("8", "Product Description", "Product Description is blank"));
 		}
 
 		if (!StringUtils.isBlank(req.getFilePath())) {

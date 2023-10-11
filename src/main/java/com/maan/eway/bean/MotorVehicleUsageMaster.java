@@ -104,7 +104,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="REGULATORY_CODE", length=20)
     private String     regulatoryCode ;
 
-
+    @Column(name="BODY_TYPE",  length=20)
+    private String     bodyType ;
+    
 }
 
 

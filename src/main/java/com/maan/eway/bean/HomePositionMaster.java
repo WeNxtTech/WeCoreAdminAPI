@@ -574,6 +574,10 @@ private static final long serialVersionUID = 1L;
     private String     brokerBranchCode ;
 
 
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="POLICY_COVERTED_DATE")
+	private Date       policyCovertedDate ;
 }
 
 

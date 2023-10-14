@@ -34,5 +34,7 @@ public interface AdminDropDownService {
 
 	List<DropDownRes> getReferralType(LovDropDownReq req);
 
+	List<DropDownRes> getQuestionType(LovDropDownReq req);
+
 
 }

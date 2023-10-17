@@ -1,6 +1,6 @@
 package com.maan.eway.vehicleupload;
 
-import java.nio.file.Files;
+import java.io.ByteArrayOutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -37,6 +37,15 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -88,6 +97,7 @@ import com.maan.eway.bean.ProductEmployeeDetails;
 import com.maan.eway.error.Error;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.springbatch.TransactionControlDetails;
+import com.sun.xml.messaging.saaj.util.ByteOutputStream;
 
 import okhttp3.MediaType;
 
@@ -1048,20 +1058,88 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 	@Override
 	public CommonRes sampleDownload(SamplFileDownloadReq req) {
 		CommonRes res =new CommonRes();
+		Map<String,Object> map =new HashMap<String,Object>();
 		try {
 			EwayUploadTypeMaster typeMaster =uploadTypeRepo.findByCompanyIdAndProductIdAndStatus(Integer.valueOf(req.getCompanyId()),Integer.valueOf(req.getProductId()),"Y");
-			String file_path =typeMaster.getFilePath();
-			String dataUri ="data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,";
-			Path path =Paths.get(file_path);
-			byte [] bytes =Files.readAllBytes(path);
-			String encodeString =Base64.getEncoder().encodeToString(bytes);
-			String base64 =dataUri+encodeString;
-			res.setMessage("SUCCESS");
-			Map<String,Object> map =new HashMap<String,Object>();
-			map.put("Base64", base64);
-			map.put("FileName", typeMaster.getTypename());
-			map.put("Message", "SUCCESS");
-			res.setCommonResponse(map);
+			if(typeMaster!=null) {
+			    Integer companyId =typeMaster.getCompanyId();
+			    Integer productId =typeMaster.getProductId();
+			    Integer typeId =typeMaster.getTypeid();
+			    String fileName =typeMaster.getTypename();
+				List<EwayXlconfigMaster> master =xlConfigMaster.findByCompanyIdAndProductIdAndTypeidAndStatusOrderByFieldid(companyId, productId, typeId, "Y");
+				
+				List<String> excelHeaderColumns =master.stream().map(p ->p.getExcelheaderName())
+						.collect(Collectors.toList());
+				
+				String [] strArray =new String[excelHeaderColumns.size()];
+				excelHeaderColumns.toArray(strArray);
+				
+				// Create a new workbook
+		        Workbook workbook = new XSSFWorkbook();
+		        
+		        Sheet sheet =workbook.createSheet(fileName);
+		        
+		        Font font = workbook.createFont();
+		        font.setFontName("Arial");
+		        font.setFontHeightInPoints((short) 12);
+		        font.setBold(true);
+		        font.setColor(IndexedColors.BLACK.getIndex());
+		        
+		        sheet.autoSizeColumn(0);
+		        
+
+		        // Create a cell style with the font
+		        CellStyle style = workbook.createCellStyle();
+		        style.setFont(font);
+		        
+		        style.setFillForegroundColor(IndexedColors.GREEN.getIndex()); 
+	            style.setFillPattern(FillPatternType.FINE_DOTS); 
+	            
+	           
+
+		        Row rowm =sheet.createRow(0);
+		        rowm.setHeightInPoints(20);
+
+		       // String [] excelColArray =excelHeaderColumns.split("~");
+
+		        int col =0;
+		        for(String str :strArray) {
+		        	Cell cell =rowm.createCell(col);
+		        	int contentLength = cell.getStringCellValue().length();
+			        sheet.setColumnWidth(0, (contentLength + 2) * 256); // Adjusting the width for extra padding
+		        	cell.setCellValue(str);
+		        	cell.setCellStyle(style);
+		        	
+		        	col++;
+		        }
+				
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		        workbook.write(bos);
+		        workbook.close();
+		        byte [] byteArray =bos.toByteArray();
+		        String base64 =Base64.getEncoder().encodeToString(byteArray);
+		        String prefix = "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,";
+
+		        res.setMessage("SUCCESS");
+				map.put("Base64", prefix+base64);
+				map.put("FileName", typeMaster.getTypename().split("[.]")[0]);
+				map.put("FileName", "Motor.xlsx");
+				map.put("Message", "SUCCESS");
+				res.setCommonResponse(map);
+			}else {
+			
+				/*String file_path =typeMaster.getFilePath();
+				String dataUri ="data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,";
+				Path path =Paths.get(file_path);
+				byte [] bytes =Files.readAllBytes(path);
+				String encodeString =Base64.getEncoder().encodeToString(bytes);
+				String base64 =dataUri+encodeString;*/
+				res.setMessage("FAILED");
+				map.put("Base64", "");
+				map.put("FileName", "");
+				map.put("Message", "FAILED");
+				res.setCommonResponse(map);
+			}
 		}catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();

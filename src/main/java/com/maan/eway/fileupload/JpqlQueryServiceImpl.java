@@ -1,5 +1,10 @@
 package com.maan.eway.fileupload;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +13,14 @@ import java.util.StringJoiner;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TemporalType;
+import javax.persistence.Tuple;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -18,7 +31,11 @@ import org.springframework.util.CollectionUtils;
 import com.google.gson.Gson;
 import com.maan.eway.bean.FactorRateMaster;
 import com.maan.eway.bean.FactorTypeDetails;
+import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.SectionCoverMaster;
+import com.maan.eway.embedded.EmbeddedDashBoardReq;
+import com.maan.eway.embedded.EmbeddedReq;
+import com.maan.eway.embedded.GroupMedicalDetails;
 
 @Component
 public class JpqlQueryServiceImpl {
@@ -30,8 +47,9 @@ public class JpqlQueryServiceImpl {
 	@PersistenceContext
 	private EntityManager em;
 	
-	private static Gson json = new Gson();
+	public static Gson json = new Gson();
 
+	public static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	
 	@SuppressWarnings("unchecked")
 	public Map<String,Object> getFactorXlColumns(FileDownloadRequest req) {
@@ -171,13 +189,99 @@ public class JpqlQueryServiceImpl {
 		}
 		return sectionMaster;
 	}
+
 	
+	public List<Tuple> getEmbeddedDetails(EmbeddedReq req){
+		List<Tuple> tupleList = null;
+		try {
+			List<Predicate> predicates = new ArrayList<>();
+			CriteriaBuilder cb =em.getCriteriaBuilder();	
+			CriteriaQuery<Tuple> query =cb.createTupleQuery();
+			Root<GroupMedicalDetails> gmd =query.from(GroupMedicalDetails.class);
+			
+			predicates.add(cb.equal(gmd.get("loginId"), req.getLoginId()));
+			predicates.add(cb.equal(gmd.get("companyId"), req.getCompanyId()));
+			predicates.add(cb.equal(gmd.get("productId"), Long.valueOf(req.getProductId())));
+			predicates.add(cb.equal(gmd.get("status"), "Y"));
+			
+			if(StringUtils.isNotBlank(req.getStartDate()) && StringUtils.isNotBlank(req.getEndDate())) {
+				 Date startDate= sdf.parse(req.getStartDate());
+				 Date endDate =sdf.parse(req.getEndDate());
+				 predicates.add(cb.between(cb.currentDate(), startDate, endDate));
+			
+			}else if(StringUtils.isNotBlank(req.getSearchType()) && StringUtils.isNotBlank(req.getSearchValue())) {
+				if("CustomerName".equalsIgnoreCase(req.getSearchType())) {
+					predicates.add(cb.like(cb.trim(cb.upper(gmd.get("customerName"))), "%"+req.getSearchValue()
+					.toUpperCase().trim()+"%"));
+				}else if("MobileNo".equalsIgnoreCase(req.getSearchType())) {
+					predicates.add(cb.equal(gmd.get("mobileNo"), req.getSearchValue()));
+				}else if("TransactionNo".equalsIgnoreCase(req.getSearchType())) {
+					predicates.add(cb.equal(gmd.get("clientTransactionNo"), req.getSearchValue()));
+				}else if("NidaNo".equalsIgnoreCase(req.getSearchType())) {
+					predicates.add(cb.equal(gmd.get("nidaNo"), req.getSearchValue()));
+				}else if("PoilcyNo".equalsIgnoreCase(req.getSearchType())) {
+					predicates.add(cb.equal(gmd.get("policyNo"), req.getSearchValue()));
+				}else if("PolicyStartDate".equalsIgnoreCase(req.getSearchType())) {
+					Date startTime =getExpectedTimeWithDate(req.getSearchValue(),0,0,0);
+					Date endTime =getExpectedTimeWithDate(req.getSearchValue(),23,59,59);
+					log.info("PolicyDateWithStarttime : "+startTime+" || PolicyDateWithEndtime : "+endTime+"");
+					predicates.add(cb.between(gmd.get("inceptionDate"), startTime, endTime));
+				}else if("RequestReferenceNo".equalsIgnoreCase(req.getSearchType())) {
+					predicates.add(cb.equal(gmd.get("requestReferenceNo"), req.getSearchValue()));
+				}
+			
+			}
+			
+			Predicate [] predicateArray = new Predicate[predicates.size()];
+			predicates.toArray(predicateArray);
+			
+			Subquery<String> planType =query.subquery(String.class);
+			Root<ListItemValue> liv =planType.from(ListItemValue.class);
+			
+			query.multiselect(gmd.get("mobileNo").alias("mobileNo"),gmd.get("inceptionDate").alias("inceptionDate"),
+					gmd.get("expiryDate").alias("expiryDate"),gmd.get("requestReferenceNo").alias("requestReferenceNo"),
+					gmd.get("policyNo").alias("policyNo"),gmd.get("nidaNo").alias("nidaNo"),gmd.get("loginId").alias("loginId"),
+					gmd.get("applicationId").alias("applicationId"),gmd.get("productId").alias("productId"),gmd.get("sectionId")
+					.alias("sectionId"),gmd.get("companyId").alias("companyId"),gmd.get("status").alias("status"),gmd.get("entryDate")
+					.alias("entryDate"),gmd.get("clientTransactionNo").alias("clientTransactionNo"),gmd.get("customerName")
+					.alias("customerName"),gmd.get("responsePeriod").alias("responsePeriod"),gmd.get("amountPaid").alias("amountPaid"),
+					gmd.get("pdfPath").alias("pdfPath"),gmd.get("premium").alias("premium"),gmd.get("commissionPercentage")
+					.alias("commissionPercentage"),gmd.get("commissionAmount").alias("commissionAmount"),gmd.get("taxPercentage")
+					.alias("taxPercentage"),gmd.get("taxPremium").alias("taxPremium"),gmd.get("overallPremium").alias("overallPremium"),
+					gmd.get("mobileCode").alias("mobileCode"),planType.select(liv.get("itemValue")).where(
+							cb.equal(liv.get("itemType"), "PLAN_OPTED"),cb.equal(gmd.get("planOpted"), liv.get("itemCode")),
+							cb.equal(gmd.get("status"), "Y")).alias("planTypeDesc")
+					
+					).where(predicateArray).orderBy(cb.desc(gmd.get("entryDate")));
+			
+		 tupleList=em.createQuery(query).getResultList();
+			
+		}catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+		}
+		return tupleList;
+	}
 	
-	
-	
-	
-	
-	
+	private  Date getExpectedTimeWithDate(String input,Integer hours,Integer min,Integer sec) {
+		Date output =null;
+		try {
+			Date date =sdf.parse(input);
+			Calendar calendar = Calendar.getInstance();
+	        calendar.setTime(date);
+
+	        // Set the time components to zero (midnight)
+	        calendar.set(Calendar.HOUR_OF_DAY, hours);
+	        calendar.set(Calendar.MINUTE, min);
+	        calendar.set(Calendar.SECOND, sec);
+	        calendar.set(Calendar.MILLISECOND, 0);
+	        output=calendar.getTime();
+		}catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+		}
+		return output;
+	}
 	
 	
 }

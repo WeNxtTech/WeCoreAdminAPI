@@ -128,6 +128,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="LICENSE_ISSUED_ON")
     private Date       licenseIssuedOn ;
 
+    @Column(name="RISK_ID")
+    private Integer riskId;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 

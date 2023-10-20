@@ -97,7 +97,6 @@ import com.maan.eway.bean.ProductEmployeeDetails;
 import com.maan.eway.error.Error;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.springbatch.TransactionControlDetails;
-import com.sun.xml.messaging.saaj.util.ByteOutputStream;
 
 import okhttp3.MediaType;
 
@@ -1105,12 +1104,16 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 		        int col =0;
 		        for(String str :strArray) {
 		        	Cell cell =rowm.createCell(col);
-		        	int contentLength = cell.getStringCellValue().length();
-			        sheet.setColumnWidth(0, (contentLength + 2) * 256); // Adjusting the width for extra padding
 		        	cell.setCellValue(str);
 		        	cell.setCellStyle(style);
 		        	
 		        	col++;
+		        }
+		        
+		     // Auto-size the cells in the first row
+		        for (int i = 0; i <strArray.length; i++) {
+		            sheet.autoSizeColumn(i);
+		            
 		        }
 				
 				ByteArrayOutputStream bos = new ByteArrayOutputStream();

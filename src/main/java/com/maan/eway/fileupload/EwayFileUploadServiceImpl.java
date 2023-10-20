@@ -114,6 +114,13 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 					row.getCell(i).setCellStyle(cellStyle);
 						
 				}
+				
+				 // Auto-size the cells in the first row
+		        for (int i = 0; i <headers.length; i++) {
+		            sheet.autoSizeColumn(i);
+		            
+		        }
+				
 				if(!CollectionUtils.isEmpty(obj)) { 
 					
 					for(Object [] ob :obj) {

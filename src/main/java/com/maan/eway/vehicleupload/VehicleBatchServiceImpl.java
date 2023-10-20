@@ -1122,18 +1122,10 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 
 		        res.setMessage("SUCCESS");
 				map.put("Base64", prefix+base64);
-				map.put("FileName", typeMaster.getTypename().split("[.]")[0]);
-				map.put("FileName", "Motor.xlsx");
+				map.put("FileName", typeMaster.getTypename());
 				map.put("Message", "SUCCESS");
 				res.setCommonResponse(map);
 			}else {
-			
-				/*String file_path =typeMaster.getFilePath();
-				String dataUri ="data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,";
-				Path path =Paths.get(file_path);
-				byte [] bytes =Files.readAllBytes(path);
-				String encodeString =Base64.getEncoder().encodeToString(bytes);
-				String base64 =dataUri+encodeString;*/
 				res.setMessage("FAILED");
 				map.put("Base64", "");
 				map.put("FileName", "");

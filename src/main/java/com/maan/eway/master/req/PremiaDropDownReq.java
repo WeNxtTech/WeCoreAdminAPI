@@ -34,5 +34,7 @@ public class PremiaDropDownReq {
 
 	@JsonProperty("BrokerCode")
 	private String brokerCode ;
+	@JsonProperty("BranchCoreAppCode")
+	private String branchCoreAppCode ;
 
 }

@@ -1,12 +1,17 @@
 package com.maan.eway.master.service.impl;
 
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -25,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -37,6 +43,7 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginProductMaster;
@@ -311,6 +318,9 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 				
 				String url = PremiaCustomerApiCall ;
 				String auth = ClaimBasicAuthName +":"+ ClaimBasicAuthPass;
+				//Branch Core App Code
+				String coreAppCode= getByBranchCode(req.getBranchCode());
+				req.setBranchCoreAppCode(coreAppCode);
 		        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
 		        String authHeader = "Basic " + new String( encodedAuth );
 		     	RestTemplate restTemplate = new RestTemplate();
@@ -354,5 +364,60 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 					}
 	 		return resList;
 		}
+	
+	public String getByBranchCode(String branchCode) {
+		String res = "";
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<BranchMaster> query = cb.createQuery(BranchMaster.class);
+			List<BranchMaster> list = new ArrayList<BranchMaster>();
+			
+			// Find All
+			Root<BranchMaster>    c = query.from(BranchMaster.class);		
+			
+			// Select
+			query.select(c );
+			
+			// amendId Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<BranchMaster> ocpm1 = amendId.from(BranchMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode") );
+			
+			amendId.where(a1);
+			
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("branchCode")));
+			
+			// Where
+			Predicate n1 = cb.equal(c.get("amendId"), amendId);
+			Predicate n4 = cb.equal(c.get("branchCode"), branchCode);
+			query.where(n1,n4).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<BranchMaster> result = em.createQuery(query);			
+			list =  result.getResultList();  
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getBranchCode()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(BranchMaster :: getBranchName ));
+			res=list.get(0).getCoreAppCode();
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return res;
+	}
 		
+	private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
+	    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+	}
 }

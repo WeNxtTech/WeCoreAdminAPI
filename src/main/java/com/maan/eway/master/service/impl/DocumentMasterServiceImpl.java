@@ -575,7 +575,7 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 			String itemType = "DOCUMENT_APPLICABLE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, "99999");
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -592,7 +592,7 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 
 	}
 	
-	public synchronized List<ListItemValue> getListItem(LovDropDownReq req , String itemType) {
+	public synchronized List<ListItemValue> getListItem(LovDropDownReq req , String itemType, String companyId) {
 		List<ListItemValue> list = new ArrayList<ListItemValue>();
 		try {
 			Date today = new Date();
@@ -644,22 +644,22 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 			Predicate n12 = cb.or(n1,n11);
 			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
-			Predicate n4 = cb.equal(c.get("companyId"), req.getInsuranceId());
-			Predicate n5 = cb.equal(c.get("companyId"), "99999");
+			Predicate n4 = cb.equal(c.get("companyId"), companyId);
+	//		Predicate n5 = cb.equal(c.get("companyId"), "99999");
 			Predicate n6 = cb.equal(c.get("branchCode"), req.getBranchCode());
 			Predicate n7 = cb.equal(c.get("branchCode"), "99999");
-			Predicate n8 = cb.or(n4,n5);
+		//	Predicate n8 = cb.or(n4,n5);
 			Predicate n9 = cb.or(n6,n7);
 			Predicate n10 = cb.equal(c.get("itemType"),itemType);
 			
-			if(itemType.equalsIgnoreCase("DOCUMENT_APPLICABLE")) {
-				
-				query.where(n12,n2,n3,n9,n10,n8).orderBy(orderList);
-				
-			}else {
+//			if(itemType.equalsIgnoreCase("DOCUMENT_APPLICABLE")) {
+//				
+//				query.where(n12,n2,n3,n9,n10,n8).orderBy(orderList);
+//				
+//			}else {
 			
 			query.where(n12,n2,n3,n4,n9,n10).orderBy(orderList);
-			}
+		//	}
 			// Get Result
 			TypedQuery<ListItemValue> result = em.createQuery(query);
 			list = result.getResultList();

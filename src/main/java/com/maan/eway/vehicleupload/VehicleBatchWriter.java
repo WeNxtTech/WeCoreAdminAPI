@@ -334,7 +334,7 @@ private String validateDetails(Record items, EwayUploadRes response) {
 					}
 				}
 				if("DATE".equalsIgnoreCase(datatype)) {
-					if(!excelValue.matches("([0-9]{2})/([0-9]{2})/([0-9]{4})")) {
+					if(!excelValue.matches("([0-9]{2})/([0-9]{2})/([0-9]{4})") && !excelValue.matches("([0-9]{2})-([0-9]{2})-([0-9]{4})")) {
 						errors="Please Enter Valid Date format in "+ headername + ": Given Value is - >  " + excelValue +"Excepted date fromat is DD/MM/YYYY";
 				   }else if(!"0".equals(rangeCondition)){
 						LocalDate sysdate =LocalDate.now();

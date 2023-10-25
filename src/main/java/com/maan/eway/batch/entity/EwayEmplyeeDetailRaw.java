@@ -55,11 +55,11 @@ public class EwayEmplyeeDetailRaw {
 	@Column(name ="EMPLOYEE_NAME")
 	private String employeeName;
 	
-	@Column(name ="DATE_OF_JOINING")
-	private String dateOfJoining;
+	@Column(name ="YEAR_OF_JOINING")
+	private String yearOfJoining;
 	
-	@Column(name ="DATE_OF_JOIN_MONTH")
-	private String dateOfJoinMonth;
+	@Column(name ="MONTH_OF_JOINING_DESC")
+	private String monthOfJoiningDesc;
 	
 	@Column(name ="OCCUPATION_ID")
 	private String occupationId;
@@ -109,8 +109,8 @@ public class EwayEmplyeeDetailRaw {
 	@Column(name ="LOCATION_ID")
 	private String locationId;
 	
-	@Column(name ="DATE_OF_JOIN_MONTH_YEAR")
-	private String dateOfJoinMonthYear;
+	@Column(name ="MONTH_OF_JOINING")
+	private String monthOfJoining;
 	
 	@Column(name ="LOCATION_DESC")
 	private String locationDesc;

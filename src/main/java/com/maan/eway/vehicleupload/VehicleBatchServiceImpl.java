@@ -269,8 +269,8 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 					.createdBy(StringUtils.isBlank(p.getCreatedBy())?"":p.getCreatedBy())
 					.nationalityId(StringUtils.isBlank(p.getNationalityId())?"":p.getNationalityId())
 					.employeeName(StringUtils.isBlank(p.getEmployeeName())?"":p.getEmployeeName())
-					.dateOfJoining(p.getDateOfJoiningYear()==null?"":p.getDateOfJoiningYear().toString())
-					.dateOfJoinMonth(p.getDateOfJoiningMonth()==null?"":p.getDateOfJoiningMonth().toLowerCase())
+					.yearOfJoining(p.getDateOfJoiningYear()==null?"":p.getDateOfJoiningYear().toString())
+					.monthOfJoiningDesc(p.getDateOfJoiningMonth()==null?"":p.getDateOfJoiningMonth().toLowerCase())
 					.dateOfBirth(p.getDateOfBirth()==null?"":sdf.format(p.getDateOfBirth()))
 					.occupationId(StringUtils.isBlank(p.getOccupationId())?"":p.getOccupationId())
 					.occupationDesc(StringUtils.isBlank(p.getOccupationDesc())?"":p.getOccupationDesc())
@@ -714,8 +714,8 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 								.nationalityId(StringUtils.isBlank(p.getNationalityId())?"":p.getNationalityId())
 								.employeeName(StringUtils.isBlank(p.getEmployeeName())?"":p.getEmployeeName())
 								.dateOfBirth(StringUtils.isBlank(p.getDateOfBirth())?"":p.getDateOfBirth())
-								.dateOfJoiningYear(StringUtils.isBlank(p.getDateOfJoining())?"":p.getDateOfJoining())
-								.dateOfJoiningMonth(StringUtils.isBlank(p.getDateOfJoinMonth())?"":p.getDateOfJoinMonth())
+								.dateOfJoiningYear(StringUtils.isBlank(p.getYearOfJoining())?"":p.getYearOfJoining())
+								.dateOfJoiningMonth(StringUtils.isBlank(p.getMonthOfJoining())?"":p.getMonthOfJoining())
 								.occupationDesc(StringUtils.isBlank(p.getOccupationDesc())?"":p.getOccupationDesc())
 								.salary(StringUtils.isBlank(p.getSalary())?"":p.getSalary())
 								.occupationId(StringUtils.isBlank(p.getOccupationId())?"":p.getOccupationId())
@@ -794,7 +794,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 							.nationalityId(StringUtils.isBlank(p.getNationalityId())?"":p.getNationalityId())
 							.employeeName(StringUtils.isBlank(p.getEmployeeName())?"":p.getEmployeeName())
 							.dateOfBirth(StringUtils.isBlank(p.getDateOfBirth())?"":p.getDateOfBirth())
-							.dateOfJoiningYear(StringUtils.isBlank(p.getDateOfJoining())?"":p.getDateOfJoining())
+							.dateOfJoiningYear(StringUtils.isBlank(p.getYearOfJoining())?"":p.getYearOfJoining())
 							.occupationDesc(StringUtils.isBlank(p.getOccupationDesc())?"":p.getOccupationDesc())
 							.salary(StringUtils.isBlank(p.getSalary())?"":p.getSalary())
 							.status(p.getStatus())
@@ -926,8 +926,8 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 						EwayEmplyeeDetailRaw detailRaw =emp.get();
 						detailRaw.setEmployeeName(req.getEmployeeName());
 						detailRaw.setDateOfBirth(req.getDateOfBirth());
-						detailRaw.setDateOfJoining(req.getDateOfJoiningYear());
-						detailRaw.setDateOfJoinMonth(req.getDateOfJoiningMonth());
+						//detailRawdetailRaw.setDateOfJoining(req.getDateOfJoiningYear());
+						//detailRaw.setDateOfJoinMonth(req.getDateOfJoiningMonth());
 						detailRaw.setNationalityId(req.getNationalityId());
 						detailRaw.setOccupationId(req.getOccupationId());
 						detailRaw.setOccupationDesc(req.getOccupationDesc());

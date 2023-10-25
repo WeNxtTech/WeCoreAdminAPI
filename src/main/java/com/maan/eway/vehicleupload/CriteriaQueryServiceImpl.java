@@ -777,7 +777,7 @@ public class CriteriaQueryServiceImpl {
 			  Expression<String> caseCon =cb.selectCase()
 					  .when(cb.isNull(root.<Integer>get("occupationId")), "Please enter valid Occupation")
 					  .when(cb.isNull(root.get("locationId")), "Please enter valid Location")
-					  .when(cb.isNull(root.get("dateOfJoinMonth")), "Pleae enter valid Joining Period")
+					  .when(cb.isNull(root.get("monthOfJoining")), "Pleae enter valid Joining Period")
 					  .otherwise(root.get("errorDesc")).as(String.class);
 			  criteriaUpdate.set(root.<String>get("errorDesc"), caseCon)
 			  .where(

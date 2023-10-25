@@ -812,7 +812,7 @@ public class XLConfigMasterServiceImpl {
 						}if(StringUtils.isNotBlank(xl.getDataRange())) {
 							
 							if(!xl.getDataRange().matches("[0-9]+-[0-9]+")) {
-								
+								error.add(new Errors(""+i+"","DataRange","DataRange format should be like this :00-00"));
 							}
 						}
 					}

@@ -319,8 +319,14 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 				String url = PremiaCustomerApiCall ;
 				String auth = ClaimBasicAuthName +":"+ ClaimBasicAuthPass;
 				//Branch Core App Code
+				if(StringUtils.isNotBlank(req.getBranchCode())) {
 				String coreAppCode= getByBranchCode(req.getBranchCode());
-				req.setBranchCoreAppCode(coreAppCode);
+					req.setBranchCoreAppCode(coreAppCode);
+				}else
+				{
+					req.setBranchCoreAppCode("");
+				}
+				
 		        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
 		        String authHeader = "Basic " + new String( encodedAuth );
 		     	RestTemplate restTemplate = new RestTemplate();

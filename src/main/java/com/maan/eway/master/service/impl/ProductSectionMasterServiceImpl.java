@@ -279,6 +279,7 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 				saveData.setCoreAppCode("99999");
 				saveData.setEntryDate(new Date());
 				saveData.setAmendId(amendId);
+				saveData.setMinPremium(BigDecimal.ZERO);
 				repo.saveAndFlush(saveData);
 				
 				log.info("Saved Details is ---> " + json.toJson(saveData));
@@ -919,6 +920,9 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 				errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy within 100 Characters "));
 			}
 			
+			if (StringUtils.isNotBlank(req.getMinimumPremium()) && ! req.getMinimumPremium().matches("[0-9.]+") ) {
+				errorList.add(new Error("07", "MinimumPremium", "Please Enter Valid  MinimumPremium"));
+			}
 			
 			if (StringUtils.isBlank(req.getRegulatoryCode())) {
 				errorList.add(new Error("09", "RegulatoryCode", "Please Enter RegulatoryCode"));

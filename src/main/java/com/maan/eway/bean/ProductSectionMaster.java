@@ -19,6 +19,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import java.util.Date;
@@ -109,6 +110,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="MOTOR_YN", length=1)
     private String     motorYn;
 
+    @Column(name="MIN_PREMIUM")
+    private BigDecimal minPremium;
 
 }
 

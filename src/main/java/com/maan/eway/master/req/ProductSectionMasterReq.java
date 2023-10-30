@@ -49,4 +49,7 @@ public class ProductSectionMasterReq {
 	
 	@JsonProperty("RegulatoryCode")
 	private String regulatoryCode;
+	
+	@JsonProperty("MinimumPremium")
+	private String minimumPremium;
 }

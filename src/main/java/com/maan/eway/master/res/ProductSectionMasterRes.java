@@ -75,5 +75,8 @@ public class ProductSectionMasterRes implements Serializable {
 	
 	@JsonProperty("RegulatoryCode")
 	private String regulatoryCode;
+	
+	@JsonProperty("MinimumPremium")
+	private String minimumPremium;
       
 }

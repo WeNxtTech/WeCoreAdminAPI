@@ -5,6 +5,7 @@
 */
 package com.maan.eway.master.service.impl;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -418,7 +419,7 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			res.setSectionId(list.get(0).getSectionId().toString());
 			res.setEntryDate(list.get(0).getEntryDate());
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
-		
+			res.setMinimumPremium(list.get(0).getMinPremium() ==null ? "0" :list.get(0).getMinPremium().toPlainString() );
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -1042,6 +1043,7 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 				saveData.setUpdatedDate(new Date());
 				saveData.setUpdatedBy(req.getCreatedBy());
 				saveData.setMotorYn(req.getMotorYn());
+				saveData.setMinPremium(StringUtils.isBlank(req.getMinimumPremium()) ? BigDecimal.ZERO : new BigDecimal(req.getMinimumPremium()) );
 				repo.saveAndFlush(saveData);
 			
 				log.info("Saved Details is ---> " + json.toJson(saveData));

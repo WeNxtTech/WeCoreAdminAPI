@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.common.req.GetAllTirraErrorHistory;
 import com.maan.eway.common.req.GetTirraEorrorHistoryReq;
 import com.maan.eway.common.res.GetTirraEorrorHistoryRes;
 import com.maan.eway.common.service.ReportsService;
@@ -35,6 +36,24 @@ public class ReportsController {
 	public ResponseEntity<CommonRes> getTirraErrorHistory(@RequestBody GetTirraEorrorHistoryReq req){
 		CommonRes data = new CommonRes();
 		List<GetTirraEorrorHistoryRes> res = service.getTirraEorrorHistory(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		if(res!=null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		}
+		else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
+	@PostMapping("/alltirrahistory")
+	@ApiOperation(value="This method is to Get All Tirra Error History")
+	public ResponseEntity<CommonRes> getAllTirraErrorHistory(@RequestBody GetAllTirraErrorHistory req){
+		CommonRes data = new CommonRes();
+		List<GetTirraEorrorHistoryRes> res = service.getAllTirraErrorHistory(req);
 		data.setCommonResponse(res);
 		data.setErrorMessage(Collections.emptyList());
 		data.setIsError(false);

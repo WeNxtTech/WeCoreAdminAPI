@@ -13,4 +13,6 @@ public interface TirraErrorHistoryRepository extends JpaRepository<TirraErrorHis
 	List<TirraErrorHistory> findByReqRegNumberAndEntryDateBetween(String registrationNumber, Date effectiveStartDate,
 			Date effectiveEndDate);
 
+	List<TirraErrorHistory> findByEntryDateBetween(Date effectiveStartDate, Date effectiveEndDate);
+
 }

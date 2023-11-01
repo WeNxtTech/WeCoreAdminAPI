@@ -373,14 +373,14 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					if ( param1==true  ) {
 						if( StringUtils.isBlank(data.getParam1())  ) 
 							errorList.add(new Error("01", param1Name, "Please Enter " +  param1Name + " in Row No : " + row  ));
-						else if(! data.getParam1().matches("[0-9.]+")) 
+						else if(! data.getParam1().matches("[0-9.-]+")) 
 							errorList.add(new Error("01",param1Name, "Please Enter Valid "  + param1Name + " Value in Row No : " + row ));	
 						
 					}
 					if ( param2==true  ) {
 						if( StringUtils.isBlank(data.getParam2())  ) 
 							errorList.add(new Error("02", param2Name, "Please Enter " +  param2Name + "in Row No : " + row  ));
-						else if(! data.getParam2().matches("[0-9.]+")) 
+						else if(! data.getParam2().matches("[0-9.-]+")) 
 							errorList.add(new Error("02",param2Name, "Please Enter Valid "  + param2Name + " Value in Row No : " + row ));
 						else if ( param1==true &&  StringUtils.isNotBlank(data.getParam1()) &&  data.getParam1().matches("[0-9.]+") ) {
 							if( Double.valueOf(data.getParam1()) >  Double.valueOf(data.getParam2()) ) 
@@ -392,14 +392,14 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					if ( param3==true  ) {
 						if( StringUtils.isBlank(data.getParam3())  ) 
 							errorList.add(new Error("03", param3Name, "Please Enter " +  param3Name + "in Row No : " + row  ));
-						else if(! data.getParam3().matches("[0-9.]+")) 
+						else if(! data.getParam3().matches("[0-9.-]+")) 
 							errorList.add(new Error("03",param3Name, "Please Enter Valid "  + param3Name + " Value in Row No : " + row ));	
 				
 					}
 					if ( param4==true  ) {
 						if( StringUtils.isBlank(data.getParam4())  ) 
 							errorList.add(new Error("04", param4Name, "Please Enter " +  param4Name + "in Row No : " + row  ));
-						else if(! data.getParam4().matches("[0-9.]+")) 
+						else if(! data.getParam4().matches("[0-9.-]+")) 
 							errorList.add(new Error("04",param4Name, "Please Enter Valid "  + param4Name + " Value in Row No : " + row ));
 						else if ( param3==true &&  StringUtils.isNotBlank(data.getParam3()) &&  data.getParam3().matches("[0-9.]+") ) {
 							if( Double.valueOf(data.getParam3()) >  Double.valueOf(data.getParam4()) ) 
@@ -411,14 +411,14 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					if ( param5==true  ) {
 						if( StringUtils.isBlank(data.getParam5())  ) 
 							errorList.add(new Error("05", param5Name, "Please Enter " +  param5Name + "in Row No : " + row  ));
-						else if(! data.getParam5().matches("[0-9.]+")) 
+						else if(! data.getParam5().matches("[0-9.-]+")) 
 							errorList.add(new Error("05",param5Name, "Please Enter Valid "  + param5Name + " Value in Row No : " + row ));	
 						
 					}
 					if ( param6==true  ) {
 						if( StringUtils.isBlank(data.getParam6())  ) 
 							errorList.add(new Error("06", param6Name, "Please Enter " +  param6Name + "in Row No : " + row  ));
-						else if(! data.getParam6().matches("[0-9.]+")) 
+						else if(! data.getParam6().matches("[0-9.-]+")) 
 							errorList.add(new Error("06",param6Name, "Please Enter Valid "  + param6Name + " Value in Row No : " + row ));
 						else if ( param5==true &&  StringUtils.isNotBlank(data.getParam5()) &&  data.getParam5().matches("[0-9.]+") ) {
 							if( Double.valueOf(data.getParam5()) >  Double.valueOf(data.getParam6()) ) 
@@ -431,14 +431,14 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					if ( param7==true  ) {
 						if( StringUtils.isBlank(data.getParam7())  ) 
 							errorList.add(new Error("07", param7Name, "Please Enter " +  param7Name + "in Row No : " + row  ));
-						else if(! data.getParam7().matches("[0-9.]+")) 
+						else if(! data.getParam7().matches("[0-9.-]+")) 
 							errorList.add(new Error("07",param7Name, "Please Enter Valid "  + param7Name + " Value in Row No : " + row ));	
 						
 					}
 					if ( param8==true  ) {
 						if( StringUtils.isBlank(data.getParam8())  ) 
 							errorList.add(new Error("08", param8Name, "Please Enter " +  param8Name + "in Row No : " + row  ));
-						else if(! data.getParam8().matches("[0-9.]+")) 
+						else if(! data.getParam8().matches("[0-9.-]+")) 
 							errorList.add(new Error("08",param8Name, "Please Enter Valid "  + param8Name + " Value in Row No : " + row ));
 						else if ( param7==true &&  StringUtils.isNotBlank(data.getParam7()) &&  data.getParam7().matches("[0-9.]+") ) {
 							if( Double.valueOf(data.getParam7()) >  Double.valueOf(data.getParam8()) ) 

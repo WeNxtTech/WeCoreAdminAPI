@@ -281,8 +281,8 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			// Find All
 			Root<SectionCoverMaster> b2 = query2.from(SectionCoverMaster.class);
 
-			// Effective Date Max Filter
-			/*
+			// Amed Id
+			
 			Subquery<Long> amendId2 = query2.subquery(Long.class);
 			Root<SectionCoverMaster> ocpm2 = amendId2.from(SectionCoverMaster.class);
 			amendId2.select(cb2.max(ocpm2.get("amendId")));
@@ -291,37 +291,36 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate a8 = cb2.equal(ocpm2.get("sectionId"), b2.get("sectionId"));
 			Predicate a9 = cb2.equal(ocpm2.get("productId"), b2.get("productId"));
 			Predicate a10 = cb2.equal(ocpm2.get("companyId"), b2.get("companyId"));
-			Predicate a11 = cb2.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"), today);
+	//		Predicate a11 = cb2.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"), today);
 			Predicate a13 = cb2.equal(ocpm2.get("agencyCode"), b2.get("agencyCode"));
 			Predicate a14 = cb2.equal(ocpm2.get("branchCode"), b2.get("branchCode"));
-			amendId2.where(a7,a8,a9,a10,a11,a12,a13,a14);
-			*/
+			amendId2.where(a7,a8,a9,a10,a12,a13,a14);
 			
-			Subquery<Long> effectiveDate = query2.subquery(Long.class);
-			Root<SectionCoverMaster> ocpm2 = effectiveDate.from(SectionCoverMaster.class);
-			effectiveDate.select(cb2.max(ocpm2.get("effectiveDateStart")));
-			Predicate a1 = cb2.equal(ocpm2.get("coverId"), b2.get("coverId"));
-			Predicate a2 = cb2.equal(ocpm2.get("subCoverId"), b2.get("subCoverId"));
-			Predicate a3 = cb2.equal(ocpm2.get("sectionId"), b2.get("sectionId"));
-			Predicate a4 = cb2.equal(ocpm2.get("productId"), b2.get("productId"));
-			Predicate a5 = cb2.equal(ocpm2.get("companyId"), b2.get("companyId"));
-			Predicate a6 = cb2.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"), today);
-			Predicate a7 = cb2.equal(ocpm2.get("agencyCode"), b2.get("agencyCode"));
-			Predicate a8 = cb2.equal(ocpm2.get("branchCode"), b2.get("branchCode"));
-			effectiveDate.where(a1,a2,a3,a4,a5,a6,a7,a8);
-			
-			Subquery<Long> effectiveDate2 = query2.subquery(Long.class);
-			Root<SectionCoverMaster> ocpm3 = effectiveDate2.from(SectionCoverMaster.class);
-			effectiveDate2.select(cb2.max(ocpm3.get("effectiveDateEnd")));
-			Predicate a9 = cb2.equal(ocpm3.get("coverId"), b2.get("coverId"));
-			Predicate a10 = cb2.equal(ocpm3.get("subCoverId"), b2.get("subCoverId"));
-			Predicate a11 = cb2.equal(ocpm3.get("sectionId"), b2.get("sectionId"));
-			Predicate a12 = cb2.equal(ocpm3.get("productId"), b2.get("productId"));
-			Predicate a13 = cb2.equal(ocpm3.get("companyId"), b2.get("companyId"));
-			Predicate a14 = cb2.greaterThanOrEqualTo(ocpm3.get("effectiveDateEnd"), today);
-			Predicate a15 = cb2.equal(ocpm3.get("agencyCode"), b2.get("agencyCode"));
-			Predicate a16 = cb2.equal(ocpm3.get("branchCode"), b2.get("branchCode"));
-			effectiveDate2.where(a9,a10,a11,a12,a13,a14,a15,a16);
+//			Subquery<Long> effectiveDate = query2.subquery(Long.class);
+//			Root<SectionCoverMaster> ocpm2 = effectiveDate.from(SectionCoverMaster.class);
+//			effectiveDate.select(cb2.max(ocpm2.get("effectiveDateStart")));
+//			Predicate a1 = cb2.equal(ocpm2.get("coverId"), b2.get("coverId"));
+//			Predicate a2 = cb2.equal(ocpm2.get("subCoverId"), b2.get("subCoverId"));
+//			Predicate a3 = cb2.equal(ocpm2.get("sectionId"), b2.get("sectionId"));
+//			Predicate a4 = cb2.equal(ocpm2.get("productId"), b2.get("productId"));
+//			Predicate a5 = cb2.equal(ocpm2.get("companyId"), b2.get("companyId"));
+//			Predicate a6 = cb2.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"), today);
+//			Predicate a7 = cb2.equal(ocpm2.get("agencyCode"), b2.get("agencyCode"));
+//			Predicate a8 = cb2.equal(ocpm2.get("branchCode"), b2.get("branchCode"));
+//			effectiveDate.where(a1,a2,a3,a4,a5,a6,a7,a8);
+//			
+//			Subquery<Long> effectiveDate2 = query2.subquery(Long.class);
+//			Root<SectionCoverMaster> ocpm3 = effectiveDate2.from(SectionCoverMaster.class);
+//			effectiveDate2.select(cb2.max(ocpm3.get("effectiveDateEnd")));
+//			Predicate a9 = cb2.equal(ocpm3.get("coverId"), b2.get("coverId"));
+//			Predicate a10 = cb2.equal(ocpm3.get("subCoverId"), b2.get("subCoverId"));
+//			Predicate a11 = cb2.equal(ocpm3.get("sectionId"), b2.get("sectionId"));
+//			Predicate a12 = cb2.equal(ocpm3.get("productId"), b2.get("productId"));
+//			Predicate a13 = cb2.equal(ocpm3.get("companyId"), b2.get("companyId"));
+//			Predicate a14 = cb2.greaterThanOrEqualTo(ocpm3.get("effectiveDateEnd"), today);
+//			Predicate a15 = cb2.equal(ocpm3.get("agencyCode"), b2.get("agencyCode"));
+//			Predicate a16 = cb2.equal(ocpm3.get("branchCode"), b2.get("branchCode"));
+//			effectiveDate2.where(a9,a10,a11,a12,a13,a14,a15,a16);
 			
 			// Select
 			query2.select(b2);
@@ -332,8 +331,8 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 
 			
 			// Where
-			Predicate n4 = cb2.equal(b2.get("effectiveDateEnd"),effectiveDate2);
-			Predicate n5 = cb2.equal(b2.get("effectiveDateStart"),effectiveDate);
+			Predicate n4 = cb2.equal(b2.get("amendId"),amendId2);
+			//Predicate n5 = cb2.equal(b2.get("effectiveDateStart"),effectiveDate);
 			Predicate n6 = cb2.equal(b2.get("subCoverId"),"0");
 			Predicate n7 = cb2.equal(b2.get("productId"), req.getProductId());
 			Predicate n14 = cb2.equal(b2.get("companyId"), req.getInsuranceId());
@@ -346,7 +345,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate n13 = cb2.or(n11,n12 );
 //			Predicate n16 = cb2.equal(b2.get("status"),"Y");
 
-			query2.where(n4,n5,n6,n7,n14,n15,n10,n13).orderBy(orderList2);
+			query2.where(n4,n6,n7,n14,n15,n10,n13).orderBy(orderList2);
 
 			// Get Result
 			TypedQuery<SectionCoverMaster> result2 = em.createQuery(query2);

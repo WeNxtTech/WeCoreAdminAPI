@@ -71,7 +71,7 @@ import com.maan.eway.res.SuccessRes;
 /**
  * <h2>CoverMasterServiceimpl</h2>
  */
-@Service
+@Service 
 @Transactional
 public class SectionCoverMasterServiceImpl implements SectionCoverMasterService {
 
@@ -2109,6 +2109,120 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			//Predicate n13 = cb2.or(n11,n12 );
 			//Predicate n16 = cb2.equal(b2.get("status"),"Y");
 			query2.where(n4,n5,n6,n7,n14,n15,n8,n11).orderBy(orderList2);
+
+			// Get Result
+			TypedQuery<SectionCoverMaster> result2 = em.createQuery(query2);
+			list = result2.getResultList();
+			list.sort( Comparator.comparing(SectionCoverMaster :: getAgencyCode  ).thenComparing(SectionCoverMaster :: getBranchCode  ) );;
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCoverId() ,o.getSubCoverId() ))).collect(Collectors.toList());
+			
+			Map<Integer,List<SectionCoverMaster>> groupByCover = list.stream().collect(Collectors.groupingBy(SectionCoverMaster :: getCoverId));
+			// Map
+			for (Integer  data : groupByCover.keySet()) {
+				List<SectionCoverMaster> datas = groupByCover.get(data);
+				datas.sort(Comparator.comparing(SectionCoverMaster :: getStatus).reversed());
+				SectionCoverMasterGetAllRes res = new SectionCoverMasterGetAllRes();
+				res = mapper.map(datas.get(0), SectionCoverMasterGetAllRes.class);
+				resList.add(res);
+			}
+			
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+
+		}
+		return resList;
+	}
+
+	@Override
+	public List<SectionCoverMasterGetAllRes> getallSectionCoverForBroker(SectionCoverMasterGetAllReq req) {
+		List<SectionCoverMasterGetAllRes> resList = new ArrayList<SectionCoverMasterGetAllRes>();
+		DozerBeanMapper mapper = new DozerBeanMapper();
+		try {
+			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 50);
+			today = cal.getTime();
+
+			List<SectionCoverMaster> list = new ArrayList<SectionCoverMaster>();
+						
+							
+			// Find Latest Record
+			CriteriaBuilder cb2 = em.getCriteriaBuilder();
+			CriteriaQuery<SectionCoverMaster> query2 = cb2.createQuery(SectionCoverMaster.class);
+
+			// Find All
+			Root<SectionCoverMaster> b2 = query2.from(SectionCoverMaster.class);
+
+			// Amed Id
+			
+//			Subquery<Long> amendId2 = query2.subquery(Long.class);
+//			Root<SectionCoverMaster> ocpm2 = amendId2.from(SectionCoverMaster.class);
+//			amendId2.select(cb2.max(ocpm2.get("amendId")));
+//			Predicate a7 = cb2.equal(ocpm2.get("coverId"), b2.get("coverId"));
+//			Predicate a12 = cb2.equal(ocpm2.get("subCoverId"), b2.get("subCoverId"));
+//			Predicate a8 = cb2.equal(ocpm2.get("sectionId"), b2.get("sectionId"));
+//			Predicate a9 = cb2.equal(ocpm2.get("productId"), b2.get("productId"));
+//			Predicate a10 = cb2.equal(ocpm2.get("companyId"), b2.get("companyId"));
+//	//		Predicate a11 = cb2.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"), today);
+//			Predicate a13 = cb2.equal(ocpm2.get("agencyCode"), b2.get("agencyCode"));
+//			Predicate a14 = cb2.equal(ocpm2.get("branchCode"), b2.get("branchCode"));
+//			amendId2.where(a7,a8,a9,a10,a12,a13,a14);
+			
+			Subquery<Long> effectiveDate = query2.subquery(Long.class);
+			Root<SectionCoverMaster> ocpm2 = effectiveDate.from(SectionCoverMaster.class);
+			effectiveDate.select(cb2.max(ocpm2.get("effectiveDateStart")));
+			Predicate a1 = cb2.equal(ocpm2.get("coverId"), b2.get("coverId"));
+			Predicate a2 = cb2.equal(ocpm2.get("subCoverId"), b2.get("subCoverId"));
+			Predicate a3 = cb2.equal(ocpm2.get("sectionId"), b2.get("sectionId"));
+			Predicate a4 = cb2.equal(ocpm2.get("productId"), b2.get("productId"));
+			Predicate a5 = cb2.equal(ocpm2.get("companyId"), b2.get("companyId"));
+			Predicate a6 = cb2.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"), today);
+			Predicate a7 = cb2.equal(ocpm2.get("agencyCode"), b2.get("agencyCode"));
+			Predicate a8 = cb2.equal(ocpm2.get("branchCode"), b2.get("branchCode"));
+			effectiveDate.where(a1,a2,a3,a4,a5,a6,a7,a8);
+			
+			Subquery<Long> effectiveDate2 = query2.subquery(Long.class);
+			Root<SectionCoverMaster> ocpm3 = effectiveDate2.from(SectionCoverMaster.class);
+			effectiveDate2.select(cb2.max(ocpm3.get("effectiveDateEnd")));
+			Predicate a9 = cb2.equal(ocpm3.get("coverId"), b2.get("coverId"));
+			Predicate a10 = cb2.equal(ocpm3.get("subCoverId"), b2.get("subCoverId"));
+			Predicate a11 = cb2.equal(ocpm3.get("sectionId"), b2.get("sectionId"));
+			Predicate a12 = cb2.equal(ocpm3.get("productId"), b2.get("productId"));
+			Predicate a13 = cb2.equal(ocpm3.get("companyId"), b2.get("companyId"));
+			Predicate a14 = cb2.greaterThanOrEqualTo(ocpm3.get("effectiveDateEnd"), today);
+			Predicate a15 = cb2.equal(ocpm3.get("agencyCode"), b2.get("agencyCode"));
+			Predicate a16 = cb2.equal(ocpm3.get("branchCode"), b2.get("branchCode"));
+			effectiveDate2.where(a9,a10,a11,a12,a13,a14,a15,a16);
+			
+			// Select
+			query2.select(b2);
+
+			// Order By
+			List<Order> orderList2 = new ArrayList<Order>();
+			orderList2.add(cb2.asc(b2.get("coverName")));
+
+			
+			// Where
+			Predicate n4 = cb2.equal(b2.get("effectiveDateEnd"),effectiveDate2);
+			Predicate n5 = cb2.equal(b2.get("effectiveDateStart"),effectiveDate);
+			Predicate n6 = cb2.equal(b2.get("subCoverId"),"0");
+			Predicate n7 = cb2.equal(b2.get("productId"), req.getProductId());
+			Predicate n14 = cb2.equal(b2.get("companyId"), req.getInsuranceId());
+			Predicate n15 = cb2.equal(b2.get("sectionId"), req.getSectionId());
+			Predicate n8 = cb2.equal(b2.get("agencyCode"), req.getAgencyCode());
+			Predicate n9 = cb2.equal(b2.get("agencyCode"), "99999");
+			Predicate n10 = cb2.or(n8,n9);
+			Predicate n11 = cb2.equal(b2.get("branchCode"), req.getBranchCode());
+			Predicate n12 = cb2.equal(b2.get("branchCode"), "99999");
+			Predicate n13 = cb2.or(n11,n12 );
+//			Predicate n16 = cb2.equal(b2.get("status"),"Y");
+
+			query2.where(n4,n5,n6,n7,n14,n15,n10,n13).orderBy(orderList2);
 
 			// Get Result
 			TypedQuery<SectionCoverMaster> result2 = em.createQuery(query2);

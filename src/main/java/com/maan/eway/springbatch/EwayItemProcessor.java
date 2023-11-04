@@ -47,7 +47,6 @@ public class EwayItemProcessor implements ItemProcessor<FactorRateRawInsert, Fac
 			    item.setSectionId(StringUtils.isBlank(factorData.getSectionId())?0:Integer.valueOf(factorData.getSectionId()));
 			    item.setAgencyCode(StringUtils.isBlank(factorData.getAgencyCode())?"99999": factorData.getAgencyCode());
 			    item.setBranchCode(StringUtils.isBlank(factorData.getBranchCode())?"99999":factorData.getBranchCode());
-			    item.setStatus("Y");
 			    item.setFactorTypeId(StringUtils.isBlank(factorData.getFactorTypeId())?0:Integer.valueOf(factorData.getFactorTypeId()));
 			    item.setProductId(StringUtils.isBlank(factorData.getProductId())?0:Integer.valueOf(factorData.getProductId()));
 			    item.setEffectiveDateStart(StringUtils.isBlank(factorData.getEffectiveDate())?null:new SimpleDateFormat("dd/MM/yyyy hh:MM:ss").parse(factorData.getEffectiveDate()));

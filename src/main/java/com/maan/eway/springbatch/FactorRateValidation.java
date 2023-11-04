@@ -42,7 +42,7 @@ public class FactorRateValidation {
 				List<FactorParamsInsert> factorParams =list.parallelStream().map(p ->{
 					FactorParamsInsert factor =new FactorParamsInsert();
 					factor.setSno(p.getSNo()==null?"0":p.getSNo().toString());
-					factor.setStatus("Y");
+					factor.setStatus(p.getStatus());
 					factor.setRegulatoryCode(StringUtils.isBlank(p.getRegulatoryCode())?"":p.getRegulatoryCode());
 					factor.setRate(p.getRate()==null?"":new BigDecimal(p.getRate()).toPlainString());
 					factor.setApiUrl(StringUtils.isBlank(p.getApiUrl())?"":p.getApiUrl());

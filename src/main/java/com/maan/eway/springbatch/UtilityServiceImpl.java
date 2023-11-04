@@ -207,12 +207,13 @@ public class UtilityServiceImpl {
         	entityColumns.add("calcType");
         	entityColumns.add("minPremium");
         	entityColumns.add("regulatoryCode");
-        	
+        	entityColumns.add("status");
         	// default xl headercolumns
         	xlheaderCol.add("Rate");
         	xlheaderCol.add("CalcType");
         	xlheaderCol.add("MinimumPremium");
         	xlheaderCol.add("RegulatoryCode");
+        	xlheaderCol.add("Status");
         	
         	request.setExcelHeaderColumns(xlheaderCol.toString());
         	request.setColumns(entityColumns.toString());

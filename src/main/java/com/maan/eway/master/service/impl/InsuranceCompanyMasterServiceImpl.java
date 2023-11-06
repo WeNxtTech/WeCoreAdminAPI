@@ -635,7 +635,23 @@ this.repository = repo;
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			if(StringUtils.isNotBlank(req.getBrokerCompanyYn()) ) {
 				Predicate n2 = cb.equal(b.get("brokerYn"), req.getBrokerCompanyYn());
-				query.where(n1,n2).orderBy(orderList);
+				
+				if(StringUtils.isNotBlank(req.getLoginId()) ) {
+					List<String> comapanyIds = 	new ArrayList<String>() ;
+					LoginMaster loginData = loginRepo.findByLoginId(req.getLoginId());
+					if(loginData!=null && StringUtils.isNotBlank(loginData.getAttachedCompanies()) ) {
+						String[] array = loginData.getAttachedCompanies().split(",");
+						comapanyIds = 	new ArrayList<String>(Arrays.asList(array)) ;
+						comapanyIds = comapanyIds.stream().filter( o -> StringUtils.isNotBlank(o)  ).collect(Collectors.toList());			
+					}
+					//In 
+					Expression<String>e0=b.get("companyId");
+					Predicate n3 = e0.in(comapanyIds) ;
+					query.where(n1 ,n2,n3 ).orderBy(orderList);
+				} else {
+					query.where(n1,n2).orderBy(orderList);
+				}
+				
 				
 				
 				TypedQuery<InsuranceCompanyMaster> result = em.createQuery(query);

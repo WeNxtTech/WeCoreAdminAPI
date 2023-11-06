@@ -25,4 +25,7 @@ public class InsuranceCompanyMasterGetAllReq implements Serializable {
     @JsonFormat(pattern ="dd/MM/yyyy")
     @JsonProperty("EffectiveDateStart")
     private Date effectiveDateStart;
+    
+    @JsonProperty("LoginId")
+    private String loginId;
 }

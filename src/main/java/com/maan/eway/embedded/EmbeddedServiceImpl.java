@@ -171,6 +171,8 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 						.overAllTaxPremium(premium.get("total_tax_premium")==null?"":premium.get("total_tax_premium").toString())
 						.productId(req.getProductId())
 						.totalPolicy(premium.get("total_policy")==null?"":premium.get("total_policy").toString())
+						.planOpted(plan_opted)
+						.planName(embeddedRepository.getPlanName(plan_opted))
 						.build();
 				return boardRes;
 				

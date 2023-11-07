@@ -36,4 +36,10 @@ public class EmbeddedDashBoardRes {
 
 	@JsonProperty("ActivePremium")
 	private String activePremium;
+	
+	@JsonProperty("PlanName")
+	private String planName;
+	
+	@JsonProperty("PlanOpted")
+	private String planOpted;
 }

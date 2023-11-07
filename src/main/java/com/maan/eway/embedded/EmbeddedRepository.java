@@ -27,5 +27,7 @@ public interface EmbeddedRepository extends JpaRepository<GroupMedicalDetails, G
 	@Query(value ="SELECT SUM(overall_premium) as active_premium FROM group_medical_details WHERE login_id=:loginId AND company_id =:companyId AND product_id=:productId AND plan_opted =:planOpted AND :todaydate BETWEEN inception_date AND expiry_date GROUP BY company_id,product_id,plan_opted",nativeQuery=true)
 	public String getActivePremiumBasedPlan(@Param("loginId") String loginId,@Param("companyId") String companyId,@Param("productId") String productId,@Param("planOpted") String planOptd,@Param("todaydate") Date date);
 
-
+	
+	@Query(value="SELECT item_value FROM eway_list_item_value WHERE item_type='PLAN_OPTED' AND item_code=:planId and status ='Y'",nativeQuery=true)
+	public String getPlanName(@Param("planId")String planOptedId);
 }

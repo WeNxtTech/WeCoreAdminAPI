@@ -7,10 +7,12 @@ import com.maan.eway.common.req.GetAllTirraErrorHistory;
 import com.maan.eway.common.req.GetTirraEorrorHistoryReq;
 import com.maan.eway.common.req.TiraGetReq;
 import com.maan.eway.common.req.TiraPushedDetailsReq;
+import com.maan.eway.common.req.TransactionCheckStatusReq;
 import com.maan.eway.common.res.GetTirraEorrorHistoryRes;
 import com.maan.eway.common.res.TiraErrorHistoryTotalRes;
 import com.maan.eway.common.res.TiraPushedDetailsRes;
 import com.maan.eway.common.res.TiraPushedListDetailsRes;
+import com.maan.eway.common.res.TransactionCheckStatusRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.res.SuccessRes2;
 
@@ -24,6 +26,8 @@ public interface ReportsService {
 
 	List<TiraPushedDetailsRes> getTiraIntegrationPushedDetails(TiraGetReq req);
 
-	SuccessRes2 getTiraIntegrationPushedDetails(DeleteTiraSearchedVehicleReq req);
+	SuccessRes2 deleteTiraSearchVehicle(DeleteTiraSearchedVehicleReq req);
+
+	TransactionCheckStatusRes getTransactionCheckStatusDetails(TransactionCheckStatusReq req);
 
 }

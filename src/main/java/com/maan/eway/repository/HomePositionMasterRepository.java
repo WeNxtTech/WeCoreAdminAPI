@@ -32,4 +32,12 @@ public interface HomePositionMasterRepository  extends JpaRepository<HomePositio
 
 	HomePositionMaster findByQuoteNo(String quoteNo);
 
+//	HomePositionMaster findTop1ByCompanyIdOrderByPolicyCovertedDateDesc(String insuranceId);
+
+	HomePositionMaster findTop1ByCompanyIdAndPolicyNoIsNotNullAndIntegrationStatusAndStatusAndEndtTypeIdIsNullOrderByPolicyCovertedDateDesc(
+			String insuranceId, String string, String string2);
+
+	HomePositionMaster findTop1ByCompanyIdAndPolicyNoIsNotNullAndIntegrationStatusAndStatusAndEndtTypeIdIsNotNullOrderByPolicyCovertedDateDesc(
+			String insuranceId, String string, String string2);
+
 }

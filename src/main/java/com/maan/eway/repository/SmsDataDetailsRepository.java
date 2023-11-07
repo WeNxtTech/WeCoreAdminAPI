@@ -33,5 +33,7 @@ public interface SmsDataDetailsRepository extends JpaRepository<SmsDataDetails, 
 
 	List<SmsDataDetails> findByMobileNoOrderByReqTimeDesc(String mobileNo);
 
+	SmsDataDetails findTop1ByOrderByEntryDateDesc();
+
 
 }

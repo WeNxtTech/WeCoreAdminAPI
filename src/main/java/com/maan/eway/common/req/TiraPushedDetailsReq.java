@@ -8,9 +8,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class GetAllTirraErrorHistory {
+public class TiraPushedDetailsReq {
 
-	
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("StartDate")
 	private Date startDate;
@@ -24,5 +23,4 @@ public class GetAllTirraErrorHistory {
 	
 	@JsonProperty("Offset")
 	private String offset;
-	
 }

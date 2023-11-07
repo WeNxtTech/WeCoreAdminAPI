@@ -2,14 +2,28 @@ package com.maan.eway.common.service;
 
 import java.util.List;
 
+import com.maan.eway.common.req.DeleteTiraSearchedVehicleReq;
 import com.maan.eway.common.req.GetAllTirraErrorHistory;
 import com.maan.eway.common.req.GetTirraEorrorHistoryReq;
+import com.maan.eway.common.req.TiraGetReq;
+import com.maan.eway.common.req.TiraPushedDetailsReq;
 import com.maan.eway.common.res.GetTirraEorrorHistoryRes;
+import com.maan.eway.common.res.TiraErrorHistoryTotalRes;
+import com.maan.eway.common.res.TiraPushedDetailsRes;
+import com.maan.eway.common.res.TiraPushedListDetailsRes;
+import com.maan.eway.res.SuccessRes;
+import com.maan.eway.res.SuccessRes2;
 
 public interface ReportsService {
 
-	List<GetTirraEorrorHistoryRes> getTirraEorrorHistory(GetTirraEorrorHistoryReq req);
+	TiraErrorHistoryTotalRes getTirraEorrorHistory(GetTirraEorrorHistoryReq req);
 
-	List<GetTirraEorrorHistoryRes> getAllTirraErrorHistory(GetAllTirraErrorHistory req);
+	TiraErrorHistoryTotalRes getAllTirraErrorHistory(GetAllTirraErrorHistory req);
+
+	TiraPushedListDetailsRes getallTiraIntegrationPushedDetails(TiraPushedDetailsReq req);
+
+	List<TiraPushedDetailsRes> getTiraIntegrationPushedDetails(TiraGetReq req);
+
+	SuccessRes2 getTiraIntegrationPushedDetails(DeleteTiraSearchedVehicleReq req);
 
 }

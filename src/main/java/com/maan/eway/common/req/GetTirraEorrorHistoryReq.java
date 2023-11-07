@@ -14,10 +14,16 @@ public class GetTirraEorrorHistoryReq {
 	private String registrationNumber;
 	
 	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveStartDate")
-	private Date effectiveStartDate;
+	@JsonProperty("StartDate")
+	private Date startDate;
 	
 	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveEndDate")
-	private Date effectiveEndDate;
+	@JsonProperty("EndDate")
+	private Date endDate;
+	
+	@JsonProperty("Limit")
+	private String limit;
+	
+	@JsonProperty("Offset")
+	private String offset;
 }

@@ -15,6 +15,7 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -86,8 +87,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="CREATED_BY", length=200)
     private String     createdBy ;
 
-//    @Column(name="RES_RESPONSE_ID")
-//    private Integer    resResponseId ;
+    @Column(name="RES_RESPONSE_ID")
+    private BigDecimal    resResponseId ;
 
     @Column(name="RES_REQUEST_ID", length=20)
     private String     resRequestId ;
@@ -104,7 +105,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="RES_REG_NUMBER", length=20)
     private String     resRegNumber ;
 
-    @Column(name="RES_CHASSIS_NUMBER", length=20)
+    @Column(name="RES_CHASSIS_NUMBER", length=100)
     private String     resChassisNumber ;
 
     @Column(name="RES_MAKE", length=20)
@@ -162,10 +163,7 @@ private static final long serialVersionUID = 1L;
     private String     savedFrom ;
 
     @Column(name="POLICY_YN", length=20)
-    private String     policyYn ;    
-    
-    @Column(name="RES_RESPONSE_ID")
-    private BigDecimal    resResponseId ;
+    private String     policyYn ;
 
 
     //--- ENTITY LINKS ( RELATIONSHIP )

@@ -30,7 +30,10 @@ public class GetTirraEorrorHistoryRes {
 	@JsonProperty("ResponseString")
     private String     responseString  ;
 	
-	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("RegistrationNumber")
+	private String registrationNumber;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy hh:mm:ss")
 	@JsonProperty("EntryDate")
     private Date     entryDate  ;
 }

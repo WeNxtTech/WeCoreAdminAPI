@@ -42,4 +42,13 @@ public class EmbeddedDashBoardRes {
 	
 	@JsonProperty("PlanOpted")
 	private String planOpted;
+	
+	@JsonProperty("ActivePolicyCount")
+	private String activePolicyCount;
+	
+	@JsonProperty("ExpiryPolicyPremium")
+	private String expiryPolicyPremium;
+	
+	@JsonProperty("ExpiryPolicyCount")
+	private String expiryPolicyCount;
 }

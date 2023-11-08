@@ -37,5 +37,15 @@ public class EmbeddedController {
 	public CommonRes getProductPlanTypeDashBoard(@RequestBody EmbeddedDashBoardReq req) {
 		return service.getProductPlanTypeDashBoard(req);
 	}
+	
+	@PostMapping("/getActivePolicy")
+	public CommonRes getActivePolicy(@RequestBody EmbeddedDashBoardReq req) {
+		return service.getActivePolicy(req);
+	}
+
+	@PostMapping("/getAllPolicy")
+	public CommonRes getAllPolicy(@RequestBody EmbeddedDashBoardReq req) {
+		return service.getAllPolicy(req);
+	}
 
 }

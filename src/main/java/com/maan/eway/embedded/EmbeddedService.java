@@ -12,4 +12,8 @@ public interface EmbeddedService {
 
 	CommonRes getProductPlanTypeDashBoard(EmbeddedDashBoardReq req);
 
+	CommonRes getActivePolicy(EmbeddedDashBoardReq req);
+
+	CommonRes getAllPolicy(EmbeddedDashBoardReq req);
+
 }

@@ -132,8 +132,9 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 		CommonRes response = new CommonRes();
 		try {
 			Date date = new Date();
-			Map<String,Object> premium =embeddedRepository.getProductDashBoard(req.getLoginId(),req.getCompanyId(),req.getProductId());
-			Map<String,Object> activePremium =embeddedRepository.getActivePremium(req.getLoginId(),req.getCompanyId(),req.getProductId(),date);
+			Map<String,Object> premium =embeddedRepository.getProductDashBoard(req.getCompanyId(),req.getProductId());
+			Map<String,Object> activePremium =embeddedRepository.getActivePremium(req.getCompanyId(),req.getProductId(),date);
+			Map<String,Object> expiryPremium =embeddedRepository.getExpiryPremium(req.getCompanyId(), req.getProductId(), date);
 			EmbeddedDashBoardRes boardRes =EmbeddedDashBoardRes.builder()
 					.activePremium(activePremium.get("active_premium")==null?"":activePremium.get("active_premium").toString())
 					.companyId(req.getCompanyId())
@@ -143,6 +144,9 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 					.overAllTaxPremium(premium.get("total_tax_premium")==null?"":premium.get("total_tax_premium").toString())
 					.productId(req.getProductId())
 					.totalPolicy(premium.get("total_policy")==null?"":premium.get("total_policy").toString())
+					.activePolicyCount(activePremium.get("activePolicyCount")==null?"":activePremium.get("activePolicyCount").toString())
+					.expiryPolicyCount(expiryPremium.get("activePolicyCount")==null?"":expiryPremium.get("activePolicyCount").toString())
+					.expiryPolicyPremium(expiryPremium.get("expiry_premium")==null?"":expiryPremium.get("expiry_premium").toString())
 					.build();
 			response.setCommonResponse(boardRes);
 			response.setMessage("SUCCESS");
@@ -157,11 +161,11 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 	@Override
 	public CommonRes getProductPlanTypeDashBoard(EmbeddedDashBoardReq req) {
 		CommonRes response = new CommonRes();
-		try {
-			List<Map<String,Object>> list =embeddedRepository.getProductPlanDashBoard(req.getLoginId(),req.getCompanyId(),req.getProductId());
-			List<EmbeddedDashBoardRes> resList = list.stream().map(premium ->{
+		/*try {
+			//List<Map<String,Object>> list =embeddedRepository.getProductPlanDashBoard(req.getLoginId(),req.getCompanyId(),req.getProductId());
+			//List<EmbeddedDashBoardRes> resList = list.stream().map(premium ->{
 				String plan_opted =premium.get("plan_opted")==null?"":premium.get("plan_opted").toString();
-				String activePremium=embeddedRepository.getActivePremiumBasedPlan(req.getLoginId(),req.getCompanyId(),req.getProductId(),plan_opted,new Date());
+			//	String activePremium=embeddedRepository.getActivePremiumBasedPlan(req.getLoginId(),req.getCompanyId(),req.getProductId(),plan_opted,new Date());
 				EmbeddedDashBoardRes boardRes =EmbeddedDashBoardRes.builder()
 						.activePremium(activePremium)
 						.companyId(req.getCompanyId())
@@ -180,11 +184,33 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 		
 			response.setCommonResponse(resList);
 			response.setMessage("SUCCESS");
-			response.setErrorMessage(Collections.EMPTY_LIST);
+			response.setErrorMessage(Collections.emptyList());
 		}catch (Exception e) {
 			e.printStackTrace();
 			log.error(e);
-		}
+		}*/
 		return response;
 	}
+
+	@Override
+	public CommonRes getActivePolicy(EmbeddedDashBoardReq req) {
+		try {
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public CommonRes getAllPolicy(EmbeddedDashBoardReq req) {
+		try {
+			//embeddedRepository.findByCompanyIdAnd
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
 }

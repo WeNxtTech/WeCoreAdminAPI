@@ -48,13 +48,16 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 		log.info("getEmbeddedDetails request : "+printReq.toJson(req));
 		CommonRes response = new CommonRes();
 		try {
+			 String pattern = "#####0.00";
+			 DecimalFormat df = new DecimalFormat(pattern);
+
 			List<Tuple> list=query.getEmbeddedDetails(req);
 			if(list.size()>0) {
 				List<EmbeddedRes> resList =list.stream().map(p ->{
 					EmbeddedRes embeddedRes =EmbeddedRes.builder()
 							.companyId(p.get("companyId")==null?"":p.get("companyId").toString())
 							.productId(p.get("productId")==null?"":p.get("productId").toString())
-							.amountPaid(p.get("amountPaid")==null?"":p.get("amountPaid").toString())
+							.amountPaid(p.get("amountPaid")==null?"":df.format(p.get("amountPaid")))
 							.customerName(p.get("customerName")==null?"":p.get("customerName").toString())
 							.filePath(p.get("pdfPath")==null?"":p.get("pdfPath").toString())
 							.loginId(p.get("loginId")==null?"":p.get("loginId").toString())
@@ -64,16 +67,16 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 							.policyEndDate(p.get("expiryDate")==null?"":sdf.format(p.get("expiryDate")))
 							.policyStartDate(p.get("inceptionDate")==null?"":sdf.format(p.get("inceptionDate")))
 							.policyNo(p.get("policyNo")==null?"":p.get("policyNo").toString())
-							.premium(p.get("premium")==null?"":p.get("premium").toString())
+							.premium(p.get("premium")==null?"":df.format(p.get("premium")))
 							.requestReferenceNo(p.get("requestReferenceNo")==null?"":p.get("requestReferenceNo").toString())
-							.taxPremium(p.get("taxPremium")==null?"":p.get("taxPremium").toString())
+							.taxPremium(p.get("taxPremium")==null?"":df.format(p.get("taxPremium")))
 							.transactionNo(p.get("clientTransactionNo")==null?"":p.get("clientTransactionNo").toString())
-							.commissionAmt(p.get("commissionAmount")==null?"":p.get("commissionAmount").toString())
+							.commissionAmt(p.get("commissionAmount")==null?"":df.format(p.get("commissionAmount")))
 							.taxPercentage(p.get("taxPercentage")==null?"":p.get("taxPercentage").toString())
 							.commissionPercentage(p.get("commissionPercentage")==null?"":p.get("commissionPercentage").toString())
 							.responsePeriod(p.get("responsePeriod")==null?"":p.get("responsePeriod").toString())
 							.mobileCode(p.get("mobileCode")==null?"":p.get("mobileCode").toString())
-							.overAllPremium(p.get("overallPremium")==null?"":p.get("overallPremium").toString())
+							.overAllPremium(p.get("overallPremium")==null?"":df.format(p.get("overallPremium")))
 							.build();
 					return embeddedRes;
 				}).collect(Collectors.toList());
@@ -132,21 +135,24 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 		CommonRes response = new CommonRes();
 		try {
 			Date date = new Date();
+			 String pattern = "#####0.00";
+			 DecimalFormat df = new DecimalFormat(pattern);
+			 
 			Map<String,Object> premium =embeddedRepository.getProductDashBoard(req.getCompanyId(),req.getProductId());
 			Map<String,Object> activePremium =embeddedRepository.getActivePremium(req.getCompanyId(),req.getProductId(),date);
 			Map<String,Object> expiryPremium =embeddedRepository.getExpiryPremium(req.getCompanyId(), req.getProductId(), date);
 			EmbeddedDashBoardRes boardRes =EmbeddedDashBoardRes.builder()
-					.activePremium(activePremium.get("active_premium")==null?"":activePremium.get("active_premium").toString())
+					.activePremium(activePremium.get("active_premium")==null?"":df.format(activePremium.get("active_premium")))
 					.companyId(req.getCompanyId())
 					.loginId(req.getLoginId())
-					.overAllComiPremium(premium.get("total_commission_amount")==null?"":premium.get("total_commission_amount").toString())
-					.overAllPremium(premium.get("total_premium")==null?"":premium.get("total_premium").toString())
-					.overAllTaxPremium(premium.get("total_tax_premium")==null?"":premium.get("total_tax_premium").toString())
+					.overAllComiPremium(premium.get("total_commission_amount")==null?"":df.format(premium.get("total_commission_amount")))
+					.overAllPremium(premium.get("total_premium")==null?"":df.format(premium.get("total_premium")))
+					.overAllTaxPremium(premium.get("total_tax_premium")==null?"":df.format(premium.get("total_tax_premium")))
 					.productId(req.getProductId())
 					.totalPolicy(premium.get("total_policy")==null?"":premium.get("total_policy").toString())
 					.activePolicyCount(activePremium.get("activePolicyCount")==null?"":activePremium.get("activePolicyCount").toString())
 					.expiryPolicyCount(expiryPremium.get("activePolicyCount")==null?"":expiryPremium.get("activePolicyCount").toString())
-					.expiryPolicyPremium(expiryPremium.get("expiry_premium")==null?"":expiryPremium.get("expiry_premium").toString())
+					.expiryPolicyPremium(expiryPremium.get("expiry_premium")==null?"":df.format(expiryPremium.get("expiry_premium")))
 					.build();
 			response.setCommonResponse(boardRes);
 			response.setMessage("SUCCESS");
@@ -161,22 +167,22 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 	@Override
 	public CommonRes getProductPlanTypeDashBoard(EmbeddedDashBoardReq req) {
 		CommonRes response = new CommonRes();
-		/*try {
-			//List<Map<String,Object>> list =embeddedRepository.getProductPlanDashBoard(req.getLoginId(),req.getCompanyId(),req.getProductId());
-			//List<EmbeddedDashBoardRes> resList = list.stream().map(premium ->{
+		try {
+			 String pattern = "#####0.00";
+			 DecimalFormat df = new DecimalFormat(pattern);
+			List<Map<String,Object>> list =embeddedRepository.getProductPlanDashBoard(req.getLoginId(),req.getCompanyId(),req.getProductId());
+			List<EmbeddedDashBoardRes> resList = list.stream().map(premium ->{
 				String plan_opted =premium.get("plan_opted")==null?"":premium.get("plan_opted").toString();
-			//	String activePremium=embeddedRepository.getActivePremiumBasedPlan(req.getLoginId(),req.getCompanyId(),req.getProductId(),plan_opted,new Date());
+				String activePremium=embeddedRepository.getActivePremiumBasedPlan(req.getLoginId(),req.getCompanyId(),req.getProductId(),plan_opted,new Date());
 				EmbeddedDashBoardRes boardRes =EmbeddedDashBoardRes.builder()
 						.activePremium(activePremium)
 						.companyId(req.getCompanyId())
 						.loginId(req.getLoginId())
-						.overAllComiPremium(premium.get("total_commission_amount")==null?"":premium.get("total_commission_amount").toString())
-						.overAllPremium(premium.get("total_premium")==null?"":premium.get("total_premium").toString())
-						.overAllTaxPremium(premium.get("total_tax_premium")==null?"":premium.get("total_tax_premium").toString())
+						.overAllComiPremium(premium.get("total_commission_amount")==null?"":df.format(premium.get("total_commission_amount")))
+						.overAllPremium(premium.get("total_premium")==null?"":df.format(premium.get("total_premium")))
+						.overAllTaxPremium(premium.get("total_tax_premium")==null?"":df.format(premium.get("total_tax_premium")))
 						.productId(req.getProductId())
 						.totalPolicy(premium.get("total_policy")==null?"":premium.get("total_policy").toString())
-						.planOpted(plan_opted)
-						.planName(embeddedRepository.getPlanName(plan_opted))
 						.build();
 				return boardRes;
 				
@@ -184,11 +190,11 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 		
 			response.setCommonResponse(resList);
 			response.setMessage("SUCCESS");
-			response.setErrorMessage(Collections.emptyList());
+			response.setErrorMessage(Collections.EMPTY_LIST);
 		}catch (Exception e) {
 			e.printStackTrace();
 			log.error(e);
-		}*/
+		}
 		return response;
 	}
 

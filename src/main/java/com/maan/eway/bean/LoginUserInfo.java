@@ -115,7 +115,7 @@ private static final long serialVersionUID = 1L;
     private String     cityName ;
 
     @Column(name="POBOX")
-    private BigDecimal pobox ;
+    private String pobox ;
 
     @Column(name="STATE_NAME", length=50)
     private String     stateName ;
@@ -187,10 +187,11 @@ private static final long serialVersionUID = 1L;
     @Column(name="WHATSAPP_NO", length=20)
     private String     whatsappNo ;
 
+
     @Column(name="TAX_EXEMPTED_YN", length=20)
     private String     taxExemptedYn;
     
-    @Column(name="CREDIT_LIMIT", length=20)
+    @Column(name="CREDIT_LIMIT")
     private BigDecimal creditLimit ;
 
 
@@ -200,9 +201,10 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="CUSTOMER_NAME", length=100)
     private String    customerName;
-
+    
     @Column(name="REGULATORY_CODE", length=100)
     private String    regulatoryCode;
+    
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

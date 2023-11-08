@@ -19,6 +19,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import java.util.Date;
@@ -140,7 +141,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="VRN_GST", length=20)
     private String     vrnGst ;
 
-    @Column(name="REGION_CODE",  length=20)
+    @Column(name="REGION_CODE", length=20)
     private String     regionCode ;
 
     @Column(name="STATE_CODE", length=20)
@@ -170,22 +171,34 @@ private static final long serialVersionUID = 1L;
     @Column(name="TELEPHONE_NO_3", length=20)
     private String     telephoneNo3 ;
 
+    @Column(name="MOBILE_CODE_1", length=20)
+    private String     mobileCode1 ;
+    @Column(name="MOBILE_CODE_DESC_1", length=20)
+    private String     mobileCodeDesc1 ;
     @Column(name="MOBILE_NO_1", length=20)
     private String     mobileNo1 ;
 
+    @Column(name="MOBILE_CODE_2", length=20)
+    private String     mobileCode2 ;
+    @Column(name="MOBILE_CODE_DESC_2", length=20)
+    private String     mobileCodeDesc2 ;
     @Column(name="MOBILE_NO_2", length=20)
     private String     mobileNo2 ;
 
+    @Column(name="MOBILE_CODE_3", length=20)
+    private String     mobileCode3 ;
+    @Column(name="MOBILE_CODE_DESC_3", length=20)
+    private String     mobileCodeDesc3 ;
     @Column(name="MOBILE_NO_3", length=20)
     private String     mobileNo3 ;
 
-    @Column(name="EMAIL_1", length=20)
+    @Column(name="EMAIL_1", length=100)
     private String     email1 ;
 
-    @Column(name="EMAIL_2", length=20)
+    @Column(name="EMAIL_2", length=100)
     private String     email2 ;
 
-    @Column(name="EMAIL_3", length=20)
+    @Column(name="EMAIL_3", length=100)
     private String     email3 ;
 
     @Column(name="LANGUAGE", length=1)
@@ -236,13 +249,57 @@ private static final long serialVersionUID = 1L;
     @Column(name="PREFERRED_NOTIFICATION", length=20)
     private String     preferredNotification ;
     
-    
-    @Column(name="PIN_CODE", length=20)
-    private String     pinCode ;
-
+    @Column(name="WHATSAPP_CODE", length=20)
+    private String     whatsappCode ;
+    @Column(name="WHATSAPP_CODE_DESC", length=20)
+    private String     whatsappcodeDesc ;
+    @Column(name="WHATSAPP_NO", length=20)
+    private String     whatsappNo ;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 
+    @Column(name="ENDORSEMENT_TYPE")
+    private Integer    endorsementType ;
+
+    @Column(name="ENDORSEMENT_TYPE_DESC", length=100)
+    private String     endorsementTypeDesc ;
+
+  @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="ENDORSEMENT_DATE")
+    private Date       endorsementDate ;
+
+    @Column(name="ENDORSEMENT_REMARKS", length=500)
+    private String     endorsementRemarks ;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="ENDORSEMENT_EFFDATE")
+    private Date       endorsementEffdate ;
+
+    @Column(name="ORIGINAL_POLICY_NO", length=500)
+    private String     originalPolicyNo ;
+
+    @Column(name="ENDT_PREV_POLICY_NO", length=500)
+    private String     endtPrevPolicyNo ;
+
+    @Column(name="ENDT_PREV_QUOTE_NO", length=500)
+    private String     endtPrevQuoteNo ;
+
+    @Column(name="ENDT_COUNT")
+    private BigDecimal endtCount ;
+
+    @Column(name="ENDT_STATUS", length=10)
+    private String     endtStatus ;
+    
+    @Column(name="IS_FINYN", length=10)
+    private String     isFinaceYn ;
+    
+    
+    @Column(name="ENDT_CATEG_DESC", length=100)
+    private String     endtCategDesc ;
+    
+    
+    @Column(name="PIN_CODE", length=20)
+    private String     pinCode ;
 
 }
 

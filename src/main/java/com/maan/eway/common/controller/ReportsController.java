@@ -16,11 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.maan.eway.common.req.DeleteTiraSearchedVehicleReq;
 import com.maan.eway.common.req.GetAllTirraErrorHistory;
 import com.maan.eway.common.req.GetTirraEorrorHistoryReq;
+import com.maan.eway.common.req.PolicyRevertReq;
 import com.maan.eway.common.req.TiraGetReq;
 import com.maan.eway.common.req.TiraPushedDetailsReq;
+import com.maan.eway.common.req.TransactionCheckStatusReq;
 import com.maan.eway.common.res.TiraErrorHistoryTotalRes;
 import com.maan.eway.common.res.TiraPushedDetailsRes;
 import com.maan.eway.common.res.TiraPushedListDetailsRes;
+import com.maan.eway.common.res.TransactionCheckStatusRes;
 import com.maan.eway.common.service.ReportsService;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.SuccessRes2;
@@ -116,10 +119,10 @@ public class ReportsController {
 	
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/deletetirasearchedvehicle")
-	public ResponseEntity<CommonRes> getTiraIntegrationPushedDetails(@RequestBody DeleteTiraSearchedVehicleReq req) {
+	public ResponseEntity<CommonRes> deleteTiraSearchVehicle(@RequestBody DeleteTiraSearchedVehicleReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		SuccessRes2 res = service.getTiraIntegrationPushedDetails(req);
+		SuccessRes2 res = service.deleteTiraSearchVehicle(req);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());
@@ -130,4 +133,40 @@ public class ReportsController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
+	@PostMapping("/transactioncheckstatus")
+	public ResponseEntity<CommonRes> getTransactionCheckStatusDetails(@RequestBody TransactionCheckStatusReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		TransactionCheckStatusRes res = service.getTransactionCheckStatusDetails(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
+	@PostMapping("/policyreverttoquote")
+	public ResponseEntity<CommonRes> policyRevertToQuote(@RequestBody PolicyRevertReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		SuccessRes2 res = service.policyRevertToQuote(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
 }

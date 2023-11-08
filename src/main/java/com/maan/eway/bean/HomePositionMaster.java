@@ -13,17 +13,27 @@
 package com.maan.eway.bean;
 
 
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import lombok.*;
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.List;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import javax.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 
 
@@ -51,537 +61,632 @@ public class HomePositionMaster implements Serializable {
  
 private static final long serialVersionUID = 1L;
  
-    //--- ENTITY PRIMARY KEY 
-    @Id
-    @Column(name="REQUEST_REFERENCE_NO", nullable=false, length=20)
-    private String     requestReferenceNo ;
+//--- ENTITY PRIMARY KEY 
+@Id
+@Column(name="REQUEST_REFERENCE_NO", nullable=false, length=20)
+private String     requestReferenceNo ;
 
-    @Id
-    @Column(name="QUOTE_NO", nullable=false)
-    private String    quoteNo ;
+@Id
+@Column(name="QUOTE_NO", nullable=false)
+private String    quoteNo ;
 
-    @Id
-    @Column(name="NO_OF_VEHICLES", nullable=false)
-    private Integer    noOfVehicles ;
+@Id
+@Column(name="NO_OF_VEHICLES", nullable=false)
+private Integer    noOfVehicles ;
 
-    @Id
-    @Column(name="AGENCY_CODE", nullable=false)
-    private Integer    agencyCode ;
+@Id
+@Column(name="AGENCY_CODE", nullable=false)
+private Integer    agencyCode ;
 
-    @Column(name="ADMIN_LOGIN_ID")
-    private String    adminLoginId ;
+@Column(name="ADMIN_LOGIN_ID")
+private String    adminLoginId ;
 
-    //--- ENTITY DATA FIELDS 
-    @Column(name="CUSTOMER_ID", nullable=false)
-    private String    customerId ;
+//--- ENTITY DATA FIELDS 
+@Column(name="CUSTOMER_ID", nullable=false)
+private String    customerId ;
 
-    @Column(name="PRODUCT_ID", nullable=false)
-    private Integer    productId ;
+@Column(name="PRODUCT_ID", nullable=false)
+private Integer    productId ;
 
-    @Column(name="COMPANY_ID", nullable=false, length=20)
-    private String     companyId ;
+@Column(name="COMPANY_ID", nullable=false, length=20)
+private String     companyId ;
 
-    @Column(name="PROPOSAL_NO", length=15)
-    private String     proposalNo ;
+@Column(name="PROPOSAL_NO", length=15)
+private String     proposalNo ;
 
-    @Column(name="APPLICATION_NO", nullable=false)
-    private Long       applicationNo ;
+@Column(name="APPLICATION_NO", nullable=false)
+private Long       applicationNo ;
 
-    @Column(name="LOGIN_ID", nullable=false, length=50)
-    private String     loginId ;
+@Column(name="LOGIN_ID", nullable=false, length=50)
+private String     loginId ;
 
-    @Column(name="APPLICATION_ID", length=50)
-    private String     applicationId ;
+@Column(name="APPLICATION_ID", length=50)
+private String     applicationId ;
 
-    @Column(name="SECTION_ID", nullable=false)
-    private Integer    sectionId ;
+@Column(name="CUSTOMER_NAME", length=50)
+private String     customerName;
 
-    @Column(name="BROKER_CODE", length=25)
-    private String     brokerCode ;
+@Column(name="SECTION_ID", nullable=false)
+private Integer    sectionId ;
 
-    @Column(name="AC_EXECUTIVE_ID")
-    private Long       acExecutiveId ;
+@Column(name="BROKER_CODE", length=25)
+private String     brokerCode ;
 
-    @Column(name="STATUS", length=3)
-    private String     status ;
+@Column(name="AC_EXECUTIVE_ID")
+private Long       acExecutiveId ;
 
-    @Column(name="POLICY_NO", length=100)
-    private String     policyNo ;
+@Column(name="STATUS", length=3)
+private String     status ;
 
-    @Column(name="ORIGINAL_POLICY_NO", length=100)
-    private String     originalPolicyNo ;
+@Column(name="POLICY_NO", length=100)
+private String     policyNo ;
 
-    @Column(name="POLICY_TERM", length=20)
-    private String     policyTerm ;
+@Column(name="ORIGINAL_POLICY_NO", length=100)
+private String     originalPolicyNo ;
 
-    @Column(name="AMEND_ID", nullable=false)
-    private Integer    amendId ;
+@Column(name="POLICY_TERM", length=20)
+private String     policyTerm ;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="QUOTE_CREATED_DATE")
-    private Date       quoteCreatedDate ;
+@Column(name="EMI_YN", length=20)
+private String     emiYn;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="ENTRY_DATE")
-    private Date       entryDate ;
+@Column(name="INSTALLMENT_PERIOD", length=20)
+private String     installmentPeriod ;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="INCEPTION_DATE")
-    private Date       inceptionDate ;
+@Column(name="AMEND_ID", nullable=false)
+private Integer    amendId ;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EXPIRY_DATE")
-    private Date       expiryDate ;
+@Temporal(TemporalType.TIMESTAMP)
+@Column(name="QUOTE_CREATED_DATE")
+private Date       quoteCreatedDate ;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EFFECTIVE_DATE")
-    private Date       effectiveDate ;
+@Temporal(TemporalType.TIMESTAMP)
+@Column(name="ENTRY_DATE")
+private Date       entryDate ;
 
-    @Column(name="HIJRI_POLICY_START_DATE", length=40)
-    private String     hijriPolicyStartDate ;
+@Temporal(TemporalType.TIMESTAMP)
+@Column(name="INCEPTION_DATE")
+private Date       inceptionDate ;
 
-    @Column(name="HIJRI_POLICY_END_DATE", length=40)
-    private String     hijriPolicyEndDate ;
+@Temporal(TemporalType.TIMESTAMP)
+@Column(name="EXPIRY_DATE")
+private Date       expiryDate ;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="LAPSED_DATE")
-    private Date       lapsedDate ;
+@Temporal(TemporalType.TIMESTAMP)
+@Column(name="EFFECTIVE_DATE")
+private Date       effectiveDate ;
 
-    @Column(name="LAPSED_REMARKS", length=250)
-    private String     lapsedRemarks ;
+@Column(name="HIJRI_POLICY_START_DATE", length=40)
+private String     hijriPolicyStartDate ;
 
-    @Column(name="LAPSED_UPDATED_BY", length=50)
-    private String     lapsedUpdatedBy ;
+@Column(name="HIJRI_POLICY_END_DATE", length=40)
+private String     hijriPolicyEndDate ;
 
-    @Column(name="CURRENCY", length=50)
-    private String     currency ;
+@Temporal(TemporalType.TIMESTAMP)
+@Column(name="LAPSED_DATE")
+private Date       lapsedDate ;
 
-    @Column(name="REMARKS", length=100)
-    private String     remarks ;
+@Column(name="LAPSED_REMARKS", length=250)
+private String     lapsedRemarks ;
 
-    @Column(name="EXCHANGE_RATE")
-    private Double     exchangeRate ;
+@Column(name="LAPSED_UPDATED_BY", length=50)
+private String     lapsedUpdatedBy ;
 
-    @Column(name="EXCESS_SIGN", length=1)
-    private String     excessSign ;
+@Column(name="CURRENCY", length=50)
+private String     currency ;
 
-    @Column(name="PREMIUM_FC")
-    private Double     premiumFc ;
+@Column(name="REMARKS", length=100)
+private String     remarks ;
 
-    @Column(name="EXCESS_PREMIUM")
-    private BigDecimal excessPremium ;
+@Column(name="EXCHANGE_RATE")
+private BigDecimal     exchangeRate ;
 
-    @Column(name="PREMIUM_LC")
-    private Double     premiumLc ;
+@Column(name="EXCESS_SIGN", length=1)
+private String     excessSign ;
 
-    @Column(name="DISCOUNT_PREMIUM")
-    private Double     discountPremium ;
+@Column(name="PREMIUM_FC")
+private BigDecimal     premiumFc ;
 
-    @Column(name="POLICY_FEE")
-    private BigDecimal policyFee ;
+@Column(name="EXCESS_PREMIUM")
+private BigDecimal excessPremium ;
 
-    @Column(name="OTHER_FEE")
-    private Double     otherFee ;
+@Column(name="PREMIUM_LC")
+private BigDecimal     premiumLc ;
 
-    @Column(name="VAT_PERCENT")
-    private Double     vatPercent ;
+@Column(name="DISCOUNT_PREMIUM")
+private BigDecimal     discountPremium ;
 
-    @Column(name="TAX1")
-    private Double     tax1 ;
+@Column(name="POLICY_FEE")
+private BigDecimal policyFee ;
 
-    @Column(name="TAX2")
-    private Double     tax2 ;
+@Column(name="OTHER_FEE")
+private BigDecimal     otherFee ;
 
-    @Column(name="COMMISSION_PERCENTAGE")
-    private BigDecimal commissionPercentage ;
+@Column(name="VAT_PERCENT")
+private BigDecimal     vatPercent ;
 
-    @Column(name="TAX3")
-    private Double     tax3 ;
+@Column(name="TAX1")
+private BigDecimal     tax1 ;
 
-    @Column(name="VAT_PREMIUM_LC")
-    private Double     vatPremiumLc ;
+@Column(name="TAX2")
+private BigDecimal     tax2 ;
 
-    @Column(name="VAT_COMMISSION")
-    private BigDecimal vatCommission ;
+@Column(name="COMMISSION_PERCENTAGE")
+private BigDecimal commissionPercentage ;
 
-    @Column(name="COMMISSION")
-    private BigDecimal commission ;
+@Column(name="TAX3")
+private BigDecimal     tax3 ;
 
-    @Column(name="VAT_PREMIUM_FC")
-    private Double     vatPremiumFc ;
+@Column(name="VAT_PREMIUM_LC")
+private BigDecimal     vatPremiumLc ;
 
-    @Column(name="OVERALL_PREMIUM_LC")
-    private Double     overallPremiumLc ;
+@Column(name="VAT_COMMISSION")
+private BigDecimal vatCommission ;
 
-    @Column(name="CALC_PREMIUM")
-    private Double     calcPremium ;
+@Column(name="COMMISSION")
+private BigDecimal commission ;
 
-    @Column(name="ADMIN_REMARKS", length=470)
-    private String     adminRemarks ;
+@Column(name="VAT_PREMIUM_FC")
+private BigDecimal     vatPremiumFc ;
 
-    @Column(name="OVERALL_PREMIUM_FC")
-    private Double     overallPremiumFc ;
+@Column(name="OVERALL_PREMIUM_LC")
+private BigDecimal     overallPremiumLc ;
 
-    @Column(name="ADMIN_REFERRAL_STATUS", length=1)
-    private String     adminReferralStatus ;
+@Column(name="CALC_PREMIUM")
+private BigDecimal     calcPremium ;
 
-    @Column(name="REFERRAL_DESCRIPTION", length=500)
-    private String     referralDescription ;
+@Column(name="ADMIN_REMARKS", length=470)
+private String     adminRemarks ;
 
-    @Column(name="BRANCH_CODE", length=8)
-    private String     branchCode ;
+@Column(name="OVERALL_PREMIUM_FC")
+private BigDecimal     overallPremiumFc ;
 
-    @Column(name="FINALIZE_YN", length=10)
-    private String     finalizeYn ;
+@Column(name="ADMIN_REFERRAL_STATUS", length=1)
+private String     adminReferralStatus ;
 
-    @Column(name="APPROVED_BY", length=30)
-    private String     approvedBy ;
+@Column(name="REFERRAL_DESCRIPTION", length=500)
+private String     referralDescription ;
 
-    @Column(name="APPR_CAN_BY", length=100)
-    private String     apprCanBy ;
+@Column(name="BRANCH_CODE", length=8)
+private String     branchCode ;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="APPR_CAN_DT")
-    private Date       apprCanDt ;
+@Column(name="BRANCH_NAME", length=8)
+private String     branchName ;
 
-    @Column(name="APPR_CAN_REMARKS", length=500)
-    private String     apprCanRemarks ;
+@Column(name="FINALIZE_YN", length=10)
+private String     finalizeYn ;
 
-    @Column(name="CANCELLED_REASON", length=200)
-    private String     cancelledReason ;
+@Column(name="APPROVED_BY", length=30)
+private String     approvedBy ;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="CANCELLED_DATE")
-    private Date       cancelledDate ;
+@Column(name="APPR_CAN_BY", length=100)
+private String     apprCanBy ;
 
-    @Column(name="CANCELLED_BY", length=20)
-    private String     cancelledBy ;
+@Temporal(TemporalType.TIMESTAMP)
+@Column(name="APPR_CAN_DT")
+private Date       apprCanDt ;
 
-    @Column(name="DEBIT_AC_NO", length=80)
-    private String     debitAcNo ;
+@Column(name="APPR_CAN_REMARKS", length=500)
+private String     apprCanRemarks ;
 
-    @Column(name="DEBIT_TO", length=10)
-    private String     debitTo ;
+@Column(name="CANCELLED_REASON", length=200)
+private String     cancelledReason ;
 
-    @Column(name="DEBIT_TO_ID", length=10)
-    private String     debitToId ;
+@Temporal(TemporalType.TIMESTAMP)
+@Column(name="CANCELLED_DATE")
+private Date       cancelledDate ;
 
-    @Column(name="DEBIT_NOTE_NO", length=50)
-    private String     debitNoteNo ;
+@Column(name="CANCELLED_BY", length=20)
+private String     cancelledBy ;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="DEBIT_NOTE_DATE")
-    private Date       debitNoteDate ;
+@Column(name="DEBIT_AC_NO", length=80)
+private String     debitAcNo ;
 
-    @Column(name="CREDIT_TO", length=10)
-    private String     creditTo ;
+@Column(name="DEBIT_TO", length=10)
+private String     debitTo ;
 
-    @Column(name="CREDIT_TO_ID", length=10)
-    private String     creditToId ;
+@Column(name="DEBIT_TO_ID", length=10)
+private String     debitToId ;
 
-    @Column(name="CREDIT_NO", length=50)
-    private String     creditNo ;
+@Column(name="DEBIT_NOTE_NO", length=50)
+private String     debitNoteNo ;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="CREDIT_DATE")
-    private Date       creditDate ;
+@Temporal(TemporalType.TIMESTAMP)
+@Column(name="DEBIT_NOTE_DATE")
+private Date       debitNoteDate ;
 
-    @Column(name="RECEIPT_NO", length=25)
-    private String     receiptNo ;
+@Column(name="CREDIT_TO", length=10)
+private String     creditTo ;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="RECEIPT_DATE")
-    private Date       receiptDate ;
+@Column(name="CREDIT_TO_ID", length=10)
+private String     creditToId ;
 
-    @Column(name="DECLARATION_STATUS", length=10)
-    private String     declarationStatus ;
+@Column(name="CREDIT_NO", length=50)
+private String     creditNo ;
 
-    @Column(name="PDF_BROKER_STATUS")
-    private Short      pdfBrokerStatus ;
+@Temporal(TemporalType.TIMESTAMP)
+@Column(name="CREDIT_DATE")
+private Date       creditDate ;
 
-    @Column(name="SUMMARY_CLAUSES", length=470)
-    private String     summaryClauses ;
+@Column(name="RECEIPT_NO", length=25)
+private String     receiptNo ;
 
-    @Column(name="SUMMARY_REMARKS", length=2000)
-    private String     summaryRemarks ;
+@Temporal(TemporalType.TIMESTAMP)
+@Column(name="RECEIPT_DATE")
+private Date       receiptDate ;
 
-    @Column(name="BROKER_ADDITIONAL_COMMISSION")
-    private BigDecimal brokerAdditionalCommission ;
+@Column(name="DECLARATION_STATUS", length=10)
+private String     declarationStatus ;
 
-    @Column(name="PAYMENT_MODE", length=20)
-    private String     paymentMode ;
+@Column(name="PDF_BROKER_STATUS")
+private Short      pdfBrokerStatus ;
 
-    @Column(name="PAYMENT_STATUS", length=1)
-    private String     paymentStatus ;
+@Column(name="SUMMARY_CLAUSES", length=470)
+private String     summaryClauses ;
 
-    @Column(name="RENEWAL_STATUS", length=10)
-    private String     renewalStatus ;
+@Column(name="SUMMARY_REMARKS", length=2000)
+private String     summaryRemarks ;
 
-    @Column(name="RENEWAL_OLD_POLICY", length=100)
-    private String     renewalOldPolicy ;
+@Column(name="BROKER_ADDITIONAL_COMMISSION")
+private BigDecimal brokerAdditionalCommission ;
 
-    @Column(name="ENDT_STATUS", length=10)
-    private String     endtStatus ;
+@Column(name="PAYMENT_MODE", length=20)
+private String     paymentMode ;
 
-    @Column(name="ENDT_TYPE_ID", length=100)
-    private String     endtTypeId ;
+@Column(name="PAYMENT_STATUS", length=1)
+private String     paymentStatus ;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="ENDT_DATE")
-    private Date       endtDate ;
+@Column(name="RENEWAL_STATUS", length=10)
+private String     renewalStatus ;
 
-    @Column(name="ENDT_BY", length=100)
-    private String     endtBy ;
+@Column(name="RENEWAL_OLD_POLICY", length=100)
+private String     renewalOldPolicy ;
 
-    @Column(name="ENDT_PREMIUM")
-    private Long       endtPremium ;
+@Column(name="ENDT_STATUS", length=10)
+private String     endtStatus ;
 
-    @Column(name="ENDT_COMMISSION")
-    private BigDecimal endtCommission ;
+@Column(name="ENDT_TYPE_ID", length=100)
+private String     endtTypeId ;
 
-    @Column(name="ADMIN_SUMMARY_STATUS", length=1)
-    private String     adminSummaryStatus ;
+@Temporal(TemporalType.TIMESTAMP)
+@Column(name="ENDT_DATE")
+private Date       endtDate ;
 
-    @Column(name="CLASS_ID", length=1)
-    private String     classId ;
+@Column(name="ENDT_BY", length=100)
+private String     endtBy ;
 
-    @Column(name="COVER_NOTE_NUMBER")
-    private BigDecimal coverNoteNumber ;
 
-    @Column(name="CSH_ID_TYP_CODE")
-    private Short      cshIdTypCode ;
 
-    @Column(name="INGSERIAL_NUMBER", length=20)
-    private String     ingserialNumber ;
+@Column(name="ENDT_COMMISSION")
+private BigDecimal endtCommission ;
 
-    @Column(name="CHQ_INV_NO", length=10)
-    private String     chqInvNo ;
+@Column(name="ADMIN_SUMMARY_STATUS", length=1)
+private String     adminSummaryStatus ;
 
-    @Column(name="OWNNERDRIVER_YN", length=1)
-    private String     ownnerdriverYn ;
+@Column(name="CLASS_ID", length=1)
+private String     classId ;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="RENEWAL_OLD_EXP_DATE")
-    private Date       renewalOldExpDate ;
+@Column(name="COVER_NOTE_NUMBER")
+private BigDecimal coverNoteNumber ;
 
-    @Column(name="RENEWAL_DATE_YN", length=1)
-    private String     renewalDateYn ;
+@Column(name="CSH_ID_TYP_CODE")
+private Short      cshIdTypCode ;
 
-    @Column(name="VEHICLE_NO")
-    private Integer    vehicleNo ;
+@Column(name="INGSERIAL_NUMBER", length=20)
+private String     ingserialNumber ;
 
-    @Column(name="MIN_PREMIUM_YN", length=10)
-    private String     minPremiumYn ;
+@Column(name="CHQ_INV_NO", length=10)
+private String     chqInvNo ;
 
-    @Column(name="SMS_YN", length=10)
-    private String     smsYn ;
+@Column(name="OWNNERDRIVER_YN", length=1)
+private String     ownnerdriverYn ;
 
-    @Column(name="HAVEPROMO_YN", length=50)
-    private String     havepromoYn ;
+@Temporal(TemporalType.TIMESTAMP)
+@Column(name="RENEWAL_OLD_EXP_DATE")
+private Date       renewalOldExpDate ;
 
-    @Column(name="PROMO_YN", length=10)
-    private String     promoYn ;
+@Column(name="RENEWAL_DATE_YN", length=1)
+private String     renewalDateYn ;
 
-    @Column(name="PROMOCODE", length=100)
-    private String     promocode ;
+@Column(name="VEHICLE_NO")
+private Integer    vehicleNo ;
 
-    @Column(name="PROMO_AGENCY_CODE", length=60)
-    private String     promoAgencyCode ;
+@Column(name="MIN_PREMIUM_YN", length=10)
+private String     minPremiumYn ;
 
-    @Column(name="EMPCODE", length=30)
-    private String     empcode ;
+@Column(name="SMS_YN", length=10)
+private String     smsYn ;
 
-    @Column(name="NO_OF_INSTALLMENT")
-    private Double     noOfInstallment ;
+@Column(name="HAVEPROMO_YN", length=50)
+private String     havepromoYn ;
 
-    @Column(name="INSURED_BY", length=25)
-    private String     insuredBy ;
+@Column(name="PROMO_YN", length=10)
+private String     promoYn ;
 
-    @Column(name="INTEGRATION_STATUS", length=20)
-    private String     integrationStatus ;
+@Column(name="PROMOCODE", length=100)
+private String     promocode ;
 
-    @Column(name="INTEGRATION_ERROR", length=800)
-    private String     integrationError ;
+@Column(name="PROMO_AGENCY_CODE", length=60)
+private String     promoAgencyCode ;
 
-    @Column(name="CORE_POLICY_NO", length=80)
-    private String     corePolicyNo ;
+@Column(name="EMPCODE", length=30)
+private String     empcode ;
 
-    @Column(name="CORE_DEBIT_NOTE", length=80)
-    private String     coreDebitNote ;
+@Column(name="NO_OF_INSTALLMENT")
+private BigDecimal     noOfInstallment ;
 
-    @Column(name="CORE_CREDIT_NOTE", length=80)
-    private String     coreCreditNote ;
+@Column(name="INSURED_BY", length=25)
+private String     insuredBy ;
 
-    @Column(name="CORE_INTG_STATUS", length=80)
-    private String     coreIntgStatus ;
+@Column(name="INTEGRATION_STATUS", length=20)
+private String     integrationStatus ;
 
-    @Column(name="CORE_INTG_REMARKS", length=1000)
-    private String     coreIntgRemarks ;
+@Column(name="INTEGRATION_ERROR", length=800)
+private String     integrationError ;
 
-    @Column(name="CORE_INTG_QUEUE")
-    private Double     coreIntgQueue ;
+@Column(name="CORE_POLICY_NO", length=80)
+private String     corePolicyNo ;
 
-    @Column(name="OTHER_FEE_1")
-    private Double     otherFee1 ;
+@Column(name="CORE_DEBIT_NOTE", length=80)
+private String     coreDebitNote ;
 
-    @Column(name="OTHER_FEE_2")
-    private Double     otherFee2 ;
+@Column(name="CORE_CREDIT_NOTE", length=80)
+private String     coreCreditNote ;
 
-    @Column(name="OTHER_FEE_3")
-    private Double     otherFee3 ;
+@Column(name="CORE_INTG_STATUS", length=80)
+private String     coreIntgStatus ;
 
-    @Column(name="OTHER_FEE_PERC_1")
-    private Double     otherFeePerc1 ;
+@Column(name="CORE_INTG_REMARKS", length=1000)
+private String     coreIntgRemarks ;
 
-    @Column(name="OTHER_FEE_PERC_2")
-    private Double     otherFeePerc2 ;
+@Column(name="CORE_INTG_QUEUE")
+private BigDecimal     coreIntgQueue ;
 
-    @Column(name="OTHER_FEE_PERC_3")
-    private Double     otherFeePerc3 ;
+@Column(name="OTHER_FEE_1")
+private BigDecimal     otherFee1 ;
 
-    @Column(name="PROMO_RATE")
-    private Double     promoRate ;
+@Column(name="OTHER_FEE_2")
+private BigDecimal     otherFee2 ;
 
-    @Column(name="PROMO_PREMIUM")
-    private Double     promoPremium ;
+@Column(name="OTHER_FEE_3")
+private BigDecimal     otherFee3 ;
 
-    @Column(name="DRAFT_STATUS", length=10)
-    private String     draftStatus ;
+@Column(name="OTHER_FEE_PERC_1")
+private BigDecimal     otherFeePerc1 ;
 
-    @Column(name="TRAN_CODE", length=100)
-    private String     tranCode ;
+@Column(name="OTHER_FEE_PERC_2")
+private BigDecimal     otherFeePerc2 ;
 
-    @Column(name="DOC_NO", length=100)
-    private String     docNo ;
+@Column(name="OTHER_FEE_PERC_3")
+private BigDecimal     otherFeePerc3 ;
 
-    @Column(name="AAA_CARDNO", length=20)
-    private String     aaaCardno ;
+@Column(name="PROMO_RATE")
+private BigDecimal     promoRate ;
 
-    @Column(name="RSA_CARDNO", length=20)
-    private String     rsaCardno ;
+@Column(name="PROMO_PREMIUM")
+private BigDecimal     promoPremium ;
 
-    @Column(name="ORANGE_CARDNO", length=20)
-    private String     orangeCardno ;
+@Column(name="DRAFT_STATUS", length=10)
+private String     draftStatus ;
 
-    @Column(name="CHANNEL_LIST", length=50)
-    private String     channelList ;
+@Column(name="TRAN_CODE", length=100)
+private String     tranCode ;
 
-    @Column(name="SOURCE_TYPE", length=100)
-    private String     sourceType ;
+@Column(name="DOC_NO", length=100)
+private String     docNo ;
 
-    @Column(name="MODE_OF_PAYMENT", length=50)
-    private String     modeOfPayment ;
+@Column(name="AAA_CARDNO", length=20)
+private String     aaaCardno ;
 
-    @Column(name="PAYMENT_TYPE", length=50)
-    private String     paymentType ;
+@Column(name="RSA_CARDNO", length=20)
+private String     rsaCardno ;
 
-    @Column(name="CUST_APPROVE_STATUS", length=10)
-    private String     custApproveStatus ;
+@Column(name="ORANGE_CARDNO", length=20)
+private String     orangeCardno ;
 
-    @Column(name="CUST_REJECT_REMARKS", length=1000)
-    private String     custRejectRemarks ;
+@Column(name="CHANNEL_LIST", length=50)
+private String     channelList ;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="CUST_APPROVE_DATE")
-    private Date       custApproveDate ;
+@Column(name="SOURCE_TYPE", length=100)
+private String     sourceType ;
 
-    @Column(name="CREDIT_LIMIT_STATUS", length=10)
-    private String     creditLimitStatus ;
+@Column(name="MODE_OF_PAYMENT", length=50)
+private String     modeOfPayment ;
 
-    @Column(name="POL_INTEG_STATUS", length=50)
-    private String     polIntegStatus ;
+@Column(name="PAYMENT_TYPE", length=50)
+private String     paymentType ;
 
-    @Column(name="INTEG_PRODUCT", length=12)
-    private String     integProduct ;
+@Column(name="CUST_APPROVE_STATUS", length=10)
+private String     custApproveStatus ;
 
-    @Column(name="BDM_CODE", length=20)
-    private String     bdmCode ;
+@Column(name="CUST_REJECT_REMARKS", length=1000)
+private String     custRejectRemarks ;
 
-    @Column(name="ADD_CONDITION", length=1000)
-    private String     addCondition ;
+@Temporal(TemporalType.TIMESTAMP)
+@Column(name="CUST_APPROVE_DATE")
+private Date       custApproveDate ;
 
-    @Column(name="ORANGE_CARDURL", length=1000)
-    private String     orangeCardurl ;
+@Column(name="CREDIT_LIMIT_STATUS", length=10)
+private String     creditLimitStatus ;
 
-    @Column(name="HOD_LOGINID", length=100)
-    private String     hodLoginid ;
+@Column(name="POL_INTEG_STATUS", length=50)
+private String     polIntegStatus ;
 
-    @Column(name="CEO_REFERRAL", length=30)
-    private String     ceoReferral ;
+@Column(name="INTEG_PRODUCT", length=12)
+private String     integProduct ;
 
-    @Column(name="EMIINSTALL_YN", length=10)
-    private String     emiinstallYn ;
+@Column(name="BDM_CODE", length=20)
+private String     bdmCode ;
 
-    @Column(name="COLL_BRANCH_CODE", length=8)
-    private String     collBranchCode ;
+@Column(name="ADD_CONDITION", length=1000)
+private String     addCondition ;
 
-    @Column(name="EMI_ID")
-    private Double     emiId ;
+@Column(name="ORANGE_CARDURL", length=1000)
+private String     orangeCardurl ;
 
-    @Column(name="EMI_PREMIUM")
-    private Double     emiPremium ;
+@Column(name="HOD_LOGINID", length=100)
+private String     hodLoginid ;
 
-    @Column(name="POLICY_TINYURL", length=250)
-    private String     policyTinyurl ;
+@Column(name="CEO_REFERRAL", length=30)
+private String     ceoReferral ;
 
-    @Column(name="REFERAL_CODES", length=250)
-    private String     referalCodes ;
+@Column(name="EMIINSTALL_YN", length=10)
+private String     emiinstallYn ;
 
-    @Column(name="OLD_APPLICATION_ID", length=80)
-    private String     oldApplicationId ;
+@Column(name="COLL_BRANCH_CODE", length=8)
+private String     collBranchCode ;
 
-    @Column(name="PROMOTYPE", length=15)
-    private String     promotype ;
+@Column(name="EMI_ID")
+private BigDecimal     emiId ;
 
-    @Column(name="PREV_POLICYTYPE", length=10)
-    private String     prevPolicytype ;
+@Column(name="EMI_PREMIUM")
+private BigDecimal     emiPremium ;
 
-    @Column(name="TINY_URL", length=500)
-    private String     tinyUrl ;
+@Column(name="POLICY_TINYURL", length=250)
+private String     policyTinyurl ;
 
-    @Column(name="TARGET_PRICE")
-    private Double     targetPrice ;
+@Column(name="REFERAL_CODES", length=250)
+private String     referalCodes ;
 
-    @Column(name="VISION_REPLACEMENT")
-    private Double     visionReplacement ;
+@Column(name="OLD_APPLICATION_ID", length=80)
+private String     oldApplicationId ;
 
-    @Column(name="VISION_MAINTENANCE")
-    private Double     visionMaintenance ;
+@Column(name="PROMOTYPE", length=15)
+private String     promotype ;
 
-    @Column(name="AGGR_REFERENCEID", length=80)
-    private String     aggrReferenceid ;
+@Column(name="PREV_POLICYTYPE", length=10)
+private String     prevPolicytype ;
 
-    @Column(name="PREMIUMWOVAT")
-    private Double     premiumwovat ;
+@Column(name="TINY_URL", length=500)
+private String     tinyUrl ;
 
-    @Column(name="VERIFICATION_CODE")
-    private Double     verificationCode ;
+@Column(name="TARGET_PRICE")
+private BigDecimal     targetPrice ;
 
-    @Column(name="MMM_CARDNO", length=20)
-    private String     mmmCardno ;
+@Column(name="VISION_REPLACEMENT")
+private BigDecimal     visionReplacement ;
 
-    @Column(name="NAJM_FEE")
-    private BigDecimal najmFee ;
+@Column(name="VISION_MAINTENANCE")
+private BigDecimal     visionMaintenance ;
 
-    @Column(name="NO_CLAIM_DISCOUNT_VALUE")
-    private BigDecimal noClaimDiscountValue ;
+@Column(name="AGGR_REFERENCEID", length=80)
+private String     aggrReferenceid ;
 
-    @Column(name="NO_CLAIM_DISCOUNT", length=10)
-    private String     noClaimDiscount ;
+@Column(name="PREMIUMWOVAT")
+private BigDecimal     premiumwovat ;
 
+@Column(name="VERIFICATION_CODE")
+private BigDecimal     verificationCode ;
 
-    @Column(name="BROKER_BRANCH_CODE", length=20)
-    private String     brokerBranchCode ;
+@Column(name="MMM_CARDNO", length=20)
+private String     mmmCardno ;
 
+@Column(name="NAJM_FEE")
+private BigDecimal najmFee ;
 
+@Column(name="NO_CLAIM_DISCOUNT_VALUE")
+private BigDecimal noClaimDiscountValue ;
 
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="POLICY_COVERTED_DATE")
-	private Date       policyCovertedDate ;
-	
-	
-	@Column(name="COMMISSION_MODIFY_YN")
-	private String commissionModifyYn;
+@Column(name="NO_CLAIM_DISCOUNT", length=10)
+private String     noClaimDiscount ;
+
+@Column(name="IS_FINACIAL_ENDT", length=20)
+private String     isFinacialEndt ;
+
+@Column(name="BROKER_BRANCH_CODE", length=20)
+private String     brokerBranchCode ;
+
+@Column(name="MANUAL_REFERAL_YN", length=100)
+private String  manualReferalYn;
+
+@Column(name="CUSTOMER_CODE", length=100)
+private String  customerCode;
+
+@Column(name="BROKER_BRANCH_NAME", length=100)
+private String  brokerBranchName;
+
+@Column(name="COMPANY_NAME", length=100)
+private String  companyName;
+
+@Column(name="PRODUCT_NAME", length=100)
+private String  productName;
+
+@Column(name="USER_TYPE", length=100)
+private String  userType;
+
+@Column(name="SUB_USER_TYPE", length=100)
+private String  subUserType;
+
+@Column(name="COMMISSION_TYPE", length=100)
+private String  commissionType;
+
+@Column(name="COMMISSION_TYPE_DESC", length=100)
+private String  commissionTypeDesc;
+
+@Column(name="ENDT_CATEG_DESC", length=100)
+private String     endtCategDesc ;
+
+@Column(name="ENDORSEMENT_REMARKS", length=500)
+private String     endorsementRemarks ;
+
+@Temporal(TemporalType.TIMESTAMP)
+@Column(name="ENDORSEMENT_EFFDATE")
+private Date       endorsementEffdate ;
+
+@Column(name="ENDT_PREV_POLICY_NO", length=100)
+private String     endtPrevPolicyNo ;
+
+@Column(name="ENDT_PREV_QUOTE_NO", length=50)
+private String     endtPrevQuoteNo ;
+
+@Column(name="ENDT_COUNT")
+private Integer    endtCount ;
+
+@Column(name="IS_CHARG_REFUND")
+private String isChargRefund;
+
+@Column(name="ENDT_TYPE_DESC")
+private String endtTypeDesc;
+
+@Column(name="ENDT_PREMIUM_TAX")
+private BigDecimal endtPremiumTax;
+
+@Column(name="TIRA_COVER_NOTE_NO")
+private String tiraCoverNoteNo;
+
+@Column(name="TIRA_REQUEST_ID")
+private String tiraRequestId;
+
+@Column(name="TIRA_RESPONSE_ID")
+private String tiraResponseId;
+
+@Column(name="COVERNOTE_REFERENCENO")
+private String coverNoteReferenceNo;
+
+@Column(name="STICKER_NUMBER")
+private String stickerNumber;
+
+@Column(name="RESPONSE_STATUS_CODE")
+private String responseStatusCode;
+
+@Column(name="RESPONSE_STATUS_DESC")
+private String responseStatusDesc;
+
+@Column(name="PREV_COVERNOTE_REFNO")
+private String prevCoverNoteRefNo;
+@Column(name="ENDT_PREMIUM")
+private BigDecimal       endtPremium ;
+@Column(name="ENDT_PREMIUM_LC")
+private BigDecimal       endtPremiumLc ;
+
+@Temporal(TemporalType.TIMESTAMP)
+@Column(name="POLICY_COVERTED_DATE")
+private Date       policyCovertedDate ;
+
+@Column(name="COMMISSION_MODIFY_YN")
+private String commissionModifyYn;
+
+
 }
 
 

@@ -458,12 +458,12 @@ public class NotificationServiceImpl implements NotificationService {
 		
 		//Save
 		data.setSNo(smsId);
-		data.setCustName(req.getCustName());
-		data.setInsId(req.getInsuranceid());
+	//	data.setCustName(req.getCustName());
+	//	data.setInsId(req.getInsuranceid());
 		data.setMobileNo(req.getMobileNo());
-		data.setSmsRefNo(smsId);
+	//	data.setSmsRefNo(smsId);
 		data.setSmsContent(req.getSmsContent());
-		data.setCreatedBy(req.getCreatedBy());
+	//	data.setCreatedBy(req.getCreatedBy());
 		smsdatarepo.save(data);	 
 		
 		/*

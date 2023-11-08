@@ -22,4 +22,6 @@ public interface TirraErrorHistoryRepository extends JpaRepository<TirraErrorHis
 	Page<TirraErrorHistory> findByReqRegNumberAndEntryDateBetween(Pageable paging, String registrationNumber,
 			Date effectiveStartDate, Date effectiveEndDate);
 
+	TirraErrorHistory findTop1ByOrderByEntryDateDesc();
+
 }

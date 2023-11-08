@@ -13,6 +13,7 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.maan.eway.bean.HomePositionMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -39,5 +40,7 @@ public interface HomePositionMasterRepository  extends JpaRepository<HomePositio
 
 	HomePositionMaster findTop1ByCompanyIdAndPolicyNoIsNotNullAndIntegrationStatusAndStatusAndEndtTypeIdIsNotNullOrderByPolicyCovertedDateDesc(
 			String insuranceId, String string, String string2);
+
+	List<HomePositionMaster> findByQuoteNoIn(List<String> quoteNos);
 
 }

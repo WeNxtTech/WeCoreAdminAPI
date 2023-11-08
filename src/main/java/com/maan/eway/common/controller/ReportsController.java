@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.maan.eway.common.req.DeleteTiraSearchedVehicleReq;
 import com.maan.eway.common.req.GetAllTirraErrorHistory;
 import com.maan.eway.common.req.GetTirraEorrorHistoryReq;
+import com.maan.eway.common.req.PolicyRevertReq;
 import com.maan.eway.common.req.TiraGetReq;
 import com.maan.eway.common.req.TiraPushedDetailsReq;
 import com.maan.eway.common.req.TransactionCheckStatusReq;
@@ -139,6 +140,24 @@ public class ReportsController {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
 		TransactionCheckStatusRes res = service.getTransactionCheckStatusDetails(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
+	@PostMapping("/policyreverttoquote")
+	public ResponseEntity<CommonRes> policyRevertToQuote(@RequestBody PolicyRevertReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		SuccessRes2 res = service.policyRevertToQuote(req);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());

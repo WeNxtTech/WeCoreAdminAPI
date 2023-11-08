@@ -5,6 +5,7 @@ import java.util.List;
 import com.maan.eway.common.req.DeleteTiraSearchedVehicleReq;
 import com.maan.eway.common.req.GetAllTirraErrorHistory;
 import com.maan.eway.common.req.GetTirraEorrorHistoryReq;
+import com.maan.eway.common.req.PolicyRevertReq;
 import com.maan.eway.common.req.TiraGetReq;
 import com.maan.eway.common.req.TiraPushedDetailsReq;
 import com.maan.eway.common.req.TransactionCheckStatusReq;
@@ -29,5 +30,7 @@ public interface ReportsService {
 	SuccessRes2 deleteTiraSearchVehicle(DeleteTiraSearchedVehicleReq req);
 
 	TransactionCheckStatusRes getTransactionCheckStatusDetails(TransactionCheckStatusReq req);
+
+	SuccessRes2 policyRevertToQuote(PolicyRevertReq req);
 
 }

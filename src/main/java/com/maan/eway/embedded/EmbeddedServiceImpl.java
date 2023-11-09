@@ -138,9 +138,9 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 			 String pattern = "#####0.00";
 			 DecimalFormat df = new DecimalFormat(pattern);
 			 
-			Map<String,Object> premium =embeddedRepository.getProductDashBoard(req.getCompanyId(),req.getProductId());
-			Map<String,Object> activePremium =embeddedRepository.getActivePremium(req.getCompanyId(),req.getProductId(),date);
-			Map<String,Object> expiryPremium =embeddedRepository.getExpiryPremium(req.getCompanyId(), req.getProductId(), date);
+			Map<String,Object> premium =embeddedRepository.getProductDashBoard(req.getCompanyId(),req.getProductId(), req.getStartDate(), req.getEndDate());
+			Map<String,Object> activePremium =embeddedRepository.getActivePremium(req.getCompanyId(),req.getProductId(),req.getStartDate(), req.getEndDate());
+			Map<String,Object> expiryPremium =embeddedRepository.getExpiryPremium(req.getCompanyId(), req.getProductId(), req.getStartDate(), req.getEndDate());
 			EmbeddedDashBoardRes boardRes =EmbeddedDashBoardRes.builder()
 					.activePremium(activePremium.get("active_premium")==null?"":df.format(activePremium.get("active_premium")))
 					.companyId(req.getCompanyId())
@@ -168,13 +168,16 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 	public CommonRes getProductPlanTypeDashBoard(EmbeddedDashBoardReq req) {
 		CommonRes response = new CommonRes();
 		try {
+			Date date = new Date();
 			 String pattern = "#####0.00";
 			 DecimalFormat df = new DecimalFormat(pattern);
-			List<Map<String,Object>> list =embeddedRepository.getProductPlanDashBoard(req.getLoginId(),req.getCompanyId(),req.getProductId());
+			List<Map<String,Object>> list =embeddedRepository.getProductPlanDashBoard(req.getLoginId(),req.getCompanyId(),req.getProductId(),req.getStartDate(),req.getEndDate());
 			List<EmbeddedDashBoardRes> resList = list.stream().map(premium ->{
 				String plan_opted =premium.get("plan_opted")==null?"":premium.get("plan_opted").toString();
-				String activePremium=embeddedRepository.getActivePremiumBasedPlan(req.getLoginId(),req.getCompanyId(),req.getProductId(),plan_opted,new Date());
+				String activePremium=embeddedRepository.getActivePremiumBasedPlan(req.getLoginId(),req.getCompanyId(),req.getProductId(),plan_opted,req.getStartDate(),req.getEndDate());
+				//Double activeP=Double.parseDouble(df.format(activePremium).toString());
 				EmbeddedDashBoardRes boardRes =EmbeddedDashBoardRes.builder()
+						.planOpted(plan_opted)
 						.activePremium(activePremium)
 						.companyId(req.getCompanyId())
 						.loginId(req.getLoginId())

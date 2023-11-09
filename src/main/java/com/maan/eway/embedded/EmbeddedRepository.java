@@ -15,20 +15,23 @@ public interface EmbeddedRepository extends JpaRepository<GroupMedicalDetails, G
 	
 	@Query(value="SELECT SUM(overAll_premium) AS total_premium,COUNT(*) AS total_policy,"
 			+ "SUM(tax_premium) total_tax_premium,SUM(commission_amount) total_commission_amount, SUM(Amount_paid) AS "
-			+ "total_amount_paid FROM group_medical_details WHERE company_id=:companyId and product_id=:productId AND STATUS='Y'"
+			+ "total_amount_paid FROM group_medical_details WHERE company_id=:companyId and product_id=:productId AND STATUS='Y' "
+			+ "AND DATE(expiry_date) BETWEEN :startDate AND :endDate "
 			+ "GROUP BY company_id,login_id",nativeQuery=true)
-	public Map<String,Object> getProductDashBoard(@Param("companyId") String companyId,@Param("productId")String productId);
+	public Map<String,Object> getProductDashBoard(@Param("companyId") String companyId,@Param("productId")String productId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
 	
 	@Query(value="SELECT SUM(overall_premium) AS active_premium FROM group_medical_details WHERE "
 			+ "company_id =:companyId and product_id=:productId and "
-			+ ":systemDate BETWEEN inception_date AND expiry_date GROUP BY company_id,login_id",nativeQuery=true)
-	public Map<String,Object> getActivePremium(@Param("companyId") String companyId, @Param("productId")String productId,@Param("systemDate") Date date);
+			+ " DATE(expiry_date) BETWEEN :startDate AND :endDate "
+			+ "GROUP BY company_id, login_id", nativeQuery = true)
+	public Map<String,Object> getActivePremium(@Param("companyId") String companyId, @Param("productId")String productId,@Param("startDate") Date startDate,@Param("endDate") Date endDate);
 	
 	@Query(value="SELECT SUM(overAll_premium) AS expiry_premium,COUNT(*) AS expiry_count, "
 			+ "SUM(tax_premium) total_tax_premium,SUM(commission_amount) total_commission_amount, SUM(Amount_paid) AS "
-			+ "total_amount_paid FROM group_medical_details WHERE company_id=:companyId and product_id =:productId AND STATUS='Y' AND expiry_date<:systemDate "
+			+ "total_amount_paid FROM group_medical_details WHERE company_id=:companyId and product_id =:productId AND STATUS='Y' "
+			+ "AND DATE(expiry_date)BETWEEN :startDate AND :endDate "
 			+ "GROUP BY company_id,login_id ",nativeQuery=true)
-	public Map<String,Object> getExpiryPremium(@Param("companyId") String companyId,@Param("productId")String productId,@Param("systemDate") Date date);
+	public Map<String,Object> getExpiryPremium(@Param("companyId") String companyId,@Param("productId")String productId,@Param("startDate") Date startDate,@Param("endDate") Date endDate);
 
 
 	@Query(value=" SELECT SUM(overAll_premium) AS total_premium,COUNT(*) AS total_policy, SUM(tax_premium) total_tax_premium,SUM(commission_amount) total_commission_amount, SUM(Amount_paid) AS total_amount_paid,(SELECT item_value FROM eway_list_item_value WHERE item_type='PLAN_OPTED' AND item_code=plan_opted AND STATUS='Y') AS plan_type ,company_id,login_id FROM group_medical_details WHERE company_id=:companyId AND STATUS='Y' GROUP BY company_id,login_id,plan_opted",nativeQuery=true)
@@ -41,12 +44,12 @@ public interface EmbeddedRepository extends JpaRepository<GroupMedicalDetails, G
 	public Map<String,Object> getPlanBasedActivePre(@Param("companyId") String companyId,@Param("systemDate") Date date);
 
 	
-	@Query(value ="SELECT SUM(overAll_premium) AS total_premium,COUNT(*) AS total_policy, SUM(tax_premium) total_tax_premium,SUM(commission_amount) total_commission_amount, SUM(Amount_paid) AS total_amount_paid,plan_opted FROM group_medical_details WHERE login_id=:loginId AND company_id=:companyId AND product_id=:productId and status='Y' GROUP BY login_id ,company_id,product_id,plan_opted ",nativeQuery=true)
-	public List<Map<String,Object>> getProductPlanDashBoard(@Param("loginId") String loginId,@Param("companyId") String companyId,@Param("productId") String productId);
+	@Query(value ="SELECT PLAN_OPTED, SUM(overAll_premium) AS total_premium,COUNT(*) AS total_policy, SUM(tax_premium) total_tax_premium,SUM(commission_amount) total_commission_amount, SUM(Amount_paid) AS total_amount_paid,plan_opted FROM group_medical_details WHERE login_id=:loginId AND company_id=:companyId AND product_id=:productId and status='Y' AND DATE(expiry_date) BETWEEN :startDate AND :endDate GROUP BY login_id ,company_id,product_id,plan_opted ",nativeQuery=true)
+	public List<Map<String,Object>> getProductPlanDashBoard(@Param("loginId") String loginId,@Param("companyId") String companyId,@Param("productId") String productId, @Param("startDate") Date startDate,@Param("endDate") Date endDate);
 	
 	
-	@Query(value ="SELECT SUM(overall_premium) as active_premium FROM group_medical_details WHERE login_id=:loginId AND company_id =:companyId AND product_id=:productId AND plan_opted =:planOpted AND :todaydate BETWEEN inception_date AND expiry_date GROUP BY company_id,product_id,plan_opted",nativeQuery=true)
-	public String getActivePremiumBasedPlan(@Param("loginId") String loginId,@Param("companyId") String companyId,@Param("productId") String productId,@Param("planOpted") String planOptd,@Param("todaydate") Date date);
+	@Query(value ="SELECT SUM(overall_premium) as active_premium FROM group_medical_details WHERE login_id=:loginId AND company_id =:companyId AND product_id=:productId AND plan_opted =:planOpted AND DATE(expiry_date) BETWEEN :startDate AND :endDate GROUP BY company_id,product_id,plan_opted",nativeQuery=true)
+	public String getActivePremiumBasedPlan(@Param("loginId") String loginId,@Param("companyId") String companyId,@Param("productId") String productId,@Param("planOpted") String planOpted,@Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
 
 

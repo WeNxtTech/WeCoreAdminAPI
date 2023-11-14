@@ -1355,6 +1355,10 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				saveData.setProRataYn( StringUtils.isNotBlank(req.getProRataYn() ) ? req.getProRataYn()  : "N");
 				saveData.setMinSuminsured(StringUtils.isBlank(req.getSumInsuredStart())? BigDecimal.ZERO : new BigDecimal(req.getSumInsuredStart()));
 				saveData.setCoverageLimit(StringUtils.isBlank(req.getCoverageLimit())? BigDecimal.ZERO : new BigDecimal(req.getCoverageLimit()));
+				List<ListItemValue> proRataTypes =  getListItem("99999" , saveData.getProRataYn()   ,"PRO_RATA_TYPE");
+				String proRata = saveData.getProRataYn() ;
+				proRataTypes = proRataTypes.stream().filter( o -> proRata.equalsIgnoreCase(o.getItemCode())   ).collect(Collectors.toList());
+				saveData.setProRataDesc(proRataTypes.size() > 0 ? proRataTypes.get(0).getItemValue() : ""   );
 				
 				// Amount Details
 				if(req.getCalcType().equalsIgnoreCase("F")  ) {

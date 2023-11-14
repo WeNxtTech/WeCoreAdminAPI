@@ -30,5 +30,8 @@ public class EmbeddedDashBoardReq {
 	@JsonProperty("PreimumType")
 	private String preimumType;
 	
+	@JsonProperty("PlanId")
+	private String planId;
+	
 
 }

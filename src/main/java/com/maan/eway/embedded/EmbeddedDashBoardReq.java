@@ -27,5 +27,8 @@ public class EmbeddedDashBoardReq {
 	@JsonFormat(pattern="dd/MM/yyyy")
 	private Date endDate;
 	
+	@JsonProperty("PreimumType")
+	private String preimumType;
+	
 
 }

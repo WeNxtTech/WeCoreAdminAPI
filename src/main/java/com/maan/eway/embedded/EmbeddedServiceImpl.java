@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -15,6 +16,7 @@ import javax.persistence.Tuple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
@@ -135,24 +137,39 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 		CommonRes response = new CommonRes();
 		try {
 			Date date = new Date();
-			 String pattern = "#####0.00";
-			 DecimalFormat df = new DecimalFormat(pattern);
-			 
-			Map<String,Object> premium =embeddedRepository.getProductDashBoard(req.getCompanyId(),req.getProductId(), req.getStartDate(), req.getEndDate());
-			Map<String,Object> activePremium =embeddedRepository.getActivePremium(req.getCompanyId(),req.getProductId(),req.getStartDate(), req.getEndDate());
-			Map<String,Object> expiryPremium =embeddedRepository.getExpiryPremium(req.getCompanyId(), req.getProductId(), req.getStartDate(), req.getEndDate());
+			String pattern = "#####0.00";
+			DecimalFormat df = new DecimalFormat(pattern);
+			List<Map<String,Object>> list =embeddedRepository.getCompanyBasedDashBoard(req.getCompanyId(), req.getProductId(), req.getStartDate(), req.getEndDate()); 
+			
+			Map<String,Object> overAll =list.stream()
+			.filter( p-> p.get("typ").toString().equalsIgnoreCase("Overall"))
+			.map( p->p.entrySet())
+			.flatMap(p ->p.stream())
+			.collect(Collectors.toMap(Entry :: getKey, Entry :: getValue));
+			
+			Map<String,Object> active =list.stream()
+					.filter( p-> p.get("typ").toString().equalsIgnoreCase("Active"))
+					.map( p->p.entrySet())
+					.flatMap(p ->p.stream())
+					.collect(Collectors.toMap(Entry :: getKey, Entry :: getValue));
+			
+			Map<String,Object> expiry =list.stream()
+					.filter(  p-> p.get("typ").toString().equalsIgnoreCase("Expiry"))
+					.map( p->p.entrySet())
+					.flatMap(p ->p.stream())
+					.collect(Collectors.toMap(Entry :: getKey, Entry :: getValue));
+					
+			
 			EmbeddedDashBoardRes boardRes =EmbeddedDashBoardRes.builder()
-					.activePremium(activePremium.get("active_premium")==null?"":df.format(activePremium.get("active_premium")))
+					.activePremium(active.get("total_premium")==null?"":df.format(active.get("total_premium")))
 					.companyId(req.getCompanyId())
 					.loginId(req.getLoginId())
-					.overAllComiPremium(premium.get("total_commission_amount")==null?"":df.format(premium.get("total_commission_amount")))
-					.overAllPremium(premium.get("total_premium")==null?"":df.format(premium.get("total_premium")))
-					.overAllTaxPremium(premium.get("total_tax_premium")==null?"":df.format(premium.get("total_tax_premium")))
+					.overAllPremium(overAll.get("total_premium")==null?"":df.format(overAll.get("total_premium")))
 					.productId(req.getProductId())
-					.totalPolicy(premium.get("total_policy")==null?"":premium.get("total_policy").toString())
-					.activePolicyCount(activePremium.get("activePolicyCount")==null?"":activePremium.get("activePolicyCount").toString())
-					.expiryPolicyCount(expiryPremium.get("activePolicyCount")==null?"":expiryPremium.get("activePolicyCount").toString())
-					.expiryPolicyPremium(expiryPremium.get("expiry_premium")==null?"":df.format(expiryPremium.get("expiry_premium")))
+					.totalPolicy(overAll.get("total_policy")==null?"":overAll.get("total_policy").toString())
+					.activePolicyCount(active.get("total_policy")==null?"":active.get("total_policy").toString())
+					.expiryPolicyCount(expiry.get("total_policy")==null?"":expiry.get("total_policy").toString())
+					.expiryPolicyPremium(expiry.get("total_premium")==null?"":df.format(expiry.get("total_premium")))
 					.build();
 			response.setCommonResponse(boardRes);
 			response.setMessage("SUCCESS");
@@ -168,28 +185,40 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 	public CommonRes getProductPlanTypeDashBoard(EmbeddedDashBoardReq req) {
 		CommonRes response = new CommonRes();
 		try {
-			Date date = new Date();
-			 String pattern = "#####0.00";
-			 DecimalFormat df = new DecimalFormat(pattern);
-			List<Map<String,Object>> list =embeddedRepository.getProductPlanDashBoard(req.getLoginId(),req.getCompanyId(),req.getProductId(),req.getStartDate(),req.getEndDate());
-			List<EmbeddedDashBoardRes> resList = list.stream().map(premium ->{
-				String plan_opted =premium.get("plan_opted")==null?"":premium.get("plan_opted").toString();
-				String activePremium=embeddedRepository.getActivePremiumBasedPlan(req.getLoginId(),req.getCompanyId(),req.getProductId(),plan_opted,req.getStartDate(),req.getEndDate());
-				//Double activeP=Double.parseDouble(df.format(activePremium).toString());
-				EmbeddedDashBoardRes boardRes =EmbeddedDashBoardRes.builder()
-						.planOpted(plan_opted)
-						.activePremium(activePremium)
-						.companyId(req.getCompanyId())
-						.loginId(req.getLoginId())
-						.overAllComiPremium(premium.get("total_commission_amount")==null?"":df.format(premium.get("total_commission_amount")))
-						.overAllPremium(premium.get("total_premium")==null?"":df.format(premium.get("total_premium")))
-						.overAllTaxPremium(premium.get("total_tax_premium")==null?"":df.format(premium.get("total_tax_premium")))
-						.productId(req.getProductId())
-						.totalPolicy(premium.get("total_policy")==null?"":premium.get("total_policy").toString())
-						.build();
-				return boardRes;
-				
-			}).collect(Collectors.toList());
+			String pattern = "#####0.00";
+			DecimalFormat df = new DecimalFormat(pattern);
+			List<Map<String,Object>> list =embeddedRepository.getPlanBasedDashBoard(req.getCompanyId(),req.getProductId(),req.getStartDate(),req.getEndDate());
+			List<Map<String,Object>> filterList =null;
+			if("OVERALL".equalsIgnoreCase(req.getPreimumType())) {
+				filterList =list.stream()
+						.filter(p ->p.get("typ").toString().equalsIgnoreCase(req.getPreimumType()))
+						.collect(Collectors.toList());
+			}else if("ACTIVE".equalsIgnoreCase(req.getPreimumType())) {
+			
+				filterList =list.stream()
+						.filter(p ->p.get("typ").toString().equalsIgnoreCase(req.getPreimumType()))
+						.collect(Collectors.toList());
+			}else if("EXPIRY".equalsIgnoreCase(req.getPreimumType())) {
+			
+				filterList =list.stream()
+						.filter(p ->p.get("typ").toString().equalsIgnoreCase(req.getPreimumType()))
+						.collect(Collectors.toList());
+			}
+			
+			
+			List<EmbeddedPlanDashBoardRes> resList =filterList.stream()
+					.map(p ->{
+						EmbeddedPlanDashBoardRes boardRes = new EmbeddedPlanDashBoardRes();
+						boardRes.setCompanyId(p.get("company_id")==null?"":p.get("company_id").toString());
+						boardRes.setLoginId(p.get("login_id")==null?"":p.get("login_id").toString());
+						boardRes.setPlanId(p.get("plan_opted")==null?"":p.get("plan_opted").toString());
+						boardRes.setPremium(p.get("total_premium")==null?"":df.format(p.get("total_premium")));
+						boardRes.setProductId(req.getProductId());
+						boardRes.setTotalPolicy(p.get("total_policy")==null?"":p.get("total_policy").toString());
+						boardRes.setPlanType(p.get("plan_desc")==null?"":p.get("plan_desc").toString());
+						boardRes.setPremiumType(req.getPreimumType());
+						return boardRes;
+					}).collect(Collectors.toList());
 		
 			response.setCommonResponse(resList);
 			response.setMessage("SUCCESS");

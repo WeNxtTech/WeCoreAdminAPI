@@ -4,14 +4,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
-@Builder
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmbeddedDashBoardRes {
+@Builder
+public class EmbeddedPlanDashBoardRes {
 	
 	@JsonProperty("LoginId")
 	private String loginId;
@@ -22,21 +24,20 @@ public class EmbeddedDashBoardRes {
 	@JsonProperty("ProductId")
 	private String productId;
 	
-	@JsonProperty("OverAllPremium")
-	private String overAllPremium;
-
-	@JsonProperty("ActivePremium")
-	private String activePremium;
+	@JsonProperty("PlanId")
+	private String planId;
 	
-	@JsonProperty("ExpiryPolicyPremium")
-	private String expiryPolicyPremium;
+	@JsonProperty("PlanType")
+	private String planType;
+	
+	@JsonProperty("Premium")
+	private String premium;
 
 	@JsonProperty("TotalPolicy")
 	private String totalPolicy;
 	
-	@JsonProperty("ActivePolicyCount")
-	private String activePolicyCount;
+	@JsonProperty("PremiumType")
+	private String premiumType;
 	
-	@JsonProperty("ExpiryPolicyCount")
-	private String expiryPolicyCount;
+
 }

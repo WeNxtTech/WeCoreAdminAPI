@@ -1116,6 +1116,9 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 				saveData.setTaxAmount(req.getTaxAmount()==null ? BigDecimal.ZERO :new BigDecimal(req.getTaxAmount()));
 				saveData.setTaxCode(req.getTaxCode());
 			}
+			saveData.setProRataYn(StringUtils.isNotBlank(req.getProRataYn()) ?  req.getProRataYn() : "N" );
+			List<ListItemValue> proRataTypes =  getListItem("99999" , saveData.getProRataYn()   ,"PRO_RATA_TYPE");
+			saveData.setProRataDesc(proRataTypes.size() > 0 ? proRataTypes.get(0).getItemValue() : ""   );
 			
 			repo.saveAndFlush(saveData);
 

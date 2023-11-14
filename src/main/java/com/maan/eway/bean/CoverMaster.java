@@ -197,6 +197,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="PRO_RATA_YN")
     private String       proRataYn;
+    
+    @Column(name="PRO_RATA_DESC")
+    private String       proRataDesc;
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

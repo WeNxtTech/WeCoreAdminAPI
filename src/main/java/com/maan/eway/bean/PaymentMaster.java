@@ -88,6 +88,8 @@ public class PaymentMaster {
 	
 	@Column(name="UPDATED_BY",length=100)
 	private String updatedBy;
-	
+
+	@Column(name="AGENCY_CODE",length=100)
+	private String agencyCode;
 	
 }

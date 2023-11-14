@@ -291,7 +291,8 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 	public List<BrokerCustCodeRes> getBrokerBranches(PremiaDropDownReq req) {
 		List<BrokerCustCodeRes> resList = new ArrayList<BrokerCustCodeRes>();
 			try { 
-				List<LoginBranchMaster> lb = lbRepo.findByAgencyCodeAndStatusAndBranchCodeAndEffectiveDateStartLessThanEqual(Integer.valueOf(req.getBrokerCode()) , "Y" ,req.getBranchCode(), new Date());
+				if (StringUtils.isNotBlank(req.getBrokerCode())) {
+					List<LoginBranchMaster> lb = lbRepo.findByAgencyCodeAndStatusAndBranchCodeAndEffectiveDateStartLessThanEqual(Integer.valueOf(req.getBrokerCode()) , "Y" ,req.getBranchCode(), new Date());
 					for (LoginBranchMaster data : lb ) {
 						// Response 
 						BrokerCustCodeRes res = new BrokerCustCodeRes(); 
@@ -300,6 +301,8 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 						resList.add(res);
 						
 					}
+				}
+				
 						
 			}catch(Exception e) {
 					e.printStackTrace();

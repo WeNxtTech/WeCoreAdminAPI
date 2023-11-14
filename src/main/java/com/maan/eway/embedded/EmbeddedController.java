@@ -48,4 +48,8 @@ public class EmbeddedController {
 		return service.getAllPolicy(req);
 	}
 
+	@PostMapping("/getExpiredPolicy")
+	public CommonRes getExpiredPolicy(@RequestBody EmbeddedDashBoardReq req) {
+		return service.getExpiredPolicy(req);
+	}
 }

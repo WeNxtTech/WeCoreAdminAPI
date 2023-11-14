@@ -137,6 +137,7 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 		CommonRes response = new CommonRes();
 		try {
 			Date date = new Date();
+<<<<<<< Updated upstream
 			String pattern = "#####0.00";
 			DecimalFormat df = new DecimalFormat(pattern);
 			List<Map<String,Object>> list =embeddedRepository.getCompanyBasedDashBoard(req.getCompanyId(), req.getProductId(), req.getStartDate(), req.getEndDate()); 
@@ -170,6 +171,30 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 					.activePolicyCount(active.get("total_policy")==null?"":active.get("total_policy").toString())
 					.expiryPolicyCount(expiry.get("total_policy")==null?"":expiry.get("total_policy").toString())
 					.expiryPolicyPremium(expiry.get("total_premium")==null?"":df.format(expiry.get("total_premium")))
+=======
+			 String pattern = "#####0.00";
+			 DecimalFormat df = new DecimalFormat(pattern);
+			 
+			Map<String,Object> premium =embeddedRepository.getProductDashBoard(req.getCompanyId(),req.getProductId(), req.getStartDate(), req.getEndDate());
+			Map<String,Object> activePremium =embeddedRepository.getActivePremium(req.getCompanyId(),req.getProductId(),req.getStartDate(), req.getEndDate());
+			Map<String,Object> expiryPremium =embeddedRepository.getExpiryPremium(req.getCompanyId(), req.getProductId(), req.getStartDate(), req.getEndDate());
+			String plan_opted =premium.get("plan_opted")==null?"0":premium.get("plan_opted").toString();
+			String plan_desc =premium.get("plan_desc")==null?"":premium.get("plan_desc").toString();
+			EmbeddedDashBoardRes boardRes =EmbeddedDashBoardRes.builder()
+					.planOpted(plan_opted)
+					.planName(plan_desc)
+					.activePremium(activePremium.get("active_premium")==null?"0":df.format(activePremium.get("active_premium")))
+					.companyId(req.getCompanyId())
+					.loginId(req.getLoginId())
+					.overAllComiPremium(premium.get("total_commission_amount")==null?"0":df.format(premium.get("total_commission_amount")))
+					.overAllPremium(premium.get("total_premium")==null?"":df.format(premium.get("total_premium")))
+					.overAllTaxPremium(premium.get("total_tax_premium")==null?"":df.format(premium.get("total_tax_premium")))
+					.productId(req.getProductId())
+					.totalPolicy(premium.get("total_policy")==null?"":premium.get("total_policy").toString())
+					.activePolicyCount(activePremium.get("activePolicyCount")==null?"0":activePremium.get("activePolicyCount").toString())
+					.expiryPolicyCount(expiryPremium.get("expiryPolicyCount")==null?"0":expiryPremium.get("expiryPolicyCount").toString())
+					.expiryPolicyPremium(expiryPremium.get("expiry_premium")==null?"0":df.format(expiryPremium.get("expiry_premium")))
+>>>>>>> Stashed changes
 					.build();
 			response.setCommonResponse(boardRes);
 			response.setMessage("SUCCESS");
@@ -185,6 +210,7 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 	public CommonRes getProductPlanTypeDashBoard(EmbeddedDashBoardReq req) {
 		CommonRes response = new CommonRes();
 		try {
+<<<<<<< Updated upstream
 			String pattern = "#####0.00";
 			DecimalFormat df = new DecimalFormat(pattern);
 			List<Map<String,Object>> list =embeddedRepository.getPlanBasedDashBoard(req.getCompanyId(),req.getProductId(),req.getStartDate(),req.getEndDate());
@@ -219,6 +245,34 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 						boardRes.setPremiumType(req.getPreimumType());
 						return boardRes;
 					}).collect(Collectors.toList());
+=======
+			Date date = new Date();
+			 String pattern = "#####0.00";
+			 DecimalFormat df = new DecimalFormat(pattern);
+			List<Map<String,Object>> list =embeddedRepository.getProductPlanDashBoard(req.getLoginId(),req.getCompanyId(),req.getProductId(),req.getStartDate(),req.getEndDate());
+			List<EmbeddedDashBoardRes> resList = list.stream().map(premium ->{
+				String plan_opted =premium.get("plan_opted")==null?"0":premium.get("plan_opted").toString();
+				String plan_desc =premium.get("plan_desc")==null?"":premium.get("plan_desc").toString();
+				Map<String,Object> activePremium=embeddedRepository.getActivePremiumBasedPlan(req.getLoginId(),req.getCompanyId(),req.getProductId(),plan_opted,req.getStartDate(),req.getEndDate());
+				EmbeddedDashBoardRes boardRes =EmbeddedDashBoardRes.builder()
+						.planOpted(plan_opted)
+						.planName(plan_desc)
+						.activePremium(activePremium.get("active_premium")==null?"0":df.format(activePremium.get("active_premium")))
+						.companyId(req.getCompanyId())
+						.loginId(req.getLoginId())
+						.overAllComiPremium(premium.get("total_commission_amount")==null?"0":df.format(premium.get("total_commission_amount")))
+						.overAllPremium(premium.get("total_premium")==null?"0":df.format(premium.get("total_premium")))
+						.overAllTaxPremium(premium.get("total_tax_premium")==null?"0":df.format(premium.get("total_tax_premium")))
+						.productId(req.getProductId())
+						.totalPolicy(premium.get("total_policy")==null?"0":premium.get("total_policy").toString())
+						.activePolicyCount(activePremium.get("activePolicyCount")==null?"0":activePremium.get("activePolicyCount").toString())
+						.expiryPolicyCount(premium.get("expiryPolicyCount")==null?"0":premium.get("expiryPolicyCount").toString())
+						.expiryPolicyPremium(premium.get("expiry_premium")==null?"0":df.format(premium.get("expiry_premium")))
+						.build();
+				return boardRes;
+				
+			}).collect(Collectors.toList());
+>>>>>>> Stashed changes
 		
 			response.setCommonResponse(resList);
 			response.setMessage("SUCCESS");
@@ -232,22 +286,160 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 
 	@Override
 	public CommonRes getActivePolicy(EmbeddedDashBoardReq req) {
+		CommonRes response = new CommonRes();
+
 		try {
+			Date date = new Date();
+			String pattern = "#####0.00";
+			DecimalFormat df = new DecimalFormat(pattern);
+			List<Map<String,Object>> list =embeddedRepository.getActivePolicy(req.getLoginId(), req.getCompanyId(), req.getProductId() , req.getStartDate(), req.getEndDate());
+			List<EmbeddedDashBoardRes> resList = list.stream().map(premium ->{
+				String plan_desc =premium.get("plan_desc")==null?"":premium.get("plan_desc").toString();
+				EmbeddedDashBoardRes boardRes =EmbeddedDashBoardRes.builder()
+						.planName(plan_desc)
+						.planOpted(premium.get("plan_opted")==null?"0":premium.get("plan_opted").toString())
+						.requestReferenceNumber(premium.get("request_reference_no")==null?"0":premium.get("request_reference_no").toString())
+						.companyId(req.getCompanyId())
+						.loginId(req.getLoginId())
+						.policyNo(premium.get("policy_no")==null?"0":premium.get("policyNo").toString())
+						.mobileCode(premium.get("mobile_code")==null?"0":premium.get("mobile_code").toString())
+						.mobileNo(premium.get("mobile_no")==null?"0":premium.get("mobile_no").toString())
+						.sectionId(premium.get("section_id")==null?"0":premium.get("section_id").toString())
+						.clientTransactionNo(premium.get("client_transaction_no")==null?"0":premium.get("client_transaction_no").toString())
+						.customerName(premium.get("customer_name")==null?"":premium.get("customer_name").toString())
+						.productId(req.getProductId())
+						.amountPaid(premium.get("amount_paid")==null?"0":df.format(premium.get("amount_paid")))
+						.premium(premium.get("premium")==null?"0":df.format(premium.get("premium")))
+						.commissionPercentage(premium.get("commission_percentage")==null?"0":df.format(premium.get("commission_percentage")))
+						.commissionAmount(premium.get("commission_amount")==null?"0":df.format(premium.get("commission_amount")))
+						.taxPercentage(premium.get("tax_percentage")==null?"0":df.format(premium.get("tax_percentage")))
+						.taxPremium(premium.get("tax_premium")==null?"0":df.format(premium.get("tax_premium")))
+						.overAllPremium(premium.get("overall_premium")==null?"0":df.format(premium.get("overall_premium")))
+						.totalPolicy(premium.get("total_policy")==null?"0":premium.get("total_policy").toString())
+						.overAllComiPremium(premium.get("total_commission_amount")==null?"0":df.format(premium.get("total_commission_amount")))
+						.overAllTaxPremium(premium.get("total_tax_premium")==null?"0":df.format(premium.get("total_tax_premium")))
+						.activePolicyCount(premium.get("activePolicyCount")==null?"0":premium.get("activePolicyCount").toString())
+						.expiryPolicyCount(premium.get("expiryPolicyCount")==null?"0":premium.get("expiryPolicyCount").toString())
+						.expiryPolicyPremium(premium.get("expiry_premium")==null?"0":df.format(premium.get("expiry_premium")))
+						.activePremium(premium.get("active_premium")==null?"0":df.format(premium.get("active_premium")))
+						.build();
+				return boardRes;
+			}).collect(Collectors.toList());
+			
+			response.setCommonResponse(resList);
+			response.setMessage("SUCCESS");
+			response.setErrorMessage(Collections.EMPTY_LIST);
 			
 		}catch (Exception e) {
 			e.printStackTrace();
+			log.error(e);
 		}
-		return null;
+		return response;
 	}
 
 	@Override
 	public CommonRes getAllPolicy(EmbeddedDashBoardReq req) {
+		CommonRes response = new CommonRes();
 		try {
+			Date date = new Date();
+			String pattern = "#####0.00";
+			DecimalFormat df = new DecimalFormat(pattern);
+			List<Map<String,Object>> list =embeddedRepository.getAllPolicy(req.getLoginId(), req.getCompanyId(), req.getProductId() , req.getStartDate(), req.getEndDate());
+			List<EmbeddedDashBoardRes> resList = list.stream().map(premium ->{
+				String plan_desc =premium.get("plan_desc")==null?"":premium.get("plan_desc").toString();
+				EmbeddedDashBoardRes boardRes =EmbeddedDashBoardRes.builder()
+						.planName(plan_desc)
+						.planOpted(premium.get("plan_opted")==null?"0":premium.get("plan_opted").toString())
+						.requestReferenceNumber(premium.get("request_reference_no")==null?"0":premium.get("request_reference_no").toString())
+						.companyId(req.getCompanyId())
+						.loginId(req.getLoginId())
+						.policyNo(premium.get("policyNo")==null?"0":premium.get("policyNo").toString())
+						.mobileCode(premium.get("mobile_code")==null?"0":premium.get("mobile_code").toString())
+						.mobileNo(premium.get("mobile_no")==null?"0":premium.get("mobile_no").toString())
+						.sectionId(premium.get("section_id")==null?"0":premium.get("section_id").toString())
+						.clientTransactionNo(premium.get("client_transaction_no")==null?"0":premium.get("client_transaction_no").toString())
+						.customerName(premium.get("customer_name")==null?"":premium.get("customer_name").toString())
+						.productId(req.getProductId())
+						.amountPaid(premium.get("amount_paid")==null?"0":df.format(premium.get("amount_paid")))
+						.premium(premium.get("premium")==null?"0":df.format(premium.get("premium")))
+						.commissionPercentage(premium.get("commission_percentage")==null?"0":df.format(premium.get("commission_percentage")))
+						.commissionAmount(premium.get("commission_amount")==null?"0":df.format(premium.get("commission_amount")))
+						.taxPercentage(premium.get("tax_percentage")==null?"0":df.format(premium.get("tax_percentage")))
+						.taxPremium(premium.get("tax_premium")==null?"0":df.format(premium.get("tax_premium")))
+						.overAllPremium(premium.get("overall_premium")==null?"0":df.format(premium.get("overall_premium")))
+						.totalPolicy(premium.get("total_policy")==null?"0":premium.get("total_policy").toString())
+						.overAllComiPremium(premium.get("total_commission_amount")==null?"0":df.format(premium.get("total_commission_amount")))
+						.overAllTaxPremium(premium.get("total_tax_premium")==null?"0":df.format(premium.get("total_tax_premium")))
+						.activePolicyCount(premium.get("activePolicyCount")==null?"0":premium.get("activePolicyCount").toString())
+						.expiryPolicyCount(premium.get("expiryPolicyCount")==null?"0":premium.get("expiryPolicyCount").toString())
+						.expiryPolicyPremium(premium.get("expiry_premium")==null?"0":df.format(premium.get("expiry_premium")))
+						.activePremium(premium.get("active_premium")==null?"0":df.format(premium.get("active_premium")))
+						.build();
+					return boardRes;
+			}).collect(Collectors.toList());
+			
+			response.setCommonResponse(resList);
+			response.setMessage("SUCCESS");
+			response.setErrorMessage(Collections.EMPTY_LIST);
+
+
 			//embeddedRepository.findByCompanyIdAnd
 		}catch (Exception e) {
 			e.printStackTrace();
+			log.error(e);
 		}
-		return null;
+		return response;
+	}
+
+	@Override
+	public CommonRes getExpiredPolicy(EmbeddedDashBoardReq req) {
+		CommonRes response = new CommonRes();
+		try {
+			Date date = new Date();
+			String pattern = "#####0.00";
+			DecimalFormat df = new DecimalFormat(pattern);
+			List<Map<String,Object>> list = embeddedRepository.getExpiredPolicy(req.getLoginId(), req.getCompanyId(), req.getProductId() , req.getStartDate(), req.getEndDate());
+			List<EmbeddedDashBoardRes> resList = list.stream().map(premium ->{
+				String plan_desc =premium.get("plan_desc")==null?"":premium.get("plan_desc").toString();
+				EmbeddedDashBoardRes boardRes =EmbeddedDashBoardRes.builder()
+						.planName(plan_desc)
+						.planOpted(premium.get("plan_opted")==null?"0":premium.get("plan_opted").toString())
+						.requestReferenceNumber(premium.get("request_reference_no")==null?"0":premium.get("request_reference_no").toString())
+						.companyId(req.getCompanyId())
+						.loginId(req.getLoginId())
+						.policyNo(premium.get("policyNo")==null?"0":premium.get("policyNo").toString())
+						.mobileCode(premium.get("mobile_code")==null?"0":premium.get("mobile_code").toString())
+						.mobileNo(premium.get("mobile_no")==null?"0":premium.get("mobile_no").toString())
+						.sectionId(premium.get("section_id")==null?"0":premium.get("section_id").toString())
+						.clientTransactionNo(premium.get("client_transaction_no")==null?"0":premium.get("client_transaction_no").toString())
+						.customerName(premium.get("customer_name")==null?"":premium.get("customer_name").toString())
+						.productId(req.getProductId())
+						.amountPaid(premium.get("amount_paid")==null?"0":df.format(premium.get("amount_paid")))
+						.premium(premium.get("premium")==null?"0":df.format(premium.get("premium")))
+						.commissionPercentage(premium.get("commission_percentage")==null?"0":df.format(premium.get("commission_percentage")))
+						.commissionAmount(premium.get("commission_amount")==null?"0":df.format(premium.get("commission_amount")))
+						.taxPercentage(premium.get("tax_percentage")==null?"0":df.format(premium.get("tax_percentage")))
+						.taxPremium(premium.get("tax_premium")==null?"0":df.format(premium.get("tax_premium")))
+						.overAllPremium(premium.get("overall_premium")==null?"0":df.format(premium.get("overall_premium")))
+						.totalPolicy(premium.get("total_policy")==null?"0":premium.get("total_policy").toString())
+						.overAllComiPremium(premium.get("total_commission_amount")==null?"0":df.format(premium.get("total_commission_amount")))
+						.overAllTaxPremium(premium.get("total_tax_premium")==null?"0":df.format(premium.get("total_tax_premium")))
+						.activePolicyCount(premium.get("activePolicyCount")==null?"0":premium.get("activePolicyCount").toString())
+						.expiryPolicyCount(premium.get("expiryPolicyCount")==null?"0":premium.get("expiryPolicyCount").toString())
+						.expiryPolicyPremium(premium.get("expiry_premium")==null?"0":df.format(premium.get("expiry_premium")))
+						.activePremium(premium.get("active_premium")==null?"0":df.format(premium.get("active_premium")))
+						.build();
+					return boardRes;
+			}).collect(Collectors.toList());
+			
+			response.setCommonResponse(resList);
+			response.setMessage("SUCCESS");
+			response.setErrorMessage(Collections.EMPTY_LIST);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error(e);
+		}
+		return response;
 	}
 	
 	

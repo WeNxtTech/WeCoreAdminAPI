@@ -16,4 +16,6 @@ public interface EmbeddedService {
 
 	CommonRes getAllPolicy(EmbeddedDashBoardReq req);
 
+	CommonRes getExpiredPolicy(EmbeddedDashBoardReq req);
+
 }

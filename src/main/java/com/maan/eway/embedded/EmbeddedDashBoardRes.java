@@ -39,4 +39,45 @@ public class EmbeddedDashBoardRes {
 	
 	@JsonProperty("ExpiryPolicyCount")
 	private String expiryPolicyCount;
+	
+	@JsonProperty("RequestReferenceNumber")
+	private String requestReferenceNumber;
+	
+	@JsonProperty("PolicyNo")
+	private String policyNo;
+	
+	@JsonProperty("MobileCode")
+	private String mobileCode;
+	
+	@JsonProperty("MobileNo")
+	private String mobileNo;
+	
+	@JsonProperty("SectionId")
+	private String sectionId;
+	
+	@JsonProperty("ClientTransactionNo")
+	private String clientTransactionNo;
+	
+	@JsonProperty("CustomerName")
+	private String customerName;
+	
+	@JsonProperty("AmountPaid")
+	private String amountPaid;
+	
+	@JsonProperty("Premium")
+	private String premium;
+	
+	@JsonProperty("CommissionPercentage")
+	private String commissionPercentage;
+	
+	@JsonProperty("CommissionAmount")
+	private String commissionAmount;
+	
+	@JsonProperty("TaxPercentage")
+	private String taxPercentage;
+	
+	@JsonProperty("TaxPremium")
+	private String taxPremium;
+	
+	
 }

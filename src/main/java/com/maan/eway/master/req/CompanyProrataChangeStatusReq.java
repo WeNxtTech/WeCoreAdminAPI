@@ -22,7 +22,8 @@ public class CompanyProrataChangeStatusReq {
 	 @JsonFormat(pattern = "dd/MM/yyyy")
 	 @JsonProperty("EffectiveDateStart")
 	 private Date effectiveDateStart;
-	 
+	 @JsonProperty("PolicyTypeId")
+	 private String   policyTypeId;
 	 @JsonProperty("Status")
 	 private String status;
 }

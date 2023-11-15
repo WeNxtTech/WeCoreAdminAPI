@@ -393,4 +393,7 @@ public class MsAssetDetails implements Serializable {
     
     @Column(name="CARPETS_SI_LC")
     private BigDecimal carpetsSiLc  ;
+    
+    @Column(name="INSURANCE_CLASS", length=10)
+    private String     insuranceClass ;    
 }

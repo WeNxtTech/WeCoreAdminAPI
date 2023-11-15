@@ -365,8 +365,8 @@ public List<Error> validateCompanyProrata(CompanyProrataSaveReq req) {
 			Predicate a2 = cb.equal(ocpm1.get("insuranceid"), b.get("insuranceid"));
 //			Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
 			Predicate a4 = cb.equal(ocpm1.get("productid"), b.get("productid"));
-
-			amendId.where(a1, a2,a4);
+			Predicate a3 = cb.equal(ocpm1.get("policyTypeId"), b.get("policyTypeId"));
+			amendId.where(a1, a2,a4,a3);
 			
 			
 			
@@ -379,10 +379,10 @@ public List<Error> validateCompanyProrata(CompanyProrataSaveReq req) {
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("insuranceid"), req.getCompanyId());
 //			Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
-		
+			Predicate n3 = cb.equal(b.get("policyTypeId"), StringUtils.isBlank(req.getPolicyTypeId()) ? "99999" :req.getPolicyTypeId() );
 			Predicate n6 = cb.equal(b.get("productid"), req.getProductId());
 
-			query.where(n1,n2,n6).orderBy(orderList);
+			query.where(n1,n2,n3,n6).orderBy(orderList);
 			
 			
 			
@@ -431,10 +431,10 @@ public List<Error> validateCompanyProrata(CompanyProrataSaveReq req) {
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("sno"), b.get("sno"));
 			Predicate a2 = cb.equal(ocpm1.get("insuranceid"), b.get("insuranceid"));
-		
+			Predicate a3 = cb.equal(ocpm1.get("policyTypeId"), b.get("policyTypeId"));
 			Predicate a4 = cb.equal(ocpm1.get("productid"), b.get("productid"));
 
-			effectiveDate.where(a1,a2,a4);
+			effectiveDate.where(a1,a2,a4,a3);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -444,11 +444,12 @@ public List<Error> validateCompanyProrata(CompanyProrataSaveReq req) {
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("insuranceid"), req.getCompanyId());
 			Predicate n3 = cb.equal(b.get("productid"), req.getProductId());
+			Predicate n5 = cb.equal(b.get("policyTypeId"), StringUtils.isBlank(req.getPolicyTypeId()) ? "99999" :req.getPolicyTypeId() );
 			Predicate n4 = cb.equal(b.get("status"), "Y");
 
 			
 		
-			query.where(n1,n2,n3,n4).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CompanyProrataMaster> result = em.createQuery(query);
@@ -504,7 +505,8 @@ public List<Error> validateCompanyProrata(CompanyProrataSaveReq req) {
 			Predicate a1 = cb.equal(ocpm1.get("sno"), b.get("sno"));
 			Predicate a2 = cb.equal(ocpm1.get("insuranceid"), b.get("insuranceid"));
 			Predicate a3 = cb.equal(ocpm1.get("productid"),b.get("productid"));
-			amendId.where(a1, a2,a3);
+			Predicate a5 = cb.equal(ocpm1.get("policyTypeId"), b.get("policyTypeId"));
+			amendId.where(a1, a2,a3,a5);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -515,10 +517,10 @@ public List<Error> validateCompanyProrata(CompanyProrataSaveReq req) {
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("productid"), req.getProductId());
 			Predicate n3 = cb.equal(b.get("insuranceid"), req.getCompanyId());
-		
+			Predicate n5 = cb.equal(b.get("policyTypeId"), StringUtils.isBlank(req.getPolicyTypeId()) ? "99999" :req.getPolicyTypeId() );
 			
 			
-			query.where(n1,n2,n3).orderBy(orderList);
+			query.where(n1,n2,n3,n5).orderBy(orderList);
 			
 
 			// Get Result
@@ -589,8 +591,8 @@ public List<Error> validateCompanyProrata(CompanyProrataSaveReq req) {
 			Predicate a1 = cb.equal(ocpm1.get("sno"), b.get("sno"));
 			Predicate a2 = cb.equal(ocpm1.get("insuranceid"), b.get("insuranceid"));
 			Predicate a4 = cb.equal(ocpm1.get("productid"), b.get("productid"));
-			
-			amendId.where(a1, a2,a4);
+			Predicate a5 = cb.equal(ocpm1.get("policyTypeId"), b.get("policyTypeId"));
+			amendId.where(a1, a2,a4,a5);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -604,8 +606,8 @@ public List<Error> validateCompanyProrata(CompanyProrataSaveReq req) {
 		//	Predicate n5 = cb.equal(b.get("insuranceid"), "99999");
 		//	Predicate n6 = cb.or(n3,n5);
 			Predicate n7 = cb.equal(b.get("productid"), req.getProductId() );
-					
-			query.where(n1,n4,n3,n7).orderBy(orderList);
+			Predicate n5 = cb.equal(b.get("policyTypeId"), StringUtils.isBlank(req.getPolicyTypeId()) ? "99999" :req.getPolicyTypeId() );
+			query.where(n1,n4,n3,n7,n5).orderBy(orderList);
 	
 			// Get Result 
 			TypedQuery<CompanyProrataMaster> result = em.createQuery(query);

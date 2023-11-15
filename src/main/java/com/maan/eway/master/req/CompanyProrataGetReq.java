@@ -19,5 +19,6 @@ public class CompanyProrataGetReq implements Serializable {
     private String     companyId     ;
 	@JsonProperty("Sno")
     private String     sno;
-    
+	@JsonProperty("PolicyTypeId")
+	 private String   policyTypeId;
 }

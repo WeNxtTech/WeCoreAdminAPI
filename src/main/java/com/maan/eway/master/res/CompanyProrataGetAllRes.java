@@ -32,7 +32,10 @@ public class CompanyProrataGetAllRes implements Serializable {
 
 	@JsonProperty("EndTo")
 	private String endto;
-
+	
+	
+	@JsonProperty("PolicyTypeId")
+	 private String   policyTypeId;
 	@JsonProperty("Percent")
 	private String percent;
     

@@ -207,7 +207,8 @@ public List<Error> validateCompanyProrata(CompanyProrataSaveReq req) {
 			Predicate a1 = cb.equal(ocpm1.get("insuranceid"), b.get("insuranceid"));
 			Predicate a2 = cb.equal(ocpm1.get("productid"), b.get("productid"));
 			Predicate a3 = cb.equal(ocpm1.get("sno"), b.get("sno"));
-			maxAmendId.where(a1,a2,a3);
+			Predicate a4 = cb.equal(ocpm1.get("policyTypeId"), b.get("policyTypeId"));
+			maxAmendId.where(a1,a2,a3,a4);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -217,7 +218,8 @@ public List<Error> validateCompanyProrata(CompanyProrataSaveReq req) {
 			Predicate n1 = cb.equal(b.get("insuranceid"), req.getCompanyId());
 			Predicate n2 = cb.equal(b.get("productid"), req.getProductId());
 			Predicate n3 = cb.equal(b.get("amendId"), maxAmendId);
-			query.where(n1,n2,n3).orderBy(orderList);
+			Predicate n4 = cb.equal(b.get("policyTypeId"),  StringUtils.isBlank(req.getPolicyTypeId()) ? "99999" :req.getPolicyTypeId());
+			query.where(n1,n2,n3,n4).orderBy(orderList);
 			
 			// Get Result 
 			TypedQuery<CompanyProrataMaster> result = em.createQuery(query);
@@ -277,7 +279,7 @@ public List<Error> validateCompanyProrata(CompanyProrataSaveReq req) {
 				saveData.setAmendId(amendId);
 				saveData.setInsuranceid(req.getCompanyId());
 				saveData.setStatus(data.getStatus());	
-				
+				saveData.setPolicyTypeId(StringUtils.isBlank(req.getPolicyTypeId()) ? 99999 :Integer.valueOf(req.getPolicyTypeId()) );
 				prorataRepo.saveAndFlush(saveData);
 				log.info("Saved Details is ---> " + json.toJson(saveData));
 				

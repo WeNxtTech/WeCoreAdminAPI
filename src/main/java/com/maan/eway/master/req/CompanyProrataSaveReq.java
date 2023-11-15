@@ -32,6 +32,9 @@ public class CompanyProrataSaveReq implements Serializable {
     @JsonProperty("CreatedBy")
     private String   createdBy ;
     
+    @JsonProperty("PolicyTypeId")
+    private String   policyTypeId;
+    
     @JsonProperty("ProrataDetails")
     private List<ProrataMultiInsertReq> ProrataMultiInsertReq ; 
     

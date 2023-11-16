@@ -199,7 +199,7 @@ public class JpqlQueryServiceImpl {
 			CriteriaQuery<Tuple> query =cb.createTupleQuery();
 			Root<GroupMedicalDetails> gmd =query.from(GroupMedicalDetails.class);
 			
-			predicates.add(cb.equal(gmd.get("loginId"), req.getLoginId()));
+			//predicates.add(cb.equal(gmd.get("loginId"), req.getLoginId()));
 			predicates.add(cb.equal(gmd.get("companyId"), req.getCompanyId()));
 			predicates.add(cb.equal(gmd.get("productId"), Long.valueOf(req.getProductId())));
 			predicates.add(cb.equal(gmd.get("status"), "Y"));
@@ -250,7 +250,7 @@ public class JpqlQueryServiceImpl {
 					.alias("taxPercentage"),gmd.get("taxPremium").alias("taxPremium"),gmd.get("overallPremium").alias("overallPremium"),
 					gmd.get("mobileCode").alias("mobileCode"),planType.select(liv.get("itemValue")).where(
 							cb.equal(liv.get("itemType"), "PLAN_OPTED"),cb.equal(gmd.get("planOpted"), liv.get("itemCode")),
-							cb.equal(gmd.get("status"), "Y")).alias("planTypeDesc")
+							cb.equal(liv.get("status"), "Y")).alias("planTypeDesc")
 					
 					).where(predicateArray).orderBy(cb.desc(gmd.get("entryDate")));
 			

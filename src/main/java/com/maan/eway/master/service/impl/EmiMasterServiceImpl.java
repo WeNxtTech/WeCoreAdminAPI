@@ -16,6 +16,8 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -175,13 +177,22 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			}
 			if (StringUtils.isBlank(req.getAdvancePercent())) {
 				errorList.add(new Error("10", "AdvancePercent", "Please Enter AdvancePercent"));
-			}else if (Integer.valueOf(req.getAdvancePercent())>100) {
+			}else if (Double.valueOf(req.getAdvancePercent())>100.0) {
 				errorList.add(new Error("10", "AdvancePercent", "Please Enter AdvancePercent Less that or equal to 100"));
-			}else if (Integer.valueOf(req.getAdvancePercent())<0 ) {
+			}else if (Double.valueOf(req.getAdvancePercent())<0.0 ) {
 				errorList.add(new Error("10", "AdvancePercent", "Please Enter AdvancePercent Should Br Greater than 0"));
-			}else if (!req.getAdvancePercent().matches("[0-9.]+")) {
-				errorList.add(new Error("10", "AdvancePercent", "Please Enter Valid Number In AdvancePercent"));
+			}else if (StringUtils.isNotBlank(req.getAdvancePercent())) {
+				String input = req.getAdvancePercent();
+
+				Pattern pat = Pattern.compile("^[0-9]*\\.?[0-9]+$");
+				Matcher mat = pat.matcher(input);
+				if (!mat.matches()) {
+					errorList.add(new Error("10", "AdvancePercent", "Please Enter Valid Number In AdvancePercent"));
+				}
 			}
+//			}else if (!req.getAdvancePercent().matches("[0-9.]+")) {
+//				errorList.add(new Error("10", "AdvancePercent", "Please Enter Valid Number In AdvancePercent"));
+//			}
 
 		} catch (Exception e) {
 			log.error(e);

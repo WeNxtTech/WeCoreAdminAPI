@@ -63,4 +63,7 @@ public class EmbeddedPolicyGridRes {
 	
 	private String activePremium;
 	
+	@JsonProperty("FilePath")
+	private String filePath;
+	
 }

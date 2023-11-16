@@ -195,7 +195,7 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 				filterList =list.stream()
 						.filter(p ->p.get("typ").toString().equalsIgnoreCase(req.getPreimumType()))
 						.collect(Collectors.toList());
-			}else if("EXPIRY".equalsIgnoreCase(req.getPreimumType())) {
+			}else if("EXPIRED".equalsIgnoreCase(req.getPreimumType())) {
 			
 				filterList =list.stream()
 						.filter(p ->p.get("typ").toString().equalsIgnoreCase(req.getPreimumType()))

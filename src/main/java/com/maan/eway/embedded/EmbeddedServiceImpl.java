@@ -264,6 +264,7 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 						.expiryPolicyCount(premium.get("expiryPolicyCount")==null?"0":premium.get("expiryPolicyCount").toString())
 						.expiryPolicyPremium(premium.get("expiry_premium")==null?"0":df.format(premium.get("expiry_premium")))
 						.activePremium(premium.get("active_premium")==null?"0":df.format(premium.get("active_premium")))
+						.filePath(premium.get("pdf_path")==null?"0":df.format(premium.get("pdf_path")))
 						.build();
 				return boardRes;
 			}).collect(Collectors.toList());
@@ -316,6 +317,7 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 						.expiryPolicyCount(premium.get("expiryPolicyCount")==null?"0":premium.get("expiryPolicyCount").toString())
 						.expiryPolicyPremium(premium.get("expiry_premium")==null?"0":df.format(premium.get("expiry_premium")))
 						.activePremium(premium.get("active_premium")==null?"0":df.format(premium.get("active_premium")))
+						.filePath(premium.get("pdf_path")==null?"0":df.format(premium.get("pdf_path")))
 						.build();
 					return boardRes;
 			}).collect(Collectors.toList());
@@ -368,6 +370,7 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 						.expiryPolicyCount(premium.get("expiryPolicyCount")==null?"0":premium.get("expiryPolicyCount").toString())
 						.expiryPolicyPremium(premium.get("expiry_premium")==null?"0":df.format(premium.get("expiry_premium")))
 						.activePremium(premium.get("active_premium")==null?"0":df.format(premium.get("active_premium")))
+						.filePath(premium.get("pdf_path")==null?"0":df.format(premium.get("pdf_path")))
 						.build();
 					return boardRes;
 			}).collect(Collectors.toList());

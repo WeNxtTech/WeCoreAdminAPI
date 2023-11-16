@@ -67,13 +67,13 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 							.policyEndDate(p.get("expiryDate")==null?"":sdf.format(p.get("expiryDate")))
 							.policyStartDate(p.get("inceptionDate")==null?"":sdf.format(p.get("inceptionDate")))
 							.policyNo(p.get("policyNo")==null?"":p.get("policyNo").toString())
-							.premium(p.get("premium")==null?"":df.format(p.get("premium")))
+							.premium(p.get("premium")==null?"0":df.format(p.get("premium")))
 							.requestReferenceNo(p.get("requestReferenceNo")==null?"":p.get("requestReferenceNo").toString())
-							.taxPremium(p.get("taxPremium")==null?"":df.format(p.get("taxPremium")))
+							.taxPremium(p.get("taxPremium")==null?"0":df.format(p.get("taxPremium")))
 							.transactionNo(p.get("clientTransactionNo")==null?"":p.get("clientTransactionNo").toString())
-							.commissionAmt(p.get("commissionAmount")==null?"":df.format(p.get("commissionAmount")))
+							.commissionAmt(p.get("commissionAmount")==null?"0":df.format(p.get("commissionAmount")))
 							.taxPercentage(p.get("taxPercentage")==null?"":p.get("taxPercentage").toString())
-							.commissionPercentage(p.get("commissionPercentage")==null?"":p.get("commissionPercentage").toString())
+							.commissionPercentage(p.get("commissionPercentage")==null?"0":p.get("commissionPercentage").toString())
 							.responsePeriod(p.get("responsePeriod")==null?"":p.get("responsePeriod").toString())
 							.mobileCode(p.get("mobileCode")==null?"":p.get("mobileCode").toString())
 							.overAllPremium(p.get("overallPremium")==null?"":df.format(p.get("overallPremium")))
@@ -158,15 +158,15 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 					
 			
 			EmbeddedDashBoardRes boardRes =EmbeddedDashBoardRes.builder()
-					.activePremium(active.get("total_premium")==null?"":df.format(active.get("total_premium")))
+					.activePremium(active.get("total_premium")==null?"0":df.format(active.get("total_premium")))
 					.companyId(req.getCompanyId())
 					.loginId(req.getLoginId())
-					.overAllPremium(overAll.get("total_premium")==null?"":df.format(overAll.get("total_premium")))
+					.overAllPremium(overAll.get("total_premium")==null?"0":df.format(overAll.get("total_premium")))
 					.productId(req.getProductId())
-					.totalPolicy(overAll.get("total_policy")==null?"":overAll.get("total_policy").toString())
-					.activePolicyCount(active.get("total_policy")==null?"":active.get("total_policy").toString())
-					.expiryPolicyCount(expiry.get("total_policy")==null?"":expiry.get("total_policy").toString())
-					.expiryPolicyPremium(expiry.get("total_premium")==null?"":df.format(expiry.get("total_premium")))
+					.totalPolicy(overAll.get("total_policy")==null?"0":overAll.get("total_policy").toString())
+					.activePolicyCount(active.get("total_policy")==null?"0":active.get("total_policy").toString())
+					.expiryPolicyCount(expiry.get("total_policy")==null?"0":expiry.get("total_policy").toString())
+					.expiryPolicyPremium(expiry.get("total_premium")==null?"0":df.format(expiry.get("total_premium")))
 					.build();
 			response.setCommonResponse(boardRes);
 			response.setMessage("SUCCESS");
@@ -209,10 +209,11 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 						boardRes.setCompanyId(p.get("company_id")==null?"":p.get("company_id").toString());
 						boardRes.setLoginId(p.get("login_id")==null?"":p.get("login_id").toString());
 						boardRes.setPlanId(p.get("plan_opted")==null?"":p.get("plan_opted").toString());
-						boardRes.setPremium(p.get("total_premium")==null?"":df.format(p.get("total_premium")));
+						boardRes.setPremium(p.get("total_premium")==null?"0":df.format(p.get("total_premium")));
 						boardRes.setProductId(req.getProductId());
-						boardRes.setTotalPolicy(p.get("total_policy")==null?"":p.get("total_policy").toString());
-						boardRes.setPlanType(p.get("plan_desc")==null?"":p.get("plan_desc").toString());
+						boardRes.setTotalPolicy(p.get("total_policy")==null?"0":p.get("total_policy").toString());
+						boardRes.setPlanType(p.get("plan_desc")==null?"0":p.get("plan_desc").toString());
+						boardRes.setCommissionPremium(p.get("total_commission_amount")==null?"0":p.get("total_commission_amount").toString());
 						boardRes.setPremiumType(req.getPreimumType());
 						return boardRes;
 					}).collect(Collectors.toList());
@@ -236,9 +237,8 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 			List<Map<String,Object>> list =embeddedRepository.getActivePolicy(req.getLoginId(), req.getCompanyId(), req.getProductId() ,
 					req.getStartDate(), req.getEndDate(),req.getPlanId());
 			List<EmbeddedPolicyGridRes> resList = list.stream().map(premium ->{
-				String plan_desc =premium.get("plan_desc")==null?"":premium.get("plan_desc").toString();
 				EmbeddedPolicyGridRes boardRes =EmbeddedPolicyGridRes.builder()
-						.planName(plan_desc)
+						.planName(premium.get("plan_desc")==null?"0":premium.get("plan_desc").toString())
 						.planOpted(premium.get("plan_opted")==null?"0":premium.get("plan_opted").toString())
 						.requestReferenceNumber(premium.get("request_reference_no")==null?"0":premium.get("request_reference_no").toString())
 						.companyId(req.getCompanyId())
@@ -289,9 +289,8 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 			List<Map<String,Object>> list =embeddedRepository.getAllPolicy(req.getLoginId(), req.getCompanyId(), req.getProductId() 
 					, req.getStartDate(), req.getEndDate(),req.getPlanId());
 			List<EmbeddedPolicyGridRes> resList = list.stream().map(premium ->{
-				String plan_desc =premium.get("plan_desc")==null?"":premium.get("plan_desc").toString();
 				EmbeddedPolicyGridRes boardRes =EmbeddedPolicyGridRes.builder()
-						.planName(plan_desc)
+						.planName(premium.get("plan_desc")==null?"0":premium.get("plan_desc").toString())
 						.planOpted(premium.get("plan_opted")==null?"0":premium.get("plan_opted").toString())
 						.requestReferenceNumber(premium.get("request_reference_no")==null?"0":premium.get("request_reference_no").toString())
 						.companyId(req.getCompanyId())
@@ -338,14 +337,12 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 	public CommonRes getExpiredPolicy(EmbeddedDashBoardReq req) {
 		CommonRes response = new CommonRes();
 		try {
-			Date date = new Date();
 			String pattern = "#####0.00";
 			DecimalFormat df = new DecimalFormat(pattern);
 			List<Map<String,Object>> list = embeddedRepository.getExpiredPolicy(req.getLoginId(), req.getCompanyId(), req.getProductId() , req.getStartDate(), req.getEndDate(),req.getPlanId());
 			List<EmbeddedPolicyGridRes> resList = list.stream().map(premium ->{
-				String plan_desc =premium.get("plan_desc")==null?"":premium.get("plan_desc").toString();
 				EmbeddedPolicyGridRes boardRes =EmbeddedPolicyGridRes.builder()
-						.planName(plan_desc)
+						.planName(premium.get("plan_desc")==null?"":premium.get("plan_desc").toString())
 						.planOpted(premium.get("plan_opted")==null?"0":premium.get("plan_opted").toString())
 						.requestReferenceNumber(premium.get("request_reference_no")==null?"0":premium.get("request_reference_no").toString())
 						.companyId(req.getCompanyId())

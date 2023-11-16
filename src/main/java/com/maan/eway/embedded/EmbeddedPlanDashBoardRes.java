@@ -39,5 +39,7 @@ public class EmbeddedPlanDashBoardRes {
 	@JsonProperty("PremiumType")
 	private String premiumType;
 	
-
+	@JsonProperty("CommissionPremium")
+	private String commissionPremium;
+	
 }

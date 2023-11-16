@@ -172,9 +172,19 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 				errorList.add(new Error("09", "InterestPercent", "Please Enter InterestPercent Less that or equal to 100"));
 			}else if (Integer.valueOf(req.getInterestPercent())<0 ) {
 				errorList.add(new Error("09", "InterestPercent", "Please Enter InterestPercent Should Br Greater than 0"));
-			}else if (!req.getInterestPercent().matches("[0-9.]+")) {
+			}
+			else if (!req.getInterestPercent().matches("[0-9.]+")) {
 				errorList.add(new Error("09", "InterestPercent", "Please Enter Valid Number In InterestPercent"));
 			}
+//			else if (StringUtils.isNotBlank(req.getInterestPercent())) {
+//				String input = req.getInterestPercent();
+//
+//				Pattern pat = Pattern.compile("^[0-9]*\\.?[0-9]+$");
+//				Matcher mat = pat.matcher(input);
+//				if (!mat.matches()) {
+//					errorList.add(new Error("09", "InterestPercent", "Please Enter Valid Number In InterestPercent"));
+//				}
+//			}
 			if (StringUtils.isBlank(req.getAdvancePercent())) {
 				errorList.add(new Error("10", "AdvancePercent", "Please Enter AdvancePercent"));
 			}else if (Double.valueOf(req.getAdvancePercent())>100.0) {
@@ -347,7 +357,11 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			saveData.setEmiId(Integer.valueOf(emiId));
 			saveData.setEffectiveDateStart(startDate);
 			saveData.setPolicyType(req.getPolicyType());
-			saveData.setPolicyDesc(policyTypeDesc);
+			if("99999".equalsIgnoreCase(req.getPolicyType())) {
+				saveData.setPolicyDesc("ALL");
+			}else {
+				saveData.setPolicyDesc(policyTypeDesc);
+			}
 			saveData.setEffectiveDateEnd(endDate);
 			saveData.setCreatedBy(createdBy);
 			saveData.setStatus(req.getStatus());
@@ -440,7 +454,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			Predicate a3 = cb.equal(ocpm1.get("productId"),b.get("productId"));
 			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 
-			query.where(a1, a2,a3,a4);
+			amendId.where(a1,a2,a3,a4);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();

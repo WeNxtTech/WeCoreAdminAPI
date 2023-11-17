@@ -2,6 +2,8 @@ package com.maan.eway.embedded;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -231,11 +233,20 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 	@Override
 	public CommonRes getActivePolicy(EmbeddedDashBoardReq req) {
 		CommonRes response = new CommonRes();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		try {
+			String startDate= sdf.format(req.getStartDate());
+	        String endDate= sdf.format(req.getEndDate());
+
+	    
+	        LocalDate date1 = LocalDate.parse(startDate);
+	        LocalDate date2 = LocalDate.parse(endDate);
+	        // Calculate the number of days between the two dates
+	        long noOfDays = ChronoUnit.DAYS.between(date1, date2);
 			String pattern = "#####0.00";
 			DecimalFormat df = new DecimalFormat(pattern);
 			List<Map<String,Object>> list =embeddedRepository.getActivePolicy(req.getLoginId(), req.getCompanyId(), req.getProductId() ,
-					req.getStartDate(), req.getEndDate(),req.getPlanId());
+					req.getStartDate(), req.getEndDate(), req.getPlanId());
 			List<EmbeddedPolicyGridRes> resList = list.stream().map(premium ->{
 				EmbeddedPolicyGridRes boardRes =EmbeddedPolicyGridRes.builder()
 						.planName(premium.get("plan_desc")==null?"0":premium.get("plan_desc").toString())
@@ -264,7 +275,10 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 						.expiryPolicyCount(premium.get("expiryPolicyCount")==null?"0":premium.get("expiryPolicyCount").toString())
 						.expiryPolicyPremium(premium.get("expiry_premium")==null?"0":df.format(premium.get("expiry_premium")))
 						.activePremium(premium.get("active_premium")==null?"0":df.format(premium.get("active_premium")))
+						.noOfDays(noOfDays)
 						.filePath(premium.get("pdf_path")==null?"0":(String)premium.get("pdf_path"))
+						.startDate(req.getStartDate())
+						.endDate(req.getEndDate())
 						.build();
 				return boardRes;
 			}).collect(Collectors.toList());
@@ -283,7 +297,16 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 	@Override
 	public CommonRes getAllPolicy(EmbeddedDashBoardReq req) {
 		CommonRes response = new CommonRes();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		try {
+			String startDate= sdf.format(req.getStartDate());
+	        String endDate= sdf.format(req.getEndDate());
+
+	    
+	        LocalDate date1 = LocalDate.parse(startDate);
+	        LocalDate date2 = LocalDate.parse(endDate);
+	        // Calculate the number of days between the two dates
+	        long noOfDays = ChronoUnit.DAYS.between(date1, date2);
 			Date date = new Date();
 			String pattern = "#####0.00";
 			DecimalFormat df = new DecimalFormat(pattern);
@@ -296,7 +319,7 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 						.requestReferenceNumber(premium.get("request_reference_no")==null?"0":premium.get("request_reference_no").toString())
 						.companyId(req.getCompanyId())
 						.loginId(req.getLoginId())
-						.policyNo(premium.get("policyNo")==null?"0":premium.get("policyNo").toString())
+						.policyNo(premium.get("policy_no")==null?"0":premium.get("policy_no").toString())
 						.mobileCode(premium.get("mobile_code")==null?"0":premium.get("mobile_code").toString())
 						.mobileNo(premium.get("mobile_no")==null?"0":premium.get("mobile_no").toString())
 						.sectionId(premium.get("section_id")==null?"0":premium.get("section_id").toString())
@@ -317,6 +340,9 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 						.expiryPolicyCount(premium.get("expiryPolicyCount")==null?"0":premium.get("expiryPolicyCount").toString())
 						.expiryPolicyPremium(premium.get("expiry_premium")==null?"0":df.format(premium.get("expiry_premium")))
 						.activePremium(premium.get("active_premium")==null?"0":df.format(premium.get("active_premium")))
+						.startDate(req.getStartDate())
+						.endDate(req.getEndDate())
+						.noOfDays(noOfDays)
 						.filePath(premium.get("pdf_path")==null?"0":(String)premium.get("pdf_path"))
 						.build();
 					return boardRes;
@@ -338,7 +364,16 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 	@Override
 	public CommonRes getExpiredPolicy(EmbeddedDashBoardReq req) {
 		CommonRes response = new CommonRes();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		try {
+			String startDate= sdf.format(req.getStartDate());
+	        String endDate= sdf.format(req.getEndDate());
+
+	    
+	        LocalDate date1 = LocalDate.parse(startDate);
+	        LocalDate date2 = LocalDate.parse(endDate);
+	        // Calculate the number of days between the two dates
+	        long noOfDays = ChronoUnit.DAYS.between(date1, date2);
 			String pattern = "#####0.00";
 			DecimalFormat df = new DecimalFormat(pattern);
 			List<Map<String,Object>> list = embeddedRepository.getExpiredPolicy(req.getLoginId(), req.getCompanyId(), req.getProductId() , req.getStartDate(), req.getEndDate(),req.getPlanId());
@@ -349,7 +384,7 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 						.requestReferenceNumber(premium.get("request_reference_no")==null?"0":premium.get("request_reference_no").toString())
 						.companyId(req.getCompanyId())
 						.loginId(req.getLoginId())
-						.policyNo(premium.get("policyNo")==null?"0":premium.get("policyNo").toString())
+						.policyNo(premium.get("policy_no")==null?"0":premium.get("policy_no").toString())
 						.mobileCode(premium.get("mobile_code")==null?"0":premium.get("mobile_code").toString())
 						.mobileNo(premium.get("mobile_no")==null?"0":premium.get("mobile_no").toString())
 						.sectionId(premium.get("section_id")==null?"0":premium.get("section_id").toString())
@@ -370,6 +405,9 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 						.expiryPolicyCount(premium.get("expiryPolicyCount")==null?"0":premium.get("expiryPolicyCount").toString())
 						.expiryPolicyPremium(premium.get("expiry_premium")==null?"0":df.format(premium.get("expiry_premium")))
 						.activePremium(premium.get("active_premium")==null?"0":df.format(premium.get("active_premium")))
+						.startDate(req.getStartDate())
+						.endDate(req.getEndDate())
+						.noOfDays(noOfDays)
 						.filePath(premium.get("pdf_path")==null?"0":(String)premium.get("pdf_path"))
 						.build();
 					return boardRes;

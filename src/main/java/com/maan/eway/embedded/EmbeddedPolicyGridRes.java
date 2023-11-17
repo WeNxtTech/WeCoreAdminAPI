@@ -1,5 +1,7 @@
 package com.maan.eway.embedded;
 
+import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Builder;
@@ -62,6 +64,12 @@ public class EmbeddedPolicyGridRes {
 	private String expiryPolicyCount;
 	
 	private String activePremium;
+	
+	private Date startDate;
+	
+	private Date endDate;
+	
+	private long noOfDays;
 	
 	@JsonProperty("FilePath")
 	private String filePath;

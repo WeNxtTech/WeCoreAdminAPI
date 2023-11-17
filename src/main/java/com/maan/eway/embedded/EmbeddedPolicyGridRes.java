@@ -2,6 +2,7 @@ package com.maan.eway.embedded;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Builder;
@@ -65,8 +66,10 @@ public class EmbeddedPolicyGridRes {
 	
 	private String activePremium;
 	
+	@JsonFormat(pattern="dd/MM/yyyy")
 	private Date startDate;
 	
+	@JsonFormat(pattern="dd/MM/yyyy")
 	private Date endDate;
 	
 	private long noOfDays;

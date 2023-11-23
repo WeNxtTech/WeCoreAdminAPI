@@ -66,11 +66,11 @@ public class EmbeddedPolicyGridRes {
 	
 	private String activePremium;
 	
-	@JsonFormat(pattern="dd/MM/yyyy")
-	private Date startDate;
 	
-	@JsonFormat(pattern="dd/MM/yyyy")
-	private Date endDate;
+	private String startDate;
+	
+	
+	private String endDate;
 	
 	private long noOfDays;
 	

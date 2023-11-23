@@ -1,8 +1,11 @@
 package com.maan.eway.embedded;
 
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Date;
@@ -233,21 +236,19 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 	@Override
 	public CommonRes getActivePolicy(EmbeddedDashBoardReq req) {
 		CommonRes response = new CommonRes();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		try {
-			String startDate= sdf.format(req.getStartDate());
-	        String endDate= sdf.format(req.getEndDate());
-
-	    
-	        LocalDate date1 = LocalDate.parse(startDate);
-	        LocalDate date2 = LocalDate.parse(endDate);
-	        // Calculate the number of days between the two dates
-	        long noOfDays = ChronoUnit.DAYS.between(date1, date2);
+			
 			String pattern = "#####0.00";
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+			SimpleDateFormat sdf1 = new SimpleDateFormat("dd/MM/yyyy");
 			DecimalFormat df = new DecimalFormat(pattern);
 			List<Map<String,Object>> list =embeddedRepository.getActivePolicy(req.getLoginId(), req.getCompanyId(), req.getProductId() ,
-					req.getStartDate(), req.getEndDate(), req.getPlanId());
+					sdf.format(req.getStartDate()), sdf.format(req.getEndDate()), req.getPlanId());
 			List<EmbeddedPolicyGridRes> resList = list.stream().map(premium ->{
+				Date inceptionDate=premium.get("inception_date")==null?null:(Date)premium.get("inception_date");
+				Date expiryDate=premium.get("expiry_date")==null?null:(Date)premium.get("expiry_date");
+				String strDate1 =sdf1.format(inceptionDate);
+				String strDate2 =sdf1.format(expiryDate);
 				EmbeddedPolicyGridRes boardRes =EmbeddedPolicyGridRes.builder()
 						.planName(premium.get("plan_desc")==null?"0":premium.get("plan_desc").toString())
 						.planOpted(premium.get("plan_opted")==null?"0":premium.get("plan_opted").toString())
@@ -275,10 +276,10 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 						.expiryPolicyCount(premium.get("expiryPolicyCount")==null?"0":premium.get("expiryPolicyCount").toString())
 						.expiryPolicyPremium(premium.get("expiry_premium")==null?"0":df.format(premium.get("expiry_premium")))
 						.activePremium(premium.get("active_premium")==null?"0":df.format(premium.get("active_premium")))
-						.noOfDays(noOfDays)
 						.filePath(premium.get("pdf_path")==null?"0":(String)premium.get("pdf_path"))
-						.startDate(req.getStartDate())
-						.endDate(req.getEndDate())
+						.startDate(strDate1)
+						.endDate(strDate2)
+						.noOfDays(getBetweenDays(strDate2,strDate1))
 						.build();
 				return boardRes;
 			}).collect(Collectors.toList());
@@ -297,22 +298,19 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 	@Override
 	public CommonRes getAllPolicy(EmbeddedDashBoardReq req) {
 		CommonRes response = new CommonRes();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		try {
-			String startDate= sdf.format(req.getStartDate());
-	        String endDate= sdf.format(req.getEndDate());
-
-	    
-	        LocalDate date1 = LocalDate.parse(startDate);
-	        LocalDate date2 = LocalDate.parse(endDate);
-	        // Calculate the number of days between the two dates
-	        long noOfDays = ChronoUnit.DAYS.between(date1, date2);
-			Date date = new Date();
 			String pattern = "#####0.00";
 			DecimalFormat df = new DecimalFormat(pattern);
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+			SimpleDateFormat sdf1 = new SimpleDateFormat("dd/MM/yyyy");
 			List<Map<String,Object>> list =embeddedRepository.getAllPolicy(req.getLoginId(), req.getCompanyId(), req.getProductId() 
-					, req.getStartDate(), req.getEndDate(),req.getPlanId());
+					, sdf.format(req.getStartDate()), sdf.format(req.getEndDate()),req.getPlanId());
+			System.out.println(new Gson().toJson(list));
 			List<EmbeddedPolicyGridRes> resList = list.stream().map(premium ->{
+				Date inceptionDate=premium.get("inception_date")==null?null:(Date)premium.get("inception_date");
+				Date expiryDate=premium.get("expiry_date")==null?null:(Date)premium.get("expiry_date");
+				String strDate1 =sdf1.format(inceptionDate);
+				String strDate2 =sdf1.format(expiryDate);
 				EmbeddedPolicyGridRes boardRes =EmbeddedPolicyGridRes.builder()
 						.planName(premium.get("plan_desc")==null?"0":premium.get("plan_desc").toString())
 						.planOpted(premium.get("plan_opted")==null?"0":premium.get("plan_opted").toString())
@@ -340,9 +338,9 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 						.expiryPolicyCount(premium.get("expiryPolicyCount")==null?"0":premium.get("expiryPolicyCount").toString())
 						.expiryPolicyPremium(premium.get("expiry_premium")==null?"0":df.format(premium.get("expiry_premium")))
 						.activePremium(premium.get("active_premium")==null?"0":df.format(premium.get("active_premium")))
-						.startDate(req.getStartDate())
-						.endDate(req.getEndDate())
-						.noOfDays(noOfDays)
+						.startDate(strDate1)
+						.endDate(strDate2)
+						.noOfDays(getBetweenDays(strDate2,strDate1))
 						.filePath(premium.get("pdf_path")==null?"0":(String)premium.get("pdf_path"))
 						.build();
 					return boardRes;
@@ -364,20 +362,18 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 	@Override
 	public CommonRes getExpiredPolicy(EmbeddedDashBoardReq req) {
 		CommonRes response = new CommonRes();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		try {
-			String startDate= sdf.format(req.getStartDate());
-	        String endDate= sdf.format(req.getEndDate());
-
-	    
-	        LocalDate date1 = LocalDate.parse(startDate);
-	        LocalDate date2 = LocalDate.parse(endDate);
-	        // Calculate the number of days between the two dates
-	        long noOfDays = ChronoUnit.DAYS.between(date1, date2);
 			String pattern = "#####0.00";
 			DecimalFormat df = new DecimalFormat(pattern);
-			List<Map<String,Object>> list = embeddedRepository.getExpiredPolicy(req.getLoginId(), req.getCompanyId(), req.getProductId() , req.getStartDate(), req.getEndDate(),req.getPlanId());
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+			SimpleDateFormat sdf1 = new SimpleDateFormat("dd/MM/yyyy");
+			List<Map<String,Object>> list = embeddedRepository.getExpiredPolicy(req.getLoginId(), req.getCompanyId(), req.getProductId() ,
+					sdf.format(req.getStartDate()), sdf.format(req.getEndDate()),req.getPlanId());
 			List<EmbeddedPolicyGridRes> resList = list.stream().map(premium ->{
+				Date inceptionDate=premium.get("inception_date")==null?null:(Date)premium.get("inception_date");
+				Date expiryDate=premium.get("expiry_date")==null?null:(Date)premium.get("expiry_date");
+				String strDate1 =sdf1.format(inceptionDate);
+				String strDate2 =sdf1.format(expiryDate);
 				EmbeddedPolicyGridRes boardRes =EmbeddedPolicyGridRes.builder()
 						.planName(premium.get("plan_desc")==null?"":premium.get("plan_desc").toString())
 						.planOpted(premium.get("plan_opted")==null?"0":premium.get("plan_opted").toString())
@@ -405,9 +401,9 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 						.expiryPolicyCount(premium.get("expiryPolicyCount")==null?"0":premium.get("expiryPolicyCount").toString())
 						.expiryPolicyPremium(premium.get("expiry_premium")==null?"0":df.format(premium.get("expiry_premium")))
 						.activePremium(premium.get("active_premium")==null?"0":df.format(premium.get("active_premium")))
-						.startDate(req.getStartDate())
-						.endDate(req.getEndDate())
-						.noOfDays(noOfDays)
+						.startDate(strDate1)
+						.endDate(strDate2)
+						.noOfDays(getBetweenDays(strDate2,strDate1))
 						.filePath(premium.get("pdf_path")==null?"0":(String)premium.get("pdf_path"))
 						.build();
 					return boardRes;
@@ -421,6 +417,20 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 			log.error(e);
 		}
 		return response;
+	}
+	
+	private Long getBetweenDays(String startDate,String endDate) {
+		Long count =0L;
+		try {
+			LocalDate date1 = LocalDate.parse(startDate,DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+			LocalDate date2 = LocalDate.parse(endDate,DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+			count=ChronoUnit.DAYS.between(date1, date2);
+		}catch (Exception e) {
+			e.printStackTrace();
+			log.error(e);
+		}
+		
+		return count;
 	}
 	
 	

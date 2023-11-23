@@ -279,7 +279,7 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 						.filePath(premium.get("pdf_path")==null?"0":(String)premium.get("pdf_path"))
 						.startDate(strDate1)
 						.endDate(strDate2)
-						.noOfDays(getBetweenDays(strDate2,strDate1))
+						.noOfDays(getBetweenDays(strDate1,strDate2))
 						.build();
 				return boardRes;
 			}).collect(Collectors.toList());
@@ -340,7 +340,7 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 						.activePremium(premium.get("active_premium")==null?"0":df.format(premium.get("active_premium")))
 						.startDate(strDate1)
 						.endDate(strDate2)
-						.noOfDays(getBetweenDays(strDate2,strDate1))
+						.noOfDays(getBetweenDays(strDate1,strDate2))
 						.filePath(premium.get("pdf_path")==null?"0":(String)premium.get("pdf_path"))
 						.build();
 					return boardRes;
@@ -403,7 +403,7 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 						.activePremium(premium.get("active_premium")==null?"0":df.format(premium.get("active_premium")))
 						.startDate(strDate1)
 						.endDate(strDate2)
-						.noOfDays(getBetweenDays(strDate2,strDate1))
+						.noOfDays(getBetweenDays(strDate1,strDate2))
 						.filePath(premium.get("pdf_path")==null?"0":(String)premium.get("pdf_path"))
 						.build();
 					return boardRes;

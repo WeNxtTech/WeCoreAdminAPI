@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -70,14 +71,68 @@ private Logger log=LogManager.getLogger(OneTimeTableDetailsServiceImpl.class);
 public List<DropDownRes> tableName() {
 	List<DropDownRes> resList = new ArrayList<DropDownRes>();
 	try {
-		List<OneTimeTableDetails> getList = repo.findByItemTypeAndStatusOrderByItemCodeAsc("ONE_TIME_TABLE", "Y");
+	//	List<OneTimeTableDetails> getList = repo.findByItemTypeAndStatusOrderByItemCodeAsc("ONE_TIME_TABLE", "Y");
+		List<OneTimeTableDetails> getList = new ArrayList<OneTimeTableDetails>();
+		String itemType = "ONE_TIME_TABLE"; 
+		Date today = new Date();
+		Calendar cal = new GregorianCalendar();
+		cal.setTime(today);
+		today = cal.getTime();
+		Date todayEnd = cal.getTime();
+		
+		// Criteria
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<OneTimeTableDetails> query=  cb.createQuery(OneTimeTableDetails.class);
+		// Find All
+		Root<OneTimeTableDetails> c = query.from(OneTimeTableDetails.class);
+		
+		//Select
+		query.select(c);
+		// Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.asc(c.get("itemId")));
+		
+		
+		// Effective Date Start Max Filter
+		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Root<OneTimeTableDetails> ocpm1 = effectiveDate.from(OneTimeTableDetails.class);
+		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
+		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+		Predicate b2 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
+		Predicate b4 = cb.equal(c.get("parentId"),ocpm1.get("parentId"));
+		effectiveDate.where(a1,a2,b2,b4);
+		
+		// Effective Date End Max Filter
+		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+		Root<OneTimeTableDetails> ocpm2 = effectiveDate2.from(OneTimeTableDetails.class);
+		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+		Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
+		Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+		Predicate b3= cb.equal(c.get("companyId"),ocpm2.get("companyId"));
+		Predicate b5 = cb.equal(c.get("parentId"),ocpm2.get("parentId"));
+		effectiveDate2.where(a3,a4,b3,b5);
+					
+		// Where
+		Predicate n1 = cb.equal(c.get("status"),"Y");
+		Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
+		Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
+		Predicate n4 = cb.equal(c.get("companyId"), "99999");
+		Predicate n10 = cb.equal(c.get("itemType"),itemType);
+		
+	
+		query.where(n2,n3,n4,n10,n1).orderBy(orderList);
+	
 
+		TypedQuery<OneTimeTableDetails> result = em.createQuery(query);
+		getList = result.getResultList();
 		for (OneTimeTableDetails data : getList) {
 			DropDownRes res = new DropDownRes();
 			res.setCode(data.getItemCode());
 			res.setCodeDesc(data.getItemValue());
 			resList.add(res);
 		}
+		resList.sort(Comparator.comparing(DropDownRes :: getCodeDesc));
 	} catch (Exception e) {
 		e.printStackTrace();
 		log.info("Exception is ---> " + e.getMessage());

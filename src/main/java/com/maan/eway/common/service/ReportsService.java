@@ -1,7 +1,9 @@
 package com.maan.eway.common.service;
 
 import java.util.List;
+import java.util.Map;
 
+import com.maan.eway.common.req.DataManipulationReq;
 import com.maan.eway.common.req.DeleteTiraSearchedVehicleReq;
 import com.maan.eway.common.req.GetAllTirraErrorHistory;
 import com.maan.eway.common.req.GetTirraEorrorHistoryReq;
@@ -14,6 +16,7 @@ import com.maan.eway.common.res.TiraErrorHistoryTotalRes;
 import com.maan.eway.common.res.TiraPushedDetailsRes;
 import com.maan.eway.common.res.TiraPushedListDetailsRes;
 import com.maan.eway.common.res.TransactionCheckStatusRes;
+import com.maan.eway.error.Error;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.res.SuccessRes2;
 
@@ -32,5 +35,9 @@ public interface ReportsService {
 	TransactionCheckStatusRes getTransactionCheckStatusDetails(TransactionCheckStatusReq req);
 
 	SuccessRes2 policyRevertToQuote(PolicyRevertReq req);
+
+	List<Map<String, Object>> dataManipulation(DataManipulationReq req);
+
+	List<Error> validatedataManipulation(DataManipulationReq req);
 
 }

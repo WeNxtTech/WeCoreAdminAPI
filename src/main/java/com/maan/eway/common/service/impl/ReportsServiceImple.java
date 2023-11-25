@@ -2,12 +2,23 @@ package com.maan.eway.common.service.impl;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import org.apache.commons.lang3.StringUtils;
 import org.dozer.DozerBeanMapper;
+import org.hibernate.query.internal.NativeQueryImpl;
+import org.hibernate.transform.AliasToEntityMapResultTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.batch.repository.TirraErrorHistoryRepository;
+import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.MailDataDetails;
 import com.maan.eway.bean.MailDetails;
@@ -25,6 +37,7 @@ import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.SmsDataDetails;
 import com.maan.eway.bean.TiraTrackingDetails;
 import com.maan.eway.bean.TirraErrorHistory;
+import com.maan.eway.common.req.DataManipulationReq;
 import com.maan.eway.common.req.DeleteTiraSearchedVehicleReq;
 import com.maan.eway.common.req.GetAllTirraErrorHistory;
 import com.maan.eway.common.req.GetTirraEorrorHistoryReq;
@@ -49,6 +62,7 @@ import com.maan.eway.common.res.TiraPushedDetailsRes;
 import com.maan.eway.common.res.TiraPushedListDetailsRes;
 import com.maan.eway.common.res.TransactionCheckStatusRes;
 import com.maan.eway.common.service.ReportsService;
+import com.maan.eway.error.Error;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.MailDataDetailsRepository;
 import com.maan.eway.repository.MailDetailsRepository;
@@ -62,7 +76,7 @@ import com.maan.eway.res.SuccessRes2;
 @Service
 @Transactional
 public class ReportsServiceImple implements ReportsService {
- 
+  
 	@Autowired
 	private TirraErrorHistoryRepository repo;
 	
@@ -86,6 +100,12 @@ public class ReportsServiceImple implements ReportsService {
 	
 	@Autowired
 	private PaymentDetailRepository paymentRepo ;
+	
+	@PersistenceContext
+	private EntityManager em;
+	
+	@Value("${datamanipulation.password}")
+	private String datamanipulationPassword;
 	
 	@Override
 	public TiraErrorHistoryTotalRes getTirraEorrorHistory(GetTirraEorrorHistoryReq req) {
@@ -477,5 +497,44 @@ public class ReportsServiceImple implements ReportsService {
 		}
 		return null;
 	
+	}
+
+	@Override
+	public List<Map<String, Object>> dataManipulation(DataManipulationReq req) {
+		List<Map<String,Object>> list = new ArrayList<>();
+		Query query=null;
+		query = em.createNativeQuery(req.getQuery());
+		query.unwrap(NativeQueryImpl.class).setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+		try {
+		list = query.getResultList();
+		} catch(Exception e) {
+		e.printStackTrace();
+		} 
+		return list;
+	}
+
+	@Override
+	public List<Error> validatedataManipulation(DataManipulationReq req) {
+		List<Error> errorList = new ArrayList<Error>();
+
+		try {
+			
+//			
+			if (StringUtils.isBlank(req.getQuery())) {
+				errorList.add(new Error("02", "Query", "Please Enter Valid Query"));
+			}
+			
+			if (StringUtils.isBlank(req.getPassword())) {
+				errorList.add(new Error("02", "Password", "Please Enter Password"));
+				
+			} else if (! datamanipulationPassword.equalsIgnoreCase(req.getPassword())) {
+				errorList.add(new Error("02", "Password", "Please Enter Valid Password"));
+			}
+			
+		} catch (Exception e) {
+			//log.error(e);
+			e.printStackTrace();
+		}
+		return errorList;
 	}
 }

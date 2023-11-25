@@ -3,6 +3,7 @@ package com.maan.eway.common.controller;
 import java.util.Collections;
 //import java.util.List;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.common.req.DataManipulationReq;
 import com.maan.eway.common.req.DeleteTiraSearchedVehicleReq;
 import com.maan.eway.common.req.GetAllTirraErrorHistory;
 import com.maan.eway.common.req.GetTirraEorrorHistoryReq;
@@ -25,6 +27,7 @@ import com.maan.eway.common.res.TiraPushedDetailsRes;
 import com.maan.eway.common.res.TiraPushedListDetailsRes;
 import com.maan.eway.common.res.TransactionCheckStatusRes;
 import com.maan.eway.common.service.ReportsService;
+import com.maan.eway.error.Error;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.SuccessRes2;
 import com.maan.eway.service.PrintReqService;
@@ -169,4 +172,31 @@ public class ReportsController {
 		}
 	}
 	
+//	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
+	@PostMapping("/datamanipulation")
+	public ResponseEntity<CommonRes> dataManipulation(@RequestBody DataManipulationReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<Error> validation = service.validatedataManipulation(req);
+		// validation
+		if (validation != null && validation.size() != 0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+		} else {
+		List<Map<String, Object>> res = service.dataManipulation(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+		}
+	}
 }

@@ -165,8 +165,8 @@ public List<Error> validateConstantTableDetails(ConstantTableDetailsSaveReq req)
 			} else if (req.getApiUrl().length() > 200) {
 				errorList.add(new Error("10", "ApiUrl", "Please Enter ApiUrl within 100 Characters"));
 				
-			} else if (req.getApiUrl().toLowerCase().contains("localhost")) {
-				String apiUrl = req.getApiUrl().toLowerCase().replaceAll("localhost", "192.168.1.42");
+			} else if (req.getApiUrl().contains("localhost")) {
+				String apiUrl = req.getApiUrl().replaceAll("localhost", "192.168.1.42");
 				String regex="^(https?:\\/\\/)"+"(\\d{3}\\.\\d{3}.\\d{1}.\\d{2}):\\d{4}(\\/)"+"[a-zA-Z]+(\\/)"+"[a-zA-Z/]+$";
 				Pattern p = Pattern.compile(regex);	
 				Matcher matcher3 = p.matcher(apiUrl);

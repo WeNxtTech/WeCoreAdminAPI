@@ -122,6 +122,12 @@ private static final long serialVersionUID = 1L;
 	private Date updatedDate;
 	
 	
+    @Id
+	@Column(name="QUESTION_CATEGORY", nullable=false)
+	private String questionCategory;
+    
+    @Column(name="QUESTION_CATEGORY_DESC")
+	private String questionCategoryDesc;
 }
 
 

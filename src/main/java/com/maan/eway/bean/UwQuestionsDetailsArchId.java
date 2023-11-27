@@ -40,6 +40,7 @@ public class UwQuestionsDetailsArchId implements Serializable {
     private Integer    vehicleId ;
     
     private Integer    uwQuestionId ;
-    
+
+	private String questionCategory;
      
 }

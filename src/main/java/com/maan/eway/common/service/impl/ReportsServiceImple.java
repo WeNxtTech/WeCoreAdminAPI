@@ -265,8 +265,7 @@ public class ReportsServiceImple implements ReportsService {
 		
 		try {
 			
-			List<MotorVehicleInfo> vehInfos = motVehRepo.findByResRegNumberAndSavedFromOrderByEntryDateDesc(req.getRegisterNumber(),"API");
-			MotorVehicleInfo vehInfo = vehInfos.size() > 0 ? vehInfos.get(0) : null ;
+			MotorVehicleInfo vehInfo = motVehRepo.findByResRegNumberAndSavedFrom(req.getRegisterNumber(),"API");
 			if(vehInfo!=null) {
 				motVehRepo.delete(vehInfo);
 				res.setSuccessId(req.getRegisterNumber());;

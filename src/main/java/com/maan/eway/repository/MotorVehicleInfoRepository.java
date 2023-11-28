@@ -14,6 +14,7 @@ package com.maan.eway.repository;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import com.maan.eway.bean.MotorVehicleInfo;
 
@@ -34,17 +35,21 @@ import com.maan.eway.bean.MotorVehicleInfoId;
  
 public interface MotorVehicleInfoRepository  extends JpaRepository<MotorVehicleInfo,MotorVehicleInfoId > , JpaSpecificationExecutor<MotorVehicleInfo> {
 
-	MotorVehicleInfo findByResRegNumberAndResChassisNumberAndSavedFrom(String regNo, String chassisNo,String saveFrom);
+	
+//
+//	MotorVehicleInfo findByResRegNumberAndResChassisNumberAndSavedFrom(String regNo, String chassisNo,String saveFrom);
+//
+//	MotorVehicleInfo findByResRegNumberAndSavedFrom(String reqRegNumber,String saveFrom);
+//
+//	MotorVehicleInfo findByResChassisNumberAndSavedFrom(String reqChassisNumber,String saveFrom);
+//
+//	Page<MotorVehicleInfo> findByEntryDateBetween(Pageable paging, Date effDate, Date endDate);
+//
+//	MotorVehicleInfo findByResRegNumber(String resRegNumber);
+//
+//	MotorVehicleInfo findByResChassisNumber(String chassisNumber);
 
-	MotorVehicleInfo findByResRegNumberAndSavedFrom(String reqRegNumber,String saveFrom);
-
-	MotorVehicleInfo findByResChassisNumberAndSavedFrom(String reqChassisNumber,String saveFrom);
-
-	Page<MotorVehicleInfo> findByEntryDateBetween(Pageable paging, Date effDate, Date endDate);
-
-	MotorVehicleInfo findByResRegNumber(String resRegNumber);
-
-	MotorVehicleInfo findByResChassisNumber(String chassisNumber);
+	List<MotorVehicleInfo> findByResRegNumberAndSavedFromOrderByEntryDateDesc(String registerNumber, String string);
 	
 
 }

@@ -729,6 +729,41 @@ private static final long serialVersionUID = 1L;
       
       @Column(name="SALE_POINT_CODE", length=200)
       private String    salePointCode;
+      
+      
+      @Column(name = "ON_STOCK_SI")
+ 	  private BigDecimal onStockSi;
+      
+
+      @Column(name = "ON_STOCK_SI_LC")
+ 	  private BigDecimal onStockSiLc;
+      
+
+      @Column(name = "ON_ASSETS_SI")
+ 	  private BigDecimal onAssetsSi;
+      
+      @Column(name = "ON_ASSETS_SI_LC")
+	  private BigDecimal onAssetsSiLc;
+      
+      @Column(name = "BURGLARY_SI")
+	  private BigDecimal burglarySi;
+      
+      @Column(name = "BURGLARY_SI_LC")
+	  private BigDecimal burglarySiLc;
+      
+      @Column(name = "STRONGROOM_SI")
+	  private BigDecimal strongroomSi;
+      
+      @Column(name = "STRONGROOM_SI_LC")
+	  private BigDecimal strongroomSiLc;
+      
+      @Column(name = "MACHINERY_SI")
+	  private BigDecimal machinerySi;
+      
+      @Column(name = "MACHINERY_SI_LC")
+	  private BigDecimal machinerySiLc;
+      
+      
 }
 
 

@@ -396,4 +396,16 @@ public class MsAssetDetails implements Serializable {
     
     @Column(name="INSURANCE_CLASS", length=10)
     private String     insuranceClass ;    
+    
+    @Column(name = "GROSS_PROFIT_FC")
+    private BigDecimal grossProfitFc;
+    
+    @Column(name = "GROSS_PROFIT_LC")
+    private BigDecimal grossProfitLc;
+    
+    @Column(name="INDEMNITY_PERIOD_FC")
+    private BigDecimal indemnityPeriodFc;
+    
+    @Column(name="INDEMNITY_PERIOD_LC ")
+    private BigDecimal indemnityPeriodLc;
 }

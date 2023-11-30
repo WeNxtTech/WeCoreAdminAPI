@@ -729,6 +729,18 @@ private static final long serialVersionUID = 1L;
       
       @Column(name="SALE_POINT_CODE", length=200)
       private String    salePointCode;
+      
+      @Column(name = "GROSS_PROFIT_FC")
+      private BigDecimal grossProfitFc;
+      
+      @Column(name = "GROSS_PROFIT_LC")
+      private BigDecimal grossProfitLc;
+      
+      @Column(name="INDEMNITY_PERIOD_FC")
+      private BigDecimal indemnityPeriodFc;
+      
+      @Column(name="INDEMNITY_PERIOD_LC ")
+      private BigDecimal indemnityPeriodLc;
 }
 
 

@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -138,6 +137,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="AMEND_ID", nullable=false)
     private Integer  amendId;
+    
+    @Column(name="Type_Id",length=1) 	//o-optional, D-Default
+    private String  typeId;
         
 }
 

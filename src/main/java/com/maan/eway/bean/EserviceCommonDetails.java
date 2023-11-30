@@ -411,6 +411,7 @@ private static final long serialVersionUID = 1L;
        
        @Column(name = "PRODUCT_TURNOVER_SI_LC")
    	private BigDecimal productTurnoverSiLc;
+       
 }
 
 

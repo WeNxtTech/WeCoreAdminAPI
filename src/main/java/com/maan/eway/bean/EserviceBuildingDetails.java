@@ -777,6 +777,27 @@ private static final long serialVersionUID = 1L;
 	  private BigDecimal machinerySiLc;
       
       
+      @Column(name="TRANSPORTED_BY") 
+      private String transportedBy;
+     
+     @Column(name="MODE_OF_TRANSPORT")
+     private String modeOfTransport;
+     
+     @Column(name="GEOGRAPHICAL_COVERAGE") 
+     private String geographicalCoverage;
+     
+     @Column(name="SINGLE_ROAD_SI_LC") 
+     private Double singleRoadSiLc;
+     
+     @Column(name="SINGLE_ROAD_SI_FC ") 
+     private Double singleRoadSiFc;
+     
+     @Column(name="EST_ANNUAL_CARRIES_SI_LC ") 
+     private Double estAnnualCarriesSiLc; 
+     
+     @Column(name="EST_ANNUAL_CARRIES_SI_FC ") 
+     private Double estAnnualCarriesSiFc;
+      
 
 }
 

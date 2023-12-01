@@ -30,7 +30,6 @@ import com.maan.eway.master.req.DuplicationCheck;
 import com.maan.eway.master.req.InsertPlanBenefitsReq;
 import com.maan.eway.master.req.SuccessResponse;
 import com.maan.eway.master.req.TravelPolicyTypeCoverRes;
-import com.maan.eway.master.req.TravelPolicyTypeSaveReq;
 import com.maan.eway.master.req.TravelPolicyTypeSubCoverRes;
 import com.maan.eway.master.service.PlanBenefitsService;
 import com.maan.eway.repository.TravelPolicyTypeRepository;

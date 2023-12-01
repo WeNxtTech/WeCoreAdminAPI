@@ -776,7 +776,6 @@ private static final long serialVersionUID = 1L;
       @Column(name = "MACHINERY_SI_LC")
 	  private BigDecimal machinerySiLc;
       
-      
       @Column(name="TRANSPORTED_BY") 
       private String transportedBy;
      
@@ -798,6 +797,8 @@ private static final long serialVersionUID = 1L;
      @Column(name="EST_ANNUAL_CARRIES_SI_FC ") 
      private Double estAnnualCarriesSiFc;
       
+      @Column(name="BROKER_TIRA_CODE")
+      private String brokerTiraCode;      
 
 }
 

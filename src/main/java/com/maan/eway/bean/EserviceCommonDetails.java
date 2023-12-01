@@ -409,9 +409,12 @@ private static final long serialVersionUID = 1L;
     @Column(name = "PRODUCT_TURNOVER_SI")
    	private BigDecimal productTurnoverSi;
        
-       @Column(name = "PRODUCT_TURNOVER_SI_LC")
+    @Column(name = "PRODUCT_TURNOVER_SI_LC")
    	private BigDecimal productTurnoverSiLc;
        
+    @Column(name="BROKER_TIRA_CODE")
+    private String brokerTiraCode;
+
 }
 
 

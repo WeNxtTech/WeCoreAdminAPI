@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.GetPolicyTypesubcoverReq;
-import com.maan.eway.master.req.PolicyTypeMasterSubCoverSaveReq;
+import com.maan.eway.master.req.PolicyTypeMasterSubCoverSingleSaveReq;
 import com.maan.eway.master.req.PolicyTypeSubCoverMasterGetAllReq;
 import com.maan.eway.master.res.PolicyTypeSubCoverMasterGetRes;
 import com.maan.eway.master.service.PolicyTypeMasterSubCoverService;
@@ -35,9 +35,41 @@ public class PolicyTypeMasterSubCoverController {
 	@Autowired
 	private PrintReqService reqPrinter;
 	
-	@PostMapping("/insertpolicytypesubcover")
+//	@PostMapping("/insertpolicytypesubcover")
+//	@ApiOperation("This method is to save Policy Type Master Sub Cover")
+//	public ResponseEntity<CommonRes> insertPolicyTypeSubCover(@RequestBody PolicyTypeMasterSubCoverSaveReq req){
+//		CommonRes data = new CommonRes();
+//		reqPrinter.reqPrint(req);
+//		
+//		List<Error> validation = service.validatePolicyTypeSubCover(req);
+//		//Validation
+//		if(validation!=null && validation.size()!=0) {
+//		data.setCommonResponse(null);
+//		data.setErrorMessage(validation);
+//		data.setMessage("Failed");
+//		return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+//
+//		}
+//		else {
+//		SuccessRes2 res = service.insertPolicyTypeSubCover(req);
+//		data.setCommonResponse(res);
+//		data.setErrorMessage(Collections.emptyList());
+//		data.setIsError(false);
+//		data.setMessage("Success");
+//		
+//		if(res!=null) {
+//			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+//		}
+//		else {
+//			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+//		}
+//		
+//		}
+//	}
+	
+	@PostMapping("/insertpolicytypesubcover") //single
 	@ApiOperation("This method is to save Policy Type Master Sub Cover")
-	public ResponseEntity<CommonRes> insertPolicyTypeSubCover(@RequestBody PolicyTypeMasterSubCoverSaveReq req){
+	public ResponseEntity<CommonRes> insertPolicyTypeSubCover(@RequestBody PolicyTypeMasterSubCoverSingleSaveReq req){
 		CommonRes data = new CommonRes();
 		reqPrinter.reqPrint(req);
 		

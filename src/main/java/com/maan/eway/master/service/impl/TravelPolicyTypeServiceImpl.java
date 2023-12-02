@@ -33,7 +33,6 @@ import com.maan.eway.master.res.TravelPolicyTypeGetRes;
 import com.maan.eway.master.res.TravelPolicyTypeGetRes1;
 import com.maan.eway.master.service.TravelPolicyTypeService;
 import com.maan.eway.repository.TravelPolicyTypeRepository;
-import com.maan.eway.res.SuccessRes;
 import com.maan.eway.res.SuccessRes2;
 
 @Service
@@ -155,7 +154,7 @@ public class TravelPolicyTypeServiceImpl implements TravelPolicyTypeService {
 		//Duplication find
 		if(StringUtils.isNotBlank(req.getCompanyId()) &&  StringUtils.isNotBlank(req.getBranchCode()) && StringUtils.isNotBlank(req.getProductId()) && 
 				StringUtils.isNotBlank(req.getPolicyTypeId()) && StringUtils.isNotBlank(req.getPlanTypeId()) && StringUtils.isNotBlank(req.getCoverDesc())
-				&& StringUtils.isNotBlank(req.getCoverId())) {
+				&& StringUtils.isBlank(req.getCoverId())) {  //new insert
 			
 			List<TravelPolicyType> list = new ArrayList<TravelPolicyType>();
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -187,9 +186,9 @@ public class TravelPolicyTypeServiceImpl implements TravelPolicyTypeService {
 			Predicate n7 =  cb.equal(b.get("planTypeId"), req.getPlanTypeId()); 
 			Predicate n8 = cb.lessThanOrEqualTo(b.get("effectiveStartdate"), today1);
 			Predicate n9 = cb.greaterThanOrEqualTo(b.get("effectiveEnddate"), todayEnd1);
-			Predicate n10 = cb.notEqual(b.get("coverId"), req.getCoverId());
+		//	Predicate n10 = cb.notEqual(b.get("coverId"), req.getCoverId());
 		
-			query.where(n1, n2,n3,n4,n6, n7, n8, n9, n10);
+			query.where(n1, n2,n3,n4,n6, n7, n8, n9);
 			
 			TypedQuery<TravelPolicyType> result = em.createQuery(query);
 			list = result.getResultList();
@@ -223,19 +222,23 @@ public class TravelPolicyTypeServiceImpl implements TravelPolicyTypeService {
 			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime()- MILLS_IN_A_DAY);
 			Date entryDate = null;
 			String createdBy ="";
+			Integer coverId = 0;
 			
-			List<TravelPolicyType> old = repository.findByProductIdAndBranchCodeAndCompanyIdAndCoverIdAndPolicyTypeIdAndPlanTypeId(
+			List<TravelPolicyType> old = repository.findByProductIdAndBranchCodeAndCompanyIdAndPolicyTypeIdAndPlanTypeIdOrderByCoverIdDesc(
 					Integer.valueOf(req.getProductId()), req.getBranchCode(), req.getCompanyId(),
-					Integer.valueOf(req.getCoverId()),Integer.valueOf(req.getPolicyTypeId()),Integer.valueOf(req.getPlanTypeId()) );
+					Integer.valueOf(req.getPolicyTypeId()),Integer.valueOf(req.getPlanTypeId()) );
 			
-			if(old.size()<=0 ) {   //Insert
+			if(StringUtils.isBlank(req.getCoverId())) {   //Insert
 				
+				coverId = old.get(0).getCoverId() + 1;
 				entryDate = new Date();
 				createdBy = req.getCreatedBy();
 				res.setResponse("Saved Successfully");
 				
 			}
 			else {  //update
+				
+				coverId = Integer.valueOf( req.getCoverId());
 				
 				List<TravelPolicyType> list = new ArrayList<TravelPolicyType>();
 				
@@ -297,6 +300,7 @@ public class TravelPolicyTypeServiceImpl implements TravelPolicyTypeService {
 			
 			dozerMapper.map(req, saveData);
 			
+			saveData.setCoverId(coverId);
 			saveData.setSubCoverId(0);
 			saveData.setEffectiveStartdate(StartDate);
 			saveData.setEffectiveEnddate(endDate);
@@ -306,7 +310,7 @@ public class TravelPolicyTypeServiceImpl implements TravelPolicyTypeService {
 			saveData.setAmendId(amendId);
 			
 			repository.saveAndFlush(saveData);
-			res.setSuccessId(req.getCoverId().toString());
+			res.setSuccessId(coverId.toString());
 			
 			}
 		catch(Exception e) {

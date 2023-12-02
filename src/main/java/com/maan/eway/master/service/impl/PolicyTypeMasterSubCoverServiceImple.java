@@ -561,9 +561,9 @@ public class PolicyTypeMasterSubCoverServiceImple  implements PolicyTypeMasterSu
 				errorList.add(new Error("02", "ExcessAmt", "Please Enter ExcessAmt "));
 			}
 			
-			if (StringUtils.isBlank(req.getSubCoverId())) {
-				errorList.add(new Error("02", "SubCoverId", "Please Enter SubCoverId " ));
-			}
+//			if (StringUtils.isBlank(req.getSubCoverId())) {
+//				errorList.add(new Error("02", "SubCoverId", "Please Enter SubCoverId " ));
+//			}
 			
 			if (StringUtils.isBlank(req.getSubCoverDesc())) {
 				errorList.add(new Error("02", "SubCoverDesc", "Please Enter SubCoverDesc " ));
@@ -584,7 +584,7 @@ public class PolicyTypeMasterSubCoverServiceImple  implements PolicyTypeMasterSu
 			//Duplication find
 			if(StringUtils.isNotBlank(req.getCompanyId()) &&  StringUtils.isNotBlank(req.getBranchCode()) && StringUtils.isNotBlank(req.getProductId()) && 
 					StringUtils.isNotBlank(req.getPolicyTypeId()) && StringUtils.isNotBlank(req.getPlanTypeId()) && StringUtils.isNotBlank(req.getSubCoverDesc())  
-					&& StringUtils.isNotBlank(req.getCoverId()) && StringUtils.isNotBlank(req.getSubCoverId())) {
+					&& StringUtils.isNotBlank(req.getCoverId()) && StringUtils.isBlank(req.getSubCoverId())) {
 				List<TravelPolicyType> list = new ArrayList<TravelPolicyType>();
 				CriteriaBuilder cb = em.getCriteriaBuilder();
 				CriteriaQuery<TravelPolicyType> query = cb.createQuery(TravelPolicyType.class);
@@ -617,9 +617,9 @@ public class PolicyTypeMasterSubCoverServiceImple  implements PolicyTypeMasterSu
 				Predicate n7 =  cb.equal(b.get("planTypeId"), req.getPlanTypeId()); 
 				Predicate n8 = cb.lessThanOrEqualTo(b.get("effectiveStartdate"), today1);
 				Predicate n9 = cb.greaterThanOrEqualTo(b.get("effectiveEnddate"), todayEnd1);
-				Predicate n10 = cb.notEqual(b.get("subCoverId"), req.getSubCoverId());
+			//	Predicate n10 = cb.notEqual(b.get("subCoverId"), req.getSubCoverId());
 			
-				query.where(n1, n2,n3,n4, n5, n6, n7, n8, n9,n10);
+				query.where(n1, n2,n3,n4, n5, n6, n7, n8, n9);
 				
 				TypedQuery<TravelPolicyType> result = em.createQuery(query);
 				list = result.getResultList();
@@ -658,12 +658,16 @@ public class PolicyTypeMasterSubCoverServiceImple  implements PolicyTypeMasterSu
 			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime()- MILLS_IN_A_DAY);
 			Date entryDate = null;
 			String createdBy ="";
+			Integer subCoverId = 0;
 			
-			List<TravelPolicyType> old = repository.findByProductIdAndBranchCodeAndCompanyIdAndCoverIdAndSubCoverIdAndPolicyTypeIdAndPlanTypeId(
+			List<TravelPolicyType> old = repository.findByProductIdAndBranchCodeAndCompanyIdAndCoverIdAndPolicyTypeIdAndPlanTypeIdOrderBySubCoverIdDesc(
 					Integer.valueOf(req.getProductId()), req.getBranchCode(), req.getCompanyId(),
-					Integer.valueOf(req.getCoverId()),Integer.valueOf(req.getSubCoverId()),Integer.valueOf(req.getPolicyTypeId()),Integer.valueOf(req.getPlanTypeId()) );
+					Integer.valueOf(req.getCoverId()),Integer.valueOf(req.getPolicyTypeId()),Integer.valueOf(req.getPlanTypeId()) );
 			
-			if(old.size()<=0 ) {   //Insert
+			//if(old.size()<=0 ) {   //Insert
+			if(StringUtils.isBlank(req.getSubCoverId())) {
+				
+				subCoverId = old.get(0).getSubCoverId() + 1;
 				
 				entryDate = new Date();
 				createdBy = req.getCreatedBy();
@@ -671,6 +675,8 @@ public class PolicyTypeMasterSubCoverServiceImple  implements PolicyTypeMasterSu
 				
 			}
 			else {  //update
+				
+				subCoverId = Integer.valueOf( req.getSubCoverId());
 				
 				List<TravelPolicyType> list = new ArrayList<TravelPolicyType>();
 				
@@ -733,7 +739,7 @@ public class PolicyTypeMasterSubCoverServiceImple  implements PolicyTypeMasterSu
 			
 			dozerMapper.map(req, saveData);
 			
-	
+			saveData.setSubCoverId(subCoverId);
 			saveData.setEffectiveStartdate(StartDate);
 			saveData.setEffectiveEnddate(endDate);
 			saveData.setEntryDate(entryDate);
@@ -742,7 +748,7 @@ public class PolicyTypeMasterSubCoverServiceImple  implements PolicyTypeMasterSu
 			saveData.setAmendId(amendId);
 			
 			repository.saveAndFlush(saveData);
-			res.setSuccessId(req.getSubCoverId().toString());
+			res.setSuccessId(subCoverId.toString());
 			
 			}
 		catch(Exception e) {

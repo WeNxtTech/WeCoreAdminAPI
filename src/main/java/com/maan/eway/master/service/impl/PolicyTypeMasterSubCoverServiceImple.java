@@ -479,7 +479,7 @@ public class PolicyTypeMasterSubCoverServiceImple  implements PolicyTypeMasterSu
 
 	@Override
 	public List<Error> validatePolicyTypeSubCover(PolicyTypeMasterSubCoverSingleSaveReq req) {
-		List<TravelPolicyType> list = new ArrayList<TravelPolicyType>();
+	
 		List<Error> errorList = new ArrayList<Error>();
 		try {
 			Date today1 = new Date();
@@ -533,12 +533,7 @@ public class PolicyTypeMasterSubCoverServiceImple  implements PolicyTypeMasterSu
 			if (StringUtils.isBlank(req.getPlanTypeId())) {
 				errorList.add(new Error("02", "PlanTypeId", "Please Select PlanTypeId"));
 			}
-			
-//			if (StringUtils.isBlank(req.getRemarks()) ) {
-//				errorList.add(new Error("03", "Remark", "Please Enter Remark "));
-//			}else if (req.getRemarks().length() > 100){
-//				errorList.add(new Error("03","Remark", "Please Enter Remark within 100 Characters")); 
-//			}
+
 			
 			if (StringUtils.isBlank(req.getCoverId())) {
 				errorList.add(new Error("02", "CoverId", "Please Select CoverId"));
@@ -589,8 +584,8 @@ public class PolicyTypeMasterSubCoverServiceImple  implements PolicyTypeMasterSu
 			//Duplication find
 			if(StringUtils.isNotBlank(req.getCompanyId()) &&  StringUtils.isNotBlank(req.getBranchCode()) && StringUtils.isNotBlank(req.getProductId()) && 
 					StringUtils.isNotBlank(req.getPolicyTypeId()) && StringUtils.isNotBlank(req.getPlanTypeId()) && StringUtils.isNotBlank(req.getSubCoverDesc())  
-					&& StringUtils.isNotBlank(req.getCoverId()) ) {
-				
+					&& StringUtils.isNotBlank(req.getCoverId()) && StringUtils.isNotBlank(req.getSubCoverId())) {
+				List<TravelPolicyType> list = new ArrayList<TravelPolicyType>();
 				CriteriaBuilder cb = em.getCriteriaBuilder();
 				CriteriaQuery<TravelPolicyType> query = cb.createQuery(TravelPolicyType.class);
 
@@ -610,9 +605,8 @@ public class PolicyTypeMasterSubCoverServiceImple  implements PolicyTypeMasterSu
 				Predicate a4 = cb.equal(ocpm1.get("planTypeId"),b.get("planTypeId"));
 				Predicate a5 = cb.equal(ocpm1.get("coverId"),b.get("coverId"));
 				Predicate a7 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
-				Predicate a9 = cb.equal(ocpm1.get("coverId"),  b.get("coverId"));
 		
-				amendId.where(a1,a2,a3,a4,a5,a7,a9);
+				amendId.where(a1,a2,a3,a4,a5,a7);
 
 				Predicate n1 = cb.equal(b.get("amendId"),amendId);
 				Predicate n2 = cb.equal(b.get("productId"), req.getProductId() );	
@@ -623,8 +617,9 @@ public class PolicyTypeMasterSubCoverServiceImple  implements PolicyTypeMasterSu
 				Predicate n7 =  cb.equal(b.get("planTypeId"), req.getPlanTypeId()); 
 				Predicate n8 = cb.lessThanOrEqualTo(b.get("effectiveStartdate"), today1);
 				Predicate n9 = cb.greaterThanOrEqualTo(b.get("effectiveEnddate"), todayEnd1);
+				Predicate n10 = cb.notEqual(b.get("subCoverId"), req.getSubCoverId());
 			
-				query.where(n1, n2,n3,n4, n5, n6, n7, n8, n9);
+				query.where(n1, n2,n3,n4, n5, n6, n7, n8, n9,n10);
 				
 				TypedQuery<TravelPolicyType> result = em.createQuery(query);
 				list = result.getResultList();

@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -18,11 +19,12 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.maan.eway.bean.LmTariffDet;
 import com.maan.eway.bean.TravelPolicyType;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.TravelPolicyTypeGetReq;
@@ -32,19 +34,36 @@ import com.maan.eway.master.res.TravelPolicyTypeGetRes1;
 import com.maan.eway.master.service.TravelPolicyTypeService;
 import com.maan.eway.repository.TravelPolicyTypeRepository;
 import com.maan.eway.res.SuccessRes;
+import com.maan.eway.res.SuccessRes2;
 
 @Service
 public class TravelPolicyTypeServiceImpl implements TravelPolicyTypeService {
-	
-	@Autowired
-	private TravelPolicyTypeRepository repo;
-	
+	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	@PersistenceContext
 	private EntityManager em;
+	private Logger log=LogManager.getLogger(PolicyTypeMasterSubCoverServiceImple.class);
+	
+	@Autowired
+	private TravelPolicyTypeRepository repository;
 
 	@Override
 	public List<Error> validateTravelPolicyType(TravelPolicyTypeSaveReq req) {
 		List<Error> error = new ArrayList<Error>();
+		try {
+		Date today1 = new Date();
+		Calendar cal = new GregorianCalendar();
+		cal.setTime(today1);
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		today1 = cal.getTime();  //beginning of the date
+		
+		cal.set(Calendar.HOUR_OF_DAY, 23);
+		cal.set(Calendar.MINUTE, 59);
+		cal.set(Calendar.SECOND, 59);
+		cal.set(Calendar.MILLISECOND, 999);
+		Date todayEnd1 = cal.getTime(); //today end
 		
 		if(req.getPolicyTypeId()==null)
 		{
@@ -61,16 +80,7 @@ public class TravelPolicyTypeServiceImpl implements TravelPolicyTypeService {
 			error.add(new Error("O3","Cover Id","Please Enter Cover Id"));
 		}
 		
-		if(req.getSubCoverId()==null)
-		{
-			error.add(new Error("O4","SubCover Id","Please Enter SubCover Id"));
-		}
 		
-//		if(req.getAmendId()==null)
-//		{
-//			error.add(new Error("O5","Amend Id","Please Enter Amend Id"));
-//		}
-//		
 		if(req.getCompanyId()==null)
 		{
 			error.add(new Error("O6","Company Id","Please Enter Company Id"));
@@ -112,72 +122,23 @@ public class TravelPolicyTypeServiceImpl implements TravelPolicyTypeService {
 		{
 			error.add(new Error("11","Cover Description","Please Enter Cover Description below 100 character"));
 		}
-		
-		if(StringUtils.isBlank(req.getSubCoverDesc()))
-		{
-			error.add(new Error("12","SubCover Description","Please Enter SubCover Description"));
-		}
-		else if(req.getSubCoverDesc().length()>100)
-		{
-			error.add(new Error("12","SubCover Description","Please Enter SubCover Description below 100 character"));
-		}
-		
-		if(req.getCurrency()==null)
-		{
-			error.add(new Error("13","Currency","Please Enter Currency"));
-		}
-		
-		if(req.getSumInsured()==null)
-		{
-			error.add(new Error("14","Sum Insured","Please Enter Sum Insured"));
-		}
-		
-		if(req.getExcessAmt()==null)
-		{
-			error.add(new Error("15","Excess Amount","Please Enter Excess Amount"));
-		}
-		
-		Calendar cal = new GregorianCalendar();
+
+//		
+		Calendar cal1 = new GregorianCalendar();
 		Date today = new Date();
-		cal.setTime(today);
-		cal.add(Calendar.DAY_OF_MONTH, -1);
-		cal.set(Calendar.HOUR_OF_DAY, 23);
-		cal.set(Calendar.MINUTE, 50);
-		today = cal.getTime();
+		cal1.setTime(today);
+		cal1.add(Calendar.DAY_OF_MONTH, -1);
+		cal1.set(Calendar.HOUR_OF_DAY, 23);
+		cal1.set(Calendar.MINUTE, 50);
+		today = cal1.getTime();
 		
-		if (req.getEffectiveStartdate() == null) {
+		if (req.getEffectiveDateStart() == null) {
 			error.add(new Error("16", "EffectiveStartDate", "Please Enter Effective Start Date"));
 
-		} else if (req.getEffectiveStartdate().before(today)) {
+		} else if (req.getEffectiveDateStart().before(today)) {
 			error.add(new Error("16", "EffectiveStartDate", "Please Enter Effective Start Date as Future Date"));
 		}
-		
-		if (req.getEffectiveEnddate()==null) {
-			error.add(new Error("17", "EffectiveEnddate", "Please Enter EffectiveEnddate"));
-		}else if (req.getEffectiveStartdate()!=null && req.getEffectiveEnddate()!=null) {
-			if( req.getEffectiveStartdate().after(req.getEffectiveEnddate())) {
-				error.add(new Error("17", "EffectiveEnddate", "EffectiveStartdate After EffectiveEnddate Not Allwoed"));	
-			}
-		}
-		
-		if (req.getEntryDate() == null) {
-			error.add(new Error("18", "Entry Date", "Please Enter Entry Date"));
 
-		}
-		
-		if (StringUtils.isBlank(req.getRemarks())) {
-			error.add(new Error("19", "Remarks", "Please Enter Remarks"));
-		} else if (req.getRemarks().length() > 100) {
-			error.add(new Error("19", "Remarks", "Enter Remarks  within 100 Characters Only"));
-		}
-		
-		if (StringUtils.isBlank(req.getStatus())) {
-			error.add(new Error("20", "Status", "Please Enter Status"));
-			} else if (req.getStatus().length() > 1) {
-				error.add(new Error("20", "Status", "Enter Status in One Character Only"));
-			} else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-				error.add(new Error("20", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
-			}
 		
 		if (StringUtils.isBlank(req.getCoverStatus())) {
 			error.add(new Error("21", "Cover Status", "Please Enter Cover Status"));
@@ -185,185 +146,178 @@ public class TravelPolicyTypeServiceImpl implements TravelPolicyTypeService {
 			error.add(new Error("21", "Cover Status", "Enter Cover Status within 100 Characters Only"));
 		}
 		
-		if (StringUtils.isBlank(req.getUpdatedBy())) {
-			error.add(new Error("22", "Updated By", "Please Enter Updated By"));
-		} else if (req.getUpdatedBy().length() > 50) {
-			error.add(new Error("22", "Updated By", "Enter Updated By within 50 Characters Only"));
+		if (StringUtils.isBlank(req.getCreatedBy())) {
+			error.add(new Error("06", "CreatedBy", "Please Enter CreatedBy"));
+		}else if (req.getCreatedBy().length() > 50) {
+			error.add(new Error("06", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+		} 
+				
+		//Duplication find
+		if(StringUtils.isNotBlank(req.getCompanyId()) &&  StringUtils.isNotBlank(req.getBranchCode()) && StringUtils.isNotBlank(req.getProductId()) && 
+				StringUtils.isNotBlank(req.getPolicyTypeId()) && StringUtils.isNotBlank(req.getPlanTypeId()) && StringUtils.isNotBlank(req.getCoverDesc())
+				&& StringUtils.isNotBlank(req.getCoverId())) {
+			
+			List<TravelPolicyType> list = new ArrayList<TravelPolicyType>();
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<TravelPolicyType> query = cb.createQuery(TravelPolicyType.class);
+
+			// Find All
+			Root<TravelPolicyType> b = query.from(TravelPolicyType.class);
+
+			// Select
+			query.select(b);
+
+			// Amend ID Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<TravelPolicyType> ocpm1 = amendId.from(TravelPolicyType.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("policyTypeId"),b.get("policyTypeId"));
+			Predicate a4 = cb.equal(ocpm1.get("planTypeId"),b.get("planTypeId"));
+			Predicate a7 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+	
+			amendId.where(a1,a2,a3,a4,a7);
+
+			Predicate n1 = cb.equal(b.get("amendId"),amendId);
+			Predicate n2 = cb.equal(b.get("productId"), req.getProductId() );	
+			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId() );		
+			Predicate n4 = cb.equal(b.get("branchCode"), req.getBranchCode());
+			Predicate n6 =  cb.equal(b.get("policyTypeId"), req.getPolicyTypeId()); 
+			Predicate n7 =  cb.equal(b.get("planTypeId"), req.getPlanTypeId()); 
+			Predicate n8 = cb.lessThanOrEqualTo(b.get("effectiveStartdate"), today1);
+			Predicate n9 = cb.greaterThanOrEqualTo(b.get("effectiveEnddate"), todayEnd1);
+			Predicate n10 = cb.notEqual(b.get("coverId"), req.getCoverId());
+		
+			query.where(n1, n2,n3,n4,n6, n7, n8, n9, n10);
+			
+			TypedQuery<TravelPolicyType> result = em.createQuery(query);
+			list = result.getResultList();
+			
+			if(list.size()>0) {
+				
+				List<TravelPolicyType> dup = list.stream().filter(o -> o.getCoverDesc().equalsIgnoreCase(req.getCoverDesc())).collect(Collectors.toList());
+				if(dup.size()>0)
+					error.add(new Error("02", "CoverDesc","Cover '" + req.getCoverDesc() + "' Already Exists"));
+							
+			}
+		}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
 		}
 		return error;
 	}
 
 	@Override
-	public SuccessRes insertTravelPolicyType(TravelPolicyTypeSaveReq req) {
-		SimpleDateFormat format = new SimpleDateFormat("dd/MM/YYYY");
-		SuccessRes data = new SuccessRes();
+	public SuccessRes2 insertTravelPolicyType(TravelPolicyTypeSaveReq req) {
+		SuccessRes2 res = new SuccessRes2();
+		TravelPolicyType saveData = new TravelPolicyType();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+		try {
+			Integer amendId = 0;
+			Date StartDate = req.getEffectiveDateStart();
+			String end = "31/12/2050";
+			Date endDate = sdf.parse(end);
+			long MILLS_IN_A_DAY = 1000*60*60*24;
+			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime()- MILLS_IN_A_DAY);
+			Date entryDate = null;
+			String createdBy ="";
+			
+			List<TravelPolicyType> old = repository.findByProductIdAndBranchCodeAndCompanyIdAndCoverIdAndPolicyTypeIdAndPlanTypeId(
+					Integer.valueOf(req.getProductId()), req.getBranchCode(), req.getCompanyId(),
+					Integer.valueOf(req.getCoverId()),Integer.valueOf(req.getPolicyTypeId()),Integer.valueOf(req.getPlanTypeId()) );
+			
+			if(old.size()<=0 ) {   //Insert
+				
+				entryDate = new Date();
+				createdBy = req.getCreatedBy();
+				res.setResponse("Saved Successfully");
+				
+			}
+			else {  //update
+				
+				List<TravelPolicyType> list = new ArrayList<TravelPolicyType>();
+				
+				// Find Latest Record
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<TravelPolicyType> query = cb.createQuery(TravelPolicyType.class);
 
-		TravelPolicyType pt = new TravelPolicyType();
-		List<TravelPolicyType> list = new ArrayList<TravelPolicyType>();
+				// Find All
+				Root<TravelPolicyType> b = query.from(TravelPolicyType.class);
 
-		try
-		{
-		int amendId = 0;
-		Date startdate = req.getEffectiveStartdate();
-		String enddate = "31/12/2050";
-		Date end = format.parse(enddate);
-		long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
-		Date oldEndDate = new Date(req.getEffectiveStartdate().getTime() - MILLIS_IN_A_DAY);
-		Date entrydate = null;
+				// Select
+				query.select(b);
 
-		Integer subCoverId = 0;
-		{
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<TravelPolicyType> query = cb.createQuery(TravelPolicyType.class);
-		Root<TravelPolicyType> root = query.from(TravelPolicyType.class);
-		query.select(root);
-
-		Predicate p1 = cb.equal(root.get("subCoverId"), req.getSubCoverId());
-
-		query.where(p1);
-
-		TypedQuery<TravelPolicyType> tq = em.createQuery(query);
-		int limit = 0 , offset = 1 ;
-		tq.setFirstResult(limit * offset);
-		tq.setMaxResults(offset);
-
-		list = tq.getResultList();
-
-		}
-
-		if(list.size() > 0)
-		{
-		subCoverId= req.getSubCoverId();
-		CriteriaBuilder cb1 = em.getCriteriaBuilder();
-		CriteriaQuery<TravelPolicyType> query1 = cb1.createQuery(TravelPolicyType.class);
-
-		Root<TravelPolicyType> b = query1.from(TravelPolicyType.class);
-
-		Subquery<Long> maxAmendId = query1.subquery(Long.class);
-		Root<TravelPolicyType> ocpm1 = maxAmendId.from(TravelPolicyType.class);
-		maxAmendId.select(cb1.max(ocpm1.get("amendId")));
-		Predicate a1 = cb1.equal(ocpm1.get("companyId"), b.get("companyId"));
-		Predicate a2 = cb1.equal(ocpm1.get("productId"), b.get("productId"));
-		Predicate a3 = cb1.equal(ocpm1.get("policyTypeId"), b.get("policyTypeId"));
-		Predicate a4 = cb1.equal(ocpm1.get("planTypeId"), b.get("planTypeId"));
-		Predicate a5 = cb1.equal(ocpm1.get("branchCode"), b.get("branchCode"));
-		maxAmendId.where(a1,a2,a3,a4,a5);
-
-		// Order By
-		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb1.desc(b.get("amendId")));
-
-		// Where
-		Predicate n1 = cb1.equal(b.get("companyId"), req.getCompanyId());
-		Predicate n2 = cb1.equal(b.get("productId"), req.getProductId());
-		Predicate n3 = cb1.equal(b.get("policyTypeId"), req.getPolicyTypeId());
-		Predicate n4 = cb1.equal(b.get("planTypeId"), req.getPlanTypeId());
-		Predicate n5 = cb1.equal(b.get("branchCode"), req.getBranchCode());
-
-		query1.where(n1, n2, n3, n4, n5).orderBy(orderList);
-
-		TypedQuery<TravelPolicyType> result = em.createQuery(query1);
-		int limit1 = 0 , offset1 = 2 ;
-		result.setFirstResult(limit1 * offset1);
-		result.setMaxResults(offset1);
-		list = result.getResultList();
-
-		if (list.size() > 0) {
-		Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
-
-		if ( list.get(0).getEffectiveStartdate().before(beforeOneDay)  ) {
-		amendId = list.get(0).getAmendId() + 1 ;
-		entrydate = new Date() ;
-		TravelPolicyType lastRecord = list.get(0);
-		lastRecord.setEffectiveEnddate(oldEndDate);
-		savedetails(data,pt,req,entrydate,amendId);
-		repo.saveAndFlush(lastRecord);
-
-		} else {
-		amendId = list.get(0).getAmendId() ;
-		entrydate = list.get(0).getEntryDate() ;
-		pt = list.get(0) ;
-		if (list.size()>1 ) {
-		TravelPolicyType lastRecord = list.get(1);
-		lastRecord.setEffectiveEnddate(oldEndDate);
-		savedetails(data,pt,req,entrydate,amendId);
-		repo.saveAndFlush(lastRecord);
-		}
-	}
-}
-		savedetails(data,pt,req,entrydate,amendId);
-		repo.save(pt);
-		data.setResponse("Updated Successfully ");
-		data.setSuccessId(subCoverId.toString());
-
-		}
-		else
-		{
-		CriteriaBuilder cb2 = em.getCriteriaBuilder();
-		CriteriaQuery<TravelPolicyType> query2 = cb2.createQuery(TravelPolicyType.class);
-		Root<TravelPolicyType> root2 = query2.from(TravelPolicyType.class);
-		query2.select(root2);
-
-		Predicate p1 = cb2.equal(root2.get("subCoverDesc"), req.getSubCoverId());
-
-		query2.where(p1);
-
-		TypedQuery<TravelPolicyType> tq2 = em.createQuery(query2);
-		int limit = 0 , offset = 1 ;
-		tq2.setFirstResult(limit * offset);
-		tq2.setMaxResults(offset);
-
-		list = tq2.getResultList();
-
-		    if(list.size() > 0)
-		   {
-		    data.setResponse("Sub Cover Description is already Exist");
-		    data.setSuccessId(req.getSubCoverId().toString());
-		   }
-		   else
-		  {
-		data.setResponse("Saved Successfully ");
-		data.setSuccessId(req.getSubCoverId().toString());
-		savedetails(data,pt,req,entrydate,amendId);
-		repo.saveAndFlush(pt);
-		   }
-		}
-		} 
+				List<Order> orderList = new ArrayList<Order>();
+			    orderList.add(cb.desc(b.get("amendId")));
 		
-		catch (Exception e) {
+				Predicate n2 = cb.equal(b.get("productId"), req.getProductId() );	
+				Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId() );		
+				Predicate n4 = cb.equal(b.get("branchCode"), req.getBranchCode());
+				Predicate n5 = cb.equal(b.get("coverId"), req.getCoverId());
+				Predicate n6 =  cb.equal(b.get("policyTypeId"), req.getPolicyTypeId()); 
+				Predicate n7 =  cb.equal(b.get("planTypeId"), req.getPlanTypeId()); 
+			
+				query.where(n2,n3,n4, n5, n6, n7) ;
+			
+				TypedQuery<TravelPolicyType> result = em.createQuery(query);
+				int limit=0, offset=2;
+				result.setFirstResult(limit * offset);
+				result.setMaxResults(offset);
+				list = result.getResultList();
+				
+				if(list.size()>0) {
+					Date beforeOneDay = new Date(new Date().getTime()- MILLS_IN_A_DAY);
+					
+					if(list.get(0).getEffectiveStartdate().before(beforeOneDay)) {
+						amendId = list.get(0).getAmendId()+1;
+						entryDate = new Date();
+						createdBy = req.getCreatedBy();
+						TravelPolicyType lastRecord = list.get(0);
+						lastRecord.setEffectiveEnddate(oldEndDate);
+						repository.saveAndFlush(lastRecord);
+					}
+					else {
+						amendId = list.get(0).getAmendId();
+						entryDate = list.get(0).getEntryDate();
+						createdBy = list.get(0).getUpdatedBy();
+					
+						if(list.size()>1) {
+							TravelPolicyType lastRecord = list.get(1);	
+							lastRecord.setEffectiveEnddate(oldEndDate);
+							repository.saveAndFlush(lastRecord);
+						}
+					}
+				}
+				res.setResponse("Updated Successfully");
+				
+			}
+			
+			
+			dozerMapper.map(req, saveData);
+			
+			saveData.setSubCoverId(0);
+			saveData.setEffectiveStartdate(StartDate);
+			saveData.setEffectiveEnddate(endDate);
+			saveData.setEntryDate(entryDate);
+			saveData.setUpdatedBy(req.getCreatedBy());
+			saveData.setUpdatedDate(new Date());
+			saveData.setAmendId(amendId);
+			
+			repository.saveAndFlush(saveData);
+			res.setSuccessId(req.getCoverId().toString());
+			
+			}
+		catch(Exception e) {
 			e.printStackTrace();
+			log.info("Exception is --> " + e.getMessage());
+			return null;
 		}
-		return data;
+		return res;
 	}
 
-	private static TravelPolicyType savedetails(SuccessRes data, TravelPolicyType pt, TravelPolicyTypeSaveReq req, Date entrydate,int amendId) {
-		DozerBeanMapper mapper = new DozerBeanMapper();			
-		mapper.map(req, pt);
-		pt.setAmendId(amendId);
-		pt.setPolicyTypeId(Integer.valueOf(req.getPolicyTypeId()));
-		pt.setPlanTypeId(Integer.valueOf(req.getPlanTypeId()));
-		pt.setPolicyTypeDesc(req.getPolicyTypeDesc());
-		pt.setPlanTypeDesc(req.getPlanTypeDesc());
-		pt.setCoverId(Integer.valueOf(req.getCoverId()));
-		pt.setSubCoverId(Integer.valueOf(req.getSubCoverId()));
-		pt.setCompanyId(req.getCompanyId());
-		pt.setProductId(Integer.valueOf(req.getProductId()));
-		pt.setBranchCode(req.getBranchCode());
-		pt.setSubCoverDesc(req.getSubCoverDesc());
-		pt.setCurrency(req.getCurrency());
-		pt.setSumInsured(req.getSumInsured());
-		pt.setExcessAmt(req.getExcessAmt());
-		pt.setEntryDate(entrydate);
-		pt.setStatus(req.getStatus());
-		pt.setRemarks(req.getRemarks());
-		pt.setEffectiveStartdate(req.getEffectiveStartdate());
-		pt.setEffectiveEnddate(req.getEffectiveEnddate());
-		pt.setUpdatedBy(req.getUpdatedBy());
-		pt.setUpdatedDate(req.getUpdatedDate());
-		pt.setCoverStatus(req.getCoverStatus());
-		pt.setSubCoverId(req.getSubCoverId());
-		return pt;
-	}
+	
 
 	@Override
 	public TravelPolicyTypeGetRes1 getalltravelpolicytype(TravelPolicyTypeGetReq req) {
@@ -374,6 +328,21 @@ public class TravelPolicyTypeServiceImpl implements TravelPolicyTypeService {
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		
 		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 0);
+			cal.set(Calendar.SECOND, 0);
+			cal.set(Calendar.MILLISECOND, 0);
+			today = cal.getTime();  //beginning of the date
+			
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 59);
+			cal.set(Calendar.SECOND, 59);
+			cal.set(Calendar.MILLISECOND, 999);
+			Date todayEnd = cal.getTime(); //today end
+			
 		List<TravelPolicyType> list = new ArrayList<TravelPolicyType>();
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -397,7 +366,7 @@ public class TravelPolicyTypeServiceImpl implements TravelPolicyTypeService {
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.desc(b.get("amendId")));
+		orderList.add(cb.desc(b.get("coverId")));
 
 		// Where
 		Predicate n1 = cb.equal(b.get("companyId"), req.getCompanyId());
@@ -405,8 +374,11 @@ public class TravelPolicyTypeServiceImpl implements TravelPolicyTypeService {
 		Predicate n3 = cb.equal(b.get("policyTypeId"), req.getPolicyTypeId());
 		Predicate n4 = cb.equal(b.get("planTypeId"), req.getPlanTypeId());
 		Predicate n5 = cb.equal(b.get("branchCode"), req.getBranchCode());
+		Predicate n6 = cb.equal(b.get("amendId"),maxAmendId);
+		Predicate n8 = cb.lessThanOrEqualTo(b.get("effectiveStartdate"), today);
+		Predicate n9 = cb.greaterThanOrEqualTo(b.get("effectiveEnddate"), todayEnd);
 
-		query.where(n1, n2, n3, n4, n5).orderBy(orderList);
+		query.where(n1, n2, n3, n4, n5, n6,n8,n9).orderBy(orderList);
 
 		TypedQuery<TravelPolicyType> result = em.createQuery(query);
 		result.setFirstResult(req.getLimit() * req.getOffset());

@@ -10,23 +10,16 @@ import lombok.Data;
 @Data
 public class TravelPolicyTypeSaveReq {
 
-
 	private static final long serialVersionUID = 1L;
 
 	@JsonProperty("PolicyTypeId")
-	private String policyTypeId; //plan africa, asia...
+	private String policyTypeId;
 
 	@JsonProperty("PlanTypeId")
-	private String planTypeId;  //indivual, family, group
+	private String planTypeId;
 
 	@JsonProperty("CoverId")
-	private String coverId; 
-
-	@JsonProperty("SubCoverId")
-	private Integer subCoverId;
-	
-	@JsonProperty("AmendId")
-	private String amendId;
+	private String coverId;
 
 	@JsonProperty("CompanyId")
 	private String companyId;
@@ -46,46 +39,17 @@ public class TravelPolicyTypeSaveReq {
 	@JsonProperty("CoverDesc")
 	private String coverDesc;
 
-	@JsonProperty("subCoverDesc")
-	private String subCoverDesc;
-
-	@JsonProperty("Currency")
-	private String currency;
-
-	@JsonProperty("SumInsured")
-	private String sumInsured;
-
-	@JsonProperty("ExcessAmt")
-	private String excessAmt;
-
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EntryDate")
-	private Date entryDate;
-
-	@JsonProperty("Status")
-	private String status;
-
 	@JsonProperty("Remarks")
 	private String remarks;
 
 	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveStartdate")
-	private Date effectiveStartdate;
-
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveEnddate")
-	private Date effectiveEnddate;
-
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("UpdatedDate")
-	private Date updatedDate;
-
-	@JsonProperty("UpdatedBy")
-	private String updatedBy;
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
 
 	@JsonProperty("CoverStatus")
 	private String coverStatus;
 
-
+	@JsonProperty("CreatedBy")
+	private String createdBy;
 
 }

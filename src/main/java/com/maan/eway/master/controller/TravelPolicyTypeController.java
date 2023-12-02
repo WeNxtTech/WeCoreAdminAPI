@@ -18,7 +18,7 @@ import com.maan.eway.master.req.TravelPolicyTypeSaveReq;
 import com.maan.eway.master.res.TravelPolicyTypeGetRes1;
 import com.maan.eway.master.service.TravelPolicyTypeService;
 import com.maan.eway.res.CommonRes;
-import com.maan.eway.res.SuccessRes;
+import com.maan.eway.res.SuccessRes2;
 import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.ApiOperation;
@@ -54,7 +54,7 @@ public class TravelPolicyTypeController {
 			} else {
 
 				// Insert
-				SuccessRes res = entityService.insertTravelPolicyType(req);
+				SuccessRes2 res = entityService.insertTravelPolicyType(req);
 				data.setCommonResponse(res);
 				data.setIsError(false);
 				data.setErrorMessage(Collections.emptyList());

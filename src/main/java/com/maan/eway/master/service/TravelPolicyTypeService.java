@@ -6,13 +6,13 @@ import com.maan.eway.error.Error;
 import com.maan.eway.master.req.TravelPolicyTypeGetReq;
 import com.maan.eway.master.req.TravelPolicyTypeSaveReq;
 import com.maan.eway.master.res.TravelPolicyTypeGetRes1;
-import com.maan.eway.res.SuccessRes;
+import com.maan.eway.res.SuccessRes2;
 
 public interface TravelPolicyTypeService {
 	
 	List<Error> validateTravelPolicyType(TravelPolicyTypeSaveReq req);
 
-	SuccessRes insertTravelPolicyType(TravelPolicyTypeSaveReq req);
+	SuccessRes2 insertTravelPolicyType(TravelPolicyTypeSaveReq req);
 
 	TravelPolicyTypeGetRes1 getalltravelpolicytype(TravelPolicyTypeGetReq req);
 

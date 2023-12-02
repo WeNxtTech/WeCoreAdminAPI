@@ -74,10 +74,10 @@ public class TravelPolicyTypeServiceImpl implements TravelPolicyTypeService {
 			error.add(new Error("O2","Plan Type Id","Please Enter Plan Type Id"));
 		}
 		
-		if(req.getCoverId()==null)
-		{
-			error.add(new Error("O3","Cover Id","Please Enter Cover Id"));
-		}
+//		if(req.getCoverId()==null)
+//		{
+//			error.add(new Error("O3","Cover Id","Please Enter Cover Id"));
+//		}
 		
 		
 		if(req.getCompanyId()==null)

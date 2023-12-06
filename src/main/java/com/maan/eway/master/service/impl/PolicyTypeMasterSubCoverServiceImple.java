@@ -374,11 +374,12 @@ public class PolicyTypeMasterSubCoverServiceImple  implements PolicyTypeMasterSu
 			Predicate n7 =  cb.equal(b.get("planTypeId"), req.getPlanTypeId()); 
 			Predicate n8 = cb.lessThanOrEqualTo(b.get("effectiveStartdate"), today);
 			Predicate n9 = cb.greaterThanOrEqualTo(b.get("effectiveEnddate"), todayEnd);
+			Predicate n11 = cb.notEqual(b.get("subCoverId"), "0");
 			
 		
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("subCoverId")));
-			query.where(n1, n2,n3,n4, n5, n6, n7, n8, n9).orderBy(orderList);
+			query.where(n1, n2,n3,n4, n5, n6, n7, n8, n9,n11).orderBy(orderList);
 			
 			TypedQuery<TravelPolicyType> result = em.createQuery(query);
 			list = result.getResultList();
@@ -460,6 +461,7 @@ public class PolicyTypeMasterSubCoverServiceImple  implements PolicyTypeMasterSu
 			Predicate n8 = cb.lessThanOrEqualTo(b.get("effectiveStartdate"), today);
 			Predicate n9 = cb.greaterThanOrEqualTo(b.get("effectiveEnddate"), todayEnd);
 			Predicate n10 = cb.equal(b.get("subCoverId"), req.getSubCoverId());
+			
 		
 			query.where(n1, n2,n3,n4, n5, n6, n7, n8, n9, n10);
 			
@@ -626,7 +628,7 @@ public class PolicyTypeMasterSubCoverServiceImple  implements PolicyTypeMasterSu
 				
 				if(list.size()>0) {
 					
-					List<TravelPolicyType> dup = list.stream().filter(o -> o.getSubCoverDesc().equalsIgnoreCase(req.getSubCoverDesc())).collect(Collectors.toList());
+					List<TravelPolicyType> dup = list.stream().filter(o -> (o.getSubCoverDesc()==null?"":o.getSubCoverDesc()).equalsIgnoreCase(req.getSubCoverDesc())).collect(Collectors.toList());
 					if(dup.size()>0)
 						errorList.add(new Error("02", "SubCoverDesc","SubCover '" + req.getSubCoverDesc() + "' Already Exists"));
 								

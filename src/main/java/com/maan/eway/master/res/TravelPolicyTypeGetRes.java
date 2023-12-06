@@ -45,24 +45,24 @@ public class TravelPolicyTypeGetRes {
 	@JsonProperty("CoverDesc")
 	private String coverDesc;
 
-	@JsonProperty("subCoverDesc")
-	private String subCoverDesc;
-
-	@JsonProperty("Currency")
-	private String currency;
-
-	@JsonProperty("SumInsured")
-	private String sumInsured;
-
-	@JsonProperty("ExcessAmt")
-	private String excessAmt;
-
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EntryDate")
-	private Date entryDate;
-
-	@JsonProperty("Status")
-	private String status;
+//	@JsonProperty("subCoverDesc")
+//	private String subCoverDesc;
+//
+//	@JsonProperty("Currency")
+//	private String currency;
+//
+//	@JsonProperty("SumInsured")
+//	private String sumInsured;
+//
+//	@JsonProperty("ExcessAmt")
+//	private String excessAmt;
+//
+//	@JsonFormat(pattern = "dd/MM/yyyy")
+//	@JsonProperty("EntryDate")
+//	private Date entryDate;
+//
+//	@JsonProperty("Status")
+//	private String status;
 
 	@JsonProperty("Remarks")
 	private String remarks;

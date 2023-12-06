@@ -13,7 +13,7 @@ public class TravelPolicyTypeGetReq {
 	@JsonProperty("PolicyTypeId")
 	private String policyTypeId;
 	
-	@JsonProperty("CompanyId")
+	@JsonProperty("InsuranceId")
 	private String companyId;
 	
 	@JsonProperty("ProductId")

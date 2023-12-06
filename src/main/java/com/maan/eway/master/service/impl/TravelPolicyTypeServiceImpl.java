@@ -29,6 +29,7 @@ import com.maan.eway.bean.TravelPolicyType;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.TravelPolicyTypeGetReq;
 import com.maan.eway.master.req.TravelPolicyTypeSaveReq;
+import com.maan.eway.master.res.PolicyTypeSubCoverMasterGetRes;
 import com.maan.eway.master.res.TravelPolicyTypeGetRes;
 import com.maan.eway.master.res.TravelPolicyTypeGetRes1;
 import com.maan.eway.master.service.TravelPolicyTypeService;
@@ -349,15 +350,17 @@ public class TravelPolicyTypeServiceImpl implements TravelPolicyTypeService {
 			
 		List<TravelPolicyType> list = new ArrayList<TravelPolicyType>();
 
+		//Find Latest Record
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<TravelPolicyType> query = cb.createQuery(TravelPolicyType.class);
 
+		//Find All
 		Root<TravelPolicyType> b = query.from(TravelPolicyType.class);
 
-
+		//Select
 		query.select(b);
 
-
+		//AmenId max filter
 		Subquery<Long> maxAmendId = query.subquery(Long.class);
 		Root<TravelPolicyType> ocpm1 = maxAmendId.from(TravelPolicyType.class);
 		maxAmendId.select(cb.max(ocpm1.get("amendId")));
@@ -366,13 +369,9 @@ public class TravelPolicyTypeServiceImpl implements TravelPolicyTypeService {
 		Predicate a3 = cb.equal(ocpm1.get("policyTypeId"), b.get("policyTypeId"));
 		Predicate a4 = cb.equal(ocpm1.get("planTypeId"), b.get("planTypeId"));
 		Predicate a5 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+		
 		maxAmendId.where(a1,a2,a3,a4,a5);
 
-		// Order By
-		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.desc(b.get("coverId")));
-
-		// Where
 		Predicate n1 = cb.equal(b.get("companyId"), req.getCompanyId());
 		Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
 		Predicate n3 = cb.equal(b.get("policyTypeId"), req.getPolicyTypeId());
@@ -382,6 +381,8 @@ public class TravelPolicyTypeServiceImpl implements TravelPolicyTypeService {
 		Predicate n8 = cb.lessThanOrEqualTo(b.get("effectiveStartdate"), today);
 		Predicate n9 = cb.greaterThanOrEqualTo(b.get("effectiveEnddate"), todayEnd);
 
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.desc(b.get("coverId")));
 		query.where(n1, n2, n3, n4, n5, n6,n8,n9).orderBy(orderList);
 
 		TypedQuery<TravelPolicyType> result = em.createQuery(query);
@@ -389,51 +390,57 @@ public class TravelPolicyTypeServiceImpl implements TravelPolicyTypeService {
 		result.setMaxResults( req.getOffset());
 		list = result.getResultList();
 		
-		for (TravelPolicyType data : list) {
+		if(list.size()>0) {
 			
-		TravelPolicyTypeGetRes res = new TravelPolicyTypeGetRes();
-		
-		
-		res = mapper.map(data, TravelPolicyTypeGetRes.class);
-		res.setPolicyTypeId(data.getPolicyTypeId().toString());
-		res.setPolicyTypeDesc(data.getPolicyTypeDesc());
-		res.setPlanTypeId(data.getPlanTypeId().toString());
-		res.setPlanTypeDesc(data.getPlanTypeDesc());
-		res.setCoverId(data.getCoverId().toString());
-		res.setSubCoverId(data.getSubCoverId().toString());
-		res.setAmendId(data.getAmendId().toString());
-		res.setCompanyId(data.getCompanyId().toString());
-		res.setProductId(data.getProductId().toString());
-		res.setBranchCode(data.getBranchCode());
-		res.setPolicyTypeDesc(data.getPolicyTypeDesc());
-		res.setPlanTypeDesc(data.getPlanTypeDesc());
-		res.setCoverDesc(data.getCoverDesc());
-		res.setSubCoverDesc(data.getSubCoverDesc());
-		res.setCurrency(data.getCurrency());
-		res.setSumInsured(data.getSumInsured());
-		res.setExcessAmt(data.getExcessAmt());
-		res.setEntryDate(data.getEntryDate());
-		res.setStatus(data.getStatus());
-		res.setRemarks(data.getRemarks()==null?"":data.getRemarks());
-		res.setEffectiveStartdate(data.getEffectiveStartdate());
-		res.setEffectiveEnddate(data.getEffectiveEnddate());
-		res.setUpdatedDate(data.getUpdatedDate());
-		res.setCoverStatus(data.getCoverStatus()==null?"":data.getCoverStatus());
-		resList.add(res);
-		}		
-		res1.setTotalCount(list.size());
-		res1.setTravelPolicyType(resList);
-		
+			for(TravelPolicyType data : list) {
+				TravelPolicyTypeGetRes res = new TravelPolicyTypeGetRes();
+				res = mapper.map(data,  TravelPolicyTypeGetRes.class);
+				resList.add(res);
+				
+			}
+			res1.setTotalCount(list.size());
+			res1.setTravelPolicyType(resList);
+		}
 		} catch (Exception e) {
-		e.printStackTrace();
-		return null;
-
+			e.printStackTrace();
+			return null;
 		}
 		return res1;
-
-	
+		}
 	}
-	
-	
-
-}
+		
+//		for (TravelPolicyType data : list) {
+//			
+//		TravelPolicyTypeGetRes res = new TravelPolicyTypeGetRes();
+//		
+//		
+//		res = mapper.map(data, TravelPolicyTypeGetRes.class);
+//		res.setPolicyTypeId(data.getPolicyTypeId().toString());
+//		res.setPolicyTypeDesc(data.getPolicyTypeDesc());
+//		res.setPlanTypeId(data.getPlanTypeId().toString());
+//		res.setPlanTypeDesc(data.getPlanTypeDesc());
+//		res.setCoverId(data.getCoverId().toString());
+//		res.setSubCoverId(data.getSubCoverId().toString());
+//		res.setAmendId(data.getAmendId().toString());
+//		res.setCompanyId(data.getCompanyId().toString());
+//		res.setProductId(data.getProductId().toString());
+//		res.setBranchCode(data.getBranchCode());
+//		res.setPolicyTypeDesc(data.getPolicyTypeDesc());
+//		res.setPlanTypeDesc(data.getPlanTypeDesc());
+//		res.setCoverDesc(data.getCoverDesc());
+//		res.setSubCoverDesc(data.getSubCoverDesc());
+//		res.setCurrency(data.getCurrency());
+//		res.setSumInsured(data.getSumInsured());
+//		res.setExcessAmt(data.getExcessAmt());
+//		res.setEntryDate(data.getEntryDate());
+//		res.setStatus(data.getStatus());
+//		res.setRemarks(data.getRemarks()==null?"":data.getRemarks());
+//		res.setEffectiveStartdate(data.getEffectiveStartdate());
+//		res.setEffectiveEnddate(data.getEffectiveEnddate());
+//		res.setUpdatedDate(data.getUpdatedDate());
+//		res.setCoverStatus(data.getCoverStatus()==null?"":data.getCoverStatus());
+//		resList.add(res);
+//		}		
+		
+		
+		

@@ -141,9 +141,11 @@ public class TravelPolicyTypeServiceImpl implements TravelPolicyTypeService {
 
 		
 		if (StringUtils.isBlank(req.getCoverStatus())) {
-			error.add(new Error("21", "Cover Status", "Please Enter Cover Status"));
-		} else if (req.getCoverStatus().length() > 100) {
-			error.add(new Error("21", "Cover Status", "Enter Cover Status within 100 Characters Only"));
+			error.add(new Error("21", "Cover Status", "Please Select Cover Status"));
+		} else if (req.getCoverStatus().length() > 1) {
+			error.add(new Error("21", "Cover Status", "Please Select Valid Cover Status - 1 Character Only Allowed"));
+		}else if(!("Y".equalsIgnoreCase(req.getCoverStatus())||"N".equalsIgnoreCase(req.getCoverStatus()))) {
+			error.add(new Error("21", "Cover Status", "Please Select Valid Cover Status - Active or Deactive or Pending or Referral "));
 		}
 		
 		if (StringUtils.isBlank(req.getCreatedBy())) {

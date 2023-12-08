@@ -13,6 +13,7 @@ import com.maan.eway.batch.req.GetUploadTypeReq;
 import com.maan.eway.batch.req.MoveRecordsReq;
 import com.maan.eway.batch.req.SamplFileDownloadReq;
 import com.maan.eway.batch.req.SaveUploadTypeReq;
+import com.maan.eway.batch.req.UpdateEmployeeRecordReq;
 import com.maan.eway.batch.req.UpdateRecordReq;
 import com.maan.eway.batch.res.EwayUploadRes;
 import com.maan.eway.batch.res.SaveXlConfigReq;
@@ -47,5 +48,7 @@ public interface VehicleBatchService {
 	CommonRes saveExcelField(List<SaveXlConfigReq> req);
 
 	CommonRes getUploadRecord(MoveRecordsReq req);
+
+	CommonRes updateEmployeeRecord(UpdateEmployeeRecordReq req);
 
 }

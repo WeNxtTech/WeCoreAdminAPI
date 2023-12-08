@@ -86,6 +86,7 @@ import com.maan.eway.batch.req.MotorUpdateReq;
 import com.maan.eway.batch.req.MoveRecordsReq;
 import com.maan.eway.batch.req.SamplFileDownloadReq;
 import com.maan.eway.batch.req.SaveUploadTypeReq;
+import com.maan.eway.batch.req.UpdateEmployeeRecordReq;
 import com.maan.eway.batch.req.UpdateRecordReq;
 import com.maan.eway.batch.res.EwayUploadRes;
 import com.maan.eway.batch.res.GetEmployeeDetailsRes;
@@ -591,6 +592,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 				employeeRawRepo.updateContentTypeId(requestReferenceNo);
 				employeeRawRepo.updateErrorStatusAndErrorDesc(requestReferenceNo);
 			}else {
+				employeeRawRepo.updateLocationId(requestReferenceNo);
 				List<EwayEmplyeeDetailRaw> passList=employeeRawRepo.findByCompanyIdAndProductIdAndRequestReferenceNo(companyId, productId, requestReferenceNo);
 				if(!CollectionUtils.isEmpty(passList)) {
 					
@@ -1578,6 +1580,8 @@ public CommonRes getUploadRecord(MoveRecordsReq req) {
 	    			res.put("SumInsured",StringUtils.isBlank(p.getSumInsured())?"":p.getSumInsured());
 	    			res.put("Description", StringUtils.isBlank(p.getDescription())?"":p.getDescription());
 	    			res.put("Status", "Y");
+	    			res.put("RowNum", p.getRowNum().toString());
+	    			res.put("SerialNumber", p.getSerialNumber());
 	    			return res;
 	    		})
 	    		.collect(Collectors.toList());
@@ -1600,6 +1604,7 @@ public CommonRes getUploadRecord(MoveRecordsReq req) {
 	    	    			res.put("ErrorDesc", StringUtils.isBlank(p.getErrorDesc())?"":p.getErrorDesc());
 	    	    			res.put("Status", "E");
 	    	    			res.put("RowNum", p.getRowNum().toString());
+	    	    			res.put("SerialNumber", p.getSerialNumber());
 	    	    			return res;
 	    	    		})
 	    	    		.collect(Collectors.toList());
@@ -1620,8 +1625,71 @@ public CommonRes getUploadRecord(MoveRecordsReq req) {
 	return response;
 }
 
+@Override
+public CommonRes updateEmployeeRecord(UpdateEmployeeRecordReq req) {
+	CommonRes response = new CommonRes();
+	try {
+		List<Error> error =validateDomestic(req);
+		if(error.isEmpty()) {
+			EwayEmplyeeDetailRaw  detailRaw =EwayEmplyeeDetailRaw.builder()
+					.companyId(Integer.valueOf(req.getCompanyId()))
+					.productId(Integer.valueOf(req.getProductId()))
+					.requestReferenceNo(req.getRequestReferenceNo())
+					.contentTypeDesc(req.getContentTypeDesc())
+					.contentTypeId(req.getContentTypeId())
+					.locationDesc(req.getLocationDesc())
+					.locationId(req.getLocationId())
+					.sumInsured(req.getSumInsured())
+					.description(req.getDescription())
+					.status("Y")
+					.errorDesc(null)
+					.rowNum(Integer.valueOf(req.getRowNum()))
+					.serialNumber(req.getSerialNumber())
+					.build();
+			employeeRawRepo.save(detailRaw);
+			response.setErrorMessage(Collections.emptyList());
+			response.setIsError(false);
+			response.setMessage("Records updated Success");
+		}else {
+			response.setErrorMessage(error);
+			response.setIsError(true);
+			response.setMessage("Records Failed");
+		}
+	}catch (Exception e) {
+		e.printStackTrace();
+		log.error(e);
+	}
+	return response;
+}
+
  
- 
+ private List<Error> validateDomestic(UpdateEmployeeRecordReq req){
+	 
+	 List<Error> list =new ArrayList<>();
+	 
+	 if(StringUtils.isBlank(req.getLocationDesc())) {
+		 list.add(new Error("","LocationDesc","Please enter LocationDesc")) ;
+	 }if(StringUtils.isBlank(req.getLocationId())) {
+		 list.add(new Error("","LocationId","Please enter LocationId")) ;
+	 }if(StringUtils.isBlank(req.getContentTypeDesc())) {
+		 list.add(new Error("","ContentTypeDesc","Please enter ContentTypeDesc")) ;
+	 }if(StringUtils.isBlank(req.getContentTypeId())) {
+		 list.add(new Error("","ContentTypeId","Please enter ContentTypeId")) ;
+	 }if(StringUtils.isBlank(req.getSumInsured())) {
+		 list.add(new Error("","SumInsured","Please enter SumInsured")) ;
+
+	 }if(StringUtils.isBlank(req.getDescription())) {
+		 list.add(new Error("","Description","Please enter Description")) ;
+
+	 }if(StringUtils.isBlank(req.getSerialNumber())) {
+		 list.add(new Error("","SerialNumber","Please enter SerialNumber")) ;
+
+	 }
+	 
+	 return list;
+	 
+	 
+ }
 
    
 }

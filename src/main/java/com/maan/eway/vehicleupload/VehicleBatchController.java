@@ -22,6 +22,7 @@ import com.maan.eway.batch.req.GetUploadTypeReq;
 import com.maan.eway.batch.req.MoveRecordsReq;
 import com.maan.eway.batch.req.SamplFileDownloadReq;
 import com.maan.eway.batch.req.SaveUploadTypeReq;
+import com.maan.eway.batch.req.UpdateEmployeeRecordReq;
 import com.maan.eway.batch.req.UpdateRecordReq;
 import com.maan.eway.batch.res.EwayUploadRes;
 import com.maan.eway.batch.res.SaveXlConfigReq;
@@ -120,6 +121,11 @@ public class VehicleBatchController {
     @PostMapping("/get/upload/record")
     public CommonRes getUploadRecord(@RequestBody MoveRecordsReq req) {
     	return service.getUploadRecord(req);
+    }
+
+    @PostMapping("/update/employee/record")
+    public CommonRes updateEmployeeRecord(@RequestBody UpdateEmployeeRecordReq req) {
+    	return service.updateEmployeeRecord(req);
     }
 
 }

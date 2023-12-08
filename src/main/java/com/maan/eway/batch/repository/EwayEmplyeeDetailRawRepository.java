@@ -104,4 +104,26 @@ public interface EwayEmplyeeDetailRawRepository extends JpaRepository<EwayEmplye
 	@Query(value="UPDATE eway_employee_details_raw EMP SET LOCATION_ID =( SELECT RISK_ID FROM building_details WHERE TRIM(UPPER(EMP.LOCATION_DESC)) = TRIM(UPPER(LOCATION_NAME)) AND STATUS='Y' AND EMP.QUOTE_NO=QUOTE_NO AND EMP.REQUEST_REFERENCE_NO=REQUEST_REFERENCE_NO) WHERE REQUEST_REFERENCE_NO=?1",nativeQuery=true)
 	Integer updateLocationId(String requestReferenceNo);
 	
+	
+	@Modifying
+	@Transactional
+	@Query(value="UPDATE eway_employee_details_raw SET error_desc='duplicate serial number has found' ,STATUS ='E' WHERE request_reference_no=?1 AND serial_number IN(SELECT * FROM(SELECT serial_number FROM eway_employee_details_raw WHERE request_reference_no=?1 GROUP BY serial_number HAVING COUNT(*)>1)temp)",nativeQuery=true)
+	Integer updateDuplicateSerialNo(String requestReferenceNo);
+	
+	
+	@Modifying
+	@Transactional
+	@Query(value="UPDATE eway_employee_details_raw emp SET STATUS='E',error_desc= CONCAT(COALESCE(error_desc,''),'~Suminsured is not matched') WHERE(SELECT * FROM(SELECT SUM(sum_insured) FROM eway_employee_details_raw WHERE request_reference_no=emp.request_reference_no AND section_id=emp.section_id)X) !=(SELECT CASE WHEN section_id='3' THEN allrisk_suminsured_lc ELSE content_suminsured_lc END FROM eservice_building_details WHERE section_id=emp.section_id AND request_reference_no=emp.request_reference_no) AND request_reference_no=?1",nativeQuery=true)
+	Integer updateContentAndAllriskSumInsured(String requestReferenceNo);
+
+	@Modifying
+	@Transactional
+	@Query(value="UPDATE eway_employee_details_raw emp SET content_type_id=(SELECT item_code FROM eway_list_item_value WHERE item_type=(CASE WHEN emp.section_id='3' THEN 'All Risk' ELSE 'Content' END) AND company_id=emp.company_id AND STATUS='Y' AND TRIM(UPPER(item_value))=TRIM(UPPER(emp.content_type_desc))) WHERE STATUS='Y' AND request_reference_no=?1",nativeQuery=true)
+	Integer updateContentTypeId(String requestReferenceNo);
+
+	@Modifying
+	@Transactional
+	@Query(value="UPDATE eway_employee_details_raw SET STATUS='E',error_desc=CONCAT(COALESCE(error_desc,' '),'~Content/Allrisk Id is not updated') WHERE(content_type_id IS NULL OR content_type_id='') AND STATUS='Y' AND request_reference_no=?1",nativeQuery=true)
+	Integer updateErrorStatusAndErrorDesc(String requestReferenceNo);
+	
 }

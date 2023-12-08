@@ -221,7 +221,7 @@ public class VehicleCSVFileConvertion {
 		              }
 		              for(int i = 0; i < firstCount; i++){
 		            	  csvData = (String.valueOf(csvData)+getXLSXCellData(myRow.getCell(i))+"~")
-			                		  .replace("\t", "").replace("\n", "").replace("\r", "").replace("'", "").replaceAll("^\"|\"$", "");
+			                		  .replace("\t", "").replace("\n", "").replace("\r", "").replace("'", "").replaceAll("^\"|\"$", "").trim();
 		              }
 		             /* if(StringUtils.isNotBlank(csvData)) {
 							
@@ -270,7 +270,7 @@ public class VehicleCSVFileConvertion {
 	                }
 	                for(int i = 0; i < firstCount; i++)
 	                {
-	                    csvData = String.valueOf(csvData)+getCellData(myRow.getCell(i)).replace("\t", "").replace("\n", "").replace("\r", "").replace("'", "").replaceAll("^\"|\"$", "")+"~";
+	                    csvData = String.valueOf(csvData)+getCellData(myRow.getCell(i)).replace("\t", "").replace("\n", "").replace("\r", "").replace("'", "").replaceAll("^\"|\"$", "")+"~".trim();
 	                }
 	               // int rownum = ++rowcount;
 	                
@@ -324,6 +324,7 @@ public class VehicleCSVFileConvertion {
 	                    break;
 	                }
 	            }
+	           
 	            return cellData.trim();
 	        }
 	    

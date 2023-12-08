@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -18,6 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -391,6 +394,8 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 				}else if("4".equals(productId)){
 					eserviceRepository.deleteRawEmployeeDetails(requestReferenceNo);
 					eserviceRepository.deletePassengerDetails(requestReferenceNo);
+				}else {
+					eserviceRepository.deleteRawEmployeeDetails(requestReferenceNo);
 				}
 			}else {
 				eserviceRepository.deleteByRequestReferenceNo(requestReferenceNo,"E");
@@ -578,6 +583,23 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 					totalRecords =errorRecords + validRecords;
 					
 					
+				}
+			}else if("3".equals(product)) {
+				employeeRawRepo.updateDuplicateSerialNo(requestReferenceNo);
+				employeeRawRepo.updateContentAndAllriskSumInsured(requestReferenceNo);
+				employeeRawRepo.updateLocationId(requestReferenceNo);
+				employeeRawRepo.updateContentTypeId(requestReferenceNo);
+				employeeRawRepo.updateErrorStatusAndErrorDesc(requestReferenceNo);
+			}else {
+				List<EwayEmplyeeDetailRaw> passList=employeeRawRepo.findByCompanyIdAndProductIdAndRequestReferenceNo(companyId, productId, requestReferenceNo);
+				if(!CollectionUtils.isEmpty(passList)) {
+					
+					errorRecords =passList.stream().filter(f -> "E".equalsIgnoreCase(f.getStatus()))
+							.count();
+					validRecords =passList.stream().filter(f -> "Y".equalsIgnoreCase(f.getStatus()))
+							.count();
+					totalRecords =errorRecords + validRecords;
+						
 				}
 			}
 			
@@ -1527,6 +1549,73 @@ public CommonRes saveExcelField(List<SaveXlConfigReq> req) {
 		log.error(e);
     	response.setCommonResponse("FAILED");
     	response.setMessage(e.getMessage());
+	}
+	return response;
+}
+
+@Override
+public CommonRes getUploadRecord(MoveRecordsReq req) {
+	CommonRes response = new CommonRes();
+	try {
+		List<EwayEmplyeeDetailRaw> list =employeeRawRepo.findByRequestReferenceNo(req.getRequestRefNo());
+		
+	    Map<String,List<EwayEmplyeeDetailRaw>>  groupData=
+	    		list.stream().collect(Collectors.groupingBy(EwayEmplyeeDetailRaw::getStatus));
+			    		
+	    List<HashMap<String,String>> validRecords =groupData
+	    		.entrySet().stream().filter(p ->p.getKey().equalsIgnoreCase("Y"))
+	    		.map(p ->p.getValue())
+	    		.flatMap(p ->p.parallelStream())
+	    		.map(p ->{
+	    			HashMap<String,String> res = new HashMap<String,String>();
+	    			res.put("CompanyId", p.getCompanyId() ==null?"":p.getCompanyId().toString());
+	    			res.put("ProductId", p.getProductId()==null?"":p.getProductId().toString());
+	    			res.put("RequestReferenceNo", StringUtils.isBlank(p.getRequestReferenceNo())?"":p.getRequestReferenceNo());
+	    			res.put("LocationDesc", StringUtils.isBlank(p.getLocationDesc())?"":p.getLocationDesc());
+	    			res.put("ContentTypeDesc", StringUtils.isBlank(p.getContentTypeDesc())?"":p.getContentTypeDesc());
+	    			res.put("LocationId", StringUtils.isBlank(p.getLocationId())?"":p.getLocationId());
+	    			res.put("ContentTypeId", StringUtils.isBlank(p.getContentTypeId())?"":p.getContentTypeId());
+	    			res.put("SumInsured",StringUtils.isBlank(p.getSumInsured())?"":p.getSumInsured());
+	    			res.put("Description", StringUtils.isBlank(p.getDescription())?"":p.getDescription());
+	    			res.put("Status", "Y");
+	    			return res;
+	    		})
+	    		.collect(Collectors.toList());
+	  
+	    List<HashMap<String,String>> errorRecords =groupData
+	    	    		.entrySet().stream().filter(p ->p.getKey().equalsIgnoreCase("E"))
+	    	    		.map(p ->p.getValue())
+	    	    		.flatMap(p ->p.parallelStream())
+	    	    		.map(p ->{
+	    	    			HashMap<String,String> res = new HashMap<String,String>();
+	    	    			res.put("CompanyId", p.getCompanyId() ==null?"":p.getCompanyId().toString());
+	    	    			res.put("ProductId", p.getProductId()==null?"":p.getProductId().toString());
+	    	    			res.put("RequestReferenceNo", StringUtils.isBlank(p.getRequestReferenceNo())?"":p.getRequestReferenceNo());
+	    	    			res.put("LocationDesc", StringUtils.isBlank(p.getLocationDesc())?"":p.getLocationDesc());
+	    	    			res.put("ContentTypeDesc", StringUtils.isBlank(p.getContentTypeDesc())?"":p.getContentTypeDesc());
+	    	    			res.put("LocationId", StringUtils.isBlank(p.getLocationId())?"":p.getLocationId());
+	    	    			res.put("ContentTypeId", StringUtils.isBlank(p.getContentTypeId())?"":p.getContentTypeId());
+	    	    			res.put("SumInsured",StringUtils.isBlank(p.getSumInsured())?"":p.getSumInsured());
+	    	    			res.put("Description", StringUtils.isBlank(p.getDescription())?"":p.getDescription());
+	    	    			res.put("ErrorDesc", StringUtils.isBlank(p.getErrorDesc())?"":p.getErrorDesc());
+	    	    			res.put("Status", "E");
+	    	    			res.put("RowNum", p.getRowNum().toString());
+	    	    			return res;
+	    	    		})
+	    	    		.collect(Collectors.toList());
+	    
+	    HashMap<String,Object> map = new HashMap<>();
+	    map.put("SuccessRecords", validRecords);		
+	    map.put("ErrorRecords", errorRecords);		
+	    response.setErroCode(0);
+	    response.setErrorMessage(Collections.emptyList());
+	    response.setIsError(false);
+	    response.setMessage("SUCCESS");
+	    response.setCommonResponse(map);
+	    	  
+	}catch (Exception e) {
+		e.printStackTrace();
+		log.error(e);
 	}
 	return response;
 }

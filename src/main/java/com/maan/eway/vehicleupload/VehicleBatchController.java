@@ -116,5 +116,10 @@ public class VehicleBatchController {
     	return service.moveRecords(req,token.replaceAll("Bearer ", "").split(",")[0]);
     }
     
+    
+    @PostMapping("/get/upload/record")
+    public CommonRes getUploadRecord(@RequestBody MoveRecordsReq req) {
+    	return service.getUploadRecord(req);
+    }
 
 }

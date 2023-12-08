@@ -46,4 +46,6 @@ public interface VehicleBatchService {
 
 	CommonRes saveExcelField(List<SaveXlConfigReq> req);
 
+	CommonRes getUploadRecord(MoveRecordsReq req);
+
 }

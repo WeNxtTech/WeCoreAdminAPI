@@ -133,6 +133,21 @@ public class EwayEmplyeeDetailRaw {
 	@Column(name ="PASSENGER_NATIONALITY")
 	private String passengerNationality;
 	
+	@Column(name ="CONTENT_TYPE_DESC")
+	private String contentTypeDesc;
+	
+	@Column(name ="CONTENT_TYPE_ID")
+	private String contentTypeId;
+	
+	@Column(name ="DESCRIPTION")
+	private String description;
+	
+	@Column(name ="SERIAL_NUMBER")
+	private String serialNumber;
+	
+	@Column(name ="SUM_INSURED")
+	private String sumInsured;
+	
 	
 	
 }

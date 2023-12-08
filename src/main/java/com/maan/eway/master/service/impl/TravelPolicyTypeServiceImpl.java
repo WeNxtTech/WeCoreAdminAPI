@@ -192,11 +192,11 @@ public class TravelPolicyTypeServiceImpl implements TravelPolicyTypeService {
 			Predicate n4 = cb.equal(b.get("branchCode"), req.getBranchCode());
 			Predicate n6 =  cb.equal(b.get("policyTypeId"), req.getPolicyTypeId()); 
 			Predicate n7 =  cb.equal(b.get("planTypeId"), req.getPlanTypeId()); 
-//			Predicate n8 = cb.lessThanOrEqualTo(b.get("effectiveStartdate"), today1);
-//			Predicate n9 = cb.greaterThanOrEqualTo(b.get("effectiveEnddate"), todayEnd1);
+			Predicate n8 = cb.lessThanOrEqualTo(b.get("effectiveStartdate"), today1);
+			Predicate n9 = cb.greaterThanOrEqualTo(b.get("effectiveEnddate"), todayEnd1);
 	//		Predicate n10 = cb.equal(b.get("subCoverId"), "0");
 		
-			query.where(n1, n2,n3,n4,n6, n7);
+			query.where(n1, n2,n3,n4,n6, n7,n8,n9);
 			
 			TypedQuery<TravelPolicyType> result = em.createQuery(query);
 			list = result.getResultList();
@@ -269,6 +269,7 @@ public class TravelPolicyTypeServiceImpl implements TravelPolicyTypeService {
 				Predicate n5 = cb.equal(b.get("coverId"), req.getCoverId());
 				Predicate n6 =  cb.equal(b.get("policyTypeId"), req.getPolicyTypeId()); 
 				Predicate n7 =  cb.equal(b.get("planTypeId"), req.getPlanTypeId()); 
+			//	Predicate n8 =  cb.equal(b.get("subCoverId"), "0"); 
 			
 				query.where(n2,n3,n4, n5, n6, n7) ;
 			
@@ -356,6 +357,7 @@ public class TravelPolicyTypeServiceImpl implements TravelPolicyTypeService {
 			Date todayEnd = cal.getTime(); //today end
 			
 		List<TravelPolicyType> list = new ArrayList<TravelPolicyType>();
+		List<TravelPolicyType> list1 = new ArrayList<TravelPolicyType>();
 
 		//Find Latest Record
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -382,8 +384,8 @@ public class TravelPolicyTypeServiceImpl implements TravelPolicyTypeService {
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(b.get("coverId")));
-		orderList.add(cb.asc(b.get("subCoverId")));
+		orderList.add(cb.desc(b.get("coverId")));
+		orderList.add(cb.desc(b.get("subCoverId")));
 
 
 		Predicate n1 = cb.equal(b.get("companyId"), req.getCompanyId());
@@ -391,19 +393,22 @@ public class TravelPolicyTypeServiceImpl implements TravelPolicyTypeService {
 		Predicate n3 = cb.equal(b.get("policyTypeId"), req.getPolicyTypeId());
 		Predicate n4 = cb.equal(b.get("planTypeId"), req.getPlanTypeId());
 		Predicate n5 = cb.equal(b.get("branchCode"), req.getBranchCode());
-	//	Predicate n11 = cb.equal(b.get("coverId"), coverId);
 		Predicate n6 = cb.equal(b.get("amendId"),maxAmendId);
-//		Predicate n8 = cb.lessThanOrEqualTo(b.get("effectiveStartdate"), today);
-//		Predicate n9 = cb.greaterThanOrEqualTo(b.get("effectiveEnddate"), todayEnd);
+		Predicate n8 = cb.lessThanOrEqualTo(b.get("effectiveStartdate"), today);
+		Predicate n9 = cb.greaterThanOrEqualTo(b.get("effectiveEnddate"), todayEnd);
 //		Predicate n10 = cb.equal(b.get("subCoverId"), "0");
 
-		query.where(n1, n2,n3,n4,n6, n5).orderBy(orderList) ;
+		query.where(n1, n2,n3,n4,n6, n5,n8,n9).orderBy(orderList) ;
 
 		TypedQuery<TravelPolicyType> result = em.createQuery(query);
 		result.setFirstResult(req.getLimit() * req.getOffset());
 		result.setMaxResults( req.getOffset());
 		list = result.getResultList();
 		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCoverId()))).collect(Collectors.toList());
+		
+		TypedQuery<TravelPolicyType> result1 = em.createQuery(query);
+		list1 = result1.getResultList();
+		list1 = list1.stream().filter(distinctByKey(o -> Arrays.asList(o.getCoverId()))).collect(Collectors.toList());
 
 		if(list.size()>0) {
 			for (TravelPolicyType data : list) {
@@ -416,7 +421,7 @@ public class TravelPolicyTypeServiceImpl implements TravelPolicyTypeService {
 				res.setPlanTypeId(data.getPlanTypeId().toString());
 				res.setPlanTypeDesc(data.getPlanTypeDesc());
 				res.setCoverId(data.getCoverId().toString());
-			//	res.setSubCoverId(data.getSubCoverId().toString());
+				res.setSubCoverId(data.getSubCoverId().toString());
 				res.setAmendId(data.getAmendId().toString());
 				res.setCompanyId(data.getCompanyId().toString());
 				res.setProductId(data.getProductId().toString());
@@ -437,7 +442,7 @@ public class TravelPolicyTypeServiceImpl implements TravelPolicyTypeService {
 				res.setCoverStatus(data.getCoverStatus()==null?"":data.getCoverStatus());
 				resList.add(res);
 				}		
-				res1.setTotalCount(list.size());
+				res1.setTotalCount(list1.size());
 				res1.setTravelPolicyType(resList);
 
 			}

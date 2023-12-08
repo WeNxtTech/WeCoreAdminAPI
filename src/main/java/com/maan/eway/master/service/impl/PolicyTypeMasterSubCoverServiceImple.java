@@ -379,7 +379,7 @@ public class PolicyTypeMasterSubCoverServiceImple  implements PolicyTypeMasterSu
 			
 		
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("subCoverId")));
+			orderList.add(cb.desc(b.get("subCoverId")));
 			query.where(n1, n2,n3,n4, n5, n6, n7, n8, n9,n11).orderBy(orderList);
 			
 			TypedQuery<TravelPolicyType> result = em.createQuery(query);

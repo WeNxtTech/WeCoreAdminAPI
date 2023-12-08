@@ -362,8 +362,9 @@ public class PolicyTypeMasterSubCoverServiceImple  implements PolicyTypeMasterSu
 			Predicate a5 = cb.equal(ocpm1.get("coverId"),b.get("coverId"));
 			Predicate a7 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
 			Predicate a9 = cb.equal(ocpm1.get("coverId"),  b.get("coverId"));
+			Predicate a10 = cb.notEqual(ocpm1.get("subCoverId"), "0");
 	
-			amendId.where(a1,a2,a3,a4,a5,a7,a9);
+			amendId.where(a1,a2,a3,a4,a5,a7,a9,a10);
 
 			Predicate n1 = cb.equal(b.get("amendId"),amendId);
 			Predicate n2 = cb.equal(b.get("productId"), req.getProductId() );	
@@ -702,7 +703,7 @@ public class PolicyTypeMasterSubCoverServiceImple  implements PolicyTypeMasterSu
 				Predicate n6 =  cb.equal(b.get("policyTypeId"), req.getPolicyTypeId()); 
 				Predicate n7 =  cb.equal(b.get("planTypeId"), req.getPlanTypeId()); 
 				Predicate n10 = cb.equal(b.get("subCoverId"), req.getSubCoverId());
-			
+		
 				query.where(n2,n3,n4, n5, n6, n7,n10) ;
 			
 				TypedQuery<TravelPolicyType> result = em.createQuery(query);
@@ -737,7 +738,6 @@ public class PolicyTypeMasterSubCoverServiceImple  implements PolicyTypeMasterSu
 				res.setResponse("Updated Successfully");
 				
 			}
-			
 			
 			dozerMapper.map(req, saveData);
 			

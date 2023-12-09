@@ -587,7 +587,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 				}
 			}else if("3".equals(product)) {
 				employeeRawRepo.updateDuplicateSerialNo(requestReferenceNo);
-				employeeRawRepo.updateContentAndAllriskSumInsured(requestReferenceNo);
+			//	employeeRawRepo.updateContentAndAllriskSumInsured(requestReferenceNo);
 				employeeRawRepo.updateLocationId(requestReferenceNo);
 				employeeRawRepo.updateContentTypeId(requestReferenceNo);
 				employeeRawRepo.updateErrorStatusAndErrorDesc(requestReferenceNo);

@@ -742,9 +742,7 @@ public class CriteriaQueryServiceImpl {
 					  cb.equal(cb.function("replace", String.class,(cb.upper(occuRoot.get("occupationName"))),cb.literal(" "),cb.literal(""))
 							  ,cb.function("replace", String.class,cb.upper(amendRoot.get("occupationName")),cb.literal(" "),cb.literal(""))),
 					  cb.between(cb.currentDate(), amendRoot.get("effectiveDateStart"), amendRoot.get("effectiveDateEnd"))
-
-					  
-					  );
+					  ).distinct(true);
 			  occupationId.select(occuRoot.get("occupationId")).where(
 					  cb.equal(occuRoot.get("status"), "Y"),cb.equal(occuRoot.get("companyId"), root.get("companyId")),
 					  cb.equal(occuRoot.get("productId"), root.get("productId")),
@@ -752,7 +750,7 @@ public class CriteriaQueryServiceImpl {
 							  ,cb.function("replace", String.class,cb.upper(occuRoot.get("occupationName")),cb.literal(" "),cb.literal(""))),
 					  cb.between(cb.currentDate(), occuRoot.get("effectiveDateStart"), occuRoot.get("effectiveDateEnd")),
 					  cb.equal(occuRoot.get("amendId"), amendId)
-					  );
+					  ).distinct(true);
 			  criteriaUpdate.set(root.<Integer>get("occupationId"), occupationId)
 			  .where(
 					  cb.equal(root.get("companyId"), companyId), cb.equal(root.get("productId"), productId), cb.equal(root.get("requestReferenceNo"), refNo),

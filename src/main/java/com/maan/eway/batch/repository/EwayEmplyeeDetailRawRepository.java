@@ -123,7 +123,7 @@ public interface EwayEmplyeeDetailRawRepository extends JpaRepository<EwayEmplye
 
 	@Modifying
 	@Transactional
-	@Query(value="UPDATE eway_employee_details_raw SET STATUS='E',error_desc=CONCAT(COALESCE(error_desc,' '),'~Content/Allrisk Id is not updated') WHERE(content_type_id IS NULL OR content_type_id='') AND STATUS='Y' AND request_reference_no=?1",nativeQuery=true)
+	@Query(value="UPDATE eway_employee_details_raw SET STATUS='E', error_desc=CONCAT(COALESCE(error_desc,' '), CASE WHEN content_type_id IS NULL OR content_type_id='' THEN '~Content/Allrisk Id is not updated' ELSE '~Location Id is not updated' END) WHERE(content_type_id IS NULL OR content_type_id='' OR LOCATION_ID IS NULL OR LOCATION_ID='') AND STATUS='Y' AND request_reference_no=?1",nativeQuery=true)
 	Integer updateErrorStatusAndErrorDesc(String requestReferenceNo);
 	
 }

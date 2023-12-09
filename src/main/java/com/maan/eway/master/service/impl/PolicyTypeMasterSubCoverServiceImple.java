@@ -620,7 +620,6 @@ public class PolicyTypeMasterSubCoverServiceImple  implements PolicyTypeMasterSu
 				Predicate n7 =  cb.equal(b.get("planTypeId"), req.getPlanTypeId()); 
 				Predicate n8 = cb.lessThanOrEqualTo(b.get("effectiveStartdate"), today1);
 				Predicate n9 = cb.greaterThanOrEqualTo(b.get("effectiveEnddate"), todayEnd1);
-			//	Predicate n10 = cb.notEqual(b.get("subCoverId"), req.getSubCoverId());
 			
 				query.where(n1, n2,n3,n4, n5, n6, n7, n8, n9);
 				

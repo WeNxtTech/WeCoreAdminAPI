@@ -520,7 +520,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			                                            
 			
 			// For Employee MASTER validation block
-			else if("14".equals(product) || "15".equals(product) || "32".equals(product)) {
+			else if("14".equals(product) || "15".equals(product) || "32".equals(product) || "19".equals(product)) {
 				
 				//employeeRawRepo.updateOccupationId(companyId,productId,
 						//Integer.valueOf(uploadResponse.getRiskId()),requestReferenceNo,quoteNo);

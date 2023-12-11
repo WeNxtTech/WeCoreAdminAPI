@@ -566,7 +566,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 				}
 			}
 			
-			else if("4".equals(product)) {
+			else if("4".equals(product) ) {
 				
 				employeeRawRepo.updateDuplicatePassportNo(companyId.toString(), productId.toString(), requestReferenceNo, quoteNo);
 				employeeRawRepo.updateNationlityId(companyId, productId,requestReferenceNo);
@@ -585,14 +585,25 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 					
 					
 				}
-			}else if("3".equals(product)) {
+			}else if("3".equals(product) ||"26".equals(product) || "24".equals(product)) {
 				employeeRawRepo.updateDuplicateSerialNo(requestReferenceNo);
 			//	employeeRawRepo.updateContentAndAllriskSumInsured(requestReferenceNo);
 				employeeRawRepo.updateLocationId(requestReferenceNo);
 				employeeRawRepo.updateContentTypeId(requestReferenceNo);
 				employeeRawRepo.updateErrorStatusAndErrorDesc(requestReferenceNo);
+				List<EwayEmplyeeDetailRaw> passList=employeeRawRepo.findByCompanyIdAndProductIdAndRequestReferenceNo(companyId, productId, requestReferenceNo);
+				if(!CollectionUtils.isEmpty(passList)) {
+					
+					errorRecords =passList.stream().filter(f -> "E".equalsIgnoreCase(f.getStatus()))
+							.count();
+					validRecords =passList.stream().filter(f -> "Y".equalsIgnoreCase(f.getStatus()))
+							.count();
+					totalRecords =errorRecords + validRecords;
+						
+				}
 			}else {
 				employeeRawRepo.updateLocationId(requestReferenceNo);
+			
 				List<EwayEmplyeeDetailRaw> passList=employeeRawRepo.findByCompanyIdAndProductIdAndRequestReferenceNo(companyId, productId, requestReferenceNo);
 				if(!CollectionUtils.isEmpty(passList)) {
 					

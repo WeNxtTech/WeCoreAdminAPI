@@ -110,7 +110,10 @@ public interface EwayEmplyeeDetailRawRepository extends JpaRepository<EwayEmplye
 	@Query(value="UPDATE eway_employee_details_raw SET error_desc='duplicate serial number has found' ,STATUS ='E' WHERE request_reference_no=?1 AND serial_number IN(SELECT * FROM(SELECT serial_number FROM eway_employee_details_raw WHERE request_reference_no=?1 GROUP BY serial_number HAVING COUNT(*)>1)temp)",nativeQuery=true)
 	Integer updateDuplicateSerialNo(String requestReferenceNo);
 	
-	
+    default String get() {
+    	
+    	return ""
+;    }
 	@Modifying
 	@Transactional
 	@Query(value="UPDATE eway_employee_details_raw emp SET STATUS='E',error_desc= CONCAT(COALESCE(error_desc,''),'~Suminsured is not matched') WHERE(SELECT * FROM(SELECT SUM(sum_insured) FROM eway_employee_details_raw WHERE request_reference_no=emp.request_reference_no AND section_id=emp.section_id)X) !=(SELECT CASE WHEN section_id='3' THEN allrisk_suminsured_lc ELSE content_suminsured_lc END FROM eservice_building_details WHERE section_id=emp.section_id AND request_reference_no=emp.request_reference_no) AND request_reference_no=?1",nativeQuery=true)

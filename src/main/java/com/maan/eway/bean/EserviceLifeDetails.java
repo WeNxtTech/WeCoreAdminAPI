@@ -15,11 +15,11 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import java.util.Date;
@@ -254,6 +254,17 @@ private static final long serialVersionUID = 1L;
     @Column(name="VD_REFNO")
     private Long       vdRefno ;
 
+    @Column(name="EMI_YN", length=20)
+    private String     emiYn;
+
+    @Column(name="INSTALLMENT_PERIOD")
+    private Integer     installmentPeriod ;
+    
+    @Column(name="NO_OF_INSTALLMENT")
+    private Integer     noOfInstallment ;
+
+    @Column(name="EMI_PREMIUM")
+    private BigDecimal     emiPremium ;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 

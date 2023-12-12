@@ -192,11 +192,11 @@ public class TravelPolicyTypeServiceImpl implements TravelPolicyTypeService {
 			Predicate n4 = cb.equal(b.get("branchCode"), req.getBranchCode());
 			Predicate n6 =  cb.equal(b.get("policyTypeId"), req.getPolicyTypeId()); 
 			Predicate n7 =  cb.equal(b.get("planTypeId"), req.getPlanTypeId()); 
-			Predicate n8 = cb.lessThanOrEqualTo(b.get("effectiveStartdate"), today1);
-			Predicate n9 = cb.greaterThanOrEqualTo(b.get("effectiveEnddate"), todayEnd1);
+//			Predicate n8 = cb.lessThanOrEqualTo(b.get("effectiveStartdate"), today1);
+//			Predicate n9 = cb.greaterThanOrEqualTo(b.get("effectiveEnddate"), todayEnd1);
 			Predicate n10 = cb.equal(b.get("subCoverId"), "0");
 		
-			query.where(n1, n2,n3,n4,n6, n7,n8,n9,n10);
+			query.where(n1, n2,n3,n4,n6, n7,n10);
 			
 			TypedQuery<TravelPolicyType> result = em.createQuery(query);
 			list = result.getResultList();
@@ -394,11 +394,11 @@ public class TravelPolicyTypeServiceImpl implements TravelPolicyTypeService {
 		Predicate n4 = cb.equal(b.get("planTypeId"), req.getPlanTypeId());
 		Predicate n5 = cb.equal(b.get("branchCode"), req.getBranchCode());
 		Predicate n6 = cb.equal(b.get("amendId"),maxAmendId);
-		Predicate n8 = cb.lessThanOrEqualTo(b.get("effectiveStartdate"), today);
-		Predicate n9 = cb.greaterThanOrEqualTo(b.get("effectiveEnddate"), todayEnd);
+//		Predicate n8 = cb.lessThanOrEqualTo(b.get("effectiveStartdate"), today);
+//		Predicate n9 = cb.greaterThanOrEqualTo(b.get("effectiveEnddate"), todayEnd);
 		Predicate n10 = cb.equal(b.get("subCoverId"), "0");
 
-		query.where(n1, n2,n3,n4,n6, n5,n8,n9, n10).orderBy(orderList) ;
+		query.where(n1, n2,n3,n4,n6, n5, n10).orderBy(orderList) ;
 
 		TypedQuery<TravelPolicyType> result = em.createQuery(query);
 		result.setFirstResult(req.getLimit() * req.getOffset());

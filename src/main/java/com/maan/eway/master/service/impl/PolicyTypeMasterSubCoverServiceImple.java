@@ -373,14 +373,14 @@ public class PolicyTypeMasterSubCoverServiceImple  implements PolicyTypeMasterSu
 			Predicate n5 = cb.equal(b.get("coverId"), req.getCoverId());
 			Predicate n6 =  cb.equal(b.get("policyTypeId"), req.getPolicyTypeId()); 
 			Predicate n7 =  cb.equal(b.get("planTypeId"), req.getPlanTypeId()); 
-			Predicate n8 = cb.lessThanOrEqualTo(b.get("effectiveStartdate"), today);
-			Predicate n9 = cb.greaterThanOrEqualTo(b.get("effectiveEnddate"), todayEnd);
+//			Predicate n8 = cb.lessThanOrEqualTo(b.get("effectiveStartdate"), today);
+//			Predicate n9 = cb.greaterThanOrEqualTo(b.get("effectiveEnddate"), todayEnd);
 			Predicate n11 = cb.notEqual(b.get("subCoverId"), "0");
 			
 		
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.desc(b.get("subCoverId")));
-			query.where(n1, n2,n3,n4, n5, n6, n7, n8, n9,n11).orderBy(orderList);
+			query.where(n1, n2,n3,n4, n5, n6, n7, n11).orderBy(orderList);
 			
 			TypedQuery<TravelPolicyType> result = em.createQuery(query);
 			list = result.getResultList();
@@ -459,12 +459,12 @@ public class PolicyTypeMasterSubCoverServiceImple  implements PolicyTypeMasterSu
 			Predicate n5 = cb.equal(b.get("coverId"), req.getCoverId());
 			Predicate n6 =  cb.equal(b.get("policyTypeId"), req.getPolicyTypeId()); 
 			Predicate n7 =  cb.equal(b.get("planTypeId"), req.getPlanTypeId()); 
-			Predicate n8 = cb.lessThanOrEqualTo(b.get("effectiveStartdate"), today);
-			Predicate n9 = cb.greaterThanOrEqualTo(b.get("effectiveEnddate"), todayEnd);
+//			Predicate n8 = cb.lessThanOrEqualTo(b.get("effectiveStartdate"), today);
+//			Predicate n9 = cb.greaterThanOrEqualTo(b.get("effectiveEnddate"), todayEnd);
 			Predicate n10 = cb.equal(b.get("subCoverId"), req.getSubCoverId());
 			
 		
-			query.where(n1, n2,n3,n4, n5, n6, n7, n8, n9, n10);
+			query.where(n1, n2,n3,n4, n5, n6, n7, n10);
 			
 			TypedQuery<TravelPolicyType> result = em.createQuery(query);
 			list = result.getResultList();
@@ -618,10 +618,10 @@ public class PolicyTypeMasterSubCoverServiceImple  implements PolicyTypeMasterSu
 				Predicate n5 = cb.equal(b.get("coverId"), req.getCoverId());
 				Predicate n6 =  cb.equal(b.get("policyTypeId"), req.getPolicyTypeId()); 
 				Predicate n7 =  cb.equal(b.get("planTypeId"), req.getPlanTypeId()); 
-				Predicate n8 = cb.lessThanOrEqualTo(b.get("effectiveStartdate"), today1);
-				Predicate n9 = cb.greaterThanOrEqualTo(b.get("effectiveEnddate"), todayEnd1);
+//				Predicate n8 = cb.lessThanOrEqualTo(b.get("effectiveStartdate"), today1);
+//				Predicate n9 = cb.greaterThanOrEqualTo(b.get("effectiveEnddate"), todayEnd1);
 			
-				query.where(n1, n2,n3,n4, n5, n6, n7, n8, n9);
+				query.where(n1, n2,n3,n4, n5, n6, n7);
 				
 				TypedQuery<TravelPolicyType> result = em.createQuery(query);
 				list = result.getResultList();

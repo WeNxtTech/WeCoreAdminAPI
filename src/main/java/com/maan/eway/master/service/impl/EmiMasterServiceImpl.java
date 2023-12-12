@@ -168,23 +168,23 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			}
 			if (StringUtils.isBlank(req.getInterestPercent())) {
 				errorList.add(new Error("09", "InterestPercent", "Please Enter InterestPercent"));
-			}else if (Integer.valueOf(req.getInterestPercent())>100 || Integer.valueOf(req.getInterestPercent())<0 ) {
+			}else if (Double.valueOf(req.getInterestPercent())>100.0 || Double.valueOf(req.getInterestPercent())<0.0 ) {
 				errorList.add(new Error("09", "InterestPercent", "Please Enter InterestPercent Less that or equal to 100"));
-			}else if (Integer.valueOf(req.getInterestPercent())<0 ) {
+			}else if (Double.valueOf(req.getInterestPercent())<0.0 ) {
 				errorList.add(new Error("09", "InterestPercent", "Please Enter InterestPercent Should Br Greater than 0"));
 			}
 			else if (!req.getInterestPercent().matches("[0-9.]+")) {
 				errorList.add(new Error("09", "InterestPercent", "Please Enter Valid Number In InterestPercent"));
 			}
-//			else if (StringUtils.isNotBlank(req.getInterestPercent())) {
-//				String input = req.getInterestPercent();
-//
-//				Pattern pat = Pattern.compile("^[0-9]*\\.?[0-9]+$");
-//				Matcher mat = pat.matcher(input);
-//				if (!mat.matches()) {
-//					errorList.add(new Error("09", "InterestPercent", "Please Enter Valid Number In InterestPercent"));
-//				}
-//			}
+			else if (StringUtils.isNotBlank(req.getInterestPercent())) {
+				String input = req.getInterestPercent();
+
+				Pattern pat = Pattern.compile("^[0-9]*\\.?[0-9]+$");
+				Matcher mat = pat.matcher(input);
+				if (!mat.matches()) {
+					errorList.add(new Error("09", "InterestPercent", "Please Enter Valid Number In InterestPercent"));
+				}
+			}
 			if (StringUtils.isBlank(req.getAdvancePercent())) {
 				errorList.add(new Error("10", "AdvancePercent", "Please Enter AdvancePercent"));
 			}else if (Double.valueOf(req.getAdvancePercent())>100.0) {

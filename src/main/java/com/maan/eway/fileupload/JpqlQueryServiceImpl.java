@@ -32,7 +32,9 @@ import com.google.gson.Gson;
 import com.maan.eway.bean.FactorRateMaster;
 import com.maan.eway.bean.FactorTypeDetails;
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.PremiaConfigDataMaster;
 import com.maan.eway.bean.SectionCoverMaster;
+import com.maan.eway.bean.YiPolicyDetail;
 import com.maan.eway.embedded.EmbeddedDashBoardReq;
 import com.maan.eway.embedded.EmbeddedReq;
 import com.maan.eway.embedded.GroupMedicalDetails;
@@ -102,7 +104,7 @@ public class JpqlQueryServiceImpl {
 		}
 		return res;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public List<Object[][]> getFactorRateDetails(FileDownloadRequest req,String columns,String factorId){
 		List<Object[][]> object =null;
@@ -283,5 +285,49 @@ public class JpqlQueryServiceImpl {
 		return output;
 	}
 	
-	
+//Premia Integration Table
+	@SuppressWarnings("unchecked")
+	public Map<String,Object> getPremiaXlColumns(PremiaFileDownloadRequest req) {
+		StringJoiner display_columns = new StringJoiner(",");
+		StringJoiner select_columns = new StringJoiner(",");
+		Map<String,Object> res =new HashMap<String,Object>();
+		try {
+			query =em.createQuery("SELECT p FROM PremiaConfigDataMaster p where"
+					+ " p.companyId=:companyId and p.productId=:productId and p.premiaId=:premiaId");
+			query.setParameter("companyId", req.getCompanyId());
+			query.setParameter("productId", req.getProductId());
+			query.setParameter("premiaId",1 );
+			List<PremiaConfigDataMaster> premiaList=query.getResultList(); 
+			if(!CollectionUtils.isEmpty(premiaList)) {
+					for (PremiaConfigDataMaster fac :premiaList) {
+							display_columns.add(fac.getColumnName());
+							select_columns.add(fac.getColumnName());
+						}
+			}
+			res.put("QUERY_COLUMNS", select_columns.toString());
+			res.put("XL_COLUMNS", display_columns.toString());
+			log.info("getPremiaXlColumns Response || "+json.toJson(res));
+		}catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+		}
+		return res;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Object[][]> getPremiaDetails(PremiaFileDownloadRequest req,String columns) {
+		List<Object[][]> object =null;
+		try {
+			query =em.createQuery("SELECT "+columns+" FROM YiPolicyDetail pol "
+					+ "where quotationPolicyNo=:policyNo");
+			query.setParameter("policyNo", req.getPolicyNo());
+			object =query.getResultList();
+		log.info("getPremiaDetails Response || "+json.toJson(object));
+	}catch (Exception e) {
+		log.error(e);
+		e.printStackTrace();
+	}
+	return object;
+	}
+
 }

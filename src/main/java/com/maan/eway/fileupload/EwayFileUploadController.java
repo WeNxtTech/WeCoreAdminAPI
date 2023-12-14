@@ -55,4 +55,11 @@ public class EwayFileUploadController {
 		}
 		return response;
 	}
+	
+	//Premia table Download
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
+	@PostMapping("/premiadownload")
+	public com.maan.eway.res.CommonRes premiaDownload(@RequestBody PremiaFileDownloadRequest req) {
+		return service.premiaDownload(req);
+	}
 }

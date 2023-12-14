@@ -348,7 +348,93 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 		
 	}
 
+	//Premia table Download
+	@Override
+	public CommonRes premiaDownload(PremiaFileDownloadRequest req) {
+		log.info("File download request : "+json.toJson(req));
+		byte byteArry[] =null ;
+		com.maan.eway.res.CommonRes response = new com.maan.eway.res.CommonRes();
+		FileDownloadRes  res =new FileDownloadRes();
+		List<Error> errors = new ArrayList<Error>();
+		try {
+			Map<String,Object> object=queryService.getPremiaXlColumns(req);
+			if(object!=null) {
+				String input =object.get("QUERY_COLUMNS").toString();
+				String columns = convertToCamelCase(input);
+				String xlColumns =object.get("XL_COLUMNS").toString();
+				List<Object[][]> obj =queryService.getPremiaDetails(req,columns);
+				
+					
+				XSSFWorkbook workbook = new XSSFWorkbook();
+				XSSFSheet sheet =workbook.createSheet("YI_POLICY_DETAIL");
+					
+				XSSFCellStyle cellStyle =workbook.createCellStyle();
+				XSSFFont font = workbook.createFont();
+					
+				font.setBold(true);
+				font.setFontHeight(10);
+				font.setFontName("Arial");
+				cellStyle.setFont(font);
+					
+				String[] headers =xlColumns.split(",");
+					
+				int rowNum = 1;
+					
+				Row row =sheet.createRow(0);
+					
+				for (int i =0;i<headers.length;i++) {
+					Cell cell =row.createCell(i);
+					cell.setCellValue(headers[i]);
+					row.getCell(i).setCellStyle(cellStyle);
+						
+				}
+				
+				 // Auto-size the cells in the first row
+		        for (int i = 0; i <headers.length; i++) {
+		            sheet.autoSizeColumn(i);
+		            
+		        }
+				
+				if(!CollectionUtils.isEmpty(obj)) { 
+					
+					for(Object [] ob :obj) {
+						row =sheet.createRow(rowNum++);
+						int col =0;
+						for(Object str : ob) {
+							Cell cell =row.createCell(col++);
+							cell.setCellValue(str==null?"":str.toString());
+						}
+					}
+				}
+					ByteArrayOutputStream bos = new ByteArrayOutputStream();
+					workbook.write(bos);
+					workbook.close();
+					byteArry = bos.toByteArray();
+					String prefix = "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,";
+					String base64 = Base64Utils.encodeToString(byteArry);
+					res.setFile(prefix+base64);
+					response.setCommonResponse(res);
+				
+				
+			}else {
+				errors.add(new Error("101", "FileDownload", "Excle header columns not found.."));
+				response.setErrorMessage(errors);
+				return 	response;
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			log.error(e);
+		}
+		return response;
+	}
 
+	public static String convertToCamelCase(String input) {
+        String[] parts = input.toLowerCase().split("_");
+        for (int i = 1; i < parts.length; i++) {
+            parts[i] = parts[i].substring(0, 1).toUpperCase() + parts[i].substring(1);
+        }
+        return String.join("", parts);
+    }
 	
 
 }

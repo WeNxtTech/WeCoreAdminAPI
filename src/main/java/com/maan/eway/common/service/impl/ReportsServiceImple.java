@@ -524,13 +524,13 @@ public class ReportsServiceImple implements ReportsService {
 				errorList.add(new Error("02", "Query", "Please Enter Valid Query"));
 			}
 			
-			if (StringUtils.isBlank(req.getPassword())) {
-				errorList.add(new Error("02", "Password", "Please Enter Password"));
-				
-			} else if (! datamanipulationPassword.equalsIgnoreCase(req.getPassword())) {
-				errorList.add(new Error("02", "Password", "Please Enter Valid Password"));
-			}
-			
+//			if (StringUtils.isBlank(req.getPassword())) {
+//				errorList.add(new Error("02", "Password", "Please Enter Password"));
+//				
+//			} else if (! datamanipulationPassword.equalsIgnoreCase(req.getPassword())) {
+//				errorList.add(new Error("02", "Password", "Please Enter Valid Password"));
+//			}
+//			
 		} catch (Exception e) {
 			//log.error(e);
 			e.printStackTrace();

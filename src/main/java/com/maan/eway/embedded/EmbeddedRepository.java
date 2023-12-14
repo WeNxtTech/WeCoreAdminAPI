@@ -67,4 +67,16 @@ public interface EmbeddedRepository extends JpaRepository<GroupMedicalDetails, G
 
 	@Query(value="SELECT inception_date,expiry_date,pdf_path,request_reference_no, policy_no, mobile_code, mobile_no, login_id, product_id, section_id, company_id, client_transaction_no, customer_name, plan_opted, amount_paid, premium, commission_percentage, commission_amount, tax_percentage, tax_premium, overall_premium,( SELECT item_value FROM eway_list_item_value WHERE item_type = 'PLAN_OPTED' AND STATUS = 'Y' AND SYSDATE() BETWEEN effective_date_start AND effective_date_end AND item_code = plan_opted AND ( company_id = gmd.company_id OR company_id = '99999') )AS plan_desc FROM group_medical_details gmd WHERE DATE(inception_date) BETWEEN :startDate AND :endDate AND company_id =:companyId AND product_id =:productId AND login_id =:loginId AND STATUS = 'Y' AND plan_opted =:planId and date(expiry_date)<date(SYSDATE())",nativeQuery=true)
 	public List<Map<String, Object>> getExpiredPolicy(@Param("loginId") String loginId,@Param("companyId") String companyId,@Param("productId") String productId , @Param("startDate") String startDate, @Param("endDate") String endDate,@Param("planId") String planId);
+
+
+	@Query(value ="SELECT DISTINCT body_id FROM EWAY_MOTOR_BODYTYPE_MASTER  WHERE company_id=?1 AND UPPER(TRIM(regulatory_code))=UPPER(TRIM(?2))"
+			+ " AND STATUS ='Y'",nativeQuery=true)
+	public String getBodyId(String companyId,String bodyName);
+	
+	@Query(value ="SELECT vehicle_usage_id FROM motor_VEHICLEUSAGE_MASTER mm WHERE mm.company_id=?1 AND UPPER(TRIM(mm.regulatory_code))=UPPER(TRIM(?2))"
+			+ " AND mm.STATUS ='Y' AND mm.amend_id=(SELECT * FROM(SELECT MAX(amend_id) FROM motor_VEHICLEUSAGE_MASTER rr WHERE mm.company_id=rr.company_id AND"
+			+ " UPPER(TRIM(mm.regulatory_code))=UPPER(TRIM(rr.regulatory_code)) AND rr.status='Y')X)",nativeQuery=true)
+	public String getVehicleUsage(String companyId,String vehUsageName);
+
+
 }

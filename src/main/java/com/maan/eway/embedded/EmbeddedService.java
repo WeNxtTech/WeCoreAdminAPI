@@ -1,5 +1,7 @@
 package com.maan.eway.embedded;
 
+import java.util.Map;
+
 import com.maan.eway.res.CommonRes;
 
 public interface EmbeddedService {
@@ -17,5 +19,7 @@ public interface EmbeddedService {
 	CommonRes getAllPolicy(EmbeddedDashBoardReq req);
 
 	CommonRes getExpiredPolicy(EmbeddedDashBoardReq req);
+
+	Map<String,String>  getWhatsAppVehicle(Map<String, Object> req);
 
 }

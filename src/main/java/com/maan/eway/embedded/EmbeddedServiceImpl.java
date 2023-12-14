@@ -1,9 +1,7 @@
 package com.maan.eway.embedded;
 
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -431,6 +429,24 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 		}
 		
 		return count;
+	}
+
+	@Override
+	public Map<String,String>  getWhatsAppVehicle(Map<String, Object> req) {
+		Map<String,String> response = new HashMap<>();
+		try {
+			String companyId=req.get("CompanyId")==null?"":req.get("CompanyId").toString();
+			String vehicleUsageName=req.get("MotorUsageName")==null?"":req.get("MotorUsageName").toString();
+			String bodyType=req.get("BodyType")==null?"":req.get("BodyType").toString();
+			String bodyId =embeddedRepository.getBodyId(companyId, bodyType);
+			String vehcileUsageId =embeddedRepository.getVehicleUsage(companyId, vehicleUsageName);
+			response.put("BodyId", bodyId);
+			response.put("MotorUsage", vehcileUsageId);
+		}catch (Exception e) {
+			e.printStackTrace();
+			log.error(e);
+		}
+		return response;
 	}
 	
 	

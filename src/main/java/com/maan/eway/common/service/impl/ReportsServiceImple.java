@@ -522,6 +522,8 @@ public class ReportsServiceImple implements ReportsService {
 //			
 			if (StringUtils.isBlank(req.getQuery())) {
 				errorList.add(new Error("02", "Query", "Please Enter Valid Query"));
+			} else if( req.getQuery().toLowerCase().contains("update") ||  req.getQuery().toLowerCase().contains("delete")) {
+				errorList.add(new Error("02", "Query", "Cannot Run Delete/Update Query"));
 			}
 			
 //			if (StringUtils.isBlank(req.getPassword())) {

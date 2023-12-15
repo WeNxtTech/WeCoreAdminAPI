@@ -632,7 +632,7 @@ public class PolicyTypeMasterSubCoverServiceImple  implements PolicyTypeMasterSu
 				
 				if(list.size()>0) {
 					
-					List<TravelPolicyType> dup = list.stream().filter(o -> (o.getSubCoverDesc()==null?"":o.getSubCoverDesc()).equalsIgnoreCase(req.getSubCoverDesc())).collect(Collectors.toList());
+					List<TravelPolicyType> dup = list.stream().filter(o -> (o.getSubCoverDesc()==null?"":o.getSubCoverDesc().trim().replaceAll("\\s+", "")).equalsIgnoreCase(req.getSubCoverDesc().trim().replaceAll("\\s+", ""))).collect(Collectors.toList());
 					if(dup.size()>0)
 						errorList.add(new Error("02", "SubCoverDesc","SubCover '" + req.getSubCoverDesc() + "' Already Exists"));
 								

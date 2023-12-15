@@ -203,7 +203,7 @@ public class TravelPolicyTypeServiceImpl implements TravelPolicyTypeService {
 			
 			if(list.size()>0) {
 				
-				List<TravelPolicyType> dup = list.stream().filter(o -> (o.getCoverDesc()==null?"":o.getCoverDesc()).equalsIgnoreCase(req.getCoverDesc())).collect(Collectors.toList());
+				List<TravelPolicyType> dup = list.stream().filter(o -> (o.getCoverDesc()==null?"":o.getCoverDesc().trim().replaceAll("\\s+", "") ).equalsIgnoreCase(req.getCoverDesc().trim().replaceAll("\\s+", "") )).collect(Collectors.toList());
 				if(dup.size()>0)
 					error.add(new Error("02", "CoverDesc","Cover '" + req.getCoverDesc() + "' Already Exists"));
 							

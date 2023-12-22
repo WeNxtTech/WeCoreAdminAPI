@@ -10,4 +10,7 @@ public class DeleteTiraSearchedVehicleReq {
 
 	@JsonProperty("RegisterNumber")
 	private String registerNumber;
+	
+	@JsonProperty("InsuranceId")
+	private String insuranceId;
 }

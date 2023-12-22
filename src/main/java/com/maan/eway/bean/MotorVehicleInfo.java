@@ -59,6 +59,10 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="REQ_CHASSIS_NUMBER", nullable=false, length=20)
     private String     reqChassisNumber ;
+    
+    @Id
+    @Column(name="COMPANY_ID", nullable=false, length=20)
+    private String     companyId;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="REQ_REQUEST_ID", length=20)
@@ -95,7 +99,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="RES_STATUS_CODE", length=20)
     private String     resStatusCode ;
 
-    @Column(name="RES_STATUS_DESC", length=50)
+    @Column(name="RES_STATUS_DESC", length=100)
     private String     resStatusDesc ;
 
     @Column(name="RES_MOTOR_CATEGORY")
@@ -169,6 +173,17 @@ private static final long serialVersionUID = 1L;
     private String     ModelNumber;
     //--- ENTITY LINKS ( RELATIONSHIP )
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="FIRST_REGDATE")
+    private Date       firstRegdate ;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="CURRENT_LICENSEEXP_DT")
+    private Date       currentLicenseexpDt ;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="ROAD_WORTHEXP_DT")
+    private Date       roadWorthexpDt ;
 
 }
 

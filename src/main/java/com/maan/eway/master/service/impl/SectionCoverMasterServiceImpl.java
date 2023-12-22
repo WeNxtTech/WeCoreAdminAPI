@@ -853,8 +853,8 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 		try {
 			if (StringUtils.isBlank(req.getCoverName())) {
 				errorList.add(new Error("01", "CoverName", "Please Select Cover  Name "));
-			}else if (req.getCoverName().length() > 100){
-				errorList.add(new Error("01","CoverName", "Please Enter Cover  Name within 100 Characters")); 
+			}else if (req.getCoverName().length() > 400){
+				errorList.add(new Error("01","CoverName", "Please Enter Cover  Name within 400 Characters")); 
 			}else  {
 				List<SectionCoverMaster> CoverList =  getSectionCoverNameExistDetails(req.getCoverName() , req );
 				if (CoverList.size()>0 && req.getCoverId()!=null && (! req.getCoverId().equalsIgnoreCase(CoverList.get(0).getCoverId().toString())) ) {
@@ -874,8 +874,8 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			
 			if (StringUtils.isBlank(req.getCoverDesc())) {
 				errorList.add(new Error("02", "Cover Desc", "Please Enter Cover Desc "));
-			} else if (req.getCoverDesc().length() > 100) {
-				errorList.add(new Error("02", "Cover Desc", "Please Enter Cover  Desc within 100 Characters"));
+			} else if (req.getCoverDesc().length() > 400) {
+				errorList.add(new Error("02", "Cover Desc", "Please Enter Cover  Desc within 400 Characters"));
 			}
 			// Date Validation 
 			

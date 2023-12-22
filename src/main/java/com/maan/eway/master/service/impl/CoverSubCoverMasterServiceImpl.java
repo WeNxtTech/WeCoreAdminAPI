@@ -723,8 +723,8 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 				errorList.add(new Error("01", "CoverId", "Please Select Cover Id"));
 			} else if (StringUtils.isBlank(req.getSubCoverName())) {
 				errorList.add(new Error("02", "SubCoverName", "Please Select Sub Cover  Name "));
-			} else if (req.getSubCoverName().length() > 100) {
-				errorList.add(new Error("02", "SubCoverName", "Please Enter Sub Cover  Name within 100 Characters"));
+			} else if (req.getSubCoverName().length() > 400) {
+				errorList.add(new Error("02", "SubCoverName", "Please Enter Sub Cover  Name within 400 Characters"));
 			}
 
 			if (StringUtils.isBlank(req.getSubCoverDesc())) {

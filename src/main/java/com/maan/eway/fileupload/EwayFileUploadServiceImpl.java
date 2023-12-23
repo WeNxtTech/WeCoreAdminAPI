@@ -381,22 +381,26 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 				tableList=tableList( tableName);
 			}
 			Integer premiaId=0;
+			String tableString=null;
+			String table1=null;
+			XSSFWorkbook workbook = new XSSFWorkbook();
 			for(String data: tableList ) {
-			String table1=data;
+			table1=data;
 			premiaId=premiaId+1;
 			
-			String tableString=capitalizeWordsWithoutUnderscore(table1.replaceAll("\\s", ""));
+			tableString=capitalizeWordsWithoutUnderscore(table1.replaceAll("\\s", ""));
+			
 			Map<String,Object> object=queryService.getPremiaXlColumns(req,premiaId);
 			if(object!=null) {
 				String input =object.get("QUERY_COLUMNS").toString();
 				String columns = convertToCamelCase(input);
 				String xlColumns =object.get("XL_COLUMNS").toString();
 				List<Object[][]> obj =queryService.getPremiaDetails(req,columns,tableString);
+			
 				
-					
-				XSSFWorkbook workbook = new XSSFWorkbook();
-				XSSFSheet sheet =workbook.createSheet(table1);
-					
+				
+				Sheet sheet =workbook.createSheet(table1);
+				
 				XSSFCellStyle cellStyle =workbook.createCellStyle();
 				XSSFFont font = workbook.createFont();
 					
@@ -435,14 +439,8 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 						}
 					}
 				}
-					ByteArrayOutputStream bos = new ByteArrayOutputStream();
-					workbook.write(bos);
-					workbook.close();
-					byteArry = bos.toByteArray();
-					String prefix = "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,";
-					String base64 = Base64Utils.encodeToString(byteArry);
-					res.setFile(prefix+base64);
-					response.setCommonResponse(res);
+
+					
 				
 				
 			}else {
@@ -451,6 +449,14 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 				return 	response;
 			}
 			}
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			workbook.write(bos);
+			workbook.close();
+			byteArry = bos.toByteArray();
+			String prefix = "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,";
+			String base64 = Base64Utils.encodeToString(byteArry);
+			res.setFile(prefix+base64);
+			response.setCommonResponse(res);
 		}catch (Exception e) {
 			e.printStackTrace();
 			log.error(e);

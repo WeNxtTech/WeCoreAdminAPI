@@ -287,7 +287,7 @@ public class JpqlQueryServiceImpl {
 	
 //Premia Integration Table
 	@SuppressWarnings("unchecked")
-	public Map<String,Object> getPremiaXlColumns(PremiaFileDownloadRequest req) {
+	public Map<String,Object> getPremiaXlColumns(PremiaFileDownloadRequest req,Integer premiaId) {
 		StringJoiner display_columns = new StringJoiner(",");
 		StringJoiner select_columns = new StringJoiner(",");
 		Map<String,Object> res =new HashMap<String,Object>();
@@ -296,7 +296,7 @@ public class JpqlQueryServiceImpl {
 					+ " p.companyId=:companyId and p.productId=:productId and p.premiaId=:premiaId");
 			query.setParameter("companyId", req.getCompanyId());
 			query.setParameter("productId", req.getProductId());
-			query.setParameter("premiaId",1 );
+			query.setParameter("premiaId",premiaId );
 			List<PremiaConfigDataMaster> premiaList=query.getResultList(); 
 			if(!CollectionUtils.isEmpty(premiaList)) {
 					for (PremiaConfigDataMaster fac :premiaList) {
@@ -315,12 +315,24 @@ public class JpqlQueryServiceImpl {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Object[][]> getPremiaDetails(PremiaFileDownloadRequest req,String columns) {
+	public List<Object[][]> getPremiaDetails(PremiaFileDownloadRequest req,String columns,String tableString) {
 		List<Object[][]> object =null;
 		try {
-			query =em.createQuery("SELECT "+columns+" FROM YiPolicyDetail pol "
-					+ "where quotationPolicyNo=:policyNo");
-			query.setParameter("policyNo", req.getPolicyNo());
+			if(tableString.equals("PgitPolRiskAddlInfo01")) {
+				tableString="PgithPolRiskAddlInfo";
+				query =em.createQuery("SELECT "+columns+" FROM "+tableString+" pol "
+						+ "where quotationPolicyNo=:policyNo");
+				query.setParameter("policyNo", req.getPolicyNo());
+			}else if(tableString.equals("CreditLimitDetail")) {
+				query =em.createQuery("SELECT "+columns+" FROM "+tableString+" pol "
+						+ "where customerCode=:customerId");
+				query.setParameter("customerId", req.getCustomerId());
+			}else {
+				query =em.createQuery("SELECT "+columns+" FROM "+tableString+" pol "
+						+ "where quotationPolicyNo=:policyNo");
+				query.setParameter("policyNo", req.getPolicyNo());
+			}
+		
 			object =query.getResultList();
 		log.info("getPremiaDetails Response || "+json.toJson(object));
 	}catch (Exception e) {

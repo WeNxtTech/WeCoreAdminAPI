@@ -107,7 +107,21 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="STATUS", length=10)
     private String     status ;
+    
+    @Column(name="DISCOUNT_AMOUNT")
+    private Double discountAmount ;
 
+    @Column(name="CVR_ID")
+    private Integer     cvrId ;
+    
+    @Column(name="COVER_CODE")
+    private Integer     coverCode ;
+    
+    @Column(name="RISK_ID")
+    private Integer     riskId ;
+    
+    @Column(name="COVER_DESC", length=100)
+    private String     coverDesc ;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 

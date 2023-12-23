@@ -15,6 +15,9 @@ public class PremiaFileDownloadRequest {
 	private String productId;
 	@JsonProperty("PolicyNo")
 	private String policyNo;
+	@JsonProperty("CustomerId")
+	private String customerId;
+	
 
 	
 }

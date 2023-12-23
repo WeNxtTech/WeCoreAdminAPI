@@ -4,14 +4,26 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -34,6 +46,8 @@ import org.springframework.util.CollectionUtils;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.FactorTypeDetails;
+import com.maan.eway.bean.PremiaConfigDataMaster;
+import com.maan.eway.bean.PremiaConfigMaster;
 import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.FactorParamsInsert;
@@ -357,16 +371,31 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 		FileDownloadRes  res =new FileDownloadRes();
 		List<Error> errors = new ArrayList<Error>();
 		try {
-			Map<String,Object> object=queryService.getPremiaXlColumns(req);
+			Map<String,Object> premia=getallPremiaConfig(req);
+			int count=0;
+			String[] tableList=null;
+			if(premia!=null) {
+				String premiaId =premia.get("PREMIA_ID").toString();
+				String tableName =premia.get("TABLE_NAME").toString();
+				count= countPremiaId(premiaId); 
+				tableList=tableList( tableName);
+			}
+			Integer premiaId=0;
+			for(String data: tableList ) {
+			String table1=data;
+			premiaId=premiaId+1;
+			
+			String tableString=capitalizeWordsWithoutUnderscore(table1.replaceAll("\\s", ""));
+			Map<String,Object> object=queryService.getPremiaXlColumns(req,premiaId);
 			if(object!=null) {
 				String input =object.get("QUERY_COLUMNS").toString();
 				String columns = convertToCamelCase(input);
 				String xlColumns =object.get("XL_COLUMNS").toString();
-				List<Object[][]> obj =queryService.getPremiaDetails(req,columns);
+				List<Object[][]> obj =queryService.getPremiaDetails(req,columns,tableString);
 				
 					
 				XSSFWorkbook workbook = new XSSFWorkbook();
-				XSSFSheet sheet =workbook.createSheet("YI_POLICY_DETAIL");
+				XSSFSheet sheet =workbook.createSheet(table1);
 					
 				XSSFCellStyle cellStyle =workbook.createCellStyle();
 				XSSFFont font = workbook.createFont();
@@ -421,6 +450,7 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 				response.setErrorMessage(errors);
 				return 	response;
 			}
+			}
 		}catch (Exception e) {
 			e.printStackTrace();
 			log.error(e);
@@ -435,6 +465,126 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
         }
         return String.join("", parts);
     }
-	
+	public int  countPremiaId(String premiaId) {
+        String[] parts = premiaId.split(",");
+        for (int i = 1; i < parts.length; i++) {
+            parts[i] = parts[i];
+        }
+        int count= parts.length;
+        return count;
+        
+    }
+	public String[]  tableList(String tableName) {
+		
+        String[] parts = tableName.split(",");
+        for (int i = 0; i < parts.length; i++) {
+        	 if ( parts[i].startsWith("[")) {
+        		 parts[i] =  parts[i].substring(1);
+ 	        }else  if ( parts[i].endsWith("]")){
+ 	        	 parts[i] =  parts[i].substring(0,  parts[i].length() - 1);
+ 	        }
+            parts[i] = parts[i];
+        }
+        return parts;
+        
+    }
 
+//	 private static String capitalizeWordsWithoutUnderscore(String input) {
+//	        return Arrays.stream(input.split("_"))
+//	                .map(word -> Character.toUpperCase(word.charAt(0)) + word.substring(1).toLowerCase())
+//	                .collect(Collectors.joining());
+//	    }
+	 private static String capitalizeWordsWithoutUnderscore(String input) {
+	        StringBuilder result = new StringBuilder();
+
+	        boolean capitalizeNext = true;
+
+	        for (char c : input.toLowerCase().toCharArray()) {
+	            if (c == '_') {
+	                capitalizeNext = true;
+	            } else {
+	                result.append(capitalizeNext ? Character.toUpperCase(c) : c);
+	                capitalizeNext = false;
+	            }
+	        }
+
+	        return result.toString();
+	    }
+
+	
+	
+	public Map<String,Object> getallPremiaConfig(PremiaFileDownloadRequest req) {
+		List<String> tableName = new ArrayList<String>();
+		List<Integer> premiaId =new ArrayList<Integer>();
+		Map<String,Object> res =new HashMap<String,Object>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+
+			List<PremiaConfigMaster> list = new ArrayList<PremiaConfigMaster>();
+		
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<PremiaConfigMaster> query = cb.createQuery(PremiaConfigMaster.class);
+
+			// Find All
+			Root<PremiaConfigMaster> b = query.from(PremiaConfigMaster.class);
+
+			// Select
+			query.select(b);
+
+			// Amend ID Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<PremiaConfigMaster> ocpm1 = amendId.from(PremiaConfigMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a2 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+			Predicate a3 = cb.equal(ocpm1.get("premiaId"), b.get("premiaId"));
+			Predicate a4 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+
+			amendId.where(a1, a2,a3,a4);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("branchCode")));
+
+			
+			// Where
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
+			Predicate n6 = cb.equal(b.get("productId"),req.getProductId());
+			if((StringUtils.isNotBlank(req.getProductId()))) {
+			query.where(n1,n2,n6).orderBy(orderList);
+			}
+			
+			else {
+				query.where(n1,n2).orderBy(orderList);
+				
+			}
+			
+			// Get Result
+			TypedQuery<PremiaConfigMaster> result = em.createQuery(query);
+
+			list = result.getResultList();
+			if(!CollectionUtils.isEmpty(list)) {
+				for (PremiaConfigMaster fac :list) {
+					tableName.add(fac.getPremiaTableName());
+					premiaId.add(fac.getPremiaId());
+					}
+		}
+			res.put("TABLE_NAME", tableName.toString());
+			res.put("PREMIA_ID", premiaId.toString());
+			log.info("getPremiaTable Response || "+json.toJson(res));
+	
+		}catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return res;
+	}
 }

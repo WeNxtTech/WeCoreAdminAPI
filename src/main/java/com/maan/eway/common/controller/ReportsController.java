@@ -1,5 +1,6 @@
 package com.maan.eway.common.controller;
 
+import java.util.ArrayList;
 import java.util.Collections;
 //import java.util.List;
 import java.util.List;
@@ -188,13 +189,24 @@ public class ReportsController {
 
 		} else {
 		List<Map<String, Object>> res = service.dataManipulation(req);
+		if (res == null) {
+			List<Error> error = new ArrayList<Error>();
+			error.add(new Error("01","Not Found", "No Data Found"));
+			data.setCommonResponse(res);
+			data.setErrorMessage(error);
+			data.setIsError(true);
+			data.setMessage("Failed");
+			return new ResponseEntity<>(data, HttpStatus.CREATED);
+		}else {
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());
 		data.setMessage("Success");
+		}
 		if (res != null) {
 			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 		} else {
+			
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 		}

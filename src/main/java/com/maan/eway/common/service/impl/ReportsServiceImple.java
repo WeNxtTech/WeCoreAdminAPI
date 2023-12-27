@@ -1,6 +1,7 @@
 package com.maan.eway.common.service.impl;
 
 import java.io.File;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -11,10 +12,12 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
 import org.apache.commons.lang3.StringUtils;
 import org.dozer.DozerBeanMapper;
+import org.hibernate.exception.SQLGrammarException;
 import org.hibernate.query.internal.NativeQueryImpl;
 import org.hibernate.transform.AliasToEntityMapResultTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +27,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.UnexpectedRollbackException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.batch.repository.TirraErrorHistoryRepository;
@@ -74,7 +78,7 @@ import com.maan.eway.repository.TiraTrackingDetailsRepository;
 import com.maan.eway.res.SuccessRes2;
 
 @Service
-@Transactional
+//@Transactional(noRollbackFor = { SQLException.class , SQLGrammarException.class ,UnexpectedRollbackException.class ,PersistenceException.class })
 public class ReportsServiceImple implements ReportsService {
   
 	@Autowired
@@ -500,15 +504,20 @@ public class ReportsServiceImple implements ReportsService {
 	}
 
 	@Override
+	//@Transactional(noRollbackFor = { SQLException.class , SQLGrammarException.class , UnexpectedRollbackException.class ,PersistenceException.class })
 	public List<Map<String, Object>> dataManipulation(DataManipulationReq req) {
 		List<Map<String,Object>> list = new ArrayList<>();
-		Query query=null;
-		query = em.createNativeQuery(req.getQuery());
-		query.unwrap(NativeQueryImpl.class).setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+		
 		try {
-		list = query.getResultList();
-		} catch(Exception e) {
-		e.printStackTrace();
+			Query query=null;
+			query = em.createNativeQuery(req.getQuery());
+			
+			query.unwrap(NativeQueryImpl.class).setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			list = query.getResultList();
+		
+		} catch(Exception e ) {
+		   e.printStackTrace();
+		   return null;
 		} 
 		return list;
 	}

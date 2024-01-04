@@ -70,4 +70,53 @@ public class FactorParamsInsert {
     @JsonProperty("xlAgencyCode" )
     private String xlAgencyCode;
     
+    // New Params
+    @JsonProperty("Param13" )
+    private String param13 ;
+    
+    @JsonProperty("Param14" )
+    private String param14 ;
+    
+    @JsonProperty("Param15" )
+    private String param15 ;
+    
+    @JsonProperty("Param16" )
+    private String param16 ;
+    
+    @JsonProperty("Param17" )
+    private String param17 ;
+    
+    @JsonProperty("Param18" )
+    private String param18 ;
+    
+    @JsonProperty("Param19" )
+    private String param19 ;
+    
+    @JsonProperty("Param20" )
+    private String param20 ;
+    
+    @JsonProperty("Param21" )
+    private String param21 ;
+    
+    @JsonProperty("Param22" )
+    private String param22 ;
+    
+    @JsonProperty("Param23" )
+    private String param23 ;
+    
+    @JsonProperty("Param24" )
+    private String param24 ;
+    
+    @JsonProperty("Param25" )
+    private String param25 ;
+    
+    @JsonProperty("Param26" )
+    private String param26 ;
+    
+    @JsonProperty("Param27" )
+    private String param27 ;
+    
+    @JsonProperty("Param28" )
+    private String param28 ;
+    
 }

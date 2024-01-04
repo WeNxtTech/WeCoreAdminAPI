@@ -222,6 +222,11 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="SOURCE_TYPE", length=100)
     private String     sourceType;
+    @Column(name="MANUFACTURE_COUNTRY")
+    private String manufactureCountry;
+    
+    @Column(name="CUSTOMER_TYPE")
+    private String customerType;
 }
 
 

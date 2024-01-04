@@ -369,8 +369,7 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 					factorTypeId =req.getFactorTypeId();
 					
 			}
-			FactorTypeDetails saveData = new FactorTypeDetails();
-			
+		
 			// FInd Old Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<FactorTypeDetails> query = cb.createQuery(FactorTypeDetails.class);
@@ -441,9 +440,11 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 			    }
 			}		
 			
+			List<FactorTypeDetails> saveList = new  ArrayList<FactorTypeDetails>();
 			for ( RatingFieldDetails data :  req.getRatingFieldDetails() ) {
 				
-
+				FactorTypeDetails saveData = new FactorTypeDetails();
+				
 				// Save New Records
 				saveData = dozerMapper.map(req, FactorTypeDetails.class );
 				saveData.setFactorTypeId(Integer.valueOf(factorTypeId));
@@ -473,23 +474,24 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 					saveData.setDiscreteDisplayName(data.getDiscreteDisplayName());
 				}
 				
-				repository.saveAndFlush(saveData);
-				log.info("Saved Details is ---> " + json.toJson(saveData));
+				saveList.add(saveData);
 				
 			}
-		
-			List<FactorTypeDetails> filterNonUpdatedData = list.stream().filter( o ->
-			 req.getRatingFieldDetails().stream().noneMatch( t -> 
-			  t.getRatingFieldId().equalsIgnoreCase(o.getRatingFieldId()
-					 .toString()))).collect(Collectors.toList());
-			
-			if( filterNonUpdatedData.size()>0) {
-				for (FactorTypeDetails old : filterNonUpdatedData ) {
-					Date yesterDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
-					old.setEffectiveDateEnd(yesterDay);
-					repository.saveAndFlush(old);
-				}
-			}
+			repository.saveAllAndFlush(saveList);
+			log.info("Saved Details is ---> " + json.toJson(saveList));
+//			
+//			List<FactorTypeDetails> filterNonUpdatedData = list.stream().filter( o ->
+//			 req.getRatingFieldDetails().stream().noneMatch( t -> 
+//			  t.getRatingFieldId().equalsIgnoreCase(o.getRatingFieldId()
+//					 .toString()))).collect(Collectors.toList());
+//			
+//			if( filterNonUpdatedData.size()>0) {
+//				for (FactorTypeDetails old : filterNonUpdatedData ) {
+//					Date yesterDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+//					old.setEffectiveDateEnd(yesterDay);
+//					repository.saveAndFlush(old);
+//				}
+//			}
 			res.setResponse("Factor Types Added Successfully ");
 			res.setSuccessId(factorTypeId );
 

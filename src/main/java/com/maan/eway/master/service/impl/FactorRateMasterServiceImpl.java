@@ -127,9 +127,14 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 	public Map<String,List<DropDownRes>>  masterDiscreteApiCall(FactorRateSaveReq req , String token) {
 		Map<String,List<DropDownRes>>  apiResList = new HashMap<String,List<DropDownRes>>();
 		try {
-			 boolean param9 = false ,
-						param10 = false , param11 = false, param12 = false ;
-			 Integer param9RatingField  = null,param10RatingField  = null ,param11RatingField  = null,param12RatingField  = null ;
+			 boolean param9 = false , param10 = false , param11 = false, param12 = false ,
+					 param13 = false , param14 = false, param15 = false, param16 = false ,
+					  param17 = false, param18 = false,param19 = false,param20 = false ;
+			 
+			 Integer param9RatingField  = null,param10RatingField  = null ,param11RatingField  = null,param12RatingField  = null
+					 ,param13RatingField  = null,param14RatingField  = null ,param15RatingField  = null,param16RatingField  = null,
+					  param17RatingField  = null,param18RatingField  = null ,param19RatingField  = null,param20RatingField  = null;
+			 
 			if (StringUtils.isNotBlank(req.getFactorTypeId())) {
 				List<FactorTypeDetails>  factorList = getRatingFieldDetails(req.getFactorTypeId() ,req.getCompanyId() ,req.getProductId()) ;
 				
@@ -152,6 +157,38 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 							param12 = true ;
 							
 							param12RatingField = data.getRatingFieldId();
+						}  else if(data.getDiscreteColumn().equalsIgnoreCase("Param13") ) {
+							param13 = true ;
+							
+							param13RatingField = data.getRatingFieldId();
+						}  else if(data.getDiscreteColumn().equalsIgnoreCase("Param14") ) {
+							param14 = true ;
+							
+							param14RatingField = data.getRatingFieldId();
+						}  else if(data.getDiscreteColumn().equalsIgnoreCase("Param15") ) {
+							param15 = true ;
+							
+							param15RatingField = data.getRatingFieldId();
+						} else if(data.getDiscreteColumn().equalsIgnoreCase("Param16") ) {
+							param16 = true ;
+							
+							param16RatingField = data.getRatingFieldId();
+						} else if(data.getDiscreteColumn().equalsIgnoreCase("Param17") ) {
+							param17 = true ;
+							
+							param17RatingField = data.getRatingFieldId();
+						} else if(data.getDiscreteColumn().equalsIgnoreCase("Param18") ) {
+							param18 = true ;
+							
+							param18RatingField = data.getRatingFieldId();
+						} else if(data.getDiscreteColumn().equalsIgnoreCase("Param19") ) {
+							param19 = true ;
+							
+							param19RatingField = data.getRatingFieldId();
+						} else if(data.getDiscreteColumn().equalsIgnoreCase("Param20") ) {
+							param19 = true ;
+							
+							param19RatingField = data.getRatingFieldId();
 						} 
 					}
 				
@@ -189,6 +226,70 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				List<RatingFieldMaster>  filterRatingFields = ratingFields.stream().filter( o -> o.getRatingId().equals(param12Column)	).collect(Collectors.toList());
 				if(StringUtils.isNotBlank(filterRatingFields.get(0).getApiUrl())) {	
 					paramsApiReq.put("param12", filterRatingFields.get(0));
+				}
+			}
+			
+			if (param13  == true  ) {
+				Integer param13Column  = param13RatingField ;
+				List<RatingFieldMaster>  filterRatingFields = ratingFields.stream().filter( o -> o.getRatingId().equals(param13Column)	).collect(Collectors.toList());
+				if(StringUtils.isNotBlank(filterRatingFields.get(0).getApiUrl())) {	
+					paramsApiReq.put("param13", filterRatingFields.get(0));
+				}
+			}
+			
+			if (param14  == true  ) {
+				Integer param14Column  = param14RatingField ;
+				List<RatingFieldMaster>  filterRatingFields = ratingFields.stream().filter( o -> o.getRatingId().equals(param14Column)	).collect(Collectors.toList());
+				if(StringUtils.isNotBlank(filterRatingFields.get(0).getApiUrl())) {	
+					paramsApiReq.put("param14", filterRatingFields.get(0));
+				}
+			}
+			
+			if (param15  == true  ) {
+				Integer param15Column  = param15RatingField ;
+				List<RatingFieldMaster>  filterRatingFields = ratingFields.stream().filter( o -> o.getRatingId().equals(param15Column)	).collect(Collectors.toList());
+				if(StringUtils.isNotBlank(filterRatingFields.get(0).getApiUrl())) {	
+					paramsApiReq.put("param15", filterRatingFields.get(0));
+				}
+			}
+			
+			if (param16  == true  ) {
+				Integer param16Column  = param16RatingField ;
+				List<RatingFieldMaster>  filterRatingFields = ratingFields.stream().filter( o -> o.getRatingId().equals(param16Column)	).collect(Collectors.toList());
+				if(StringUtils.isNotBlank(filterRatingFields.get(0).getApiUrl())) {	
+					paramsApiReq.put("param16", filterRatingFields.get(0));
+				}
+			}
+			
+			if (param17  == true  ) {
+				Integer param17Column  = param17RatingField ;
+				List<RatingFieldMaster>  filterRatingFields = ratingFields.stream().filter( o -> o.getRatingId().equals(param17Column)	).collect(Collectors.toList());
+				if(StringUtils.isNotBlank(filterRatingFields.get(0).getApiUrl())) {	
+					paramsApiReq.put("param17", filterRatingFields.get(0));
+				}
+			}
+			
+			if (param18  == true  ) {
+				Integer param18Column  = param18RatingField ;
+				List<RatingFieldMaster>  filterRatingFields = ratingFields.stream().filter( o -> o.getRatingId().equals(param18Column)	).collect(Collectors.toList());
+				if(StringUtils.isNotBlank(filterRatingFields.get(0).getApiUrl())) {	
+					paramsApiReq.put("param18", filterRatingFields.get(0));
+				}
+			}
+			
+			if (param19  == true  ) {
+				Integer param19Column  = param19RatingField ;
+				List<RatingFieldMaster>  filterRatingFields = ratingFields.stream().filter( o -> o.getRatingId().equals(param19Column)	).collect(Collectors.toList());
+				if(StringUtils.isNotBlank(filterRatingFields.get(0).getApiUrl())) {	
+					paramsApiReq.put("param19", filterRatingFields.get(0));
+				}
+			}
+			
+			if (param20  == true  ) {
+				Integer param20Column  = param20RatingField ;
+				List<RatingFieldMaster>  filterRatingFields = ratingFields.stream().filter( o -> o.getRatingId().equals(param20Column)	).collect(Collectors.toList());
+				if(StringUtils.isNotBlank(filterRatingFields.get(0).getApiUrl())) {	
+					paramsApiReq.put("param20", filterRatingFields.get(0));
 				}
 			}
 			
@@ -249,11 +350,26 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				}
 			}
 			
-		  boolean param1 = false ,param2 = false ,param3 = false , param4 = false , param5  = false,param6 = false , param7  = false,param8 = false,param9 = false ,
-					param10 = false , param11 = false, param12 = false ;
-			String param1Name = "" , param2Name = ""  ,param3Name = "" ,param4Name = ""  ,param5Name= "" ,param6Name= ""  , 
-					param7Name= "" ,param8Name= "" ,param9Name= "" ,param10Name= "" ,param11Name= "" ,param12Name= ""  ;
-			Integer param9RatingField  = null,param10RatingField  = null ,param11RatingField  = null,param12RatingField  = null ;
+		  boolean param1 = false ,param2 = false ,param3 = false , param4 = false ,
+				  param5  = false,param6 = false , param7  = false,param8 = false ,
+				  param9 = false ,param10 = false, param11 = false, param12 = false,
+				  param13 = false ,param14 = false, param15 = false, param16 = false ,
+				  param17 = false ,param18 = false, param19 = false, param20 = false ,
+				  param21 = false ,param22 = false, param23 = false, param24 = false ,
+				  param25 = false ,param26 = false, param27 = false, param28 = false
+				  ;
+		  
+			String param1Name = "" , param2Name = ""  ,param3Name = "" ,param4Name = ""  ,
+				  param5Name= "" ,param6Name= ""  ,param7Name= "" ,param8Name= "" ,
+				  param9Name= "" ,param10Name= "" ,param11Name= "" ,param12Name= ""  ,
+				  param13Name= "" ,param14Name= "" ,param15Name= "" ,param16Name= ""  ,
+				  param17Name= "" ,param18Name= "" ,param19Name= "" ,param20Name= "" ,
+				  param21Name= "" ,param22Name= "" ,param23Name= "" ,param24Name= ""  ,
+				  param25Name= "" ,param26Name= "" ,param27Name= "" ,param28Name= ""  ;
+			
+			Integer param9RatingField  = null,param10RatingField  = null ,param11RatingField  = null,param12RatingField  = null ,
+					param13RatingField  = null,param14RatingField  = null ,param15RatingField  = null,param16RatingField  = null ,
+					param17RatingField  = null,param18RatingField  = null ,param19RatingField  = null,param20RatingField  = null ;
 			
 			if (StringUtils.isBlank(req.getFactorTypeId())) {
 				errorList.add(new Error("02", "FactorTypeId", "Please Enter FactorTypeId"));
@@ -263,6 +379,8 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				for(FactorTypeDetails data :factorList ) {
 					
 					if(data.getRangeYn().equalsIgnoreCase("Y") ) {
+						
+						// Start Column
 						if(data.getRangeFromColumn().equalsIgnoreCase("Param1") )  {
 							param1 = true ;
 							param1Name = data.getFromDisplayName() ;
@@ -275,8 +393,21 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 						} else if(data.getRangeFromColumn().equalsIgnoreCase("Param7") ) {
 							param7 = true ;
 							param7Name = data.getFromDisplayName() ;
+						} else if(data.getRangeToColumn().equalsIgnoreCase("Param21") ) {
+							param21 = true ;
+							param21Name = data.getToDisplayName() ;
+						} else if(data.getRangeToColumn().equalsIgnoreCase("Param23") ) {
+							param23 = true ;
+							param23Name = data.getToDisplayName() ;
+						} else if(data.getRangeToColumn().equalsIgnoreCase("Param25") ) {
+							param25 = true ;
+							param25Name = data.getToDisplayName() ;
+						} else if(data.getRangeToColumn().equalsIgnoreCase("Param27") ) {
+							param27 = true ;
+							param27Name = data.getToDisplayName() ;
 						}
 						
+						// End Column
 						if(data.getRangeToColumn().equalsIgnoreCase("Param2") ) {
 							param2 = true ;
 							param2Name = data.getToDisplayName() ;
@@ -289,9 +420,22 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 						} else if(data.getRangeToColumn().equalsIgnoreCase("Param8") ) {
 							param8 = true ;
 							param8Name = data.getToDisplayName() ;
+						} else if(data.getRangeToColumn().equalsIgnoreCase("Param22") ) {
+							param22 = true ;
+							param22Name = data.getToDisplayName() ;
+						} else if(data.getRangeToColumn().equalsIgnoreCase("Param24") ) {
+							param24 = true ;
+							param24Name = data.getToDisplayName() ;
+						} else if(data.getRangeToColumn().equalsIgnoreCase("Param26") ) {
+							param26 = true ;
+							param26Name = data.getToDisplayName() ;
+						} else if(data.getRangeToColumn().equalsIgnoreCase("Param28") ) {
+							param28 = true ;
+							param28Name = data.getToDisplayName() ;
 						} 
 						
 					} else {
+						// Disrete Column
 						if(data.getDiscreteColumn().equalsIgnoreCase("Param9") ) {
 							param9 = true ;
 							param9Name = data.getDiscreteDisplayName() ;
@@ -308,7 +452,41 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 							param12 = true ;
 							param12Name = data.getDiscreteDisplayName() ;
 							param12RatingField = data.getRatingFieldId();
+						} else if(data.getDiscreteColumn().equalsIgnoreCase("Param13") ) {
+							param13 = true ;
+							param13Name = data.getDiscreteDisplayName() ;
+						    param13RatingField = data.getRatingFieldId();
+						} else if(data.getDiscreteColumn().equalsIgnoreCase("Param14") ) {
+							param14 = true ;
+							param14Name = data.getDiscreteDisplayName() ;
+							param14RatingField = data.getRatingFieldId();
+						} else if(data.getDiscreteColumn().equalsIgnoreCase("Param15") ) {
+							param15 = true ;
+							param15Name = data.getDiscreteDisplayName() ;
+							param15RatingField = data.getRatingFieldId();
+						} else if(data.getDiscreteColumn().equalsIgnoreCase("Param16") ) {
+							param16 = true ;
+							param16Name = data.getDiscreteDisplayName() ;
+							param16RatingField = data.getRatingFieldId();
+						}  else if(data.getDiscreteColumn().equalsIgnoreCase("Param17") ) {
+							param17 = true ;
+							param17Name = data.getDiscreteDisplayName() ;
+							param17RatingField = data.getRatingFieldId();
+						}  else if(data.getDiscreteColumn().equalsIgnoreCase("Param18") ) {
+							param18 = true ;
+							param18Name = data.getDiscreteDisplayName() ;
+							param18RatingField = data.getRatingFieldId();
+						}  else if(data.getDiscreteColumn().equalsIgnoreCase("Param19") ) {
+							param19 = true ;
+							param19Name = data.getDiscreteDisplayName() ;
+							param19RatingField = data.getRatingFieldId();
+						}  else if(data.getDiscreteColumn().equalsIgnoreCase("Param20") ) {
+							param20 = true ;
+							param20Name = data.getDiscreteDisplayName() ;
+							param20RatingField = data.getRatingFieldId();
 						} 
+						
+						
 					}
 				
 				}
@@ -338,6 +516,46 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				Integer param12Column  = param12RatingField ;
 				List<RatingFieldMaster>  filterRatingFields = ratingFields.stream().filter( o -> o.getRatingId().equals(param12Column)	).collect(Collectors.toList());
 				paramsApiReq.put("param12", filterRatingFields.get(0));
+			} 
+			if (param13  == true  ) {
+				Integer param13Column  = param13RatingField ;
+				List<RatingFieldMaster>  filterRatingFields = ratingFields.stream().filter( o -> o.getRatingId().equals(param13Column)	).collect(Collectors.toList());
+				paramsApiReq.put("param13", filterRatingFields.get(0));
+			}
+			if (param14  == true  ) {
+				Integer param14Column  = param14RatingField ;
+				List<RatingFieldMaster>  filterRatingFields = ratingFields.stream().filter( o -> o.getRatingId().equals(param14Column)	).collect(Collectors.toList());
+				paramsApiReq.put("param14", filterRatingFields.get(0));
+			}
+			if (param15  == true  ) {
+				Integer param15Column  = param15RatingField ;
+				List<RatingFieldMaster>  filterRatingFields = ratingFields.stream().filter( o -> o.getRatingId().equals(param15Column)	).collect(Collectors.toList());
+				paramsApiReq.put("param15", filterRatingFields.get(0));
+			}
+			if (param16  == true  ) {
+				Integer param16Column  = param16RatingField ;
+				List<RatingFieldMaster>  filterRatingFields = ratingFields.stream().filter( o -> o.getRatingId().equals(param16Column)	).collect(Collectors.toList());
+				paramsApiReq.put("param16", filterRatingFields.get(0));
+			}
+			if (param17  == true  ) {
+				Integer param17Column  = param17RatingField ;
+				List<RatingFieldMaster>  filterRatingFields = ratingFields.stream().filter( o -> o.getRatingId().equals(param17Column)	).collect(Collectors.toList());
+				paramsApiReq.put("param17", filterRatingFields.get(0));
+			}
+			if (param18  == true  ) {
+				Integer param18Column  = param18RatingField ;
+				List<RatingFieldMaster>  filterRatingFields = ratingFields.stream().filter( o -> o.getRatingId().equals(param18Column)	).collect(Collectors.toList());
+				paramsApiReq.put("param18", filterRatingFields.get(0));
+			}
+			if (param19  == true  ) {
+				Integer param19Column  = param19RatingField ;
+				List<RatingFieldMaster>  filterRatingFields = ratingFields.stream().filter( o -> o.getRatingId().equals(param19Column)	).collect(Collectors.toList());
+				paramsApiReq.put("param19", filterRatingFields.get(0));
+			}
+			if (param20  == true  ) {
+				Integer param20Column  = param20RatingField ;
+				List<RatingFieldMaster>  filterRatingFields = ratingFields.stream().filter( o -> o.getRatingId().equals(param20Column)	).collect(Collectors.toList());
+				paramsApiReq.put("param20", filterRatingFields.get(0));
 			}
 			
 			// Master Api Response 
@@ -345,6 +563,14 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 			List<DropDownRes> param10Master = param10  == true  &&  apiResList.get("param10")!=null ? apiResList.get("param10") : new ArrayList<>();
 			List<DropDownRes> param11Master = param11  == true  &&  apiResList.get("param11")!=null ? apiResList.get("param11") : new ArrayList<>();
 			List<DropDownRes> param12Master = param12  == true  &&  apiResList.get("param12")!=null ? apiResList.get("param12") : new ArrayList<>();
+			List<DropDownRes> param13Master = param13  == true  &&  apiResList.get("param13")!=null ? apiResList.get("param13") : new ArrayList<>();
+			List<DropDownRes> param14Master = param14  == true  &&  apiResList.get("param14")!=null ? apiResList.get("param14") : new ArrayList<>();
+			List<DropDownRes> param15Master = param15  == true  &&  apiResList.get("param15")!=null ? apiResList.get("param15") : new ArrayList<>();
+			List<DropDownRes> param16Master = param16  == true  &&  apiResList.get("param16")!=null ? apiResList.get("param16") : new ArrayList<>();
+			List<DropDownRes> param17Master = param17  == true  &&  apiResList.get("param17")!=null ? apiResList.get("param17") : new ArrayList<>();
+			List<DropDownRes> param18Master = param18  == true  &&  apiResList.get("param18")!=null ? apiResList.get("param18") : new ArrayList<>();
+			List<DropDownRes> param19Master = param19  == true  &&  apiResList.get("param19")!=null ? apiResList.get("param19") : new ArrayList<>();
+			List<DropDownRes> param20Master = param20  == true  &&  apiResList.get("param20")!=null ? apiResList.get("param20") : new ArrayList<>();
 			
 			// Get Master DropDown List 
 			
@@ -353,10 +579,14 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				errorList.add(new Error("01", "please enter", "Please Enter Alteast One Factor Params Details"));
 			} else {
 				Long row = 0L ;
-			  List<RangeParamsReq>  param1to2Values = new ArrayList<RangeParamsReq>();
+				  List<RangeParamsReq>  param1to2Values = new ArrayList<RangeParamsReq>();
 				  List<RangeParamsReq>  param3To4Values = new ArrayList<RangeParamsReq>();
 				  List<RangeParamsReq>  param5To6Values = new ArrayList<RangeParamsReq>();
 				  List<RangeParamsReq>  param7To8Values = new ArrayList<RangeParamsReq>();
+				  List<RangeParamsReq>  param21To22Values = new ArrayList<RangeParamsReq>();
+				  List<RangeParamsReq>  param23To24Values = new ArrayList<RangeParamsReq>();
+				  List<RangeParamsReq>  param25To26Values = new ArrayList<RangeParamsReq>();
+				  List<RangeParamsReq>  param27To28Values = new ArrayList<RangeParamsReq>();
 					
 					/*	  List<String>  discrete9Values = new ArrayList<String>();
 				  List<String>  discrete10Values = new ArrayList<String>();
@@ -398,7 +628,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					}
 					if ( param4==true  ) {
 						if( StringUtils.isBlank(data.getParam4())  ) 
-							errorList.add(new Error("04", param4Name, "Please Enter " +  param4Name + "in Row No : " + row  ));
+							errorList.add(new Error("04", param4Name, "Please Enter " +  param4Name + " in Row No : " + row  ));
 						else if(! data.getParam4().matches("[0-9.-]+")) 
 							errorList.add(new Error("04",param4Name, "Please Enter Valid "  + param4Name + " Value in Row No : " + row ));
 						else if ( param3==true &&  StringUtils.isNotBlank(data.getParam3()) &&  data.getParam3().matches("[0-9.]+") ) {
@@ -410,14 +640,14 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					// Param 5 & Param 6 Validation
 					if ( param5==true  ) {
 						if( StringUtils.isBlank(data.getParam5())  ) 
-							errorList.add(new Error("05", param5Name, "Please Enter " +  param5Name + "in Row No : " + row  ));
+							errorList.add(new Error("05", param5Name, "Please Enter " +  param5Name + " in Row No : " + row  ));
 						else if(! data.getParam5().matches("[0-9.-]+")) 
 							errorList.add(new Error("05",param5Name, "Please Enter Valid "  + param5Name + " Value in Row No : " + row ));	
 						
 					}
 					if ( param6==true  ) {
 						if( StringUtils.isBlank(data.getParam6())  ) 
-							errorList.add(new Error("06", param6Name, "Please Enter " +  param6Name + "in Row No : " + row  ));
+							errorList.add(new Error("06", param6Name, "Please Enter " +  param6Name + " in Row No : " + row  ));
 						else if(! data.getParam6().matches("[0-9.-]+")) 
 							errorList.add(new Error("06",param6Name, "Please Enter Valid "  + param6Name + " Value in Row No : " + row ));
 						else if ( param5==true &&  StringUtils.isNotBlank(data.getParam5()) &&  data.getParam5().matches("[0-9.]+") ) {
@@ -430,14 +660,14 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					// Param 7 & Param 8 Validation
 					if ( param7==true  ) {
 						if( StringUtils.isBlank(data.getParam7())  ) 
-							errorList.add(new Error("07", param7Name, "Please Enter " +  param7Name + "in Row No : " + row  ));
+							errorList.add(new Error("07", param7Name, "Please Enter " +  param7Name + " in Row No : " + row  ));
 						else if(! data.getParam7().matches("[0-9.-]+")) 
 							errorList.add(new Error("07",param7Name, "Please Enter Valid "  + param7Name + " Value in Row No : " + row ));	
 						
 					}
 					if ( param8==true  ) {
 						if( StringUtils.isBlank(data.getParam8())  ) 
-							errorList.add(new Error("08", param8Name, "Please Enter " +  param8Name + "in Row No : " + row  ));
+							errorList.add(new Error("08", param8Name, "Please Enter " +  param8Name + " in Row No : " + row  ));
 						else if(! data.getParam8().matches("[0-9.-]+")) 
 							errorList.add(new Error("08",param8Name, "Please Enter Valid "  + param8Name + " Value in Row No : " + row ));
 						else if ( param7==true &&  StringUtils.isNotBlank(data.getParam7()) &&  data.getParam7().matches("[0-9.]+") ) {
@@ -446,11 +676,89 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 						}
 						
 					}
+					
+					// Param 21 & Param 22 Validation
+					if ( param21==true  ) {
+						if( StringUtils.isBlank(data.getParam21())  ) 
+							errorList.add(new Error("01", param21Name, "Please Enter " +  param21Name + " in Row No : " + row  ));
+						else if(! data.getParam21().matches("[0-9.-]+")) 
+							errorList.add(new Error("01",param21Name, "Please Enter Valid "  + param21Name + " Value in Row No : " + row ));	
+						
+					}
+					if ( param22==true  ) {
+						if( StringUtils.isBlank(data.getParam22())  ) 
+							errorList.add(new Error("02", param22Name, "Please Enter " +  param22Name + "in Row No : " + row  ));
+						else if(! data.getParam22().matches("[0-9.-]+")) 
+							errorList.add(new Error("02",param22Name, "Please Enter Valid "  + param22Name + " Value in Row No : " + row ));
+						else if ( param21==true &&  StringUtils.isNotBlank(data.getParam1()) &&  data.getParam1().matches("[0-9.]+") ) {
+							if( Double.valueOf(data.getParam1()) >  Double.valueOf(data.getParam2()) ) 
+								errorList.add(new Error("02", param22Name,  param21Name + " Greater Than  " + param22Name + " Not Allowed in Row No : " + row  ));
+						}
+					}
+					
+					// Param 23 & Param 24 Validation
+					if ( param23==true  ) {
+						if( StringUtils.isBlank(data.getParam23())  ) 
+							errorList.add(new Error("03", param23Name, "Please Enter " +  param23Name + " in Row No : " + row  ));
+						else if(! data.getParam23().matches("[0-9.-]+")) 
+							errorList.add(new Error("03",param23Name, "Please Enter Valid "  + param23Name + " Value in Row No : " + row ));	
 				
-					// Param 9 - 12 Validation
+					}
+					if ( param24==true  ) {
+						if( StringUtils.isBlank(data.getParam24())  ) 
+							errorList.add(new Error("04", param24Name, "Please Enter " +  param24Name + " in Row No : " + row  ));
+						else if(! data.getParam24().matches("[0-9.-]+")) 
+							errorList.add(new Error("04",param24Name, "Please Enter Valid "  + param24Name + " Value in Row No : " + row ));
+						else if ( param23==true &&  StringUtils.isNotBlank(data.getParam23()) &&  data.getParam23().matches("[0-9.]+") ) {
+							if( Double.valueOf(data.getParam23()) >  Double.valueOf(data.getParam24()) ) 
+								errorList.add(new Error("04", param24Name,  param23Name + " Greater Than  " + param24Name + " Not Allowed in Row No : " + row  ));
+						}
+					}
+					
+					// Param 25 & Param 26 Validation
+					if ( param25==true  ) {
+						if( StringUtils.isBlank(data.getParam25())  ) 
+							errorList.add(new Error("05", param25Name, "Please Enter " +  param25Name + " in Row No : " + row  ));
+						else if(! data.getParam25().matches("[0-9.-]+")) 
+							errorList.add(new Error("05",param25Name, "Please Enter Valid "  + param25Name + " Value in Row No : " + row ));	
+						
+					}
+					if ( param26==true  ) {
+						if( StringUtils.isBlank(data.getParam26())  ) 
+							errorList.add(new Error("06", param26Name, "Please Enter " +  param26Name + " in Row No : " + row  ));
+						else if(! data.getParam26().matches("[0-9.-]+")) 
+							errorList.add(new Error("06",param26Name, "Please Enter Valid "  + param26Name + " Value in Row No : " + row ));
+						else if ( param25==true &&  StringUtils.isNotBlank(data.getParam25()) &&  data.getParam25().matches("[0-9.]+") ) {
+							if( Double.valueOf(data.getParam25()) >  Double.valueOf(data.getParam26()) ) 
+								errorList.add(new Error("06", param26Name,  param25Name + " Greater Than  " + param26Name + " Not Allowed in Row No : " + row  ));
+						}
+						
+			
+					}
+					// Param 27 & Param 28 Validation
+					if ( param27==true  ) {
+						if( StringUtils.isBlank(data.getParam27())  ) 
+							errorList.add(new Error("07", param27Name, "Please Enter " +  param27Name + " in Row No : " + row  ));
+						else if(! data.getParam27().matches("[0-9.-]+")) 
+							errorList.add(new Error("07",param27Name, "Please Enter Valid "  + param27Name + " Value in Row No : " + row ));	
+						
+					}
+					if ( param28==true  ) {
+						if( StringUtils.isBlank(data.getParam28())  ) 
+							errorList.add(new Error("08", param28Name, "Please Enter " +  param28Name + " in Row No : " + row  ));
+						else if(! data.getParam28().matches("[0-9.-]+")) 
+							errorList.add(new Error("08",param28Name, "Please Enter Valid "  + param28Name + " Value in Row No : " + row ));
+						else if ( param27==true &&  StringUtils.isNotBlank(data.getParam27()) &&  data.getParam27().matches("[0-9.]+") ) {
+							if( Double.valueOf(data.getParam27()) >  Double.valueOf(data.getParam28()) ) 
+								errorList.add(new Error("08", param28Name,  param27Name + " Greater Than  " + param28Name + " Not Allowed in Row No : " + row  ));
+						}
+						
+					}
+				
+					// Param 9 - 20 Validation
 					if ( param9==true  ) {
 						if( StringUtils.isBlank(data.getParam9())  ) 
-							errorList.add(new Error("09", param9Name, "Please Enter " +  param9Name + "in Row No : " + row  ));
+							errorList.add(new Error("09", param9Name, "Please Enter " +  param9Name + " in Row No : " + row  ));
 						else if  (param9Master !=null && param9Master.size()> 0 && ! data.getParam9().equalsIgnoreCase("99999") ) {
 							List<DropDownRes> filterMaster = param9Master.stream().filter( o ->  o.getCode().equalsIgnoreCase(data.getParam9()) ).collect(Collectors.toList());
 							if(filterMaster.size()<=0 ) {
@@ -461,7 +769,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					}
 					if ( param10==true  ) {
 						if( StringUtils.isBlank(data.getParam10())  ) 
-							errorList.add(new Error("10", param10Name, "Please Enter " +  param10Name + "in Row No : " + row  ));
+							errorList.add(new Error("10", param10Name, "Please Enter " +  param10Name + " in Row No : " + row  ));
 						else if  (param10Master !=null && param10Master.size()> 0 && ! data.getParam10().equalsIgnoreCase("99999") ) {
 							List<DropDownRes> filterMaster = param10Master.stream().filter( o ->  o.getCode().equalsIgnoreCase(data.getParam10()) ).collect(Collectors.toList());
 							if(filterMaster.size()<=0 ) {
@@ -472,7 +780,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					}
 					if ( param11==true  ) {
 						if( StringUtils.isBlank(data.getParam11())  ) 
-							errorList.add(new Error("11", param11Name, "Please Enter " +  param11Name + "in Row No : " + row  ));
+							errorList.add(new Error("11", param11Name, "Please Enter " +  param11Name + " in Row No : " + row  ));
 						else if  (param11Master !=null && param11Master.size()> 0 && ! data.getParam11().equalsIgnoreCase("99999") ) {
 							List<DropDownRes> filterMaster = param11Master.stream().filter( o ->  o.getCode().equalsIgnoreCase(data.getParam11()) ).collect(Collectors.toList());
 							if(filterMaster.size()<=0 ) {
@@ -483,7 +791,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					}
 					if ( param12==true  ) {
 						if( StringUtils.isBlank(data.getParam12())  ) 
-							errorList.add(new Error("12", param12Name, "Please Enter " +  param12Name + "in Row No : " + row  ));
+							errorList.add(new Error("12", param12Name, "Please Enter " +  param12Name + " in Row No : " + row  ));
 						else if  (param12Master !=null && param12Master.size()> 0 && ! data.getParam12().equalsIgnoreCase("99999") ) {
 							List<DropDownRes> filterMaster = param12Master.stream().filter( o ->  o.getCode().equalsIgnoreCase(data.getParam12()) ).collect(Collectors.toList());
 							if(filterMaster.size()<=0 ) {
@@ -493,18 +801,131 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 						}	
 					}
 					
+					if ( param13==true  ) {
+						if( StringUtils.isBlank(data.getParam13())  ) 
+							errorList.add(new Error("12", param13Name, "Please Enter " +  param13Name + " in Row No : " + row  ));
+						else if  (param13Master !=null && param13Master.size()> 0 && ! data.getParam13().equalsIgnoreCase("99999") ) {
+							List<DropDownRes> filterMaster = param13Master.stream().filter( o ->  o.getCode().equalsIgnoreCase(data.getParam13()) ).collect(Collectors.toList());
+							if(filterMaster.size()<=0 ) {
+								errorList.add(new Error("09", param13Name,  param13Name +" Row No : " + row +" "  + " Value = " + data.getParam13() +  " Not available in Master "  ));
+							}
+							
+						}	
+					}
+					
+					if ( param14==true  ) {
+						if( StringUtils.isBlank(data.getParam14())  ) 
+							errorList.add(new Error("12", param14Name, "Please Enter " +  param14Name + " in Row No : " + row  ));
+						else if  (param14Master !=null && param14Master.size()> 0 && ! data.getParam14().equalsIgnoreCase("99999") ) {
+							List<DropDownRes> filterMaster = param14Master.stream().filter( o ->  o.getCode().equalsIgnoreCase(data.getParam14()) ).collect(Collectors.toList());
+							if(filterMaster.size()<=0 ) {
+								errorList.add(new Error("09", param14Name,  param14Name +" Row No : " + row +" "  + " Value = " + data.getParam14() +  " Not available in Master "  ));
+							}
+							
+						}	
+					}
+					
+					if ( param15==true  ) {
+						if( StringUtils.isBlank(data.getParam15())  ) 
+							errorList.add(new Error("12", param15Name, "Please Enter " +  param15Name + " in Row No : " + row  ));
+						else if  (param15Master !=null && param15Master.size()> 0 && ! data.getParam15().equalsIgnoreCase("99999") ) {
+							List<DropDownRes> filterMaster = param15Master.stream().filter( o ->  o.getCode().equalsIgnoreCase(data.getParam15()) ).collect(Collectors.toList());
+							if(filterMaster.size()<=0 ) {
+								errorList.add(new Error("09", param15Name,  param15Name +" Row No : " + row +" "  + " Value = " + data.getParam15() +  " Not available in Master "  ));
+							}
+							
+						}	
+					}
+					
+					if ( param16==true  ) {
+						if( StringUtils.isBlank(data.getParam16())  ) 
+							errorList.add(new Error("12", param16Name, "Please Enter " +  param16Name + " in Row No : " + row  ));
+						else if  (param16Master !=null && param16Master.size()> 0 && ! data.getParam16().equalsIgnoreCase("99999") ) {
+							List<DropDownRes> filterMaster = param16Master.stream().filter( o ->  o.getCode().equalsIgnoreCase(data.getParam16()) ).collect(Collectors.toList());
+							if(filterMaster.size()<=0 ) {
+								errorList.add(new Error("09", param16Name,  param16Name +" Row No : " + row +" "  + " Value = " + data.getParam16() +  " Not available in Master "  ));
+							}
+							
+						}	
+					}
+					if ( param17==true  ) {
+						if( StringUtils.isBlank(data.getParam17())  ) 
+							errorList.add(new Error("12", param17Name, "Please Enter " +  param17Name + " in Row No : " + row  ));
+						else if  (param17Master !=null && param17Master.size()> 0 && ! data.getParam17().equalsIgnoreCase("99999") ) {
+							List<DropDownRes> filterMaster = param17Master.stream().filter( o ->  o.getCode().equalsIgnoreCase(data.getParam17()) ).collect(Collectors.toList());
+							if(filterMaster.size()<=0 ) {
+								errorList.add(new Error("09", param17Name,  param17Name +" Row No : " + row +" "  + " Value = " + data.getParam17() +  " Not available in Master "  ));
+							}
+							
+						}	
+					}
+					if ( param18==true  ) {
+						if( StringUtils.isBlank(data.getParam18())  ) 
+							errorList.add(new Error("12", param18Name, "Please Enter " +  param18Name + " in Row No : " + row  ));
+						else if  (param18Master !=null && param18Master.size()> 0 && ! data.getParam18().equalsIgnoreCase("99999") ) {
+							List<DropDownRes> filterMaster = param18Master.stream().filter( o ->  o.getCode().equalsIgnoreCase(data.getParam18()) ).collect(Collectors.toList());
+							if(filterMaster.size()<=0 ) {
+								errorList.add(new Error("09", param18Name,  param18Name +" Row No : " + row +" "  + " Value = " + data.getParam18() +  " Not available in Master "  ));
+							}
+							
+						}	
+					}
+					if ( param19==true  ) {
+						if( StringUtils.isBlank(data.getParam19())  ) 
+							errorList.add(new Error("12", param19Name, "Please Enter " +  param19Name + " in Row No : " + row  ));
+						else if  (param19Master !=null && param19Master.size()> 0 && ! data.getParam19().equalsIgnoreCase("99999") ) {
+							List<DropDownRes> filterMaster = param19Master.stream().filter( o ->  o.getCode().equalsIgnoreCase(data.getParam19()) ).collect(Collectors.toList());
+							if(filterMaster.size()<=0 ) {
+								errorList.add(new Error("09", param19Name,  param19Name +" Row No : " + row +" "  + " Value = " + data.getParam19() +  " Not available in Master "  ));
+							}
+							
+						}	
+					}
+					if ( param20==true  ) {
+						if( StringUtils.isBlank(data.getParam20())  ) 
+							errorList.add(new Error("12", param20Name, "Please Enter " +  param20Name + " in Row No : " + row  ));
+						else if  (param20Master !=null && param20Master.size()> 0 && ! data.getParam20().equalsIgnoreCase("99999") ) {
+							List<DropDownRes> filterMaster = param20Master.stream().filter( o ->  o.getCode().equalsIgnoreCase(data.getParam20()) ).collect(Collectors.toList());
+							if(filterMaster.size()<=0 ) {
+								errorList.add(new Error("09", param20Name,  param20Name +" Row No : " + row +" "  + " Value = " + data.getParam20() +  " Not available in Master "  ));
+							}
+							
+						}	
+					}
+					
+					
+					// Range 
 					Double param1Value = StringUtils.isNotBlank(data.getParam1())  && data.getParam1().matches("[0-9.]+") ? Double.valueOf(data.getParam1()) : 0D ;
 					Double param2Value = StringUtils.isNotBlank(data.getParam2())  && data.getParam2().matches("[0-9.]+") ? Double.valueOf(data.getParam2()) : 0D ;
 					Double param3Value = StringUtils.isNotBlank(data.getParam3())  && data.getParam3().matches("[0-9.]+") ? Double.valueOf(data.getParam3()) : 0D;												
 					Double param4Value = StringUtils.isNotBlank(data.getParam4())  && data.getParam4().matches("[0-9.]+") ? Double.valueOf(data.getParam4()) : 0D;
-					Double param5Value = StringUtils.isNotBlank(data.getParam5())  && data.getParam5().matches("[0-9.]+") ? Double.valueOf(data.getParam5()) : 0D	;			
+					Double param5Value = StringUtils.isNotBlank(data.getParam5())  && data.getParam5().matches("[0-9.]+") ? Double.valueOf(data.getParam5()) : 0D;			
 					Double param6Value = StringUtils.isNotBlank(data.getParam6())  && data.getParam6().matches("[0-9.]+") ? Double.valueOf(data.getParam6()) : 0D;
 					Double param7Value = StringUtils.isNotBlank(data.getParam7())  && data.getParam7().matches("[0-9.]+") ? Double.valueOf(data.getParam7()) : 0D;
 					Double param8Value = StringUtils.isNotBlank(data.getParam8())  && data.getParam8().matches("[0-9.]+") ? Double.valueOf(data.getParam8()) : 0D;
+					Double param21Value = StringUtils.isNotBlank(data.getParam21())  && data.getParam21().matches("[0-9.]+") ? Double.valueOf(data.getParam21()) : 0D ;
+					Double param22Value = StringUtils.isNotBlank(data.getParam22())  && data.getParam22().matches("[0-9.]+") ? Double.valueOf(data.getParam22()) : 0D ;
+					Double param23Value = StringUtils.isNotBlank(data.getParam23())  && data.getParam23().matches("[0-9.]+") ? Double.valueOf(data.getParam23()) : 0D;												
+					Double param24Value = StringUtils.isNotBlank(data.getParam24())  && data.getParam24().matches("[0-9.]+") ? Double.valueOf(data.getParam24()) : 0D;
+					Double param25Value = StringUtils.isNotBlank(data.getParam25())  && data.getParam25().matches("[0-9.]+") ? Double.valueOf(data.getParam25()) : 0D;			
+					Double param26Value = StringUtils.isNotBlank(data.getParam26())  && data.getParam26().matches("[0-9.]+") ? Double.valueOf(data.getParam26()) : 0D;
+					Double param27Value = StringUtils.isNotBlank(data.getParam27())  && data.getParam27().matches("[0-9.]+") ? Double.valueOf(data.getParam27()) : 0D;
+					Double param28Value = StringUtils.isNotBlank(data.getParam28())  && data.getParam28().matches("[0-9.]+") ? Double.valueOf(data.getParam28()) : 0D;
+					
+					// Discrete
 					String param9Value = StringUtils.isNotBlank(data.getParam9()) ? data.getParam9() : "";
 					String param10Value =StringUtils.isNotBlank( data.getParam10()) ? data.getParam10() :""  ;
 					String param11Value = StringUtils.isNotBlank(data.getParam11()) ? data.getParam11() :"" ;
 					String param12Value = StringUtils.isNotBlank(data.getParam12())  ? data.getParam12() : "" ;
+					String param13Value = StringUtils.isNotBlank(data.getParam13())  ? data.getParam13() : "" ;
+					String param14Value = StringUtils.isNotBlank(data.getParam14())  ? data.getParam14() : "" ;
+					String param15Value = StringUtils.isNotBlank(data.getParam15())  ? data.getParam15() : "" ;
+					String param16Value = StringUtils.isNotBlank(data.getParam16())  ? data.getParam16() : "" ;
+					String param17Value = StringUtils.isNotBlank(data.getParam17())  ? data.getParam17() : "" ;
+					String param18Value = StringUtils.isNotBlank(data.getParam18())  ? data.getParam18() : "" ;
+					String param19Value = StringUtils.isNotBlank(data.getParam19())  ? data.getParam19() : "" ;
+					String param20Value = StringUtils.isNotBlank(data.getParam20())  ? data.getParam20() : "" ;
+					
 					
 					boolean param1Dup = false ;
 					boolean param2Dup = false ;
@@ -514,6 +935,14 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					boolean param6Dup = false ;
 					boolean param7Dup = false ;
 					boolean param8Dup = false ;
+					boolean param21Dup = false ;
+					boolean param22Dup = false ;
+					boolean param23Dup = false ;
+					boolean param24Dup = false ;
+					boolean param25Dup = false ;
+					boolean param26Dup = false ;
+					boolean param27Dup = false ;
+					boolean param28Dup = false ;
 					
 					List<RangeParamsReq>  fiterParam1 = param1to2Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null && ( o.getParamStartValue() <= param1Value &&  param1Value <= o.getParamEndValue())  ).collect(Collectors.toList()) ;
 					fiterParam1 = fiterParam1.size() <= 0 ? param1to2Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null && param1Value <= o.getParamStartValue()   ).collect(Collectors.toList()) :fiterParam1 ;
@@ -538,6 +967,32 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					
 					List<RangeParamsReq>  fiterParam8 = param7To8Values.stream().filter(o ->  o.getParamStartValue()!=null && o.getParamEndValue()!=null && ( param7Value <= o.getParamStartValue()  )).collect(Collectors.toList()) ;
 					fiterParam8 = fiterParam8.size() <= 0 ? param7To8Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&     param8Value <= o.getParamEndValue()   ).collect(Collectors.toList()) : fiterParam8 ;
+					
+					List<RangeParamsReq>  fiterParam21 = param21To22Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null && ( o.getParamStartValue() <= param21Value &&  param1Value <= o.getParamEndValue())  ).collect(Collectors.toList()) ;
+					fiterParam21 = fiterParam21.size() <= 0 ? param21To22Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null && param21Value <= o.getParamStartValue()   ).collect(Collectors.toList()) :fiterParam21 ;
+					
+					List<RangeParamsReq>  fiterParam22 = param21To22Values.stream().filter(o ->  o.getParamStartValue()!=null && o.getParamEndValue()!=null &&  (o.getParamStartValue() <= param22Value &&  param22Value <= o.getParamEndValue()) ).collect(Collectors.toList()) ;
+					fiterParam22 = fiterParam22.size() <= 0 ? param21To22Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&    param22Value <= o.getParamEndValue()     ).collect(Collectors.toList()) : fiterParam22 ;
+					
+					List<RangeParamsReq>  fiterParam23 = param23To24Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null && ( o.getParamStartValue() <= param23Value &&  param23Value <= o.getParamEndValue()) ).collect(Collectors.toList()) ;
+					fiterParam23 = fiterParam23.size() <= 0 ? param23To24Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&   param23Value <= o.getParamStartValue() ).collect(Collectors.toList()) : fiterParam23 ;
+					
+					List<RangeParamsReq>  fiterParam24 = param23To24Values.stream().filter(o ->  o.getParamStartValue()!=null && o.getParamEndValue()!=null && ( o.getParamStartValue() <= param24Value &&  param24Value <= o.getParamEndValue()) ).collect(Collectors.toList()) ;
+					fiterParam24 = fiterParam24.size() <= 0 ? param23To24Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&  param24Value <= o.getParamEndValue()    ).collect(Collectors.toList()) :fiterParam24 ;
+					
+					List<RangeParamsReq>  fiterParam25 = param25To26Values.stream().filter(o ->  o.getParamStartValue()!=null && o.getParamEndValue()!=null && ( o.getParamStartValue() <= param25Value &&  param25Value <= o.getParamEndValue()) ).collect(Collectors.toList()) ;
+					fiterParam25 = fiterParam25.size() <= 0 ? param25To26Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&  o.getParamStartValue() <= param25Value   && param25Value <= o.getParamEndValue()    ).collect(Collectors.toList()) : fiterParam25 ;
+					
+					List<RangeParamsReq>  fiterParam26 = param25To26Values.stream().filter(o ->  o.getParamStartValue()!=null && o.getParamEndValue()!=null && ( param25Value <= o.getParamStartValue() )  ).collect(Collectors.toList()) ;
+					fiterParam26 = fiterParam26.size() <= 0 ? param25To26Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&    param26Value <= o.getParamEndValue()   ).collect(Collectors.toList()) : fiterParam26;
+					
+					List<RangeParamsReq>  fiterParam27 = param27To28Values.stream().filter(o ->  o.getParamStartValue()!=null && o.getParamEndValue()!=null && ( o.getParamStartValue() <= param27Value &&  param27Value <= o.getParamEndValue()) ).collect(Collectors.toList()) ;
+					fiterParam27 = fiterParam27.size() <= 0 ? param27To28Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null && o.getParamStartValue() <= param27Value   && param27Value <= o.getParamEndValue()     ).collect(Collectors.toList()) :fiterParam27 ;
+					
+					List<RangeParamsReq>  fiterParam28 = param27To28Values.stream().filter(o ->  o.getParamStartValue()!=null && o.getParamEndValue()!=null && ( param27Value <= o.getParamStartValue()  )).collect(Collectors.toList()) ;
+					fiterParam28 = fiterParam28.size() <= 0 ? param27To28Values.stream().filter(o -> o.getParamStartValue()!=null && o.getParamEndValue()!=null &&     param28Value <= o.getParamEndValue()   ).collect(Collectors.toList()) : fiterParam28 ;
+					
+					
 					
 					// Param1 to 2 Duplicate Setup
 					RangeParamsReq param1To2 = new RangeParamsReq();
@@ -602,14 +1057,79 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					param7To8.setRowNo(row);
 					param7To8Values.add(param7To8);
 					
+					// Param221 to 22 Duplicate Setup
+					RangeParamsReq param21To22 = new RangeParamsReq();
+					if(fiterParam21.size() > 0 ) {
+						param21Dup = true ;
+						param22Dup = true ;
+					}
+					
+					if(fiterParam22.size() > 0 ) {
+						param21Dup = true ;
+						param22Dup = true ;
+					} 
+					param21To22.setParamStartValue(param21Value);
+					param21To22.setParamEndValue(param22Value);
+					param21To22.setRowNo(row);
+					param21To22Values.add(param21To22);
+					
+					
+					// Param23 to 24 Duplicate Setup
+					RangeParamsReq param23To24 = new RangeParamsReq();
+					if(fiterParam23.size() > 0 ) {
+						param23Dup = true ;
+						param24Dup = true ;
+					}
+					if(fiterParam24.size() > 0 ) {
+						param23Dup = true ;
+						param24Dup = true ;
+					}
+					
+					param23To24.setParamStartValue(param23Value);
+					param23To24.setParamEndValue(param24Value);
+					param23To24.setRowNo(row);
+					param23To24Values.add(param23To24);
+					
+					// Param25 to 26 Duplicate Setup
+					RangeParamsReq param25To26 = new RangeParamsReq();
+					if(fiterParam25.size() > 0 ) {
+						param25Dup = true ;
+						param26Dup = true ;
+					}
+					if(fiterParam26.size() > 0 ) {
+						param25Dup = true ;
+						param26Dup = true ;
+					}
+					param25To26.setParamStartValue(param25Value);
+					param25To26.setParamEndValue(param26Value);
+					param25To26.setRowNo(row);
+					param25To26Values.add(param25To26);
+					
+					// Param27 to 28 Duplicate Setup
+					RangeParamsReq param27To28 = new RangeParamsReq();
+					if(fiterParam27.size() > 0 ) {
+						param27Dup = true ;
+						param28Dup = true ;
+					}
+					if(fiterParam28.size() > 0 ) {
+						param27Dup = true ;
+						param28Dup = true ;
+					}
+					param27To28.setParamStartValue(param27Value);
+					param27To28.setParamEndValue(param28Value);
+					param27To28.setRowNo(row);
+					param27To28Values.add(param27To28);
+					
 					
 					// Full Setup Duplicate
 					List<DuplicateParamCheckingReq> filterDupParams = new ArrayList<DuplicateParamCheckingReq>();
-					if(  param1Dup==true  && param2Dup==true && param3Dup==true && param4Dup==true && param5Dup==true &&
-							param6Dup==true && param7Dup==true && param8Dup==true  ) { 
+					if(  param1Dup==true  && param2Dup==true && param3Dup==true && param4Dup==true && 
+						 param5Dup==true &&	param6Dup==true && param7Dup==true && param8Dup==true  &&
+						 param21Dup==true  && param22Dup==true && param23Dup==true && param24Dup==true && 
+						 param25Dup==true &&	param26Dup==true && param27Dup==true && param28Dup==true  ) { 
 						filterDupParams = duplicateParams.stream().filter( o ->  
 						o.getParam9().equalsIgnoreCase(param9Value) && o.getParam10().equalsIgnoreCase(param10Value) && 
-								o.getParam11().equalsIgnoreCase(param11Value) && o.getParam12().equalsIgnoreCase(param12Value) ).collect(Collectors.toList());
+						o.getParam11().equalsIgnoreCase(param11Value) && o.getParam12().equalsIgnoreCase(param12Value) ).collect(Collectors.toList());
 						
 						if( filterDupParams.size()>0 ) {
 						
@@ -622,20 +1142,43 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 							//List<Long> fiterParam6RowNo  =  fiterParam6.stream().map( RangeParamsReq :: getRowNo ).collect(Collectors.toList());	
 							List<Long> fiterParam7RowNo  =  fiterParam7.stream().map( RangeParamsReq :: getRowNo ).collect(Collectors.toList());	
 							//List<Long> fiterParam8RowNo  =  fiterParam8.stream().map( RangeParamsReq :: getRowNo ).collect(Collectors.toList());
+							List<Long> fiterParam21RowNo  =  fiterParam21.stream().map( RangeParamsReq :: getRowNo ).collect(Collectors.toList());
+							//List<Long> fiterParam22RowNo  =  fiterParam22.stream().map( RangeParamsReq :: getRowNo ).collect(Collectors.toList());	
+							List<Long> fiterParam23RowNo  =  fiterParam23.stream().map( RangeParamsReq :: getRowNo ).collect(Collectors.toList());	
+							//List<Long> fiterParam24RowNo  =  fiterParam24.stream().map( RangeParamsReq :: getRowNo ).collect(Collectors.toList());	
+							List<Long> fiterParam25RowNo  =  fiterParam25.stream().map( RangeParamsReq :: getRowNo ).collect(Collectors.toList());	
+							//List<Long> fiterParam26RowNo  =  fiterParam26.stream().map( RangeParamsReq :: getRowNo ).collect(Collectors.toList());	
+							List<Long> fiterParam27RowNo  =  fiterParam27.stream().map( RangeParamsReq :: getRowNo ).collect(Collectors.toList());	
+							//List<Long> fiterParam28RowNo  =  fiterParam28.stream().map( RangeParamsReq :: getRowNo ).collect(Collectors.toList());
 							
-							
+							// Find Duplicate
 							List<Long> sameRowNoFilter   =  fiterParam1RowNo.stream().filter(e -> fiterParam3RowNo.contains(e)).collect(Collectors.toList());
-							
 							if(sameRowNoFilter.size()> 0) {
 								sameRowNoFilter =  sameRowNoFilter.stream().filter(e -> fiterParam5RowNo.contains(e)).collect(Collectors.toList());
 								if(sameRowNoFilter.size()> 0) {
 										sameRowNoFilter =  sameRowNoFilter.stream().filter(e -> fiterParam7RowNo.contains(e)).collect(Collectors.toList());
+										
 									if(sameRowNoFilter.size()> 0) {
-											List<Long> dupParamRows = 	filterDupParams.stream().map(DuplicateParamCheckingReq :: getRowNo ).collect(Collectors.toList());				
-											sameRowNoFilter =  sameRowNoFilter.stream().filter(e -> dupParamRows.contains(e)).collect(Collectors.toList());
-											
+										sameRowNoFilter =  sameRowNoFilter.stream().filter(e -> fiterParam21RowNo.contains(e)).collect(Collectors.toList());
+										
 										if(sameRowNoFilter.size()> 0) {
-											errorList.add(new Error("01","Duplicate" ," Duplicate  Setup Available In Row No : " + row ));
+											sameRowNoFilter =  sameRowNoFilter.stream().filter(e -> fiterParam23RowNo.contains(e)).collect(Collectors.toList());
+											
+											if(sameRowNoFilter.size()> 0) {
+												sameRowNoFilter =  sameRowNoFilter.stream().filter(e -> fiterParam25RowNo.contains(e)).collect(Collectors.toList());
+												
+												if(sameRowNoFilter.size()> 0) {
+													sameRowNoFilter =  sameRowNoFilter.stream().filter(e -> fiterParam27RowNo.contains(e)).collect(Collectors.toList());
+													
+													List<Long> dupParamRows = 	filterDupParams.stream().map(DuplicateParamCheckingReq :: getRowNo ).collect(Collectors.toList());				
+													sameRowNoFilter =  sameRowNoFilter.stream().filter(e -> dupParamRows.contains(e)).collect(Collectors.toList());
+													
+													if(sameRowNoFilter.size()> 0) {
+														errorList.add(new Error("01","Duplicate" ," Duplicate  Setup Available In Row No : " + row ));
+													}
+												}
+											}
+											
 										}
 									}
 								}
@@ -658,6 +1201,23 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					dupParams.setParam10(param10Value);
 					dupParams.setParam11(param11Value);
 					dupParams.setParam12(param12Value);
+					dupParams.setParam13(param13Value);
+					dupParams.setParam14(param14Value);
+					dupParams.setParam15(param15Value);
+					dupParams.setParam16(param16Value);
+					dupParams.setParam17(param17Value);
+					dupParams.setParam18(param18Value);
+					dupParams.setParam19(param19Value);
+					dupParams.setParam20(param20Value);
+					dupParams.setParam21(param21Value);
+					dupParams.setParam22(param22Value);
+					dupParams.setParam23(param23Value);
+					dupParams.setParam24(param24Value);
+					dupParams.setParam25(param25Value);
+					dupParams.setParam26(param26Value);
+					dupParams.setParam27(param27Value);
+					dupParams.setParam28(param28Value);
+					
 					dupParams.setRowNo(row);
 					duplicateParams.add(dupParams);
 					
@@ -1191,6 +1751,8 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				saveData.setAmendId(amendId);
 				saveData.setStatus(req.getStatus().equalsIgnoreCase("P")?"P" : data.getStatus());		
 				saveData.setSNo(Integer.valueOf(data.getSno()));
+				
+				// Range
 				saveData.setParam1(StringUtils.isBlank(data.getParam1()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam1()))) );
 				saveData.setParam2(StringUtils.isBlank(data.getParam2()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam2()))) );
 				saveData.setParam3(StringUtils.isBlank(data.getParam3()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam3()))) );
@@ -1199,10 +1761,29 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				saveData.setParam6(StringUtils.isBlank(data.getParam6()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam6()))) );
 				saveData.setParam7(StringUtils.isBlank(data.getParam7()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam7()))) );
 				saveData.setParam8(StringUtils.isBlank(data.getParam8()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam8()))) );
+				saveData.setParam21(StringUtils.isBlank(data.getParam21()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam21()))) );
+				saveData.setParam22(StringUtils.isBlank(data.getParam22()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam22()))) );
+				saveData.setParam23(StringUtils.isBlank(data.getParam23()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam23()))) );
+				saveData.setParam24(StringUtils.isBlank(data.getParam24()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam24()))) );
+				saveData.setParam25(StringUtils.isBlank(data.getParam25()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam25()))) );
+				saveData.setParam26(StringUtils.isBlank(data.getParam26()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam26()))) );
+				saveData.setParam27(StringUtils.isBlank(data.getParam27()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam27()))) );
+				saveData.setParam28(StringUtils.isBlank(data.getParam28()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam28()))) );
+				
+				// Discrete
 				saveData.setParam9(data.getParam9());
 				saveData.setParam10(data.getParam10());
 				saveData.setParam11(data.getParam11());
 				saveData.setParam12(data.getParam12());
+				saveData.setParam13(data.getParam13());
+				saveData.setParam14(data.getParam14());
+				saveData.setParam15(data.getParam15());
+				saveData.setParam16(data.getParam16());
+				saveData.setParam17(data.getParam17());
+				saveData.setParam18(data.getParam18());
+				saveData.setParam19(data.getParam19());
+				saveData.setParam20(data.getParam20());
+				
 				saveData.setRate(StringUtils.isBlank(data.getRate()) ? null :new BigDecimal(data.getRate()) );
 				saveData.setMinPremium(StringUtils.isBlank(data.getMinimumPremium()) ? null :new BigDecimal(data.getMinimumPremium()) );
 				saveData.setCalcType(data.getCalType() );

@@ -762,7 +762,7 @@ public class UtilityServiceImpl {
 							 			 }						 									 			
 							 		}					 								 								 		
 							 	 }  
-							    }else if(discreateColArr.length==12){
+					 }else if(discreateColArr.length==12){
 							    	
 							 								 			
 							 		 Map<String, Map<String, Map<String, Map<String, Map<String, Map<String, Map<String, Map<String, Map<String, Map<String, Map<String, 
@@ -849,7 +849,139 @@ public class UtilityServiceImpl {
 							         }); 	
 							         
 							         								
-							 	}
+							 	}else if(discreateColArr.length==5) {
+									
+									 Map<String, Map<String, Map<String, Map<String, Map<String, List<FactorRateRawInsert>>>>>> 
+									 groupdata =list.stream()
+										       .collect(
+								                        Collectors.groupingBy(getGroupFields().get(discreateColArr[0]),
+								                                Collectors.groupingBy(getGroupFields().get(discreateColArr[1]),
+								                                		Collectors.groupingBy(getGroupFields().get(discreateColArr[2]),
+								                                				Collectors.groupingBy(getGroupFields().get(discreateColArr[3]),
+								                                				Collectors.groupingBy(getGroupFields().get(discreateColArr[4])
+								                                       ))))));	
+									 
+										
+								 		// Loop through the nested map
+									 groupdata.forEach((a, b) -> {
+								             b.forEach((c, d) -> {
+								            	 d.forEach((e, f) -> {
+								            		 f.forEach((g, h) -> {
+								            			 h.forEach((l, m) -> {
+													            loadList.put(String.valueOf(uniqueId.getAndIncrement()), m);
+
+											             });    
+										             }); 
+									             });
+								             });
+								         }); 	
+									
+							 }else if(discreateColArr.length==6) {
+									
+								 Map<String, Map<String, Map<String, Map<String, Map<String, Map<String, List<FactorRateRawInsert>>>>>>>
+								 groupData =list.stream()
+									       .collect(
+							                        Collectors.groupingBy(getGroupFields().get(discreateColArr[0]),
+							                                Collectors.groupingBy(getGroupFields().get(discreateColArr[1]),
+							                                		Collectors.groupingBy(getGroupFields().get(discreateColArr[2]),
+							                                				Collectors.groupingBy(getGroupFields().get(discreateColArr[3]),
+							                                						Collectors.groupingBy(getGroupFields().get(discreateColArr[4]),
+							                                								Collectors.groupingBy(getGroupFields().get(discreateColArr[5])
+							                                       )))))));	
+								 
+								// Loop through the nested map
+						         groupData.forEach((a, b) -> {
+						             b.forEach((c, d) -> {
+						            	 d.forEach((e, f) -> {
+						            		 f.forEach((g, h) -> {
+						            			 h.forEach((l, m) -> {
+						            				 m.forEach((n, o) -> {
+												            loadList.put(String.valueOf(uniqueId.getAndIncrement()), o);
+
+										             });   
+									             });    
+								             }); 
+							             });
+						             });
+						         }); 	
+						         
+								 						 
+								
+						 }else if(discreateColArr.length==7) {
+						
+							 Map<String, Map<String, Map<String, Map<String, Map<String, Map<String, Map<String, List<FactorRateRawInsert>>>>>>>> 
+							 groupData =list.stream()
+								       .collect(
+						                        Collectors.groupingBy(getGroupFields().get(discreateColArr[0]),
+						                                Collectors.groupingBy(getGroupFields().get(discreateColArr[1]),
+						                                		Collectors.groupingBy(getGroupFields().get(discreateColArr[2]),
+						                                				Collectors.groupingBy(getGroupFields().get(discreateColArr[3]),
+						                                						Collectors.groupingBy(getGroupFields().get(discreateColArr[4]),
+						                                								Collectors.groupingBy(getGroupFields().get(discreateColArr[5]),
+						                                										Collectors.groupingBy(getGroupFields().get(discreateColArr[6])
+						                                       ))))))));	
+							 						 
+							// Loop through the nested map
+					         groupData.forEach((a, b) -> {
+					             b.forEach((c, d) -> {
+					            	 d.forEach((e, f) -> {
+					            		 f.forEach((g, h) -> {
+					            			 h.forEach((l, m) -> {
+					            				 m.forEach((n, o) -> {
+					            					 o.forEach((p, q) -> {
+												            loadList.put(String.valueOf(uniqueId.getAndIncrement()), q);
+
+										             });  
+									             });   
+								             });    
+							             }); 
+						             });
+					             });
+					         }); 	
+					         
+							
+					 }else if(discreateColArr.length==9) {
+						 
+						 
+						 Map<String, Map<String, Map<String, Map<String, Map<String, Map<String, Map<String, Map<String, Map<String, List<FactorRateRawInsert>>>>>>>>>> groupData=list.stream()
+							       .collect(
+					                        Collectors.groupingBy(getGroupFields().get(discreateColArr[0]),
+					                                Collectors.groupingBy(getGroupFields().get(discreateColArr[1]),
+					                                		Collectors.groupingBy(getGroupFields().get(discreateColArr[2]),
+					                                				Collectors.groupingBy(getGroupFields().get(discreateColArr[3]),
+					                                						Collectors.groupingBy(getGroupFields().get(discreateColArr[4]),
+													                                Collectors.groupingBy(getGroupFields().get(discreateColArr[5]),
+													                                		Collectors.groupingBy(getGroupFields().get(discreateColArr[6]),
+													                                				Collectors.groupingBy(getGroupFields().get(discreateColArr[7]),
+													                                						Collectors.groupingBy(getGroupFields().get(discreateColArr[8])
+																					                                		
+					                           ))))))))));	
+				 	
+				 				
+				 		// Loop through the nested map
+				         groupData.forEach((a, b) -> {
+				             b.forEach((c, d) -> {
+				            	 d.forEach((e, f) -> {
+				            		 f.forEach((g, h) -> {
+				            			 h.forEach((l, m) -> {
+				            				 m.forEach((n, o) -> {
+				            					 o.forEach((p, q) -> {
+				            						 q.forEach((r, s) -> {
+				            							 s.forEach((t, u) -> {
+													            loadList.put(String.valueOf(uniqueId.getAndIncrement()), u);
+  
+											             });    
+										             });   
+									             });  
+								             });   
+							             });    
+						             }); 
+					             });
+				             });
+				         }); 	
+				         
+						 
+					 }
 						 
 						log.info("Grouping the records block completed based on the discreate columns ||" +discreateColumns);  
 						

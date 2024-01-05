@@ -28,7 +28,8 @@ public class ItemReader_2 extends JdbcCursorItemReader<FactorBatchRecordRes> imp
 		setSql("SELECT FACTOR_TYPE_ID,S_NO,COMPANY_ID,PRODUCT_ID,BRANCH_CODE,AGENCY_CODE,SECTION_ID,COVER_ID,SUB_COVER_ID,"
 				+ "CREATED_BY,EFFECTIVE_DATE_START,EFFECTIVE_DATE_END,STATUS,REMARKS,PARAM_1,PARAM_2,PARAM_3,PARAM_4,PARAM_5,PARAM_6,"
 				+ "PARAM_7,PARAM_8,PARAM_9,PARAM_10,PARAM_11,PARAM_12,UPDATED_BY,RATE,CALC_TYPE,MIN_PREMIUM,REGULATORY_CODE,MASTER_YN,"
-				+ "API_URL FROM factor_rate_raw_master where TRAN_ID='"+dataOfArray[0]+"'");
+				+ "PARAM_13,PARAM_14,PARAM_15,PARAM_16,PARAM_17,PARAM_18,PARAM_19,PARAM_20,PARAM_21,PARAM_22,PARAM_23,PARAM_24,PARAM_25,"
+				+ "PARAM_26,PARAM_27,PARAM_28,API_URL FROM factor_rate_raw_master where TRAN_ID='"+dataOfArray[0]+"'");
 		setFetchSize(Integer.valueOf(dataOfArray[1]));
 		setRowMapper(new FactorRateRowMapper());
 	}
@@ -71,6 +72,22 @@ public class ItemReader_2 extends JdbcCursorItemReader<FactorBatchRecordRes> imp
 					.status(StringUtils.isBlank(rs.getString("STATUS"))?"":rs.getString("STATUS"))
 					.subCoverId(String.valueOf((rs.getInt("SUB_COVER_ID"))))
 					.subCoverYn(rs.getInt("SUB_COVER_ID")==0?"Y":"N")
+					.param13(StringUtils.isBlank(rs.getString("PARAM_13"))?null:rs.getString("PARAM_13"))
+					.param14(StringUtils.isBlank(rs.getString("PARAM_14"))?null:rs.getString("PARAM_14"))
+					.param15(StringUtils.isBlank(rs.getString("PARAM_15"))?null:rs.getString("PARAM_15"))
+					.param16(StringUtils.isBlank(rs.getString("PARAM_16"))?null:rs.getString("PARAM_16"))
+					.param17(StringUtils.isBlank(rs.getString("PARAM_17"))?null:rs.getString("PARAM_17"))
+					.param18(StringUtils.isBlank(rs.getString("PARAM_18"))?null:rs.getString("PARAM_18"))
+					.param19(StringUtils.isBlank(rs.getString("PARAM_19"))?null:rs.getString("PARAM_19"))
+					.param20(StringUtils.isBlank(rs.getString("PARAM_20"))?null:rs.getString("PARAM_20"))
+					.param21(rs.getBigDecimal("PARAM_21")==null?"0":String.valueOf(rs.getBigDecimal("PARAM_21")))
+					.param22(rs.getBigDecimal("PARAM_22")==null?"0":String.valueOf(rs.getBigDecimal("PARAM_22")))
+					.param23(rs.getBigDecimal("PARAM_23")==null?"0":String.valueOf(rs.getBigDecimal("PARAM_23")))
+					.param24(rs.getBigDecimal("PARAM_24")==null?"0":String.valueOf(rs.getBigDecimal("PARAM_24")))
+					.param25(rs.getBigDecimal("PARAM_25")==null?"0":String.valueOf(rs.getBigDecimal("PARAM_25")))
+					.param26(rs.getBigDecimal("PARAM_26")==null?"0":String.valueOf(rs.getBigDecimal("PARAM_26")))
+					.param27(rs.getBigDecimal("PARAM_27")==null?"0":String.valueOf(rs.getBigDecimal("PARAM_27")))
+					.param28(rs.getBigDecimal("PARAM_28")==null?"0":String.valueOf(rs.getBigDecimal("PARAM_28")))
 					.build();
 			return factor;
 		}

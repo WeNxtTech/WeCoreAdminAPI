@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -20,7 +19,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -240,7 +238,10 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			
 			uploadRes.setExcelFilePath(excelFilePath);
 			
-			EwayUploadTypeMaster uploadTypeMaster=uploadTypeRepo.findByCompanyIdAndProductIdAndStatus(Integer.valueOf(req.getCompanyId()),Integer.valueOf(req.getProductId()),
+			Integer sectionId =StringUtils.isBlank(req.getSectionId())?0:Integer.valueOf(req.getSectionId());
+			
+			EwayUploadTypeMaster uploadTypeMaster=uploadTypeRepo.findByCompanyIdAndProductIdAndSectionIdAndStatus
+					(Integer.valueOf(req.getCompanyId()),Integer.valueOf(req.getProductId()),sectionId,
 					"Y");
 			
 			uploadRes.setTypeId(uploadTypeMaster.getTypeid().toString());
@@ -1696,6 +1697,8 @@ public CommonRes updateEmployeeRecord(UpdateEmployeeRecordReq req) {
 		 list.add(new Error("","SerialNumber","Please enter SerialNumber")) ;
 
 	 }
+	 
+	
 	 
 	 return list;
 	 

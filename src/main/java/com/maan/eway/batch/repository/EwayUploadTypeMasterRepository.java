@@ -39,6 +39,9 @@ public interface EwayUploadTypeMasterRepository  extends JpaRepository<EwayUploa
 
 	EwayUploadTypeMaster findByCompanyIdAndProductIdAndStatus(Integer companyId, Integer productId, 
 			 String status);
+	
+	EwayUploadTypeMaster findByCompanyIdAndProductIdAndSectionIdAndStatus(Integer companyId, Integer productId, 
+			 Integer sectionid,String status);
 
 
 	List<EwayUploadTypeMaster> findByCompanyIdAndStatus(Integer valueOf, String string);

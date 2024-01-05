@@ -5,7 +5,9 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -224,18 +226,18 @@ public class UtilityServiceImpl {
         	request.setCreatedBy(createdBy);
         	request.setDiscreteColumn(discreateColumns.toString());
         	request.setTotalRecordsCount(String.valueOf(toltalNoRows));
-        	checkMismatchedColumns(request);
+        	Boolean columnStatus =checkMismatchedColumns(request);
         	
-        	
-			updateBatchTransaction (request.getTranId(), "spring batch process calling" ,"","Progressing","P");
-
-        	log.info("Spring batch job started ");
-        	JobParameters jobParameters = new JobParametersBuilder()
-					.addLong("time", System.currentTimeMillis())
-			     	.addString("ewayBatchData", print.toJson(request))
-			        .toJobParameters();
-					jobLauncher.run(processJob, jobParameters);
-        	
+        	if(columnStatus) {
+				updateBatchTransaction (request.getTranId(), "spring batch process calling" ,"","Progressing","P");
+	
+	        	log.info("Spring batch job started ");
+	        	JobParameters jobParameters = new JobParametersBuilder()
+						.addLong("time", System.currentTimeMillis())
+				     	.addString("ewayBatchData", print.toJson(request))
+				        .toJobParameters();
+						jobLauncher.run(processJob, jobParameters);
+        	}
   
 		}catch (Exception e) {
 			log.error(e);
@@ -247,43 +249,41 @@ public class UtilityServiceImpl {
 	}
 
 	
-	private void checkMismatchedColumns(FileUploadInputRequest request) {
+	private Boolean checkMismatchedColumns(FileUploadInputRequest request) {
 		updateBatchTransaction (request.getTranId(), "checking columns mismatching columns" ,"","Progressing",null);
 		try {
 			File csvFile = new File(request.getCsvFilePath());
-			String [] headers=null;
+			String [] excelHeaders=null;
+			BufferedReader in = null;
+			String record = "", result = "", unmatched = "";
+			long totalLinesProcessed = 0l;
 			if(csvFile.exists() && csvFile.canRead()) {
-				ByteArrayInputStream inputFilestream = new ByteArrayInputStream(request.getCsvFilePath().getBytes());
-				BufferedReader br = new BufferedReader(new InputStreamReader(inputFilestream ));
-				String line = "";
-				Integer getHeaderLine=0;
-				while ((line = br.readLine()) != null) {
-					getHeaderLine++;
-					if(getHeaderLine==1) {
-						headers =line.split("~");
-						
+				in = new BufferedReader(new FileReader(request.getCsvFilePath()));
+				while ((record = in.readLine()) != null) {
+					///System.out.println("status----->" + record);
+					totalLinesProcessed++;
+					
+					if (totalLinesProcessed == 1) {
+						//record=record.replaceAll("~Sno~VehicleNo", "");
+						excelHeaders = record.split("~");
+						//System.out.println(excelHeaders.length);
+						}
 					}
-					break;
-				}
-				br.close();
 			}
-			
-			if(headers.length==request.getExcelHeaderColumns().length()) {
+			System.out.println(excelHeaders.length +" || "+1+request.getExcelHeaderColumns().split("~").length);
+			Boolean columnLength =excelHeaders.length==request.getExcelHeaderColumns().split("~").length+1?true:false;
+			if(columnLength) {
 				
-				List<String> s1 =new ArrayList<String>(Arrays.asList(headers));
+				List<String> s1 =new ArrayList<String>(Arrays.asList(excelHeaders));
 				List<String> s2 =new ArrayList<String>(Arrays.asList(request.getExcelHeaderColumns()));
 				
 				boolean status =s1.toString().replaceAll("\\s", "").contentEquals(s2.toString().replaceAll("\\s", ""))?true:false; 
-				if(status) {
-					
-				}else {
 				
-					updateBatchTransaction (request.getTranId(), "checking columns mismatching columns" ,"mismatched columns found","Progressing","E");
-
-				}
+				return true;
 			}else {
 				updateBatchTransaction (request.getTranId(), "checking columns mismatching columns" ,"Xl Heder columns is not matched","Progressing","E");
 
+				return false;
 			}
 				
 		}catch (Exception e) {
@@ -292,6 +292,7 @@ public class UtilityServiceImpl {
 			updateBatchTransaction (request.getTranId(), e.getMessage() ,"Error","Error","E");
 
 		}
+		return null;
 		
 	}
 
@@ -760,7 +761,95 @@ public class UtilityServiceImpl {
 							 				}						 				 						 				
 							 			 }						 									 			
 							 		}					 								 								 		
-							 	}  }		
+							 	 }  
+							    }else if(discreateColArr.length==12){
+							    	
+							 								 			
+							 		 Map<String, Map<String, Map<String, Map<String, Map<String, Map<String, Map<String, Map<String, Map<String, Map<String, Map<String, 
+							 		 Map<String, List<FactorRateRawInsert>>>>>>>>>>>>> groupData=list.stream()
+										       .collect(
+								                        Collectors.groupingBy(getGroupFields().get(discreateColArr[0]),
+								                                Collectors.groupingBy(getGroupFields().get(discreateColArr[1]),
+								                                		Collectors.groupingBy(getGroupFields().get(discreateColArr[2]),
+								                                				Collectors.groupingBy(getGroupFields().get(discreateColArr[3]),
+								                                						Collectors.groupingBy(getGroupFields().get(discreateColArr[4]),
+																                                Collectors.groupingBy(getGroupFields().get(discreateColArr[5]),
+																                                		Collectors.groupingBy(getGroupFields().get(discreateColArr[6]),
+																                                				Collectors.groupingBy(getGroupFields().get(discreateColArr[7]),
+																                                						Collectors.groupingBy(getGroupFields().get(discreateColArr[8]),
+																								                                Collectors.groupingBy(getGroupFields().get(discreateColArr[9]),
+																								                                		Collectors.groupingBy(getGroupFields().get(discreateColArr[10]),
+																								                                				Collectors.groupingBy(getGroupFields().get(discreateColArr[11])
+								                           )))))))))))));	
+							 	
+							 				
+							 		// Loop through the nested map
+							         groupData.forEach((a, b) -> {
+							             b.forEach((c, d) -> {
+							            	 d.forEach((e, f) -> {
+							            		 f.forEach((g, h) -> {
+							            			 h.forEach((l, m) -> {
+							            				 m.forEach((n, o) -> {
+							            					 o.forEach((p, q) -> {
+							            						 q.forEach((r, s) -> {
+							            							 s.forEach((t, u) -> {
+							            								 u.forEach((v, x) -> {
+							            									 x.forEach((w, y) -> { 
+							            										 y.forEach((z, z1) -> {
+																		               loadList.put(String.valueOf(uniqueId.getAndIncrement()), z1);
+																	             });
+																             });   
+															             });     
+														             });    
+													             });   
+												             });  
+											             });   
+										             });    
+									             }); 
+								             });
+							             });
+							         }); 	
+							         
+							         								
+							 	}else if(discreateColArr.length==8){
+							    	
+							 								 			
+							 		 Map<String, Map<String, Map<String, Map<String, Map<String, Map<String, Map<String, Map<String, List<FactorRateRawInsert>>>>>>>>> groupData=list.stream()
+										       .collect(
+								                        Collectors.groupingBy(getGroupFields().get(discreateColArr[0]),
+								                                Collectors.groupingBy(getGroupFields().get(discreateColArr[1]),
+								                                		Collectors.groupingBy(getGroupFields().get(discreateColArr[2]),
+								                                				Collectors.groupingBy(getGroupFields().get(discreateColArr[3]),
+								                                						Collectors.groupingBy(getGroupFields().get(discreateColArr[4]),
+																                                Collectors.groupingBy(getGroupFields().get(discreateColArr[5]),
+																                                		Collectors.groupingBy(getGroupFields().get(discreateColArr[6]),
+																                                				Collectors.groupingBy(getGroupFields().get(discreateColArr[7])
+																                                						
+								                           )))))))));	
+							 	
+							 				
+							 		// Loop through the nested map
+							         groupData.forEach((a, b) -> {
+							             b.forEach((c, d) -> {
+							            	 d.forEach((e, f) -> {
+							            		 f.forEach((g, h) -> {
+							            			 h.forEach((l, m) -> {
+							            				 m.forEach((n, o) -> {
+							            					 o.forEach((p, q) -> {
+							            						 q.forEach((r, s) -> {
+														            loadList.put(String.valueOf(uniqueId.getAndIncrement()), s);
+ 
+													             });   
+												             });  
+											             });   
+										             });    
+									             }); 
+								             });
+							             });
+							         }); 	
+							         
+							         								
+							 	}
 						 
 						log.info("Grouping the records block completed based on the discreate columns ||" +discreateColumns);  
 						
@@ -844,6 +933,22 @@ public class UtilityServiceImpl {
 				entity.setErrorStatus(CollectionUtils.isEmpty(errors)?"":"E");
 				entity.setEntryDate(new Date());
 				entity.setXlAgencyCode(StringUtils.isBlank(p.getXlAgencyCode())?"":p.getXlAgencyCode());
+				entity.setParam13(StringUtils.isBlank(p.getParam13())?null:p.getParam13());
+				entity.setParam14(StringUtils.isBlank(p.getParam14())?null:p.getParam14());
+				entity.setParam15(StringUtils.isBlank(p.getParam15())?null:p.getParam15());
+				entity.setParam16(StringUtils.isBlank(p.getParam16())?null:p.getParam16());
+				entity.setParam17(StringUtils.isBlank(p.getParam17())?null:p.getParam17());
+				entity.setParam18(StringUtils.isBlank(p.getParam18())?null:p.getParam18());
+				entity.setParam19(StringUtils.isBlank(p.getParam19())?null:p.getParam19());
+				entity.setParam20(StringUtils.isBlank(p.getParam20())?null:p.getParam20());
+				entity.setParam21(p.getParam21()==null?null:new BigDecimal(p.getParam21()));
+				entity.setParam22(p.getParam22()==null?null:new BigDecimal(p.getParam22()));
+				entity.setParam23(p.getParam23()==null?null:new BigDecimal(p.getParam23()));
+				entity.setParam24(p.getParam24()==null?null:new BigDecimal(p.getParam24()));
+				entity.setParam25(p.getParam25()==null?null:new BigDecimal(p.getParam25()));
+				entity.setParam26(p.getParam26()==null?null:new BigDecimal(p.getParam26()));
+				entity.setParam27(p.getParam27()==null?null:new BigDecimal(p.getParam27()));
+				entity.setParam28(p.getParam28()==null?null:new BigDecimal(p.getParam28()));
 				return entity;
 			}).collect(Collectors.toList());
 			
@@ -851,28 +956,7 @@ public class UtilityServiceImpl {
 				
 			
 			
-			/*for(FactorParamsInsert p :req.getFactorParams()) {				
-				entity.setParam1(p.getParam1()==null?0D:Double.valueOf(p.getParam1()));
-				entity.setParam2(p.getParam2()==null?0D:Double.valueOf(p.getParam2()));
-				entity.setParam3(p.getParam3()==null?0D:Double.valueOf(p.getParam3()));
-				entity.setParam4(p.getParam4()==null?0D:Double.valueOf(p.getParam4()));
-				entity.setParam5(p.getParam5()==null?0D:Double.valueOf(p.getParam5()));
-				entity.setParam6(p.getParam6()==null?0D:Double.valueOf(p.getParam6()));
-				entity.setParam7(p.getParam7()==null?0D:Double.valueOf(p.getParam7()));
-				entity.setParam8(p.getParam8()==null?0D:Double.valueOf(p.getParam8()));
-				entity.setParam9(StringUtils.isBlank(p.getParam9())?"":p.getParam9());
-				entity.setParam10(StringUtils.isBlank(p.getParam10())?"":p.getParam10());
-				entity.setParam11(StringUtils.isBlank(p.getParam11())?"":p.getParam11());
-				entity.setParam12(StringUtils.isBlank(p.getParam12())?"":p.getParam12());
-				entity.setSNo(Integer.valueOf(p.getSno()));
-				entity.setApiUrl(StringUtils.isBlank(p.getApiUrl())?"":p.getApiUrl());
-				entity.setCalcType(StringUtils.isBlank(p.getCalType())?"":p.getCalType());
-				entity.setMasterYn(StringUtils.isBlank(p.getMasterYn())?"":p.getMasterYn());
-				entity.setMinPremium(p.getMinimumPremium()==null?0D:Double.valueOf(p.getMinimumPremium()));
-				entity.setRegulatoryCode(StringUtils.isBlank(p.getRegulatoryCode())?"":p.getRegulatoryCode());
-				entity.setRate(p.getRate()==null?0D:Double.valueOf(p.getRate()));
-				rawMasterRepository.saveAndFlush(entity);
-			}*/						
+						
 			
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -886,10 +970,27 @@ public class UtilityServiceImpl {
 		   Function<FactorRateRawInsert, String> param10 = FactorRateRawInsert::getParam10;
 		   Function<FactorRateRawInsert, String> param11 = FactorRateRawInsert::getParam11;
 		   Function<FactorRateRawInsert, String> param12 = FactorRateRawInsert::getParam12;
+		   Function<FactorRateRawInsert, String> param13 = FactorRateRawInsert::getParam13;
+		   Function<FactorRateRawInsert, String> param14 = FactorRateRawInsert::getParam14;
+		   Function<FactorRateRawInsert, String> param15 = FactorRateRawInsert::getParam15;
+		   Function<FactorRateRawInsert, String> param16 = FactorRateRawInsert::getParam16;
+		   Function<FactorRateRawInsert, String> param17 = FactorRateRawInsert::getParam17;
+		   Function<FactorRateRawInsert, String> param18 = FactorRateRawInsert::getParam18;
+		   Function<FactorRateRawInsert, String> param19 = FactorRateRawInsert::getParam19;
+		   Function<FactorRateRawInsert, String> param20 = FactorRateRawInsert::getParam20;
+		   
 		   map.put("param10", param10);
 		   map.put("param11", param11);
 		   map.put("param9", param9);
 		   map.put("param12", param12);
+		   map.put("param13", param13);
+		   map.put("param14", param14);
+		   map.put("param15", param15);
+		   map.put("param16", param16);
+		   map.put("param17", param17);
+		   map.put("param18", param18);
+		   map.put("param19", param19);
+		   map.put("param20", param20);
 		   return map;
 	   }
 	  

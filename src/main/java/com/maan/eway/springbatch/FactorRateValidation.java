@@ -62,6 +62,22 @@ public class FactorRateValidation {
 					factor.setParam11(p.getParam11()==null?"0":new BigDecimal(p.getParam11()).toPlainString());
 					factor.setParam12(p.getParam12()==null?"0":new BigDecimal(p.getParam12()).toPlainString());
 					factor.setXlAgencyCode(StringUtils.isBlank(p.getXlAgencyCode())?"":p.getXlAgencyCode());
+					factor.setParam13(StringUtils.isBlank(p.getParam13())?null:p.getParam13());
+					factor.setParam14(StringUtils.isBlank(p.getParam14())?null:p.getParam14());
+					factor.setParam15(StringUtils.isBlank(p.getParam15())?null:p.getParam15());
+					factor.setParam16(StringUtils.isBlank(p.getParam16())?null:p.getParam16());
+					factor.setParam17(StringUtils.isBlank(p.getParam17())?null:p.getParam17());
+					factor.setParam18(StringUtils.isBlank(p.getParam18())?null:p.getParam18());
+					factor.setParam19(StringUtils.isBlank(p.getParam19())?null:p.getParam19());
+					factor.setParam20(StringUtils.isBlank(p.getParam20())?null:p.getParam20());
+					factor.setParam21(p.getParam21()==null?"0":p.getParam21().toPlainString());
+					factor.setParam22(p.getParam22()==null?"0":p.getParam22().toPlainString());
+					factor.setParam23(p.getParam23()==null?"0":p.getParam23().toPlainString());
+					factor.setParam24(p.getParam24()==null?"0":p.getParam24().toPlainString());
+					factor.setParam25(p.getParam25()==null?"0":p.getParam25().toPlainString());
+					factor.setParam26(p.getParam26()==null?"0":p.getParam26().toPlainString());
+					factor.setParam27(p.getParam27()==null?"0":p.getParam27().toPlainString());
+					factor.setParam28(p.getParam28()==null?"0":p.getParam28().toPlainString());
 					return factor;
 				}).collect(Collectors.toList());
 				

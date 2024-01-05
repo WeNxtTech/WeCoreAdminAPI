@@ -973,8 +973,8 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				
 				if (StringUtils.isBlank(req.getSumInsuredStart())) {
 					errorList.add(new Error("09", "SumInsuredStart", "Please Enter Min Sum"));
-				} else if (! req.getSumInsuredStart().matches("[0-9.]+") ) {
-					errorList.add(new Error("09", "SumInsuredStart", "Please Enter Valid Number In CoverageLimit "));
+				} else if (! req.getSumInsuredStart().matches("[-0-9.]+") ) {
+					errorList.add(new Error("09", "SumInsuredStart", "Please Enter Valid Number In Min Sum "));
 				} else if (StringUtils.isBlank(req.getCoverageLimit())) {
 					errorList.add(new Error("09", "CoverageLimit", "Please Enter CoverageLimit"));
 				} else if (! req.getCoverageLimit().matches("[0-9.]+") ) {

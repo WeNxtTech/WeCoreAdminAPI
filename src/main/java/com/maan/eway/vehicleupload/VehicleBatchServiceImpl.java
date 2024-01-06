@@ -238,13 +238,14 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			
 			uploadRes.setExcelFilePath(excelFilePath);
 			
-			Integer sectionId =StringUtils.isBlank(req.getSectionId())?0:Integer.valueOf(req.getSectionId());
+			Integer sectionId =StringUtils.isBlank(req.getSectionId()) || "4".equals(req.getProductId()) ?0:Integer.valueOf(req.getSectionId());
 			
 			EwayUploadTypeMaster uploadTypeMaster=uploadTypeRepo.findByCompanyIdAndProductIdAndSectionIdAndStatus
 					(Integer.valueOf(req.getCompanyId()),Integer.valueOf(req.getProductId()),sectionId,
 					"Y");
 			
 			uploadRes.setTypeId(uploadTypeMaster.getTypeid().toString());
+			uploadRes.setSectionId(uploadTypeMaster.getSectionId().toString());
 			saveUploadTransactionData(uploadRes);
 			
 			VehicleThread_CSV_Convertion thread = new VehicleThread_CSV_Convertion(uploadRes,csvFileConvertion,uploadTypeMaster);
@@ -653,6 +654,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 					.validRecords(d.getValidRecords()==null?"0":d.getValidRecords().toString())
 					.errorRecords(d.getErrorRecords()==null?"0":d.getErrorRecords().toString())
 					.movedRecords(d.getMovedRecords()==null?"0":d.getMovedRecords().toString())
+					.sectionId(d.getSectionId()==null?"0":d.getSectionId().toString())
 					.build();
 				
 				res.setCommonResponse(transactionRes);
@@ -1391,11 +1393,22 @@ public CommonRes getUploadMaster(GetUploadTypeReq req) {
 			}
 				
 			}else {	
-				 EwayUploadTypeMaster typeMaster=uploadTypeRepo.findByCompanyIdAndProductIdAndStatus(companyId, productId, "Y");
-				 Integer typeId =typeMaster.getTypeid();
-				 List<EwayXlconfigMaster> list =xlConfigMaster.findByCompanyIdAndProductIdAndTypeidOrderByFieldid(companyId,productId,typeId);
+				
+				List<EwayEmplyeeDetailRaw> empList =employeeRawRepo.findByRequestReferenceNo(req.getRequestRefNo());
 				 
-				 List<EwayXlconfigMaster> mainData =list.stream()
+				Integer sectionId =Integer.valueOf(empList.get(0).getSectionId());
+				
+				EwayUploadTypeMaster typeMaster=uploadTypeRepo.findByCompanyIdAndProductIdAndSectionIdAndStatus
+						 (companyId, productId,sectionId, "Y");
+				 
+				Integer typeId=typeMaster.getTypeid();
+				 
+				 
+				List<EwayXlconfigMaster> list =xlConfigMaster.findByCompanyIdAndProductIdAndSectionIdAndTypeidOrderByFieldid
+						 (companyId,productId,sectionId,typeId);
+				 
+				 
+				List<EwayXlconfigMaster> mainData =list.stream()
 						 .filter(p ->StringUtils.isNotBlank(p.getSelColName()))
 						 .collect(Collectors.toList());
 				 

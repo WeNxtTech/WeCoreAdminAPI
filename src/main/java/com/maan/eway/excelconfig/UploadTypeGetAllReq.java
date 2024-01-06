@@ -13,4 +13,8 @@ public class UploadTypeGetAllReq {
 	@JsonProperty("ProductId")
 	private String productId;
 	
+	@JsonProperty("SectionId")
+	private String sectionId;
+	
+	
 }

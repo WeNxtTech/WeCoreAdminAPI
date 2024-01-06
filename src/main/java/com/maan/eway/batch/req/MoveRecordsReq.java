@@ -28,5 +28,8 @@ public class MoveRecordsReq {
 	@JsonProperty("TypeId")
     private String typeId;
 	
+	@JsonProperty("SectionId")
+    private String sectionId;
+	
 
 }

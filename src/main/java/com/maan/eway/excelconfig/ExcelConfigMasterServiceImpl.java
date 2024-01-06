@@ -253,7 +253,8 @@ public class ExcelConfigMasterServiceImpl implements ExcelConfigMasterService {
 
 	public List<UploadTypeResponse> getAll(UploadTypeGetAllReq req) {
 
-		List<EwayUploadTypeMaster> list = typeMasterRepository.findByCompanyId(req.getCompanyId());
+		List<EwayUploadTypeMaster> list = typeMasterRepository.findByCompanyIdAndProductId(
+				Integer.valueOf(req.getCompanyId()),Integer.valueOf(req.getProductId()));
 
 		if (list.size() > 0) {
 
@@ -272,6 +273,7 @@ public class ExcelConfigMasterServiceImpl implements ExcelConfigMasterService {
 
 				mapper.map(upload, res);
 
+				
 				resList.add(res);
 			}
 			return resList;
@@ -289,7 +291,7 @@ public class ExcelConfigMasterServiceImpl implements ExcelConfigMasterService {
 		if (upload != null) {
 
 			List<EwayXlconfigMaster> list = xlConfigRepository.findXLConfigMasterByPk(upload.getCompanyId().toString(),
-					upload.getProductId().toString(), upload.getTypeid().toString());
+					upload.getProductId().toString(), upload.getSectionId().toString(), upload.getTypeid().toString());
 
 //			for (EwayXlconfigMaster xl : list) {
 //				xlConfigRepository.delete(xl);

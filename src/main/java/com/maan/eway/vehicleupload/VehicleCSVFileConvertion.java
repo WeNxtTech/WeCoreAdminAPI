@@ -42,7 +42,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.batch.entity.EwayUploadTypeMaster;
 import com.maan.eway.batch.entity.EwayXlconfigMaster;
-import com.maan.eway.batch.repository.EserviceMotorDetailsRawRepository;
 import com.maan.eway.batch.repository.EwayXlconfigMasterRepository;
 import com.maan.eway.batch.repository.TransactionControlDetailsRepository;
 import com.maan.eway.batch.res.EwayUploadRes;
@@ -72,8 +71,6 @@ public class VehicleCSVFileConvertion {
 	private TransactionControlDetailsRepository transRepo;
 	
 	@Autowired
-	private EserviceMotorDetailsRawRepository eserviceRawRepo;
-	@Autowired
 	private VehicleBatchServiceImpl batchServiceImpl;
 	
 	public void doCSVCovertion(EwayUploadRes uploadRes, EwayUploadTypeMaster uploadTypeMaster) {
@@ -86,9 +83,11 @@ public class VehicleCSVFileConvertion {
 				if(csvFile.exists() && csvFile.canRead()) {
 					if(uploadTypeMaster!=null) {
 						
-						List<EwayXlconfigMaster> list = xlConfigMaster.findByCompanyIdAndProductIdAndTypeidAndStatusIgnoreCaseOrderByExcelColumnIndex(
-								Integer.valueOf(uploadRes.getCompanyId()),Integer.valueOf(uploadRes.getProductId()),Integer.valueOf(uploadRes.getTypeId()),
-								"Y");
+						List<EwayXlconfigMaster> list = xlConfigMaster.findByCompanyIdAndProductIdAndSectionIdAndTypeidAndStatusIgnoreCaseOrderByExcelColumnIndex(
+								Integer.valueOf(uploadRes.getCompanyId()),Integer.valueOf(uploadRes.getProductId()),Integer.valueOf(uploadRes.getSectionId()),
+								Integer.valueOf(uploadRes.getTypeId()),"Y");
+								
+						
 						List<EwayXlconfigMaster> xlConfigData =list.stream().filter(p ->StringUtils.isNotBlank(p.getExcelheaderName()))
 								.filter(p ->StringUtils.isNotBlank(p.getFieldNameRaw()))
 								.collect(Collectors.toList());
@@ -175,8 +174,8 @@ public class VehicleCSVFileConvertion {
         try
         {
         	String excelFileName=response.getExcelFilePath();
-           String OUTPUT_DATE_FORMAT = dateFormat;
-           String CVS_SEPERATOR_CHAR = seperatorChar;
+           //String OUTPUT_DATE_FORMAT = dateFormat;
+          // String CVS_SEPERATOR_CHAR = seperatorChar;
            String fileType=FilenameUtils.getExtension(excelFileName);
            if("xlsx".equals(fileType))
            {
@@ -212,7 +211,7 @@ public class VehicleCSVFileConvertion {
 		         // String vehicleId =getVehilceId(response.getRequestReferenceNo(), response.getProductId());
 		          for(int eachRow = 0; eachRow < rows; eachRow++){
 		              String csvData = "";
-		              String snoAndVehNo = String.valueOf(eachRow);
+		            //  String snoAndVehNo = String.valueOf(eachRow);
 		              XSSFRow myRow = mySheet.getRow(eachRow);
 		              //System.out.println("RowNo : " + eachRow);
 		              System.out.println("myRow is Empty"+ myRow!=null); 
@@ -256,7 +255,7 @@ public class VehicleCSVFileConvertion {
 	            HSSFSheet mySheet = myWorkBook.getSheetAt(0);
 	            Iterator rowIter = mySheet.rowIterator();
 	            int count = 0;
-	            int rowcount = 0;
+	          //  int rowcount = 0;
 	            int firstCount = 0;
 	            String csvData;
 		       //  String vehicleId =getVehilceId(response.getRequestReferenceNo(), response.getProductId());
@@ -524,7 +523,7 @@ public class VehicleCSVFileConvertion {
 			HashMap<String,Object> columns = new HashMap<String, Object>();
 			if(excelColumnLength==dbColumnLength) {
 				for(int i=0;i<excelColumnLength;i++) {
-					int headerIndex = Integer.valueOf(i);
+				//	int headerIndex = Integer.valueOf(i);
 					columnInfo = dbColumns.get(i);
 					String dbheader=columnInfo.getExcelheaderName().trim().toUpperCase().replaceAll("\\s","");
 					String excelheaderName = excelColumns[i].trim().toUpperCase().replaceAll("\\s","");

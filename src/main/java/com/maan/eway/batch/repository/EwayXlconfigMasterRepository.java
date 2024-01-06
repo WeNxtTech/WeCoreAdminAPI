@@ -35,11 +35,11 @@ import com.maan.eway.bean.OneTimeTableDetails;
 public interface EwayXlconfigMasterRepository  extends JpaRepository<EwayXlconfigMaster,EwayXlconfigMasterId > , JpaSpecificationExecutor<EwayXlconfigMaster> {
 
 
-	List<EwayXlconfigMaster> findByCompanyIdAndProductIdAndTypeidAndStatusIgnoreCaseOrderByExcelColumnIndex(Integer companyId,
-			Integer productId, Integer typeId, String status);
+	List<EwayXlconfigMaster> findByCompanyIdAndProductIdAndSectionIdAndTypeidAndStatusIgnoreCaseOrderByExcelColumnIndex(Integer companyId,
+			Integer productId, Integer sectionId,Integer typeId, String status);
 
-	@Query(nativeQuery = true, value = "select * from eway_xlconfig_master where COMPANY_ID=?1 and PRODUCT_ID=?2 and TYPEID=?3")
-	public List<EwayXlconfigMaster> findXLConfigMasterByPk(String companyId, String productId, String typeId);
+	@Query(nativeQuery = true, value = "select * from eway_xlconfig_master where COMPANY_ID=?1 and PRODUCT_ID=?2 and SECTION_ID=?3 and TYPEID=?4")
+	public List<EwayXlconfigMaster> findXLConfigMasterByPk(String companyId, String productId,String sectionId, String typeId);
 
 	@Query(nativeQuery = true, value = "select * from eway_xlconfig_master where COMPANY_ID=?1 and PRODUCT_ID=?2 and TYPEID=?3 AND FIELDID=?4")
 	public EwayXlconfigMaster findByPK(String companyId, String productId, String typeId,String fieldId);
@@ -59,10 +59,7 @@ public interface EwayXlconfigMasterRepository  extends JpaRepository<EwayXlconfi
 	List<EwayXlconfigMaster> findByCompanyIdAndProductIdAndTypeidAndStatusOrderByFieldid(Integer companyId,
 			Integer productId, Integer typeId, String status);
 
-	List<EwayXlconfigMaster> findByCompanyIdAndProductIdAndTypeidOrderByFieldid(Integer companyId, Integer productId,
-			Integer typeId);
-
-
-	//List<EwayXlconfigMaster> findByCompanyIdAndProductIdAndTypeidAndIsMainMoveOrderByIsMainColIdx(Integer companyId, Integer productId, Integer typeId,String status);
+	List<EwayXlconfigMaster> findByCompanyIdAndProductIdAndSectionIdAndTypeidOrderByFieldid(Integer companyId, Integer productId,
+			Integer sectionId,Integer typeId);
 
 }

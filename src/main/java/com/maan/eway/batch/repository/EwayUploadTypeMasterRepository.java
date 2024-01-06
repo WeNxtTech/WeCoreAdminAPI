@@ -49,8 +49,7 @@ public interface EwayUploadTypeMasterRepository  extends JpaRepository<EwayUploa
 	@Transactional
 	void deleteByCompanyIdAndProductIdAndTypeid(Integer companyId, Integer productId,Integer typeId);
 
-	Integer findByCompanyIdAndProductId(Integer companyId, Integer productId);
-
+	List<EwayUploadTypeMaster> findByCompanyIdAndProductId(Integer companyId, Integer productId);
 	
 	
 	@Query(nativeQuery = true,value="select max(typeid) from eway_upload_type_master where company_id=?1 group by company_id")
@@ -61,5 +60,9 @@ public interface EwayUploadTypeMasterRepository  extends JpaRepository<EwayUploa
 	
 	@Query(nativeQuery = true, value="select * from eway_upload_type_master where company_id=?1")
 	public List<EwayUploadTypeMaster> findByCompanyId(String companyId);
+	
+	EwayUploadTypeMaster findByCompanyIdAndProductIdAndSectionIdAndTypeidAndStatus(Integer companyId,Integer productId,Integer sectionId,
+			Integer typeId,String status);
 
+	
 }

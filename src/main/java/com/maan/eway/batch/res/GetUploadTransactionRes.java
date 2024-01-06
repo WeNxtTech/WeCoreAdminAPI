@@ -33,4 +33,7 @@ public class GetUploadTransactionRes {
 	@JsonProperty("UploadDate")
     private String uploadDate;
 	
+	@JsonProperty("SectionId")
+    private String sectionId;
+	
 }

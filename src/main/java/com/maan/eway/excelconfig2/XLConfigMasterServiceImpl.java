@@ -619,7 +619,7 @@ public class XLConfigMasterServiceImpl {
 		SuccessResponse sRes = new SuccessResponse();
 
 		List<EwayXlconfigMaster> lastData = configRepo.findXLConfigMasterByPk(xlConfigList.get(0).getCompanyId(),
-				xlConfigList.get(0).getProductId(), xlConfigList.get(0).getTypeId());
+				xlConfigList.get(0).getProductId(),xlConfigList.get(0).getSectionId(), xlConfigList.get(0).getTypeId());
 
 		if (lastData.size() > 0) {
 			for (EwayXlconfigMaster xl : lastData) {
@@ -665,7 +665,7 @@ public class XLConfigMasterServiceImpl {
 	public List<XLConfigMasterResponse> getAll(XLConfigGetReq req) {
 
 		List<EwayXlconfigMaster> xlConfigList = configRepo.findXLConfigMasterByPk(req.getCompanyId(),
-				req.getProductId(), req.getTypeId());
+				req.getProductId(), req.getSectionId(),req.getTypeId());
 
 		List<XLConfigMasterResponse> respList = new ArrayList<XLConfigMasterResponse>();
 

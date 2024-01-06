@@ -31,7 +31,7 @@ public class VehicleThread_CSV_Convertion implements Runnable {
 		try {
 			log.info("Thread_CSV_Convertion || Run || Start doing CSVCovertion ..");
 			csvFileConvertion.doCSVCovertion(uploadRes,uploadTypeMaster);
-			log.info("Thread_CSV_Convertion || Run || CSVCovertion completed");
+			log.info("Thread_CSV_Convertion || Run || CSVConvertion completed");
 		}catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();

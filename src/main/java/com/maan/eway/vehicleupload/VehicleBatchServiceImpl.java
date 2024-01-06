@@ -1280,13 +1280,13 @@ public CommonRes saveUploadMaster(SaveUploadTypeReq req) {
 	try {
 		Integer companyId =Integer.valueOf(req.getCompanyId());
 		Integer productId =Integer.valueOf(req.getProductId());
-		Integer typeId =uploadTypeRepo.findByCompanyIdAndProductId(companyId, productId);
-	    Integer type_id =StringUtils.isBlank(req.getRawTableId())?typeId==null?101:typeId :Integer.valueOf(req.getRawTableId());
+		//Integer typeId =uploadTypeRepo.findByCompanyIdAndProductId(companyId, productId);
+	    //Integer type_id =StringUtils.isBlank(req.getRawTableId())?typeId==null?101:typeId :Integer.valueOf(req.getRawTableId());
 		
 	    EwayUploadTypeMaster uploadMaster =EwayUploadTypeMaster.builder()
 	    		.companyId(companyId)
 	    		.productId(productId)
-	    		.typeid(type_id)
+	    		.typeid(null)
 	    		.filePath(req.getSampleXlFilePath())
 	    		.typename(req.getFileName())
 	    		.sectionId(0)

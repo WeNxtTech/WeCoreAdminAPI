@@ -107,13 +107,6 @@ public class ExcelConfigMasterServiceImpl implements ExcelConfigMasterService {
 			eList.add(new Errors("8", "Product Description", "Product Description is blank"));
 		}
 
-		if (!StringUtils.isBlank(req.getFilePath())) {
-			if (req.getFilePath().length() > 200)
-				eList.add(new Errors("9", "File Path", "File Path is too long"));
-		} else {
-			eList.add(new Errors("9", "File Path", "File Path is blank"));
-		}
-
 		if (!StringUtils.isBlank(req.getApiName())) {
 			if (req.getApiName().length() > 300)
 				eList.add(new Errors("10", "API name", "API name is too long"));
@@ -173,7 +166,7 @@ public class ExcelConfigMasterServiceImpl implements ExcelConfigMasterService {
 			upload.setRawTableName(req.getRawTableName());
 			upload.setApiName(req.getApiName().trim());
 			upload.setProductDesc(req.getProductDesc());
-			upload.setFilePath(req.getFilePath().trim());
+			upload.setFilePath(null);
 			upload.setRawTableId(req.getRawTableId());
 			// upload.setIsMainStatus(req.getIsMainStatus().toUpperCase().charAt(0));
 			upload.setApiMethod(req.getApiMethod());

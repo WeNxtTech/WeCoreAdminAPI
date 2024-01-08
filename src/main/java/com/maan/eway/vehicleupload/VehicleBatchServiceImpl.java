@@ -238,7 +238,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			
 			uploadRes.setExcelFilePath(excelFilePath);
 			
-			Integer sectionId =StringUtils.isBlank(req.getSectionId()) || "4".equals(req.getProductId()) ?0:Integer.valueOf(req.getSectionId());
+			Integer sectionId =StringUtils.isBlank(req.getSectionId())?0:Integer.valueOf(req.getSectionId());
 			
 			EwayUploadTypeMaster uploadTypeMaster=uploadTypeRepo.findByCompanyIdAndProductIdAndSectionIdAndStatus
 					(Integer.valueOf(req.getCompanyId()),Integer.valueOf(req.getProductId()),sectionId,
@@ -391,7 +391,8 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 					eserviceRepository.deleteUwQuestionsDetailsByRefNo(requestReferenceNo);
 					eserviceRepository.deleteMotorDetailsByRefNo(requestReferenceNo);
 					eserviceRepository.deleteMaster_referral_detailsByRefNo(requestReferenceNo);
-				}else if("14".equals(productId) || "15".equals(productId) || "32".equals(productId)){
+				}else if("14".equals(productId) || "15".equals(productId) || "32".equals(productId) ||
+						"19".equals(productId)){
 					eserviceRepository.deleteProductEmployeeDetails(requestReferenceNo);
 					eserviceRepository.deleteRawEmployeeDetails(requestReferenceNo);
 				}else if("4".equals(productId)){
@@ -1097,7 +1098,8 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 		CommonRes res =new CommonRes();
 		Map<String,Object> map =new HashMap<String,Object>();
 		try {
-			EwayUploadTypeMaster typeMaster =uploadTypeRepo.findByCompanyIdAndProductIdAndStatus(Integer.valueOf(req.getCompanyId()),Integer.valueOf(req.getProductId()),"Y");
+			EwayUploadTypeMaster typeMaster =uploadTypeRepo.findByCompanyIdAndProductIdAndSectionIdAndStatus(
+					Integer.valueOf(req.getCompanyId()),Integer.valueOf(req.getSectionId()),Integer.valueOf(req.getProductId()),"Y");
 			if(typeMaster!=null) {
 			    Integer companyId =typeMaster.getCompanyId();
 			    Integer productId =typeMaster.getProductId();

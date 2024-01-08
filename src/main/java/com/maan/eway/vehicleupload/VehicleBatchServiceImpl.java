@@ -1098,7 +1098,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 		Map<String,Object> map =new HashMap<String,Object>();
 		try {
 			EwayUploadTypeMaster typeMaster =uploadTypeRepo.findByCompanyIdAndProductIdAndSectionIdAndStatus(
-					Integer.valueOf(req.getCompanyId()),Integer.valueOf(req.getSectionId()),Integer.valueOf(req.getProductId()),"Y");
+					Integer.valueOf(req.getCompanyId()),Integer.valueOf(req.getProductId()),Integer.valueOf(req.getSectionId()),"Y");
 			if(typeMaster!=null) {
 			    Integer companyId =typeMaster.getCompanyId();
 			    Integer productId =typeMaster.getProductId();

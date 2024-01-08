@@ -149,7 +149,6 @@ public class EwayEmplyeeDetailRaw {
 	private String sumInsured;
 	
 	
-	
 }
 
 

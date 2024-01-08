@@ -383,6 +383,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			String uploadType =StringUtils.isBlank(uploadResponse.getUploadType())?"":uploadResponse.getUploadType();
 			String productId =StringUtils.isBlank(uploadResponse.getProductId())?"":uploadResponse.getProductId();
 			String requestReferenceNo =StringUtils.isBlank(uploadResponse.getRequestReferenceNo())?"":uploadResponse.getRequestReferenceNo();
+			String sectionId =StringUtils.isBlank(uploadResponse.getSectionId())?"":uploadResponse.getSectionId();
 
 			if("Add".equalsIgnoreCase(uploadType)) {
 				if("5".equals(productId)) {
@@ -391,15 +392,12 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 					eserviceRepository.deleteUwQuestionsDetailsByRefNo(requestReferenceNo);
 					eserviceRepository.deleteMotorDetailsByRefNo(requestReferenceNo);
 					eserviceRepository.deleteMaster_referral_detailsByRefNo(requestReferenceNo);
-				}else if("14".equals(productId) || "15".equals(productId) || "32".equals(productId) ||
-						"19".equals(productId)){
-					eserviceRepository.deleteProductEmployeeDetails(requestReferenceNo);
-					eserviceRepository.deleteRawEmployeeDetails(requestReferenceNo);
-				}else if("4".equals(productId)){
-					eserviceRepository.deleteRawEmployeeDetails(requestReferenceNo);
-					eserviceRepository.deletePassengerDetails(requestReferenceNo);
+					eserviceRepository.deletePassengerDetails(requestReferenceNo,sectionId);
 				}else {
-					eserviceRepository.deleteRawEmployeeDetails(requestReferenceNo);
+					eserviceRepository.deleteProductEmployeeDetails(requestReferenceNo,sectionId);
+					eserviceRepository.deleteRawEmployeeDetails(requestReferenceNo,sectionId);
+					eserviceRepository.deletePassengerDetails(requestReferenceNo,sectionId);
+
 				}
 			}else {
 				eserviceRepository.deleteByRequestReferenceNo(requestReferenceNo,"E");
@@ -471,6 +469,8 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			Integer productId =Integer.valueOf(uploadResponse.getProductId());
 			Integer typeId =Integer.valueOf(uploadResponse.getTypeId());
 			String requestReferenceNo =uploadResponse.getRequestReferenceNo();
+			String sectionId =StringUtils.isBlank(uploadResponse.getSectionId())?"":uploadResponse.getSectionId();
+
 			String quoteNo =StringUtils.isBlank(uploadResponse.getQuoteNo())?"":uploadResponse.getQuoteNo();
 			fileUploadProgress(uploadResponse,"P","Uploading","Validating raw table records","50");
 			
@@ -509,7 +509,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 				criteriaQuery.updateColleteralValidation(companyId, productId, typeId, requestReferenceNo);
 				//eserviceRepository.updateMasterIdEmptyValidation(companyId, productId, typeId, requestReferenceNo);
 				criteriaQuery.updateEmptyDataError(companyId, productId, typeId, requestReferenceNo);
-				criteriaQuery.updateErrorStatus(companyId, productId, typeId, requestReferenceNo);
+				criteriaQuery.updateErrorStatus(companyId, productId, typeId, requestReferenceNo,"0");
 				//eserviceRepository.updateEmptyErrorStatus(companyId, productId, typeId, requestReferenceNo);
 				eserviceRepository.updateDupicateSearchBydata(companyId, productId, typeId, requestReferenceNo);
 				//criteriaQuery.updateDuplicateData(companyId, productId, typeId, requestReferenceNo);
@@ -527,13 +527,12 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 				
 				//employeeRawRepo.updateOccupationId(companyId,productId,
 						//Integer.valueOf(uploadResponse.getRiskId()),requestReferenceNo,quoteNo);
-				criteriaQuery.updateOccupationId(companyId, productId, quoteNo, requestReferenceNo);
-				employeeRawRepo.updateDateOfMonth(companyId, productId, quoteNo, requestReferenceNo);
-				employeeRawRepo.updateLocationId(requestReferenceNo);
-				criteriaQuery.updateEmpErrorDesc(companyId, productId, quoteNo, requestReferenceNo);
-				criteriaQuery.updateErrorStatus(companyId, productId, typeId, requestReferenceNo);
-				employeeRawRepo.updateDuplicateNationalityId(companyId,productId,requestReferenceNo,quoteNo);
-				String sectionId =StringUtils.isBlank(uploadResponse.getSectionId())?"":uploadResponse.getSectionId();
+				criteriaQuery.updateOccupationId(companyId, productId, quoteNo, requestReferenceNo,sectionId);
+				employeeRawRepo.updateDateOfMonth(companyId, productId, quoteNo, requestReferenceNo,sectionId);
+				employeeRawRepo.updateLocationId(requestReferenceNo,productId.toString(),sectionId);
+				criteriaQuery.updateEmpErrorDesc(companyId, productId, quoteNo, requestReferenceNo,sectionId);
+				criteriaQuery.updateErrorStatus(companyId, productId, typeId, requestReferenceNo,sectionId);
+				employeeRawRepo.updateDuplicateNationalityId(companyId,productId,requestReferenceNo,quoteNo,sectionId);
 				Map<String,String> map =new HashMap<String,String>();
 				map.put("QuoteNo", quoteNo);
 				map.put("ProductId", product);
@@ -545,17 +544,17 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 				Map<String,Object> result =response.get("Result")==null?null:(Map<String,Object>) response.get("Result");
 				Long expectedCount =result.get("ExpectedCount")==null?0L:Long.valueOf(result.get("ExpectedCount").toString());
 				Long actualCount =result.get("ActualCount")==null?0L:Long.valueOf(result.get("ActualCount").toString());
-				Long newEmpCount =employeeRawRepo.getCountRecords(companyId,productId,requestReferenceNo);
+				Long newEmpCount =employeeRawRepo.getCountRecords(companyId,productId,requestReferenceNo,sectionId);
 				Long totalEmpCount =actualCount + newEmpCount;
 				if(totalEmpCount>expectedCount) {
 				    String errorMsg="The employees limt has exceeded more than your setup ("+expectedCount+")";
-					Integer updateCount=employeeRawRepo.updateEmployeeExceededCount(errorMsg,companyId,productId,requestReferenceNo);
+					Integer updateCount=employeeRawRepo.updateEmployeeExceededCount(errorMsg,companyId,productId,requestReferenceNo,sectionId);
 					log.info("validateRawTableRecords :: updateEmployeeExceededCount : "+updateCount);
 				}
 				
-				List<EwayEmplyeeDetailRaw> emp_list =employeeRawRepo.findByCompanyIdAndProductIdAndQuoteNoAndRiskIdAndRequestReferenceNo(
+				List<EwayEmplyeeDetailRaw> emp_list =employeeRawRepo.findByCompanyIdAndProductIdAndQuoteNoAndRiskIdAndSectionIdAndRequestReferenceNo(
 						companyId,productId,quoteNo,
-						Integer.valueOf(uploadResponse.getRiskId()),requestReferenceNo);
+						Integer.valueOf(uploadResponse.getRiskId()),sectionId,requestReferenceNo);
 				
 				if(!CollectionUtils.isEmpty(emp_list)) {
 					
@@ -576,7 +575,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 				employeeRawRepo.updateGender(requestReferenceNo);
 				criteriaQuery.updateRelationId(companyId, productId, quoteNo, requestReferenceNo);
 				criteriaQuery.updateTravelErrorDesc(companyId, productId, quoteNo, requestReferenceNo);
-				criteriaQuery.updateErrorStatus(companyId, productId, typeId, requestReferenceNo);
+				criteriaQuery.updateErrorStatus(companyId, productId, typeId, requestReferenceNo,sectionId);
 				List<EwayEmplyeeDetailRaw> passList=employeeRawRepo.findByCompanyIdAndProductIdAndRequestReferenceNo(companyId, productId, requestReferenceNo);
 				if(!CollectionUtils.isEmpty(passList)) {
 					
@@ -591,7 +590,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			}else if("3".equals(product) ||"26".equals(product) || "24".equals(product)) {
 				employeeRawRepo.updateDuplicateSerialNo(requestReferenceNo);
 			//	employeeRawRepo.updateContentAndAllriskSumInsured(requestReferenceNo);
-				employeeRawRepo.updateLocationId(requestReferenceNo);
+				employeeRawRepo.updateLocationId(requestReferenceNo,product,sectionId);
 				employeeRawRepo.updateContentTypeId(requestReferenceNo);
 				employeeRawRepo.updateErrorStatusAndErrorDesc(requestReferenceNo);
 				List<EwayEmplyeeDetailRaw> passList=employeeRawRepo.findByCompanyIdAndProductIdAndRequestReferenceNo(companyId, productId, requestReferenceNo);
@@ -605,7 +604,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 						
 				}
 			}else {
-				employeeRawRepo.updateLocationId(requestReferenceNo);
+				employeeRawRepo.updateLocationId(requestReferenceNo,productId.toString(),sectionId);
 			
 				List<EwayEmplyeeDetailRaw> passList=employeeRawRepo.findByCompanyIdAndProductIdAndRequestReferenceNo(companyId, productId, requestReferenceNo);
 				if(!CollectionUtils.isEmpty(passList)) {

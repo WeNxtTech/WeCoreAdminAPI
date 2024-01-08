@@ -693,7 +693,7 @@ public class CriteriaQueryServiceImpl {
 	       
 	   }
 	   
-	   public void updateErrorStatus(Object companyId, Object productId, Object typeId, Object referenceNo) {
+	   public void updateErrorStatus(Object companyId, Object productId, Object typeId, Object referenceNo,Object sectionId) {
 		   try {
 			   CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 		        CriteriaUpdate<EwayEmplyeeDetailRaw> updateQuery = criteriaBuilder.createCriteriaUpdate(EwayEmplyeeDetailRaw.class);
@@ -713,8 +713,9 @@ public class CriteriaQueryServiceImpl {
 		        Predicate condition2 = criteriaBuilder.equal(root.get("productId"), productId);
 		        Predicate condition3 = criteriaBuilder.equal(root.get("typeid"), typeId);
 		        Predicate condition4 = criteriaBuilder.equal(root.get("requestReferenceNo"), referenceNo);
-
-		        updateQuery.where(criteriaBuilder.and(condition1, condition2, condition3, condition4));
+		        Predicate condition5 = criteriaBuilder.equal(root.get("sectionId"), sectionId);
+		        
+		        updateQuery.where(criteriaBuilder.and(condition1, condition2, condition3, condition4,condition5));
 
 		        // Perform the update operation
 		        entityManager.createQuery(updateQuery).executeUpdate();
@@ -725,7 +726,7 @@ public class CriteriaQueryServiceImpl {
 	   
 	  }
 	   
-	  public Integer updateOccupationId(Object companyId,Object productId,Object quoteNo,Object refNo) {
+	  public Integer updateOccupationId(Object companyId,Object productId,Object quoteNo,Object refNo,Object sectionId) {
 		  try {
 			  CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 			  CriteriaUpdate<EwayEmplyeeDetailRaw> criteriaUpdate =cb.createCriteriaUpdate(EwayEmplyeeDetailRaw.class);
@@ -755,7 +756,7 @@ public class CriteriaQueryServiceImpl {
 			  .where(
 					  cb.equal(root.get("companyId"), companyId), cb.equal(root.get("productId"), productId), cb.equal(root.get("requestReferenceNo"), refNo),
 					  cb.equal(root.get("status"), "Y"),cb.isNull(root.get("apiStatus")),cb.equal(root.get("quoteNo"), quoteNo)
-					  );
+					  ,cb.equal(root.get("sectionId"), sectionId));
 			  
 			  entityManager.createQuery(criteriaUpdate).executeUpdate();
 			  
@@ -767,7 +768,7 @@ public class CriteriaQueryServiceImpl {
 		  return null;
 	  }
 	   
-	  public Integer updateEmpErrorDesc(Object companyId,Object productId,Object quoteNo,Object refNo) {
+	  public Integer updateEmpErrorDesc(Object companyId,Object productId,Object quoteNo,Object refNo,Object sectionId) {
 		  try {
 			  CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 			  CriteriaUpdate<EwayEmplyeeDetailRaw> criteriaUpdate =cb.createCriteriaUpdate(EwayEmplyeeDetailRaw.class);
@@ -780,8 +781,8 @@ public class CriteriaQueryServiceImpl {
 			  criteriaUpdate.set(root.<String>get("errorDesc"), caseCon)
 			  .where(
 					  cb.equal(root.get("companyId"), companyId), cb.equal(root.get("productId"), productId), cb.equal(root.get("requestReferenceNo"), refNo),
-					  cb.equal(root.get("status"), "Y"), cb.or(cb.isNull(root.get("apiStatus")),cb.isNull(root.get("apiStatus"))),cb.equal(root.get("quoteNo"), quoteNo)
-					 
+					  cb.equal(root.get("status"), "Y"), cb.or(cb.isNull(root.get("apiStatus")),cb.isNull(root.get("apiStatus"))),cb.equal(root.get("quoteNo"), quoteNo),
+					  cb.equal(root.get("sectionId"), sectionId)
 					);
 			  entityManager.createQuery(criteriaUpdate).executeUpdate();
 		  }catch (Exception e) {

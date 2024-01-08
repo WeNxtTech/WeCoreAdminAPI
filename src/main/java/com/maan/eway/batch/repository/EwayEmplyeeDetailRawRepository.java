@@ -36,8 +36,8 @@ public interface EwayEmplyeeDetailRawRepository extends JpaRepository<EwayEmplye
 	
 	@Modifying
 	@Transactional
-	@Query(value="UPDATE eway_employee_details_raw SET STATUS='E',error_desc=CONCAT(COALESCE(error_desc,'~'),'Duplicate nationalityId found') WHERE(company_id,product_id,request_reference_no,quote_no,nationality_id) IN (SELECT company_id,product_id,request_reference_no,quote_no,nationality_id FROM(SELECT company_id,product_id,request_reference_no,quote_no,nationality_id FROM eway_employee_details_raw WHERE company_id=?1 AND product_id=?2 AND request_reference_no=?3 AND quote_no=?4 AND STATUS ='Y' AND (api_status IS NULL OR api_status='') GROUP BY company_id,product_id,request_reference_no,quote_no,nationality_id HAVING COUNT(*)>1)X)",nativeQuery=true)
-	Integer updateDuplicateNationalityId(Integer companyId,Integer productId,String refNo,String quoteNo);
+	@Query(value="UPDATE eway_employee_details_raw SET STATUS='E',error_desc=CONCAT(COALESCE(error_desc,'~'),'Duplicate nationalityId found') WHERE(company_id,product_id,request_reference_no,quote_no,nationality_id,section_id) IN (SELECT company_id,product_id,request_reference_no,quote_no,nationality_id,section_id FROM(SELECT company_id,product_id,request_reference_no,quote_no,nationality_id,section_id FROM eway_employee_details_raw WHERE company_id=?1 AND product_id=?2 AND request_reference_no=?3 AND quote_no=?4 and section_id=?5 AND STATUS ='Y' AND (api_status IS NULL OR api_status='') GROUP BY company_id,product_id,request_reference_no,quote_no,nationality_id,section_id HAVING COUNT(*)>1)X)",nativeQuery=true)
+	Integer updateDuplicateNationalityId(Integer companyId,Integer productId,String refNo,String quoteNo,String sectionId);
 
 	List<EwayEmplyeeDetailRaw> findByCompanyIdAndProductIdAndRequestReferenceNoAndQuoteNoAndRiskIdAndStatusIgnoreCase(
 			Integer companyId, Integer productId, String requestRefNo, String quoteNo, Integer riskId, String status);
@@ -73,13 +73,13 @@ public interface EwayEmplyeeDetailRawRepository extends JpaRepository<EwayEmplye
 	@Query(value="UPDATE eway_employee_details_raw SET STATUS='E',ERROR_DESC=CONCAT(CONCAT(COALESCE(error_desc,'~'),'duplicate civilId number found for this : '),civil_id) WHERE(request_reference_no,civil_id)IN (SELECT request_reference_no,civil_id FROM(SELECT a.request_reference_no,a.civil_id FROM eway_employee_details_raw a,eway_employee_details_raw b WHERE a.rownum=b.rownum AND a.company_id=b.company_id AND a.product_id=b.product_id AND a.request_reference_no =b.request_reference_no AND a.quote_no=b.quote_no AND a.company_id=?1 AND a.product_id=?2 AND a.request_reference_no=?3 AND a.quote_no=?4 GROUP BY a.request_reference_no ,a.civil_id HAVING COUNT(*) >1)X) and status='Y' and api_status is null",nativeQuery=true)
 	Integer updateDuplicateCivilId(String companyId,String productId,String refno,String quoteNo);
 
-	@Query(value ="select count(*) from Eway_Employee_Details_Raw emp where emp.company_Id=?1 and emp.product_Id=?2 and emp.request_Reference_No=?3 and emp.status='Y' and emp.api_Status is null",nativeQuery=true)
-	Long getCountRecords(Integer companyId, Integer productId, String requestReferenceNo);
+	@Query(value ="select count(*) from Eway_Employee_Details_Raw emp where emp.company_Id=?1 and emp.product_Id=?2 and emp.request_Reference_No=?3 and section_id=?4 and emp.status='Y' and emp.api_Status is null",nativeQuery=true)
+	Long getCountRecords(Integer companyId, Integer productId, String requestReferenceNo,String sectionId);
 
 	@Modifying
 	@Transactional
-	@Query("update EwayEmplyeeDetailRaw emp set emp.status='E',emp.errorDesc=?1 where emp.companyId=?2 and emp.productId=?3 and emp.requestReferenceNo=?4 and emp.status='Y'")
-	Integer updateEmployeeExceededCount(String errorMsg,Integer companyId, Integer productId, String requestReferenceNo);
+	@Query("update EwayEmplyeeDetailRaw emp set emp.status='E',emp.errorDesc=?1 where emp.companyId=?2 and emp.productId=?3 and emp.requestReferenceNo=?4 and sectionId=?5 and emp.status='Y'")
+	Integer updateEmployeeExceededCount(String errorMsg,Integer companyId, Integer productId, String requestReferenceNo,String sectionId);
 
 	@Query(value ="SELECT COMPANY_ID,PRODUCT_ID,QUOTE_NO,REQUEST_REFERENCE_NO,PASSPORT_NO,FIRST_NAME,LAST_NAME,DATE_OF_BIRTH,PASS_RELATION_ID,CREATED_BY,NATIONALITY_ID,GENDER FROM eway_employee_details_raw WHERE COMPANY_ID=?1 AND PRODUCT_ID=?2 AND REQUEST_REFERENCE_NO=?3 AND STATUS='Y' AND (api_status IS NULL or api_status='N') ",nativeQuery=true)
 	List<Map<String,Object>> getPassengersList(String companyId,String productId,String refno);
@@ -96,13 +96,13 @@ public interface EwayEmplyeeDetailRawRepository extends JpaRepository<EwayEmplye
 	
 	@Modifying
 	@Transactional
-	@Query(value="UPDATE eway_employee_details_raw EMP SET MONTH_OF_JOINING =( SELECT ITEM_CODE FROM EWAY_LIST_ITEM_VALUE WHERE REPLACE(UPPER(EMP.MONTH_OF_JOINING_DESC),' ','')=REPLACE(UPPER(ITEM_VALUE),' ','') AND STATUS = 'Y' AND AMEND_ID =( SELECT MAX(AMEND_ID) FROM EWAY_LIST_ITEM_VALUE WHERE REPLACE(UPPER(ITEM_VALUE),' ','')= REPLACE(UPPER(EMP.MONTH_OF_JOINING_DESC),' ','') AND STATUS = 'Y') ) WHERE COMPANY_ID =?1 AND PRODUCT_ID =?2 AND QUOTE_NO =?3 AND REQUEST_REFERENCE_NO =?4 ",nativeQuery=true)
-	Integer updateDateOfMonth(Integer companyId, Integer productId, String quoteNo, String requestReferenceNo);
+	@Query(value="UPDATE eway_employee_details_raw EMP SET MONTH_OF_JOINING =( SELECT ITEM_CODE FROM EWAY_LIST_ITEM_VALUE WHERE REPLACE(UPPER(EMP.MONTH_OF_JOINING_DESC),' ','')=REPLACE(UPPER(ITEM_VALUE),' ','') AND STATUS = 'Y' AND AMEND_ID =( SELECT MAX(AMEND_ID) FROM EWAY_LIST_ITEM_VALUE WHERE REPLACE(UPPER(ITEM_VALUE),' ','')= REPLACE(UPPER(EMP.MONTH_OF_JOINING_DESC),' ','') AND STATUS = 'Y') ) WHERE COMPANY_ID =?1 AND PRODUCT_ID =?2 AND QUOTE_NO =?3 AND REQUEST_REFERENCE_NO =?4 AND SECTION_ID=?5 ",nativeQuery=true)
+	Integer updateDateOfMonth(Integer companyId, Integer productId, String quoteNo, String requestReferenceNo,String sectionId);
 
 	@Modifying
 	@Transactional
-	@Query(value="UPDATE eway_employee_details_raw EMP SET LOCATION_ID =( SELECT RISK_ID FROM building_details WHERE TRIM(UPPER(EMP.LOCATION_DESC)) = TRIM(UPPER(LOCATION_NAME)) AND STATUS='Y' AND EMP.QUOTE_NO=QUOTE_NO AND EMP.REQUEST_REFERENCE_NO=REQUEST_REFERENCE_NO) WHERE REQUEST_REFERENCE_NO=?1",nativeQuery=true)
-	Integer updateLocationId(String requestReferenceNo);
+	@Query(value="UPDATE eway_employee_details_raw EMP SET LOCATION_ID =( SELECT RISK_ID FROM building_details WHERE TRIM(UPPER(EMP.LOCATION_DESC)) = TRIM(UPPER(LOCATION_NAME)) AND STATUS='Y' AND EMP.QUOTE_NO=QUOTE_NO AND EMP.REQUEST_REFERENCE_NO=REQUEST_REFERENCE_NO) WHERE REQUEST_REFERENCE_NO=?1 AND PRODUCT_ID=?2 AND SECTION_ID=?3",nativeQuery=true)
+	Integer updateLocationId(String requestReferenceNo,String productId,String sectionId);
 	
 	
 	@Modifying
@@ -128,5 +128,9 @@ public interface EwayEmplyeeDetailRawRepository extends JpaRepository<EwayEmplye
 	@Transactional
 	@Query(value="UPDATE eway_employee_details_raw SET STATUS='E', error_desc=CONCAT(COALESCE(error_desc,' '), CASE WHEN content_type_id IS NULL OR content_type_id='' THEN '~Content/Allrisk Id is not updated' ELSE '~Location Id is not updated' END) WHERE(content_type_id IS NULL OR content_type_id='' OR LOCATION_ID IS NULL OR LOCATION_ID='') AND STATUS='Y' AND request_reference_no=?1",nativeQuery=true)
 	Integer updateErrorStatusAndErrorDesc(String requestReferenceNo);
+
+	List<EwayEmplyeeDetailRaw> findByCompanyIdAndProductIdAndQuoteNoAndRiskIdAndSectionIdAndRequestReferenceNo(
+			Integer companyId, Integer productId, String quoteNo, Integer valueOf, String sectionId,
+			String requestReferenceNo);
 	
 }

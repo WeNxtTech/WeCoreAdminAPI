@@ -125,6 +125,24 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 					errorList.add(new Error("07", "COverId", "Please Enter Cover Id in Row No : " + row  ));
 				}
 				
+				if(req.getPacMaxAgeOnMat() == null)
+				{
+					errorList.add(new Error("13", "Pac Max Age On Mat", "Please Enter Pac Max Age On Mat"));
+				}
+				if(req.getPacPeriod() == null)
+				{
+					errorList.add(new Error("14", "Pac Period", "Please Enter Pac Period"));
+				}
+				if(req.getPacPremPayYrs() ==  null)
+				{
+					errorList.add(new Error("15", "Pac Prem Pay Yrs", "Please Enter Pac Prem Pay Yrs"));
+				}
+				
+				if (StringUtils.isBlank(req.getPacCoverCode()))
+				{
+					errorList.add(new Error("16", "Pac Cover Code", "Please Enter Pac Cover Code"));
+				}
+				
 				
 			}
 		} catch (Exception e) {
@@ -217,6 +235,10 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 						secCover.setProductId(Integer.valueOf(req.getProductId()));
 						secCover.setCompanyId(req.getCompanyId());
 						secCover.setCreatedBy(req.getCreatedBy());
+						secCover.setPacMaxAgeOnMat(req.getPacMaxAgeOnMat());
+						secCover.setPacPeriod(req.getPacPeriod());
+						secCover.setPacPremPayYrs(req.getPacPremPayYrs());
+						secCover.setPacCoverCode(req.getPacCoverCode());
 						secCover.setCoreAppCode("99999");
 						secCover.setSubCoverId(Integer.valueOf("0"));
 						secCover.setAgencyCode(StringUtils.isNotBlank(req.getAgencyCode()) ? req.getAgencyCode() : "99999") ;
@@ -235,6 +257,10 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 						secCover.setProductId(Integer.valueOf(req.getProductId()));
 						secCover.setCompanyId(req.getCompanyId());
 						secCover.setCreatedBy(req.getCreatedBy());
+						secCover.setPacMaxAgeOnMat(req.getPacMaxAgeOnMat());
+						secCover.setPacPeriod(req.getPacPeriod());
+						secCover.setPacPremPayYrs(req.getPacPremPayYrs());
+						secCover.setPacCoverCode(req.getPacCoverCode());
 						secCover.setCoreAppCode("99999");
 						secCover.setAgencyCode(StringUtils.isNotBlank(req.getAgencyCode()) ? req.getAgencyCode() : "99999") ;
 						secCover.setBranchCode(StringUtils.isNotBlank(req.getBranchCode()) ? req.getBranchCode() : "99999");
@@ -463,6 +489,10 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				res.setExcessPercent(list.get(0).getExcessPercent() == null ? "" :df.format(list.get(0).getExcessPercent()));
 				res.setExcessAmount(list.get(0).getExcessAmount() == null ? "" :df.format(list.get(0).getExcessAmount()));
 				res.setExcessDesc(list.get(0).getExcessDesc()==null ?"": list.get(0).getExcessDesc());	
+				res.setPacMaxAgeOnMat(list.get(0).getPacMaxAgeOnMat()  == null ? 0 : list.get(0).getPacMaxAgeOnMat());
+				res.setPacPeriod(list.get(0).getPacPeriod()  == null ? 0 : list.get(0).getPacPeriod());
+				res.setPacPremPayYrs(list.get(0).getPacPremPayYrs() == null ? 0 : list.get(0).getPacPremPayYrs());
+				res.setPacCoverCode(list.get(0).getPacCoverCode() == null ? "" : list.get(0).getPacCoverCode());
 			}
 			
 		} catch (Exception e) {
@@ -834,7 +864,10 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			saveData.setUpdatedDate(new Date());
 			saveData.setAmendId(amendId);
 			saveData.setStatus(req.getStatus());
-		
+			saveData.setPacMaxAgeOnMat(req.getPacMaxAgeOnMat());
+			saveData.setPacPeriod(req.getPacPeriod());
+			saveData.setPacPremPayYrs(req.getPacPremPayYrs());
+			saveData.setPacCoverCode(req.getPacCoverCode());
 			
 			repo.saveAndFlush(saveData);
 			res.setResponse("Status Changed");
@@ -1071,6 +1104,23 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 						errorList.add(new Error("09", "MinimumPremium", "Please Enter Valid Number In MinimumPremium"));
 					}
 					
+					if(req.getPacMaxAgeOnMat() == null)
+					{
+						errorList.add(new Error("13", "Pac Max Age On Mat", "Please Enter Pac Max Age On Mat"));
+					}
+					if(req.getPacPeriod() == null)
+					{
+						errorList.add(new Error("14", "Pac Period", "Please Enter Pac Period"));
+					}
+					if(req.getPacPremPayYrs() ==  null)
+					{
+						errorList.add(new Error("15", "Pac Prem Pay Yrs", "Please Enter Pac Prem Pay Yrs"));
+					}
+					
+					if (StringUtils.isBlank(req.getPacCoverCode()))
+					{
+						errorList.add(new Error("16", "Pac Cover Code", "Please Enter Pac Cover Code"));
+					}
 					
 				}
 			}

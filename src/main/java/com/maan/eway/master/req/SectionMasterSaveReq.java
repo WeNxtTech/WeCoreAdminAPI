@@ -60,5 +60,7 @@ public class SectionMasterSaveReq implements Serializable {
 
 	@JsonProperty("MotorYn")
 	private String motorYn;
-
+	
+	
+	
 }

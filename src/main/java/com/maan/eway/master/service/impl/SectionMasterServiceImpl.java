@@ -143,6 +143,8 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			}else if (req.getMotorYn().length() >1) {
 				errorList.add(new Error("12", "Product Type", "Please Enter Product Type within 1 Character"));
 			}
+			
+		
 
 		} catch (Exception e) {
 			log.error(e);
@@ -299,7 +301,6 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 				saveData.setUpdatedDate(new Date());
 				saveData.setUpdatedBy(req.getCreatedBy());
 				saveData.setAmendId(amendId);
-				
 				saveData.setAmendId(amendId);
 				repo.saveAndFlush(saveData);
 				log.info("Saved Details is ---> " + json.toJson(saveData));

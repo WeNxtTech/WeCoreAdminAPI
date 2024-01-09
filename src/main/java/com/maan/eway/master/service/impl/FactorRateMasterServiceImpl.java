@@ -186,9 +186,9 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 							
 							param19RatingField = data.getRatingFieldId();
 						} else if(data.getDiscreteColumn().equalsIgnoreCase("Param20") ) {
-							param19 = true ;
+							param20 = true ;
 							
-							param19RatingField = data.getRatingFieldId();
+							param20RatingField = data.getRatingFieldId();
 						} 
 					}
 				
@@ -1129,7 +1129,11 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 						 param25Dup==true &&	param26Dup==true && param27Dup==true && param28Dup==true  ) { 
 						filterDupParams = duplicateParams.stream().filter( o ->  
 						o.getParam9().equalsIgnoreCase(param9Value) && o.getParam10().equalsIgnoreCase(param10Value) && 
-						o.getParam11().equalsIgnoreCase(param11Value) && o.getParam12().equalsIgnoreCase(param12Value) ).collect(Collectors.toList());
+						o.getParam11().equalsIgnoreCase(param11Value) && o.getParam12().equalsIgnoreCase(param12Value)&&
+						o.getParam13().equalsIgnoreCase(param13Value) && o.getParam14().equalsIgnoreCase(param14Value)
+						&& o.getParam15().equalsIgnoreCase(param15Value) && o.getParam16().equalsIgnoreCase(param16Value)
+						&& o.getParam17().equalsIgnoreCase(param17Value) && o.getParam18().equalsIgnoreCase(param18Value) 
+						&& o.getParam19().equalsIgnoreCase(param19Value) && o.getParam20().equalsIgnoreCase(param20Value) ).collect(Collectors.toList());
 						
 						if( filterDupParams.size()>0 ) {
 						

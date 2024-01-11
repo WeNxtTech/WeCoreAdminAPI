@@ -204,7 +204,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="API_URL", length=20)
     private String     apiUrl;
     
-
     @Column(name="PARAM_13", length=100)
     private String     param13 ;
     
@@ -252,10 +251,6 @@ private static final long serialVersionUID = 1L;
    
     @Column(name="PARAM_28")
     private BigDecimal     param28;
-
-    @Column(name="PLAN_CODE")
-   private Integer planCode;
-
     
  
 }

@@ -344,18 +344,12 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 			if (StringUtils.isBlank(req.getCoverId())) {
 				errorList.add(new Error("02", "CoverId", "Please Enter CoverId"));
 			}
-//			if (StringUtils.isNotBlank(req.getSubCoverYn()) && req.getSubCoverYn().equalsIgnoreCase("Y") ) {
-//				if (StringUtils.isBlank(req.getSubCoverId())) {
-//					errorList.add(new Error("02", "SubCoverId", "Please Enter SubCoverId"));
-//				}
-//			}
-			
-			if(req.getPlanCode() == null)
-			{
-				errorList.add(new Error("07", "Plan Code", "Please Enter Plan Code"));
+			if (StringUtils.isNotBlank(req.getSubCoverYn()) && req.getSubCoverYn().equalsIgnoreCase("Y") ) {
+				if (StringUtils.isBlank(req.getSubCoverId())) {
+					errorList.add(new Error("02", "SubCoverId", "Please Enter SubCoverId"));
+				}
 			}
 			
-
 		  boolean param1 = false ,param2 = false ,param3 = false , param4 = false ,
 				  param5  = false,param6 = false , param7  = false,param8 = false ,
 				  param9 = false ,param10 = false, param11 = false, param12 = false,
@@ -376,14 +370,6 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 			Integer param9RatingField  = null,param10RatingField  = null ,param11RatingField  = null,param12RatingField  = null ,
 					param13RatingField  = null,param14RatingField  = null ,param15RatingField  = null,param16RatingField  = null ,
 					param17RatingField  = null,param18RatingField  = null ,param19RatingField  = null,param20RatingField  = null ;
-
-			
-//		  boolean param1 = false ,param2 = false ,param3 = false , param4 = false , param5  = false,param6 = false , param7  = false,param8 = false,param9 = false ,
-//					param10 = false , param11 = false, param12 = false ;
-//			String param1Name = "" , param2Name = ""  ,param3Name = "" ,param4Name = ""  ,param5Name= "" ,param6Name= ""  , 
-//					param7Name= "" ,param8Name= "" ,param9Name= "" ,param10Name= "" ,param11Name= "" ,param12Name= ""  ;
-//			Integer param9RatingField  = null,param10RatingField  = null ,param11RatingField  = null,param12RatingField  = null ;
-
 			
 			if (StringUtils.isBlank(req.getFactorTypeId())) {
 				errorList.add(new Error("02", "FactorTypeId", "Please Enter FactorTypeId"));
@@ -1765,15 +1751,12 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				saveData.setEffectiveDateStart(req.getEffectiveDateStart());
 				saveData.setEffectiveDateEnd(endDate);
 				saveData.setEntryDate(new Date());
-				//saveData.setSubCoverId(req.getSubCoverYn().equalsIgnoreCase("Y") ? Integer.valueOf(req.getSubCoverId()) : 0 );
+				saveData.setSubCoverId(req.getSubCoverYn().equalsIgnoreCase("Y") ? Integer.valueOf(req.getSubCoverId()) : 0 );
 				saveData.setAmendId(amendId);
 				saveData.setStatus(req.getStatus().equalsIgnoreCase("P")?"P" : data.getStatus());		
-
 				saveData.setSNo(Integer.valueOf(data.getSno()));
 				
 				// Range
-		saveData.setSNo(StringUtils.isBlank(data.getSno()) ? null : Integer.valueOf(data.getSno()));
-
 				saveData.setParam1(StringUtils.isBlank(data.getParam1()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam1()))) );
 				saveData.setParam2(StringUtils.isBlank(data.getParam2()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam2()))) );
 				saveData.setParam3(StringUtils.isBlank(data.getParam3()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam3()))) );
@@ -1819,8 +1802,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				saveData.setFactorTypeName(coverMD.size()>0 &&  coverMD.get("FactorTypeName")!=null ? coverMD.get("FactorTypeName").toString() : "");
 				saveData.setFactorTypeDesc(coverMD.size()>0 &&  coverMD.get("FactorTypeDesc")!=null  ? coverMD.get("FactorTypeDesc").toString() : "");
 				saveData.setRegulatoryCode(data.getRegulatoryCode());
-				saveData.setPlanCode(req.getPlanCode());
-				//saveData.setsu
+				
 				saveList.add(saveData);
 			}
 			repository.saveAllAndFlush(saveList);

@@ -114,17 +114,4 @@ public class CoverMasterGetAllRes {
 	
 	@JsonProperty("ProRataYn")
 	private String proRataYn;
-	
-	@JsonProperty("PacMaxAgeOnMat")
-	private Integer pacMaxAgeOnMat; 
-	
-	@JsonProperty("PacPeriod")
-	private Integer pacPeriod; 
-	
-	@JsonProperty("PacPremPayYrs")
-	private Integer pacPremPayYrs;
-	
-	@JsonProperty("PacCoverCode")
-	private String pacCoverCode;
-	
 }

@@ -63,7 +63,4 @@ public class FactorRateSaveReq {
     @JsonProperty("FactorParams")
     private List<FactorParamsInsert>     factorParams;
     
-    @JsonProperty("PlanCode")
-   private Integer planCode;
-    
 }

@@ -36,18 +36,6 @@ public class SectionCoverMasterNonSelectedReq implements Serializable {
     @JsonFormat(pattern ="dd/MM/yyyy")
     @JsonProperty("EffectiveDateStart")
     private Date effectiveDateStart;
-    
-    @JsonProperty("PacMaxAgeOnMat")
-	private Integer pacMaxAgeOnMat; 
-	
-	@JsonProperty("PacPeriod")
-	private Integer pacPeriod; 
-	
-	@JsonProperty("PacPremPayYrs")
-	private Integer pacPremPayYrs;
-	
-	@JsonProperty("PacCoverCode")
-	private String pacCoverCode;
   
 
 }

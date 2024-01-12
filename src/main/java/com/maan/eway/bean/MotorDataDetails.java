@@ -499,7 +499,10 @@ private static final long serialVersionUID = 1L;
     private String vehicleModelId ;
     
     @Column(name="FUEL_TYPE_ID")
-    private String fuelTypeId;
+    private String fuelTypeId;   
+    
+    @Column(name="OWNER_CATEGORY_ID", length=20)
+    private String     ownerCategoryId ;
 }
 
 

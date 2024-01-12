@@ -242,7 +242,7 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="OWNER_CATEGORY", length=20)
     private String     ownerCategory ;
-
+    
     @Column(name="COMPANY_ID", nullable=false, length=20)
     private String     companyId ;
     
@@ -558,7 +558,10 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="FUEL_TYPE_ID")
     private String fuelTypeId;
-    
+
+    @Column(name="OWNER_CATEGORY_ID", length=20)
+    private String     ownerCategoryId ;
+
 }
 
 

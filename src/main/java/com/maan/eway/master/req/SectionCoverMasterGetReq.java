@@ -14,7 +14,7 @@ public class SectionCoverMasterGetReq {
 	@JsonProperty("CoverId")
     private String     coverId     ;
 	
-	@JsonProperty("PlanCode")
+	@JsonProperty("SectionId")
     private String     sectionId     ;
 	
 	@JsonProperty("InsuranceId")

@@ -19,7 +19,7 @@ public class SectionCoverChangeStatusReq {
 	 @JsonProperty("CoverId")
 	 private String coverId;
 
-	 @JsonProperty("PlanCode")
+	 @JsonProperty("SectionId")
 	 private String sectionId;
 
 	 @JsonProperty("Status")

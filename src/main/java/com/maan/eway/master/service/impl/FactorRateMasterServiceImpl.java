@@ -1603,7 +1603,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					em.createQuery(update).executeUpdate();
 					
 				} else {
-					amendId = list.get(0).getAmendId();
+					amendId = list.get(0).getAmendId() ;
 					repository.deleteAll(list);
 			    }
 			}

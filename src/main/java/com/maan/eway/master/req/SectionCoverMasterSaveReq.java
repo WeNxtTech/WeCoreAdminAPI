@@ -16,7 +16,7 @@ public class SectionCoverMasterSaveReq {
 	@JsonProperty("ProductId")
 	private String productId;
 	
-	@JsonProperty("SectionId")
+	@JsonProperty("PlanCode")
 	private String sectionId;
 	
 	@JsonProperty("InsuranceId")

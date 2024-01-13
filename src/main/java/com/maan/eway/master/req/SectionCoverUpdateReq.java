@@ -17,7 +17,7 @@ public class SectionCoverUpdateReq {
 	@JsonProperty("ProductId")
 	private String productId;
 	
-	@JsonProperty("SectionId")
+	@JsonProperty("PlanCode")
 	private String sectionId;
 	@JsonProperty("AgencyCode")
 	private String agencyCode;

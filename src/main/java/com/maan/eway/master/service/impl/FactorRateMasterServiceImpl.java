@@ -1057,7 +1057,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					param7To8.setRowNo(row);
 					param7To8Values.add(param7To8);
 					
-					// Param221 to 22 Duplicate Setup
+					// Param21 to 22 Duplicate Setup
 					RangeParamsReq param21To22 = new RangeParamsReq();
 					if(fiterParam21.size() > 0 ) {
 						param21Dup = true ;
@@ -2240,6 +2240,14 @@ public Integer getMasterTableCount(String companyId , String branchCode) {
 					 fParam.setParam6( data.getParam6()==null?"" : data.getParam6().toPlainString());
 					 fParam.setParam7( data.getParam7()==null?"" : data.getParam7().toPlainString());
 					 fParam.setParam8( data.getParam8()==null?"" : data.getParam8().toPlainString());
+					 fParam.setParam21( data.getParam21()==null?"" : data.getParam21().toPlainString());
+					 fParam.setParam22( data.getParam22()==null?"" : data.getParam22().toPlainString());
+					 fParam.setParam23( data.getParam23()==null?"" : data.getParam23().toPlainString());
+					 fParam.setParam24( data.getParam24()==null?"" : data.getParam24().toPlainString());
+					 fParam.setParam25( data.getParam25()==null?"" : data.getParam25().toPlainString());
+					 fParam.setParam26( data.getParam26()==null?"" : data.getParam26().toPlainString());
+					 fParam.setParam27( data.getParam27()==null?"" : data.getParam27().toPlainString());
+					 fParam.setParam28( data.getParam28()==null?"" : data.getParam28().toPlainString());
 					 fParam.setSno(data.getSNo()==null?"" : data.getSNo().toString());
 					fParam.setRate(data.getRate()==null?"" : data.getRate().toPlainString());
 					fParam.setCalType(data.getCalcType());

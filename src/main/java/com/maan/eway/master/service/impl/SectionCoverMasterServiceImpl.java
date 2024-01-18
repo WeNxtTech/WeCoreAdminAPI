@@ -1814,7 +1814,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			// Get Result
 			TypedQuery<SectionCoverMaster> result = em.createQuery(query);
 			list = result.getResultList();
-			list.sort( Comparator.comparing(SectionCoverMaster :: getAgencyCode  ).thenComparing(SectionCoverMaster :: getBranchCode  ) );;
+			list.sort( Comparator.comparing(SectionCoverMaster :: getAgencyCode  ).thenComparing(SectionCoverMaster :: getBranchCode  ).thenComparing(SectionCoverMaster :: getAmendId ).reversed() );
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCoverId() ,o.getSubCoverId() ))).collect(Collectors.toList());
 			
 		//	list = list.stream().filter( o ->  today.before(o.getEffectiveDateEnd())   ).collect(Collectors.toList()); 
@@ -2354,9 +2354,11 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			//	Predicate n15 = cb.equal(b.get("status"), "R");
 			//	Predicate n16 = cb.or(n14,n15 );
 				query.where(n1,n2,n3,n4,n5,n6,n9).orderBy(orderList);
-				
 				TypedQuery<SectionCoverMaster> result = em.createQuery(query);
 				List<SectionCoverMaster> excludedlist = result.getResultList();
+				excludedlist.sort( Comparator.comparing(SectionCoverMaster :: getAgencyCode  ).thenComparing(SectionCoverMaster :: getBranchCode  ).thenComparing(SectionCoverMaster :: getAmendId ).reversed() );
+				excludedlist = excludedlist.stream().filter(distinctByKey(o -> Arrays.asList(o.getCoverId() ,o.getSubCoverId() ))).collect(Collectors.toList());
+				
 				List<SectionCoverMaster> excludedlist2 = new ArrayList<SectionCoverMaster>(); 
 				for(SectionCoverMaster data :  excludedlist) {
 					if(data.getEffectiveDateEnd().before(today)  ) {

@@ -38,4 +38,6 @@ public class SectionCoverMasterSaveReq {
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
 
+	@JsonProperty("Type")
+	private String type;
 }

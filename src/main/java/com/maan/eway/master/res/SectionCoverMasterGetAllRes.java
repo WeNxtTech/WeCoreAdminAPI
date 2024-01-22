@@ -91,6 +91,11 @@ public class SectionCoverMasterGetAllRes {
 	@JsonProperty("SubCoverYn")
 	private String subCoverYn;
 	
+	@JsonProperty("CoverageTypeDesc")
+	private String coverageTypeDesc;
+	
+	
+	
 	@JsonProperty("AmendId")
 	private String amendId;
 	

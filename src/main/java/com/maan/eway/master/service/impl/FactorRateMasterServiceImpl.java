@@ -1269,7 +1269,27 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 						errorList.add(new Error("06", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters In Row No : " + row ));
 					}
 					
+					if (StringUtils.isNotBlank(data.getExcessPercent())) {
+					  if (! data.getExcessPercent().matches("[0-9.]+") ) {
+							errorList.add(new Error("09", "Excess Percent", "Please Enter Valid Number In Excess Percent"));
+						}
+					}
+					if (StringUtils.isNotBlank(data.getExcessAmount())) {
+						if (! data.getExcessAmount().matches("[0-9.]+") ) {
+							errorList.add(new Error("10", "Excess Amount", "Please Enter Valid Number In Excess Amount"));
+						}
+					}  
+					if (StringUtils.isNotBlank(data.getExcessDesc())) {
+						 if (data.getExcessDesc().length() > 500) {
+								errorList.add(new Error("11", "Excess Desc", "Enter Excess Desc  within 500 Characters Only"));
+						}
+					}
+					
+					
 					} 
+				  
+				 
+					
 			}
 		
 		} catch (Exception e) {

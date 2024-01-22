@@ -1800,6 +1800,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 		//	Predicate n7 = cb.equal(b.get("agencyCode"), "99999");
 		//	Predicate n8 = cb.or(n6,n7);
 			Predicate n9 = cb.equal(b.get("branchCode"), req.getBranchCode());
+			Predicate n10 = cb.equal(b.get("coverageType"), "AD");
 		//	Predicate n10 = cb.lessThanOrEqualTo(b.get("effectiveDateEnd"), todayEnd);
 			
 		//	Predicate n10 = cb.equal(b.get("branchCode"), "99999");
@@ -1809,7 +1810,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			//Predicate n14 = cb.equal(b.get("status"),"Y");
 			//Predicate n15 = cb.equal(b.get("status"), "R");
 			//Predicate n16 = cb.or(n14,n15 );
-			query.where(n1,n2,n3,n4,n5,n6,n9).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n5,n6,n9,n10).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<SectionCoverMaster> result = em.createQuery(query);
@@ -1952,8 +1953,8 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 					Predicate n7 = cb.equal(b.get("productId"), req.getProductId());
 					Predicate n8 = cb.equal(b.get("agencyCode"), req.getAgencyCode());
 					Predicate n11 = cb.equal(b.get("branchCode"), req.getBranchCode());
-					
-					query.where( n2, n3,n5,n6,n7,n8,n11);
+					Predicate n13 = cb.equal(b.get("coverageType"), "AD");
+					query.where( n2, n3,n5,n6,n7,n8,n11,n13);
 					
 					// Get Result
 					TypedQuery<SectionCoverMaster> result = em.createQuery(query);
@@ -1964,7 +1965,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 						//Predicate n10 = cb.or(n8,n9);
 						Predicate n12 = cb.equal(b.get("branchCode"), "99999");
 						//Predicate n13 = cb.or(n11,n12);
-						query.where( n2, n3,n5,n6,n7,n9,n12);
+						query.where( n2, n3,n5,n6,n7,n9,n12,n13);
 						result = em.createQuery(query);
 						list = result.getResultList();
 					}
@@ -2073,8 +2074,8 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 					Predicate n11 = cb.equal(b.get("branchCode"), req.getBranchCode());
 				//	Predicate n12 = cb.equal(b.get("branchCode"), "99999");
 				//	Predicate n13 = cb.or(n11,n12);
-					
-					query.where( n2, n3,n5,n6,n7,n8,n11);
+					Predicate n12 = cb.equal(b.get("coverageType"), "AD");
+					query.where( n2, n3,n5,n6,n7,n8,n11,n12);
 					
 					// Get Result
 					TypedQuery<SectionCoverMaster> result = em.createQuery(query);
@@ -2346,6 +2347,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			//	Predicate n7 = cb.equal(b.get("agencyCode"), "99999");
 			//	Predicate n8 = cb.or(n6,n7);
 				Predicate n9 = cb.equal(b.get("branchCode"), req.getBranchCode());
+				Predicate n10 = cb.equal(b.get("coverageType"), "AD");
 			//	Predicate n10 = cb.equal(b.get("branchCode"), "99999");
 			//	Predicate n11 = cb.or(n9,n10 );
 		//		Predicate n12 = cb.equal(b.get("effectiveDateEnd"),effectiveDate2);
@@ -2353,7 +2355,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			//	Predicate n14 = cb.equal(b.get("status"),"Y");
 			//	Predicate n15 = cb.equal(b.get("status"), "R");
 			//	Predicate n16 = cb.or(n14,n15 );
-				query.where(n1,n2,n3,n4,n5,n6,n9).orderBy(orderList);
+				query.where(n1,n2,n3,n4,n5,n6,n9,n10).orderBy(orderList);
 				TypedQuery<SectionCoverMaster> result = em.createQuery(query);
 				List<SectionCoverMaster> excludedlist = result.getResultList();
 				excludedlist.sort( Comparator.comparing(SectionCoverMaster :: getAgencyCode  ).thenComparing(SectionCoverMaster :: getBranchCode  ).thenComparing(SectionCoverMaster :: getAmendId ).reversed() );
@@ -2426,12 +2428,13 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate n9 = cb2.equal(b2.get("agencyCode"), "99999");
 			Predicate n10 = cb2.or(n8,n9);
 			Predicate n11 = cb2.equal(b2.get("branchCode"), req.getBranchCode());
+			Predicate n12 = cb2.equal(b2.get("coverageType"), "AD");
 			if(excludedCoverIds.size() > 0 ) {
 				Predicate n13 = e0.in(excludedCoverIds).not();
-				query2.where(n4,n5,n6,n7,n14,n15,n10,n11,n13).orderBy(orderList2);
+				query2.where(n4,n5,n6,n7,n14,n15,n10,n11,n13,n12).orderBy(orderList2);
 			} else {
 				//Predicate n13 = e0.in(excludedCoverIds).not();
-				query2.where(n4,n5,n6,n7,n14,n15,n10,n11).orderBy(orderList2);
+				query2.where(n4,n5,n6,n7,n14,n15,n10,n11,n12).orderBy(orderList2);
 			}
 			
 			

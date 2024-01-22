@@ -1822,6 +1822,10 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				saveData.setFactorTypeName(coverMD.size()>0 &&  coverMD.get("FactorTypeName")!=null ? coverMD.get("FactorTypeName").toString() : "");
 				saveData.setFactorTypeDesc(coverMD.size()>0 &&  coverMD.get("FactorTypeDesc")!=null  ? coverMD.get("FactorTypeDesc").toString() : "");
 				saveData.setRegulatoryCode(data.getRegulatoryCode());
+				// Excess
+				saveData.setExcessAmount(StringUtils.isBlank(data.getExcessAmount()) ? BigDecimal.ZERO : new BigDecimal(data.getExcessAmount()) );
+				saveData.setExcessPercent(StringUtils.isBlank(data.getExcessPercent()) ? BigDecimal.ZERO : new BigDecimal(data.getExcessPercent())  );
+				saveData.setExcessDesc(data.getExcessDesc());
 				
 				saveList.add(saveData);
 			}
@@ -2272,6 +2276,10 @@ public Integer getMasterTableCount(String companyId , String branchCode) {
 					fParam.setRate(data.getRate()==null?"" : data.getRate().toPlainString());
 					fParam.setCalType(data.getCalcType());
 					fParam.setMinimumPremium(data.getMinPremium() == null ? null : minPreFormat.format(data.getMinPremium()));
+					// Excess
+					fParam.setExcessAmount( data.getExcessAmount()==null?"" : data.getExcessAmount().toPlainString());
+					fParam.setExcessPercent( data.getExcessPercent()==null?"" : data.getExcessPercent().toPlainString());
+					fParam.setExcessDesc(data.getExcessDesc());
 					factorParams.add(fParam);
 				}
 				res.setFactorParams(factorParams);

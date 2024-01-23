@@ -42,6 +42,10 @@ public class CoverMasterGetAllRes {
 	private String updatedBy; 
 	
 	
+	@JsonProperty("CoverageTypeDesc")
+	private String coverageTypeDesc;
+	
+	
 	@JsonProperty("ToolTip")
 	private String toolTip;  
 

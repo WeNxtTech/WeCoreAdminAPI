@@ -29,7 +29,7 @@ public class ItemReader_2 extends JdbcCursorItemReader<FactorBatchRecordRes> imp
 				+ "CREATED_BY,EFFECTIVE_DATE_START,EFFECTIVE_DATE_END,STATUS,REMARKS,PARAM_1,PARAM_2,PARAM_3,PARAM_4,PARAM_5,PARAM_6,"
 				+ "PARAM_7,PARAM_8,PARAM_9,PARAM_10,PARAM_11,PARAM_12,UPDATED_BY,RATE,CALC_TYPE,MIN_PREMIUM,REGULATORY_CODE,MASTER_YN,"
 				+ "PARAM_13,PARAM_14,PARAM_15,PARAM_16,PARAM_17,PARAM_18,PARAM_19,PARAM_20,PARAM_21,PARAM_22,PARAM_23,PARAM_24,PARAM_25,"
-				+ "PARAM_26,PARAM_27,PARAM_28,API_URL FROM factor_rate_raw_master where TRAN_ID='"+dataOfArray[0]+"'");
+				+ "PARAM_26,PARAM_27,PARAM_28,API_URL,EXCESS_AMOUNT,EXCESS_PERCENT,EXCESS_DESC FROM factor_rate_raw_master where TRAN_ID='"+dataOfArray[0]+"'");
 		setFetchSize(Integer.valueOf(dataOfArray[1]));
 		setRowMapper(new FactorRateRowMapper());
 	}
@@ -88,6 +88,9 @@ public class ItemReader_2 extends JdbcCursorItemReader<FactorBatchRecordRes> imp
 					.param26(rs.getBigDecimal("PARAM_26")==null?"0":String.valueOf(rs.getBigDecimal("PARAM_26")))
 					.param27(rs.getBigDecimal("PARAM_27")==null?"0":String.valueOf(rs.getBigDecimal("PARAM_27")))
 					.param28(rs.getBigDecimal("PARAM_28")==null?"0":String.valueOf(rs.getBigDecimal("PARAM_28")))
+					.excessAmount(rs.getBigDecimal("EXCESS_AMOUNT")==null?"0":String.valueOf(rs.getBigDecimal("EXCESS_AMOUNT")))
+					.excessPercent(rs.getBigDecimal("EXCESS_PERCENT")==null?"0":String.valueOf(rs.getBigDecimal("EXCESS_PERCENT")))
+					.excessDesc(StringUtils.isBlank(rs.getString("EXCESS_DESC"))?"":rs.getString("EXCESS_DESC"))
 					.build();
 			return factor;
 		}

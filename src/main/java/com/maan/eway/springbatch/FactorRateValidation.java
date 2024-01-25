@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.FactorParamsInsert;
 import com.maan.eway.master.req.FactorRateSaveReq;
@@ -27,6 +28,7 @@ public class FactorRateValidation {
 	private UtilityServiceImpl serviceImpl;
 	
 	public static DozerBeanMapper mapper =new DozerBeanMapper();
+	
 	
 	
 	  
@@ -57,10 +59,10 @@ public class FactorRateValidation {
 					factor.setParam6(p.getParam6()==null?"0":new BigDecimal(p.getParam6()).toPlainString());
 					factor.setParam7(p.getParam7()==null?"0":new BigDecimal(p.getParam7()).toPlainString());
 					factor.setParam8(p.getParam8()==null?"0":new BigDecimal(p.getParam8()).toPlainString());
-					factor.setParam9(p.getParam9()==null?"0":new BigDecimal(p.getParam9()).toPlainString());
-					factor.setParam10(p.getParam10()==null?"0":new BigDecimal(p.getParam10()).toPlainString());
-					factor.setParam11(p.getParam11()==null?"0":new BigDecimal(p.getParam11()).toPlainString());
-					factor.setParam12(p.getParam12()==null?"0":new BigDecimal(p.getParam12()).toPlainString());
+					factor.setParam9(StringUtils.isBlank(p.getParam9())?"0":new BigDecimal(p.getParam9()).toPlainString());
+					factor.setParam10(StringUtils.isBlank(p.getParam10())?"0":new BigDecimal(p.getParam10()).toPlainString());
+					factor.setParam11(StringUtils.isBlank(p.getParam11())?"0":new BigDecimal(p.getParam11()).toPlainString());
+					factor.setParam12(StringUtils.isBlank(p.getParam12())?"0":new BigDecimal(p.getParam12()).toPlainString());
 					factor.setXlAgencyCode(StringUtils.isBlank(p.getXlAgencyCode())?"":p.getXlAgencyCode());
 					factor.setParam13(StringUtils.isBlank(p.getParam13())?null:p.getParam13());
 					factor.setParam14(StringUtils.isBlank(p.getParam14())?null:p.getParam14());
@@ -78,10 +80,15 @@ public class FactorRateValidation {
 					factor.setParam26(p.getParam26()==null?"0":p.getParam26().toPlainString());
 					factor.setParam27(p.getParam27()==null?"0":p.getParam27().toPlainString());
 					factor.setParam28(p.getParam28()==null?"0":p.getParam28().toPlainString());
+					factor.setExcessAmount(p.getExcessAmount()==null?"0":p.getExcessAmount().toPlainString());
+					factor.setExcessPercent(p.getExcessPercent()==null?"0":p.getExcessPercent().toPlainString());
+					factor.setExcessDesc(StringUtils.isBlank(p.getExcessDesc())?"":p.getExcessDesc());
 					return factor;
 				}).collect(Collectors.toList());
 				
 				factorRateSaveReq.setFactorParams(factorParams);
+				
+				System.out.println("Group  "+new Gson().toJson(factorRateSaveReq));
 				
 				List<Error> errors =obj.factorRatingsValidation(factorRateSaveReq, dropDownList);
 				

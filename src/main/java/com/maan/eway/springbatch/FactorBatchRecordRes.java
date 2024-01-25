@@ -167,5 +167,13 @@ public class FactorBatchRecordRes {
     @JsonProperty("Param28" )
     private String param28 ;
     
-
+    @JsonProperty("ExcessPercent")
+   	private String excessPercent;
+   	
+   	@JsonProperty("ExcessAmount")
+   	private String excessAmount;
+   	
+   	@JsonProperty("ExcessDesc")
+   	private String excessDesc;
+       
 }

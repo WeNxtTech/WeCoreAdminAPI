@@ -248,5 +248,14 @@ public class FactorRateRawInsert {
 	    @Column(name="PARAM_28")
 	    private BigDecimal     param28;
 	    
+	    @Column(name="EXCESS_AMOUNT")
+	    private BigDecimal     excessAmount ;
+	    
+	    @Column(name="EXCESS_PERCENT")
+	    private BigDecimal     excessPercent ;
+	    
+	    @Column(name="EXCESS_DESC")
+	    private String     excessDesc ;
+	    
 
 }

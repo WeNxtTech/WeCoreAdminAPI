@@ -209,12 +209,18 @@ public class UtilityServiceImpl {
         	entityColumns.add("calcType");
         	entityColumns.add("minPremium");
         	entityColumns.add("regulatoryCode");
+        	entityColumns.add("excessPercent");
+        	entityColumns.add("excessAmount");
+        	entityColumns.add("excessDesc");
         	entityColumns.add("status");
         	// default xl headercolumns
         	xlheaderCol.add("Rate");
         	xlheaderCol.add("CalcType");
         	xlheaderCol.add("MinimumPremium");
         	xlheaderCol.add("RegulatoryCode");
+        	xlheaderCol.add("ExcessPercent");
+        	xlheaderCol.add("ExcessAmount");
+        	xlheaderCol.add("ExcessDesc");
         	xlheaderCol.add("Status");
         	
         	request.setExcelHeaderColumns(xlheaderCol.toString());
@@ -281,7 +287,7 @@ public class UtilityServiceImpl {
 				
 				return true;
 			}else {
-				updateBatchTransaction (request.getTranId(), "checking columns mismatching columns" ,"Xl Heder columns is not matched","Progressing","E");
+				updateBatchTransaction (request.getTranId(), "checking mismatching columns" ,"Xl Heder columns is not matched","Progressing","E");
 
 				return false;
 			}
@@ -497,7 +503,7 @@ public class UtilityServiceImpl {
 	            {
 	                //cellData = String.valueOf(cellData)+myCell.getNumericCellValue()+CVS_SEPERATOR_CHAR;
 	            	try{
-	            		cellData = String.valueOf(cellData)+myCell.getRawValue()+CVS_SEPERATOR_CHAR;
+	            		cellData = String.valueOf(cellData)+myCell.getNumericCellValue()+CVS_SEPERATOR_CHAR;
 	            	}catch(Exception e){
 	            		cellData = "";
 	            		cellData = String.valueOf(cellData)+myCell.getNumericCellValue()+CVS_SEPERATOR_CHAR;
@@ -1081,14 +1087,14 @@ public class UtilityServiceImpl {
 				entity.setParam26(p.getParam26()==null?null:new BigDecimal(p.getParam26()));
 				entity.setParam27(p.getParam27()==null?null:new BigDecimal(p.getParam27()));
 				entity.setParam28(p.getParam28()==null?null:new BigDecimal(p.getParam28()));
+				entity.setExcessAmount(new BigDecimal(p.getExcessAmount()));
+				entity.setExcessPercent(new BigDecimal(p.getExcessPercent()));
+				entity.setExcessDesc(StringUtils.isBlank(p.getExcessDesc())?"":p.getExcessDesc());
 				return entity;
 			}).collect(Collectors.toList());
 			
 			rawMasterRepository.saveAllAndFlush(saveData);
 				
-			
-			
-						
 			
 		}catch (Exception e) {
 			e.printStackTrace();

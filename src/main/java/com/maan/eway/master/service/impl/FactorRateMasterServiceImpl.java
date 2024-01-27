@@ -1246,7 +1246,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 						errorList.add(new Error("05", "CalcType", "Enter CalcType 1 Character Only In Row No : " + row ));
 						
 					} else if (data.getCalType().equalsIgnoreCase("P")) {
-						if(StringUtils.isNotBlank(data.getRate()) &&  Double.valueOf(data.getRate())>1000 ) {
+						if(StringUtils.isNotBlank(data.getRate()) &&  Double.valueOf(data.getRate())>10000 ) {
 							errorList.add(new Error("05", "Rate", "Please Enter Valid Percent In Row No : " + row ));
 						}
 					}

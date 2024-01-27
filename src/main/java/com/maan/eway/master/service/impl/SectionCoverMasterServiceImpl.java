@@ -1973,7 +1973,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 						SectionCoverMaster data = new SectionCoverMaster();
 						dozerMapper.map(o , data );
 						data.setEffectiveDateEnd(oldEndDate);
-						//data.setEffectiveDateStart(req.getEffectiveDateStart() );
+						data.setEffectiveDateStart(req.getEffectiveDateStart() );
 						data.setAgencyCode(req.getAgencyCode());
 						data.setBranchCode(req.getBranchCode());
 						repo.saveAndFlush(data);

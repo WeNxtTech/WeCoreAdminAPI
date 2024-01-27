@@ -247,7 +247,7 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 				}
 				
 				
-				if (StringUtils.isNotBlank(req.getCalcType()) &&  req.getCalcType().equalsIgnoreCase("F") ) {
+				if (StringUtils.isNotBlank(req.getCalcType()) &&  ( req.getCalcType().equalsIgnoreCase("F") || req.getCalcType().equalsIgnoreCase("FD")) ) {
 					
 			/*		if( StringUtils.isBlank(req.getFactorTypeId()) ) {
 						errorList.add(new Error("09", "Factor Type Id", "Please Enter Factor Type Id "));
@@ -461,7 +461,7 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			saveData.setCoverageLimit(StringUtils.isBlank(req.getCoverageLimit())? BigDecimal.ZERO : new BigDecimal(req.getCoverageLimit()));
 			
 			// Amount Details
-			if(req.getCalcType().equalsIgnoreCase("F")  ) {
+			if(req.getCalcType().equalsIgnoreCase("F") || req.getCalcType().equalsIgnoreCase("FD")) {
 				
 				saveData.setFactorTypeId(req.getFactorTypeId()==null ?null : Integer.valueOf(req.getFactorTypeId()));
 			} else if(req.getCalcType().equalsIgnoreCase("D")  ) {

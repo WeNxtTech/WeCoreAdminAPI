@@ -1038,7 +1038,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 					} 
 				}
 				
-				if (StringUtils.isNotBlank(req.getCalcType()) &&  req.getCalcType().equalsIgnoreCase("F") ) {
+				if (StringUtils.isNotBlank(req.getCalcType()) &&  ( req.getCalcType().equalsIgnoreCase("F") || req.getCalcType().equalsIgnoreCase("FD")) ) {
 					
 					if( StringUtils.isBlank(req.getFactorTypeId()) ) {
 						errorList.add(new Error("09", "Factor Type Id", "Please Enter Factor Type Id "));
@@ -1361,7 +1361,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				saveData.setProRataDesc(proRataTypes.size() > 0 ? proRataTypes.get(0).getItemValue() : ""   );
 				
 				// Amount Details
-				if(req.getCalcType().equalsIgnoreCase("F")  ) {
+				if( req.getCalcType().equalsIgnoreCase("F") || req.getCalcType().equalsIgnoreCase("FD")) {
 					
 					saveData.setFactorTypeId( Integer.valueOf(req.getFactorTypeId()));
 				} else if(req.getCalcType().equalsIgnoreCase("D")  ) {

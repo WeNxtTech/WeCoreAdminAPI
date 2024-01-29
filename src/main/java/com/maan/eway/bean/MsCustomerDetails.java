@@ -164,6 +164,12 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="MARITAL_STATUS", length=100)
     private String maritalStatus ;
+    
+
+    @Column(name="MARITAL_STATUS_DESC", length=100)
+    private String maritalStatusDesc ;
+    
+    
 }
 
 

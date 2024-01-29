@@ -2256,29 +2256,29 @@ public Integer getMasterTableCount(String companyId , String branchCode) {
 				for (FactorRateMaster  data : list) {
 					FactorParamsInsert fParam = new FactorParamsInsert();
 					fParam  =  dozerMapper.map(data, FactorParamsInsert.class);
-					 fParam.setParam1( data.getParam1()==null?"" : data.getParam1().toPlainString());
-					 fParam.setParam2( data.getParam2()==null?"" : data.getParam2().toPlainString());
-					 fParam.setParam3( data.getParam3()==null?"" : data.getParam3().toPlainString());
-					 fParam.setParam4( data.getParam4()==null?"" : data.getParam4().toPlainString());
-					 fParam.setParam5( data.getParam5()==null?"" : data.getParam5().toPlainString());
-					 fParam.setParam6( data.getParam6()==null?"" : data.getParam6().toPlainString());
-					 fParam.setParam7( data.getParam7()==null?"" : data.getParam7().toPlainString());
-					 fParam.setParam8( data.getParam8()==null?"" : data.getParam8().toPlainString());
-					 fParam.setParam21( data.getParam21()==null?"" : data.getParam21().toPlainString());
-					 fParam.setParam22( data.getParam22()==null?"" : data.getParam22().toPlainString());
-					 fParam.setParam23( data.getParam23()==null?"" : data.getParam23().toPlainString());
-					 fParam.setParam24( data.getParam24()==null?"" : data.getParam24().toPlainString());
-					 fParam.setParam25( data.getParam25()==null?"" : data.getParam25().toPlainString());
-					 fParam.setParam26( data.getParam26()==null?"" : data.getParam26().toPlainString());
-					 fParam.setParam27( data.getParam27()==null?"" : data.getParam27().toPlainString());
-					 fParam.setParam28( data.getParam28()==null?"" : data.getParam28().toPlainString());
+					 fParam.setParam1( data.getParam1()==null?"" : data.getParam1().stripTrailingZeros().toPlainString());
+					 fParam.setParam2( data.getParam2()==null?"" : data.getParam2().stripTrailingZeros().toPlainString());
+					 fParam.setParam3( data.getParam3()==null?"" : data.getParam3().stripTrailingZeros().toPlainString());
+					 fParam.setParam4( data.getParam4()==null?"" : data.getParam4().stripTrailingZeros().toPlainString());
+					 fParam.setParam5( data.getParam5()==null?"" : data.getParam5().stripTrailingZeros().toPlainString());
+					 fParam.setParam6( data.getParam6()==null?"" : data.getParam6().stripTrailingZeros().toPlainString());
+					 fParam.setParam7( data.getParam7()==null?"" : data.getParam7().stripTrailingZeros().toPlainString());
+					 fParam.setParam8( data.getParam8()==null?"" : data.getParam8().stripTrailingZeros().toPlainString());
+					 fParam.setParam21( data.getParam21()==null?"" : data.getParam21().stripTrailingZeros().toPlainString());
+					 fParam.setParam22( data.getParam22()==null?"" : data.getParam22().stripTrailingZeros().toPlainString());
+					 fParam.setParam23( data.getParam23()==null?"" : data.getParam23().stripTrailingZeros().toPlainString());
+					 fParam.setParam24( data.getParam24()==null?"" : data.getParam24().stripTrailingZeros().toPlainString());
+					 fParam.setParam25( data.getParam25()==null?"" : data.getParam25().stripTrailingZeros().toPlainString());
+					 fParam.setParam26( data.getParam26()==null?"" : data.getParam26().stripTrailingZeros().toPlainString());
+					 fParam.setParam27( data.getParam27()==null?"" : data.getParam27().stripTrailingZeros().toPlainString());
+					 fParam.setParam28( data.getParam28()==null?"" : data.getParam28().stripTrailingZeros().toPlainString());
 					 fParam.setSno(data.getSNo()==null?"" : data.getSNo().toString());
-					fParam.setRate(data.getRate()==null?"" : data.getRate().toPlainString());
+					fParam.setRate(data.getRate()==null?"" : data.getRate().stripTrailingZeros().toPlainString());
 					fParam.setCalType(data.getCalcType());
 					fParam.setMinimumPremium(data.getMinPremium() == null ? null : minPreFormat.format(data.getMinPremium()));
 					// Excess
-					fParam.setExcessAmount( data.getExcessAmount()==null?"" : data.getExcessAmount().toPlainString());
-					fParam.setExcessPercent( data.getExcessPercent()==null?"" : data.getExcessPercent().toPlainString());
+					fParam.setExcessAmount( data.getExcessAmount()==null?"" : data.getExcessAmount().stripTrailingZeros().toPlainString());
+					fParam.setExcessPercent( data.getExcessPercent()==null?"" : data.getExcessPercent().stripTrailingZeros().toPlainString());
 					fParam.setExcessDesc(data.getExcessDesc());
 					factorParams.add(fParam);
 				}

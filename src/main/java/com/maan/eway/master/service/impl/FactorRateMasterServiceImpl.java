@@ -1777,22 +1777,22 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				saveData.setSNo(Integer.valueOf(data.getSno()));
 				
 				// Range
-				saveData.setParam1(StringUtils.isBlank(data.getParam1()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam1()))) );
-				saveData.setParam2(StringUtils.isBlank(data.getParam2()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam2()))) );
-				saveData.setParam3(StringUtils.isBlank(data.getParam3()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam3()))) );
-				saveData.setParam4(StringUtils.isBlank(data.getParam4()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam4()))) );
-				saveData.setParam5(StringUtils.isBlank(data.getParam5()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam5()))) );
-				saveData.setParam6(StringUtils.isBlank(data.getParam6()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam6()))) );
-				saveData.setParam7(StringUtils.isBlank(data.getParam7()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam7()))) );
-				saveData.setParam8(StringUtils.isBlank(data.getParam8()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam8()))) );
-				saveData.setParam21(StringUtils.isBlank(data.getParam21()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam21()))) );
-				saveData.setParam22(StringUtils.isBlank(data.getParam22()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam22()))) );
-				saveData.setParam23(StringUtils.isBlank(data.getParam23()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam23()))) );
-				saveData.setParam24(StringUtils.isBlank(data.getParam24()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam24()))) );
-				saveData.setParam25(StringUtils.isBlank(data.getParam25()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam25()))) );
-				saveData.setParam26(StringUtils.isBlank(data.getParam26()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam26()))) );
-				saveData.setParam27(StringUtils.isBlank(data.getParam27()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam27()))) );
-				saveData.setParam28(StringUtils.isBlank(data.getParam28()) ? null :new BigDecimal(df.format(Double.valueOf(data.getParam28()))) );
+				saveData.setParam1(StringUtils.isBlank(data.getParam1()) ? null :new BigDecimal(data.getParam1()) );
+				saveData.setParam2(StringUtils.isBlank(data.getParam2()) ? null :new BigDecimal(data.getParam2()) );
+				saveData.setParam3(StringUtils.isBlank(data.getParam3()) ? null :new BigDecimal(data.getParam3()) );
+				saveData.setParam4(StringUtils.isBlank(data.getParam4()) ? null :new BigDecimal(data.getParam4()) );
+				saveData.setParam5(StringUtils.isBlank(data.getParam5()) ? null :new BigDecimal(data.getParam5()) );
+				saveData.setParam6(StringUtils.isBlank(data.getParam6()) ? null :new BigDecimal(data.getParam6()) );
+				saveData.setParam7(StringUtils.isBlank(data.getParam7()) ? null :new BigDecimal(data.getParam7()) );
+				saveData.setParam8(StringUtils.isBlank(data.getParam8()) ? null :new BigDecimal(data.getParam8()) );
+				saveData.setParam21(StringUtils.isBlank(data.getParam21()) ? null :new BigDecimal(data.getParam21()) );
+				saveData.setParam22(StringUtils.isBlank(data.getParam22()) ? null :new BigDecimal(data.getParam22()) );
+				saveData.setParam23(StringUtils.isBlank(data.getParam23()) ? null :new BigDecimal(data.getParam23()) );
+				saveData.setParam24(StringUtils.isBlank(data.getParam24()) ? null :new BigDecimal(data.getParam24()) );
+				saveData.setParam25(StringUtils.isBlank(data.getParam25()) ? null :new BigDecimal(data.getParam25()) );
+				saveData.setParam26(StringUtils.isBlank(data.getParam26()) ? null :new BigDecimal(data.getParam26()) );
+				saveData.setParam27(StringUtils.isBlank(data.getParam27()) ? null :new BigDecimal(data.getParam27()) );
+				saveData.setParam28(StringUtils.isBlank(data.getParam28()) ? null :new BigDecimal(data.getParam28()) );
 				
 				// Discrete
 				saveData.setParam9(data.getParam9());

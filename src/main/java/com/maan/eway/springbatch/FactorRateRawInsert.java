@@ -126,28 +126,28 @@ public class FactorRateRawInsert {
 	    private String     remarks ;
 
 	    @Column(name="PARAM_1")
-	    private Double     param1 ;
+	    private String     param1 ;
 
 	    @Column(name="PARAM_2")
-	    private Double     param2 ;
+	    private String     param2 ;
 
 	    @Column(name="PARAM_3")
-	    private Double     param3 ;
+	    private String     param3 ;
 
 	    @Column(name="PARAM_4")
-	    private Double     param4 ;
+	    private String     param4 ;
 
 	    @Column(name="PARAM_5")
-	    private Double     param5 ;
+	    private String     param5 ;
 
 	    @Column(name="PARAM_6")
-	    private Double     param6 ;
+	    private String     param6 ;
 
 	    @Column(name="PARAM_7")
-	    private Double     param7 ;
+	    private String     param7 ;
 
 	    @Column(name="PARAM_8")
-	    private Double     param8 ;
+	    private String     param8 ;
 
 	    @Column(name="PARAM_9", length=100)
 	    private String     param9 ;
@@ -171,7 +171,7 @@ public class FactorRateRawInsert {
 	 
 	        
 	    @Column(name="RATE")
-	    private Double     rate ;
+	    private String     rate ;
 
 	    @Column(name="CALC_TYPE", length=1)
 	    private String     calcType ;
@@ -180,7 +180,7 @@ public class FactorRateRawInsert {
 	    private String     calcTypeDesc ;
 
 	    @Column(name="MIN_PREMIUM")
-	    private Double     minPremium ;
+	    private String     minPremium ;
 
 	    @Column(name="REGULATORY_CODE", length=20)
 	    private String     regulatoryCode ;
@@ -225,34 +225,34 @@ public class FactorRateRawInsert {
 	    private String     param20 ;
 	    
 	    @Column(name="PARAM_21")
-	    private BigDecimal     param21 ;
+	    private String     param21 ;
 	    
 	    @Column(name="PARAM_22")
-	    private BigDecimal     param22 ;
+	    private String     param22 ;
 	    
 	    @Column(name="PARAM_23")
-	    private BigDecimal     param23 ;
+	    private String     param23 ;
 	    
 	    @Column(name="PARAM_24")
-	    private BigDecimal     param24 ;
+	    private String     param24 ;
 	    
 	    @Column(name="PARAM_25")
-	    private BigDecimal     param25 ;
+	    private String     param25 ;
 	    
 	    @Column(name="PARAM_26")
-	    private BigDecimal     param26 ;
+	    private String     param26 ;
 	    
 	    @Column(name="PARAM_27")
-	    private BigDecimal     param27;
+	    private String     param27;
 	   
 	    @Column(name="PARAM_28")
-	    private BigDecimal     param28;
+	    private String     param28;
 	    
 	    @Column(name="EXCESS_AMOUNT")
-	    private BigDecimal     excessAmount ;
+	    private String     excessAmount ;
 	    
 	    @Column(name="EXCESS_PERCENT")
-	    private BigDecimal     excessPercent ;
+	    private String     excessPercent ;
 	    
 	    @Column(name="EXCESS_DESC")
 	    private String     excessDesc ;

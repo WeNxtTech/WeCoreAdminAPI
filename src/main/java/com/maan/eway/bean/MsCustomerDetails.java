@@ -162,6 +162,8 @@ private static final long serialVersionUID = 1L;
     private String areaClasification ;
         
 
+    @Column(name="MARITAL_STATUS", length=100)
+    private String maritalStatus ;
 }
 
 

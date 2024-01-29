@@ -1,12 +1,10 @@
 package com.maan.eway.springbatch;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -23,7 +21,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -39,6 +36,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -104,6 +102,9 @@ public class UtilityServiceImpl {
 	public static  int totalRecordCount =0;
 	
 	public static DozerBeanMapper mapper =new DozerBeanMapper();
+	
+	private static final DataFormatter ORIGINAL_VALUE = new DataFormatter();
+
 
 	@Autowired
     JobLauncher jobLauncher;
@@ -350,6 +351,7 @@ public class UtilityServiceImpl {
 		                  firstCount = myRow.getLastCellNum();
 		              }
 		              for(int i = 0; i < firstCount; i++){
+
 		            	  csvData = (String.valueOf(csvData)+getXLSXCellData(myRow.getCell(i))+"~")
 			                		  .replace("\t", "").replace("\n", "").replace("\r", "").replace("'", "").replaceAll("^\"|\"$", "").replace(",", "");
 		              }
@@ -461,6 +463,7 @@ public class UtilityServiceImpl {
 	 	private  String getXLSXCellData(XSSFCell myCell)
 	            throws Exception
 	        {
+	 		  
 	            String cellData = "";
 	            if(myCell == null)
 	            {
@@ -470,9 +473,9 @@ public class UtilityServiceImpl {
 	                switch(myCell.getCellType())
 	                {
 	                case STRING: 
-	                	cellData = String.valueOf(cellData)+myCell.getRichStringCellValue()+CVS_SEPERATOR_CHAR;
+	                	cellData = String.valueOf(cellData)+ORIGINAL_VALUE.formatCellValue(myCell)+CVS_SEPERATOR_CHAR;
 	                    break;
-	                case BOOLEAN:               cellData = String.valueOf(cellData)+myCell.getBooleanCellValue()+CVS_SEPERATOR_CHAR;
+	                case BOOLEAN:               cellData = String.valueOf(cellData)+ORIGINAL_VALUE.formatCellValue(myCell)+CVS_SEPERATOR_CHAR;
 	                    break;
 
 	                case NUMERIC:  
@@ -490,11 +493,12 @@ public class UtilityServiceImpl {
 	            return cellData.trim();
 	        }
 	    
-	    @SuppressWarnings("deprecation")
 		private static String getXLSXNumericValue(XSSFCell myCell)
 	            throws Exception
 	        {
 	            String cellData = "";
+	            
+	            
 	            if(DateUtil.isCellDateFormatted(myCell))
 	            {
 	                java.util.Date obj = myCell.getDateCellValue();
@@ -502,13 +506,18 @@ public class UtilityServiceImpl {
 	            } else
 	            {
 	                //cellData = String.valueOf(cellData)+myCell.getNumericCellValue()+CVS_SEPERATOR_CHAR;
+	            	String cellValue =ORIGINAL_VALUE.formatCellValue(myCell);
+		            System.out.println("cellValue || "+cellValue);
+
 	            	try{
-	            		cellData = String.valueOf(cellData)+myCell.getNumericCellValue()+CVS_SEPERATOR_CHAR;
+	            		cellData = cellData+cellValue+CVS_SEPERATOR_CHAR;
 	            	}catch(Exception e){
 	            		cellData = "";
-	            		cellData = String.valueOf(cellData)+myCell.getNumericCellValue()+CVS_SEPERATOR_CHAR;
+	            		cellData = cellData+ORIGINAL_VALUE.formatCellValue(myCell)+CVS_SEPERATOR_CHAR;
 	            	}
 	            }
+	            
+	            System.out.println("Last || "+cellData);
 	            return cellData;
 	        }
 
@@ -518,11 +527,11 @@ public class UtilityServiceImpl {
 	            String cellData = "";
 	            if(myCell.getCachedFormulaResultType() == CellType.STRING || myCell.getCellType() == CellType.BOOLEAN)
 	            {
-	                cellData = String.valueOf(cellData)+myCell.getRichStringCellValue()+CVS_SEPERATOR_CHAR;
+	                cellData = cellData+ORIGINAL_VALUE.formatCellValue(myCell)+CVS_SEPERATOR_CHAR;
 	            } else
 	            if(myCell.getCachedFormulaResultType() == CellType.NUMERIC)
 	            {
-	                cellData = String.valueOf(cellData)+getXLSXNumericValue(myCell)+CVS_SEPERATOR_CHAR;
+	                cellData = cellData+getXLSXNumericValue(myCell)+CVS_SEPERATOR_CHAR;
 	            }
 	            return cellData;
 	        }

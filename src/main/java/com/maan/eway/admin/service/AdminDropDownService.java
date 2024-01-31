@@ -36,5 +36,7 @@ public interface AdminDropDownService {
 
 	List<DropDownRes> getQuestionType(LovDropDownReq req);
 
+	List<DropDownRes> getSequenceType(LovDropDownReq req);
+
 
 }

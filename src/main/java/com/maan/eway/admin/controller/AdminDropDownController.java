@@ -307,5 +307,26 @@ public class AdminDropDownController {
 		}
 
 	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
+	@PostMapping("/sequencetype")
+	@ApiOperation(value = "This method is to Question Type  Drop Down")
+	public ResponseEntity<CommonRes> getSequenceType(@RequestBody LovDropDownReq req) {
+		CommonRes data = new CommonRes();
+
+		// Save
+		List<DropDownRes> res = dropDownService.getSequenceType(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
 
 }

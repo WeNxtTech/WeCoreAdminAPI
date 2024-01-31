@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import javax.persistence.Column;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -58,6 +59,7 @@ import com.maan.eway.bean.PaymentMaster;
 import com.maan.eway.bean.PolicyTypeMaster;
 import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.ProductSectionMaster;
+import com.maan.eway.bean.ProductTaxSetup;
 import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.common.req.LovDropDownReq;
 import com.maan.eway.error.Error;
@@ -1593,7 +1595,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
                 productdetails.setEmiConfigRes(emiResList);
                 
                 // Set Tax
-                List<CompanyTaxSetup> tax =getCompanyProductConfigTax(req.getCompanyId(),req.getProductId());
+                List<ProductTaxSetup> tax =getCompanyProductConfigTax(req.getCompanyId(),req.getProductId());
                 List<CommonConfigRes> taxResList = setTaxDetails(tax) ;
                 productdetails.setTaxSetUpDetails(taxResList);
                 
@@ -1638,7 +1640,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
     				productRes.setStatusDesc( getStatusDescription(data.getStatus()) );
     				
     				List<SectionCoverMaster> filterCovers = coverDetails.stream().filter( o -> o.getSectionId().equals(data.getSectionId()) ).collect(Collectors.toList());
-    				setCoverDetails(filterCovers);
+    			
     				List<CommonCoverConfigRes> coverResList = setCoverDetails(filterCovers);
     				productRes.setSectionCoverRes(coverResList);
     				sectionResList.add(productRes);
@@ -1730,14 +1732,14 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 		return factorTypeResList;
 	}
 	
-	public List<CommonConfigRes>  setTaxDetails(List<CompanyTaxSetup> taxDetails ) {
+	public List<CommonConfigRes>  setTaxDetails(List<ProductTaxSetup> taxDetails ) {
 		List<CommonConfigRes> taxResList = new ArrayList<CommonConfigRes>();
 		try {
 			if(taxDetails.size() > 0) {
-				for(CompanyTaxSetup taxData : taxDetails) {
+				for(ProductTaxSetup taxData : taxDetails) {
 					CommonConfigRes taxRes=new CommonConfigRes();
 					taxRes.setId(taxData.getTaxCode().toString());
-					taxRes.setName(taxData.getTaxName());
+					taxRes.setName( taxData.getTaxForDesc() + " - "+ taxData.getTaxName());
 					taxRes.setEffectiveDateStart(taxData.getEffectiveDateStart());
 					taxRes.setEffectiveDateEnd(taxData.getEffectiveDateEnd());
 					taxRes.setStatus(taxData.getStatus());
@@ -1745,6 +1747,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 					taxResList.add(taxRes);
 					
 				}
+				taxResList.sort(Comparator.comparing(CommonConfigRes :: getName ).reversed() ) ;
 			}
 			
 		} catch (Exception e) {
@@ -1790,7 +1793,11 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 				for(EmiMaster emiData : emiDetails) {
 					CommonConfigRes emiRes = new CommonConfigRes();
 					emiRes.setId(emiData.getEmiId().toString());
-					emiRes.setName(emiData.getPolicyType());
+					String name = "Premium - " +  emiData.getPremiumStart() + " to " + emiData.getPremiumEnd() + ", Policy - " + 
+							emiData.getPolicyDesc() + ", Interest - " + emiData.getInterestPercent() + "%, Installement Period - " + 
+							emiData.getInstallmentPeriod(); 
+					
+					emiRes.setName(name);
 					emiRes.setEffectiveDateStart(emiData.getEffectiveDateStart());
 					emiRes.setEffectiveDateEnd(emiData.getEffectiveDateEnd());
 					emiRes.setStatus(emiData.getStatus());
@@ -1918,7 +1925,10 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 					}
 					
 					paymentRes.setId(paymentData.getPaymentMasterId().toString());
-					paymentRes.setName("Usertype :" + paymentData.getUserType() + " " + "SubUserType :" + paymentData.getSubUserType());
+					String payments  = " Cash = " + paymentData.getCashYn() + ", Credit = " + paymentData.getChequeYn() +
+									   ", Cheque = " + paymentData.getChequeYn() + ", Online = " +  paymentData.getOnlineYn() ;
+
+					paymentRes.setName( paymentData.getUserType() + "-" + paymentData.getSubUserType() + "Payments : " +payments );
 					paymentRes.setEffectiveDateStart(paymentData.getEffectiveDateStart());
 					paymentRes.setEffectiveDateEnd(paymentData.getEffectiveDateEnd());
 					paymentRes.setUserType(paymentData.getUserType());
@@ -1951,8 +1961,8 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 					proRataRes.setStartFrom(data.getStartfrom()==null ? "" : data.getStartfrom().toPlainString());
 					proRataRes.setEndTo(data.getEndto()==null ? "" : data.getEndto().toPlainString());
 					proRataRes.setId(data.getSno()==null ? "" : data.getSno().toString());
-					proRataRes.setName("Start From :" + data.getPercent()==null ? "" : data.getPercent().toPlainString() + "-" 
-							 + " End To :" + data.getEndto()==null ? "" : data.getEndto().toPlainString() );
+					String name = "Days Between :"  + data.getStartfrom() + " to "  +  data.getEndto() + " = " + data.getPercent().stripTrailingZeros().toPlainString() + "%";
+					proRataRes.setName(name );
 					proRataRes.setEffectiveDateStart(data.getEffectiveDateStart());
 					proRataRes.setEffectiveDateEnd(data.getEffectiveDateEnd());
 					proRataRes.setStatus(data.getStatus());
@@ -2243,7 +2253,8 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			Predicate a4 = cb.equal(c.get("productId"), ocpm2.get("productId"));
 			Predicate a5 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
 			Predicate a8 = cb.equal(c.get("sectionId"), ocpm2.get("sectionId"));
-			amendId.where(a4, a5, a8);
+			Predicate a9 = cb.equal(c.get("coverId"), ocpm2.get("coverId"));
+			amendId.where(a4, a5, a8,a9);
 			
 			// Where
 			Predicate n2 = cb.equal(c.get("amendId"), amendId);
@@ -2298,6 +2309,8 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			// Get Result
 			TypedQuery<FactorTypeDetails> result = em.createQuery(query);
 			list = result.getResultList();
+			
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getFactorTypeId()))).collect(Collectors.toList());
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2410,8 +2423,8 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 	}
 	
 	
-	public List<CompanyTaxSetup>  getCompanyProductConfigTax(String companyId, String productId) {
-		List<CompanyTaxSetup> list = new ArrayList<CompanyTaxSetup>();
+	public List<ProductTaxSetup>  getCompanyProductConfigTax(String companyId, String productId) {
+		List<ProductTaxSetup> list = new ArrayList<ProductTaxSetup>();
 
 		try {
 			Date today = new Date();
@@ -2427,10 +2440,10 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 
 			// Criteria
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<CompanyTaxSetup> query = cb.createQuery(CompanyTaxSetup.class);
+			CriteriaQuery<ProductTaxSetup> query = cb.createQuery(ProductTaxSetup.class);
 //			List<ProductSectionMaster> list = new ArrayList<ProductSectionMaster>();
 			// Find All
-			Root<CompanyTaxSetup> c = query.from(CompanyTaxSetup.class);
+			Root<ProductTaxSetup> c = query.from(ProductTaxSetup.class);
 			// Select
 			query.select(c);
 			// Order By
@@ -2439,13 +2452,12 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			
 			// Effective Date End Max Filter
 			Subquery<Long> amendId = query.subquery(Long.class);
-			Root<CompanyTaxSetup> ocpm2 = amendId.from(CompanyTaxSetup.class);
+			Root<ProductTaxSetup> ocpm2 = amendId.from(ProductTaxSetup.class);
 			amendId.select(cb.max(ocpm2.get("amendId")));
 			Predicate a4 = cb.equal(c.get("productId"), ocpm2.get("productId"));
 			Predicate a5 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
 			Predicate a8 = cb.equal(c.get("taxId"), ocpm2.get("taxId"));
 			Predicate a10 = cb.equal(c.get("branchCode"), ocpm2.get("branchCode"));
-		
 			amendId.where(a4, a5, a8,a10);
 			// Where
 			Predicate n2 = cb.equal(c.get("amendId"), amendId);
@@ -2455,8 +2467,10 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 
 			query.where(n2,  n4, n5, n6).orderBy(orderList);
 			// Get Result
-			TypedQuery<CompanyTaxSetup> result = em.createQuery(query);
+			TypedQuery<ProductTaxSetup> result = em.createQuery(query);
 			list = result.getResultList();
+			
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getTaxId()))).collect(Collectors.toList());
 
 
 		} catch (Exception e) {

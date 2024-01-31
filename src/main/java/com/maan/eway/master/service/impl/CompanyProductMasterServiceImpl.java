@@ -1928,7 +1928,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 					String payments  = " Cash = " + paymentData.getCashYn() + ", Credit = " + paymentData.getChequeYn() +
 									   ", Cheque = " + paymentData.getChequeYn() + ", Online = " +  paymentData.getOnlineYn() ;
 
-					paymentRes.setName( paymentData.getUserType() + "-" + paymentData.getSubUserType() + "Payments : " +payments );
+					paymentRes.setName( paymentData.getUserType() + " - " + paymentData.getSubUserType() + " - Payments : " +payments );
 					paymentRes.setEffectiveDateStart(paymentData.getEffectiveDateStart());
 					paymentRes.setEffectiveDateEnd(paymentData.getEffectiveDateEnd());
 					paymentRes.setUserType(paymentData.getUserType());

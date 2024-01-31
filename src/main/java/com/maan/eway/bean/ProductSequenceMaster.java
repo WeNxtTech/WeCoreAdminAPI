@@ -19,6 +19,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import java.util.Date;
@@ -82,7 +83,7 @@ private static final long serialVersionUID = 1L;
     private String     sequenceCharacter ;
     
     @Column(name="CURRENT_SEQUENCE_NO", length=1)
-    private Integer currentSequenceNo ;
+    private BigDecimal currentSequenceNo ;
     
     @Column(name="QUERY_YN", length=1)
     private String     queryYn ;

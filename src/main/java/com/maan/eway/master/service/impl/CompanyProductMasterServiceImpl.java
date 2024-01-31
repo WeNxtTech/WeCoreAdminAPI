@@ -2470,7 +2470,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			TypedQuery<ProductTaxSetup> result = em.createQuery(query);
 			list = result.getResultList();
 			
-			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getTaxId()))).collect(Collectors.toList());
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getTaxFor() , o.getTaxId()))).collect(Collectors.toList());
 
 
 		} catch (Exception e) {

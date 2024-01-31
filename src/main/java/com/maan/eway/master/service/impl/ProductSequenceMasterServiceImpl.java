@@ -189,19 +189,18 @@ private Logger log=LogManager.getLogger(ProductSequenceMasterServiceImpl.class);
 			Date entryDate = null ;
 			String createdBy = "" ;
 			
-			Integer sequenceId = 0 ;
-			if(StringUtils.isBlank(req.getSequenceId())) {
-				// Save
-				Integer totalCount = getMasterTableCount( req.getInsuranceId() ,req.getProductId() , req.getBranchCode());
-				sequenceId =  totalCount+1 ;
-				entryDate = new Date();
-				createdBy = req.getCreatedBy();
-				res.setResponse("Saved Successfully");
-				res.setSuccessId(sequenceId.toString());
-			}
-			else {
+			Integer sequenceId =Integer.valueOf(req.getType());
+//			if(StringUtils.isBlank(req.getSequenceId())) {
+//				// Save
+//				Integer totalCount = getMasterTableCount( req.getInsuranceId() ,req.getProductId() , req.getBranchCode());
+//				sequenceId =  totalCount+1 ;
+//				entryDate = new Date();
+//				createdBy = req.getCreatedBy();
+//				res.setResponse("Saved Successfully");
+//				res.setSuccessId(sequenceId.toString());
+//			}
+//			else {
 				// Update
-				sequenceId = Integer.valueOf(req.getSequenceId());
 				CriteriaBuilder cb = em.getCriteriaBuilder();
 				CriteriaQuery<ProductSequenceMaster> query = cb.createQuery(ProductSequenceMaster.class);
 				//Find all
@@ -214,7 +213,7 @@ private Logger log=LogManager.getLogger(ProductSequenceMasterServiceImpl.class);
 				orderList.add(cb.desc(b.get("amendId")));
 				
 				// Where
-				Predicate n1 = cb.equal(b.get("sequenceId"), req.getSequenceId());
+				Predicate n1 = cb.equal(b.get("sequenceId"), sequenceId);
 				Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
 				Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
 				Predicate n4 = cb.equal(b.get("productId"),  req.getProductId());
@@ -254,7 +253,7 @@ private Logger log=LogManager.getLogger(ProductSequenceMasterServiceImpl.class);
 				}
 				res.setResponse("Updated Successfully");
 				res.setSuccessId(sequenceId.toString());
-			}
+			
 			dozerMapper.map(req, saveData);
 			saveData.setSequenceId(sequenceId);
 			saveData.setEffectiveDateStart(startDate);

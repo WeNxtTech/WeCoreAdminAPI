@@ -1795,7 +1795,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 					emiRes.setId(emiData.getEmiId().toString());
 					String name = "Premium - " +  emiData.getPremiumStart() + " to " + emiData.getPremiumEnd() + ", Policy - " + 
 							emiData.getPolicyDesc() + ", Interest - " + emiData.getInterestPercent() + "%, Installement Period - " + 
-							emiData.getInstallmentPeriod(); 
+							emiData.getInstallmentPeriod() + "M"; 
 					
 					emiRes.setName(name);
 					emiRes.setEffectiveDateStart(emiData.getEffectiveDateStart());

@@ -786,5 +786,180 @@ public class ProductTaxSetupServiceImpl implements ProductTaxSetupService {
 		}
 		return res;
 	}
+
+	@Override
+	public ProductTaxGetRes getactiveProductTaxes(GetAllProductTaxReq req) {
+		ProductTaxGetRes res = new ProductTaxGetRes();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			List<ProductTaxSetup> productlist = new ArrayList<ProductTaxSetup>(); 
+			{
+				// Find Latest Record
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<ProductTaxSetup> query = cb.createQuery(ProductTaxSetup.class);
+
+				// Find All
+				Root<ProductTaxSetup> b = query.from(ProductTaxSetup.class);
+
+				// Select
+				query.select(b);
+
+				// Amend ID Max Filter
+				Subquery<Long> amendId = query.subquery(Long.class);
+				Root<ProductTaxSetup> ocpm1 = amendId.from(ProductTaxSetup.class);
+				amendId.select(cb.max(ocpm1.get("amendId")));
+				Predicate a1 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
+				Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+				Predicate a3 = cb.equal(ocpm1.get("taxId"), b.get("taxId"));
+				Predicate a4 = cb.equal(ocpm1.get("taxFor"), b.get("taxFor"));
+				Predicate a5 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+				Predicate a6 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+				amendId.where(a1,a2,a3,a4,a5,a6);
+
+				Predicate n1 = cb.equal(b.get("amendId"),amendId);
+				Predicate n2 = cb.equal(b.get("countryId"), req.getCountryId() );	
+				Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId() );		
+				Predicate n4 = cb.equal(b.get("branchCode"), req.getBranchCode());
+				Predicate n5 = cb.equal(b.get("taxFor"), req.getTaxFor());
+				Predicate n6 = cb.equal(b.get("productId"), req.getProductId());
+				Predicate n7 = cb.equal(b.get("status"), "Y");
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.asc(b.get("taxName")));
+				query.where( n1, n2, n3,n4,n5,n6,n7).orderBy(orderList);
+				
+				// Get Result
+				TypedQuery<ProductTaxSetup> result = em.createQuery(query);
+				productlist = result.getResultList();
+			}
+		
+			// Get Product Taxes 
+			
+			if(productlist.size() > 0 ) {
+				ProductTaxSetup firstData = productlist.get(0);
+				res.setBranchCode(firstData.getBranchCode());
+				res.setCompanyId(firstData.getCompanyId());
+				res.setCountryId(firstData.getCountryId());
+				res.setCreatedBy(firstData.getCreatedBy());
+				res.setEffectiveDateStart(firstData.getEffectiveDateStart());
+				res.setEffectiveDateEnd(firstData.getEffectiveDateEnd());
+				res.setEntryDate(firstData.getEntryDate());
+				res.setTaxFor(firstData.getTaxFor());
+				res.setTaxForDesc(firstData.getTaxForDesc());
+				res.setProductId(firstData.getProductId().toString());
+				
+				List<ProductTaxMultiInsertReq> taxList = new ArrayList<ProductTaxMultiInsertReq>();
+				for (ProductTaxSetup  data : productlist) {
+					ProductTaxMultiInsertReq taxRes = new ProductTaxMultiInsertReq();
+					taxRes.setCalcType(data.getCalcType());
+					taxRes.setCoreAppCode(data.getCoreAppCode());
+					taxRes.setCalcType(data.getCalcType() );
+					//taxRes.setCalcTypeDesc(data.getCalcTypeDesc());
+					taxRes.setCoreAppCode(data.getCoreAppCode());
+				//	taxRes.setPriority(data.getPriority()== null ? "" :data.getPriority().toString()  );
+					taxRes.setRegulatoryCode(data.getRegulatoryCode());
+					taxRes.setStatus(data.getStatus());
+					taxRes.setTaxCode(data.getTaxCode());
+					taxRes.setTaxExemptAllowYn(data.getTaxExemptAllowYn());
+					taxRes.setTaxId(data.getTaxId()==null ? "" : data.getTaxId().toString());
+//					taxRes.setTaxDesc(filterTax.size() > 0 ? filterTax.get(0).getTaxDesc() : "" );
+//					taxRes.setTaxName(filterTax.size() > 0 ? filterTax.get(0).getTaxName() : "" );
+//					taxRes.setUpdatedBy(data.getCreatedBy());
+//					taxRes.setUpdatedDate(new Date());
+					taxRes.setValue(data.getValue()== null ? "" : new BigDecimal(data.getValue()).toPlainString() ) ;
+					taxRes.setDependentYn(data.getDependentYn()==null? "" :data.getDependentYn());
+					taxRes.setMinimumAmount(data.getMinimumAmount()==null?"" :data.getMinimumAmount().toPlainString() );
+					taxList.add(taxRes);
+				}
+				res.setTaxList(taxList);
+				
+			} else {
+
+				List<CompaniesTaxSetup> list = new ArrayList<CompaniesTaxSetup>();
+				// Find Latest Record
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<CompaniesTaxSetup> query = cb.createQuery(CompaniesTaxSetup.class);
+
+				// Find All
+				Root<CompaniesTaxSetup> b = query.from(CompaniesTaxSetup.class);
+
+				// Select
+				query.select(b);
+
+				// Amend ID Max Filter
+				Subquery<Long> amendId = query.subquery(Long.class);
+				Root<CompaniesTaxSetup> ocpm1 = amendId.from(CompaniesTaxSetup.class);
+				amendId.select(cb.max(ocpm1.get("amendId")));
+				Predicate a1 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
+				Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+				Predicate a3 = cb.equal(ocpm1.get("taxId"), b.get("taxId"));
+				Predicate a4 = cb.equal(ocpm1.get("taxFor"), b.get("taxFor"));
+				Predicate a5 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+				amendId.where(a1,a2,a3,a4,a5);
+
+				Predicate n1 = cb.equal(b.get("amendId"),amendId);
+				Predicate n2 = cb.equal(b.get("countryId"), req.getCountryId() );	
+				Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId() );		
+				Predicate n4 = cb.equal(b.get("branchCode"), req.getBranchCode());
+				Predicate n5 = cb.equal(b.get("taxFor"), req.getTaxFor());
+				Predicate n6 = cb.equal(b.get("status"), "Y");
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.asc(b.get("taxName")));
+				query.where( n1, n2, n3,n4,n5,n6).orderBy(orderList);
+				
+				// Get Result
+				TypedQuery<CompaniesTaxSetup> result = em.createQuery(query);
+				list = result.getResultList();
+				if(list.size() > 0 ) {
+					CompaniesTaxSetup firstData = list.get(0);
+					res.setBranchCode(firstData.getBranchCode());
+					res.setCompanyId(firstData.getCompanyId());
+					res.setCountryId(firstData.getCountryId());
+					res.setCreatedBy(firstData.getCreatedBy());
+					res.setEffectiveDateStart(firstData.getEffectiveDateStart());
+					res.setEffectiveDateEnd(firstData.getEffectiveDateEnd());
+					res.setEntryDate(firstData.getEntryDate());
+					res.setTaxFor(firstData.getTaxFor());
+					res.setTaxForDesc(firstData.getTaxForDesc());
+					
+					List<ProductTaxMultiInsertReq> taxList = new ArrayList<ProductTaxMultiInsertReq>();
+					for (CompaniesTaxSetup  data : list) {
+						ProductTaxMultiInsertReq taxRes = new ProductTaxMultiInsertReq();
+						taxRes.setCalcType(data.getCalcType());
+						taxRes.setCoreAppCode(data.getCoreAppCode());
+						taxRes.setCalcType(data.getCalcType() );
+						//taxRes.setCalcTypeDesc(data.getCalcTypeDesc());
+						taxRes.setCoreAppCode(data.getCoreAppCode());
+					//	taxRes.setPriority(data.getPriority()== null ? "" :data.getPriority().toString()  );
+						taxRes.setRegulatoryCode(data.getRegulatoryCode());
+						taxRes.setStatus(data.getStatus());
+						taxRes.setTaxCode(data.getTaxCode());
+						taxRes.setTaxExemptAllowYn(data.getTaxExemptAllowYn());
+						taxRes.setTaxId(data.getTaxId()==null ? "" : data.getTaxId().toString());
+//						taxRes.setTaxDesc(filterTax.size() > 0 ? filterTax.get(0).getTaxDesc() : "" );
+//						taxRes.setTaxName(filterTax.size() > 0 ? filterTax.get(0).getTaxName() : "" );
+//						taxRes.setUpdatedBy(data.getCreatedBy());
+//						taxRes.setUpdatedDate(new Date());
+						taxRes.setValue(data.getValue()== null ? "" : new BigDecimal(data.getValue()).toPlainString() ) ;
+						taxRes.setDependentYn(data.getDependentYn()==null? "" :data.getDependentYn());
+						taxRes.setMinimumAmount(data.getMinimumAmount()==null?"" :data.getMinimumAmount().toPlainString() );
+						taxList.add(taxRes);
+					}
+					res.setTaxList(taxList);
+				} else {
+					res = null ;
+				}
+			}
+			
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+	
+		}
+		return res;
+	}
 	
 }

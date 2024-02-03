@@ -140,6 +140,23 @@ public class ProductTaxSetupController {
 		
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
+	@PostMapping("/getactiveproducttax")
+	@ApiOperation("This method is getall Product Taxes")
+	public ResponseEntity<CommonRes> getactiveProductTaxes(@RequestBody GetAllProductTaxReq req)
+	{
+		CommonRes data = new CommonRes();
+		
+		ProductTaxGetRes res =entityService.getactiveProductTaxes(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		
+		return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
+		
+	}
+	
 //		// Get By Document Id
 //		@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 //		@PostMapping("/getbycountrytaxid")

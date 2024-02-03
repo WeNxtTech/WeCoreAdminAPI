@@ -71,6 +71,9 @@ public class ProductSequenceMasterRes  {
 	
 	@JsonProperty("QueryYn")
 	private String queryYn;
+	
+	@JsonProperty("CurrentGeneratedSequence")
+	private String currentGeneratedSequence;
 
     //--- ENTITY PRIMARY KEY 
 

@@ -29,4 +29,6 @@ public interface ProductTaxSetupService {
 
 	ProductTaxGetRes getallProductTaxes(GetAllProductTaxReq req);
 
+	ProductTaxGetRes getactiveProductTaxes(GetAllProductTaxReq req);
+
 }

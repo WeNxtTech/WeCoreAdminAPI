@@ -131,8 +131,8 @@ private Logger log=LogManager.getLogger(ProductSequenceMasterServiceImpl.class);
 			} else if(! req.getCurrentSequenceNo().matches("[0-9]+") ) {
 				errorList.add(new Error("01", "CurrentSequenceNo", "Please Enter Valid Number in Current Sequence No"));
 				
-			}  else if( req.getCurrentSequenceNo().length() > 8 ) {
-				errorList.add(new Error("01", "CurrentSequenceNo", " Current Sequence No Max 8 digits only allowed"));
+			}  else if( req.getCurrentSequenceNo().length() > 20 ) {
+				errorList.add(new Error("01", "CurrentSequenceNo", " Current Sequence No Max 20 digits only allowed"));
 			}
 			
 			if(StringUtils.isBlank(req.getQueryYn()) ) {
@@ -188,7 +188,7 @@ private Logger log=LogManager.getLogger(ProductSequenceMasterServiceImpl.class);
 			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
 			Date entryDate = null ;
 			String createdBy = "" ;
-			
+			String currentGeneratedSequence = "" ;
 			Integer sequenceId =Integer.valueOf(req.getType());
 //			if(StringUtils.isBlank(req.getSequenceId())) {
 //				// Save
@@ -234,6 +234,7 @@ private Logger log=LogManager.getLogger(ProductSequenceMasterServiceImpl.class);
 						amendId = list.get(0).getAmendId() + 1 ;
 						entryDate = new Date() ;
 						createdBy = req.getCreatedBy();
+						currentGeneratedSequence = "" ;
 						ProductSequenceMaster lastRecord = list.get(0);
 							lastRecord.setEffectiveDateEnd(oldEndDate);
 							repo.saveAndFlush(lastRecord);
@@ -243,6 +244,7 @@ private Logger log=LogManager.getLogger(ProductSequenceMasterServiceImpl.class);
 						entryDate = list.get(0).getEntryDate() ;
 						createdBy = list.get(0).getCreatedBy();
 						saveData = list.get(0) ;
+						currentGeneratedSequence = list.get(0).getCurrentGeneratedSequence() ;
 						if (list.size()>1 ) {
 							ProductSequenceMaster lastRecord = list.get(1);
 							lastRecord.setEffectiveDateEnd(oldEndDate);
@@ -265,6 +267,7 @@ private Logger log=LogManager.getLogger(ProductSequenceMasterServiceImpl.class);
 			saveData.setUpdatedDate(new Date());
 			saveData.setUpdatedBy(req.getCreatedBy());
 			saveData.setAmendId(amendId);
+			saveData.setCurrentGeneratedSequence(currentGeneratedSequence);
 			// Type Desc
 			String seqTypeDesc = getListItem (req.getInsuranceId() , req.getBranchCode() ,"SEQUENCE_TYPE",req.getType() ); 
 			saveData.setTypeDesc(seqTypeDesc);

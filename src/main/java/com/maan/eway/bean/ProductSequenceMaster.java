@@ -83,7 +83,7 @@ private static final long serialVersionUID = 1L;
     private String     sequenceCharacter ;
     
     @Column(name="CURRENT_SEQUENCE_NO", length=1)
-    private BigDecimal currentSequenceNo ;
+    private String currentSequenceNo ;
     
     @Column(name="QUERY_YN", length=1)
     private String     queryYn ;
@@ -114,6 +114,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="UPDATED_DATE")
     private Date       updatedDate ;
 
+    @Column(name="CURRENT_GENERATED_SEQUENCE", length=100)
+    private String     currentGeneratedSequence ;
 
 
 }

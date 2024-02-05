@@ -1,23 +1,25 @@
 package com.maan.eway.fileupload;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import javax.persistence.TemporalType;
 import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
@@ -25,6 +27,7 @@ import javax.persistence.criteria.Subquery;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -32,10 +35,15 @@ import com.google.gson.Gson;
 import com.maan.eway.bean.FactorRateMaster;
 import com.maan.eway.bean.FactorTypeDetails;
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.PremiaConfigDataMaster;
 import com.maan.eway.bean.SectionCoverMaster;
-import com.maan.eway.bean.YiPolicyDetail;
-import com.maan.eway.embedded.EmbeddedDashBoardReq;
+import com.maan.eway.chart.ChartAccountChildMaster;
+import com.maan.eway.chart.ChartAccountChildMasterRepository;
+import com.maan.eway.chart.ChartChildRequest;
+import com.maan.eway.chart.ChartParentMaster;
+import com.maan.eway.chart.ChartParentMasterRepository;
+import com.maan.eway.chart.ChartParentRequest;
 import com.maan.eway.embedded.EmbeddedReq;
 import com.maan.eway.embedded.GroupMedicalDetails;
 
@@ -52,6 +60,12 @@ public class JpqlQueryServiceImpl {
 	public static Gson json = new Gson();
 
 	public static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+	
+	@Autowired
+	private ChartParentMasterRepository chartParnetRepo;
+	
+	@Autowired
+	private ChartAccountChildMasterRepository chartChildRepo;
 	
 	@SuppressWarnings("unchecked")
 	public Map<String,Object> getFactorXlColumns(FileDownloadRequest req) {
@@ -341,5 +355,153 @@ public class JpqlQueryServiceImpl {
 	}
 	return object;
 	}
+
+	public Integer getParentChartAmendId(ChartParentRequest req) {
+		Integer amendId =0;
+		try {
+			String queryString ="select cp from ChartParentMaster cp where cp.chatParentId.companyId=:companyId "
+								+ "and cp.chatParentId.chartId=:chartId and cp.chatParentId.amendId=(select max(cpm.chatParentId.amendId) from ChartParentMaster "
+								+ "cpm where cp.chatParentId.companyId=cpm.chatParentId.companyId and cp.chatParentId.chartId=cpm.chatParentId.chartId)";
+			
+			@SuppressWarnings("unchecked")
+			List<ChartParentMaster> list =em.createQuery(queryString)
+					.setParameter("companyId", Integer.valueOf(req.getCompanyId()))
+					.setParameter("chartId", StringUtils.isBlank(req.getChartId())?0:Integer.valueOf(req.getChartId()))
+					.getResultList();
+			
+			if(!list.isEmpty()) {
+				
+				LocalDate minusEffectiveDate =LocalDate.parse(req.getEffectiveStartDate(), 
+						DateTimeFormatter.ofPattern("dd/MM/yyyy")).minusDays(1);
+				
+				Date todayDate = new Date();
+				
+				
+				
+				if(list.get(0).getEffectiveStartDate().before(todayDate)) {
+					
+					// updated existing effectiveend date
+					List<ChartParentMaster> cpmList =list.stream().map(p ->{
+						p.setUpdatedBy(req.getUpdatedBy());
+						p.setUpdatedDate(todayDate);
+						p.setEffectiveEndDate(Date.from(minusEffectiveDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+						return chartParnetRepo.save(p);
+					}).collect(Collectors.toList());
+					
+					amendId=cpmList.get(0).getChatParentId().getAmendId() +1;
+					
+				}else {
+					amendId=list.get(0).getChatParentId().getAmendId();
+					chartParnetRepo.deleteAll(list);
+				}
+			}
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return amendId;
+	}
+
+	public Integer getChildChartMaxOfAmendId(ChartChildRequest req) {
+		Integer amendId=0;
+		try {
+			
+			String queryString ="select ccm from ChartAccountChildMaster ccm  where ccm.id.companyId=:companyId and ccm.id.productId=:productId and ccm.id.sectionId=:sectionId "
+					+ "and ccm.id.chartId=:chartId and ccm.id.coverId=:coverId and ccm.id.amendId=(select max(ccmm.id.amendId) from ChartAccountChildMaster ccmm where ccm.id.companyId=ccmm.id.companyId "
+					+ "and ccm.id.productId=ccmm.id.productId and ccm.id.sectionId=ccmm.id.sectionId and ccm.id.chartId=ccmm.id.chartId and ccm.id.coverId=ccmm.id.coverId)";
+			
+			@SuppressWarnings("unchecked")
+			List<ChartAccountChildMaster> list =em.createQuery(queryString)
+					.setParameter("companyId", Integer.valueOf(req.getCompanyId()))
+					.setParameter("productId", Integer.valueOf(req.getProductId()))
+					.setParameter("sectionId", Integer.valueOf(req.getSectionId()))
+					.setParameter("chartId", Integer.valueOf(req.getChartId()))
+					.setParameter("coverId", Integer.valueOf(req.getCoverId()))
+					.getResultList();
+			
+			if(!list.isEmpty()) {
+				
+				LocalDate minusEffectiveStartDate =LocalDate.parse(req.getEffectiveStartDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy")).minusDays(1);
+				
+				Date todayDate = new Date();
+				
+				if(list.get(0).getEffectiveStartDate().before(todayDate)) {
+					
+					list.stream().map(p ->{
+						p.setUpdatedDate(new Date());
+						p.setUpdatedBy(req.getUpdatedBy());
+						p.setEffectiveEndDate(Date.from(minusEffectiveStartDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+						return chartChildRepo.save(p);
+					}).collect(Collectors.toList());
+					
+					amendId =list.get(0).getId().getAmendId()+1;
+				}else {
+					amendId =list.get(0).getId().getAmendId();
+					chartChildRepo.deleteAll(list);
+				}
+				
+			}
+		   
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return amendId;
+	}
+
+	public List<ChartAccountChildMaster> getChildChartAccountData(Integer companyId, Integer productId, Integer sectionId,
+			ChartParentMaster cpmm) {
+		try {
+			
+			String stringQuery ="select c from ChartAccountChildMaster c where c.id.companyId =:companyId and c.id.productId=:productId "
+					+ "and c.id.sectionId=:sectionId and c.id.chartId=:chartId and c.status=:status and c.id.amendId=(select max(cc.id.amendId) "
+					+ "from ChartAccountChildMaster cc where cc.id.companyId= c.id.companyId and cc.id.productId=c.id.productId and "
+					+ "cc.id.sectionId=cc.id.sectionId and cc.id.chartId=c.id.chartId and cc.id.coverId=c.id.coverId and sysdate() between "
+					+ "cc.effectiveStartDate and cc.effectiveEndDate)";
+			
+			@SuppressWarnings("unchecked")
+			List<ChartAccountChildMaster> chilldMaster =em.createQuery(stringQuery).setParameter("companyId", companyId).setParameter("productId", productId)
+			.setParameter("sectionId", sectionId).setParameter("chartId", cpmm.getChatParentId().getChartId())
+			.setParameter("status", "Y").getResultList();
+			
+			return chilldMaster;
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+		
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<PolicyCoverData> getPolicyCoverDataPremium(String quoteNo,List<Integer> coverIds)
+	{
+		try {
+			
+			String sqlString ="select pcd from PolicyCoverData pcd where pcd.quoteNo=:quoteNo and pcd.coverId in(:coverId)";
+			List<PolicyCoverData> coverDatas =(List<PolicyCoverData>) em.createQuery(sqlString)
+					.setParameter("quoteNo", quoteNo).setParameter("coverId", coverIds).getResultList();
+			return coverDatas;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<PolicyCoverData> getPolicyCoverDataTax(String quoteNo,List<Integer> coverIds)
+	{
+		try {
+			
+			String sqlString ="select pcd from PolicyCoverData pcd where pcd.quoteNo=:quoteNo and pcd.taxId in(:taxId)";
+			List<PolicyCoverData> coverDatas =(List<PolicyCoverData>) em.createQuery(sqlString)
+					.setParameter("quoteNo", quoteNo).setParameter("taxId", coverIds).getResultList();
+			return coverDatas;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 
 }

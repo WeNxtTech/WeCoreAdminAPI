@@ -207,7 +207,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="FAC_YN", length=1)
     private String     facYn ;
 
-    @Column(name="HYPOTHECATION_YN", length=1)
+    @Column(name="HYPOTHECATION_YN", length=100)
     private String     hypothecationYn ;
 
     @Column(name="INSTALLMENT_YN", length=1)

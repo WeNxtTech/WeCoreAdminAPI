@@ -334,6 +334,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="MARITAL_STATUS_DESC", length=100)
     private String maritalStatusDesc ;
+    
+    @Column(name="POL_CUST_CODE", length=50)
+    private String     polCustCode ;
 }
 
 

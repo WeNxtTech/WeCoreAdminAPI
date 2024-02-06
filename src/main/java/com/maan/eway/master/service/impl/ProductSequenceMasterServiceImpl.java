@@ -268,6 +268,7 @@ private Logger log=LogManager.getLogger(ProductSequenceMasterServiceImpl.class);
 			saveData.setUpdatedBy(req.getCreatedBy());
 			saveData.setAmendId(amendId);
 			saveData.setCurrentGeneratedSequence(currentGeneratedSequence);
+			saveData.setSequenceNoApplyYn(StringUtils.isBlank(req.getSequenceNoApplyYn())?"Y" :req.getSequenceNoApplyYn() ) ;
 			// Type Desc
 			String seqTypeDesc = getListItem (req.getInsuranceId() , req.getBranchCode() ,"SEQUENCE_TYPE",req.getType() ); 
 			saveData.setTypeDesc(seqTypeDesc);

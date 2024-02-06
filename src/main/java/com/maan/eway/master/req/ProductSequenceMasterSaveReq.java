@@ -2,6 +2,8 @@ package com.maan.eway.master.req;
 
 import java.util.Date;
 
+import javax.persistence.Column;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -46,5 +48,10 @@ public class ProductSequenceMasterSaveReq  {
 	
 	@JsonProperty("QueryYn")
 	private String queryYn;
+	
+	@JsonProperty("SequenceNoApplyYn")
+	private String sequenceNoApplyYn;
+
+
 
 }

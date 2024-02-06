@@ -484,9 +484,9 @@ public class TaxExemptionSetupServiceImpl implements TaxExcemptionSetupService {
 //			List<String> regulatoryCodes = new ArrayList<String>(); 
 		//	List<String> priorities = new ArrayList<String>(); 
 			
-			if(req.getExemptedTaxIds()==null || req.getExemptedTaxIds().size() <= 0 ) {
-				errorList.add(new Error("01", "TaxDetails", "Please Excempt Atleast One Tax "));
-			}
+//			if(req.getExemptedTaxIds()==null || req.getExemptedTaxIds().size() <= 0 ) {
+//				errorList.add(new Error("01", "TaxDetails", "Please Excempt Atleast One Tax "));
+//			}
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();

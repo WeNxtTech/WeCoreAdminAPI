@@ -399,11 +399,12 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 					eserviceRepository.deleteMaster_referral_detailsByRefNo(requestReferenceNo);
 					eserviceRepository.deletePassengerDetails(requestReferenceNo,sectionId);
 					eserviceRepository.deleteUgandaVehicleDetails(requestReferenceNo);
+					eserviceRepository.deleteUgandaVehicleDetailsFromMainTable(requestReferenceNo);
 				}else {
 					eserviceRepository.deleteProductEmployeeDetails(requestReferenceNo,sectionId);
 					eserviceRepository.deleteRawEmployeeDetails(requestReferenceNo,sectionId);
 					eserviceRepository.deletePassengerDetails(requestReferenceNo,sectionId);
-
+					
 				}
 			}else {
 				eserviceRepository.deleteByRequestReferenceNo(requestReferenceNo,"E");

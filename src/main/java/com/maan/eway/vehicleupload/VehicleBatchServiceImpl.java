@@ -276,7 +276,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			
 			if("100019".equals(companyId) && "5".equals(productId)) {
 				List<UgandaVehicleDetailsRaw> list =ugandaVehicleDetailsRepo.findByEwayReferenceNo(requestReferenceNo);
-				referenceNo=list.isEmpty()?referenceNo:list.get(0).getRequestReferenceNo();
+				referenceNo=list.isEmpty()?requestReferenceNo:list.get(0).getRequestReferenceNo();
 			}else {
 				referenceNo=requestReferenceNo;
 			}

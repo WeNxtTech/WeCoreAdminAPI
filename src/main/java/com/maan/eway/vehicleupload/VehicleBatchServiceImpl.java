@@ -1417,7 +1417,7 @@ public CommonRes getUploadMaster(GetUploadTypeReq req) {
 			}else {	
 				
 				if("100019".equals(String.valueOf(companyId)) && "5".equals(String.valueOf(productId))) {
-					List<UgandaVehicleDetailsRaw> ugandaList =ugandaVehicleDetailsRepo.findByRequestReferenceNoAndEwayReferenceNoNotNull(req.getCompanyId());
+					List<UgandaVehicleDetailsRaw> ugandaList =ugandaVehicleDetailsRepo.findByRequestReferenceNoAndEwayReferenceNoNotNull(req.getRequestRefNo());
 					ewayReferenceNo =ugandaList.isEmpty()?"":ugandaList.get(0).getEwayReferenceNo();
 				}
 				
@@ -1465,7 +1465,7 @@ public CommonRes getUploadMaster(GetUploadTypeReq req) {
 		         ArrayList<LinkedHashMap<Object,Object>> arrayList =new ArrayList<LinkedHashMap<Object,Object>>();
 		         if(StringUtils.isNotBlank(arrayDynQuery.toString())) {
 					 String [] apiJsonFields=arrayJsonFields.toString().split(",");
-			         String  selectCol ="select "+arrayDynQuery.toString()+" from "+rawTableName+" where REQUEST_REFERENCE_NO=?1 and STATUS='Y'";
+			         String  selectCol ="select "+arrayDynQuery.toString()+" from "+rawTableName+" where REQUEST_REFERENCE_NO=?1 and STATUS='Y' and (API_STATUS IS NULL OR API_STATUS='N')";
 			         log.info("Array query select columns || "+selectCol);
 			         log.info("Array json key columns || "+arrayJsonFields);
 			         Query query =em.createNativeQuery(selectCol);
@@ -1489,7 +1489,7 @@ public CommonRes getUploadMaster(GetUploadTypeReq req) {
 		         }if(StringUtils.isNotBlank(objectDynQuery.toString())){
 		        	 
 		        	 String [] apiJsonFields=objectJsonKey.toString().split(",");
-			         String  selectCol ="select "+objectDynQuery.toString()+" from "+rawTableName+" where REQUEST_REFERENCE_NO=?1 and STATUS='Y'";
+			         String  selectCol ="select "+objectDynQuery.toString()+" from "+rawTableName+" where REQUEST_REFERENCE_NO=?1 and STATUS='Y' and (API_STATUS IS NULL OR API_STATUS='N')";
 			         log.info("Object query select columns || "+selectCol);
 			         log.info("Object json query columns || "+objectDynQuery);
 			         Query query =em.createNativeQuery(selectCol);
@@ -1539,6 +1539,8 @@ public CommonRes getUploadMaster(GetUploadTypeReq req) {
 					if(errorList!=null) {
 						Map<String,Object> result =apiRes.get("Result")==null?null:(Map<String,Object>)apiRes.get("Result");
 						ewayReferenceNo=result.get("RequestReferenceNo")==null?"":result.get("RequestReferenceNo").toString();
+					}else {
+						status ="N";
 					}
 					log.info("EWAY ReferenceNo || "+ewayReferenceNo);
 					String updateQuery ="update "+rawTableName+" set API_STATUS=?1,EWAY_REFERENCE_NO=?2 where REQUEST_REFERENCE_NO=?3";

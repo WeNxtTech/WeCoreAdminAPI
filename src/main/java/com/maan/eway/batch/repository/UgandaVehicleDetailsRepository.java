@@ -30,6 +30,8 @@ public interface UgandaVehicleDetailsRepository extends JpaRepository<UgandaVehi
 	@Query(nativeQuery=true,value="UPDATE uganda_vehicle_details_raw ug SET motor_category_id=(SELECT item_Code FROM eway_list_item_value WHERE item_type='MOTOR_CATEGORY' AND company_id=ug.company_id AND UPPER(TRIM(item_value))=UPPER(TRIM(ug.motor_category_desc)) AND SYSDATE() BETWEEN effective_Date_start AND effective_Date_end LIMIT 1) WHERE request_reference_no=?1")
 	Integer updateMotorCategory(String requestReferenceNo);
 
+	List<UgandaVehicleDetailsRaw> findByEwayReferenceNo(String requestReferenceNo);
+
 	
 
 }

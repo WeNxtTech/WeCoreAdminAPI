@@ -183,7 +183,8 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			uploadRes.setExcelFileName(file.getOriginalFilename());
 			uploadRes.setProgressStatus("P");
 			uploadRes.setProgressdesc("Uploading...");
-			uploadRes.setRequestReferenceNo(StringUtils.isBlank(req.getRequestReferenceNo())?getRequestRefNo(req.getCompanyId(), req.getBranchCode(), req.getProductId()):req.getRequestReferenceNo());
+			uploadRes.setRequestReferenceNo(StringUtils.isBlank(req.getRequestReferenceNo())?getRequestRefNo(req.getCompanyId(), req.getBranchCode(), req.getProductId())
+					:getTransactionId(req.getRequestReferenceNo(),req.getCompanyId(),req.getProductId()));
 			uploadRes.setToken(token);
 			uploadRes.setBrokerBranchCode(StringUtils.isBlank(req.getBrokerBranchCode())?"":req.getBrokerBranchCode());
 			uploadRes.setAcExecutiveId(StringUtils.isBlank(req.getAcExecutiveId())?"":req.getAcExecutiveId());
@@ -267,6 +268,23 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 		}
 		
 		return uploadRes;
+	}
+
+	private synchronized String getTransactionId(String requestReferenceNo, String companyId, String productId) {
+		String referenceNo="";
+		try {
+			
+			if("100019".equals(companyId) && "5".equals(productId)) {
+				List<UgandaVehicleDetailsRaw> list =ugandaVehicleDetailsRepo.findByEwayReferenceNo(requestReferenceNo);
+				referenceNo=list.isEmpty()?referenceNo:list.get(0).getRequestReferenceNo();
+			}else {
+				referenceNo=requestReferenceNo;
+			}
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return referenceNo;
 	}
 
 	private String insertExistingRecordToRawTable(ProductEmployeeDetails p,EwayUploadReq upReq) {

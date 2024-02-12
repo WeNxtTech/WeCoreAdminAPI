@@ -1369,6 +1369,7 @@ public CommonRes getUploadMaster(GetUploadTypeReq req) {
 @Transactional
  public  CommonRes moveRecords(MoveRecordsReq req, String token) {
 	LinkedHashMap<Object,Object> request =new LinkedHashMap<Object,Object>();
+	LinkedHashMap<Object,Object> mapRes =new LinkedHashMap<Object,Object>();
 	CommonRes response = new CommonRes();
 	String ewayReferenceNo ="";
 	try {
@@ -1558,11 +1559,16 @@ public CommonRes getUploadMaster(GetUploadTypeReq req) {
 		         }
 				
 				 
-				 
-				response.setCommonResponse("SUCCESS");
+				mapRes.put("Message", "SUCCESS");
+				mapRes.put("RequestRefNo", "100019".equals(req.getCompanyId()) && "5".equals(req.getProductId()
+						)?ewayReferenceNo:req.getRequestRefNo());
+				response.setCommonResponse(mapRes);
 				response.setMessage("SUCCESS");
 			}
 	 }catch (Exception e) {
+		 mapRes.put("Message", "FAILED");
+			mapRes.put("RequestRefNo", "100019".equals(req.getCompanyId()) && "5".equals(req.getProductId()
+					)?ewayReferenceNo:req.getRequestRefNo());
 		e.printStackTrace();
 		response.setMessage("FAILED");
 		return response;

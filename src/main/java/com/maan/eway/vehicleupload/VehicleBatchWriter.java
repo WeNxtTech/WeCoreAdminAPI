@@ -403,7 +403,7 @@ protected int[][] batchInsert_3(List<Record> records, JdbcTemplate jdbcTemplate,
 				+ "CREATED_BY,ERROR_DESC,STATUS,UPLOAD_TYPE,BRANCH_CODE,BROKER_BRANCH_CODE,CUSTOMER_CODE,"
 				+ "BDM_CODE,BROKER_CODE,APPLICATION_ID,CUSTOMER_REFERENCE_NO,ID_NUMBER,AGENCY_CODE,SOURCE_TYPE_ID,"
 				+ "POLICY_START_DATE,POLICY_END_DATE,CURRENCY,EXCHANGE_RATE,HAVE_PROMOCODE,FLEET_OWNER_YN,USERTYPE,"
-				+ "SAVE_OR_SUBMIT,CAR_ALARM_YN,SUB_USER_TYPE,LOGIN_ID,"+ rawTableFields + ") VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,"+prepareValues + ")";
+				+ "SAVE_OR_SUBMIT,CAR_ALARM_YN,SUB_USER_TYPE,LOGIN_ID,CUSTOMER_NAME,"+ rawTableFields + ") VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,"+prepareValues + ")";
 								
 		
 		
@@ -431,7 +431,7 @@ protected int[][] batchInsert_3(List<Record> records, JdbcTemplate jdbcTemplate,
 						ps.setString(15, response.getCustomerRefNo());
 						ps.setString(16, response.getIdnumber());
 						ps.setString(17, response.getAgencyCode());
-						ps.setString(18, response.getSourceType());
+						ps.setString(18, response.getUserType());
 						ps.setString(19, response.getPolicyStartDate());
 						ps.setString(20, response.getPolicyEndDate());
 						ps.setString(21, response.getCurrency());
@@ -443,9 +443,10 @@ protected int[][] batchInsert_3(List<Record> records, JdbcTemplate jdbcTemplate,
 						ps.setString(27, "Y");
 						ps.setString(28, response.getSubUserType());
 						ps.setString(29, response.getLoginId());
+						ps.setString(30, StringUtils.isBlank(response.getCustomerName())?"None":response.getCustomerName());
 						
 						for (int i = 1; i <= length; i++) {
-							ps.setString(i + 29, argument.getColumnByIndex(i - 1) == null ? null
+							ps.setString(i + 30, argument.getColumnByIndex(i - 1) == null ? null
 									: argument.getColumnByIndex(i - 1).toString().trim());
 							log.info("rowid: "+i+", rowvalue : "+argument.getColumnByIndex(i - 1) );
 						}

@@ -1136,8 +1136,10 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 		CommonRes res =new CommonRes();
 		Map<String,Object> map =new HashMap<String,Object>();
 		try {
+			
+			Integer sectionId =StringUtils.isBlank(req.getSectionId())?0:Integer.valueOf(req.getSectionId());
 			EwayUploadTypeMaster typeMaster =uploadTypeRepo.findByCompanyIdAndProductIdAndSectionIdAndStatus(
-					Integer.valueOf(req.getCompanyId()),Integer.valueOf(req.getProductId()),Integer.valueOf(req.getSectionId()),"Y");
+					Integer.valueOf(req.getCompanyId()),Integer.valueOf(req.getProductId()),sectionId,"Y");
 			if(typeMaster!=null) {
 			    Integer companyId =typeMaster.getCompanyId();
 			    Integer productId =typeMaster.getProductId();

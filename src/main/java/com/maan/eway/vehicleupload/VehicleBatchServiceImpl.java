@@ -65,6 +65,7 @@ import com.maan.eway.batch.entity.EwayEmplyeeDetailRaw;
 import com.maan.eway.batch.entity.EwayUploadTypeMaster;
 import com.maan.eway.batch.entity.EwayXlconfigMaster;
 import com.maan.eway.batch.entity.SqlSeqNumber;
+import com.maan.eway.batch.entity.UgandaVehicleDetailsRaw;
 import com.maan.eway.batch.repository.EserviceMotorDetailsRawRepository;
 import com.maan.eway.batch.repository.EwayEmplyeeDetailRawRepository;
 import com.maan.eway.batch.repository.EwayUploadTypeMasterRepository;
@@ -72,6 +73,7 @@ import com.maan.eway.batch.repository.EwayXlconfigMasterRepository;
 import com.maan.eway.batch.repository.ProductEmployeesDetailsRepository;
 import com.maan.eway.batch.repository.SeqRefnoRepository;
 import com.maan.eway.batch.repository.TransactionControlDetailsRepository;
+import com.maan.eway.batch.repository.UgandaVehicleDetailsRepository;
 import com.maan.eway.batch.req.DeleteRecordReq;
 import com.maan.eway.batch.req.EditRecordReq;
 import com.maan.eway.batch.req.EmployeeUpdateReq;
@@ -155,6 +157,10 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
     private EwayEmplyeeDetailRawRepository employeeRawRepo;
     @Autowired
     private VehicleInputValidation validation;
+    
+    @Autowired
+    private UgandaVehicleDetailsRepository ugandaVehicleDetailsRepo;
+    
     @Autowired 
     private Gson printReq;
   
@@ -384,7 +390,6 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			String productId =StringUtils.isBlank(uploadResponse.getProductId())?"":uploadResponse.getProductId();
 			String requestReferenceNo =StringUtils.isBlank(uploadResponse.getRequestReferenceNo())?"":uploadResponse.getRequestReferenceNo();
 			String sectionId =StringUtils.isBlank(uploadResponse.getSectionId())?"":uploadResponse.getSectionId();
-
 			if("Add".equalsIgnoreCase(uploadType)) {
 				if("5".equals(productId)) {
 					eserviceRepository.deleteByRequestReferenceNo(requestReferenceNo);
@@ -393,6 +398,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 					eserviceRepository.deleteMotorDetailsByRefNo(requestReferenceNo);
 					eserviceRepository.deleteMaster_referral_detailsByRefNo(requestReferenceNo);
 					eserviceRepository.deletePassengerDetails(requestReferenceNo,sectionId);
+					eserviceRepository.deleteUgandaVehicleDetails(requestReferenceNo);
 				}else {
 					eserviceRepository.deleteProductEmployeeDetails(requestReferenceNo,sectionId);
 					eserviceRepository.deleteRawEmployeeDetails(requestReferenceNo,sectionId);
@@ -475,7 +481,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			fileUploadProgress(uploadResponse,"P","Uploading","Validating raw table records","50");
 			
 			// for motor validation block
-			if("5".equals(product)) {
+			if("5".equals(product) && "100002".equals(companyId.toString())) {
 				List<String> status =Arrays.asList(new String[] {"Y","E"});
 				List<EserviceMotorDetailsRaw> list =eserviceRepository.findByCompanyIdAndProductIdAndRequestReferenceNoAndStatusIgnoreCaseInAndApiStatusIsNull(Integer.valueOf(uploadResponse.getCompanyId()),
 						Integer.valueOf(uploadResponse.getProductId()),uploadResponse.getRequestReferenceNo(),status);
@@ -519,9 +525,23 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 				validRecords =dlist.stream().filter(p ->"Y".equals(p.getStatus()) && "Y".equals(p.getTiraStatus())).count();
 				errorRecords =dlist.stream().filter(p ->"E".equals(p.getStatus()) ||  "E".equals(p.getTiraStatus())).count();
 				totalRecords =validRecords + errorRecords;
+			} else if("5".equals(product) && "100019".equals(companyId.toString())) {
+				
+			    ugandaVehicleDetailsRepo.updateDuplicateRegistrationNo(requestReferenceNo);
+				ugandaVehicleDetailsRepo.updateMotorCategory(requestReferenceNo);
+				List<UgandaVehicleDetailsRaw> vehiList =ugandaVehicleDetailsRepo.findByRequestReferenceNo(requestReferenceNo);
+				
+				if(!CollectionUtils.isEmpty(vehiList)) {
+					
+					errorRecords =vehiList.stream().filter(f -> "E".equalsIgnoreCase(f.getStatus()))
+							.count();
+					validRecords =vehiList.stream().filter(f -> "Y".equalsIgnoreCase(f.getStatus()))
+							.count();
+					totalRecords =errorRecords + validRecords;
+					
+					
+				}
 			}
-			                                            
-			
 			// For Employee MASTER validation block
 			else if("14".equals(product) || "15".equals(product) || "32".equals(product) || "19".equals(product)) {
 				
@@ -1350,12 +1370,13 @@ public CommonRes getUploadMaster(GetUploadTypeReq req) {
  public  CommonRes moveRecords(MoveRecordsReq req, String token) {
 	LinkedHashMap<Object,Object> request =new LinkedHashMap<Object,Object>();
 	CommonRes response = new CommonRes();
+	String ewayReferenceNo ="";
 	try {
          log.info("MoveRecords request || "+printReq.toJson(req));
 		 Integer companyId=Integer.valueOf(req.getCompanyId());
 		 Integer productId=Integer.valueOf(req.getProductId());
 		// Motor main table insert block
-		if("5".equalsIgnoreCase(req.getProductId())) {
+		if("5".equalsIgnoreCase(req.getProductId()) && "100002".equals(req.getCompanyId())) {
 			List<EserviceMotorDetailsRaw> list =eserviceRepository.findByCompanyIdAndProductIdAndRequestReferenceNo(companyId,productId,req.getRequestRefNo());
 								
 			if(!CollectionUtils.isEmpty(list)) {
@@ -1395,9 +1416,12 @@ public CommonRes getUploadMaster(GetUploadTypeReq req) {
 				
 			}else {	
 				
-				List<EwayEmplyeeDetailRaw> empList =employeeRawRepo.findByRequestReferenceNo(req.getRequestRefNo());
-				 
-				Integer sectionId =Integer.valueOf(empList.get(0).getSectionId());
+				if("100019".equals(String.valueOf(companyId)) && "5".equals(String.valueOf(productId))) {
+					List<UgandaVehicleDetailsRaw> ugandaList =ugandaVehicleDetailsRepo.findByRequestReferenceNoAndEwayReferenceNoNotNull(req.getCompanyId());
+					ewayReferenceNo =ugandaList.isEmpty()?"":ugandaList.get(0).getEwayReferenceNo();
+				}
+				
+				Integer sectionId =StringUtils.isBlank(req.getSectionId())?0:Integer.valueOf(req.getSectionId());
 				
 				EwayUploadTypeMaster typeMaster=uploadTypeRepo.findByCompanyIdAndProductIdAndSectionIdAndStatus
 						 (companyId, productId,sectionId, "Y");
@@ -1408,18 +1432,14 @@ public CommonRes getUploadMaster(GetUploadTypeReq req) {
 				List<EwayXlconfigMaster> list =xlConfigMaster.findByCompanyIdAndProductIdAndSectionIdAndTypeidOrderByFieldid
 						 (companyId,productId,sectionId,typeId);
 				 
-				 
-				List<EwayXlconfigMaster> mainData =list.stream()
-						 .filter(p ->StringUtils.isNotBlank(p.getSelColName()))
-						 .collect(Collectors.toList());
-				 
+			
 				 StringJoiner arrayDynQuery=new StringJoiner(",");
 				 StringJoiner arrayJsonFields=new StringJoiner(",");
 				 StringJoiner objectDynQuery=new StringJoiner(",");
 				 StringJoiner objectJsonKey=new StringJoiner(",");
 				 StringJoiner objectListJsonKey=new StringJoiner(",");
 				
-		         for(EwayXlconfigMaster config : mainData) {
+		         for(EwayXlconfigMaster config : list) {
 		        	 if("Y".equalsIgnoreCase(config.getIsArray()) ) {
 			        	 if("Y".equalsIgnoreCase(config.getIsMainDefauVal())) {
 			        		 arrayDynQuery.add("'"+config.getSelColName()+"' as "+config.getApiJsonKey()+"");
@@ -1441,7 +1461,7 @@ public CommonRes getUploadMaster(GetUploadTypeReq req) {
 				 
 		         String rawTableName =typeMaster.getRawTableName().trim();
 		         String apiUrl =typeMaster.getApiName().trim();
-		         String method =StringUtils.isBlank(typeMaster.getApiMethod())?"POST":typeMaster.getApiMethod();
+		        // String method =StringUtils.isBlank(typeMaster.getApiMethod())?"POST":typeMaster.getApiMethod();
 		         ArrayList<LinkedHashMap<Object,Object>> arrayList =new ArrayList<LinkedHashMap<Object,Object>>();
 		         if(StringUtils.isNotBlank(arrayDynQuery.toString())) {
 					 String [] apiJsonFields=arrayJsonFields.toString().split(",");
@@ -1477,12 +1497,15 @@ public CommonRes getUploadMaster(GetUploadTypeReq req) {
 			         @SuppressWarnings("unchecked")
 					 List<Object[]> queryResult =query.getResultList();
 					 Object [] array = new Object[1];
-					 if(queryResult.get(0) instanceof Object[]) {
-						 array=queryResult.get(0);
+					 
+					 array =queryResult.get(0) instanceof Object[]?array=queryResult.get(0):queryResult.get(0);
+					 
+					/* if(queryResult.get(0) instanceof Object[]) {
+						 
 					 }else {
 						 Object objString=(Object)queryResult.get(0);
 						 array[0]=objString;
-					 }
+					 }*/
 					 int key =0;
 					 for(Object o : array) {
 						 request.put(apiJsonFields[key], o==null?"":o.toString());
@@ -1490,8 +1513,13 @@ public CommonRes getUploadMaster(GetUploadTypeReq req) {
 					 }
 			         
 		         }
+		        
 		         if(arrayList.size()>0) {
 		        	 request.put(objectListJsonKey.toString(), arrayList);
+		         }
+		         
+		         if("100019".equals(String.valueOf(companyId)) && "5".equals(String.valueOf(productId))) {
+		        	 request.put("RequestReferenceNo", ewayReferenceNo);
 		         }
 		         
 		        String apiReq =printReq.toJson(request);
@@ -1504,13 +1532,31 @@ public CommonRes getUploadMaster(GetUploadTypeReq req) {
 				else
 					status ="N";
 				
-				 String updateQuery ="update "+rawTableName+" set API_STATUS=?1 where REQUEST_REFERENCE_NO=?2";
-				 Integer count= em.createNativeQuery(updateQuery)
-				.setParameter(1, status)
-				.setParameter(2, req.getRequestRefNo())
-				.executeUpdate();
+				if("100019".equals(String.valueOf(companyId)) && "5".equals(String.valueOf(productId))) {
+					
+					List<Map<String,Object>> errorList =apiRes.get("ErrorMessage")==null?null:(List<Map<String,Object>>)apiRes.get("ErrorMessage");
+					
+					if(errorList!=null) {
+						Map<String,Object> result =apiRes.get("Result")==null?null:(Map<String,Object>)apiRes.get("Result");
+						ewayReferenceNo=result.get("RequestReferenceNo")==null?"":result.get("RequestReferenceNo").toString();
+					}
+					log.info("EWAY ReferenceNo || "+ewayReferenceNo);
+					String updateQuery ="update "+rawTableName+" set API_STATUS=?1,EWAY_REFERENCE_NO=?2 where REQUEST_REFERENCE_NO=?3";
+					 em.createNativeQuery(updateQuery)
+					.setParameter(1, status)
+					.setParameter(2, StringUtils.isBlank(ewayReferenceNo)?null:ewayReferenceNo)
+					.setParameter(3, req.getRequestRefNo())
+					.executeUpdate();
+		         }else {
+					 String updateQuery ="update "+rawTableName+" set API_STATUS=?1 where REQUEST_REFERENCE_NO=?2";
+					 Integer count= em.createNativeQuery(updateQuery)
+					.setParameter(1, status)
+					.setParameter(2, req.getRequestRefNo())
+					.executeUpdate();
+		         }
 				
-				log.info("updated employee count "+count);
+				 
+				 
 				response.setCommonResponse("SUCCESS");
 				response.setMessage("SUCCESS");
 			}

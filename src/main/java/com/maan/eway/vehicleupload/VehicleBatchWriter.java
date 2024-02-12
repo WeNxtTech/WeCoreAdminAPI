@@ -66,11 +66,14 @@ public ItemWriter<Record> itemWriter(TransactionControlDetailsRepository fleetTe
 				response = request.getEwayUploadRes();
 				String typeId =response.getTypeId();
 				String productId =response.getProductId();
+				String companyId =response.getProductId();
 				log.info("Eway batch write start with productId:" +productId);
-				if("5".equals(productId)){
+				if("5".equals(productId) && "100002".equalsIgnoreCase(companyId)){
 					batchInsert_1(recordsList, jdbcTemplate, response,fleetTempRepo);
-				}else {
+				}else if("100002".equalsIgnoreCase(companyId)) {
 					batchInsert_2(recordsList, jdbcTemplate, response,fleetTempRepo);
+				}else {
+					batchInsert_3(recordsList, jdbcTemplate, response,fleetTempRepo);// for ugandaCompany
 				}
 				log.info("Eway batch write endwith productId:" +productId);
 				
@@ -383,6 +386,89 @@ private boolean isDouble(String value) {
 	   }
 }
 
-
+protected int[][] batchInsert_3(List<Record> records, JdbcTemplate jdbcTemplate,EwayUploadRes response, TransactionControlDetailsRepository fleetTempRepo) {
+	try {
+		System.out.println("batchInsert:");
+		String excelTableName = response.getExcelrawtablename();
+		int batchSize = records.size();
+		
+		
+		HashMap<String,String> map =getTableColumns(response.getXlConfigData());
+		String rawTableFields = map.get("RAW_COLUMNS").toString();
+		String[] listcol = rawTableFields.split(",");
+		int length = listcol.length;
+		String prepareValues =map.get("PREPARE_VALUES").toString();
+					
+		String finalquery = "INSERT INTO " + excelTableName + "(COMPANY_ID,PRODUCT_ID,TYPE_ID,REQUEST_REFERENCE_NO,"
+				+ "CREATED_BY,ERROR_DESC,STATUS,UPLOAD_TYPE,BRANCH_CODE,BROKER_BRANCH_CODE,CUSTOMER_CODE,"
+				+ "BDM_CODE,BROKER_CODE,APPLICATION_ID,CUSTOMER_REFERENCE_NO,ID_NUMBER,AGENCY_CODE,SOURCE_TYPE_ID,"
+				+ "POLICY_START_DATE,POLICY_END_DATE,CURRENCY,EXCHANGE_RATE,HAVE_PROMOCODE,FLEET_OWNER_YN,USERTYPE,"
+				+ "SAVE_OR_SUBMIT,CAR_ALARM_YN,SUB_USER_TYPE,LOGIN_ID,"+ rawTableFields + ") VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,"+prepareValues + ")";
+								
+		
+		
+			int[][] updateCounts = jdbcTemplate.batchUpdate(finalquery, records, batchSize,
+				new ParameterizedPreparedStatementSetter<Record>() {
+					public void setValues(PreparedStatement ps, Record argument) throws SQLException {
+						log.info("Eway batch data========>"+argument==null?"":print.toJson(argument));
+						
+						String error =validateDetails(argument,response);
+						DateFormat dateformat = new SimpleDateFormat("dd/MM/yyyy");
+						ps.setInt(1, StringUtils.isBlank(response.getCompanyId())?null:Integer.valueOf(response.getCompanyId()));
+						ps.setInt(2, StringUtils.isBlank(response.getProductId())?null:Integer.valueOf(response.getProductId()));
+						ps.setInt(3, StringUtils.isBlank(response.getTypeId())?null:Integer.valueOf(response.getTypeId()));
+						ps.setString(4,  StringUtils.isBlank(response.getRequestReferenceNo())?null:response.getRequestReferenceNo());
+						ps.setString(5,  StringUtils.isBlank(response.getLoginId()) ?null:response.getLoginId());
+						ps.setString(6,  StringUtils.isBlank(error) ?null:error);
+						ps.setString(7,  StringUtils.isBlank(error) ?"Y":"E");
+						ps.setString(8,response.getUploadType());
+						ps.setString(9,response.getBranchCode());
+						ps.setString(10, response.getBrokerBranchCode());
+						ps.setString(11, response.getCustomerCode());
+						ps.setString(12, response.getBdmCode());
+						ps.setString(13, response.getBeokerCode());
+						ps.setString(14, response.getApplicationId());
+						ps.setString(15, response.getCustomerRefNo());
+						ps.setString(16, response.getIdnumber());
+						ps.setString(17, response.getAgencyCode());
+						ps.setString(18, response.getSourceType());
+						ps.setString(19, response.getPolicyStartDate());
+						ps.setString(20, response.getPolicyEndDate());
+						ps.setString(21, response.getCurrency());
+						ps.setString(22, response.getExchangeRate());
+						ps.setString(23, response.getHavePromoCode());
+						ps.setString(24, "N");
+						ps.setString(25, response.getUserType());
+						ps.setString(26, "Save");
+						ps.setString(27, "Y");
+						ps.setString(28, response.getSubUserType());
+						ps.setString(29, response.getLoginId());
+						
+						for (int i = 1; i <= length; i++) {
+							ps.setString(i + 29, argument.getColumnByIndex(i - 1) == null ? null
+									: argument.getColumnByIndex(i - 1).toString().trim());
+							log.info("rowid: "+i+", rowvalue : "+argument.getColumnByIndex(i - 1) );
+						}
+						log.info("entryDate:"+dateformat.format(new Date()) );
+						log.info("finalquery:"+finalquery);
+					}
+				});
+		log.info("batchSize:"+batchSize+", updateCounts : "+updateCounts +finalquery);
+		 
+		return updateCounts;
+	} catch (Exception e) {
+		log.error(e);
+		e.printStackTrace();
+		
+	}finally {
+		try {
+		jdbcTemplate.getDataSource().getConnection().close();
+			
+		} catch (SQLException e) {
+			log.error(e);
+		}
+	}
+	return null;
+}
 
 }

@@ -505,7 +505,7 @@ public class ChartParentMasterServiceImpl implements ChartParentMasterService {
 			BigDecimal brokerCommision =hpm.getCommissionPercentage();
 			
 			String endorsmentType =StringUtils.isBlank(hpm.getEndtStatus())?"":hpm.getEndtStatus();
-			List<ChartParentMaster> cpm =chatParentMasterRepo.findByChatParentIdCompanyIdAndStatusIgnoreCaseOrderByDisplayOrderAsc(companyId, "Y");
+			List<ChartParentMaster> cpm =jpqlQuery.getChartParentMasterDetails(companyId);
 			List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
 			
 
@@ -706,7 +706,7 @@ public class ChartParentMasterServiceImpl implements ChartParentMasterService {
 					
 					List<Integer> coverIds =charAccount.stream().map(c1 -> c1.getId().getCoverId()).collect(Collectors.toList());
 					
-					Integer [] coverIdArray = new Integer[coverIds.size()];
+					//Integer [] coverIdArray = new Integer[coverIds.size()];
 					 
 					if("CR".equalsIgnoreCase(c.getAccountType()) && "C".equalsIgnoreCase(c.getCharactersticType())) {
 								

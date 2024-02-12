@@ -502,6 +502,30 @@ public class JpqlQueryServiceImpl {
 		}
 		return null;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<ChartParentMaster> getChartParentMasterDetails(Integer companyId){
+		List<ChartParentMaster> list =null;
+		try {
+			String sql ="select pm from ChartParentMaster cpm where cpm.chatParentId.companyId=:companyId and cpm.status=:status "
+					+ "and sysdate() between cpm.effectiveStartDate and cpm.effectiveEndDate and order by cpm.displayOrder";
+			list =(List<ChartParentMaster>) em.createQuery(sql).setParameter("companyId", companyId).setParameter("status", "Y").getResultList();
+			
+			List<ChartParentMaster> filterList = new ArrayList<ChartParentMaster>();
+			
+				list.stream().collect(Collectors.groupingBy(p ->p.getChatParentId().getChartId()))
+				.forEach((key,value) ->{
+					ChartParentMaster cpm =	value.stream().collect(Collectors.maxBy((a,b) ->a.getChatParentId().getAmendId().compareTo(a.getChatParentId().getAmendId())))
+					.get();
+					filterList.add(cpm);
+					});
+				
+			return filterList;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
 
 
 }

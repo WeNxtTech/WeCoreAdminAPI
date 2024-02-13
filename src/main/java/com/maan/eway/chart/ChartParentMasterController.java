@@ -46,7 +46,7 @@ public class ChartParentMasterController {
 		return service.characterstic();
 	}
 	
-	@PostMapping("/childChartInsert")
+	//@PostMapping("/childChartInsert")
 	public CommonRes childChartInsert(@RequestBody List<ChartChildRequest> req) {
 		return service.childChartInsert(req);
 	}
@@ -67,6 +67,9 @@ public class ChartParentMasterController {
 		return service.policyCredittDebitEntry(quoteNo);
 	}
 	
-	
+	@PostMapping("/childChartInsert")
+	public CommonRes childChartInsert1(@RequestBody ChildChartInfoReq req) {
+		return service.childChartInsert1(req);
+	}
 		
 }

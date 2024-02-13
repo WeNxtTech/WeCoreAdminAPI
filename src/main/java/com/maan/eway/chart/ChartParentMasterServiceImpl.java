@@ -815,6 +815,101 @@ public class ChartParentMasterServiceImpl implements ChartParentMasterService {
 		return response;
 	}
 
+	@Override
+	public CommonRes childChartInsert1(ChildChartInfoReq req) {
+		CommonRes response = new CommonRes();
+		try {
+			
+			List<Error> errors =validateChildReq1(req);
+			
+			if(errors.isEmpty()) {
+				Integer amendId =jpqlQuery.getChildChartMaxOfAmendId1(req);
+				
+				List<ChartAccountChildMaster> saveList= new ArrayList<>();
+				
+				for (ChildCoverList cover: req.getCoverList()) {
+					
+					ChartAccountChildMasterId masterId = ChartAccountChildMasterId.builder()
+							.companyId(Integer.valueOf(req.getCompanyId()))
+							.productId(Integer.valueOf(req.getProductId()))
+							.sectionId(Integer.valueOf(req.getSectionId()))
+							.chartId(Integer.valueOf(req.getChartId()))
+							.coverId(Integer.valueOf(cover.getCoverId()))
+							.amendId(amendId)
+							.build();
+					
+					ChartAccountChildMaster childMaster =ChartAccountChildMaster.builder()
+							.id(masterId)
+							.accountType(req.getAccountType())
+							.effectiveEndDate(sdf.parse("31/12/2050"))
+							.effectiveStartDate(sdf.parse(req.getEffectiveStartDate()))
+							.entryDate(new Date())
+							.updatedBy(req.getUpdatedBy())
+							.updatedDate(new Date())
+							.status(StringUtils.isBlank(cover.getStatus())?"Y":cover.getStatus())
+							.build();
+					
+					saveList.add(childMaster);
+				}
+				
+				childRepo.saveAll(saveList);
+				
+				response.setMessage("Success");
+				response.setIsError(true);
+				response.setErrorMessage(Collections.EMPTY_LIST);
+				response.setCommonResponse("Data saved successfully");
+			}else {
+				response.setMessage("Failed");
+				response.setIsError(true);
+				response.setErrorMessage(errors);
+				response.setCommonResponse(null);
+			}
+
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return response;
+	}
+
+	private List<Error> validateChildReq1(ChildChartInfoReq req) {
+		List<Error> error = new ArrayList<>();
+		if(StringUtils.isBlank(req.getCompanyId())) {
+			error.add(new Error("500","CompanyId","Please enter CompanyId"));
+		}
+		if(StringUtils.isBlank(req.getProductId())) {
+			error.add(new Error("500","ProductId","Please enter ProductId"));
+		}
+		if(StringUtils.isBlank(req.getSectionId())) {
+			error.add(new Error("500","SectionId","Please enter SectionId"));
+		}
+		if(StringUtils.isBlank(req.getChartId())) {
+			error.add(new Error("500","ChartId","Please enter ChartId"));
+		}
+		
+		if(StringUtils.isBlank(req.getAccountType())) {
+			error.add(new Error("500","AccountType","Pleae enter AccountType"));
+		}
+		
+		if(StringUtils.isBlank(req.getEffectiveStartDate())) {
+			error.add(new Error("500","EffectiveStartDate","Please enter EffectiveStartDate"));
+		}else {
+			LocalDate localDate =LocalDate.now();
+			LocalDate effectiveStartDate =LocalDate.parse(req.getEffectiveStartDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+			
+			if(effectiveStartDate.isBefore(localDate)) {
+				error.add(new Error("500","EffectiveStartDate","EffectiveStartDate should be graterthan todaydate or equal"));
+			}
+		}
+		if(StringUtils.isBlank(req.getUpdatedBy())) {
+			error.add(new Error("500","UpdatedBy","Please enter UpdatedBy"));
+		}
+		
+		
+		if(req.getCoverList().isEmpty()) {
+			error.add(new Error("500","CoverList","Please enter coverlist"));
+		}
+		return error;
+	}
 	
 
 }

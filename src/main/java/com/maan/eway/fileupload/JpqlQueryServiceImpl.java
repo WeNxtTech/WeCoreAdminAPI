@@ -1,6 +1,5 @@
 package com.maan.eway.fileupload;
 
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -44,6 +43,7 @@ import com.maan.eway.chart.ChartChildRequest;
 import com.maan.eway.chart.ChartParentMaster;
 import com.maan.eway.chart.ChartParentMasterRepository;
 import com.maan.eway.chart.ChartParentRequest;
+import com.maan.eway.chart.ChildChartInfoReq;
 import com.maan.eway.embedded.EmbeddedReq;
 import com.maan.eway.embedded.GroupMedicalDetails;
 
@@ -433,13 +433,13 @@ public class JpqlQueryServiceImpl {
 						p.setEffectiveEndDate(Date.from(minusEffectiveStartDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
 						return chartChildRepo.save(p);
 					}).collect(Collectors.toList());
-					
+										
 					amendId =list.get(0).getId().getAmendId()+1;
 				}else {
 					amendId =list.get(0).getId().getAmendId();
 					chartChildRepo.deleteAll(list);
 				}
-				
+								
 			}
 		   
 		}catch (Exception e) {
@@ -525,6 +525,53 @@ public class JpqlQueryServiceImpl {
 			e.printStackTrace();
 		}
 		return list;
+	}
+	
+	public Integer getChildChartMaxOfAmendId1(ChildChartInfoReq req) {
+		Integer amendId=0;
+		try {
+			
+			String queryString ="select ccm from ChartAccountChildMaster ccm  where ccm.id.companyId=:companyId and ccm.id.productId=:productId and ccm.id.sectionId=:sectionId "
+					+ "and ccm.id.chartId=:chartId and ccm.id.amendId=(select max(ccmm.id.amendId) from ChartAccountChildMaster ccmm where ccm.id.companyId=ccmm.id.companyId "
+					+ "and ccm.id.productId=ccmm.id.productId and ccm.id.sectionId=ccmm.id.sectionId and ccm.id.chartId=ccmm.id.chartId)";
+			
+			@SuppressWarnings("unchecked")
+			List<ChartAccountChildMaster> list =em.createQuery(queryString)
+					.setParameter("companyId", Integer.valueOf(req.getCompanyId()))
+					.setParameter("productId", Integer.valueOf(req.getProductId()))
+					.setParameter("sectionId", Integer.valueOf(req.getSectionId()))
+					.setParameter("chartId", Integer.valueOf(req.getChartId()))
+					//.setParameter("coverId", Integer.valueOf(req.getCoverId()))
+					.getResultList();
+			
+			if(!list.isEmpty()) {
+				
+				LocalDate minusEffectiveStartDate =LocalDate.parse(req.getEffectiveStartDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy")).minusDays(1);
+				
+				Date todayDate = new Date();
+				
+				if(list.get(0).getEffectiveStartDate().before(todayDate)) {
+					
+					list.stream().map(p ->{
+						p.setUpdatedDate(new Date());
+						p.setUpdatedBy(req.getUpdatedBy());
+						p.setEffectiveEndDate(Date.from(minusEffectiveStartDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+						return chartChildRepo.save(p);
+					}).collect(Collectors.toList());
+										
+					amendId =list.get(0).getId().getAmendId()+1;
+				}else {
+					amendId =list.get(0).getId().getAmendId();
+					chartChildRepo.deleteAll(list);
+				}
+								
+			}
+		   
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return amendId;
 	}
 
 

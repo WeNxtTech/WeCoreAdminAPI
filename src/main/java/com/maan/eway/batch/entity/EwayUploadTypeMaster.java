@@ -104,6 +104,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="ENTRY_DATE", length=100)
     private Date     entryDate ;
+    
+    @Column(name="FILE_PATHYN", length=100)
+    private String   filePathYn;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 

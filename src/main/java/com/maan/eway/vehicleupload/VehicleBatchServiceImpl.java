@@ -1,6 +1,7 @@
 package com.maan.eway.vehicleupload;
 
 import java.io.ByteArrayOutputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -1145,69 +1146,85 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			    Integer productId =typeMaster.getProductId();
 			    Integer typeId =typeMaster.getTypeid();
 			    String fileName =typeMaster.getTypename();
-				List<EwayXlconfigMaster> master =xlConfigMaster.findByCompanyIdAndProductIdAndTypeidAndStatusOrderByFieldid(companyId, productId, typeId, "Y");
-				
-				List<String> excelHeaderColumns =master.stream().map(p ->p.getExcelheaderName())
-						.collect(Collectors.toList());
-				
-				String [] strArray =new String[excelHeaderColumns.size()];
-				excelHeaderColumns.toArray(strArray);
-				
-				// Create a new workbook
-		        Workbook workbook = new XSSFWorkbook();
-		        
-		        Sheet sheet =workbook.createSheet(fileName);
-		        
-		        Font font = workbook.createFont();
-		        font.setFontName("Arial");
-		        font.setFontHeightInPoints((short) 12);
-		        font.setBold(true);
-		        font.setColor(IndexedColors.BLACK.getIndex());
-		        
-		        sheet.autoSizeColumn(0);
-		        
-
-		        // Create a cell style with the font
-		        CellStyle style = workbook.createCellStyle();
-		        style.setFont(font);
-		        
-		        style.setFillForegroundColor(IndexedColors.GREEN.getIndex()); 
-	            style.setFillPattern(FillPatternType.FINE_DOTS); 
-	            
-	           
-
-		        Row rowm =sheet.createRow(0);
-		        rowm.setHeightInPoints(20);
-
-		       // String [] excelColArray =excelHeaderColumns.split("~");
-
-		        int col =0;
-		        for(String str :strArray) {
-		        	Cell cell =rowm.createCell(col);
-		        	cell.setCellValue(str);
-		        	cell.setCellStyle(style);
-		        	
-		        	col++;
-		        }
-		        
-		     // Auto-size the cells in the first row
-		        for (int i = 0; i <strArray.length; i++) {
-		            sheet.autoSizeColumn(i);
+			    
+			    if("N".equals(typeMaster.getFilePathYn())) {
+				    	List<EwayXlconfigMaster> master =xlConfigMaster.findByCompanyIdAndProductIdAndTypeidAndStatusOrderByFieldid(companyId, productId, typeId, "Y");
+				    
+					List<String> excelHeaderColumns =master.stream().map(p ->p.getExcelheaderName())
+							.collect(Collectors.toList());
+					
+					String [] strArray =new String[excelHeaderColumns.size()];
+					excelHeaderColumns.toArray(strArray);
+					
+					// Create a new workbook
+			        Workbook workbook = new XSSFWorkbook();
+			        
+			        Sheet sheet =workbook.createSheet(fileName);
+			        
+			        Font font = workbook.createFont();
+			        font.setFontName("Arial");
+			        font.setFontHeightInPoints((short) 12);
+			        font.setBold(true);
+			        font.setColor(IndexedColors.BLACK.getIndex());
+			        
+			        sheet.autoSizeColumn(0);
+			        
+	
+			        // Create a cell style with the font
+			        CellStyle style = workbook.createCellStyle();
+			        style.setFont(font);
+			        
+			        style.setFillForegroundColor(IndexedColors.GREEN.getIndex()); 
+		            style.setFillPattern(FillPatternType.FINE_DOTS); 
 		            
-		        }
-				
-				ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		        workbook.write(bos);
-		        workbook.close();
-		        byte [] byteArray =bos.toByteArray();
-		        String base64 =Base64.getEncoder().encodeToString(byteArray);
-		        String prefix = "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,";
-
-		        res.setMessage("SUCCESS");
-				map.put("Base64", prefix+base64);
-				map.put("FileName", typeMaster.getTypename());
-				map.put("Message", "SUCCESS");
-				res.setCommonResponse(map);
+		           
+	
+			        Row rowm =sheet.createRow(0);
+			        rowm.setHeightInPoints(20);
+	
+			       // String [] excelColArray =excelHeaderColumns.split("~");
+	
+			        int col =0;
+			        for(String str :strArray) {
+			        	Cell cell =rowm.createCell(col);
+			        	cell.setCellValue(str);
+			        	cell.setCellStyle(style);
+			        	
+			        	col++;
+			        }
+			        
+			     // Auto-size the cells in the first row
+			        for (int i = 0; i <strArray.length; i++) {
+			            sheet.autoSizeColumn(i);
+			            
+			        }
+					
+					ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			        workbook.write(bos);
+			        workbook.close();
+			        byte [] byteArray =bos.toByteArray();
+			        String base64 =Base64.getEncoder().encodeToString(byteArray);
+			        String prefix = "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,";
+	
+			        res.setMessage("SUCCESS");
+					map.put("Base64", prefix+base64);
+					map.put("FileName", typeMaster.getTypename());
+					map.put("Message", "SUCCESS");
+					res.setCommonResponse(map);
+			    }else {
+			    	
+			    	String filePath = typeMaster.getFilePath();
+			    	Path paths = Paths.get(filePath);
+			    	byte [] array =Files.readAllBytes(paths);
+			    	String base64 =Base64.getEncoder().encodeToString(array);
+				    String prefix = "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,";
+		
+				    res.setMessage("SUCCESS");
+				    map.put("Base64", prefix+base64);
+					map.put("FileName", typeMaster.getTypename());
+					map.put("Message", "SUCCESS");
+					res.setCommonResponse(map);
+			    }
 			}else {
 				res.setMessage("FAILED");
 				map.put("Base64", "");

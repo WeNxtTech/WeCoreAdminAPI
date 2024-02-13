@@ -24,4 +24,6 @@ public interface ChartParentMasterService  {
 
 	CommonRes policyCredittDebitEntry(String quoteNo);
 
+	CommonRes childChartInsert1(ChildChartInfoReq req);
+
 }

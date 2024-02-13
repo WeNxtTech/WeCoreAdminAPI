@@ -159,7 +159,7 @@ public class ChartParentMasterServiceImpl implements ChartParentMasterService {
 	public CommonRes getAllChartByCompanyId(Integer companyId) {
 		CommonRes response = new CommonRes();
 		try {
-			List<ChartParentMaster> list =chatParentMasterRepo.findByChatParentIdCompanyIdAndStatusIgnoreCase(companyId,"Y");
+			List<ChartParentMaster> list =chatParentMasterRepo.findParentData(companyId,"Y");
 			if(!list.isEmpty()) {
 				List<Map<String,String>> listMap = new ArrayList<>();
 				 list.stream().collect(
@@ -406,7 +406,7 @@ public class ChartParentMasterServiceImpl implements ChartParentMasterService {
 	public CommonRes getAllChildChartInsert(GetAllChildChartRequest req) {
 		CommonRes response = new CommonRes();
 		try {
-			List<ChartAccountChildMaster> childMasters =childRepo.findByIdCompanyIdAndIdProductIdAndIdSectionIdAndIdChartId(Integer.valueOf(req.getCompanyId())
+			List<ChartAccountChildMaster> childMasters =childRepo.findChildData(Integer.valueOf(req.getCompanyId())
 					,Integer.valueOf(req.getProductId()),Integer.valueOf(req.getSectionId()),Integer.valueOf(req.getChartId()));
 		
 			if(!childMasters.isEmpty()) {

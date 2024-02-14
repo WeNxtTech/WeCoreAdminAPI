@@ -49,6 +49,7 @@ import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.bean.WarrantyMaster;
+import com.maan.eway.chart.ChartParentMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.SectionCoverChangeStatusReq;
 import com.maan.eway.master.req.SectionCoverMasterGetAllReq;
@@ -1573,86 +1574,121 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			cal.set(Calendar.HOUR_OF_DAY, 1);
 			cal.set(Calendar.MINUTE, 1);
 			Date todayEnd = cal.getTime();
-			// Criteria
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<SectionCoverMaster> query = cb.createQuery(SectionCoverMaster.class);
-			List<SectionCoverMaster> list = new ArrayList<SectionCoverMaster>();
-
-			// Find All
-			Root<SectionCoverMaster> c = query.from(SectionCoverMaster.class);
-
-			// Select
-			query.select(c);
-
-			// Order By
-			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(c.get("coverName")));
-
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<SectionCoverMaster> ocpm1 = effectiveDate.from(SectionCoverMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
-			javax.persistence.criteria.Predicate a2 = cb.equal(c.get("productId"), ocpm1.get("productId"));
-			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("sectionId"), ocpm1.get("sectionId"));
-			javax.persistence.criteria.Predicate a4 = cb.equal(c.get("coverId"), ocpm1.get("coverId"));
-			javax.persistence.criteria.Predicate a5 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			Predicate a13 = cb.equal(ocpm1.get("agencyCode"), c.get("agencyCode"));
-			Predicate a14 = cb.equal(ocpm1.get("branchCode"), c.get("branchCode"));
-			effectiveDate.where(a1, a2, a3, a4, a5,a13,a14);
-			// Effective Date End
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
-			Root<SectionCoverMaster> ocpm2 = effectiveDate2.from(SectionCoverMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
-			Predicate a6 = cb.equal(c.get("sectionId"), ocpm2.get("sectionId"));
-			Predicate a7 = cb.equal(c.get("coverId"), ocpm2.get("coverId"));
-			Predicate a8 = cb.equal(c.get("companyId"), ocpm2.get("companyId") );
-			Predicate a9 = cb.equal(c.get("productId"), ocpm2.get("productId") );
-			Predicate a10 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-			Predicate a15 = cb.equal(ocpm2.get("agencyCode"), c.get("agencyCode"));
-			Predicate a16 = cb.equal(ocpm2.get("branchCode"), c.get("branchCode"));
-			effectiveDate2.where(a6,a7,a8,a9,a10,a15,a16);
-					
-			// Where
-			Predicate n1 = cb.equal(c.get("status"),"Y");
-			Predicate n15 = cb.equal(c.get("status"),"R");
-			Predicate n16 = cb.or(n1,n15);
-			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
-			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"), req.getCompanyId());
-			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("productId"), req.getProductId());
-			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("sectionId"), req.getSectionId());
-			javax.persistence.criteria.Predicate n6 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
-			javax.persistence.criteria.Predicate n14 = cb.equal(c.get("subCoverId"), "0");
-			Predicate n8 = cb.equal(c.get("agencyCode"), req.getAgencyCode());
-			Predicate n9 = cb.equal(c.get("agencyCode"), "99999");
-			Predicate n10 = cb.or(n8,n9);
-			Predicate n11 = cb.equal(c.get("branchCode"), req.getBranchCode());
-			Predicate n12 = cb.equal(c.get("branchCode"), "99999");
-			Predicate n13 = cb.or(n11,n12 );
-			if(StringUtils.isNotBlank(req.getCoverId()) ) {
-				javax.persistence.criteria.Predicate n7 = cb.notEqual(c.get("coverId"), req.getCoverId());
-				query.where(n16, n2, n3, n4, n5,n6,n7,n14,n10,n13).orderBy(orderList);
+			
+			if(StringUtils.isNotBlank(req.getSectionId()) &&  "99999".equalsIgnoreCase(req.getSectionId()) ) {
+				resList = getChartAccountDropdown(req);
 			} else {
-				query.where(n16, n2, n3, n4, n5,n6,n10,n13).orderBy(orderList);
+				// Criteria
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<SectionCoverMaster> query = cb.createQuery(SectionCoverMaster.class);
+				List<SectionCoverMaster> list = new ArrayList<SectionCoverMaster>();
+
+				// Find All
+				Root<SectionCoverMaster> c = query.from(SectionCoverMaster.class);
+
+				// Select
+				query.select(c);
+
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.asc(c.get("coverName")));
+
+				// Effective Date Max Filter
+				Subquery<Long> effectiveDate = query.subquery(Long.class);
+				Root<SectionCoverMaster> ocpm1 = effectiveDate.from(SectionCoverMaster.class);
+				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+				javax.persistence.criteria.Predicate a1 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+				javax.persistence.criteria.Predicate a2 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+				javax.persistence.criteria.Predicate a3 = cb.equal(c.get("sectionId"), ocpm1.get("sectionId"));
+				javax.persistence.criteria.Predicate a4 = cb.equal(c.get("coverId"), ocpm1.get("coverId"));
+				javax.persistence.criteria.Predicate a5 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+				Predicate a13 = cb.equal(ocpm1.get("agencyCode"), c.get("agencyCode"));
+				Predicate a14 = cb.equal(ocpm1.get("branchCode"), c.get("branchCode"));
+				effectiveDate.where(a1, a2, a3, a4, a5,a13,a14);
+				// Effective Date End
+				Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+				Root<SectionCoverMaster> ocpm2 = effectiveDate2.from(SectionCoverMaster.class);
+				effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+				Predicate a6 = cb.equal(c.get("sectionId"), ocpm2.get("sectionId"));
+				Predicate a7 = cb.equal(c.get("coverId"), ocpm2.get("coverId"));
+				Predicate a8 = cb.equal(c.get("companyId"), ocpm2.get("companyId") );
+				Predicate a9 = cb.equal(c.get("productId"), ocpm2.get("productId") );
+				Predicate a10 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+				Predicate a15 = cb.equal(ocpm2.get("agencyCode"), c.get("agencyCode"));
+				Predicate a16 = cb.equal(ocpm2.get("branchCode"), c.get("branchCode"));
+				effectiveDate2.where(a6,a7,a8,a9,a10,a15,a16);
+						
+				// Where
+				Predicate n1 = cb.equal(c.get("status"),"Y");
+				Predicate n15 = cb.equal(c.get("status"),"R");
+				Predicate n16 = cb.or(n1,n15);
+				javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+				javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"), req.getCompanyId());
+				javax.persistence.criteria.Predicate n4 = cb.equal(c.get("productId"), req.getProductId());
+				javax.persistence.criteria.Predicate n5 = cb.equal(c.get("sectionId"), req.getSectionId());
+				javax.persistence.criteria.Predicate n6 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+				javax.persistence.criteria.Predicate n14 = cb.equal(c.get("subCoverId"), "0");
+				Predicate n8 = cb.equal(c.get("agencyCode"), req.getAgencyCode());
+				Predicate n9 = cb.equal(c.get("agencyCode"), "99999");
+				Predicate n10 = cb.or(n8,n9);
+				Predicate n11 = cb.equal(c.get("branchCode"), req.getBranchCode());
+				Predicate n12 = cb.equal(c.get("branchCode"), "99999");
+				Predicate n13 = cb.or(n11,n12 );
+				if(StringUtils.isNotBlank(req.getCoverId()) ) {
+					javax.persistence.criteria.Predicate n7 = cb.notEqual(c.get("coverId"), req.getCoverId());
+					query.where(n16, n2, n3, n4, n5,n6,n7,n14,n10,n13).orderBy(orderList);
+				} else {
+					query.where(n16, n2, n3, n4, n5,n6,n10,n13).orderBy(orderList);
+				}
+				
+
+				// Get Result
+				TypedQuery<SectionCoverMaster> result = em.createQuery(query);
+				list = result.getResultList();
+				list.sort( Comparator.comparing(SectionCoverMaster :: getAgencyCode  ).thenComparing(SectionCoverMaster :: getBranchCode  ) );
+				list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCoverId() ,o.getSubCoverId() ))).collect(Collectors.toList());
+				list.sort(Comparator.comparing(SectionCoverMaster :: getCoverName ));
+				
+				
+				// Map
+				for (SectionCoverMaster  coverData :list) {
+					// Response
+					DropDownRes res = new DropDownRes();
+					res.setCode(coverData.getCoverId().toString());
+					res.setCodeDesc(coverData.getCoverName());
+					resList.add(res);
+				}
 			}
 			
-
-			// Get Result
-			TypedQuery<SectionCoverMaster> result = em.createQuery(query);
-			list = result.getResultList();
-			list.sort( Comparator.comparing(SectionCoverMaster :: getAgencyCode  ).thenComparing(SectionCoverMaster :: getBranchCode  ) );
-			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCoverId() ,o.getSubCoverId() ))).collect(Collectors.toList());
-			list.sort(Comparator.comparing(SectionCoverMaster :: getCoverName ));
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+	
+	public List<DropDownRes> getChartAccountDropdown(SectionCoverMasterGetReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			
+			String sql ="select cpm from ChartParentMaster cpm where cpm.chatParentId.companyId=:companyId and cpm.status=:status "
+					+ "and CURRENT_DATE between cpm.effectiveStartDate and cpm.effectiveEndDate order by cpm.displayOrder";
+			List<ChartParentMaster> list =(List<ChartParentMaster>) em.createQuery(sql).setParameter("companyId",Integer.valueOf(req.getCompanyId())).setParameter("status", "Y").getResultList();
 			
 			
 			// Map
-			for (SectionCoverMaster  coverData :list) {
+			for (ChartParentMaster  coverData :list) {
 				// Response
 				DropDownRes res = new DropDownRes();
-				res.setCode(coverData.getCoverId().toString());
-				res.setCodeDesc(coverData.getCoverName());
+				res.setCode(coverData.getChatParentId().getChartId().toString());
+				res.setCodeDesc(coverData.getChartAccountDesc());
 				resList.add(res);
 			}
+			
+			
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());

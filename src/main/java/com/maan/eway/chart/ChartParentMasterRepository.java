@@ -17,7 +17,8 @@ public interface ChartParentMasterRepository extends JpaRepository<ChartParentMa
 	
 	List<ChartParentMaster> findByChatParentIdCompanyId(Integer companyId);
 	
-	@Query("select cam  from ChartParentMaster cam where cam.chatParentId.companyId=?1 and cam.status=?2 and current_date between cam.effectiveStartDate and cam.effectiveEndDate ")
+	@Query("select cam  from ChartParentMaster cam where cam.chatParentId.companyId=?1 and cam.status=?2 "
+			+ "and (current_date between cam.effectiveStartDate and cam.effectiveEndDate or cam.effectiveStartDate>=current_date)")
 	List<ChartParentMaster> findParentData(Integer companyId,String status);
 		
 

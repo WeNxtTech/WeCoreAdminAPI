@@ -213,7 +213,8 @@ public class VehicleCSVFileConvertion {
 		              String csvData = "";
 		            //  String snoAndVehNo = String.valueOf(eachRow);
 		              XSSFRow myRow = mySheet.getRow(eachRow);
-		              //System.out.println("RowNo : " + eachRow);
+		              
+		               //System.out.println("RowNo : " + eachRow);
 		              System.out.println("myRow is Empty"+ myRow!=null); 
 		              if(++count == 1){
 		                  firstCount = myRow.getLastCellNum();
@@ -263,6 +264,11 @@ public class VehicleCSVFileConvertion {
 	            {
 	                csvData = "";
 	                HSSFRow myRow = (HSSFRow)rowIter.next();
+	                
+	                if(myRow==null) {
+	                	continue;
+	                }
+	                
 	                if(++count == 1)
 	                {
 	                    firstCount = myRow.getLastCellNum();

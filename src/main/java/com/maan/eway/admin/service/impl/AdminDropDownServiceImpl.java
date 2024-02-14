@@ -107,7 +107,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					String oneProduct  = "A" ;
 					if(StringUtils.isNotBlank(req.getSectionId())) {
 						List<ProductSectionMaster> idfortable = sectionRepo.findByProductIdAndSectionIdOrderByEffectiveDateStartDesc(Integer.parseInt(req.getProductId()) , Integer.parseInt(req.getSectionId()));
-						oneProduct = idfortable.get(0).getMotorYn();
+						oneProduct = idfortable.size() > 0 ? idfortable.get(0).getMotorYn() : "P";
 					} else {
 						List<ProductMaster> idfortable = productrepo.findByProductIdOrderByEffectiveDateStartDesc(Integer.parseInt(req.getProductId()));
 						oneProduct = idfortable.get(0).getMotorYn();
@@ -121,6 +121,8 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 						tablename="MsAssetDetails";
 					else if(oneProduct.equals("L"))
 						tablename="MsLifeDetails";
+					else if(oneProduct.equals("P"))
+						tablename="MsPolicyDetails";
 					
 						req.setTableName(tablename);
 				}  

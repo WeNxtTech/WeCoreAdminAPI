@@ -17,10 +17,10 @@ public interface ChartParentMasterRepository extends JpaRepository<ChartParentMa
 	
 	List<ChartParentMaster> findByChatParentIdCompanyId(Integer companyId);
 	
-	@Query("select cam  from ChartParentMaster cam where cam.chatParentId.companyId=?1 and cam.status=?2 "
+	@Query("select cam  from ChartParentMaster cam where cam.chatParentId.companyId=?1 "
 			+"and cam.id.amendId=(select max(camm.id.amendId) from ChartParentMaster camm where camm.chatParentId.companyId=cam.chatParentId.companyId "
-			+ "and camm.chatParentId.chartId=cam.chatParentId.chartId)")
-	List<ChartParentMaster> findParentData(Integer companyId,String status);
+			+ "and camm.chatParentId.chartId=cam.chatParentId.chartId) order by cam.displayOrder ")
+	List<ChartParentMaster> findParentData(Integer companyId);
 		
 
 }

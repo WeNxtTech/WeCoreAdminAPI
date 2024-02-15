@@ -159,7 +159,7 @@ public class ChartParentMasterServiceImpl implements ChartParentMasterService {
 	public CommonRes getAllChartByCompanyId(Integer companyId) {
 		CommonRes response = new CommonRes();
 		try {
-			List<ChartParentMaster> list =chatParentMasterRepo.findParentData(companyId,"Y");
+			List<ChartParentMaster> list =chatParentMasterRepo.findParentData(companyId);
 			if(!list.isEmpty()) {
 				List<Map<String,String>> listMap = new ArrayList<>();
 					for(ChartParentMaster cpm :list) {	 	

@@ -371,20 +371,22 @@ public class JpqlQueryServiceImpl {
 			
 			if(!list.isEmpty()) {
 				
-				LocalDate minusEffectiveDate =LocalDate.parse(req.getEffectiveStartDate(), 
-						DateTimeFormatter.ofPattern("dd/MM/yyyy")).minusDays(1);
+			
+				long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
 				
-				Date todayDate = new Date();
+				Date oldEndDate =new Date(sdf.parse(req.getEffectiveStartDate()).getTime() -MILLIS_IN_A_DAY);
+
+				Date todayDate =new Date();
+				Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+			
 				
-				
-				
-				if(list.get(0).getEffectiveStartDate().before(todayDate)) {
+				if(list.get(0).getEffectiveStartDate().before(beforeOneDay)) {
 					
 					// updated existing effectiveend date
 					List<ChartParentMaster> cpmList =list.stream().map(p ->{
 						p.setUpdatedBy(req.getUpdatedBy());
 						p.setUpdatedDate(todayDate);
-						p.setEffectiveEndDate(Date.from(minusEffectiveDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+						p.setEffectiveEndDate(oldEndDate);
 						return chartParnetRepo.save(p);
 					}).collect(Collectors.toList());
 					
@@ -546,16 +548,19 @@ public class JpqlQueryServiceImpl {
 			
 			if(!list.isEmpty()) {
 				
-				LocalDate minusEffectiveStartDate =LocalDate.parse(req.getEffectiveStartDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy")).minusDays(1);
+				long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
 				
-				Date todayDate = new Date();
-				
-				if(list.get(0).getEffectiveStartDate().before(todayDate)) {
+				Date oldEndDate =new Date(sdf.parse(req.getEffectiveStartDate()).getTime() -MILLIS_IN_A_DAY);
+
+				Date todayDate =new Date();
+				Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+			
+				if(list.get(0).getEffectiveStartDate().before(beforeOneDay)) {
 					
 					list.stream().map(p ->{
-						p.setUpdatedDate(new Date());
+						p.setUpdatedDate(todayDate);
 						p.setUpdatedBy(req.getUpdatedBy());
-						p.setEffectiveEndDate(Date.from(minusEffectiveStartDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+						p.setEffectiveEndDate(oldEndDate);
 						return chartChildRepo.save(p);
 					}).collect(Collectors.toList());
 										

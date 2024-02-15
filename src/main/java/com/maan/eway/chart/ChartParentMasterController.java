@@ -51,7 +51,6 @@ public class ChartParentMasterController {
 		return service.childChartInsert(req);
 	}
 
-	
 	@PostMapping("/getAllChildChartInsert")
 	public CommonRes getAllChildChartInsert(@RequestBody GetAllChildChartRequest req) {
 		return service.getAllChildChartInsert(req);

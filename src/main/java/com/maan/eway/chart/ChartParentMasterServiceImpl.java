@@ -162,12 +162,8 @@ public class ChartParentMasterServiceImpl implements ChartParentMasterService {
 			List<ChartParentMaster> list =chatParentMasterRepo.findParentData(companyId,"Y");
 			if(!list.isEmpty()) {
 				List<Map<String,String>> listMap = new ArrayList<>();
-				 list.stream().collect(
-		                Collectors.groupingBy(p ->p.getChatParentId().getChartId()))
-				 		.forEach((key,value)->{
-				 			ChartParentMaster cpm=	value.stream()
-				 			.max((a,b)->a.getChatParentId().getAmendId().compareTo(b.getChatParentId().getAmendId())).get();
-				 			HashMap<String, String> map = new HashMap<>();
+					for(ChartParentMaster cpm :list) {	 	
+							HashMap<String, String> map = new HashMap<>();
 				 			map.put("CompanyId", cpm.getChatParentId().getCompanyId().toString());
 				 			map.put("ChartId", cpm.getChatParentId().getChartId().toString());
 				 			map.put("AmendId", cpm.getChatParentId().getAmendId().toString());
@@ -182,7 +178,7 @@ public class ChartParentMasterServiceImpl implements ChartParentMasterService {
 				 			map.put("updatedDate", sdf.format(cpm.getUpdatedDate()));
 				 			map.put("updatedBy", cpm.getUpdatedBy());
 				 			listMap.add(map);
-				 		});
+				 		}
 
 				 response.setCommonResponse(listMap);
 				 response.setErrorMessage(Collections.EMPTY_LIST);
@@ -409,16 +405,9 @@ public class ChartParentMasterServiceImpl implements ChartParentMasterService {
 			List<ChartAccountChildMaster> childMasters =childRepo.findChildData(Integer.valueOf(req.getCompanyId())
 					,Integer.valueOf(req.getProductId()),Integer.valueOf(req.getSectionId()),Integer.valueOf(req.getChartId()));
 		
+			List<Map<String,String>> mapList =new ArrayList<>();
 			if(!childMasters.isEmpty()) {
-				
-						List<Map<String,String>> mapList =new ArrayList<>();
-						childMasters.stream().collect(Collectors.groupingBy(p ->p.getId().getCoverId()))
-						
-						.forEach((key,value) ->{
-							
-							ChartAccountChildMaster cac = value.stream().max((a,b) -> a.getId().getAmendId().compareTo(b.getId().getAmendId()))
-							.get();
-							
+				for (ChartAccountChildMaster cac :childMasters) {
 							HashMap<String, String> map =new HashMap<>();
 							map.put("CompanyId", cac.getId().getCompanyId().toString());
 							map.put("ProductId", cac.getId().getProductId().toString());
@@ -432,7 +421,7 @@ public class ChartParentMasterServiceImpl implements ChartParentMasterService {
 							map.put("UpdatedBy", cac.getUpdatedBy());
 							map.put("UpdatedDate", sdf.format(cac.getUpdatedDate()));
 							mapList.add(map);
-						});
+				}
 				
 				
 				response.setCommonResponse(mapList);

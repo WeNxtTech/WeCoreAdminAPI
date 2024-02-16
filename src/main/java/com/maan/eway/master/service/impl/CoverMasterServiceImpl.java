@@ -77,37 +77,44 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 
 //************************************************INSERT/UPDATE COVER DETAILS******************************************************\\
 	@Override
-	public List<Error> validateCoverDetails(CoverMasterSaveReq req) {
+	public List<String> validateCoverDetails(CoverMasterSaveReq req) {
 
-		List<Error> errorList = new ArrayList<Error>();
+		List<String> errorList = new ArrayList<String>();
 
 		try {
 			
 			// Cover Master Validation
 			if (StringUtils.isBlank(req.getCoverName())) {
-				errorList.add(new Error("01", "CoverName", "Please Enter Cover  Name "));
+//				errorList.add(new Error("01", "CoverName", "Please Enter Cover  Name "));
+				errorList.add("2058");
 			}else if (req.getCoverName().length() > 100){
-				errorList.add(new Error("01","CoverName", "Please Enter Cover  Name within 100 Characters")); 
+//				errorList.add(new Error("01","CoverName", "Please Enter Cover  Name within 100 Characters")); 
+				errorList.add("2059");
 			}else if (StringUtils.isBlank(req.getCoverId())) {
 				List<CoverMaster> CoverList = getCoverNameExistDetails(req.getCoverName());
 				if (CoverList.size()>0 ) {
-					errorList.add(new Error("01", "CoverName", "This Cover Name Already Exist "));
+//					errorList.add(new Error("01", "CoverName", "This Cover Name Already Exist "));
+					errorList.add("2060");
 				}
 			}else  {
 				List<CoverMaster> CoverList =  getCoverNameExistDetails(req.getCoverName() );
 				if (CoverList.size()>0 &&  (! req.getCoverId().equalsIgnoreCase(CoverList.get(0).getCoverId().toString())) ) {
-					errorList.add(new Error("01", "CoverName", "This Cover Name Already Exist "));
+//					errorList.add(new Error("01", "CoverName", "This Cover Name Already Exist "));
+					errorList.add("2060");
 				}
 				
 			}
 			
 			if (StringUtils.isBlank(req.getCoverBasedOn())) {
-				errorList.add(new Error("01", "CoverBasedOn", "Please Select CoverBasedOn "));
+//				errorList.add(new Error("01", "CoverBasedOn", "Please Select CoverBasedOn "));
+				errorList.add("2061");
 			}
 			if (StringUtils.isBlank(req.getCoverDesc())) {
-				errorList.add(new Error("02", "Cover Desc", "Please Enter Cover Desc "));
+//				errorList.add(new Error("02", "Cover Desc", "Please Enter Cover Desc "));
+				errorList.add("2062");
 			} else if (req.getCoverDesc().length() > 100) {
-				errorList.add(new Error("02", "Cover Desc", "Please Enter Cover  Desc within 100 Characters"));
+//				errorList.add(new Error("02", "Cover Desc", "Please Enter Cover  Desc within 100 Characters"));
+				errorList.add("2063");
 			}
 			// Date Validation 
 			Calendar cal = new GregorianCalendar();
@@ -115,17 +122,21 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
 			today = cal.getTime();
 			if (req.getEffectiveDateStart() == null ) {
-				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
+//				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
+				errorList.add("2034");
 	
 			} else if (req.getEffectiveDateStart().before(today)) {
-				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+//				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+				errorList.add("2035");
 			}  
 			if(StringUtils.isNotBlank(req.getCoverageType()) && req.getCoverageType().equalsIgnoreCase("P") ) {
 				if (req.getEffectiveDateEnd()==null) {
-					errorList.add(new Error("14", "EffectiveDateEnd", "Please Enter EffectiveDateEnd"));
+//					errorList.add(new Error("14", "EffectiveDateEnd", "Please Enter EffectiveDateEnd"));
+					errorList.add("2064");
 				}else if (req.getEffectiveDateStart()!=null && req.getEffectiveDateEnd()!=null) {
 					if( req.getEffectiveDateStart().after(req.getEffectiveDateEnd())) {
-						errorList.add(new Error("14", "EffectiveDateEnd", "EffectiveDateStart After EffectiveDateEnd Not Allwoed"));	
+//						errorList.add(new Error("14", "EffectiveDateEnd", "EffectiveDateStart After EffectiveDateEnd Not Allowed"));
+						errorList.add("2065");
 					}
 					
 				}
@@ -133,123 +144,160 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			
 			
 			if (StringUtils.isBlank(req.getRegulatoryCode())) {
-				errorList.add(new Error("04", "Regulatory Code", "Please Enter Regulatory Code"));
+//				errorList.add(new Error("04", "Regulatory Code", "Please Enter Regulatory Code"));
+				errorList.add("2041");
 			} else if (req.getRegulatoryCode().length() > 20) {
-				errorList.add(new Error("04", "Regulatory Code", "Enter Regulatory Code  within 20 Characters Only"));
+//				errorList.add(new Error("04", "Regulatory Code", "Enter Regulatory Code  within 20 Characters Only"));
+				errorList.add("2042");
 			}
 		
 			if (StringUtils.isBlank(req.getCreatedBy())) {
-				errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy "));
+//				errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy "));
+				errorList.add("2039");
 			} else if (req.getCreatedBy().length() > 100) {
-				errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+//				errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+				errorList.add("2040");
 			}
 			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("05", "Status", "Please Select Status  "));
+//				errorList.add(new Error("05", "Status", "Please Select Status  "));
+				errorList.add("2036");
 			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+//				errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+				errorList.add("2037");
 			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+//				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+				errorList.add("2038");
 			}
 			
 			if (StringUtils.isBlank(req.getSubCoverYn())) {
-				errorList.add(new Error("08", "SubCoverYn", "Please Enter SubCoverYn"));
+//				errorList.add(new Error("08", "SubCoverYn", "Please Enter SubCoverYn"));
+				errorList.add("2066");
 			} else if (req.getSubCoverYn().length() > 1) {
-				errorList.add(new Error("08", "SubCoverYn", "Enter SubCoverYn in 1 Character Only"));
+//				errorList.add(new Error("08", "SubCoverYn", "Enter SubCoverYn in 1 Character Only"));
+				errorList.add("2067");
 			} else if (!("Y".equals(req.getSubCoverYn()) || "N".equals(req.getSubCoverYn()))) {
-				errorList.add(new Error("08", "SubCoverYn", "Enter SubCoverYn Y or N Only"));
+//				errorList.add(new Error("08", "SubCoverYn", "Enter SubCoverYn Y or N Only"));
+				errorList.add("2068");
 			}
 			
 			if (StringUtils.isNotBlank(req.getDependentCoverYn()) && req.getDependentCoverYn().equalsIgnoreCase("Y") ) {
 				if (StringUtils.isBlank(req.getDependentCoverId()) ) {
-					errorList.add(new Error("08", "Dependent Cover Id", "Please Select Dependent Cover Id"));
+//					errorList.add(new Error("08", "Dependent Cover Id", "Please Select Dependent Cover Id"));
+					errorList.add("2069");
 				}
 			}
 			
 			if (StringUtils.isBlank(req.getRemarks())) {
-				errorList.add(new Error("09", "Remarks", "Please Enter Remarks"));
+//				errorList.add(new Error("09", "Remarks", "Please Enter Remarks"));
+				errorList.add("2032");
 			} else if (req.getRemarks().length() > 100) {
-				errorList.add(new Error("09", "Remarks", "Enter Remarks  within 100 Characters Only"));
+//				errorList.add(new Error("09", "Remarks", "Enter Remarks  within 100 Characters Only"));
+				errorList.add("2033");
 			}
 			
 			if( StringUtils.isNotBlank(req.getSubCoverYn()) && req.getSubCoverYn().equalsIgnoreCase("N")  ) {
 			
 				// Rating Master Validation
 				if (StringUtils.isBlank(req.getCoverageType())) {
-					errorList.add(new Error("09", "CoverageType", "Please Select CoverageType"));
+//					errorList.add(new Error("09", "CoverageType", "Please Select CoverageType"));
+					errorList.add("2070");
 				}
 				
 				if (StringUtils.isBlank(req.getSumInsuredStart())) {
-					errorList.add(new Error("09", "SumInsuredStart", "Please Enter Min Sum"));
+//					errorList.add(new Error("09", "SumInsuredStart", "Please Enter Min Sum"));
+					errorList.add("2071");
 				} else if (! req.getSumInsuredStart().matches("[0-9.]+") ) {
-					errorList.add(new Error("09", "SumInsuredStart", "Please Enter Valid Number In CoverageLimit "));
+//					errorList.add(new Error("09", "SumInsuredStart", "Please Enter Valid Number In CoverageLimit "));
+					errorList.add("2072");
 				} else if (StringUtils.isBlank(req.getCoverageLimit())) {
-					errorList.add(new Error("09", "CoverageLimit", "Please Enter CoverageLimit"));
+//					errorList.add(new Error("09", "CoverageLimit", "Please Enter CoverageLimit"));
+					errorList.add("2073");
 				} else if (! req.getCoverageLimit().matches("[0-9.]+") ) {
-					errorList.add(new Error("09", "CoverageLimit", "Please Enter Valid Number In CoverageLimit "));
+//					errorList.add(new Error("09", "CoverageLimit", "Please Enter Valid Number In CoverageLimit "));
+					errorList.add("2072");
 				} else if (  Double.valueOf(req.getSumInsuredStart()) > Double.valueOf(req.getCoverageLimit()) ) {
-					errorList.add(new Error("09", "CoverageLimit", "Min Suminsured Greater Than CoverageLimit Not Allowed "));
+//					errorList.add(new Error("09", "CoverageLimit", "Minimum Suminsured Greater Than CoverageLimit Not Allowed "));
+					errorList.add("2074");
 				}
 				
 				if (StringUtils.isBlank(req.getExcessPercent())) {
-					errorList.add(new Error("09", "Excess Percent ", "Please Enter Excess Percent"));
+//					errorList.add(new Error("09", "Excess Percent ", "Please Enter Excess Percent"));
+					errorList.add("2075");
 				} else if (! req.getExcessPercent().matches("[0-9.]+") ) {
-					errorList.add(new Error("09", "Excess Percent", "Please Enter Valid Number In Excess Percent"));
+//					errorList.add(new Error("09", "Excess Percent", "Please Enter Valid Number In Excess Percent"));
+					errorList.add("2076");
 				}
 				if (StringUtils.isBlank(req.getExcessAmount())) {
-					errorList.add(new Error("10", "Excess Amount ", "Please Enter Excess Amount"));
+//					errorList.add(new Error("10", "Excess Amount ", "Please Enter Excess Amount"));
+					errorList.add("2077");
 				} else if (! req.getExcessAmount().matches("[0-9.]+") ) {
-					errorList.add(new Error("10", "Excess Amount", "Please Enter Valid Number In Excess Amount"));
+//					errorList.add(new Error("10", "Excess Amount", "Please Enter Valid Number In Excess Amount"));
+					errorList.add("2078");
 				}
 				if (StringUtils.isBlank(req.getExcessDesc())) {
-					errorList.add(new Error("11", "Excess Desc ", "Please Enter Excess Desc"));
+//					errorList.add(new Error("11", "Excess Desc ", "Please Enter Excess Desc"));
+					errorList.add("2079");
 				}
 				else if (req.getExcessDesc().length() > 500) {
-					errorList.add(new Error("11", "Excess Desc", "Enter Excess Desc  within 500 Characters Only"));
+//					errorList.add(new Error("11", "Excess Desc", "Enter Excess Desc  within 500 Characters Only"));
+					errorList.add("2080");
 				}
 				if (StringUtils.isBlank(req.getCalcType())) {
-					errorList.add(new Error("09", "CalcType", "Please Select CalcType"));
+//					errorList.add(new Error("09", "CalcType", "Please Select CalcType"));
+					errorList.add("2081");
 				} 
 				
 				
 				// Tax Calculation
 				if (StringUtils.isBlank(req.getIsTaxExcempted())) {
-					errorList.add(new Error("08", "IsTaxExcempted", "Please Enter Is Tax Excempted"));
+//					errorList.add(new Error("08", "IsTaxExcempted", "Please Enter Is Tax Exempted"));
+					errorList.add("2082");
 				} else if (req.getIsTaxExcempted().length() > 1) {
-					errorList.add(new Error("08", "IsTaxExcempted", "Enter Is Tax Excempted in 1 Character Only"));
+//					errorList.add(new Error("08", "IsTaxExcempted", "Enter Is Tax Exempted in 1 Character Only"));
+					errorList.add("2083");
 				} else if (!("Y".equals(req.getIsTaxExcempted()) || "N".equals(req.getIsTaxExcempted()))) {
-					errorList.add(new Error("08", "IsTaxExcempted", "Enter Is Tax Excempted Y or N Only"));
+//					errorList.add(new Error("08", "IsTaxExcempted", "Enter Is Tax Exempted Y or N Only"));
+					errorList.add("2084");
 					
 				} else if(req.getIsTaxExcempted().equalsIgnoreCase("Y") ){
 					if (StringUtils.isBlank(req.getTaxExcemptionReference())) {
-						errorList.add(new Error("08", "TaxExcemptionReference", "Please Enter Tax Excemption Reference"));
+//						errorList.add(new Error("08", "TaxExcemptionReference", "Please Enter Tax Excemption Reference"));
+						errorList.add("2085");
 					} else if (req.getTaxExcemptionReference().length() >100 ) {
-						errorList.add(new Error("08", "TaxExcemptionReference", "100 Chatracters Only Allowed As Tax Excemption Reference"));
+//						errorList.add(new Error("08", "TaxExcemptionReference", "100 Chatracters Only Allowed As Tax Excemption Reference"));
+						errorList.add("2086");
 					} 
 					
 					if (StringUtils.isBlank(req.getTaxExcemptionType())) {
-						errorList.add(new Error("08", "TaxExcemptionType", "Please Select Tax Excemption Type"));
+//						errorList.add(new Error("08", "TaxExcemptionType", "Please Select Tax Excemption Type"));
+						errorList.add("2087");
 					} else if (! req.getTaxExcemptionType().matches( "[0-9]+") ) {
-						errorList.add(new Error("08", "TaxExcemptionType", "Please Select Tax Excemption Type"));
+//						errorList.add(new Error("08", "TaxExcemptionType", "Please Select Valid Tax Excemption Type"));
+						errorList.add("2088");
 					} 
 				} else if(req.getIsTaxExcempted().equalsIgnoreCase("N") ){
 					if (StringUtils.isBlank(req.getTaxAmount())) {
-						errorList.add(new Error("08", "TaxAmount", "Please Enter TaxAmount"));
+//						errorList.add(new Error("08", "TaxAmount", "Please Enter TaxAmount"));
+						errorList.add("2089");
 					} else if (! req.getTaxAmount().matches( "[0-9.]+") ) {
-						errorList.add(new Error("08", "TaxAmount", "Please Enter Valid Tax Amount"));
+//						errorList.add(new Error("08", "TaxAmount", "Please Enter Valid Tax Amount"));
+						errorList.add("2090");
 					} 
 					
 					if (StringUtils.isBlank(req.getTaxCode())) {
-						errorList.add(new Error("08", "TaxCode", "Please Enter Tax Code "));
+//						errorList.add(new Error("08", "TaxCode", "Please Enter Tax Code "));
+						errorList.add("2091");
 					} else if (req.getTaxCode().length() >100 ) {
-						errorList.add(new Error("08", "TaxCode", "100 Chatracters Only Allowed As Tax Code "));
+//						errorList.add(new Error("08", "TaxCode", "100 Characters Only Allowed As Tax Code "));
+						errorList.add("2092");
 					} 
 				}
 				
 				
 				if (StringUtils.isNotBlank(req.getCalcType()) &&  ( req.getCalcType().equalsIgnoreCase("F") || req.getCalcType().equalsIgnoreCase("FD")) ) {
 					
-			/*		if( StringUtils.isBlank(req.getFactorTypeId()) ) {
+			/*		if( StringUtils.isBlank(req.getFactorTypeId()) ) {2093
 						errorList.add(new Error("09", "Factor Type Id", "Please Enter Factor Type Id "));
 					
 					} */
@@ -257,21 +305,26 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 				} else if (StringUtils.isNotBlank(req.getCalcType()) &&  req.getCalcType().equalsIgnoreCase("D") ) {
 					
 					if( StringUtils.isBlank(req.getDiscountCoverId()) ) {
-						errorList.add(new Error("09", "DiscountCoverId", "Please Select DiscountCoverId"));
+//						errorList.add(new Error("09", "DiscountCoverId", "Please Select DiscountCoverId"));
+						errorList.add("2094");
 					
 					}
 				} else  {
 					
 					if (StringUtils.isBlank(req.getBaseRate())) {
-						errorList.add(new Error("09", "BaseRate", "Please Enter BaseRate" ));
+//						errorList.add(new Error("09", "BaseRate", "Please Enter BaseRate" ));
+						errorList.add("2095");
 					} else if (! req.getBaseRate().matches("[0-9.]+") ) {
-						errorList.add(new Error("09", "BaseRate", "Please Enter Valid Number In BaseRate"));
+//						errorList.add(new Error("09", "BaseRate", "Please Enter Valid Number In BaseRate"));
+						errorList.add("2096");
 					}
 					
 					if (StringUtils.isBlank(req.getMinimumPremium())) {
-						errorList.add(new Error("09", "MinimumPremium", "Please Enter MinimumPremium"));
+//						errorList.add(new Error("09", "MinimumPremium", "Please Enter MinimumPremium"));
+						errorList.add("2097");
 					} else if (! req.getMinimumPremium().matches("[0-9.]+") ) {
-						errorList.add(new Error("09", "MinimumPremium", "Please Enter Valid Number In MinimumPremium"));
+//						errorList.add(new Error("09", "MinimumPremium", "Please Enter Valid Number In MinimumPremium"));
+						errorList.add("2098");
 					} 
 					
 //					else if (StringUtils.isBlank(req.getSumInsuredEnd())) {
@@ -288,7 +341,7 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
-			errorList.add(new Error("11", "Common Error", e.getMessage()));
+//			errorList.add(new Error("11", "Common Error", e.getMessage()));
 
 		}
 		return errorList;

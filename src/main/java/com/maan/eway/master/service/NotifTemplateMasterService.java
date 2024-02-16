@@ -6,23 +6,21 @@
 package com.maan.eway.master.service;
 
 
-import com.maan.eway.error.Error;
+import java.util.List;
+
 import com.maan.eway.master.req.NotifTemplateMasterGetReq;
 import com.maan.eway.master.req.NotifTemplateMasterReq;
 import com.maan.eway.master.req.NotifTempleteMasterChangeStatusReq;
 import com.maan.eway.master.req.NotificationTempleteMasterGetAllReq;
-
 import com.maan.eway.master.res.NotificationTempMasterColummnDropRes;
 import com.maan.eway.master.res.NotificationTempleteMasterGetRes;
 import com.maan.eway.res.SuccessRes;
-
-import java.util.List;
 /**
 * <h2>NotifTemplateMasterServiceimpl</h2>
 */
 public interface NotifTemplateMasterService  {
 
-	List<Error> validateNotifTemplate(NotifTemplateMasterReq req);
+	List<String> validateNotifTemplate(NotifTemplateMasterReq req);
 
 	List<NotificationTempMasterColummnDropRes> getTableDetails();
 

@@ -6,10 +6,8 @@
 package com.maan.eway.master.service;
 import java.util.List;
 
-import com.maan.eway.error.Error;
 import com.maan.eway.master.controller.DiscountCoverReq;
 import com.maan.eway.master.req.CoverChangeStatusReq;
-import com.maan.eway.master.req.CoverMasterGetAllReq;
 import com.maan.eway.master.req.CoverMasterGetReq;
 import com.maan.eway.master.req.CoverMasterSaveReq;
 import com.maan.eway.master.res.CoverMasterGetAllRes;
@@ -21,7 +19,7 @@ import com.maan.eway.res.SuccessRes;
 */
 public interface CoverMasterService  {
 
-	List<Error> validateCoverDetails(CoverMasterSaveReq req);
+	List<String> validateCoverDetails(CoverMasterSaveReq req);
 
 	SuccessRes insertCover(CoverMasterSaveReq req);
 

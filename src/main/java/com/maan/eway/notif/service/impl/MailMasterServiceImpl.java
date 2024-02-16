@@ -135,25 +135,29 @@ public class MailMasterServiceImpl implements MailMasterService {
 	}
 
 	@Override
-	public List<Error> validatemailmaster(MailMasterSaveReq req) {
+	public List<String> validatemailmaster(MailMasterSaveReq req) {
 
-		List<Error> errorList = new ArrayList<Error>();
+		List<String> errorList = new ArrayList<String>();
 
 		try {
 
 			if (StringUtils.isBlank(req.getCompanyId())) {
-				errorList.add(new Error("01", "Company Id", "Please Enter Company Id"));
+				//errorList.add(new Error("01", "Company Id", "Please Enter Company Id"));
+				errorList.add("1255");
 			} else if (req.getCompanyId().length() > 20) {
-				errorList.add(new Error("01", "Company Id", "Please Enter Company Id within 20 Characters"));
+			//	errorList.add(new Error("01", "Company Id", "Please Enter Company Id within 20 Characters"));
+				errorList.add("1448");
 			} else if (StringUtils.isBlank(req.getSNo())) {
 				List<MailMaster> mailList = getSnoDetails(req.getCompanyId());
 				if (mailList.size() > 0) {
-					errorList.add(new Error("01", "S No", "Please Enter Your Sno"));
+				//	errorList.add(new Error("01", "S No", "Please Enter Your Sno"));
+					errorList.add("1449");
 				}
 			} else {
 				List<MailMaster> mailList = getCompanyIdExistDetails(req.getCompanyId());
 				if (mailList.size() > 0 && (!req.getSNo().equalsIgnoreCase(mailList.get(0).getSNo().toString()))) {
-					errorList.add(new Error("01", "Company Id", "This Company Id Already Exist "));
+				//	errorList.add(new Error("01", "Company Id", "This Company Id Already Exist "));
+					errorList.add("1450");
 				}
 
 			}
@@ -166,75 +170,99 @@ public class MailMasterServiceImpl implements MailMasterService {
 			cal.set(Calendar.MINUTE, 50);
 			today = cal.getTime();
 			if (req.getEffectiveDateStart() == null) {
-				errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start "));
+			//	errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start "));
+				errorList.add("1261");
 
 			} else if (req.getEffectiveDateStart().before(today)) {
-				errorList
-						.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			//	errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+						
+				errorList.add("1262");
 			}
 
 			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("05", "Status", "Please Select Status  "));
+			//	errorList.add(new Error("05", "Status", "Please Select Status  "));
+				errorList.add("1263");
 			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+			//	errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+				errorList.add("1264");
 			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+			//	errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+				errorList.add("1265");
 			}
 			if (StringUtils.isBlank(req.getCreatedBy())) {
-				errorList.add(new Error("05", "CreatedBy", "Please Enter CreatedBy"));
+			//	errorList.add(new Error("05", "CreatedBy", "Please Enter CreatedBy"));
+				errorList.add("1270");
 			} else if (req.getCreatedBy().length() > 100) {
-				errorList.add(new Error("05", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+			//	errorList.add(new Error("05", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+				errorList.add("1271");
 			}
 			if (StringUtils.isBlank(req.getRemarks())) {
-				errorList.add(new Error("06", "Remarks", "Please Enter Remarks"));
+			//	errorList.add(new Error("06", "Remarks", "Please Enter Remarks"));
+				errorList.add("1259");
 			} else if (req.getRemarks().length() > 300) {
-				errorList.add(new Error("06", "Remarks", "Please Enter Remarks within 100 Characters"));
+			//	errorList.add(new Error("06", "Remarks", "Please Enter Remarks within 100 Characters"));
+				errorList.add("1260");
 			}
 			if (StringUtils.isBlank(req.getSmtpHost())) {
-				errorList.add(new Error("07", "Smtp Host", "Please Enter Smtp Host"));
+			//	errorList.add(new Error("07", "Smtp Host", "Please Enter Smtp Host"));
+				errorList.add("1451");
 			} else if (req.getSmtpHost().length() > 300) {
-				errorList.add(new Error("07", "Smtp Host", "Please Enter Smtp Host within 300 Characters"));
+			//	errorList.add(new Error("07", "Smtp Host", "Please Enter Smtp Host within 300 Characters"));
+				errorList.add("1452");
 			}
 			if (StringUtils.isBlank(req.getSmtpUser())) {
-				errorList.add(new Error("08", "Smtp User", "Please Enter Smtp User"));
+			//	errorList.add(new Error("08", "Smtp User", "Please Enter Smtp User"));
+				errorList.add("1453");
 			} else if (req.getSmtpUser().length() > 300) {
-				errorList.add(new Error("08", "Smtp User", "Please Enter Smtp User within 300 Characters"));
+			//	errorList.add(new Error("08", "Smtp User", "Please Enter Smtp User within 300 Characters"));
+				errorList.add("1454");
 			}
 			if (StringUtils.isBlank(req.getSmtpPwd())) {
-				errorList.add(new Error("09", "Smtp Pwd", "Please Enter Smtp Pwd"));
+			//	errorList.add(new Error("09", "Smtp Pwd", "Please Enter Smtp Pwd"));
+				errorList.add("1455");
 			} else if (req.getSmtpPwd().length() > 300) {
-				errorList.add(new Error("09", "Smtp Pwd", "Please Enter Smtp Pwd within 300 Characters"));
+			//	errorList.add(new Error("09", "Smtp Pwd", "Please Enter Smtp Pwd within 300 Characters"));
+				errorList.add("1456");
 			}
 			if (StringUtils.isBlank(req.getSmtpPort())) {
-				errorList.add(new Error("10", "Smtp Port", "Please Enter Smtp Port"));
+			//	errorList.add(new Error("10", "Smtp Port", "Please Enter Smtp Port"));
+				errorList.add("1457");
 			}
 			if (StringUtils.isBlank(req.getAddress())) {
-				errorList.add(new Error("11", "Address", "Please Enter Address"));
+			//	errorList.add(new Error("11", "Address", "Please Enter Address"));
+				errorList.add("1458");
 			} else if (req.getAddress().length() > 300) {
-				errorList.add(new Error("11", "Address", "Please Enter Address within 300 Characters"));
+			//	errorList.add(new Error("11", "Address", "Please Enter Address within 300 Characters"));
+				errorList.add("1459");
 			}
 			if (StringUtils.isBlank(req.getCoreAppCode())) {
-				errorList.add(new Error("12", "Core App Code", "Please Enter Core App Code"));
+			//	errorList.add(new Error("12", "Core App Code", "Please Enter Core App Code"));
+				errorList.add("1266");
 			} else if (req.getCoreAppCode().length() > 20) {
-				errorList.add(new Error("12", "Core App Code", "Please Enter CreatedBy within 20 Characters"));
+			//	errorList.add(new Error("12", "Core App Code", "Please Enter CreatedBy within 20 Characters"));
+				errorList.add("1267");
 			}
 			else if (req.getCoreAppCode().equalsIgnoreCase("99999")&&   StringUtils.isBlank(req.getSNo())) {
 				List<MailMaster> CompanyList = getCoreAppCodeExistDetails(req.getCoreAppCode() , req.getEffectiveDateStart() , req.getEffectiveDateEnd()  );
 				if (CompanyList.size()>0 ) {
-					errorList.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
+			//		errorList.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
+					errorList.add("1301");
 				}
 			}else  {
 				List<MailMaster> CompanyList =  getCoreAppCodeExistDetails(req.getCoreAppCode()  , req.getEffectiveDateStart() , req.getEffectiveDateEnd() );
 				if (CompanyList.size()>0 &&  (! req.getSNo().equalsIgnoreCase(CompanyList.get(0).getSNo().toString())) ) {
-					errorList.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
+				//	errorList.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
+					errorList.add("1301");
 				}
 				
 			}
 			if (StringUtils.isBlank(req.getRegulatoryCode())) {
-				errorList.add(new Error("13", "RegulatoryCode", "Please Enter RegulatoryCode"));
+			//	errorList.add(new Error("13", "RegulatoryCode", "Please Enter RegulatoryCode"));
+				errorList.add("1268");
 			} else if (req.getRegulatoryCode().length() > 20) {
-				errorList.add(new Error("13", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters"));
+			//	errorList.add(new Error("13", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters"));
+				errorList.add("1269");
 			}
 		} catch (Exception e) {
 			log.error(e);

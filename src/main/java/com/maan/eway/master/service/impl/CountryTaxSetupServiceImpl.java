@@ -2,7 +2,6 @@ package com.maan.eway.master.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
@@ -10,7 +9,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -31,25 +29,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.maan.eway.bean.BranchMaster;
-import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.CountryTaxSetup;
-import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CountryChangeStatusReq;
 import com.maan.eway.master.req.CountryTaxDropDownReq;
 import com.maan.eway.master.req.CountryTaxGetAllReq;
 import com.maan.eway.master.req.CountryTaxGetReq;
 import com.maan.eway.master.req.CountryTaxSaveReq;
-import com.maan.eway.master.res.CityMasterRes;
 import com.maan.eway.master.res.CountryTaxGetRes;
-import com.maan.eway.master.res.DocumentMasterGetRes;
 import com.maan.eway.master.service.CountryTaxSetupService;
-import com.maan.eway.repository.CityMasterRepository;
 import com.maan.eway.repository.CountryTaxSetupRepository;
 import com.maan.eway.res.DropDownRes;
-import com.maan.eway.res.SuccessRes;
 import com.maan.eway.res.SuccessRes2;
-import com.maan.eway.service.impl.BasicValidationService;
 
 @Service
 @Transactional
@@ -66,23 +56,26 @@ public class CountryTaxSetupServiceImpl implements CountryTaxSetupService {
 	private Logger log = LogManager.getLogger(CountryTaxSetupServiceImpl.class);
 
 	@Override
-	public List<Error> validateCountryTax(CountryTaxSaveReq req) {
-		List<Error> errorList = new ArrayList<Error>();
+	public List<String> validateCountryTax(CountryTaxSaveReq req) {
+		List<String> errorList = new ArrayList<String>();
 
 		try {	
 //				
 			if (StringUtils.isBlank(req.getCountryId()) ) {
-				errorList.add(new Error("03", "CountryId", "Please Select Country Id "));
+			//	errorList.add(new Error("03", "CountryId", "Please Select Country Id "));
+				errorList.add("1392");
 			}
 			else if(req.getCountryId().length()>20) {
-				errorList.add(new Error("03","CountryId","Pleaser enter the country between 20 characters"));
-				
+				//errorList.add(new Error("03","CountryId","Pleaser enter the country between 20 characters"));
+				errorList.add("1393");
 			}
 			
 			if (StringUtils.isBlank(req.getCreatedBy())) {
-				errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy"));
+			//	errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy"));
+				errorList.add("1270");
 			} else if (req.getCreatedBy().length() > 100) {
-				errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+			//	errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+				errorList.add("1271");
 			}
 
 
@@ -95,53 +88,66 @@ public class CountryTaxSetupServiceImpl implements CountryTaxSetupService {
 			cal.set(Calendar.MINUTE, 50);
 			today = cal.getTime();
 			if (req.getEffectiveDateStart() == null) {
-				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
+			//	errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
+				errorList.add("1261");
 
 			} else if (req.getEffectiveDateStart().before(today)) {
-				errorList
-						.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+				//errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+						
+				errorList.add("1262");
 			}
 			
 			
 			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("05", "Status", "Please Enter Status"));
+			//	errorList.add(new Error("05", "Status", "Please Enter Status"));
+				errorList.add("1263");
 				} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("05", "Status", "Enter Status in One Character Only"));
+			//	errorList.add(new Error("05", "Status", "Enter Status in One Character Only"));
+				errorList.add("1264");
 				} else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+			//	errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+				errorList.add("1265");
 				}
 
 			
 			if(StringUtils.isBlank(req.getRemarks())) {
-				errorList.add(new Error("13","Remarks","Please Enter the Remarks"));
+			//	errorList.add(new Error("13","Remarks","Please Enter the Remarks"));
+				errorList.add("1259");
 			}
 			else if(req.getRemarks().length()>100) {
-				errorList.add(new Error("13","Remarks","Please Enter RegionId within 10 characters"));
+			//	errorList.add(new Error("13","Remarks","Please Enter RegionId within 10 characters"));
+				errorList.add("1260");
 			}
 			
 			if (StringUtils.isBlank(req.getTaxName())) {
-				errorList.add(new Error("01", "TaxName", "Please Enter Tax Name"));
+			//	errorList.add(new Error("01", "TaxName", "Please Enter Tax Name"));
+				errorList.add("1394");
 			}else if (req.getTaxName().length() > 100){
-				errorList.add(new Error("01","TaxName", "Please Enter Tax Name within 100 Characters"));
+			//	errorList.add(new Error("01","TaxName", "Please Enter Tax Name within 100 Characters"));
+				errorList.add("1395");
 				
 			}else if (StringUtils.isBlank(req.getTaxId()) && StringUtils.isNotBlank(req.getCountryId())) {
 				List<CountryTaxSetup> taxList = getTaxNameExistDetails(req.getTaxName() , req.getCountryId());
 				if (taxList.size()>0 ) {
-					errorList.add(new Error("01", "TaxName", "This Tax Name Already Exist "));
+				//	errorList.add(new Error("01", "TaxName", "This Tax Name Already Exist "));
+					errorList.add("1396");
 				}
 				
 			} else if(StringUtils.isNotBlank(req.getTaxId()) &&  StringUtils.isNotBlank(req.getCountryId())) {
 				List<CountryTaxSetup> taxList = getTaxNameExistDetails(req.getTaxName() , req.getCountryId());
 				if (taxList.size()>0 &&  (! req.getTaxId().equalsIgnoreCase(taxList.get(0).getTaxId().toString())) ) {
-					errorList.add(new Error("01", "TaxName", "This Tax Name Already Exist "));
+				//	errorList.add(new Error("01", "TaxName", "This Tax Name Already Exist "));
+					errorList.add("1396");
 				}
 
 			}
 			
 			if (StringUtils.isBlank(req.getTaxDesc())) {
-				errorList.add(new Error("01", "TaxDesc", "Please Enter Tax Description"));
+				//errorList.add(new Error("01", "TaxDesc", "Please Enter Tax Description"));
+				errorList.add("1397");
 			}else if (req.getTaxName().length() > 200){
-				errorList.add(new Error("01","TaxName", "Please Enter Tax Name within 200 Characters"));
+			//	errorList.add(new Error("01","TaxName", "Please Enter Tax Name within 200 Characters"));
+				errorList.add("1398");
 				
 			}
 			

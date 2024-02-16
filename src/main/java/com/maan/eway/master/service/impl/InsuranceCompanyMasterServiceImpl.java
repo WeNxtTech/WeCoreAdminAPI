@@ -176,19 +176,19 @@ this.repository = repo;
 
 //******************************************INSURANCE COMPANY MASTER*******************************\\
 	@Override
-	public List<Error> validateCompanySaveReq(InsuranceCompanyMasterSaveReq req) {
-		List<Error> errors = new ArrayList<Error>();
+	public List<String> validateCompanySaveReq(InsuranceCompanyMasterSaveReq req) {
+		List<String> errors = new ArrayList<String>();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
 		try {
 
 			if (StringUtils.isBlank(req.getCompanyAddress())) {
-				errors.add(new Error("02", "Company Address", "Please Enter Company Address"));
+			//	errors.add(new Error("02", "Company Address", "Please Enter Company Address"));
+				errors.add("1409");
 			} else if (req.getCompanyAddress().length() > 200) {
-				errors.add(new Error("02", "Company Address", "Company Address under 200 Characters only allowed"));
+			//	errors.add(new Error("02", "Company Address", "Company Address under 200 Characters only allowed"));
+				errors.add("1410");
 			}
-			
-			
 			
 			/*
 			if (StringUtils.isBlank(req.getCompanyLogo())) {
@@ -198,17 +198,22 @@ this.repository = repo;
 			}
 			*/
 			if (StringUtils.isBlank(req.getCompanyEmail())) {
-				errors.add(new Error("03", "Company Email", "Please Enter Company Email"));
+			//	errors.add(new Error("03", "Company Email", "Please Enter Company Email"));
+				errors.add("1411");
 			} else if (req.getCompanyEmail().length() > 200) {
-				errors.add(new Error("03", "Company Email", "Company Email under 200 Characters only allowed"));
+			//	errors.add(new Error("03", "Company Email", "Company Email under 200 Characters only allowed"));
+				errors.add("1412");
 			} else if (isNotValidMail(req.getCompanyEmail()) ) {
-				errors.add(new Error("03", "Company Email", "Company Email under 200 Characters only allowed"));
+			//	errors.add(new Error("03", "Company Email", "Company Email under 200 Characters only allowed"));
+				errors.add("1413");
 			}
 			
 			if (StringUtils.isBlank(req.getCreatedBy())) {
-				errors.add(new Error("03", "CreatedBy", "Please Enter CreatedBy"));
+			//	errors.add(new Error("03", "CreatedBy", "Please Enter CreatedBy"));
+				errors.add("1414");
 			} else if (req.getCreatedBy().length() > 100) {
-				errors.add(new Error("03", "CreatedBy", "CreatedBy under 100 Characters only allowed"));
+			//	errors.add(new Error("03", "CreatedBy", "CreatedBy under 100 Characters only allowed"));
+				errors.add("1415");
 			}
 			/*
 			if (StringUtils.isBlank(req.getCompanyLogo())) {
@@ -223,65 +228,82 @@ this.repository = repo;
 		cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
 		today = cal.getTime();
 		if (req.getEffectiveDateStart() == null ) {
-			errors.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
+			//errors.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
+			errors.add("2020");
 
 		} else if (req.getEffectiveDateStart().before(today)) {
-			errors.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+		//	errors.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			errors.add("2021");
 		} 
 		else if (StringUtils.isBlank(req.getCoreAppCode())) {
-			errors.add(new Error("02", "CoreAppCode", "Please Enter getCoreAppCode"));
+			//errors.add(new Error("02", "CoreAppCode", "Please Enter getCoreAppCode"));
+			errors.add("2022");
 		} else if (req.getCoreAppCode().length() > 20) {
-			errors.add(new Error("02", "CoreAppCode", "getCoreAppCode under 20 Characters only allowed"));
+			//errors.add(new Error("02", "CoreAppCode", "CoreAppCode under 20 Characters only allowed"));
+			errors.add("2023");
 		}else if (StringUtils.isBlank(req.getInsuranceId())) {
 			List<InsuranceCompanyMaster> CompanyList = getCoreAppCodeExistDetails(req.getCoreAppCode() , req.getEffectiveDateStart() , req.getEffectiveDateEnd()  );
 			if (CompanyList.size()>0 ) {
-				errors.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
+		//		errors.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
+				errors.add("2024");
 			}
 		}else  {
 			List<InsuranceCompanyMaster> CompanyList =  getCoreAppCodeExistDetails(req.getCoreAppCode()  , req.getEffectiveDateStart() , req.getEffectiveDateEnd() );
 			if (CompanyList.size()>0 &&  (! req.getInsuranceId().equalsIgnoreCase(CompanyList.get(0).getCompanyId().toString())) ) {
-				errors.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
+			//	errors.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
+				errors.add("2024");
 			}
 			
 		}
 		
 		if (StringUtils.isBlank(req.getCompanyName())) {
-			errors.add(new Error("05", "Company Name", "Please Enter Company Name"));
+			//errors.add(new Error("05", "Company Name", "Please Enter Company Name"));
+			errors.add("1416");
 		} else if (req.getCompanyName().length() > 200) {
-			errors.add(new Error("05", "Company Name", "Company Name under 200 Characters only allowed"));
+		//	errors.add(new Error("05", "Company Name", "Company Name under 200 Characters only allowed"));
+			errors.add("1417");
 		}else if (StringUtils.isBlank(req.getInsuranceId())) {
 			List<InsuranceCompanyMaster> CompanyList = getCompanyNameExistDetails(req.getCompanyName());
 			if (CompanyList.size()>0 ) {
-				errors.add(new Error("01", "Company Name", "This Company Name Already Exist "));
+		//		errors.add(new Error("01", "Company Name", "This Company Name Already Exist "));
+				errors.add("1418");
 			}
 		}else  {
 			List<InsuranceCompanyMaster> CompanyList =  getCompanyNameExistDetails(req.getCompanyName() );
 			if (CompanyList.size()>0 &&  (! req.getInsuranceId().equalsIgnoreCase(CompanyList.get(0).getCompanyId().toString())) ) {
-				errors.add(new Error("01", "Company Name", "This Company Name Already Exist "));
+			//	errors.add(new Error("01", "Company Name", "This Company Name Already Exist "));
+				errors.add("1418");
 			}
 			
 		}
 
 		if (StringUtils.isBlank(req.getCompanyPhone())) {
-			errors.add(new Error("06", "Mobile Number", "Please Enter Mobile Number"));
+		//	errors.add(new Error("06", "Mobile Number", "Please Enter Mobile Number"));
+			errors.add("1419");
 		} else if (req.getCompanyPhone().length() > 200) {
-			errors.add(new Error("06", "Mobile Number", "Company Phone under 200 Characters only allowed"));
+		//	errors.add(new Error("06", "Mobile Number", "Company Phone under 200 Characters only allowed"));
+			errors.add("1420");
 		}
 		else if (!req.getCompanyPhone().matches("\\d+"))
 		{
-		errors.add(new Error("06", "Mobile Number", "Please Enter Mobile Number only in numbers"));
+	//	errors.add(new Error("06", "Mobile Number", "Please Enter Mobile Number only in numbers"));
+		errors.add("1421");
 		}
 		
 		if (StringUtils.isBlank(req.getVrnNumber())) {
-			errors.add(new Error("06", "VrnNumber", "Please Enter Vrn Number"));
+		//	errors.add(new Error("06", "VrnNumber", "Please Enter Vrn Number"));
+			errors.add("1422");
 		} else if (req.getVrnNumber().length() > 100) {
-			errors.add(new Error("06", "VrnNumber", "Vrn Number under 100 VrnNumber only allowed"));
+		//	errors.add(new Error("06", "VrnNumber", "Vrn Number under 100 VrnNumber only allowed"));
+			errors.add("1423");
 		}
 
 		if (StringUtils.isBlank(req.getTinNumber())) {
-			errors.add(new Error("06", "TinNumber", "Please Enter Tin Number"));
+		//	errors.add(new Error("06", "TinNumber", "Please Enter Tin Number"));
+			errors.add("1424");
 		} else if (req.getTinNumber().length() > 100) {
-			errors.add(new Error("06", "TinNumber", "Vrn Number under 100 Tin Number only allowed"));
+		//	errors.add(new Error("06", "TinNumber", "Vrn Number under 100 Tin Number only allowed"));
+			errors.add("1425");
 		}
 		
 		/*
@@ -292,40 +314,52 @@ this.repository = repo;
 		}
 		*/
 		if (StringUtils.isBlank(req.getRemarks())) {
-			errors.add(new Error("08", "Remark", "Please Enter Insurance Company Remark"));
+		//	errors.add(new Error("08", "Remark", "Please Enter Insurance Company Remark"));
+			errors.add("2025");
 		} else if (req.getRemarks().length() > 100) {
-			errors.add(new Error("08", "Remark", "Insurance Company Remark under 100 Characters only allowed"));
+		//	errors.add(new Error("08", "Remark", "Insurance Company Remark under 100 Characters only allowed"));
+			errors.add("2026");
 		}
 
 		//Status Validation
 		if (StringUtils.isBlank(req.getStatus())) {
-			errors.add(new Error("05", "Status", "Please Select Status  "));
+		//	errors.add(new Error("05", "Status", "Please Select Status  "));
+			errors.add("2027");
 		} else if (req.getStatus().length() > 1) {
-			errors.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+		//	errors.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allowed"));
+			errors.add("2028");
 		}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-			errors.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+		//	errors.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+			errors.add("2029");
 		}
 
 		if (StringUtils.isBlank(req.getBrokerYn())) {
-			errors.add(new Error("10", "BrokerYn", "Please Enter BrokerYn"));
+		//	errors.add(new Error("10", "BrokerYn", "Please Enter BrokerYn"));
+			errors.add("1427");
 		} else if (req.getBrokerYn().length() > 1) {
-			errors.add(new Error("10", "BrokerYn", "Insurance Company BrokerYn 1 Character Only"));
+		//	errors.add(new Error("10", "BrokerYn", "Insurance Company BrokerYn 1 Character Only"));
+			errors.add("1428");
 		} else if (!("Y".equals(req.getBrokerYn()) || "N".equals(req.getBrokerYn()))) {
-			errors.add(new Error("10", "BrokerYn", "Insurance Company Valid BrokerYn Y  or N"));
+		//	errors.add(new Error("10", "BrokerYn", "Insurance Company Valid BrokerYn Y  or N"));
+			errors.add("1429");
 		}
 				
 		if (StringUtils.isBlank(req.getRegulatoryCode())) {
-			errors.add(new Error("11", "RegulatoryCode", "Please Enter RegulatoryCode"));
+		//	errors.add(new Error("11", "RegulatoryCode", "Please Enter RegulatoryCode"));
+			errors.add("2030");
 		}else if (req.getRegulatoryCode().length() > 20) {
-			errors.add(new Error("11", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters"));
+		//	errors.add(new Error("11", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters"));
+			errors.add("2031");
 		}
 		if (StringUtils.isBlank(req.getPoBox())) {
-			errors.add(new Error("12", "PoBox", "Please Enter Po Box Number"));
+		//	errors.add(new Error("12", "PoBox", "Please Enter Po Box Number"));
+			errors.add("1430");
 		}  else if (! req.getPoBox().matches("[0-9]+") ) {
-			errors.add(new Error("12", "PoBox", "Please Enter Valid Po Box Numbers"));
-			
+		//	errors.add(new Error("12", "PoBox", "Please Enter Valid Po Box Numbers"));
+			errors.add("1431");
 		}  else if (req.getPoBox().length() > 20) {
-			errors.add(new Error("12", "PoBox", "Please Enter Po Box within 20 Numbers"));
+		//	errors.add(new Error("12", "PoBox", "Please Enter Po Box within 20 Numbers"));
+			errors.add("1432");
 		}
 		} catch (Exception e) {
 			e.printStackTrace();

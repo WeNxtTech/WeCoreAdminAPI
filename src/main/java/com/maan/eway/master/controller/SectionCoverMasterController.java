@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.error.Error;
-import com.maan.eway.master.req.ProductReferalChangeStatusReq;
 import com.maan.eway.master.req.SectionCoverChangeStatusReq;
 import com.maan.eway.master.req.SectionCoverMasterGetAllReq;
 import com.maan.eway.master.req.SectionCoverMasterGetReq;
@@ -26,10 +26,10 @@ import com.maan.eway.master.req.SectionCoverMasterNonSelectedReq;
 import com.maan.eway.master.req.SectionCoverMasterSaveReq;
 import com.maan.eway.master.req.SectionCoverUpdateReq;
 import com.maan.eway.master.res.CoverMasterGetAllRes;
-import com.maan.eway.master.res.CoverMasterRes;
 import com.maan.eway.master.res.SectionCoverMasterGetAllRes;
 import com.maan.eway.master.res.SectionCoverMasterRes;
 import com.maan.eway.master.service.SectionCoverMasterService;
+import com.maan.eway.req.CommonErrorModuleReq;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.DropdownCommonRes;
@@ -53,6 +53,9 @@ public class SectionCoverMasterController {
 	@Autowired
 	private  PrintReqService reqPrinter;
 	
+	@Autowired
+	private FetchErrorDescServiceImpl errorDescService ;
+	
 	// save
 		@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/insertsectioncover")
@@ -61,8 +64,20 @@ public class SectionCoverMasterController {
 
 			reqPrinter.reqPrint(req);
 			CommonRes data = new CommonRes();
+			List<String> validationCodes =  sectionCoverService.validateSectionCoverDetails(req);
+			List<Error> validation = null;
+			if(validationCodes!=null && validationCodes.size() > 0 ) {
+				CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+				comErrDescReq.setBranchCode(req.get(0).getBranchCode());
+				comErrDescReq.setInsuranceId(req.get(0).getCompanyId());
+				comErrDescReq.setProductId("99999");
+				comErrDescReq.setModuleId("31");
+				comErrDescReq.setModuleName("MASTERS");
+				
+				validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+			}
 
-			List<Error> validation = sectionCoverService.validateSectionCoverDetails(req);
+		
 			// validation
 			if (validation != null && validation.size() != 0) {
 				data.setCommonResponse(null);
@@ -96,8 +111,19 @@ public class SectionCoverMasterController {
 
 			reqPrinter.reqPrint(req);
 			CommonRes data = new CommonRes();
+			List<String> validationCodes = sectionCoverService.validateUpdatingSectionCove(req);
+			List<Error> validation = null;
+			if(validationCodes!=null && validationCodes.size() > 0 ) {
+				CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+				comErrDescReq.setBranchCode(req.getBranchCode());
+				comErrDescReq.setInsuranceId(req.getCompanyId());
+				comErrDescReq.setProductId("99999");
+				comErrDescReq.setModuleId("31");
+				comErrDescReq.setModuleName("MASTERS");
+				
+				validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+			}
 
-			List<Error> validation = sectionCoverService.validateUpdatingSectionCove(req);
 			// validation
 			if (validation != null && validation.size() != 0) {
 				data.setCommonResponse(null);
@@ -290,8 +316,20 @@ public class SectionCoverMasterController {
 
 			reqPrinter.reqPrint(req);
 			CommonRes data = new CommonRes();
+			List<String> validationCodes =  sectionCoverService.validateSectionCoverDetails(req);
+			List<Error> validation = null;
+			if(validationCodes!=null && validationCodes.size() > 0 ) {
+				CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+				comErrDescReq.setBranchCode(req.get(0).getBranchCode());
+				comErrDescReq.setInsuranceId(req.get(0).getCompanyId());
+				comErrDescReq.setProductId("99999");
+				comErrDescReq.setModuleId("31");
+				comErrDescReq.setModuleName("MASTERS");
+				
+				validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+			}
 
-			List<Error> validation = sectionCoverService.validateSectionCoverDetails(req);
+			
 			// validation
 			if (validation != null && validation.size() != 0) {
 				data.setCommonResponse(null);

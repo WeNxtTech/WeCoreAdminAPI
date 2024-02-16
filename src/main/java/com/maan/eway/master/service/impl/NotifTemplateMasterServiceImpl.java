@@ -39,26 +39,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.NotifTemplateMaster;
-import com.maan.eway.bean.NotifTemplateMaster;
-import com.maan.eway.bean.MotorColorMaster;
-import com.maan.eway.bean.NotifTemplateMaster;
-import com.maan.eway.bean.NotifTemplateMaster;
-import com.maan.eway.bean.NotifTemplateMaster;
-import com.maan.eway.bean.NotifTemplateMaster;
-import com.maan.eway.error.Error;
 import com.maan.eway.master.req.NotifTemplateMasterGetReq;
 import com.maan.eway.master.req.NotifTemplateMasterReq;
 import com.maan.eway.master.req.NotifTempleteMasterChangeStatusReq;
 import com.maan.eway.master.req.NotificationTempleteMasterGetAllReq;
-import com.maan.eway.master.req.NotificationTransactionDetailsGetColumnReq;
-import com.maan.eway.master.res.NotificationTempleteMasterGetRes;
-import com.maan.eway.master.res.NotificationTempleteMasterGetRes;
-import com.maan.eway.master.res.NotificationTempleteMasterGetRes;
 import com.maan.eway.master.res.NotificationTempMasterColummnDropRes;
 import com.maan.eway.master.res.NotificationTempleteMasterGetRes;
 import com.maan.eway.master.service.NotifTemplateMasterService;
 import com.maan.eway.repository.NotifTemplateMasterRepository;
-import com.maan.eway.res.ColummnDropRes;
 import com.maan.eway.res.SuccessRes;
 
 /**
@@ -84,16 +72,18 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 	 * 
 	 */
 	@Override
-	public List<Error> validateNotifTemplate(NotifTemplateMasterReq req) {
-		List<Error> errorList = new ArrayList<Error>();
+	public List<String> validateNotifTemplate(NotifTemplateMasterReq req) {
+		List<String> errorList = new ArrayList<String>();
 
 		try {
 			List<String> splitString=new ArrayList<String>();
 			List<String> content = new ArrayList<String>();
 			if (StringUtils.isBlank(req.getCompanyId().toString())) {
-				errorList.add(new Error("01", "Company Id", "Please Enter Company Id"));
+	//			errorList.add(new Error("01", "Company Id", "Please Enter Company Id"));
+				errorList.add("1255");
 			} else if (req.getCompanyId().length() > 20) {
-				errorList.add(new Error("01", "Company Id", "Please Enter Company Id within 20 Characters"));
+	//			errorList.add(new Error("01", "Company Id", "Please Enter Company Id within 20 Characters"));
+				errorList.add("1448");
 			}
 
 			// Date Validation
@@ -105,190 +95,236 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 			cal.set(Calendar.MINUTE, 50);
 			today = cal.getTime();
 			if (req.getEffectiveDateStart() == null) {
-				errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start "));
+		//		errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start "));
+				errorList.add("1261");
 
 			} else if (req.getEffectiveDateStart().before(today)) {
-				errorList
-						.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+	//			errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+						
+				errorList.add("1262");
 			} 
 
 			
 			// SMS---
 			if (StringUtils.isBlank(req.getSmsRequired())) {
-				errorList.add(new Error("04", "SmsRequired", "Please Enter SmsRequired"));
+	//			errorList.add(new Error("04", "SmsRequired", "Please Enter SmsRequired"));
+				errorList.add("1677");
 			} else if (req.getSmsRequired().equals("Y")) {
 				if (StringUtils.isBlank(req.getSmsSubject())) {
-					errorList.add(new Error("04", "SmsSubject", "Please Enter SmsSubject"));
+		//			errorList.add(new Error("04", "SmsSubject", "Please Enter SmsSubject"));
+					errorList.add("1678");
 				} else if (req.getSmsSubject().length() > 500) {
-					errorList.add(new Error("04", "SmsSubject", "Please Enter SmsSubject within 500 Characters"));
+	//				errorList.add(new Error("04", "SmsSubject", "Please Enter SmsSubject within 500 Characters"));
+					errorList.add("1679");
 				}
 				content = getTableColumn();
 				splitString = split(req.getSmsSubject());
 				for (String str : splitString) {
 					List<String> filter = content.stream().filter(o -> o.equals(str)).collect(Collectors.toList());
 					if (filter.size() <= 0) {
-						errorList.add(new Error("04", "Sms Subject Column Key", "Given {" + str + "} text does not exist in Table"));
+					//	errorList.add(new Error("04", "Sms Subject Column Key", "Following text does not exist in Table. Text: " + str));
+						errorList.add("1680"+ "," + str);
 					}
 				}
 				// String str = replaceUserContent(req.getSmsSubject(), content);
 				if (StringUtils.isBlank(req.getSmsBodyEn())) {
-					errorList.add(new Error("04", "SmsBody", "Please Enter SmsBody"));
+		//			errorList.add(new Error("04", "SmsBody", "Please Enter SmsBody"));
+					errorList.add("1681");
 				} else if (req.getSmsBodyEn().length() > 2000) {
-					errorList.add(new Error("04", "SmsBody", "Please Enter SmsBody within 2000 Characters"));
+		//			errorList.add(new Error("04", "SmsBody", "Please Enter SmsBody within 2000 Characters"));
+					errorList.add("1682");
 				}
 				content = getTableColumn();
 				splitString = split(req.getSmsBodyEn());
 				for (String str : splitString) {
 					List<String> filter = content.stream().filter(o -> o.equals(str)).collect(Collectors.toList());
 					if (filter.size() <= 0) {
-						errorList.add(new Error("04", "Sms BodyColumn Key", "Given {" + str + "} text does not exist in Table"));
+		//				errorList.add(new Error("04", "Sms BodyColumn Key", "Following text does not exist in Table. Text: " + str));
+						errorList.add("1687"+ "," + str);
 					}
 				}
 				if (StringUtils.isBlank(req.getToSmsno())) {
-					errorList.add(new Error("04", "ToSmsno", "Please Enter To Sms no "));
+		//			errorList.add(new Error("04", "ToSmsno", "Please Enter To Sms no "));
+					errorList.add("1683");
 
 				}
 
 			}
 			// WhatsApp
 			if (StringUtils.isBlank(req.getWhatsappRequired())) {
-				errorList.add(new Error("05", "WhatsappRequired", "Please Enter WhatsappRequired"));
+		//		errorList.add(new Error("05", "WhatsappRequired", "Please Enter WhatsappRequired"));
+				errorList.add("1684");
 			} else if (req.getWhatsappRequired().equals("Y")) {
 				if (StringUtils.isBlank(req.getWhatsappSubject())) {
-					errorList.add(new Error("05", "WhatsappSubject", "Please Enter WhatsappSubject"));
+	//				errorList.add(new Error("05", "WhatsappSubject", "Please Enter WhatsappSubject"));
+					errorList.add("1685");
 				} else if (req.getWhatsappSubject().length() > 500) {
-					errorList.add(new Error("05", "WhatsappSubject", "Please Enter WhatsappSubject within 500 Characters"));
+			//		errorList.add(new Error("05", "WhatsappSubject", "Please Enter WhatsappSubject within 500 Characters"));
+					errorList.add("1686");
 				}
 				content = getTableColumn();
 				splitString = split(req.getWhatsappSubject());
 				for (String str : splitString) {
 					List<String> filter = content.stream().filter(o -> o.equals(str)).collect(Collectors.toList());
 					if (filter.size() <= 0) {
-						errorList.add(new Error("05", "Whatsapp Subject Column Key", "Given {" + str + "} text does not exist in Table"));
+			//			errorList.add(new Error("05", "Whatsapp Subject Column Key", "Following text does not exist in Table. Text: " + str));
+						errorList.add("1688"+ "," + str);
 					}
 				}
 				if (StringUtils.isBlank(req.getWhatsappBodyEn())) {
-					errorList.add(new Error("05", "WhatsappBodyEn", "Please Enter WhatsappBodyEn"));
+			//		errorList.add(new Error("05", "WhatsappBodyEn", "Please Enter WhatsappBodyEn"));
+					errorList.add("1689");
 				} else if (req.getWhatsappBodyEn().length() > 500) {
-					errorList.add(new Error("05", "WhatsappBodyEn", "Please Enter WhatsappBodyEn within 500 Characters"));
+				//	errorList.add(new Error("05", "WhatsappBodyEn", "Please Enter WhatsappBodyEn within 500 Characters"));
+					errorList.add("1690");
 				}
 				content = getTableColumn();
 				splitString = split(req.getWhatsappBodyEn());
 				for (String str : splitString) {
 					List<String> filter = content.stream().filter(o -> o.equals(str)).collect(Collectors.toList());
 					if (filter.size() <= 0) {
-						errorList.add(new Error("05", "WhatsappBodyEn Column Key", "Given {" + str + "} text does not exist in Table"));
+				//		errorList.add(new Error("05", "WhatsappBodyEn Column Key", "Following text does not exist in Table. Text: " + str));
+						errorList.add("1691"+ "," + str);
 					}
 				}
 				if (StringUtils.isBlank(req.getWhatsappRegards())) {
-					errorList.add(new Error("05", "WhatsappRegards", "Please Enter WhatsappRegards"));
+			//		errorList.add(new Error("05", "WhatsappRegards", "Please Enter WhatsappRegards"));
+					errorList.add("1692");
 				} else if (req.getWhatsappRegards().length() > 500) {
-					errorList.add(new Error("05", "WhatsappRegards", "Please Enter WhatsappRegards within 500 Characters"));
+			//		errorList.add(new Error("05", "WhatsappRegards", "Please Enter WhatsappRegards within 500 Characters"));
+					errorList.add("1693");
 				}
 				content = getTableColumn();
 				splitString = split(req.getWhatsappRegards());
 				for (String str : splitString) {
 					List<String> filter = content.stream().filter(o -> o.equals(str)).collect(Collectors.toList());
 					if (filter.size() <= 0) {
-						errorList.add(new Error("05", "Whatsapp Regards Column Key", "Given {" + str + "} text does not exist in Table"));
+				//		errorList.add(new Error("05", "Whatsapp Regards Column Key", "Following text does not exist in Table. Text: " + str));
+						errorList.add("1694"+ "," + str);
 					}
 				}
 				if (StringUtils.isBlank(req.getToMessengerno())) {
-					errorList.add(new Error("05", "ToMessengerno", "Please Enter To Messenger no "));
+			//		errorList.add(new Error("05", "ToMessengerno", "Please Enter To Messenger no "));
+					errorList.add("1695");
 
 				}
 			}
 
 			// Mail
 			if (StringUtils.isBlank(req.getMailRequired())) {
-				errorList.add(new Error("06", "MailRequired", "Please Enter MailRequired"));
+		//		errorList.add(new Error("06", "MailRequired", "Please Enter MailRequired"));
+				errorList.add("1696");
 			} else if (req.getMailRequired().equals("Y")) {
 				if (StringUtils.isBlank(req.getMailSubject())) {
-					errorList.add(new Error("06", "MailSubject", "Please Enter MailSubject"));
+			//		errorList.add(new Error("06", "MailSubject", "Please Enter MailSubject"));
+					errorList.add("1697");
 				} else if (req.getMailSubject().length() > 2000) {
-					errorList.add(new Error("06", "MailSubject", "Please Enter MailSubject within 500 Characters"));
+			//		errorList.add(new Error("06", "MailSubject", "Please Enter MailSubject within 500 Characters"));
+					errorList.add("1698");
 				}
 				content = getTableColumn();
 				splitString = split(req.getMailSubject());
 				for (String str : splitString) {
 					List<String> filter = content.stream().filter(o -> o.equals(str)).collect(Collectors.toList());
 					if (filter.size() <= 0) {
-						errorList.add(new Error("06", "Mail Subject Column Key", "Given {" + str + "} text does not exist in Table"));
+				//		errorList.add(new Error("06", "Mail Subject Column Key", "Following text does not exist in Table. Text: " + str));
+						errorList.add("1699"+ "," + str);
 					}
 				}
 				if (StringUtils.isBlank(req.getMailBody())) {
-					errorList.add(new Error("06", "MailBody", "Please Enter MailBody"));
+		//			errorList.add(new Error("06", "MailBody", "Please Enter MailBody"));
+					errorList.add("1700");
 				} else if (req.getMailBody().length() > 2000) {
-					errorList.add(new Error("06", "MailBody", "Please Enter MailSubject within 2000  Characters"));
+		//			errorList.add(new Error("06", "MailBody", "Please Enter MailSubject within 2000  Characters"));
+					errorList.add("1701");
 				}
 				content = getTableColumn();
 				splitString = split(req.getMailBody());
 				for (String str : splitString) {
 					List<String> filter = content.stream().filter(o -> o.equals(str)).collect(Collectors.toList());
 					if (filter.size() <= 0) {
-						errorList
-								.add(new Error("06", "Mail Body Column Key", "Given {" + str + "} text does not exist in Table"));
+				//		errorList.add(new Error("06", "Mail Body Column Key", "Following text does not exist in Table. Text: " + str));
+								
+						errorList.add("1702");
 					}
 				}
 				if (StringUtils.isBlank(req.getMailRegards())) {
-					errorList.add(new Error("06", "MailRegards", "Please Enter MailRegards"));
+	//				errorList.add(new Error("06", "MailRegards", "Please Enter MailRegards"));
+					errorList.add("1703");
 				} else if (req.getMailRegards().length() > 500) {
-					errorList.add(new Error("06", "MailRegards", "Please Enter MailRegards within 500 Characters"));
+		//			errorList.add(new Error("06", "MailRegards", "Please Enter MailRegards within 500 Characters"));
+					errorList.add("1704");
 				}
 				content = getTableColumn();
 				splitString = split(req.getMailRegards());
 				for (String str : splitString) {
 					List<String> filter = content.stream().filter(o -> o.equals(str)).collect(Collectors.toList());
 					if (filter.size() <= 0) {
-						errorList.add(new Error("06", "Mail Regards Column Key", "Given {" + str + "} text does not exist in Table"));
+			//			errorList.add(new Error("06", "Mail Regards Column Key", "Following text does not exist in Table. Text: " + str));
+						errorList.add("1705");
 					}
 				}
 				if (StringUtils.isBlank(req.getToEmail())) {
-					errorList.add(new Error("06", "ToEmail", "Please Enter To Email no "));
+		//			errorList.add(new Error("06", "ToEmail", "Please Enter To Email no "));
+					errorList.add("1706");
 
 				}
 			}
 
 			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("05", "Status", "Please Select Status  "));
+	//			errorList.add(new Error("05", "Status", "Please Select Status  "));
+				errorList.add("1263");
 			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+		//		errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+				errorList.add("1264");
 			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+		//		errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+				errorList.add("1265");
 			}
 			if (StringUtils.isBlank(req.getCreatedBy())) {
-				errorList.add(new Error("08", "CreatedBy", "Please Enter CreatedBy"));
+		//		errorList.add(new Error("08", "CreatedBy", "Please Enter CreatedBy"));
+				errorList.add("1270");
 			} else if (req.getCreatedBy().length() > 100) {
-				errorList.add(new Error("08", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+		//		errorList.add(new Error("08", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+				errorList.add("1271");
 			}
 			if (StringUtils.isBlank(req.getRemarks())) {
-				errorList.add(new Error("09", "Remarks", "Please Enter Remarks"));
+	//			errorList.add(new Error("09", "Remarks", "Please Enter Remarks"));
+				errorList.add("1259");
 			} else if (req.getRemarks().length() > 300) {
-				errorList.add(new Error("09", "Remarks", "Please Enter Remarks within 100 Characters"));
+		//		errorList.add(new Error("09", "Remarks", "Please Enter Remarks within 100 Characters"));
+				errorList.add("1260");
 			}
 			if (StringUtils.isBlank(req.getCoreAppCode())) {
-				errorList.add(new Error("10", "Core App Code", "Please Enter Core App Code"));
+		//		errorList.add(new Error("10", "Core App Code", "Please Enter Core App Code"));
+				errorList.add("1266");
 			} else if (req.getCoreAppCode().length() > 20) {
-				errorList.add(new Error("10", "Core App Code", "Please Enter CreatedBy within 20 Characters"));
+		//		errorList.add(new Error("10", "Core App Code", "Please Enter CreatedBy within 20 Characters"));
+				errorList.add("1267");
 			}
 			if (StringUtils.isBlank(req.getRegulatoryCode())) {
-				errorList.add(new Error("11", "RegulatoryCode", "Please Enter RegulatoryCode"));
+		//		errorList.add(new Error("11", "RegulatoryCode", "Please Enter RegulatoryCode"));
+				errorList.add("1268");
 			} else if (req.getRegulatoryCode().length() > 20) {
-				errorList.add(new Error("11", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters"));
+		//		errorList.add(new Error("11", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters"));
+				errorList.add("1269");
 			}
 		
 		
 			if (StringUtils.isBlank(req.getNotifTemplatename())) {
-				errorList.add(new Error("14", "NotifTemplatename", "Please Enter NotifTemplateName "));
+		//		errorList.add(new Error("14", "NotifTemplatename", "Please Enter NotifTemplateName "));
+				errorList.add("1707");
 			}
 			else if (req.getNotifTemplatename().length()>100) {
-				errorList.add(new Error("14", "NotifTemplateName", "Please Enter NotifTemplateName within 100 Characters "));
+		//		errorList.add(new Error("14", "NotifTemplateName", "Please Enter NotifTemplateName within 100 Characters "));
+				errorList.add("1708");
 			}
 			else if (StringUtils.isBlank(req.getNotifTemplateCode()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getProductId())) {
 				List<NotifTemplateMaster> list = getNameExistDetails(req.getNotifTemplatename() , req.getCompanyId(),req.getProductId());
 				if (list.size()>0 ) {
-					errorList.add(new Error("15", "NotifTemplateName", "This NotifTemplateName Already Exist "));
+			//		errorList.add(new Error("15", "NotifTemplateName", "This NotifTemplateName Already Exist "));
+					errorList.add("1709");
 				}
 				
 			}
@@ -296,13 +332,14 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 				List<NotifTemplateMaster> list = getNameExistDetails(req.getNotifTemplatename() , req.getCompanyId() , req.getProductId());
 				
 				if (list.size()>0 &&  (! req.getNotifTemplateCode().equalsIgnoreCase(list.get(0).getNotifTemplateCode().toString())) ) {
-					errorList.add(new Error("14", "NotifTemplatename", "This NotifTemplateName Already Exist "));
+			//		errorList.add(new Error("14", "NotifTemplatename", "This NotifTemplateName Already Exist "));
+					errorList.add("1709");
 				}
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			errorList.add(new Error("00", "CommonError", "CommonError"));
+		//	errorList.add(new Error("00", "CommonError", "CommonError"));
 		}
 		return errorList;
 	}

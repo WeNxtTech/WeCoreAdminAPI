@@ -7,7 +7,6 @@ package com.maan.eway.notif.service;
 
 import java.util.List;
 
-import com.maan.eway.error.Error;
 import com.maan.eway.notif.req.MailMasterGetReq;
 import com.maan.eway.notif.req.MailMasterSaveReq;
 import com.maan.eway.notif.res.MailMasterGetRes;
@@ -19,7 +18,7 @@ public interface MailMasterService  {
 
 	
 
-	List<Error> validatemailmaster(MailMasterSaveReq req);
+	List<String> validatemailmaster(MailMasterSaveReq req);
 
 	SuccessRes insertmailmaster(MailMasterSaveReq req);
 

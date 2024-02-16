@@ -87,41 +87,49 @@ public class CompaniesTaxSetupServiceImpl implements CompaniesTaxSetupService {
 	
 
 	@Override
-	public List<Error> validateCompanyTaxes(CompaniesTaxSaveReq req) {
-		List<Error> errorList = new ArrayList<Error>();
-
+	public List<String> validateCompanyTaxes(CompaniesTaxSaveReq req) {
+		List<String> errorList = new ArrayList<String>();
 		try {	
 //				
 			if (StringUtils.isBlank(req.getCountryId()) ) {
-				errorList.add(new Error("03", "CountryId", "Please Select Country Id "));
+				//errorList.add(new Error("03", "CountryId", "Please Select Country Id "));
+				errorList.add("1470");
 			}
 			else if(req.getCountryId().length()>20) {
-				errorList.add(new Error("03","CountryId","Pleaser enter the country between 20 characters"));
+				//errorList.add(new Error("03","CountryId","Pleaser enter the country between 20 characters"));
+				errorList.add("1471");
 				
 			}
 			
 			if (StringUtils.isBlank(req.getCreatedBy())) {
-				errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy"));
+			//	errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy"));
+				errorList.add("1270");
 			} else if (req.getCreatedBy().length() > 100) {
-				errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+			//	errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+				errorList.add("1271");
 			}
 
 			if (StringUtils.isBlank(req.getBranchCode())) {
-				errorList.add(new Error("07", "BranchCode", "Please Select BranchCode"));
+				//errorList.add(new Error("07", "BranchCode", "Please Select BranchCode"));
+				errorList.add("1256");
 			}
 			
 			if (StringUtils.isBlank(req.getTaxFor())) {
-				errorList.add(new Error("07", "Tax For", "Please Select Tax For"));
+				//errorList.add(new Error("07", "Tax For", "Please Select Tax For"));
+				errorList.add("1472");
 			}
 			
 			if (StringUtils.isBlank(req.getCompanyId())) {
-				errorList.add(new Error("07", "CompanyId", "Please Select Insurance Id"));
+			//	errorList.add(new Error("07", "CompanyId", "Please Select Insurance Id"));
+				errorList.add("1255");
 			}
 			
 			if (StringUtils.isBlank(req.getCreatedBy())) {
-				errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy"));
+			//	errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy"));
+				errorList.add("1270");
 			} else if (req.getCreatedBy().length() > 100) {
-				errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+			//	errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+				errorList.add("1271");
 			}
 			
 
@@ -134,10 +142,12 @@ public class CompaniesTaxSetupServiceImpl implements CompaniesTaxSetupService {
 			cal.set(Calendar.MINUTE, 50);
 			today = cal.getTime();
 			if (req.getEffectiveDateStart() == null) {
-				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
+				//errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
+				errorList.add("1261");
 
 			} else if (req.getEffectiveDateStart().before(today)) {
-				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			//	errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+				errorList.add("1262");
 			}
 			
 			List<String> taxIds = new ArrayList<String>(); 
@@ -147,7 +157,8 @@ public class CompaniesTaxSetupServiceImpl implements CompaniesTaxSetupService {
 		//	List<String> priorities = new ArrayList<String>(); 
 			
 			if(req.getTaxList()==null || req.getTaxList().size() <= 0 ) {
-				errorList.add(new Error("01", "TaxDetails", "Please Enter Atleast One Tax Details"));
+			//	errorList.add(new Error("01", "TaxDetails", "Please Enter Atleast One Tax Details"));
+				errorList.add("1473");
 			} else {
 				List<CompanyTaxMuiltiInsertReq> taxList =req.getTaxList() ;
 				Integer row = 0 ;
@@ -156,12 +167,14 @@ public class CompaniesTaxSetupServiceImpl implements CompaniesTaxSetupService {
 					row = row + 1 ;
 										
 					if (StringUtils.isBlank(data.getTaxId())) {
-						errorList.add(new Error("01", "Tax", "Please Select Tax Name In Row No : " + row ));
+					//	errorList.add(new Error("01", "Tax", "Please Select Tax Name In Row No : " + row ));
+						errorList.add("1474" + "," + row );
 						
 					}else {
 						List<String> filterTaxIds = taxIds.stream().filter( o -> o.equalsIgnoreCase(data.getTaxId())).collect(Collectors.toList());
 						if(filterTaxIds.size() > 0 ) {
-							errorList.add(new Error("01", "Tax", "Duplicate Tax Name Available In Row No : " + row ));
+					//		errorList.add(new Error("01", "Tax", "Duplicate Tax Name Available In Row No : " + row ));
+							errorList.add("1475" + "," + row );
 						} else {
 							taxIds.add(data.getTaxId());
 						}
@@ -170,15 +183,19 @@ public class CompaniesTaxSetupServiceImpl implements CompaniesTaxSetupService {
 					
 					
 					if (StringUtils.isBlank(data.getValue())) {
-						errorList.add(new Error("05", "Value", "Please Enter Tax Value In Row No : " + row ));
+					//	errorList.add(new Error("05", "Value", "Please Enter Tax Value In Row No : " + row ));
+						errorList.add("1476" + "," + row );
 					}else if(! data.getValue().matches("[0-9.]+")) {
-						errorList.add(new Error("05","Value", "Please Enter Valid Tax Value in Row No : " + row ));
+					//	errorList.add(new Error("05","Value", "Please Enter Valid Tax Value in Row No : " + row ));
+						errorList.add("1477" + "," + row );
 					}
 					
 					if (StringUtils.isBlank(data.getMinimumAmount())) {
-						errorList.add(new Error("05", "MinimumAmount", "Please Enter Minimum Amount In Row No : " + row ));
+					//	errorList.add(new Error("05", "MinimumAmount", "Please Enter Minimum Amount In Row No : " + row ));
+						errorList.add("1478" + "," + row );
 					}else if(! data.getMinimumAmount().matches("[0-9.]+")) {
-						errorList.add(new Error("05","MinimumAmount", "Please Enter Valid Minimum Amount in Row No : " + row ));
+					//	errorList.add(new Error("05","MinimumAmount", "Please Enter Valid Minimum Amount in Row No : " + row ));
+						errorList.add("1479" + "," + row );
 					}
 					
 //					if (StringUtils.isBlank(data.getPriority())) {
@@ -194,39 +211,48 @@ public class CompaniesTaxSetupServiceImpl implements CompaniesTaxSetupService {
 //					}
 					
 					if (StringUtils.isBlank(data.getCalcType())) {
-						errorList.add(new Error("05", "CalcType", "Please Enter CalcType In Row No : " + row ));
+					//	errorList.add(new Error("05", "CalcType", "Please Enter CalcType In Row No : " + row ));
+						errorList.add("1480" + "," + row );
 					} else if (data.getCalcType().length() > 1) {
-						errorList.add(new Error("05", "CalcType", "Enter CalcType 1 Character Only In Row No : " + row ));
+					//	errorList.add(new Error("05", "CalcType", "Enter CalcType 1 Character Only In Row No : " + row ));
+						errorList.add("1481" + "," + row );
 						
 					} else if (data.getCalcType().equalsIgnoreCase("P")) {
 						if(StringUtils.isNotBlank(data.getValue()) &&  data.getValue().matches("[0-9.]+") && Double.valueOf(data.getValue())>1000 ) {
-							errorList.add(new Error("05", "Tax Value ", "Please Enter Valid Tax Value Percent In Row No : " + row ));
+					//		errorList.add(new Error("05", "Tax Value ", "Please Enter Valid Tax Value Percent In Row No : " + row ));
+							errorList.add("1482" + "," + row );
 						}
 					}
 					
 					//Status Validation
 					if (StringUtils.isBlank(data.getStatus())) {
-						errorList.add(new Error("05", "Status", "Please Enter Status In Row No : " + row ));
+					//	errorList.add(new Error("05", "Status", "Please Enter Status In Row No : " + row ));
+						errorList.add("1483" + "," + row );
 						
 					} else if (data.getStatus().length() > 1) {
-						errorList.add(new Error("05", "Status", "Enter Status in One Character Only In Row No : " + row ));
+					//	errorList.add(new Error("05", "Status", "Enter Status in One Character Only In Row No : " + row ));
+						errorList.add("1484" + "," + row );
 						
 					} else if(!("Y".equalsIgnoreCase(data.getStatus())||"N".equalsIgnoreCase(data.getStatus())||"R".equalsIgnoreCase(data.getStatus())|| "P".equalsIgnoreCase(data.getStatus()))) {
-						errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral In Row No : " + row ));
+					//	errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral In Row No : " + row ));
+						errorList.add("1485" + "," + row );
 					}
 					
 					
 					
 					if (StringUtils.isBlank(data.getRegulatoryCode())) {
-						errorList.add(new Error("06", "RegulatoryCode", "Please Enter RegulatoryCode In Row No : " + row ));
+					//	errorList.add(new Error("06", "RegulatoryCode", "Please Enter RegulatoryCode In Row No : " + row ));
+						errorList.add("1486" + "," + row );
 					} else if(data.getRegulatoryCode().length()>20) {
-						errorList.add(new Error("06", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters In Row No : " + row ));
+					//	errorList.add(new Error("06", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters In Row No : " + row ));
+						errorList.add("1487" + "," + row );
 						
 					} else if(! ( "N/A".equalsIgnoreCase(data.getRegulatoryCode()) || "99999".equalsIgnoreCase(data.getRegulatoryCode()) 
 							|| "NA".equalsIgnoreCase(data.getRegulatoryCode())) ) {
 						List<String> filterRegulatoryCodes = regulatoryCodes.stream().filter( o -> o.equalsIgnoreCase(data.getRegulatoryCode())).collect(Collectors.toList());
 						if(filterRegulatoryCodes.size() > 0 ) {
-							errorList.add(new Error("01", "RegulatoryCode", "Duplicate Regulatory Available In Row No : " + row ));
+					//		errorList.add(new Error("01", "RegulatoryCode", "Duplicate Regulatory Available In Row No : " + row ));
+							errorList.add("1488" + "," + row );
 						} else {
 							regulatoryCodes.add(data.getRegulatoryCode());
 						}
@@ -235,15 +261,18 @@ public class CompaniesTaxSetupServiceImpl implements CompaniesTaxSetupService {
 					} 
 					
 					if (StringUtils.isBlank(data.getCoreAppCode())) {
-						errorList.add(new Error("06", "CoreAppCode", "Please Enter CoreAppCode In Row No : " + row ));
+					//	errorList.add(new Error("06", "CoreAppCode", "Please Enter CoreAppCode In Row No : " + row ));
+						errorList.add("1489" + "," + row );
 					} else if(data.getCoreAppCode().length()>20) {
-						errorList.add(new Error("06", "CoreAppCode", "Please Enter CoreAppCode within 20 Characters In Row No : " + row ));
+					//	errorList.add(new Error("06", "CoreAppCode", "Please Enter CoreAppCode within 20 Characters In Row No : " + row ));
+						errorList.add("1490" + "," + row );
 						
 					} else if(! ( "N/A".equalsIgnoreCase(data.getCoreAppCode()) || "99999".equalsIgnoreCase(data.getCoreAppCode()) 
 							|| "NA".equalsIgnoreCase(data.getCoreAppCode())) ) {
 						List<String> filterCoreAppCodes = coreAppCodes.stream().filter( o -> o.equalsIgnoreCase(data.getCoreAppCode())).collect(Collectors.toList());
 						if(filterCoreAppCodes.size() > 0 ) {
-							errorList.add(new Error("01", "Core App Code", "Duplicate Core App Code Available In Row No : " + row ));
+					//		errorList.add(new Error("01", "Core App Code", "Duplicate Core App Code Available In Row No : " + row ));
+							errorList.add("1491" + "," + row );
 						} else {
 							coreAppCodes.add(data.getCoreAppCode());
 						}
@@ -251,15 +280,18 @@ public class CompaniesTaxSetupServiceImpl implements CompaniesTaxSetupService {
 					}
 					
 					if (StringUtils.isBlank(data.getTaxCode())) {
-						errorList.add(new Error("06", "TaxCode", "Please Enter Tax Code In Row No : " + row ));
+					//	errorList.add(new Error("06", "TaxCode", "Please Enter Tax Code In Row No : " + row ));
+						errorList.add("1492" + "," + row );
 					} else if(data.getTaxCode().length()>100) {
-						errorList.add(new Error("06", "TaxCode", "Please Enter Tax Code within 100 Characters In Row No : " + row ));
+						//errorList.add(new Error("06", "TaxCode", "Please Enter Tax Code within 100 Characters In Row No : " + row ));
+						errorList.add("1493" + "," + row );
 						
 					} else if(! ( "N/A".equalsIgnoreCase(data.getTaxCode()) || "99999".equalsIgnoreCase(data.getTaxCode()) 
 							|| "NA".equalsIgnoreCase(data.getTaxCode())) ) {
 						List<String> filterTaxCodes = taxCodes.stream().filter( o -> o.equalsIgnoreCase(data.getTaxCode())).collect(Collectors.toList());
 						if(filterTaxCodes.size() > 0 ) {
-							errorList.add(new Error("01", "TaxCode", "Duplicate Tax Code Available In Row No : " + row ));
+						//	errorList.add(new Error("01", "TaxCode", "Duplicate Tax Code Available In Row No : " + row ));
+							errorList.add("1494" + "," + row );
 						} else {
 							taxCodes.add(data.getTaxCode());
 						}

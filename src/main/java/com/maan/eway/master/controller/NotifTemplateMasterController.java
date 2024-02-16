@@ -5,41 +5,34 @@
 */
 package com.maan.eway.master.controller;
 
-import com.maan.eway.bean.NotifTemplateMaster;
-import com.maan.eway.common.req.GetTableDropDownReq;
-import com.maan.eway.error.Error;
-import com.maan.eway.master.req.ColorChangeStatusReq;
-import com.maan.eway.master.req.MotorColorGetAllReq;
-import com.maan.eway.master.req.MotorColorGetReq;
-import com.maan.eway.master.req.NotifTemplateMasterGetReq;
-import com.maan.eway.master.req.NotifTemplateMasterReq;
-import com.maan.eway.master.req.NotifTempleteMasterChangeStatusReq;
-import com.maan.eway.master.req.NotificationTempleteMasterGetAllReq;
-import com.maan.eway.master.req.NotificationTransactionDetailsGetColumnReq;
-import com.maan.eway.master.res.MotorColorGetRes;
-import com.maan.eway.master.res.NotificationTempMasterColummnDropRes;
-import com.maan.eway.master.res.NotificationTempleteMasterGetRes;
-import com.maan.eway.master.service.NotifTemplateMasterService;
-import com.maan.eway.res.ColummnDropRes;
-import com.maan.eway.res.CommonRes;
-import com.maan.eway.res.SuccessRes;
-import com.maan.eway.service.PrintReqService;
-
-import io.swagger.annotations.ApiOperation;
+import java.util.Collections;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
-import java.util.List;
+import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
+import com.maan.eway.error.Error;
+import com.maan.eway.master.req.NotifTemplateMasterGetReq;
+import com.maan.eway.master.req.NotifTemplateMasterReq;
+import com.maan.eway.master.req.NotifTempleteMasterChangeStatusReq;
+import com.maan.eway.master.req.NotificationTempleteMasterGetAllReq;
+import com.maan.eway.master.res.NotificationTempMasterColummnDropRes;
+import com.maan.eway.master.res.NotificationTempleteMasterGetRes;
+import com.maan.eway.master.service.NotifTemplateMasterService;
+import com.maan.eway.req.CommonErrorModuleReq;
+import com.maan.eway.res.CommonRes;
+import com.maan.eway.res.SuccessRes;
+import com.maan.eway.service.PrintReqService;
+
+import io.swagger.annotations.ApiOperation;
 
 
 /**
@@ -55,6 +48,9 @@ public class NotifTemplateMasterController {
 	
 	@Autowired
 	private  PrintReqService reqPrinter;
+	
+	@Autowired
+	private FetchErrorDescServiceImpl errorDescService ;
 
 /*
 	private static final String ENTITY_TITLE = "NotifTemplateMaster";
@@ -71,10 +67,21 @@ public class NotifTemplateMasterController {
 		@ApiOperation(value = "This method is Insert Notification Templete")
 		public ResponseEntity<CommonRes> insertnotiftemplate(@RequestBody NotifTemplateMasterReq req) {
 
-			reqPrinter.reqPrint(req);
-			CommonRes data = new CommonRes();
-
-			List<Error> validation = entityService.validateNotifTemplate(req);
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<String> validationCodes = entityService.validateNotifTemplate(req);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode("99999");
+			comErrDescReq.setInsuranceId(req.getCompanyId());
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
+			
+			validation = errorDescService.getErrorDesc(validationCodes, comErrDescReq);
+		}
+		
 
 			// Validation
 			if (validation != null && validation.size() != 0) {

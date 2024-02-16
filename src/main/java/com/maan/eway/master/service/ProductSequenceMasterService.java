@@ -7,18 +7,11 @@ package com.maan.eway.master.service;
 
 import java.util.List;
 
-import com.maan.eway.error.Error;
-import com.maan.eway.master.req.PlanTypeDropDownReq;
-import com.maan.eway.master.req.PlanTypeMasterChangeStatusReq;
-import com.maan.eway.master.req.PlanTypeMasterGetAllReq;
-import com.maan.eway.master.req.PlanTypeMasterGetReq;
-import com.maan.eway.master.req.PlanTypeMasterSaveReq;
 import com.maan.eway.master.req.ProductSequenceDropDownReq;
 import com.maan.eway.master.req.ProductSequenceMasterChangeStatusReq;
 import com.maan.eway.master.req.ProductSequenceMasterGetAllReq;
 import com.maan.eway.master.req.ProductSequenceMasterGetReq;
 import com.maan.eway.master.req.ProductSequenceMasterSaveReq;
-import com.maan.eway.master.res.PlanTypeMasterRes;
 import com.maan.eway.master.res.ProductSequenceMasterRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
@@ -26,7 +19,7 @@ import com.maan.eway.res.SuccessRes;
 public interface ProductSequenceMasterService  {
 
 
-	List<Error> validateProductSequence(ProductSequenceMasterSaveReq req);
+	List<String> validateProductSequence(ProductSequenceMasterSaveReq req);
 
 	SuccessRes insertProductSequence(ProductSequenceMasterSaveReq req);
 

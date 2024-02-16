@@ -6,24 +6,22 @@
 package com.maan.eway.master.service;
 
 
+import java.util.List;
+
 import com.maan.eway.master.req.ProductChangeStatusReq;
-import com.maan.eway.master.req.ProductDropDownReq;
 import com.maan.eway.master.req.ProductMasterGetAllReq;
 import com.maan.eway.master.req.ProductMasterGetReq;
 import com.maan.eway.master.req.ProductMasterSaveReq;
 import com.maan.eway.master.res.ProductGetAllRes;
 import com.maan.eway.master.res.ProductMasterRes;
-import com.maan.eway.error.Error;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
-
-import java.util.List;
 /**
 * <h2>BankMasterServiceimpl</h2>
 */
 public interface ProductMasterService  {
 
-	List<Error> validateProductDetails(ProductMasterSaveReq req);
+	List<String> validateProductDetails(ProductMasterSaveReq req);
 
 	SuccessRes insertProduct(ProductMasterSaveReq req);
 

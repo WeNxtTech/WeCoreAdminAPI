@@ -5,48 +5,38 @@
 */
 package com.maan.eway.master.controller;
 
-import com.maan.eway.bean.CoverMaster;
+import java.util.Collections;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CompanyProductChangeStatusReq;
 import com.maan.eway.master.req.CompanyProductMasterGetAllReq;
 import com.maan.eway.master.req.CompanyProductMasterGetReq;
 import com.maan.eway.master.req.CompanyProductMasterSaveReq;
 import com.maan.eway.master.req.CompanyProductMultiInsertReq;
-import com.maan.eway.master.req.CoverMasterGetAllReq;
-import com.maan.eway.master.req.CoverMasterGetReq;
-import com.maan.eway.master.req.CoverMasterSaveReq;
-import com.maan.eway.master.req.SectionCoverMasterSaveReq;
 import com.maan.eway.master.res.CompanyProductConfigRes;
 import com.maan.eway.master.res.CompanyProductGetAllRes;
 import com.maan.eway.master.res.CompanyProductMasterRes;
-import com.maan.eway.master.res.CoverMasterRes;
 import com.maan.eway.master.res.ProductGetAllRes;
-import com.maan.eway.master.res.ProductMasterRes;
 import com.maan.eway.master.service.CompanyProductMasterService;
-import com.maan.eway.master.service.CoverMasterService;
-import com.maan.eway.master.service.SectionCoverMasterService;
+import com.maan.eway.req.CommonErrorModuleReq;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.CompanyProductDropDownRes;
-import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Collections;
-import java.util.List;
 
 
 /**
@@ -62,6 +52,11 @@ public class CompanyProductMasterController {
 	@Autowired
 	private  PrintReqService reqPrinter;
 	
+	
+	
+	@Autowired
+	private FetchErrorDescServiceImpl errorDescService ;
+	
 	// save
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/insertcompanyproducts")
@@ -70,8 +65,20 @@ public class CompanyProductMasterController {
 
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
+		List<String> validationCodes =  companyProductService.validateCompanyProductDetails(req);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode("99999");
+			comErrDescReq.setInsuranceId(req.get(0).getCompanyId());
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
 
-		List<Error> validation = companyProductService.validateCompanyProductDetails(req);
+	
 		// validation
 		if (validation != null && validation.size() != 0) {
 			data.setCommonResponse(null);
@@ -106,8 +113,21 @@ public class CompanyProductMasterController {
 
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
+		List<String> validationCodes =companyProductService.validateUpdateCompanyProductDetails(req);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode("99999");
+			comErrDescReq.setInsuranceId(req.getCompanyId());
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
+		
 
-		List<Error> validation = companyProductService.validateUpdateCompanyProductDetails(req);
+	
 		// validation
 		if (validation != null && validation.size() != 0) {
 			data.setCommonResponse(null);

@@ -7,14 +7,12 @@ package com.maan.eway.master.service;
 
 import java.util.List;
 
-import com.maan.eway.error.Error;
 import com.maan.eway.master.req.RatingDropDownReq;
 import com.maan.eway.master.req.RatingFieldMasterGetAllReq;
 import com.maan.eway.master.req.RatingFieldsMasterChangeStatusReq;
 import com.maan.eway.master.req.RatingFieldsMasterGetReq;
 import com.maan.eway.master.req.RatingFieldsMasterSaveReq;
 import com.maan.eway.master.res.RatingFieldsMasterGetRes;
-import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.RatingFieldDropDownRes;
 import com.maan.eway.res.SuccessRes;
 /**
@@ -22,7 +20,7 @@ import com.maan.eway.res.SuccessRes;
 */
 public interface RatingFieldMasterService  {
 
-	List<Error> validateFactorType(RatingFieldsMasterSaveReq req);
+	List<String> validateFactorType(RatingFieldsMasterSaveReq req);
 
 	SuccessRes insertfactortype(RatingFieldsMasterSaveReq req);
 

@@ -11,45 +11,62 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
+import com.maan.eway.error.Error;
+import com.maan.eway.req.CommonErrorModuleReq;
+import com.maan.eway.res.SuccessRes;
+
 @RestController
 @RequestMapping("/excel/config")
 public class ExcelConfigMasterController {
 
 	@Autowired
 	ExcelConfigMasterServiceImpl service;
+	
+	@Autowired
+	private FetchErrorDescServiceImpl errorDescService ;
 
 	@PostMapping("/saveupload")
-	public ResponseEntity<CommonResponse> saveUploadType(@RequestBody UploadTypeSaveReq req) {
-
-		List<Errors> errorList = service.validate(req);
+	public ResponseEntity<CommonRes> saveUploadType(@RequestBody UploadTypeSaveReq req) {
+		
+	
+		CommonRes data = new CommonRes();
+		List<String> validationCodes =  service.validate(req);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode("9999");
+			comErrDescReq.setInsuranceId(req.getCompanyId());
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
+		
 
 		CommonResponse response = new CommonResponse();
 
-		if (errorList.size() > 0) {
-
-			response.setError(true);
-			response.setErrorMessage(errorList);
-			response.setMessage("Insertion Failed");
-			response.setResult(null);
-
-			return new ResponseEntity<CommonResponse>(response, HttpStatus.OK);
-
+		if(validation !=null && validation.size()!=0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data,HttpStatus.OK);
 		} else {
-
-			SuccessResponse sRes = service.saveUploadType(req);
-
-			if (sRes != null) {
-
-				response.setError(false);
-				response.setErrorMessage(Collections.emptyList());
-				response.setMessage("Insertion Successful");
-				response.setResult(sRes);
-
-				return new ResponseEntity<CommonResponse>(response, HttpStatus.OK);
-
-			} else {
+			//save
+			SuccessRes res = service.saveUploadType(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			
+			if(res!=null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			}
+			else {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-
 			}
 		}
 	}

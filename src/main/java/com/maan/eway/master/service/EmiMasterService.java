@@ -26,7 +26,7 @@ import com.maan.eway.res.SuccessRes;
 */
 public interface EmiMasterService  {
 
-	List<Error> validateEmiDetails(EmiMasterSaveReq req);
+	List<String> validateEmiDetails(EmiMasterSaveReq req);
 
 	SuccessRes insertEmi(EmiMasterSaveReq req);
 

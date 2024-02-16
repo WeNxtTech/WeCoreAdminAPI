@@ -17,15 +17,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.ProductSequenceDropDownReq;
 import com.maan.eway.master.req.ProductSequenceMasterChangeStatusReq;
 import com.maan.eway.master.req.ProductSequenceMasterGetAllReq;
 import com.maan.eway.master.req.ProductSequenceMasterGetReq;
 import com.maan.eway.master.req.ProductSequenceMasterSaveReq;
-import com.maan.eway.master.res.PlanTypeMasterRes;
 import com.maan.eway.master.res.ProductSequenceMasterRes;
 import com.maan.eway.master.service.ProductSequenceMasterService;
+import com.maan.eway.req.CommonErrorModuleReq;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.DropdownCommonRes;
@@ -50,16 +51,32 @@ public class ProductSequenceMasterController {
 	@Autowired
 	private  PrintReqService reqPrinter;
 	
+	
+	@Autowired
+	private FetchErrorDescServiceImpl errorDescService ;
+	
+	
 	// save
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/insertproductseq")
 		@ApiOperation(value = "This method is Insert Product Sequence Master ")
 		public ResponseEntity<CommonRes> insertPlanType(@RequestBody ProductSequenceMasterSaveReq req) {
 
-			reqPrinter.reqPrint(req);
-			CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<String> validationCodes = service.validateProductSequence(req);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode(req.getBranchCode());
+			comErrDescReq.setInsuranceId(req.getInsuranceId());
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
 
-			List<Error> validation = service.validateProductSequence(req);
 			// validation
 			if (validation != null && validation.size() != 0) {
 				data.setCommonResponse(null);

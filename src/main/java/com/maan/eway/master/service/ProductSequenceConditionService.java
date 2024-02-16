@@ -25,7 +25,7 @@ import com.maan.eway.res.SuccessRes;
 
 public interface ProductSequenceConditionService  {
 
-	List<Error> validateProductSequenceCondition(ProductSequenceConditionSaveReq req);
+	List<String> validateProductSequenceCondition(ProductSequenceConditionSaveReq req);
 
 	SuccessRes insertProductSequenceCondition(ProductSequenceConditionSaveReq req);
 

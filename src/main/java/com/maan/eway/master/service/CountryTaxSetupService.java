@@ -16,7 +16,7 @@ import com.maan.eway.res.SuccessRes2;
 
 public interface CountryTaxSetupService {
 
-	List<Error> validateCountryTax(CountryTaxSaveReq req);
+	List<String> validateCountryTax(CountryTaxSaveReq req);
 
 	SuccessRes2 saveCountryTax(CountryTaxSaveReq req);
 

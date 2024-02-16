@@ -103,8 +103,8 @@ private Logger log=LogManager.getLogger(CompanyProrataServiceImpl.class);
 
 
 @Override
-public List<Error> validateCompanyProrata(CompanyProrataSaveReq req) {
-	List<Error> errorList = new ArrayList<Error>();
+public List<String> validateCompanyProrata(CompanyProrataSaveReq req) {
+	List<String> errorList = new ArrayList<String>();
 	try {
 	
 	
@@ -114,16 +114,20 @@ public List<Error> validateCompanyProrata(CompanyProrataSaveReq req) {
 		cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
 		today = cal.getTime();
 		if (req.getEffectiveDateStart() == null ) {
-			errorList.add(new Error("01", "EffectiveDateStart", "Please Enter Effective Date Start "));
+		//	errorList.add(new Error("01", "EffectiveDateStart", "Please Enter Effective Date Start "));
+			errorList.add("1261");
 
 		} else if (req.getEffectiveDateStart().before(today)) {
-			errorList.add(new Error("01", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+	//		errorList.add(new Error("01", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			errorList.add("1262");
 		} 
 				
 		if (StringUtils.isBlank(req.getCreatedBy())) {
-			errorList.add(new Error("02", "CreatedBy", "Please Enter CreatedBy"));
+		//	errorList.add(new Error("02", "CreatedBy", "Please Enter CreatedBy"));
+			errorList.add("1270");
 		}else if (req.getCreatedBy().length() > 50) {
-			errorList.add(new Error("02", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+		//	errorList.add(new Error("02", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+			errorList.add("1271");
 		} 
 
 		
@@ -135,42 +139,47 @@ public List<Error> validateCompanyProrata(CompanyProrataSaveReq req) {
 				row = row +1 ;
 				
 				if (StringUtils.isBlank(data.getStartfrom())) {
-					errorList.add(new Error("03", "Startfrom", "Please Enter Startfrom In Row No :" + row ));
+				//	errorList.add(new Error("03", "Startfrom", "Please Enter Startfrom In Row No :" + row ));
+					errorList.add("1629" + "," + row);
 				}
 				if (StringUtils.isBlank(data.getEndto()) ){
-					errorList.add(new Error("03", "Endto", "Please Enter Endto  In Row No :" + row));
+				//	errorList.add(new Error("03", "Endto", "Please Enter Endto  In Row No :" + row));
+					errorList.add("1630" + "," + row);
 				}
 				if (StringUtils.isBlank(data.getPercent()) ){
-					errorList.add(new Error("07", "Endto", "Please Enter Percent  In Row No :" + row));
+				//	errorList.add(new Error("07", "Percent", "Please Enter Percent  In Row No :" + row));
+					errorList.add("1631" + "," + row);
 				}
 				
 			
 				if (StringUtils.isBlank(req.getProductId()) ) {
-					errorList.add(new Error("05", "ProductId", "Please Enter ProductId"));
+				//	errorList.add(new Error("05", "ProductId", "Please Enter ProductId"));
+					errorList.add("1526" + "," + row);
 				}
 				//Status Validation
 				if (StringUtils.isBlank(data.getStatus())) {
-					errorList.add(new Error("04", "Status", "Please Enter StatusPercent In Tax Value In Row No :" + row));
+				//	errorList.add(new Error("04", "Status", "Please Enter StatusPercent In Tax Value In Row No :" + row));
+					errorList.add("1483" + "," + row);
 				} else if (data.getStatus().length() > 1) {
-					errorList.add(new Error("04", "Status", "Enter Status 1 Character Only Percent In Tax Value In Row No :" + row));
+				//	errorList.add(new Error("04", "Status", "Enter Status 1 Character Only Percent In Tax Value In Row No :" + row));
+					errorList.add("1484" + "," + row);
 				}
 				else if(!("Y".equals(data.getStatus())||"N".equals(data.getStatus())||"R".equals(data.getStatus()))) {
-					errorList.add(new Error("04", "Status", "Please Enter Status  In Row No :" + row));
+				//	errorList.add(new Error("04", "Status", "Please Enter Status  In Row No :" + row));
+					errorList.add("1485" + "," + row);
 			}
 			
 		}
 		
-		
-		
-		
 		if (StringUtils.isBlank(req.getCompanyId()) ) {
-			errorList.add(new Error("06", "InsuranceId", "Please Enter InsuranceId"));
+		//	errorList.add(new Error("06", "InsuranceId", "Please Enter InsuranceId"));
+			errorList.add("1255" + "," + row);
 		}
 		
 	} catch (Exception e) {
 		log.error(e);
 		e.printStackTrace();
-		errorList.add(new Error("12", "Common Error", e.getMessage()));
+//		errorList.add(new Error("12", "Common Error", e.getMessage()));
 	}
 	return errorList;
 }

@@ -6,7 +6,8 @@
 package com.maan.eway.master.service;
 
 
-import com.maan.eway.error.Error;
+import java.util.List;
+
 import com.maan.eway.master.req.ConstantTableChangeStatusReq;
 import com.maan.eway.master.req.ConstantTableDetailsGetAllReq;
 import com.maan.eway.master.req.ConstantTableDetailsGetReq;
@@ -16,14 +17,12 @@ import com.maan.eway.master.res.ConstantTableDetailsCommonRes;
 import com.maan.eway.master.res.ConstantTableDetailsRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
-
-import java.util.List;
 /**
 * <h2>BankMasterServiceimpl</h2>
 */
 public interface ConstantTableDetailsService  {
 
-	List<Error> validateConstantTableDetails(ConstantTableDetailsSaveReq req);
+	List<String> validateConstantTableDetails(ConstantTableDetailsSaveReq req);
 
 	SuccessRes insertConstantTableDetails(ConstantTableDetailsSaveReq req);
 

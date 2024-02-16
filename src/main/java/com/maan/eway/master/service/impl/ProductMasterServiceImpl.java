@@ -216,15 +216,15 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 	
 	
 	@Override
-	public List<Error> validateProductDetails(ProductMasterSaveReq req) {
-		List<Error> errorList = new ArrayList<Error>();
+	public List<String> validateProductDetails(ProductMasterSaveReq req) {
+		List<String> errorList = new ArrayList<String>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper(); 
 		try {
 		
 			// Common Errors
 			GlobalCommonValidationReq commonReq = new GlobalCommonValidationReq();
 			dozerMapper.map(req, commonReq);
-			List<Error>  commonErrors = commonValidationService.validateGlobalMaster(commonReq) ;
+			List<String>  commonErrors = commonValidationService.validateGlobalMaster(commonReq) ;
 			if(commonErrors.size()>0  ) {
 				errorList.addAll(commonErrors);
 			}
@@ -232,53 +232,65 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 						
 			// Other Errors		
 			if (StringUtils.isBlank(req.getProductName())) {
-				errorList.add(new Error("01", "ProductName", "Please Select Product  Name "));
+//				errorList.add(new Error("01", "ProductName", "Please Select Product  Name "));
+				errorList.add("2043");
 			}else if (req.getProductName().length() > 100){
-				errorList.add(new Error("01","ProductName", "Please Enter Product  Name within 100 Characters")); 
+//				errorList.add(new Error("01","ProductName", "Please Enter Product  Name within 100 Characters")); 
+				errorList.add("2044");
 			}else if (StringUtils.isBlank(req.getProductId())) {
 				List<ProductMaster> ProductList = getProductNameExistDetails(req.getProductName());
 				if (ProductList.size()>0 ) {
-					errorList.add(new Error("01", "ProductName", "This Product Name Already Exist "));
+//					errorList.add(new Error("01", "ProductName", "This Product Name Already Exist "));
+					errorList.add("2045");
 				}
 			}else  {
 				List<ProductMaster> ProductList =  getProductNameExistDetails(req.getProductName() );
 				if (ProductList.size()>0 &&  (! req.getProductId().equalsIgnoreCase(ProductList.get(0).getProductId().toString())) ) {
-					errorList.add(new Error("01", "ProductName", "This Product Name Already Exist "));
+//					errorList.add(new Error("01", "ProductName", "This Product Name Already Exist "));
+					errorList.add("2045");
 				}
 				
 			}
 	
 			if (StringUtils.isBlank(req.getProductIconId()) ) {
-				errorList.add(new Error("02", "ProductIconId", "Please Select Product Icon"));
+//				errorList.add(new Error("02", "ProductIconId", "Please Select Product Icon"));
+				errorList.add("2046");
 			} else if (! req.getProductIconId().matches("[0-9]+")  ) {
-				errorList.add(new Error("02", "ProductIconId", "Please Select  Valid Product Icon"));
+//				errorList.add(new Error("02", "ProductIconId", "Please Select  Valid Product Icon"));
+				errorList.add("2047");
 			}else {
 				ListItemValue icon = listRepo.findByItemTypeAndItemCodeAndStatus("PRODUCT_ICONS" , req.getProductIconId() ,"Y");
 				if( icon ==null ) {
-					errorList.add(new Error("02", "ProductIconId", "Please Select  Valid Product Icon"));	
+//					errorList.add(new Error("02", "ProductIconId", "Please Select  Valid Product Icon"));
+					errorList.add("2047");
 				}
 			}
 			
 			if (req.getCurrencyIds()==null && req.getCurrencyIds().size()<=0 ) {
-				errorList.add(new Error("02", "CurrencyIds", "Please Select Currency Ids"));
+//				errorList.add(new Error("02", "CurrencyIds", "Please Select Currency Ids"));
+				errorList.add("2048");
 			}
 			
 			if (StringUtils.isBlank(req.getProductDesc())) {
-				errorList.add(new Error("08", "ProductDesc", "Please Select Product  Desc "));
+//				errorList.add(new Error("08", "ProductDesc", "Please Select Product  Desc "));
+				errorList.add("2049");
 			}else if (req.getProductDesc().length() > 500) {
-				errorList.add(new Error("08", "ProductDesc", "Please Enter Product Descwithin 500 Characters"));
+//				errorList.add(new Error("08", "ProductDesc", "Please Enter Product Desc within 500 Characters"));
+				errorList.add("2050");
 			}
 			
 			if (StringUtils.isBlank(req.getMotorYn())) {
-				errorList.add(new Error("12", "Product Type", "Please Select Product Type "));
+//				errorList.add(new Error("12", "Product Type", "Please Select Product Type "));
+				errorList.add("2051");
 			}else if (req.getMotorYn().length() >1) {
-				errorList.add(new Error("12", "Product Type", "Please Enter Product Type within 1 Character"));
+//				errorList.add(new Error("12", "Product Type", "Please Enter Product Type within 1 Character"));
+				errorList.add("2052");
 			}
 			
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
-			errorList.add(new Error("12", "Common Error", e.getMessage()));
+//			errorList.add(new Error("12", "Common Error", e.getMessage()));
 		}
 		return errorList;
 	}

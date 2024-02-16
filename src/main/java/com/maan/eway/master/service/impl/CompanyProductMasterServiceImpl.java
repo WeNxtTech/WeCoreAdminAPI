@@ -130,8 +130,8 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 	private Logger log=LogManager.getLogger(CompanyProductMasterServiceImpl.class);
 
 	@Override
-	public List<Error> validateCompanyProductDetails(List<CompanyProductMultiInsertReq> reqList) {
-		List<Error> errorList = new ArrayList<Error>();
+	public List<String> validateCompanyProductDetails(List<CompanyProductMultiInsertReq> reqList) {
+		List<String> errorList = new ArrayList<String>();
 		
 		try {
 			List<String> productIds = new ArrayList<String>();
@@ -139,22 +139,27 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			for (CompanyProductMultiInsertReq req : reqList) {
 				row = row + 1 ;
 				if (StringUtils.isBlank(req.getProductId())) {
-					errorList.add(new Error("01", "ProductId", "Please Select Product  Id in Row No :" + row));
+				//	errorList.add(new Error("01", "ProductId", "Please Select Product Id in Row No :" + row));
+					errorList.add("1526");
 				}else if (req.getProductId().length() > 3){
-					errorList.add(new Error("01","ProductId", "Please Enter Product  Id within 100 Characters in Row No :" + row)); 
+				//	errorList.add(new Error("01","ProductId", "Please Enter Product  Id within 100 Characters in Row No :" + row)); 
+					errorList.add("1527");
 				}else if (! req.getProductId().matches("[0-9]+") ){
-					errorList.add(new Error("01","ProductId", "Please Enter Valid Number in Product  Id in Row No :" + row)); 
+				//	errorList.add(new Error("01","ProductId", "Please Enter Valid Number in Product  Id in Row No :" + row)); 
+					errorList.add("1528");
 				} else {
 					List<String> filterProductIds = productIds.stream().filter( o -> o.equalsIgnoreCase(req.getProductId())).collect(Collectors.toList());
 					if(filterProductIds.size()>0 ) {
-						errorList.add(new Error("01","ProductId", "Duplicate Product  Selected in Row No :" + row));
+					//	errorList.add(new Error("01","ProductId", "Duplicate Product  Selected in Row No :" + row));
+						errorList.add("1529");
 					} else {
 						productIds.add(req.getProductId());
 					}
 				}
 				
 				if (StringUtils.isBlank(req.getCreatedBy())) {
-					errorList.add(new Error("01", "CreatedBy", "Please Select CreatedBy  Id in Row No :" + row));
+					//errorList.add(new Error("01", "CreatedBy", "Please Select CreatedBy  Id in Row No :" + row));
+					errorList.add("1530");
 				}
 			}
 			
@@ -878,42 +883,50 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 
 
 	@Override
-	public List<Error> validateUpdateCompanyProductDetails(CompanyProductMasterSaveReq req) {
-		List<Error> errorList = new ArrayList<Error>();
-		
+	public List<String> validateUpdateCompanyProductDetails(CompanyProductMasterSaveReq req) {
+		List<String> errorList = new ArrayList<String>();
 		try {
-		
 			
 		if (StringUtils.isBlank(req.getProductId())) {
-				errorList.add(new Error("01", "ProductId", "Please Select Product  Id" ));
+			//	errorList.add(new Error("01", "ProductId", "Please Select Product  Id" ));
+				errorList.add("1313");
 			}else if (req.getProductId().length() > 3){
-				errorList.add(new Error("01","ProductId", "Please Enter Product  Id within 100 Characters ")); 
+			//	errorList.add(new Error("01","ProductId", "Please Enter Product  Id within 3 Characters ")); 
+				errorList.add("1495");
 			}else if (! req.getProductId().matches("[0-9]+") ){
-				errorList.add(new Error("01","ProductId", "Please Enter Valid Number in Product  Id ")); 
+			//	errorList.add(new Error("01","ProductId", "Please Enter Valid Number in Product  Id ")); 
+				errorList.add("1496");
 			}
 			
 			if (StringUtils.isBlank(req.getProductName())) {
-				errorList.add(new Error("01", "ProductName", "Please Select Product  Name  "));
+			//	errorList.add(new Error("01", "ProductName", "Please Select Product  Name  "));
+				errorList.add("1497");
 			}else if (req.getProductName().length() > 100){
-				errorList.add(new Error("01","ProductName", "Please Enter Product  Name within 100 Characters  ")); 
+			//	errorList.add(new Error("01","ProductName", "Please Enter Product  Name within 100 Characters  ")); 
+				errorList.add("1498");
 			}
 	
 			if (StringUtils.isBlank(req.getProductIconId()) ) {
-				errorList.add(new Error("02", "ProductIconId", "Please Select Product Icon  "));
+			//	errorList.add(new Error("02", "ProductIconId", "Please Select Product Icon  "));
+				errorList.add("1499");
 			} else if (! req.getProductIconId().matches("[0-9]+")  ) {
-				errorList.add(new Error("02", "ProductIconId", "Please Select  Valid Product Icon "));
+			//	errorList.add(new Error("02", "ProductIconId", "Please Select  Valid Product Icon "));
+				errorList.add("1500");
 			}else {
 				ListItemValue icon = listRepo.findByItemTypeAndItemCodeAndStatus("PRODUCT_ICONS" , req.getProductIconId() ,"Y");
 				if( icon ==null ) {
-					errorList.add(new Error("02", "ProductIconId", "Please Select  Valid Product Icon "));	
+				//	errorList.add(new Error("02", "ProductIconId", "Please Select  Valid Product Icon "));	
+					errorList.add("1501");
 				}
 			}
 			
 			
 			if (StringUtils.isBlank(req.getRemarks()) ) {
-				errorList.add(new Error("03", "Remark", "Please Select Remark  "));
+			//	errorList.add(new Error("03", "Remark", "Please Select Remark  "));
+				errorList.add("1259");
 			}else if (req.getRemarks().length() > 100){
-				errorList.add(new Error("03","Remark", "Please Enter Remark within 100 Characters  ")); 
+			//	errorList.add(new Error("03","Remark", "Please Enter Remark within 100 Characters  ")); 
+				errorList.add("1260");
 			}
 			
 			// Effective Date Validation
@@ -922,105 +935,138 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
 			today = cal.getTime();
 			if (req.getEffectiveDateStart() == null ) {
-				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
+			//	errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
+				errorList.add("1261");
 
 			} else if (req.getEffectiveDateStart().before(today)) {
-				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date  "));
+				//errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date  "));
+				errorList.add("1262");
 			
 			} 
 			else if (StringUtils.isBlank(req.getCompanyId())) {
-				errorList.add(new Error("08", "InsuranceId", "Please Enter InsuranceId  "));
+			//	errorList.add(new Error("08", "InsuranceId", "Please Enter InsuranceId  "));
+				errorList.add("1255");
 			} else if (req.getCompanyId().length() > 20) {
-				errorList.add(new Error("11", "InsuranceId", "Please Enter InsuranceId within 20 Characters  "));
+			//	errorList.add(new Error("11", "InsuranceId", "Please Enter InsuranceId within 20 Characters  "));
+				errorList.add("1448");
 			} else if (StringUtils.isBlank(req.getCoreAppCode())) {
-				errorList.add(new Error("02", "CoreAppCode", "Please Enter CoreAppCode"));
+			//	errorList.add(new Error("02", "CoreAppCode", "Please Enter CoreAppCode"));
+				errorList.add("1266");
 			} else if (req.getCoreAppCode().length() > 20) {
-				errorList.add(new Error("02", "CoreAppCode", "CoreAppCode under 20 Characters only allowed"));
+			//	errorList.add(new Error("02", "CoreAppCode", "CoreAppCode under 20 Characters only allowed"));
+				errorList.add("1267");
 			} else if (StringUtils.isBlank(req.getProductId())) {
-				errorList.add(new Error("09", "ProductId", "Please Enter ProductId  "));
+			//	errorList.add(new Error("09", "ProductId", "Please Enter ProductId  "));
+				errorList.add("1313");
 			} else if (! req.getProductId().matches("[0-9]+") ) {
-				errorList.add(new Error("09", "ProductId", "Please Enter Valid Number ProductId "));
+			//	errorList.add(new Error("09", "ProductId", "Please Enter Valid Number ProductId "));
+				errorList.add("1496 ");
 			} else if( ! req.getCoreAppCode().equalsIgnoreCase("99999")  )  {
 				List<CompanyProductMaster> CompanyList =  getCoreAppCodeExistDetails(req.getCoreAppCode()  , req.getEffectiveDateStart() , req.getEffectiveDateEnd(), req.getCompanyId()   );
 				if (CompanyList.size()>0 &&  (! req.getProductId().equalsIgnoreCase(CompanyList.get(0).getProductId().toString())) ) {
-					errorList.add(new Error("02", "Core App Code", "This Core App Code Already Exist For Another Section "));
+		//			errorList.add(new Error("02", "Core App Code", "This Core App Code Already Exist For Another Section "));
+					errorList.add("1502");
 				}	
 			} 
 			
 			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
-			errorList.add(new Error("05", "Status", "Please Select Status  "));
+			//errorList.add(new Error("05", "Status", "Please Select Status  "));
+			errorList.add("1263");
 			} else if (req.getStatus().length() > 1) {
-			errorList.add(new Error("05", "Status", "Please Select Valid Status - 1 Character Only Allwed"));
+			//errorList.add(new Error("05", "Status", "Please Select Valid Status - 1 Character Only Allwed"));
+			errorList.add("1264");
 			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-			errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+			//errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+			errorList.add("1265");
 			}
 			
 			if (StringUtils.isBlank(req.getPaymentYn())) {
-				errorList.add(new Error("06", "Payment", "Please Select Payment Type  "));
+			//	errorList.add(new Error("06", "Payment", "Please Select Payment Type  "));
+				errorList.add("1503");
 			} else if (req.getPaymentYn().length() > 1) {
-				errorList.add(new Error("06", "Payment", "Enter Payment Type 1 Character Only  "));
-			}else if(StringUtils.isBlank(req.getPaymentYn())) {
-				errorList.add(new Error("06", "Payment", "Enter Payment Type"));
+			//	errorList.add(new Error("06", "Payment", "Enter Payment Type 1 Character Only  "));
+				errorList.add("1504");
 			} else if ( "Y".equals(req.getPaymentYn()) && StringUtils.isBlank(req.getPaymentRedirUrl())) {
-				errorList.add(new Error("08", "PaymentRedirUrl", "Please Select PaymentRedirUrl  Category  "));
+			//	errorList.add(new Error("08", "PaymentRedirUrl", "Please Select PaymentRedirUrl  Category  "));
+				errorList.add("1505");
 			}else if ("Y".equals(req.getPaymentYn()) && req.getPaymentRedirUrl().length() > 500) {
-				errorList.add(new Error("10", "PaymentRedirUrl", "Please Enter PaymentRedirUrl within 500 Characters  "));
+			//	errorList.add(new Error("10", "PaymentRedirUrl", "Please Enter PaymentRedirUrl within 500 Characters  "));
+				errorList.add("1506");
 			}
 			
 			
 			
 			if (StringUtils.isBlank(req.getCommissionVatYn())) {
-				errorList.add(new Error("05", "CommissionVat", "Please Select CommissionVat Type  "));
+			//	errorList.add(new Error("05", "CommissionVat", "Please Select CommissionVat Type  "));
+				errorList.add("1507");
 			} else if (req.getCommissionVatYn().length() > 1) {
-				errorList.add(new Error("05", "CommissionVat", "Enter CommissionVat Type 1 Character Only  "));
+			//	errorList.add(new Error("05", "CommissionVat", "Enter CommissionVat Type 1 Character Only  "));
+				errorList.add("1508");
 			}else if(!("Y".equals(req.getCommissionVatYn())||"N".equals(req.getCommissionVatYn()))) {
-				errorList.add(new Error("05", "CommissionVat", "Enter CommissionVat Y or N Only  "));
+			//	errorList.add(new Error("05", "CommissionVat", "Enter CommissionVat Y or N Only  "));
+				errorList.add("1509");
 			}
 			
 			if (StringUtils.isBlank(req.getCheckerYn())) {
-				errorList.add(new Error("05", "Checker", "Please Select Checker  "));
+				//errorList.add(new Error("05", "Checker", "Please Select Checker  "));
+				errorList.add("1510");
 			} else if (req.getCheckerYn().length() > 1) {
-				errorList.add(new Error("05", "Checker", "Enter Checker 1 Character Only  "));
+				//errorList.add(new Error("05", "Checker", "Enter Checker 1 Character Only  "));
+				errorList.add("1511");
 			}else if(!("Y".equals(req.getCheckerYn())||"N".equals(req.getCheckerYn()))) {
-				errorList.add(new Error("05", "Checker", "Enter Checker Y or N Only  "));
+			//	errorList.add(new Error("05", "Checker", "Enter Checker Y or N Only  "));
+				errorList.add("1512");
 			}
 			
 			if (StringUtils.isBlank(req.getMakerYn())) {
-				errorList.add(new Error("05", "Maker", "Please Select Maker "));
+			//	errorList.add(new Error("05", "Maker", "Please Select Maker "));
+				errorList.add("1513");
 			} else if (req.getMakerYn().length() > 1) {
-				errorList.add(new Error("05", "Maker", "Enter Maker 1 Character Only  "));
+			//	errorList.add(new Error("05", "Maker", "Enter Maker 1 Character Only  "));
+				errorList.add("1514");
 			}else if(!("Y".equals(req.getMakerYn())||"N".equals(req.getMakerYn()))) {
-				errorList.add(new Error("05", "Maker", "Enter Maker Y or N Only  "));
+			//	errorList.add(new Error("05", "Maker", "Enter Maker Y or N Only  "));
+				errorList.add("1515");
 			}
 			
 			if (StringUtils.isBlank(req.getCustConfirmYn())) {
-				errorList.add(new Error("05", "CustomerConfirmation", "Please Select CustomerConfirmation  "));
+				//errorList.add(new Error("05", "CustomerConfirmation", "Please Select CustomerConfirmation  "));
+				errorList.add("1516");
 			} else if (req.getCustConfirmYn().length() > 1) {
-				errorList.add(new Error("05", "CustomerConfirmation", "Enter CustomerConfirmation 1 Character Only  "));
+			//	errorList.add(new Error("05", "CustomerConfirmation", "Enter CustomerConfirmation 1 Character Only  "));
+				errorList.add("1517");
 			}else if(!("Y".equals(req.getCustConfirmYn())||"N".equals(req.getCustConfirmYn()))) {
-				errorList.add(new Error("05", "CustomerConfirmation", "Enter CustomerConfirmation Y or N Only  "));
+			//	errorList.add(new Error("05", "CustomerConfirmation", "Enter CustomerConfirmation Y or N Only  "));
+				errorList.add("1518");
 			}
 			
 			if(StringUtils.isBlank(req.getSumInsuredStart())) {
-				errorList.add(new Error("02", "Sum Insured Start", "Plese Enter Sum Insured Start in   "));
+			//	errorList.add(new Error("02", "Sum Insured Start", "Please Enter Sum Insured Start   "));
+				errorList.add("1519");
 			} else if (! req.getSumInsuredStart().matches("[0-9.]+") ) {
-				errorList.add(new Error("02", "Sum Insured Start", "Plese Enter Valid Number Sum Insured Start in  "  ));
+			//	errorList.add(new Error("02", "Sum Insured Start", "Please Enter Valid Number Sum Insured Start   "  ));
+				errorList.add("1520");
 			}
 			if(StringUtils.isBlank(req.getSumInsuredEnd())) {
-				errorList.add(new Error("02", "Sum Insured End", "Plese Enter Sum Insured End in  Product Row No : " ));
+				//errorList.add(new Error("02", "Sum Insured End", "Please Enter Sum Insured End" ));
+				errorList.add("1521");
 			} else if (! req.getSumInsuredEnd().matches("[0-9.]+") ) {
-				errorList.add(new Error("02", "Sum Insured End", "Plese Enter Valid Number Sum Insured End " ));
+			//	errorList.add(new Error("02", "Sum Insured End", "Please Enter Valid Number Sum Insured End " ));
+				errorList.add("1522");
 			} else if (StringUtils.isNotBlank(req.getSumInsuredStart()) && StringUtils.isBlank(req.getSumInsuredEnd())  ) {
 				if (Long.valueOf(req.getSumInsuredStart()) > Long.valueOf(req.getSumInsuredEnd()) ) {
-					errorList.add(new Error("02", "Sum Insured End", "Sum Insured Start Greater Than Sum Insured End " ));
+				//	errorList.add(new Error("02", "Sum Insured End", "Sum Insured Start Greater Than Sum Insured End " ));
+					errorList.add("1523");
 				}
 			}
 			
 			if (StringUtils.isBlank(req.getProductDesc())) {
-				errorList.add(new Error("08", "ProductDesc", "Please Select Product  Desc "));
+			//	errorList.add(new Error("08", "ProductDesc", "Please Select Product  Desc "));
+				errorList.add("1524");
 			}else if (req.getProductDesc().length() > 500) {
-				errorList.add(new Error("08", "ProductDesc", "Please Enter Product Desc within 500 Characters  "));
+			//	errorList.add(new Error("08", "ProductDesc", "Please Enter Product Desc within 500 Characters  "));
+				errorList.add("1525");
 			}
 			
 		
@@ -1031,15 +1077,19 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			} */
 			
 			if (StringUtils.isBlank(req.getCreatedBy())) {
-				errorList.add(new Error("08", "CreatedBy", "Please Enter CreatedBy  "));
+			//	errorList.add(new Error("08", "CreatedBy", "Please Enter CreatedBy  "));
+				errorList.add("1270");
 			}else if (req.getCreatedBy().length() > 50) {
-				errorList.add(new Error("11", "CreatedBy", "Please Enter CreatedBy within 100 Characters  "));
+			//	errorList.add(new Error("11", "CreatedBy", "Please Enter CreatedBy within 100 Characters  "));
+				errorList.add("1271");
 			}
 			
 			if (StringUtils.isBlank(req.getRegulatoryCode())) {
-				errorList.add(new Error("09", "RegulatoryCode", "Please Enter RegulatoryCode  "));
+			//	errorList.add(new Error("09", "RegulatoryCode", "Please Enter RegulatoryCode  "));
+				errorList.add("1268");
 			}else if (req.getRegulatoryCode().length() > 20) {
-				errorList.add(new Error("09", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters  "));
+			//	errorList.add(new Error("09", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters  "));
+				errorList.add("1269");
 			}	
 		} catch (Exception e) {
 			log.error(e);

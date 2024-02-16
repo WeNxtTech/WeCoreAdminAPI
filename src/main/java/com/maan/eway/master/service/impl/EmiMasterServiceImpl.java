@@ -87,17 +87,17 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 
 //************************************************INSERT/UPDATE EMI DETAILS******************************************************\\
 	@Override
-	public List<Error> validateEmiDetails(EmiMasterSaveReq req) {
-
-		List<Error> errorList = new ArrayList<Error>();
-
+	public List<String> validateEmiDetails(EmiMasterSaveReq req) {
+		List<String> errorList = new ArrayList<String>();
 		try {
 
 			// Emi Master Validation
 			if (StringUtils.isBlank(req.getPolicyType())) {
-				errorList.add(new Error("01", "PolicyType", "Please Enter PolicyType "));
+		//		errorList.add(new Error("01", "PolicyType", "Please Enter PolicyType "));
+				errorList.add("1595");
 			} else if (req.getPolicyType().length() > 20) {
-				errorList.add(new Error("01", "PolicyType", "Please PolicyType within 100 Characters"));
+			//	errorList.add(new Error("01", "PolicyType", "Please PolicyType within 100 Characters"));
+				errorList.add("1596");
 			} 
 
 			// Date Validation
@@ -109,72 +109,95 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			cal.set(Calendar.MINUTE, 50);
 			today = cal.getTime();
 			if (req.getEffectiveDateStart() == null) {
-				errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start "));
+			//	errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start "));
+				errorList.add("1261");
 
 			} else if (req.getEffectiveDateStart().before(today)) {
-				errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			//	errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+				errorList.add("1262");
 			}
 
 			if (StringUtils.isBlank(req.getCreatedBy())) {
-				errorList.add(new Error("03", "CreatedBy", "Please Enter CreatedBy "));
+			//	errorList.add(new Error("03", "CreatedBy", "Please Enter CreatedBy "));
+				errorList.add("1270");
 			} else if (req.getCreatedBy().length() > 100) {
-				errorList.add(new Error("03", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+			//	errorList.add(new Error("03", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+				errorList.add("1271");
 			}
 			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("05", "Status", "Please Select Status  "));
+			//	errorList.add(new Error("05", "Status", "Please Select Status  "));
+				errorList.add("1263");
 			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - 1 Character Only Allwed"));
+			//	errorList.add(new Error("05", "Status", "Please Select Valid Status - 1 Character Only Allwed"));
+				errorList.add("1264");
 			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+		//		errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+				errorList.add("1265");
 			}
 
 			if (StringUtils.isBlank(req.getRemarks())) {
-				errorList.add(new Error("05", "Remarks", "Please Enter Remarks"));
+			//	errorList.add(new Error("05", "Remarks", "Please Enter Remarks"));
+				errorList.add("1259");
 			} else if (req.getRemarks().length() > 100) {
-				errorList.add(new Error("05", "Remarks", "Enter Remarks  within 100 Characters Only"));
+			//	errorList.add(new Error("05", "Remarks", "Enter Remarks  within 100 Characters Only"));
+				errorList.add("1260");
 			}
 
 			if (StringUtils.isBlank(req.getInstallmentPeriod())) {
-				errorList.add(new Error("06", "InstallmentPeriod", "Please Enter InstallmentPeriod"));
+			//	errorList.add(new Error("06", "InstallmentPeriod", "Please Enter InstallmentPeriod"));
+				errorList.add("1596");
 			} else if (!req.getInstallmentPeriod().matches("[0-9.]+")) {
-				errorList.add(new Error("06", "InstallmentPeriod", "Please Enter Valid Number In InstallmentPeriod"));
+			//	errorList.add(new Error("06", "InstallmentPeriod", "Please Enter Valid Number In InstallmentPeriod"));
+				errorList.add("1597");
 			}
 			else if(Integer.valueOf(req.getInstallmentPeriod())<0) {
-				errorList.add(new Error("06", "InstallmentPeriod", "InstallmentPeriod Should be Greather than 0"));
+			//	errorList.add(new Error("06", "InstallmentPeriod", "InstallmentPeriod Should be Greater than 0"));
+				errorList.add("1598");
 			}
 			else {
 				EmiMaster installmentPeriod =getInstallmentPeriod(req.getInstallmentPeriod(),req.getCompanyId(),req.getProductId(),req.getPolicyType());
 				if(StringUtils.isBlank(req.getEmiId()) &&  installmentPeriod!=null ) {
-					errorList.add(new Error("08", "InstallmentPeriod", "This InstallmentPeriod  Already Exist"));
+			//		errorList.add(new Error("08", "InstallmentPeriod", "This InstallmentPeriod  Already Exist"));
+					errorList.add("1599");
 				} else if( installmentPeriod !=null  && StringUtils.isNotBlank(req.getInstallmentPeriod()) ) {
 					if(installmentPeriod.getEmiId()!=Integer.valueOf(req.getEmiId())) {
-						errorList.add(new Error("08", "InstallmentPeriod", "This InstallmentPeriod  Already Exist"));	
+			//			errorList.add(new Error("08", "InstallmentPeriod", "This InstallmentPeriod  Already Exist"));	
+						errorList.add("1599");
 					}			
 				}
 			}
 
 			if (StringUtils.isBlank(req.getPremiumEnd())) {
-				errorList.add(new Error("07", "PremiumEnd", "Please Enter PremiumEnd"));
+			//	errorList.add(new Error("07", "PremiumEnd", "Please Enter PremiumEnd"));
+				errorList.add("1600");
 			} else if (!req.getPremiumEnd().matches("[0-9.]+")) {
-				errorList.add(new Error("07", "PremiumEnd", "Please Enter Valid Number In PremiumEnd"));
+			//	errorList.add(new Error("07", "PremiumEnd", "Please Enter Valid Number In PremiumEnd"));
+				errorList.add("1601");
 			}
 			if (StringUtils.isBlank(req.getPremiumStart())) {
-				errorList.add(new Error("08", "PremiumStart", "Please Enter PremiumStart"));
+			//	errorList.add(new Error("08", "PremiumStart", "Please Enter PremiumStart"));
+				errorList.add("1602");
 			} else if (!req.getPremiumStart().matches("[0-9.]+")) {
-				errorList.add(new Error("08", "PremiumStart", "Please Enter Valid Number In PremiumStart"));
+			//	errorList.add(new Error("08", "PremiumStart", "Please Enter Valid Number In PremiumStart"));
+				errorList.add("1603");
 			} else if (Double.valueOf(req.getPremiumStart()) > Double.valueOf(req.getPremiumEnd())) {
-				errorList.add(new Error("08", "PremiumStart", "PremiumStart must be greater than PremiumEnd "));
+			//	errorList.add(new Error("08", "PremiumStart", "PremiumStart must be greater than PremiumEnd "));
+				errorList.add("1604");
 			}
 			if (StringUtils.isBlank(req.getInterestPercent())) {
-				errorList.add(new Error("09", "InterestPercent", "Please Enter InterestPercent"));
+			//	errorList.add(new Error("09", "InterestPercent", "Please Enter InterestPercent"));
+				errorList.add("1605");
 			}else if (Double.valueOf(req.getInterestPercent())>100.0 || Double.valueOf(req.getInterestPercent())<0.0 ) {
-				errorList.add(new Error("09", "InterestPercent", "Please Enter InterestPercent Less that or equal to 100"));
+			//	errorList.add(new Error("09", "InterestPercent", "Please Enter InterestPercent Less that or equal to 100"));
+				errorList.add("1606");
 			}else if (Double.valueOf(req.getInterestPercent())<0.0 ) {
-				errorList.add(new Error("09", "InterestPercent", "Please Enter InterestPercent Should Br Greater than 0"));
+			//	errorList.add(new Error("09", "InterestPercent", "Please Enter InterestPercent Should Be Greater than 0"));
+				errorList.add("1607");
 			}
 			else if (!req.getInterestPercent().matches("[0-9.]+")) {
-				errorList.add(new Error("09", "InterestPercent", "Please Enter Valid Number In InterestPercent"));
+			//	errorList.add(new Error("09", "InterestPercent", "Please Enter Valid Number In InterestPercent"));
+				errorList.add("1608");
 			}
 			else if (StringUtils.isNotBlank(req.getInterestPercent())) {
 				String input = req.getInterestPercent();
@@ -182,22 +205,27 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 				Pattern pat = Pattern.compile("^[0-9]*\\.?[0-9]+$");
 				Matcher mat = pat.matcher(input);
 				if (!mat.matches()) {
-					errorList.add(new Error("09", "InterestPercent", "Please Enter Valid Number In InterestPercent"));
+			//		errorList.add(new Error("09", "InterestPercent", "Please Enter Valid Number In InterestPercent"));
+					errorList.add("1608");
 				}
 			}
 			if (StringUtils.isBlank(req.getAdvancePercent())) {
-				errorList.add(new Error("10", "AdvancePercent", "Please Enter AdvancePercent"));
+			//	errorList.add(new Error("10", "AdvancePercent", "Please Enter AdvancePercent"));
+				errorList.add("1609");
 			}else if (Double.valueOf(req.getAdvancePercent())>100.0) {
-				errorList.add(new Error("10", "AdvancePercent", "Please Enter AdvancePercent Less that or equal to 100"));
+			//	errorList.add(new Error("10", "AdvancePercent", "Please Enter AdvancePercent Less that or equal to 100"));
+				errorList.add("1610");
 			}else if (Double.valueOf(req.getAdvancePercent())<0.0 ) {
-				errorList.add(new Error("10", "AdvancePercent", "Please Enter AdvancePercent Should Br Greater than 0"));
+				//errorList.add(new Error("10", "AdvancePercent", "Please Enter AdvancePercent Should Be Greater than 0"));
+				errorList.add("1611");
 			}else if (StringUtils.isNotBlank(req.getAdvancePercent())) {
 				String input = req.getAdvancePercent();
 
 				Pattern pat = Pattern.compile("^[0-9]*\\.?[0-9]+$");
 				Matcher mat = pat.matcher(input);
 				if (!mat.matches()) {
-					errorList.add(new Error("10", "AdvancePercent", "Please Enter Valid Number In AdvancePercent"));
+			//		errorList.add(new Error("10", "AdvancePercent", "Please Enter Valid Number In AdvancePercent"));
+					errorList.add("1612");
 				}
 			}
 //			}else if (!req.getAdvancePercent().matches("[0-9.]+")) {
@@ -207,7 +235,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
-			errorList.add(new Error("100", "Common Error", e.getMessage()));
+		//	errorList.add(new Error("100", "Common Error", e.getMessage()));
 
 		}
 		return errorList;

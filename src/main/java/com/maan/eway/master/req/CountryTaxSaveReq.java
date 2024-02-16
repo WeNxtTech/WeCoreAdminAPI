@@ -1,6 +1,5 @@
 package com.maan.eway.master.req;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -40,4 +39,8 @@ public class CountryTaxSaveReq {
 
 	@JsonProperty("Remarks")
 	private String remarks;
+	
+
+    @JsonProperty("InsuranceId")
+	private String insuranceId;
 }

@@ -2,7 +2,6 @@ package com.maan.eway.notif.service;
 
 import java.util.List;
 
-import com.maan.eway.error.Error;
 import com.maan.eway.notif.req.SmsConfigInsertReq;
 import com.maan.eway.notif.req.SmsGetReq;
 import com.maan.eway.notif.res.SmsMasterGetRes;
@@ -15,6 +14,6 @@ public interface SmsConfigMasterService {
 
 	SmsMasterGetRes getbysmsid(SmsGetReq req);
 
-	List<Error> validatesmsmaster(SmsConfigInsertReq req);
+	List<String> validatesmsmaster(SmsConfigInsertReq req);
 
 }

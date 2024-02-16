@@ -17,16 +17,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CoverDocumentChangeStatusReq;
 import com.maan.eway.master.req.CoverDocumentMasterGetAllReq;
 import com.maan.eway.master.req.CoverDocumentMasterGetReq;
 import com.maan.eway.master.req.CoverDocumentMasterSaveReq;
 import com.maan.eway.master.req.CoverDocumentMasterUpdateReq;
-import com.maan.eway.master.req.SectionCoverMasterGetReq;
 import com.maan.eway.master.res.CoverDocumentMasterGetRes;
 import com.maan.eway.master.res.DocumentMasterGetRes;
 import com.maan.eway.master.service.CoverDocumentMasterService;
+import com.maan.eway.req.CommonErrorModuleReq;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.DropdownCommonRes;
@@ -49,15 +50,31 @@ public class CoverDocumentMasterController {
 
 	@Autowired
 	private PrintReqService reqPrinter;
+	
+	@Autowired
+	private FetchErrorDescServiceImpl errorDescService ;
 
 	// save
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/insertcoverdocument")
 	@ApiOperation(value = "This method is Insert Cover Document Master")
 	public ResponseEntity<CommonRes> insertDocument(@RequestBody CoverDocumentMasterSaveReq reqList) {
-		reqPrinter.reqPrint(reqList);
+		
+
 		CommonRes data = new CommonRes();
-		List<Error> validation = documentservice.validateDocument(reqList);
+		List<String> validationCodes = documentservice.validateDocument(reqList);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode("99999");
+			comErrDescReq.setInsuranceId(reqList.getCompanyId());
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
+	
 		// validation
 		if (validation != null && validation.size() != 0) {
 			data.setCommonResponse(null);

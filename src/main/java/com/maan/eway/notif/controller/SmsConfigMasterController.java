@@ -12,14 +12,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.error.Error;
 import com.maan.eway.notif.req.SmsConfigInsertReq;
 import com.maan.eway.notif.req.SmsGetReq;
 import com.maan.eway.notif.res.SmsMasterGetRes;
 import com.maan.eway.notif.service.SmsConfigMasterService;
+import com.maan.eway.req.CommonErrorModuleReq;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.SuccessRes;
-import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -31,16 +32,31 @@ public class SmsConfigMasterController {
 
 	@Autowired
 	private SmsConfigMasterService smsConfigService;
-
+	@Autowired
+	private FetchErrorDescServiceImpl errorDescService ;
+	
 
 	// Save
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/insertsmsmaster")
 	@ApiOperation(value = "This method is to Insert Sms Master")
 	public ResponseEntity<CommonRes> insertsmsmaster(@RequestBody SmsConfigInsertReq req) {
-
+	
 		CommonRes data = new CommonRes();
-		List<Error> validation = smsConfigService.validatesmsmaster(req);
+		List<String> validationCodes = smsConfigService.validatesmsmaster(req);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode(req.getBranchCode());
+			comErrDescReq.setInsuranceId(req.getCompanyId());
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
+
+	
 		// Validation
 		if (validation != null && validation.size() != 0) {
 			data.setCommonResponse(null);

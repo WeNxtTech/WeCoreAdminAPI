@@ -383,53 +383,67 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 	}
 
 	@Override
-	public List<Error> validateDocument(DocumentMasterSaveReq req) {
-		List<Error> errorList = new ArrayList<Error>();
+	public List<String> validateDocument(DocumentMasterSaveReq req) {
+		List<String> errorList = new ArrayList<String>();
 
 		try {
 
 			if (StringUtils.isBlank(req.getDocumentName())) {
-				errorList.add(new Error("01", "Document Name", "Please Enter Document Name "));
-			} else if (req.getDocumentDesc().length() > 100) {
-				errorList.add(new Error("01", "Document Name", "Please Enter Document Name within 100 Characters"));
+//				errorList.add(new Error("01", "Document Name", "Please Enter Document Name "));
+				errorList.add("2115");
+			} else if (req.getDocumentName().length() > 100) {
+//				errorList.add(new Error("01", "Document Name", "Please Enter Document Name within 100 Characters"));
+				errorList.add("2116");
 			}else if (StringUtils.isBlank(req.getDocumentId())) {
 				List<DocumentMaster> DocumentList = getDocumentNameExistDetails(req.getDocumentName());
 				if (DocumentList.size()>0 ) {
-					errorList.add(new Error("01", "Document Name", "This Document Name Already Exist "));
+//					errorList.add(new Error("01", "Document Name", "This Document Name Already Exist "));
+					errorList.add("2117");
 				}
 			}else  {
 				List<DocumentMaster> DocumentList =  getDocumentNameExistDetails(req.getDocumentName() );
 				if (DocumentList.size()>0 &&  (! req.getDocumentId().equalsIgnoreCase(DocumentList.get(0).getDocumentId().toString())) ) {
-					errorList.add(new Error("01", "Document Name", "This Document Name Already Exist "));
+//					errorList.add(new Error("01", "Document Name", "This Document Name Already Exist "));
+					errorList.add("2117");
 				}	
 			}
 			
 			if (StringUtils.isBlank(req.getDocumentDesc())) {
-				errorList.add(new Error("01", "Document Desc", "Please Enter Document Desc"));
+//				errorList.add(new Error("01", "Document Desc", "Please Enter Document Desc"));
+				errorList.add("2118");
 			} else if (req.getDocumentDesc().length() > 100) {
-				errorList.add(new Error("01", "Document Desc", "Please Enter Document Desc within 100 Characters"));
+//				errorList.add(new Error("01", "Document Desc", "Please Enter Document Desc within 100 Characters"));
+				errorList.add("2119");
 			}
 			
 			if (StringUtils.isBlank(req.getDocApplicableId())) {
-				errorList.add(new Error("02", "Document Applicable Id", "Please Select Document Applicable Id"));	
+//				errorList.add(new Error("02", "Document Applicable Id", "Please Select Document Applicable Id"));	
+				errorList.add("2120");
 			}else if (! req.getDocApplicableId().matches("[0-9]+") ) {
-				errorList.add(new Error("02", "Document Applicable Id","Please Enter Valid Number in Document Applicable Id "));
+//				errorList.add(new Error("02", "Document Applicable Id","Please Enter Valid Number in Document Applicable Id "));
+				errorList.add("2121");
 			}
 			if (StringUtils.isBlank(req.getMandatoryStatus().toString())) {
-				errorList.add(new Error("03", "Mandatory Status", "Please Enter Mandatory Status"));
+//				errorList.add(new Error("03", "Mandatory Status", "Please Enter Mandatory Status"));
+				errorList.add("2122");
 			} else if (req.getMandatoryStatus().length() > 1) {
-				errorList.add(new Error("03", "Mandatory Status", "Please Enter Mandatory Status within 1 Character"));
+//				errorList.add(new Error("03", "Mandatory Status", "Please Enter Mandatory Status within 1 Character"));
+				errorList.add("2123");
 			}
 			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("05", "Status", "Please Select Status  "));
+//				errorList.add(new Error("05", "Status", "Please Select Status"));
+				errorList.add("2036");
 			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+//				errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allowed"));
+				errorList.add("2037");
 			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+//				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+				errorList.add("2038");
 			}
 			if ( StringUtils.isBlank(req.getRemarks()) ) {
-				errorList.add(new Error("05", "Remarks", "Please Enter Remarks "));
+//				errorList.add(new Error("05", "Remarks", "Please Enter Remarks "));
+				errorList.add("2032");
 			}
 			// Date Validation 
 			Calendar cal = new GregorianCalendar();
@@ -437,25 +451,33 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
 			today = cal.getTime();
 			if (req.getEffectiveDateStart() == null ||StringUtils.isBlank(req.getEffectiveDateStart().toString()) ) {
-				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
+//				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
+				errorList.add("2034");
 	
 			} else if (req.getEffectiveDateStart().before(today)) {
-				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+//				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+				errorList.add("2035");
 			} 
 			if (StringUtils.isBlank(req.getRegulatoryCode())) {
-				errorList.add(new Error("07", "RegulatoryCode", "Please Enter RegulatoryCode"));
+//				errorList.add(new Error("07", "RegulatoryCode", "Please Enter RegulatoryCode"));
+				errorList.add("2041");
 			} else if (req.getRegulatoryCode().length() > 20) {
-				errorList.add(new Error("07", "RegulatoryCode", "Enter RegulatoryCode  within 20 Characters Only"));
+//				errorList.add(new Error("07", "RegulatoryCode", "Enter RegulatoryCode  within 20 Characters Only"));
+				errorList.add("2042");
 			}
 			if (StringUtils.isBlank(req.getCreatedBy())) {
-				errorList.add(new Error("09", "CreatedBy", "Please Enter CreatedBy "));
+//				errorList.add(new Error("09", "CreatedBy", "Please Enter CreatedBy "));
+				errorList.add("2039");
 			} else if (req.getCreatedBy().length() > 100) {
-				errorList.add(new Error("09", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+//				errorList.add(new Error("09", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+				errorList.add("2040");
 			}
 			if (StringUtils.isBlank(req.getCoreAppCode())) {
-				errorList.add(new Error("02", "CoreAppCode", "Please Enter getCoreAppCode"));
+//				errorList.add(new Error("02", "CoreAppCode", "Please Enter getCoreAppCode"));
+				errorList.add("2124");
 			} else if (req.getCoreAppCode().length() > 20) {
-				errorList.add(new Error("02", "CoreAppCode", "getCoreAppCode under 20 Characters only allowed"));
+//				errorList.add(new Error("02", "CoreAppCode", "getCoreAppCode under 20 Characters only allowed"));
+				errorList.add("2125");
 			}
 		//		else if (req.getCoreAppCode().equalsIgnoreCase("99999")&&   StringUtils.isBlank(req.getDocumentId())) {
 //				List<DocumentMaster> CompanyList = getCoreAppCodeExistDetails(req.getCoreAppCode() , req.getEffectiveDateStart() , req.getEffectiveDateEnd()  );
@@ -473,7 +495,8 @@ public class DocumentMasterServiceImpl implements DocumentMasterService {
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
-			errorList.add(new Error("02", "Common Eror", e.getMessage() ));
+//			errorList.add(new Error("02", "Common Error", e.getMessage() ));
+			errorList.add("2114");
 		}
 		return errorList;
 	}

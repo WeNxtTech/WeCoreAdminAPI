@@ -51,15 +51,17 @@ public class SmsConfigMasterServiceImpl implements SmsConfigMasterService{
 	private Logger log = LogManager.getLogger(SmsConfigMasterServiceImpl.class);
 	
 	@Override
-	public List<Error> validatesmsmaster(SmsConfigInsertReq req) {
-		List<Error> errorList = new ArrayList<Error>();
+	public List<String> validatesmsmaster(SmsConfigInsertReq req) {
+		List<String> errorList = new ArrayList<String>();
 
 		try {
 
 			if (StringUtils.isBlank(req.getCompanyId())) {
-				errorList.add(new Error("01", "Company Id", "Please Enter Company Id"));
+			//	errorList.add(new Error("01", "Company Id", "Please Enter Company Id"));
+				errorList.add("1255");
 			} else if (req.getCompanyId().length() > 20) {
-				errorList.add(new Error("01", "Company Id", "Please Enter Company Id within 20 Characters"));
+			//	errorList.add(new Error("01", "Company Id", "Please Enter Company Id within 20 Characters"));
+				errorList.add("1448");
 			} else if (StringUtils.isBlank(req.getSNo())) {
 //				List<SmsConfigMaster> smsList = getSnoDetails(req.getCompanyId(),req.getBranchCode());
 //				if (smsList.size() > 0) {
@@ -81,65 +83,87 @@ public class SmsConfigMasterServiceImpl implements SmsConfigMasterService{
 			cal.set(Calendar.MINUTE, 50);
 			today = cal.getTime();
 			if (req.getEffectiveDateStart() == null) {
-				errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start "));
+			//	errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start "));
+				errorList.add("1261");
 
 			} else if (req.getEffectiveDateStart().before(today)) {
-				errorList
-						.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			//	errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+				errorList.add("1262");
 			} 
 			// Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("04", "Status", "Please Enter Status"));
+			//	errorList.add(new Error("04", "Status", "Please Enter Status"));
+				errorList.add("1263");
 			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("04", "Status", "Status 1 Character Only"));
+			//	errorList.add(new Error("04", "Status", "Status 1 Character Only"));
+				errorList.add("1264");
 			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()))) {
-				errorList.add(new Error("04", "Status", "Enter Status Y or N Only"));
+			//	errorList.add(new Error("04", "Status", "Enter Status Y or N Only"));
+				errorList.add("1265");
 			}
 			if (StringUtils.isBlank(req.getCreatedBy())) {
-				errorList.add(new Error("05", "CreatedBy", "Please Enter CreatedBy"));
+			//	errorList.add(new Error("05", "CreatedBy", "Please Enter CreatedBy"));
+				errorList.add("1270");
 			} else if (req.getCreatedBy().length() > 100) {
-				errorList.add(new Error("05", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+			//	errorList.add(new Error("05", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+				errorList.add("1271");
 			}
 			if (StringUtils.isBlank(req.getRemarks())) {
-				errorList.add(new Error("06", "Remarks", "Please Enter Remarks"));
+			//	errorList.add(new Error("06", "Remarks", "Please Enter Remarks"));
+				errorList.add("1259");
 			} else if (req.getRemarks().length() > 300) {
-				errorList.add(new Error("06", "Remarks", "Please Enter Remarks within 100 Characters"));
+			//	errorList.add(new Error("06", "Remarks", "Please Enter Remarks within 100 Characters"));
+				errorList.add("1260");
 			}
 			if (StringUtils.isBlank(req.getSmsUserPass())) {
-				errorList.add(new Error("07", "SmsUserPass", "Please Enter SmsUserPass"));
+			//	errorList.add(new Error("07", "SmsUserPass", "Please Enter SmsUserPass"));
+				errorList.add("1460");
 			} else if (req.getSmsUserPass().length() > 150) {
-				errorList.add(new Error("07", "SmsUserPass", "Please Enter SmsUserPass within 150 Characters"));
+			//	errorList.add(new Error("07", "SmsUserPass", "Please Enter SmsUserPass within 150 Characters"));
+				errorList.add("1461");
 			}
 			if (StringUtils.isBlank(req.getSmsUserName())) {
-				errorList.add(new Error("08", "SmsUserName", "Please Enter SmsUserName"));
+			//	errorList.add(new Error("08", "SmsUserName", "Please Enter SmsUserName"));
+				errorList.add("1462");
 			} else if (req.getSmsUserName().length() > 150) {
-				errorList.add(new Error("08", "SmsUserName", "Please Enter SmsUserName within 150 Characters"));
+			//	errorList.add(new Error("08", "SmsUserName", "Please Enter SmsUserName within 150 Characters"));
+				errorList.add("1463");
 			}
 			if (StringUtils.isBlank(req.getSmsPartyUrl())) {
-				errorList.add(new Error("09", "SmsPartyUrl", "Please Enter SmsPartyUrl"));
+				//errorList.add(new Error("09", "SmsPartyUrl", "Please Enter SmsPartyUrl"));
+				errorList.add("1464");
 			} else if (req.getSmsPartyUrl().length() > 300) {
-				errorList.add(new Error("09", "SmsPartyUrl", "Please Enter SmsPartyUrl within 300 Characters"));
+			//	errorList.add(new Error("09", "SmsPartyUrl", "Please Enter SmsPartyUrl within 300 Characters"));
+				errorList.add("1465");
 			}
 			if (StringUtils.isBlank(req.getSenderId())) {
-				errorList.add(new Error("10", "SenderId", "Please Enter SenderId"));
+			//	errorList.add(new Error("10", "SenderId", "Please Enter SenderId"));
+				errorList.add("1466");
 			}
 			 else if (req.getSenderId().length() > 60) {
-				errorList.add(new Error("10", "Sender ID", "Please Enter Sender ID within 60 Characters"));
+			//	errorList.add(new Error("10", "Sender ID", "Please Enter Sender ID within 60 Characters"));
+				errorList.add("1467");
 			}
 			if (StringUtils.isBlank(req.getSecureYn())) {
-				errorList.add(new Error("11", "SecureYn", "Please Enter SecureYn"));
+			//	errorList.add(new Error("11", "SecureYn", "Please Enter SecureYn"));
+				errorList.add("1468");
 			} else if (req.getSecureYn().length() > 60) {
-				errorList.add(new Error("11", "SecureYn", "Please Enter SecureYn within 60 Characters"));
+			//	errorList.add(new Error("11", "SecureYn", "Please Enter SecureYn within 60 Characters"));
+				errorList.add("1469");
 			}
 			if (StringUtils.isBlank(req.getCoreAppCode())) {
-				errorList.add(new Error("12", "Core App Code", "Please Enter Core App Code"));
+			//	errorList.add(new Error("12", "Core App Code", "Please Enter Core App Code"));
+				errorList.add("1266");
 			} else if (req.getCoreAppCode().length() > 20) {
-				errorList.add(new Error("12", "Core App Code", "Please Enter CreatedBy within 20 Characters"));
+			//	errorList.add(new Error("12", "Core App Code", "Please Enter CreatedBy within 20 Characters"));
+				errorList.add("1267");
 			}
 			if (StringUtils.isBlank(req.getRegulatoryCode())) {
-				errorList.add(new Error("13", "Regulatory Code", "Please Enter Regulatory Code"));
+			//	errorList.add(new Error("13", "Regulatory Code", "Please Enter Regulatory Code"));
+				errorList.add("1268");
 			} else if (req.getRegulatoryCode().length() > 20) {
-				errorList.add(new Error("13", "Regulatory Code", "Please Enter Regulatory Code within 20 Characters"));
+			//	errorList.add(new Error("13", "Regulatory Code", "Please Enter Regulatory Code within 20 Characters"));
+				errorList.add("1269");
 			}
 		} catch (Exception e) {
 			log.error(e);

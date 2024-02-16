@@ -5,28 +5,28 @@
 */
 package com.maan.eway.master.controller;
 
-import com.maan.eway.bean.SectionMaster;
+import java.util.Collections;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.error.Error;
-import com.maan.eway.master.req.CoverChangeStatusReq;
 import com.maan.eway.master.req.DocumentChangeStatusReq;
-import com.maan.eway.master.req.DocumentMasterGetAllReq;
 import com.maan.eway.master.req.DocumentMasterGetReq;
 import com.maan.eway.master.req.DocumentMasterSaveReq;
 import com.maan.eway.master.req.LovDropDownReq;
-import com.maan.eway.master.req.ProductSectionsGetReq;
-import com.maan.eway.master.req.SectionMasterGetAllReq;
-import com.maan.eway.master.req.SectionMasterGetReq;
-import com.maan.eway.master.req.SectionMasterSaveReq;
-import com.maan.eway.master.req.SubCoverMasterGetReq;
-import com.maan.eway.master.req.SubCoverMasterSaveReq;
 import com.maan.eway.master.res.DocumentMasterGetRes;
-import com.maan.eway.master.res.ProductSectionGetRes;
-import com.maan.eway.master.res.SectionMasterRes;
-import com.maan.eway.master.res.SubCoverMasterGetAllRes;
-import com.maan.eway.master.res.SubCoverMasterGetRes;
 import com.maan.eway.master.service.DocumentMasterService;
-import com.maan.eway.master.service.SectionMasterService;
-import com.maan.eway.master.service.SubCoverMasterService;
+import com.maan.eway.req.CommonErrorModuleReq;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.DropdownCommonRes;
@@ -36,21 +36,6 @@ import com.maan.eway.service.impl.BasicValidationService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
 
 
 /**
@@ -69,6 +54,9 @@ public class DocumentMasterController {
 	
 	@Autowired
 	private BasicValidationService basicvalidateService;
+	
+	@Autowired
+	private FetchErrorDescServiceImpl errorDescService ;
 
 	
 	// save
@@ -77,9 +65,22 @@ public class DocumentMasterController {
 		@ApiOperation(value = "This method is Insert Document Master")
 		public ResponseEntity<CommonRes> insertDocument(@RequestBody DocumentMasterSaveReq req) {
 
-			reqPrinter.reqPrint(req);
-			CommonRes data = new CommonRes();
-			List<Error> validation = documentservice.validateDocument(req);
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<String> validationCodes = documentservice.validateDocument(req);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode("99999");
+			comErrDescReq.setInsuranceId("99999");
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
+		
+		
 			// validation
 			if (validation != null && validation.size() != 0) {
 				data.setCommonResponse(null);

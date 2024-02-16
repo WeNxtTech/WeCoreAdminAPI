@@ -10,7 +10,7 @@ import com.maan.eway.res.SuccessRes2;
 
 public interface TravelPolicyTypeService {
 	
-	List<Error> validateTravelPolicyType(TravelPolicyTypeSaveReq req);
+	List<String> validateTravelPolicyType(TravelPolicyTypeSaveReq req);
 
 	SuccessRes2 insertTravelPolicyType(TravelPolicyTypeSaveReq req);
 

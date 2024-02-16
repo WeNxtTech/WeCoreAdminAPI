@@ -483,9 +483,9 @@ public class PolicyTypeMasterSubCoverServiceImple  implements PolicyTypeMasterSu
 	}
 
 	@Override
-	public List<Error> validatePolicyTypeSubCover(PolicyTypeMasterSubCoverSingleSaveReq req) {
+	public List<String> validatePolicyTypeSubCover(PolicyTypeMasterSubCoverSingleSaveReq req) {
 	
-		List<Error> errorList = new ArrayList<Error>();
+		List<String> errorList = new ArrayList<String>();
 		try {
 			Date today1 = new Date();
 			Calendar cal = new GregorianCalendar();
@@ -508,62 +508,79 @@ public class PolicyTypeMasterSubCoverServiceImple  implements PolicyTypeMasterSu
 			cal1.setTime(today);cal1.add(Calendar.DAY_OF_MONTH, -1);cal1.set(Calendar.HOUR_OF_DAY, 23);cal1.set(Calendar.MINUTE, 50);
 			today = cal1.getTime();
 			if (req.getEffectiveDateStart() == null ) {
-				errorList.add(new Error("04", "EffectiveDateStart", "Please Select Effective Date"));
+//				errorList.add(new Error("04", "EffectiveDateStart", "Please Select Effective Date"));
+				errorList.add("1261");
 	
 			} else if (req.getEffectiveDateStart().before(today)) {
-				errorList.add(new Error("04", "EffectiveDateStart", "Please Select Effective Date as Future Date"));
+//				errorList.add(new Error("04", "EffectiveDateStart", "Please Select Effective Date as Future Date"));
+				errorList.add("1262");
 			} 
 			
 			if (StringUtils.isBlank(req.getCreatedBy())) {
-				errorList.add(new Error("06", "CreatedBy", "Please Enter CreatedBy"));
+//				errorList.add(new Error("06", "CreatedBy", "Please Enter CreatedBy"));
+				errorList.add("1270");
 			}else if (req.getCreatedBy().length() > 50) {
-				errorList.add(new Error("06", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+//				errorList.add(new Error("06", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+				errorList.add("1271");
 			} 
 						
 			// Other Errors	
 			if (StringUtils.isBlank(req.getCompanyId())) {
-				errorList.add(new Error("01", "Insurance Id", "Please Select InsuranceId"));
+//				errorList.add(new Error("01", "Insurance Id", "Please Select InsuranceId"));
+				errorList.add("1255");
 				
 			}
 			if (StringUtils.isBlank(req.getBranchCode())) {
-				errorList.add(new Error("01", "BranchCode", "Please Select BranchCode"));
+//				errorList.add(new Error("01", "BranchCode", "Please Select BranchCode"));
+				errorList.add("1256");
 				
 			}
 			if (StringUtils.isBlank(req.getProductId())) {
-				errorList.add(new Error("02", "ProductId", "Please Enter ProductId"));
+//				errorList.add(new Error("02", "ProductId", "Please Enter ProductId"));
+				errorList.add("1313");
 			}
 			if (StringUtils.isBlank(req.getPolicyTypeId())) {
-				errorList.add(new Error("02", "PolicyTypeId", "Please Select PolicyTypeId"));
+//				errorList.add(new Error("02", "PolicyTypeId", "Please Select PolicyTypeId"));
+				errorList.add("1990");
 			}
 			if (StringUtils.isBlank(req.getPlanTypeId())) {
-				errorList.add(new Error("02", "PlanTypeId", "Please Select PlanTypeId"));
+//				errorList.add(new Error("02", "PlanTypeId", "Please Select PlanTypeId"));
+				errorList.add("1993");
 			}
 
 			
 			if (StringUtils.isBlank(req.getCoverId())) {
-				errorList.add(new Error("02", "CoverId", "Please Select CoverId"));
+//				errorList.add(new Error("02", "CoverId", "Please Select CoverId"));
+				errorList.add("2004");
 			}
 			if (StringUtils.isBlank(req.getCoverStatus())) {
-				errorList.add(new Error("05", "Cover Status", "Please Select Cover Status"));
+//				errorList.add(new Error("05", "Cover Status", "Please Select Cover Status"));
+				errorList.add("2005");
 			} else if (req.getCoverStatus().length() > 1) {
-				errorList.add(new Error("05", "Cover Status", "Please Select Valid Cover Status - 1 Character Only Allwed"));
+//				errorList.add(new Error("05", "Cover Status", "Please Select Valid Cover Status - 1 Character Only Allwed"));
+				errorList.add("2006");
 			}
 			
 			if (StringUtils.isBlank(req.getCoverDesc())) {
-				errorList.add(new Error("02", "CoverDesc", "Please Enter CoverDesc"));
+//				errorList.add(new Error("02", "CoverDesc", "Please Enter CoverDesc"));
+				errorList.add("2007");
 			} 
 			if (StringUtils.isBlank(req.getPolicyTypeDesc())) {
-				errorList.add(new Error("02", "PolicyTypeDesc", "Please Enter PolicyTypeDesc "));
+//				errorList.add(new Error("02", "PolicyTypeDesc", "Please Enter PolicyTypeDesc "));
+				errorList.add("2009");
 			} 
 			if (StringUtils.isBlank(req.getPlanTypeDesc())) {
-				errorList.add(new Error("02", "PlanTypeDesc", "Please Enter PlanTypeDesc "));
+//				errorList.add(new Error("02", "PlanTypeDesc", "Please Enter PlanTypeDesc "));
+				errorList.add("2010");
 			} 
 
 			if (StringUtils.isBlank(req.getCurrency())) {
-				errorList.add(new Error("02", "Currency", "Please Enter Currency  " ));
+//				errorList.add(new Error("02", "Currency", "Please Enter Currency  " ));
+				errorList.add("2011");
 			}
 			if (StringUtils.isBlank(req.getExcessAmt())) {
-				errorList.add(new Error("02", "ExcessAmt", "Please Enter ExcessAmt "));
+//				errorList.add(new Error("02", "ExcessAmt", "Please Enter ExcessAmt "));
+				errorList.add("2012");
 			}
 			
 //			if (StringUtils.isBlank(req.getSubCoverId())) {
@@ -571,19 +588,23 @@ public class PolicyTypeMasterSubCoverServiceImple  implements PolicyTypeMasterSu
 //			}
 			
 			if (StringUtils.isBlank(req.getSubCoverDesc())) {
-				errorList.add(new Error("02", "SubCoverDesc", "Please Enter SubCoverDesc " ));
+//				errorList.add(new Error("02", "SubCoverDesc", "Please Enter SubCoverDesc " ));
+				errorList.add("2013");
 			}
 			
 		
 
 			if (StringUtils.isBlank(req.getSumInsured())) {
-				errorList.add(new Error("02", "SumInsured", "Please Enter SumInsured in row " ));
+//				errorList.add(new Error("02", "SumInsured", "Please Enter SumInsured in row " ));
+				errorList.add("2014");
 			}
 			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("05", "SubCover Status", "Please Select SubCover Status"));
+//				errorList.add(new Error("05", "SubCover Status", "Please Select SubCover Status"));
+				errorList.add("2015");
 			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("05", "SubCover Status",
-						"Please Select Valid SubCover Status - 1 Character Only Allwed"));
+//				errorList.add(new Error("05", "SubCover Status","Please Select Valid SubCover Status - 1 Character Only Allwed"));
+						
+				errorList.add("2016");
 			}
 			
 			//Duplication find
@@ -634,7 +655,8 @@ public class PolicyTypeMasterSubCoverServiceImple  implements PolicyTypeMasterSu
 					
 					List<TravelPolicyType> dup = list.stream().filter(o -> (o.getSubCoverDesc()==null?"":o.getSubCoverDesc().trim().replaceAll("\\s+", "")).equalsIgnoreCase(req.getSubCoverDesc().trim().replaceAll("\\s+", ""))).collect(Collectors.toList());
 					if(dup.size()>0)
-						errorList.add(new Error("02", "SubCoverDesc","SubCover '" + req.getSubCoverDesc() + "' Already Exists"));
+//						errorList.add(new Error("02", "SubCoverDesc","SubCover '" + req.getSubCoverDesc() + "' Already Exists"));
+					errorList.add("2017");
 								
 				}
 			}

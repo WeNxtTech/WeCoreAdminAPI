@@ -2,28 +2,21 @@ package com.maan.eway.excelconfig;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.maan.eway.batch.entity.EwayUploadTypeMaster;
 import com.maan.eway.batch.entity.EwayXlconfigMaster;
 import com.maan.eway.batch.repository.EwayUploadTypeMasterRepository;
 import com.maan.eway.batch.repository.EwayXlconfigMasterRepository;
-import com.maan.eway.excelconfig2.DataType;
+import com.maan.eway.res.SuccessRes;
 
 @Service
 public class ExcelConfigMasterServiceImpl implements ExcelConfigMasterService {
@@ -37,113 +30,137 @@ public class ExcelConfigMasterServiceImpl implements ExcelConfigMasterService {
 	@Autowired
 	private EwayXlconfigMasterRepository xlConfigRepository;
 
-	public List<Errors> validate(UploadTypeSaveReq req) {
+	public List<String> validate(UploadTypeSaveReq req) {
 
-		List<Errors> eList = new ArrayList<>();
+		List<String> eList = new ArrayList<String>();
 
 		if (!StringUtils.isBlank(req.getCompanyId())) {
 			if (!NumberUtils.isCreatable(req.getCompanyId())) {
-				eList.add(new Errors("1", "Company id", "Company id should be a numarical value"));
+//				eList.add(new Errors("1", "Company id", "Company id should be a numarical value"));
+				eList.add("1448");
 			}
 		} else {
-			eList.add(new Errors("1", "Company id", "Company id is blank"));
+//			eList.add(new Errors("1", "Company id", "Company id is blank"));
+			eList.add("1255");
 		}
 
 		if (!StringUtils.isBlank(req.getProductId())) {
 			if (!NumberUtils.isCreatable(req.getProductId())) {
-				eList.add(new Errors("2", "Product id", "Product id should be a numerical value"));
+//				eList.add(new Errors("2", "Product id", "Product id should be a numerical value"));
+				eList.add("1496");
 			}
 		} else {
-			eList.add(new Errors("2", "Product id", "Product id is blank"));
+//			eList.add(new Errors("2", "Product id", "Product id is blank"));
+			eList.add("1313");
 		}
 
 		if (!StringUtils.isBlank(req.getSectionId())) {
 			if (!NumberUtils.isCreatable(req.getSectionId())) {
-				eList.add(new Errors("3", "Section id", "Section id should be a numerical value"));
+//				eList.add(new Errors("3", "Section id", "Section id should be a numerical value"));
+				eList.add("1551");
 			}
 		}
-//			else
-//			eList.add(new Errors("3", "Section Id", "Section Id is blank"));
+
 
 		if (!StringUtils.isBlank(req.getTypeId())) {
 			if (!NumberUtils.isCreatable(req.getTypeId())) {
-				eList.add(new Errors("4", "Type id", "Type id should be a numerical value"));
+//				eList.add(new Errors("4", "Type id", "Type id should be a numerical value"));
+				eList.add("1712");
 			} else {
 				EwayUploadTypeMaster upload = typeMasterRepository.findBy(req.getCompanyId(), req.getProductId(),
 						req.getTypeId(), StringUtils.isBlank(req.getSectionId()) ? "0" : req.getSectionId());
 				if (upload == null) {
-					eList.add(new Errors("4", "Type id", "You cannot change your Product here"/*"Cannot find any record for this given information"*/));
+//					eList.add(new Errors("4", "Type id", "You cannot change your Product here"/*"Cannot find any record for this given information"*/));
+					eList.add("1974");
 				}
 			}
 		}
 
 		if (!StringUtils.isBlank(req.getTypeName())) {
 			if (req.getTypeName().length() > 200)
-				eList.add(new Errors("5", "Sample File Name", "Sample File Name is too long"));
+//				eList.add(new Errors("5", "Sample File Name", "Sample File Name is too long"));
+				eList.add("1975");
 		} else {
-			eList.add(new Errors("5", "Sample File Name", "Sample File Name is blank"));
+//			eList.add(new Errors("5", "Sample File Name", "Sample File Name is blank"));
+			eList.add("1976");
 		}
 
 		if (!StringUtils.isBlank(req.getStatus())) {
 			if (req.getStatus().length() != 1) {
-				eList.add(new Errors("7", "Status", "Status should be 'Y' or 'N'"));
+//				eList.add(new Errors("7", "Status", "Status should be 'Y' or 'N'"));
+				eList.add("1265");
 			} else if (!(req.getStatus().equalsIgnoreCase("y") || req.getStatus().equalsIgnoreCase("n"))) {
-				eList.add(new Errors("7", "Status", "Status should be 'Y' or 'N'"));
+//				eList.add(new Errors("7", "Status", "Status should be 'Y' or 'N'"));
+				eList.add("1265");
 			}
-		} else
-			eList.add(new Errors("7", "Status", "Status is blank"));
-
-		if (!StringUtils.isBlank(req.getRawTableName())) {
-			if (req.getRawTableName().length() > 200)
-				eList.add(new Errors("6", "Raw table name", "Raw table name is too long"));
 		} else {
-			eList.add(new Errors("6", "Raw table name", "Raw table name is blank"));
+//			eList.add(new Errors("7", "Status", "Status is blank"));
+			eList.add("1263");
+			}
+		if (!StringUtils.isBlank(req.getRawTableName())) {
+			if (req.getRawTableName().length() > 200) {
+//				eList.add(new Errors("6", "Raw table name", "Raw table name is too long"));
+				eList.add("1977"); }
+		} else {
+//			eList.add(new Errors("6", "Raw table name", "Raw table name is blank"));
+			eList.add("1978");
 		}
 
 		if (!StringUtils.isBlank(req.getProductDesc())) {
 			if (req.getProductDesc().length() > 200)
-				eList.add(new Errors("8", "Product Description", "Product Description is too long"));
+//				eList.add(new Errors("8", "Product Description", "Product Description is too long"));
+				eList.add("1979");
 		} else {
-			eList.add(new Errors("8", "Product Description", "Product Description is blank"));
+//			eList.add(new Errors("8", "Product Description", "Product Description is blank"));
+			eList.add("1980");
 		}
 
 		if (!StringUtils.isBlank(req.getApiName())) {
-			if (req.getApiName().length() > 300)
-				eList.add(new Errors("10", "API name", "API name is too long"));
+			if (req.getApiName().length() > 300) {
+//				eList.add(new Errors("10", "API name", "API name is too long"));
+				eList.add("1981"); }
 		} else {
-			eList.add(new Errors("10", "API name", "API name is blank"));
+//			eList.add(new Errors("10", "API name", "API name is blank"));
+			eList.add("1982");
 		}
 
 		if (!StringUtils.isBlank(req.getRawTableId())) {
-			if (req.getApiName().length() > 300)
-				eList.add(new Errors("11", "Raw Table id", "Raw Table id is too long"));
+			if (req.getApiName().length() > 300) {
+//				eList.add(new Errors("11", "Raw Table id", "Raw Table id is too long"));
+				eList.add("1983");}
 		} else {
-			eList.add(new Errors("11", "Raw Table id", "Raw Table id is blank"));
+//			eList.add(new Errors("11", "Raw Table id", "Raw Table id is blank"));
+			eList.add("1984");
 		}
 
 		if (!StringUtils.isBlank(req.getIsMainStatus())) {
 			if (req.getIsMainStatus().length() != 1) {
-				eList.add(new Errors("12", "Is main status", "Is main status Status should be 'Y' or 'N'"));
+//				eList.add(new Errors("12", "Is main status", "Is main status Status should be 'Y' or 'N'"));
+				eList.add("1985");
 			} else if (!(req.getIsMainStatus().equalsIgnoreCase("y") || req.getIsMainStatus().equalsIgnoreCase("n"))) {
-				eList.add(new Errors("12", "Is main status", "Is main status should be 'Y' or 'N'"));
+//				eList.add(new Errors("12", "Is main status", "Is main status should be 'Y' or 'N'"));
+				eList.add("1986");
 			}
 		} else {
-			eList.add(new Errors("12", "Is main status", "Is main status is blank"));
+//			eList.add(new Errors("12", "Is main status", "Is main status is blank"));
+			eList.add("1987");
 		}
 
 		if (!StringUtils.isBlank(req.getApiMethod())) {
-			if (req.getApiMethod().length() > 200)
-				eList.add(new Errors("13", "API method", "API method is too long"));
+			if (req.getApiMethod().length() > 200) {
+//				eList.add(new Errors("13", "API method", "API method is too long"));
+				eList.add("1988");}
 		} else {
-			eList.add(new Errors("13", "API method", "API method is blank"));
+//			eList.add(new Errors("13", "API method", "API method is blank"));
+			eList.add("1989");
 		}
 
 		return eList;
 	}
 
-	public SuccessResponse saveUploadType(UploadTypeSaveReq req) {
+	public SuccessRes saveUploadType(UploadTypeSaveReq req) {
 
-		SuccessResponse sRes = new SuccessResponse();
+		SuccessRes sRes = new SuccessRes();
 
 		DozerBeanMapper mapper = new DozerBeanMapper();
 
@@ -174,8 +191,8 @@ public class ExcelConfigMasterServiceImpl implements ExcelConfigMasterService {
 			// UploadType.builder().pk(pk).section_id(Integer.valueOf(req.getSectionid())).typename(req.getTypename()).status(req.getStatus()).build();
 			typeMasterRepository.save(upload);
 
-			sRes.setSuccessMessage("Saved Successfully");
-			sRes.setSuccessCode(req.getCompanyId());
+			sRes.setResponse("Saved Successfully");
+			sRes.setSuccessId(req.getCompanyId());
 			return sRes;
 
 		} // update
@@ -208,8 +225,8 @@ public class ExcelConfigMasterServiceImpl implements ExcelConfigMasterService {
 				lastUpload.setApiMethod(req.getApiMethod());
 				typeMasterRepository.save(lastUpload);
 
-				sRes.setSuccessMessage("Updated Successfully");
-				sRes.setSuccessCode(req.getCompanyId());
+				sRes.setResponse("Updated Successfully");
+				sRes.setSuccessId(req.getCompanyId());
 
 				return sRes;
 

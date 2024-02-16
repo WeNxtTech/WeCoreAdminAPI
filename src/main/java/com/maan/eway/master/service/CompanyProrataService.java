@@ -7,25 +7,19 @@ package com.maan.eway.master.service;
 
 import java.util.List;
 
-import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CompanyProrataChangeStatusReq;
 import com.maan.eway.master.req.CompanyProrataGetAllReq;
 import com.maan.eway.master.req.CompanyProrataGetReq;
 import com.maan.eway.master.req.CompanyProrataSaveReq;
-import com.maan.eway.master.req.CompanyTaxChangeStatusReq;
-import com.maan.eway.master.req.CompanyTaxSetupGetAllReq;
-import com.maan.eway.master.req.CompanyTaxSetupGetReq;
-import com.maan.eway.master.req.CompanyTaxSetupSaveReq;
 import com.maan.eway.master.res.CompanyProrataGetAllRes;
 import com.maan.eway.master.res.CompanyProrataGetRes;
-import com.maan.eway.master.res.CompanyTaxGetRes;
 import com.maan.eway.res.SuccessRes;
 /**
 * <h2>BankMasterServiceimpl</h2>
 */
 public interface CompanyProrataService  {
 
-	List<Error> validateCompanyProrata(CompanyProrataSaveReq req);
+	List<String> validateCompanyProrata(CompanyProrataSaveReq req);
 
 	SuccessRes insertCompanyProrata(CompanyProrataSaveReq req);
 

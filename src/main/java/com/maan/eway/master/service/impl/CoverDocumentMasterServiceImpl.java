@@ -574,36 +574,45 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 	}
 
 	@Override
-	public List<Error> validateDocument(CoverDocumentMasterSaveReq req) {
-		List<Error> errorList = new ArrayList<Error>();
+	public List<String> validateDocument(CoverDocumentMasterSaveReq req) {
+		List<String> errorList = new ArrayList<String>();
 
 		try {
 			
 			if (req.getDocumentId() ==null || req.getDocumentId().size()<=0 ) {
-				errorList.add(new Error("01", "DocumentId", "Please Select DocumentId "));
+			//	errorList.add(new Error("01", "DocumentId", "Please Select DocumentId "));
+				errorList.add("1673");
 			}
 			
 			if (StringUtils.isBlank(req.getProductId().toString())) {
-				errorList.add(new Error("02", "Product Id", "Please Enter ProductId"));
+			//	errorList.add(new Error("02", "Product Id", "Please Enter ProductId"));
+				errorList.add("1313");
 			}
 			if (StringUtils.isBlank(req.getSectionId().toString())) {
-				errorList.add(new Error("03", "Section Id", "Please Enter Section Id"));
+			//	errorList.add(new Error("03", "Section Id", "Please Enter Section Id"));
+				errorList.add("1302");
 			}
 			if (StringUtils.isBlank(req.getCompanyId())) {
-				errorList.add(new Error("05", "Company Id", "Please Enter Company Id"));
+			//	errorList.add(new Error("05", "Company Id", "Please Enter Company Id"));
+				errorList.add("1255");
 			} else if (req.getCompanyId().length() > 20) {
-				errorList.add(new Error("05", "Company Id", "Please Enter Company Id within 20 Characters"));
+			//	errorList.add(new Error("05", "Company Id", "Please Enter Company Id within 20 Characters"));
+				errorList.add("1448");
 			}
 			if (StringUtils.isBlank(req.getCreatedBy())) {
-				errorList.add(new Error("06", "CreatedBy", "Please Enter CreatedBy "));
+			//	errorList.add(new Error("06", "CreatedBy", "Please Enter CreatedBy "));
+				errorList.add("1270");
 			} else if (req.getCreatedBy().length() > 100) {
-				errorList.add(new Error("06", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+			//	errorList.add(new Error("06", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+				errorList.add("1271");
 			}
 			
 			if (StringUtils.isBlank(req.getDocumentType())) {
-				errorList.add(new Error("05", "DocType", "Please Enter DocumentType"));
-			} else if (req.getCompanyId().length() > 20) {
-				errorList.add(new Error("05", "DocType", "Please Enter DocumentType within 20 Characters"));
+			//	errorList.add(new Error("05", "DocType", "Please Enter DocumentType"));
+				errorList.add("1674");
+			} else if (req.getDocumentType().length() > 20) {
+			//	errorList.add(new Error("05", "DocType", "Please Enter DocumentType within 20 Characters"));
+				errorList.add("1675");
 			}
 
 		} catch (Exception e) {

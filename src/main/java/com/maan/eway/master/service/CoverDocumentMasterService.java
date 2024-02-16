@@ -31,7 +31,7 @@ public interface CoverDocumentMasterService  {
 
 	List<DocumentMasterGetRes> getallNonSelectedCoverDocument(CoverDocumentMasterGetAllReq req);
 
-	List<Error> validateDocument(CoverDocumentMasterSaveReq reqList);
+	List<String> validateDocument(CoverDocumentMasterSaveReq reqList);
 
 	SuccessRes changeStatusOfDocument(CoverDocumentChangeStatusReq req);
 

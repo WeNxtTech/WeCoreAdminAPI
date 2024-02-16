@@ -13,7 +13,7 @@ import com.maan.eway.res.SuccessRes;
 
 public interface PolicyTypeMasterService {
 
-	List<Error> validatePolicyType(PolicyTypeMasterSaveReq req);
+	List<String> validatePolicyType(PolicyTypeMasterSaveReq req);
 
 	SuccessRes insertPolicyType(PolicyTypeMasterSaveReq req);
 

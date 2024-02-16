@@ -50,8 +50,8 @@ public class TravelPolicyTypeServiceImpl implements TravelPolicyTypeService {
 	private TravelPolicyTypeRepository repository;
 
 	@Override
-	public List<Error> validateTravelPolicyType(TravelPolicyTypeSaveReq req) {
-		List<Error> error = new ArrayList<Error>();
+	public List<String> validateTravelPolicyType(TravelPolicyTypeSaveReq req) {
+		List<String> error = new ArrayList<String>();
 		try {
 		Date today1 = new Date();
 		Calendar cal = new GregorianCalendar();
@@ -70,60 +70,65 @@ public class TravelPolicyTypeServiceImpl implements TravelPolicyTypeService {
 		
 		if(req.getPolicyTypeId()==null)
 		{
-			error.add(new Error("O1","Policy Type Id","Please Enter Policy Type Id"));
+//			error.add(new Error("O1","Policy Type Id","Please Enter Policy Type Id"));
+			error.add("1990");
 		}
 		
 		if(req.getPlanTypeId()==null)
 		{
-			error.add(new Error("O2","Plan Type Id","Please Enter Plan Type Id"));
+//			error.add(new Error("O2","Plan Type Id","Please Enter Plan Type Id"));
+			error.add("1993");
 		}
-		
-//		if(req.getCoverId()==null)
-//		{
-//			error.add(new Error("O3","Cover Id","Please Enter Cover Id"));
-//		}
-		
-		
+
 		if(req.getCompanyId()==null)
 		{
-			error.add(new Error("O6","Company Id","Please Enter Company Id"));
+//			error.add(new Error("O6","Company Id","Please Enter Company Id"));
+			error.add("1255");
 		}
 		
 		if(req.getProductId()==null)
 		{
-			error.add(new Error("O7","Product Id","Please Enter Product Id"));
+//			error.add(new Error("O7","Product Id","Please Enter Product Id"));
+			error.add("1313");
 		}
 		
 		if(req.getBranchCode()==null)
 		{
-			error.add(new Error("O8","Branch Code","Please Enter Branch Code"));
+//			error.add(new Error("O8","Branch Code","Please Enter Branch Code"));
+			error.add("1256");
 		}
 		
 		if(StringUtils.isBlank(req.getPolicyTypeDesc()))
 		{
-			error.add(new Error("O9","Policy Type Description","Please Enter Policy Type Description"));
+//			error.add(new Error("O9","Policy Type Description","Please Enter Policy Type Description"));
+			error.add("1994");
 		}
 		else if(req.getPolicyTypeDesc().length()>100)
 		{
-			error.add(new Error("O9","Policy Type Description","Please Enter Policy Type Description below 100 character"));
+//			error.add(new Error("O9","Policy Type Description","Please Enter Policy Type Description below 100 character"));
+			error.add("1995");
 		}
 		
 		if(StringUtils.isBlank(req.getPlanTypeDesc()))
 		{
-			error.add(new Error("10","Plan Type Description","Please Enter Plan Type Description"));
+//			error.add(new Error("10","Plan Type Description","Please Enter Plan Type Description"));
+			error.add("1996");
 		}
 		else if(req.getPlanTypeDesc().length()>100)
 		{
-			error.add(new Error("10","Plan Type Description","Please Enter Plan Type Description below 100 character"));
+//			error.add(new Error("10","Plan Type Description","Please Enter Plan Type Description below 100 character"));
+			error.add("1997");
 		}
 		
 		if(StringUtils.isBlank(req.getCoverDesc()))
 		{
-			error.add(new Error("11","Cover Description","Please Enter Cover Description"));
+//			error.add(new Error("11","Cover Description","Please Enter Cover Description"));
+			error.add("1998");
 		}
 		else if(req.getCoverDesc().length()>100)
 		{
-			error.add(new Error("11","Cover Description","Please Enter Cover Description below 100 character"));
+//			error.add(new Error("11","Cover Description","Please Enter Cover Description below 100 character"));
+			error.add("1999");
 		}
 
 //		
@@ -136,25 +141,32 @@ public class TravelPolicyTypeServiceImpl implements TravelPolicyTypeService {
 		today = cal1.getTime();
 		
 		if (req.getEffectiveDateStart() == null) {
-			error.add(new Error("16", "EffectiveStartDate", "Please Enter Effective Start Date"));
+//			error.add(new Error("16", "EffectiveStartDate", "Please Enter Effective Start Date"));
+			error.add("1261");
 
 		} else if (req.getEffectiveDateStart().before(today)) {
-			error.add(new Error("16", "EffectiveStartDate", "Please Enter Effective Start Date as Future Date"));
+//			error.add(new Error("16", "EffectiveStartDate", "Please Enter Effective Start Date as Future Date"));
+			error.add("1262");
 		}
 
 		
 		if (StringUtils.isBlank(req.getCoverStatus())) {
-			error.add(new Error("21", "Cover Status", "Please Select Cover Status"));
+//			error.add(new Error("21", "Cover Status", "Please Select Cover Status"));
+			error.add("2000");
 		} else if (req.getCoverStatus().length() > 1) {
-			error.add(new Error("21", "Cover Status", "Please Select Valid Cover Status - 1 Character Only Allowed"));
+//			error.add(new Error("21", "Cover Status", "Please Select Valid Cover Status - 1 Character Only Allowed"));
+			error.add("2001");
 		}else if(!("Y".equalsIgnoreCase(req.getCoverStatus())||"N".equalsIgnoreCase(req.getCoverStatus()))) {
-			error.add(new Error("21", "Cover Status", "Please Select Valid Cover Status - Active or Deactive or Pending or Referral "));
+//			error.add(new Error("21", "Cover Status", "Please Select Valid Cover Status - Active or Deactive or Pending or Referral "));
+			error.add("2002");
 		}
 		
 		if (StringUtils.isBlank(req.getCreatedBy())) {
-			error.add(new Error("06", "CreatedBy", "Please Enter CreatedBy"));
+//			error.add(new Error("06", "CreatedBy", "Please Enter CreatedBy"));
+			error.add("1270");
 		}else if (req.getCreatedBy().length() > 50) {
-			error.add(new Error("06", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+//			error.add(new Error("06", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+			error.add("1271");
 		} 
 				
 		//Duplication find
@@ -204,9 +216,11 @@ public class TravelPolicyTypeServiceImpl implements TravelPolicyTypeService {
 			if(list.size()>0) {
 				
 				List<TravelPolicyType> dup = list.stream().filter(o -> (o.getCoverDesc()==null?"":o.getCoverDesc().trim().replaceAll("\\s+", "") ).equalsIgnoreCase(req.getCoverDesc().trim().replaceAll("\\s+", "") )).collect(Collectors.toList());
-				if(dup.size()>0)
-					error.add(new Error("02", "CoverDesc","Cover '" + req.getCoverDesc() + "' Already Exists"));
-							
+				if(dup.size()>0) {
+//					error.add(new Error("02", "CoverDesc","Cover '" + req.getCoverDesc() + "' Already Exists"));
+					error.add("2003");		 
+					
+				}
 			}
 		}
 		} catch (Exception e) {

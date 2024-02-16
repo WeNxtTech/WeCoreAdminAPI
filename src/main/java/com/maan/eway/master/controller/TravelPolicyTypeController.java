@@ -12,11 +12,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.TravelPolicyTypeGetReq;
 import com.maan.eway.master.req.TravelPolicyTypeSaveReq;
 import com.maan.eway.master.res.TravelPolicyTypeGetRes1;
 import com.maan.eway.master.service.TravelPolicyTypeService;
+import com.maan.eway.req.CommonErrorModuleReq;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.SuccessRes2;
 import com.maan.eway.service.PrintReqService;
@@ -33,6 +35,11 @@ public class TravelPolicyTypeController {
 	@Autowired
 	private PrintReqService reqPrinter;
 	
+	
+	
+	@Autowired
+	private FetchErrorDescServiceImpl errorDescService ;
+	
 	//Covers
 		@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/inserttravelpolicytype")
@@ -41,8 +48,20 @@ public class TravelPolicyTypeController {
 
 			reqPrinter.reqPrint(req);
 			CommonRes data = new CommonRes();
+			List<String> validationCodes =  entityService.validateTravelPolicyType(req);
+			List<Error> validation = null;
+			if(validationCodes!=null && validationCodes.size() > 0 ) {
+				CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+				comErrDescReq.setBranchCode(req.getBranchCode());
+				comErrDescReq.setInsuranceId(req.getCompanyId());
+				comErrDescReq.setProductId("99999");
+				comErrDescReq.setModuleId("31");
+				comErrDescReq.setModuleName("MASTERS");
+				
+				validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+			}
+			
 
-			List<Error> validation = entityService.validateTravelPolicyType(req);
 			// validation
 			if (validation != null && validation.size() != 0) {
 				data.setCommonResponse(null);

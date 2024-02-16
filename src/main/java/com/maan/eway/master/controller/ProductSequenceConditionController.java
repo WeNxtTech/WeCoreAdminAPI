@@ -17,16 +17,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.error.Error;
-import com.maan.eway.master.req.PlanTypeDropDownReq;
 import com.maan.eway.master.req.ProductSequenceConditionChangeStatusReq;
 import com.maan.eway.master.req.ProductSequenceConditionDropDownReq;
 import com.maan.eway.master.req.ProductSequenceConditionGetAllReq;
 import com.maan.eway.master.req.ProductSequenceConditionGetReq;
 import com.maan.eway.master.req.ProductSequenceConditionSaveReq;
-import com.maan.eway.master.res.PlanTypeMasterRes;
 import com.maan.eway.master.res.ProductSequenceConditionRes;
 import com.maan.eway.master.service.ProductSequenceConditionService;
+import com.maan.eway.req.CommonErrorModuleReq;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.DropdownCommonRes;
@@ -51,16 +51,30 @@ public class ProductSequenceConditionController {
 	@Autowired
 	private  PrintReqService reqPrinter;
 	
+	@Autowired
+	private FetchErrorDescServiceImpl errorDescService ;
+	
 	// save
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 	@PostMapping("/insertseqcondtion")
 		@ApiOperation(value = "This method is Product Sequnce Condition")
 		public ResponseEntity<CommonRes> insertProductSequenceCondition(@RequestBody ProductSequenceConditionSaveReq req) {
 
-			reqPrinter.reqPrint(req);
-			CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<String> validationCodes = service.validateProductSequenceCondition(req);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode(req.getBranchCode());
+			comErrDescReq.setInsuranceId(req.getInsuranceId());
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
 
-			List<Error> validation = service.validateProductSequenceCondition(req);
 			// validation
 			if (validation != null && validation.size() != 0) {
 				data.setCommonResponse(null);

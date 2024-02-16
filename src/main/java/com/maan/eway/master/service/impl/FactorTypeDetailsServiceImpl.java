@@ -95,14 +95,16 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 
 
 	@Override
-	public List<Error> validateFactorTypeDetails(FactorTypeDetailsSaveReq req) {
-		List<Error> errorList = new ArrayList<Error>();
+	public List<String> validateFactorTypeDetails(FactorTypeDetailsSaveReq req) {
+		List<String> errorList = new ArrayList<String>();
 		try {
 			
 			if (StringUtils.isBlank(req.getRemarks()) ) {
-				errorList.add(new Error("03", "Remark", "Please Select Remark "));
+			//	errorList.add(new Error("03", "Remark", "Please Select Remark "));
+				errorList.add("1259");
 			}else if (req.getRemarks().length() > 100){
-				errorList.add(new Error("03","Remark", "Please Enter Remark within 100 Characters")); 
+			//	errorList.add(new Error("03","Remark", "Please Enter Remark within 100 Characters")); 
+				errorList.add("1260");
 			}
 			
 			// Date Validation 
@@ -111,51 +113,64 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
 			today = cal.getTime();
 			if (req.getEffectiveDateStart() == null ) {
-				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
+		//		errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
+				errorList.add("1261");
 	
 			} else if (req.getEffectiveDateStart().before(today)) {
-				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+		//		errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+				errorList.add("1262");
 			}
 			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("05", "Status", "Please Select Status  "));
+			//	errorList.add(new Error("05", "Status", "Please Select Status  "));
+				errorList.add("1263");
 			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+			//	errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+				errorList.add("1264");
 			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+		//		errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+				errorList.add("1265");
 			}
 		
 			
 			if (StringUtils.isBlank(req.getCreatedBy())) {
-				errorList.add(new Error("06", "CreatedBy", "Please Enter CreatedBy"));
+			//	errorList.add(new Error("06", "CreatedBy", "Please Enter CreatedBy"));
+				errorList.add("1270");
 			}else if (req.getCreatedBy().length() > 50) {
-				errorList.add(new Error("06", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+			//	errorList.add(new Error("06", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+				errorList.add("1271");
 			} 
 						
 			// Other Errors	
 			if (StringUtils.isBlank(req.getCompanyId())) {
-				errorList.add(new Error("01", "Insurance Id", "Please Enter InsuranceId"));
+			//	errorList.add(new Error("01", "Insurance Id", "Please Enter InsuranceId"));
+				errorList.add("1255");
 				
 			}else if (StringUtils.isBlank(req.getProductId())) {
-				errorList.add(new Error("02", "ProductId", "Please Enter ProductId"));
+			//	errorList.add(new Error("02", "ProductId", "Please Enter ProductId"));
+				errorList.add("1313");
 				
 			} else if (StringUtils.isBlank(req.getFactorTypeName())) {
-				errorList.add(new Error("01", "FactorTypeName", "Please Select FactorTypeName "));
+			//	errorList.add(new Error("01", "FactorTypeName", "Please Select FactorTypeName "));
+				errorList.add("1533");
 				
 			} else if (req.getFactorTypeName().length() > 100){
-				errorList.add(new Error("01","FactorTypeName", "Please Enter FactorTypeName within 100 Characters"));
+			//	errorList.add(new Error("01","FactorTypeName", "Please Enter FactorTypeName within 100 Characters"));
+				errorList.add("1531");
 				
 			}else if (StringUtils.isBlank(req.getFactorTypeId()) && StringUtils.isNotBlank(req.getProductId()) && StringUtils.isNotBlank(req.getCompanyId()) ) {
 				
 				List<FactorTypeDetails> FactorTypeList = getFactorTypeNameExistDetails(req.getFactorTypeName() , req.getCompanyId() , req.getProductId() );
 				if (FactorTypeList.size()>0 ) {
-					errorList.add(new Error("01", "FactorTypeName", "This FactorTypeName Already Exist "));
+				//	errorList.add(new Error("01", "FactorTypeName", "This FactorTypeName Already Exist "));
+					errorList.add("1532");
 				}
 				
 			}else  {
 				List<FactorTypeDetails> FactorTypeList =  getFactorTypeNameExistDetails(req.getFactorTypeName() , req.getCompanyId() , req.getProductId() );
 				if (FactorTypeList.size()>0 &&  (! req.getFactorTypeId().equalsIgnoreCase(FactorTypeList.get(0).getFactorTypeId().toString())) ) {
-					errorList.add(new Error("01", "FactorTypeName", "This FactorTypeName Already Exist "));
+				//	errorList.add(new Error("01", "FactorTypeName", "This FactorTypeName Already Exist "));
+					errorList.add("1532");
 				}
 			}
 			
@@ -164,7 +179,8 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 			List<String> ratingColumnIds = new ArrayList<String>();
 			
 			if(  req.getRatingFieldDetails()==null || req.getRatingFieldDetails().size() <= 0 ) {
-				errorList.add(new Error("01", "RatingFieldDetails", "Please Enter Alteast One Rating Field Details"));
+			//	errorList.add(new Error("01", "RatingFieldDetails", "Please Enter Atleast One Rating Field Details"));
+				errorList.add("1534");
 			} else {
 				Long row = 0L ;
 				
@@ -172,11 +188,13 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 					row = row + 1 ;
 					
 					if ( StringUtils.isBlank(data.getColumnsId())   ){
-						errorList.add(new Error("01","Column Id", "Please Enter Column Id in Row No : " + row ));
+					//	errorList.add(new Error("01","Column Id", "Please Enter Column Id in Row No : " + row ));
+						errorList.add("1535");
 					} else {
 						List<String> filterColumnIds =  ratingColumnIds.stream().filter( o -> o.equalsIgnoreCase(data.getColumnsId()) ).collect(Collectors.toList()); 
 						if(filterColumnIds.size()>0  ) {
-							errorList.add(new Error("02", "Column Id", "Duplicate Param Availabe in Row No : " + row ));
+					//		errorList.add(new Error("02", "Column Id", "Duplicate Param Availabe in Row No : " + row ));
+							errorList.add("1536");
 						} else {
 							ratingColumnIds.add(data.getColumnsId());
 						}
@@ -184,50 +202,64 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 					
 					if ( StringUtils.isBlank(data.getRatingFieldId())) {
  
-						errorList.add(new Error("03","RatingFieldId", "Please Enter RatingFieldId in Row No : " + row ));	
+					//	errorList.add(new Error("03","RatingFieldId", "Please Enter RatingFieldId in Row No : " + row ));	
+						errorList.add("1537");
 					} else {
 						List<String> filterRatingIds =  ratingRatingIds.stream().filter( o -> o.equalsIgnoreCase(data.getRatingFieldId()) ).collect(Collectors.toList()); 
 						if(filterRatingIds.size()>0  ) {
-							errorList.add(new Error("02", "RatingFieldId", "Duplicate RatingFieldId Availabe in Row No : " + row ));
+					//		errorList.add(new Error("02", "RatingFieldId", "Duplicate RatingFieldId Availabe in Row No : " + row ));
+							errorList.add("1538");
 						} else {
 							ratingRatingIds.add(data.getRatingFieldId());
 						}
 					}
 					
 					if (StringUtils.isBlank(data.getRangeYn())) {
-						errorList.add(new Error("02", "RangeYn", "Please Enter RangeYn  in Row No : " + row ));
+					//	errorList.add(new Error("02", "RangeYn", "Please Enter RangeYn  in Row No : " + row ));
+						errorList.add("1539");
 					} else if (data.getRangeYn().length() > 1) {
-						errorList.add(new Error("02", "RangeYn", "Enter RangeYn 1 Character Only in Row No : " + row ));
+					//	errorList.add(new Error("02", "RangeYn", "Enter RangeYn 1 Character Only in Row No : " + row ));
+						errorList.add("1540");
 					}else if(!("Y".equals(data.getRangeYn())||"N".equals(data.getRangeYn()))) {
-						errorList.add(new Error("02", "RangeYn", "Enter RangeYn Y or N Only in Row No : " + row ));
+				//		errorList.add(new Error("02", "RangeYn", "Enter RangeYn Y or N Only in Row No : " + row ));
+						errorList.add("1541");
 					} else if(data.getRangeYn().equalsIgnoreCase("Y") ) {
 						if ( StringUtils.isBlank(data.getFromDisplayName())   ){
-							errorList.add(new Error("01","FromDisplayName", "Please Enter From Display Name in Row No : " + row ));
+					//		errorList.add(new Error("01","FromDisplayName", "Please Enter From Display Name in Row No : " + row ));
+							errorList.add("1542");
 						} else if ( data.getFromDisplayName().length() > 100   ){
-							errorList.add(new Error("01","FromDisplayName", "From Display Name Must be Under 100 Char Onyly Allowed in Row No : " + row ));
+						//	errorList.add(new Error("01","FromDisplayName", "From Display Name Must be Under 100 Char Onyly Allowed in Row No : " + row ));
+							errorList.add("1543");
 						}
 		
 						if ( StringUtils.isBlank(data.getToDisplayName())   ){
-							errorList.add(new Error("01","ToDislapyName", "Please Enter To Dislapy Name in Row No : " + row ));
+						//	errorList.add(new Error("01","ToDislapyName", "Please Enter To Dislapy Name in Row No : " + row ));
+							errorList.add("1544");
 						} else if ( data.getToDisplayName().length() > 100   ){
-							errorList.add(new Error("01","ToDisplayName", "To Display Name Must be Under 100 Char Onyly Allowed in Row No : " + row ));
+						//	errorList.add(new Error("01","ToDisplayName", "To Display Name Must be Under 100 Char Onyly Allowed in Row No : " + row ));
+							errorList.add("1545");
 						}
 					} else if( data.getRangeYn().equalsIgnoreCase("N") ) {
 						if ( StringUtils.isBlank(data.getDiscreteDisplayName()) ){
-							errorList.add(new Error("01","DiscreteDisplayName", "Please Enter Discrete Display Name in Row No : " + row ));
+						//	errorList.add(new Error("01","DiscreteDisplayName", "Please Enter Discrete Display Name in Row No : " + row ));
+							errorList.add("1546");
 						} else if ( data.getDiscreteDisplayName().length() > 100   ){
-							errorList.add(new Error("01","DiscreteDisplayName", "Discrete Display Name Must be Under 100 Char Onyly Allowed in Row No : " + row ));
+						//	errorList.add(new Error("01","DiscreteDisplayName", "Discrete Display Name Must be Under 100 Char Onyly Allowed in Row No : " + row ));
+							errorList.add("1547");
 						}
 					}
 					
 					//Status Validation
 					if(StringUtils.isNotBlank(data.getStatus()) && !(data.getStatus().equalsIgnoreCase("P")) ) {
 						if (StringUtils.isBlank(data.getStatus())) {
-							errorList.add(new Error("05", "Status", "Please Enter Status In Row No : " + row ));
+						//	errorList.add(new Error("05", "Status", "Please Enter Status In Row No : " + row ));
+							errorList.add("1483");
 						} else if (data.getStatus().length() > 1) {
-							errorList.add(new Error("05", "Status", "Enter Status 1 Character Only In Row No : " + row ));
+						//	errorList.add(new Error("05", "Status", "Enter Status 1 Character Only In Row No : " + row ));
+							errorList.add("1484");
 						}else if(!("Y".equals(data.getStatus())||"N".equals(data.getStatus()))) {
-							errorList.add(new Error("05", "Status", "Enter Status Y or N Only In Row No : " + row ));
+						//	errorList.add(new Error("05", "Status", "Enter Status Y or N Only In Row No : " + row ));
+							errorList.add("1485");
 						}
 					}
 					
@@ -236,7 +268,7 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
-			errorList.add(new Error("12", "Common Error", e.getMessage()));
+		//	errorList.add(new Error("12", "Common Error", e.getMessage()));
 		}
 		return errorList;
 	}

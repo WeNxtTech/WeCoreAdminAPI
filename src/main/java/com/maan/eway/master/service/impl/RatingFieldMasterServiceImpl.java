@@ -79,8 +79,8 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 	private Logger log = LogManager.getLogger(RatingFieldMasterServiceImpl.class);
 
 	@Override
-	public List<Error> validateFactorType(RatingFieldsMasterSaveReq req) {
-		List<Error> errorList = new ArrayList<Error>();
+	public List<String> validateFactorType(RatingFieldsMasterSaveReq req) {
+		List<String> errorList = new ArrayList<String>();
 
 		try {
 
@@ -93,76 +93,96 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 			cal.set(Calendar.MINUTE, 50);
 			today = cal.getTime();
 			if (req.getEffectiveDateStart() == null) {
-				errorList.add(new Error("01", "EffectiveDateStart", "Please Enter Effective Date Start "));
+//				errorList.add(new Error("01", "EffectiveDateStart", "Please Enter Effective Date Start "));
+				errorList.add("2034");
 
 			} else if (req.getEffectiveDateStart().before(today)) {
-				errorList
-						.add(new Error("01", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+//				errorList.add(new Error("01", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+				errorList.add("2035");
 			}
 			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("05", "Status", "Please Select Status  "));
+//				errorList.add(new Error("05", "Status", "Please Select Status  "));
+				errorList.add("2036");
 			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+//				errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+				errorList.add("2037");
 			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+//				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+				errorList.add("2038");
 			}
 			
 			if (StringUtils.isBlank(req.getMasterYn())) {
-				errorList.add(new Error("03", "Master", "Please Select Master Yes/No"));
+//				errorList.add(new Error("03", "Master", "Please Select Master Yes/No"));
+				errorList.add("2099");
 			} else if (req.getMasterYn().length() > 1) {
-				errorList.add(new Error("03", "Master", "Master Yes/No 1 Character Only"));
+//				errorList.add(new Error("03", "Master", "Master Yes/No 1 Character Only"));
+				errorList.add("2103");
 			} else if (!("Y".equals(req.getMasterYn()) || "N".equals(req.getMasterYn()) )) {
-				errorList.add(new Error("03", "Master", "Enter Master Y or N Only"));
+//				errorList.add(new Error("03", "Master", "Enter Master Y or N Only"));
+				errorList.add("2104");
 			} else if ("Y".equals(req.getMasterYn())) {
 				if (StringUtils.isBlank(req.getApiUrl())) {
-					errorList.add(new Error("03", "ApiUrl", "Please Enter ApiUrl"));
+//					errorList.add(new Error("03", "ApiUrl", "Please Enter ApiUrl"));
+					errorList.add("2105");
 				}
 			}
 			
 			if (StringUtils.isBlank(req.getRatingField())) {
-				errorList.add(new Error("04", "RatingField", "Please Select RatingField "));
+//				errorList.add(new Error("04", "RatingField", "Please Select RatingField "));
+				errorList.add("2106");
 			}else if (req.getRatingField().length() > 100){
-				errorList.add(new Error("04","RatingField", "Please Enter RatingField within 100 Characters")); 
+//				errorList.add(new Error("04","RatingField", "Please Enter RatingField within 100 Characters")); 
+				errorList.add("2107");
 			}else if (StringUtils.isBlank(req.getRatingField())) {
 				List<RatingFieldMaster> factorList = getFactorNameExistDetails(req.getRatingField(),req.getProductId());
 				if (factorList.size()>0 ) {
-					errorList.add(new Error("04", "RatingField", "This RatingField Already Exist "));
+//					errorList.add(new Error("04", "RatingField", "This RatingField Already Exist "));
+					errorList.add("2108");
 				}
 			}else  {
 				List<RatingFieldMaster> factorList =  getFactorNameExistDetails(req.getRatingField(),req.getProductId());
 				if (factorList.size()>0 &&  (! req.getRatingId().equalsIgnoreCase(factorList.get(0).getRatingId().toString())) ) {
-					errorList.add(new Error("04", "RatingField", "This RatingField Already Exist "));
+//					errorList.add(new Error("04", "RatingField", "This RatingField Already Exist "));
+					errorList.add("2108");
 				}
 				
 			}
-			if (req.getRatingDesc().length() > 100) {
-				errorList.add(new Error("05", "Rating Desc", "Please Enter Rating Desc within 100 Characters"));
+			if (StringUtils.isNotBlank(req.getRatingDesc()) && req.getRatingDesc().length() > 100) {
+//				errorList.add(new Error("05", "Rating Desc", "Please Enter Rating Desc within 100 Characters"));
+				errorList.add("2109");
 			}
 			if (StringUtils.isBlank(req.getInputTable())) {
-				errorList.add(new Error("06", "Input Table", "Please Enter Input Table"));
+//				errorList.add(new Error("06", "Input Table", "Please Enter Input Table"));
+				errorList.add("2110");
 			} else if (req.getInputTable().length() > 100) {
-				errorList.add(new Error("06", "Input Table", "Please Enter Input Table within 100 Characters"));
+//				errorList.add(new Error("06", "Input Table", "Please Enter Input Table within 100 Characters"));
+				errorList.add("2111");
 			}
 			if (StringUtils.isBlank(req.getInputColumn())) {
-				errorList.add(new Error("07", "Input Column", "Please Enter Input Column"));
+//				errorList.add(new Error("07", "Input Column", "Please Enter Input Column"));
+				errorList.add("2112");
 			} else if (req.getInputColumn().length() > 100) {
-				errorList.add(new Error("07", "Input Column", "Please Enter Input Column within 100 Characters"));
+//				errorList.add(new Error("07", "Input Column", "Please Enter Input Column within 100 Characters"));
+				errorList.add("2113");
 			}
 			if (StringUtils.isBlank(req.getCreatedBy())) {
-				errorList.add(new Error("08", "CreatedBy", "Please Enter CreatedBy"));
+//				errorList.add(new Error("08", "CreatedBy", "Please Enter CreatedBy"));
+				errorList.add("2039");
 			} else if (req.getCreatedBy().length() > 100) {
-				errorList.add(new Error("08", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+//				errorList.add(new Error("08", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+				errorList.add("2040");
 			}
 			if (StringUtils.isBlank(req.getRemarks())) {
-				errorList.add(new Error("09", "Remarks", "Please Enter Remarks"));
+//				errorList.add(new Error("09", "Remarks", "Please Enter Remarks"));
+				errorList.add("2032");
 			} else if (req.getRemarks().length() > 100) {
-				errorList.add(new Error("09", "Remarks", "Please Enter Remarks within 100 Characters"));
+//				errorList.add(new Error("09", "Remarks", "Please Enter Remarks within 100 Characters"));
+				errorList.add("2033");
 			}
 			if (StringUtils.isBlank(req.getProductId())) {
-				errorList.add(new Error("10", "Product Id", "Please Enter Product Id"));
-			} else if (req.getRemarks().length() > 100) {
-				errorList.add(new Error("10", "Product Id", "Please Enter Product Id within 100 Characters"));
+//				errorList.add(new Error("10", "Product Id", "Please Enter Product Id"));
+				errorList.add("2100");
 			}
 			
 			

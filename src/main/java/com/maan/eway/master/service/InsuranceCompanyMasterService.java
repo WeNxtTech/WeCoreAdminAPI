@@ -30,7 +30,7 @@ InsuranceCompanyMaster update(InsuranceCompanyMaster d);
  List<InsuranceCompanyMaster> getAll();
 long getTotal();
 //boolean delete(long id);
-List<Error> validateCompanySaveReq(InsuranceCompanyMasterSaveReq req);
+List<String> validateCompanySaveReq(InsuranceCompanyMasterSaveReq req);
 SuccessRes saveCompanyDetails(InsuranceCompanyMasterSaveReq req);
 List<InsuranceCompanyMasterRes> getallInsCompanyDetails(InsuranceCompanyMasterGetAllReq req);
 List<InsuranceCompanyMasterRes> getActiveInsCompanyDetails(InsuranceCompanyMasterGetAllReq req);

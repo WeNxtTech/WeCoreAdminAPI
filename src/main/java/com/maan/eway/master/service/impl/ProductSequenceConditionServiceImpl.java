@@ -7,15 +7,11 @@ package com.maan.eway.master.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -36,28 +32,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.maan.eway.bean.PlanTypeMaster;
 import com.maan.eway.bean.ProductSequenceCondition;
 import com.maan.eway.bean.ProductSequenceMaster;
-import com.maan.eway.bean.PlanTypeMaster;
 import com.maan.eway.error.Error;
-import com.maan.eway.master.req.PlanTypeDropDownReq;
-import com.maan.eway.master.req.PlanTypeMasterChangeStatusReq;
-import com.maan.eway.master.req.PlanTypeMasterGetAllReq;
-import com.maan.eway.master.req.PlanTypeMasterGetReq;
-import com.maan.eway.master.req.PlanTypeMasterSaveReq;
 import com.maan.eway.master.req.ProductSequenceConditionChangeStatusReq;
 import com.maan.eway.master.req.ProductSequenceConditionDropDownReq;
 import com.maan.eway.master.req.ProductSequenceConditionGetAllReq;
 import com.maan.eway.master.req.ProductSequenceConditionGetReq;
 import com.maan.eway.master.req.ProductSequenceConditionSaveReq;
-import com.maan.eway.master.req.ProductSequenceDropDownReq;
-import com.maan.eway.master.res.PlanTypeMasterRes;
 import com.maan.eway.master.res.ProductSequenceConditionRes;
-import com.maan.eway.master.res.ProductSequenceMasterRes;
-import com.maan.eway.master.service.PlanTypeMasterService;
 import com.maan.eway.master.service.ProductSequenceConditionService;
-import com.maan.eway.repository.PlanTypeMasterRepository;
 import com.maan.eway.repository.ProductSequenceConditionRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
@@ -83,57 +67,69 @@ private Logger log=LogManager.getLogger(ProductSequenceConditionServiceImpl.clas
 
 	
 	@Override
-	public List<Error> validateProductSequenceCondition(ProductSequenceConditionSaveReq req) {
-		List<Error> errorList = new ArrayList<Error>();
+	public List<String> validateProductSequenceCondition(ProductSequenceConditionSaveReq req) {
+		List<String> errorList = new ArrayList<String>();
 
 		try {
 			if(StringUtils.isBlank(req.getBranchCode()) ) {
-				errorList.add(new Error("01", "BranchCode", "Please Select BranchCode"));
+			//	errorList.add(new Error("01", "BranchCode", "Please Select BranchCode"));
+				errorList.add("1256");
 				
 			} 
 			if(StringUtils.isBlank(req.getInsuranceId()) ) {
-				errorList.add(new Error("01", "InsuranceId", "Please Select company"));
+			//	errorList.add(new Error("01", "InsuranceId", "Please Select company"));
+				errorList.add("1255");
 				
 			} 
 			if(StringUtils.isBlank(req.getProductId()) ) {
-				errorList.add(new Error("01", "ProductId", "Please Select ProductId"));
+				//errorList.add(new Error("01", "ProductId", "Please Select ProductId"));
+				errorList.add("1313");
 			}
 			
 			if (StringUtils.isBlank(req.getQueryDesc())) {
-				errorList.add(new Error("02", "Query Desc", "Please Enter Query Desc"));
+			//	errorList.add(new Error("02", "Query Desc", "Please Enter Query Desc"));
+				errorList.add("1858");
 				
 			} else if (req.getQueryDesc().length() > 100 ) {
-				errorList.add(new Error("02", "Query Desc", "Query Desc max 100 Characters only allowed"));
+			//	errorList.add(new Error("02", "Query Desc", "Query Desc max 100 Characters only allowed"));
+				errorList.add("1859");
 				
 			} else if (StringUtils.isBlank(req.getQueryId()) && StringUtils.isNotBlank(req.getSequenceId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())
 						&& StringUtils.isNotBlank(req.getProductId()) ) {
 				
 				List<ProductSequenceCondition> oldList = getSeqQueryNameExistDetails(req.getQueryDesc() , req.getSequenceId() , req.getProductId() , req.getInsuranceId() ,req.getBranchCode() );
 				if (oldList.size()>0 ) {
-					errorList.add(new Error("01", "Query Desc", "This Query Desc Already Exist "));
+				//	errorList.add(new Error("01", "Query Desc", "This Query Desc Already Exist "));
+					errorList.add("1860");
 				}
 			}else if (StringUtils.isNotBlank(req.getQueryId()) && StringUtils.isNotBlank(req.getSequenceId())  &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())
 					&& StringUtils.isNotBlank(req.getProductId()) ) {
 				List<ProductSequenceCondition> oldList = getSeqQueryNameExistDetails(req.getQueryDesc() , req.getSequenceId() , req.getProductId() , req.getInsuranceId() ,req.getBranchCode() );
 				
 				if (oldList.size()>0 &&  (! req.getQueryId().equalsIgnoreCase(oldList.get(0).getQueryId().toString())) ) {
-					errorList.add(new Error("01", "Query Desc", "This Query Desc  Already Exist "));
+				//	errorList.add(new Error("01", "Query Desc", "This Query Desc  Already Exist "));
+					errorList.add("1860");
 				}
 				
 			}
 			
 			if(StringUtils.isBlank(req.getProductId()) ) {
-				errorList.add(new Error("01", "ProductId", "Please Select ProductId"));
+			//	errorList.add(new Error("01", "ProductId", "Please Select ProductId"));
+				errorList.add("1313");
 			}
 			
 			if(StringUtils.isBlank(req.getSequenceId()) ) {
-				errorList.add(new Error("01", "SequenceId", "Please Select SequenceId"));
+			//	errorList.add(new Error("01", "SequenceId", "Please Select SequenceId"));
+				errorList.add("1861");
 			}
 			
 			if(StringUtils.isBlank(req.getQuery()) ) {
-				errorList.add(new Error("01", "Query", "Please Enter Query"));
+			//	errorList.add(new Error("01", "Query", "Please Enter Query"));
+				
+				errorList.add("1862");
 			}  else if (req.getQuery().length() > 500 ) {
-				errorList.add(new Error("02", "Query", "Query  max 500 Characters only allowed"));
+			//	errorList.add(new Error("02", "Query", "Query  max 500 Characters only allowed"));
+				errorList.add("1863");
 			}
 		
 			// Date Validation 
@@ -142,25 +138,32 @@ private Logger log=LogManager.getLogger(ProductSequenceConditionServiceImpl.clas
 			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);;
 			today = cal.getTime();
 			if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
-				errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start"));
+			//	errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start"));
+				errorList.add("1261");
 
 			} else if (req.getEffectiveDateStart().before(today)) {
-				errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			//	errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+				errorList.add("1262");
 			}
 			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("05", "Status", "Please Select Status  "));
+			//	errorList.add(new Error("05", "Status", "Please Select Status  "));
+				errorList.add("1263");
 			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+			//	errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+				errorList.add("1264");
 			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+			//	errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+				errorList.add("1265");
 			}
 
 			
 			if (StringUtils.isBlank(req.getCreatedBy())) {
-				errorList.add(new Error("09", "CreatedBy", "Please Select CreatedBy"));
+			//	errorList.add(new Error("09", "CreatedBy", "Please Select CreatedBy"));
+				errorList.add("1270");
 			}else if (req.getCreatedBy().length() > 100){
-				errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
+			//	errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
+				errorList.add("1271");
 			}		
 		} catch (Exception e) {
 			log.error(e);

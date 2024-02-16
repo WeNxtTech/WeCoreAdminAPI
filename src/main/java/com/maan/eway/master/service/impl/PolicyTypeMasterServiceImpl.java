@@ -62,30 +62,38 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 	Gson json = new Gson();
 	
 	private Logger log = LogManager.getLogger(PolicyTypeMasterServiceImpl.class);
+	
 	@Override
-	public List<Error> validatePolicyType(PolicyTypeMasterSaveReq req) {
-		List<Error> error = new ArrayList<Error>();
+	public List<String> validatePolicyType(PolicyTypeMasterSaveReq req) {
+		List<String> error = new ArrayList<String>();
 		try {
 			if (StringUtils.isBlank(req.getPolicyTypeName())) {
-				error.add(new Error("01", "Policy Type Name", "Please Enter Policy Type Name "));
+			//	error.add(new Error("01", "Policy Type Name", "Please Enter Policy Type Name "));
+				error.add("1592");
+				
 			} else if (req.getPolicyTypeName().length() > 100) {
-				error.add(new Error("01", "Policy Type Name", "Please Enter Policy Type Name within 100 Characters"));
+			//	error.add(new Error("01", "Policy Type Name", "Please Enter Policy Type Name within 100 Characters"));
+				error.add("1593");
+				
 			} else if (StringUtils.isBlank(req.getPolicyTypeId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getProductId())) {
 				List<PolicyTypeMaster> policyList = getPolicyTypeNameExistDetails(req.getPolicyTypeName() , req.getInsuranceId() , req.getProductId());
 				if (policyList.size()>0 ) {
-					error.add(new Error("01", "PolicyTypeName", "This Policy Name Already Exist "));
+			//		error.add(new Error("01", "PolicyTypeName", "This Policy Name Already Exist "));
+					error.add("1594");
 				}
 			}else if (StringUtils.isNotBlank(req.getPolicyTypeId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getProductId())) {
 				List<PolicyTypeMaster> policyList = getPolicyTypeNameExistDetails(req.getPolicyTypeName() , req.getInsuranceId() , req.getProductId());
 				
 				if (policyList.size()>0 &&  (! req.getPolicyTypeId().equalsIgnoreCase(policyList.get(0).getPolicyTypeId().toString())) ) {
-					error.add(new Error("01", "PolicyTypeName", "This Policy Name Already Exist "));
+				//	error.add(new Error("01", "PolicyTypeName", "This Policy Name Already Exist "));
+					error.add("1594");
 				}
 				
 			}
 			
 			if (StringUtils.isBlank(req.getProductId())) {
-				error.add(new Error("01", "Product ID", "Please Select Product ID"));
+			//	error.add(new Error("01", "Product ID", "Please Select Product ID"));
+				error.add("1313");
 			}
 			// Date Validation
 			Calendar cal = new GregorianCalendar();
@@ -96,25 +104,30 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 			cal.set(Calendar.MINUTE, 50);
 			today = cal.getTime();
 			if (req.getEffectiveDateStart() == null) {
-				error.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start "));
+			//	error.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start "));
+				error.add("1261");
 
 			} else if (req.getEffectiveDateStart().before(today)) {
-				error
-						.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			//	error.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+						
+				error.add("1262");
 			} 
-			if (req.getRemarks().length() > 100) {
-				error.add(new Error("04", "Remarks", "Please Enter Remarks within 100 Characters"));
+			
+			if (StringUtils.isNotBlank(req.getRemarks()) && req.getRemarks().length() > 100) {
+			//	error.add(new Error("04", "Remarks", "Please Enter Remarks within 100 Characters"));
+				error.add("1260");
 			} 	
-			if (StringUtils.isBlank(req.getStatus())) {
-				error.add(new Error("01", "Status", "Please Enter Status "));
-			}
+		
 			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
-				error.add(new Error("05", "Status", "Please Select Status  "));
+			//	error.add(new Error("05", "Status", "Please Select Status  "));
+				error.add("1263");
 			} else if (req.getStatus().length() > 1) {
-				error.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+			//	error.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+				error.add("1264");
 			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-				error.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+			//	error.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+				error.add("1265");
 			}
 		}
 		catch (Exception e) {

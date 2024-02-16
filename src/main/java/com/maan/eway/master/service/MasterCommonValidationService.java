@@ -9,7 +9,7 @@ import com.maan.eway.master.req.NormalMasterValidateReq;
 
 public interface MasterCommonValidationService {
 
-	List<Error> validateGlobalMaster(GlobalCommonValidationReq req);
+	List<String> validateGlobalMaster(GlobalCommonValidationReq req);
 
 	List<Error> validateCompanyMaster(CompanyMasterValidateReq req);
 

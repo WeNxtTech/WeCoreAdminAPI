@@ -12,12 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.RatingDropDownReq;
 import com.maan.eway.master.req.RatingFieldMasterGetAllReq;
@@ -26,8 +26,8 @@ import com.maan.eway.master.req.RatingFieldsMasterGetReq;
 import com.maan.eway.master.req.RatingFieldsMasterSaveReq;
 import com.maan.eway.master.res.RatingFieldsMasterGetRes;
 import com.maan.eway.master.service.RatingFieldMasterService;
+import com.maan.eway.req.CommonErrorModuleReq;
 import com.maan.eway.res.CommonRes;
-import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.RatingFieldDropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -50,16 +50,31 @@ public class RatingFieldMasterController {
 	@Autowired
 	private  PrintReqService reqPrinter;
 	
+	@Autowired
+	private FetchErrorDescServiceImpl errorDescService ;
+	
 	// save
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/insertratingfield")
 		@ApiOperation(value = "This method is to Insert Rating Field ")
 		public ResponseEntity<CommonRes> insertfactortype(@RequestBody RatingFieldsMasterSaveReq req) {
 
-			reqPrinter.reqPrint(req);
-			CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<String> validationCodes = entityService.validateFactorType(req);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode("99999");
+			comErrDescReq.setInsuranceId("99999");
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
 
-			List<Error> validation = entityService.validateFactorType(req);
+		
 			// validation
 			if (validation != null && validation.size() != 0) {
 				data.setCommonResponse(null);

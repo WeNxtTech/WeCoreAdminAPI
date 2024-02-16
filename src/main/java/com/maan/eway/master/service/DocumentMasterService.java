@@ -7,9 +7,7 @@ package com.maan.eway.master.service;
 
 import java.util.List;
 
-import com.maan.eway.error.Error;
 import com.maan.eway.master.req.DocumentChangeStatusReq;
-import com.maan.eway.master.req.DocumentMasterGetAllReq;
 import com.maan.eway.master.req.DocumentMasterGetReq;
 import com.maan.eway.master.req.DocumentMasterSaveReq;
 import com.maan.eway.master.req.LovDropDownReq;
@@ -27,7 +25,7 @@ public interface DocumentMasterService  {
 
 	List<DocumentMasterGetRes> getActiveDocument();
 
-	List<Error> validateDocument(DocumentMasterSaveReq req);
+	List<String> validateDocument(DocumentMasterSaveReq req);
 
 	List<DropDownRes> getDocumentDropDown(LovDropDownReq req);
 

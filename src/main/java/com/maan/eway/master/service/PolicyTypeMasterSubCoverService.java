@@ -20,7 +20,7 @@ public interface PolicyTypeMasterSubCoverService {
 
 	PolicyTypeSubCoverMasterGetRes getPolicyTypesubcover(GetPolicyTypesubcoverReq req);
 
-	List<Error> validatePolicyTypeSubCover(PolicyTypeMasterSubCoverSingleSaveReq req);
+	List<String> validatePolicyTypeSubCover(PolicyTypeMasterSubCoverSingleSaveReq req);
 
 	SuccessRes2 insertPolicyTypeSubCover(PolicyTypeMasterSubCoverSingleSaveReq req);
 

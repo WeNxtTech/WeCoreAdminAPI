@@ -8,6 +8,7 @@ package com.maan.eway.master.controller;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CompanyChangeStatusReq;
 import com.maan.eway.master.req.CompanyDropDownReq;
@@ -26,6 +28,7 @@ import com.maan.eway.master.req.InsuranceCompanyMasterSaveReq;
 import com.maan.eway.master.req.SuperAdminDropDownReq;
 import com.maan.eway.master.res.InsuranceCompanyMasterRes;
 import com.maan.eway.master.service.InsuranceCompanyMasterService;
+import com.maan.eway.req.CommonErrorModuleReq;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.DropdownCommonRes;
@@ -49,6 +52,9 @@ public class InsuranceCompanyMasterController {
 
 	@Autowired
 	private PrintReqService reqPrinter;
+	
+	@Autowired
+	private FetchErrorDescServiceImpl errorDescService ;
 /*
 	private static final String ENTITY_TITLE = "InsuranceCompanyMaster";
 
@@ -63,9 +69,23 @@ public class InsuranceCompanyMasterController {
 	@PostMapping("/savecompany")
 	@ApiOperation(value = "This method is Insert Company Details")
 	public ResponseEntity<CommonRes> createInsuranceCompanyMaster(@RequestBody  InsuranceCompanyMasterSaveReq req) {
+		
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		List<Error> validation = insService.validateCompanySaveReq(req);
+		List<String> validationCodes = insService.validateCompanySaveReq(req);
+		List<Error> validation = null;
+		if(validationCodes!=null && validationCodes.size() > 0 ) {
+			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
+			comErrDescReq.setBranchCode("99999");
+			comErrDescReq.setInsuranceId(req.getInsuranceId()==null?"99999":req.getInsuranceId());
+			comErrDescReq.setProductId("99999");
+			comErrDescReq.setModuleId("31");
+			comErrDescReq.setModuleName("MASTERS");
+			
+			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
+		}
+	
+		
 		//// validation
 		if (validation != null && validation.size() != 0) {
 			data.setCommonResponse(null);

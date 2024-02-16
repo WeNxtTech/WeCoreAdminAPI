@@ -5,8 +5,6 @@
 */
 package com.maan.eway.master.service.impl;
 
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,8 +57,6 @@ import com.maan.eway.repository.DropdownTableDetailsRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 
-import junit.framework.Assert;
-
 
 
 /**
@@ -84,15 +80,17 @@ Gson json = new Gson();
 private Logger log=LogManager.getLogger(ConstantTableDetailsServiceImpl.class);
 
 @Override
-public List<Error> validateConstantTableDetails(ConstantTableDetailsSaveReq req) {
-	List<Error> errorList = new ArrayList<Error>();
+public List<String> validateConstantTableDetails(ConstantTableDetailsSaveReq req) {
+	List<String> errorList = new ArrayList<String>();
 
 	try {
 	
 		if (StringUtils.isBlank(req.getProductId())) {
-			errorList.add(new Error("02", "ProductId", "Please Enter ProductId"));
-		}else if (req.getProductId().length() > 20){
-			errorList.add(new Error("02","ProductId", "Please Enter ProductId 20 Characters")); 
+		//	errorList.add(new Error("02", "ProductId", "Please Enter ProductId"));
+			errorList.add("1313");
+		}else if (req.getProductId().length() > 3){
+		//	errorList.add(new Error("02","ProductId", "Please Enter ProductId 20 Characters")); 
+			errorList.add("1495");
 		}
 //		else if (StringUtils.isBlank(req.getItemId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
 //			List<ConstantTableDetails> ConstantTableDetailsList = getConstantTableNameExistDetails(req.getTableName() , req.getInsuranceId() , req.getBranchCode());
@@ -109,7 +107,8 @@ public List<Error> validateConstantTableDetails(ConstantTableDetailsSaveReq req)
 //		}
 		
 		if (StringUtils.isBlank(req.getInsuranceId())) {
-			errorList.add(new Error("02", "InsuranceId", "Please Enter InsuranceId"));
+		//	errorList.add(new Error("02", "InsuranceId", "Please Enter InsuranceId"));
+			errorList.add("1255");
 		}
 		
 //		if (StringUtils.isBlank(req.getBranchCode())) {
@@ -122,56 +121,73 @@ public List<Error> validateConstantTableDetails(ConstantTableDetailsSaveReq req)
 		cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);;
 		today = cal.getTime();
 		if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
-			errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start"));
+		//	errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start"));
+			errorList.add("1261");
 
 		} else if (req.getEffectiveDateStart().before(today)) {
-			errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+		//	errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			errorList.add("1262");
 		}
 		//Status Validation
 		if (StringUtils.isBlank(req.getStatus())) {
-			errorList.add(new Error("05", "Status", "Please Select Status  "));
+	//		errorList.add(new Error("05", "Status", "Please Select Status  "));
+			errorList.add("1263");
 		} else if (req.getStatus().length() > 1) {
-			errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+	//		errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+			errorList.add("1264");
 		}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-			errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+	//		errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+			errorList.add("1265");
 		}
 
 		
 		if (StringUtils.isBlank(req.getRequestYn())) {
-			errorList.add(new Error("08", "RequestYn", "Please Select RequestYn"));
+		//	errorList.add(new Error("08", "RequestYn", "Please Select RequestYn"));
+			errorList.add("1656");
 		}else if (req.getRequestYn().length() > 2){
-			errorList.add(new Error("08","RequestYn", "Please Enter RequestYn within 2 Characters")); 
+	//		errorList.add(new Error("08","RequestYn", "Please Enter RequestYn within 2 Characters")); 
+			errorList.add("1657");
 		}else if(!("Y".equals(req.getRequestYn())||"N".equals(req.getRequestYn()) || "R".equals(req.getRequestYn()))) {
-			errorList.add(new Error("08", "RequestYn", "Enter Status in Y or N or R Only"));
+		//	errorList.add(new Error("08", "RequestYn", "Enter RequestYn in Y or N or R Only"));
+			errorList.add("1658");
 		}
 		
 		if (StringUtils.isBlank(req.getCreatedBy())) {
-			errorList.add(new Error("09", "CreatedBy", "Please Select CreatedBy"));
+		//	errorList.add(new Error("09", "CreatedBy", "Please Select CreatedBy"));
+			errorList.add("1270");
 		}else if (req.getCreatedBy().length() > 100){
-			errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
+	//		errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
+			errorList.add("1271");
 		}
 
 		if (StringUtils.isBlank(req.getTableType())) {
-			errorList.add(new Error("10", "TableType", "Please Select TableType"));
+		//	errorList.add(new Error("10", "TableType", "Please Select TableType"));
+			errorList.add("1659");
 		} else if (req.getTableType().length() > 100) {
-			errorList.add(new Error("10", "TableType", "Please Enter Table Type within 100 Characters"));
+	//		errorList.add(new Error("10", "TableType", "Please Enter Table Type within 100 Characters"));
+			errorList.add("1660");
 		}else if (req.getTableType().equalsIgnoreCase("Master Table")) {
 			if (StringUtils.isBlank(req.getApiName())) {
-				errorList.add(new Error("10", "ApiName", "Please Enter  ApiName "));
+		//		errorList.add(new Error("10", "ApiName", "Please Enter  ApiName "));
+				errorList.add("1661");
 			} else if (req.getApiName().length() > 200) {
-				errorList.add(new Error("10", "ApiName", "Please Enter ApiName within 100 Characters"));
+		//		errorList.add(new Error("10", "ApiName", "Please Enter ApiName within 100 Characters"));
+				errorList.add("1662");
 			} else if (StringUtils.isBlank(req.getApiUrl())) {
-				errorList.add(new Error("10", "ApiUrl", "Please Enter ApiUrl "));
+			//	errorList.add(new Error("10", "ApiUrl", "Please Enter ApiUrl "));
+				errorList.add("1663");
 			} else if (req.getApiUrl().length() > 200) {
-				errorList.add(new Error("10", "ApiUrl", "Please Enter ApiUrl within 100 Characters"));
+		//		errorList.add(new Error("10", "ApiUrl", "Please Enter ApiUrl within 100 Characters"));
+				errorList.add("1664");
 				
 			} else if (req.getApiUrl().contains("localhost")) {
 				String apiUrl = req.getApiUrl().replaceAll("localhost", "192.168.1.42");
 				String regex="^(https?:\\/\\/)"+"(\\d{3}\\.\\d{3}.\\d{1}.\\d{2}):\\d{4}(\\/)"+"[a-zA-Z]+(\\/)"+"[a-zA-Z/]+$";
 				Pattern p = Pattern.compile(regex);	
 				Matcher matcher3 = p.matcher(apiUrl);
-				if (!matcher3.matches())
-					errorList.add(new Error("10", "ApiUrl", "Please Enter Valid ApiUrl "));
+				if (!matcher3.matches()) {
+			//		errorList.add(new Error("10", "ApiUrl", "Please Enter Valid ApiUrl "));
+					errorList.add("1665"); }
 			} else if (StringUtils.isNotBlank(req.getApiUrl())) {
 //				 try {
 				        // it will check only for scheme and not null input 
@@ -199,19 +215,24 @@ public List<Error> validateConstantTableDetails(ConstantTableDetailsSaveReq req)
 				String regex="^(https?:\\/\\/)"+"(\\d{3}\\.\\d{3}.\\d{1}.\\d{2}):\\d{4}(\\/)"+"[a-zA-Z]+(\\/)"+"[a-zA-Z/]+$";
 				Pattern p = Pattern.compile(regex);	
 				Matcher matcher3 = p.matcher(req.getApiUrl());
-				if (!matcher3.matches())
-					errorList.add(new Error("10", "ApiUrl", "Please Enter Valid ApiUrl "));
+				if (!matcher3.matches()) {
+			//		errorList.add(new Error("10", "ApiUrl", "Please Enter Valid ApiUrl "));
+					errorList.add("1665");}
 				
 			}
 
 			else if (StringUtils.isBlank(req.getKeyTable())) {
-				errorList.add(new Error("07", "KeyTable", "Please Select KeyTable"));
+		//		errorList.add(new Error("07", "KeyTable", "Please Select KeyTable"));
+				errorList.add("1666");
 			}else if (req.getKeyTable().length() > 200){
-				errorList.add(new Error("07","KeyTable", "Please Enter KeyTable within 20 Characters")); 
+		//		errorList.add(new Error("07","KeyTable", "Please Enter KeyTable within 20 Characters")); 
+				errorList.add("1667");
 			}else 	if (StringUtils.isBlank(req.getKeyName())) {
-				errorList.add(new Error("04", "KeyName", "Please Enter KeyName "));
+			//	errorList.add(new Error("04", "KeyName", "Please Enter KeyName "));
+				errorList.add("1668");
 			}else if (req.getKeyName().length() > 100){
-				errorList.add(new Error("04","KeyName", "Please Enter KeyName within 100 Characters")); 
+			//	errorList.add(new Error("04","KeyName", "Please Enter KeyName within 100 Characters")); 
+				errorList.add("1669");
 			}
 		}
 		if (req.getRequestYn().equalsIgnoreCase("Y")) {
@@ -220,14 +241,16 @@ public List<Error> validateConstantTableDetails(ConstantTableDetailsSaveReq req)
 				row = row + 1;
 
 				if (StringUtils.isBlank(data.getRequestColumn())) {
-					errorList.add(new Error("01", "RequestColumn", "Please Enter Request Column in Row No : " + row));
+				//	errorList.add(new Error("01", "RequestColumn", "Please Enter Request Column in Row No : " + row));
+					errorList.add("1670" + "," + row);
 				}
 				if (StringUtils.isBlank(data.getRequestJsonKey())) {
-					errorList
-							.add(new Error("01", "RequestJsonKey", "Please Enter Request Json Key in Row No : " + row));
+					//errorList.add(new Error("01", "RequestJsonKey", "Please Enter Request Json Key in Row No : " + row));
+					errorList.add("1671" + "," + row);
 				}
 				if (StringUtils.isBlank(data.getRequestTable())) {
-					errorList.add(new Error("01", "RequestTable", "Please Enter Request Table in Row No : " + row));
+				//	errorList.add(new Error("01", "RequestTable", "Please Enter Request Table in Row No : " + row));
+					errorList.add("1672" + "," + row);
 				}
 
 			}

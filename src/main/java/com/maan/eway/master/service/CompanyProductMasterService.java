@@ -32,7 +32,7 @@ import java.util.List;
 */
 public interface CompanyProductMasterService  {
 
-	List<Error> validateCompanyProductDetails(List<CompanyProductMultiInsertReq> req);
+	List<String> validateCompanyProductDetails(List<CompanyProductMultiInsertReq> req);
 
 	SuccessRes insertCompanyProductDetails(List<CompanyProductMultiInsertReq> req);
 
@@ -48,7 +48,7 @@ public interface CompanyProductMasterService  {
 
 	SuccessRes changeStatusOfCompanyProduct(CompanyProductChangeStatusReq req);
 
-	List<Error> validateUpdateCompanyProductDetails(CompanyProductMasterSaveReq req);
+	List<String> validateUpdateCompanyProductDetails(CompanyProductMasterSaveReq req);
 
 	SuccessRes updateCompanyProductDetails(CompanyProductMasterSaveReq req);
 

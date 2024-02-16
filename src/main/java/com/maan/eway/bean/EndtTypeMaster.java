@@ -138,8 +138,16 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="SECTION_MODIFICATION_TYPE", length=10)
     private String sectionModificationType;
+    
+    
     @Column(name="IS_COVERENDT", length=5)
     private String isCoverendt;
+
+    @Column(name="ENDT_SHORT_CODE", length=5)
+    private String endtShortCode;
+
+    @Column(name="ENDT_SHORT_DESC", length=5)
+    private String endtShortDesc;
 
 }
 

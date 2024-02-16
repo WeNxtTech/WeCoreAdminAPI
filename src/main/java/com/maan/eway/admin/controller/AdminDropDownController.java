@@ -328,5 +328,26 @@ public class AdminDropDownController {
 		}
 
 	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
+	@PostMapping("/endtshortcodes")
+	@ApiOperation(value = "This method is to Question Type  Drop Down")
+	public ResponseEntity<CommonRes> getEndtShortCodes(@RequestBody LovDropDownReq req) {
+		CommonRes data = new CommonRes();
+
+		// Save
+		List<DropDownRes> res = dropDownService.getEndtShortCodes(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
 
 }

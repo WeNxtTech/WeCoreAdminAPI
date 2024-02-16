@@ -38,5 +38,7 @@ public interface AdminDropDownService {
 
 	List<DropDownRes> getSequenceType(LovDropDownReq req);
 
+	List<DropDownRes> getEndtShortCodes(LovDropDownReq req);
+
 
 }

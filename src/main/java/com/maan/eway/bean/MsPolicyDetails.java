@@ -100,6 +100,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="CD_REFNO", nullable=false)
     private Long       cdRefno ;
+    
+    @Column(name="CLAIM_RATIO", nullable=false)
+    private BigDecimal       claimRatio ;
 }
 
 

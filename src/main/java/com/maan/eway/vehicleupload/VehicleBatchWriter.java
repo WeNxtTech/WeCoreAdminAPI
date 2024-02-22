@@ -70,10 +70,11 @@ public ItemWriter<Record> itemWriter(TransactionControlDetailsRepository fleetTe
 				log.info("Eway batch write start with productId:" +productId);
 				if("5".equals(productId) && "100002".equalsIgnoreCase(companyId)){
 					batchInsert_1(recordsList, jdbcTemplate, response,fleetTempRepo);
-				}else if("100002".equalsIgnoreCase(companyId)) {
-					batchInsert_2(recordsList, jdbcTemplate, response,fleetTempRepo);
-				}else {
+				}else if ("100019".equalsIgnoreCase(companyId)){
 					batchInsert_3(recordsList, jdbcTemplate, response,fleetTempRepo);// for ugandaCompany
+				}else {
+					batchInsert_2(recordsList, jdbcTemplate, response,fleetTempRepo);
+
 				}
 				log.info("Eway batch write endwith productId:" +productId);
 				

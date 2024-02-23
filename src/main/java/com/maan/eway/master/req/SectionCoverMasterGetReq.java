@@ -29,6 +29,9 @@ public class SectionCoverMasterGetReq {
 	@JsonProperty("BranchCode")
 	private String branchCode;
 	
+	@JsonProperty("CoverageType")
+    private String     coverageType;
+	
 	@JsonFormat(pattern ="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;

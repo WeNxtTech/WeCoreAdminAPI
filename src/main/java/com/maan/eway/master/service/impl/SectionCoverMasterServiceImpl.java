@@ -1640,7 +1640,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Date todayEnd = cal.getTime();
 			
 			if(StringUtils.isNotBlank(req.getSectionId()) &&  "99999".equalsIgnoreCase(req.getSectionId()) &&
-					StringUtils.isNotBlank(req.getCoverageType()) && ! "B".equalsIgnoreCase(req.getCoverageType())  ) {
+					StringUtils.isNotBlank(req.getCoverageType()) && "B".equalsIgnoreCase(req.getCoverageType())  ) {
 				resList = getChartAccountDropdown(req);
 			} else {
 				// Criteria

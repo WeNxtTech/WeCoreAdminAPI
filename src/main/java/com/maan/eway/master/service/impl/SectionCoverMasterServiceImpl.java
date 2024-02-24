@@ -223,6 +223,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 						secCover.setSubCoverId(Integer.valueOf("0"));
 						secCover.setAgencyCode(StringUtils.isNotBlank(req.getAgencyCode()) ? req.getAgencyCode() : "99999") ;
 						secCover.setBranchCode(StringUtils.isNotBlank(req.getBranchCode()) ? req.getBranchCode() : "99999");
+						secCover.setFreeCoverLimit(BigDecimal.ZERO);
 						repo.saveAndFlush(secCover);
 						
 						log.info("Saved Detail is  --->" + secCover );
@@ -240,6 +241,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 						secCover.setCoreAppCode("99999");
 						secCover.setAgencyCode(StringUtils.isNotBlank(req.getAgencyCode()) ? req.getAgencyCode() : "99999") ;
 						secCover.setBranchCode(StringUtils.isNotBlank(req.getBranchCode()) ? req.getBranchCode() : "99999");
+						secCover.setFreeCoverLimit(BigDecimal.ZERO);
 						repo.saveAndFlush(secCover);
 						
 						log.info("Saved Detail is  --->" + secCover );
@@ -974,6 +976,10 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				errorList.add("1260");
 			}
 			
+			if (StringUtils.isNotBlank(req.getFreeCoverLimit()) && ! req.getFreeCoverLimit().matches("[0-9.]+") ) {
+				//	errorList.add(new Error("09", "Remarks", "Please Enter Valid Number in Free Cover Limit"));
+					errorList.add("2152");
+			}
 			if( StringUtils.isNotBlank(req.getSubCoverYn()) && req.getSubCoverYn().equalsIgnoreCase("N")  ) {
 
 				if (StringUtils.isNotBlank(req.getDependentCoverYn()) && req.getDependentCoverYn().equalsIgnoreCase("Y") ) {
@@ -1384,8 +1390,8 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				List<ListItemValue> proRataTypes =  getListItem("99999" , saveData.getProRataYn()   ,"PRO_RATA_TYPE");
 				String proRata = saveData.getProRataYn() ;
 				proRataTypes = proRataTypes.stream().filter( o -> proRata.equalsIgnoreCase(o.getItemCode())   ).collect(Collectors.toList());
-				saveData.setProRataDesc(proRataTypes.size() > 0 ? proRataTypes.get(0).getItemValue() : ""   );
-				
+				saveCover.setProRataDesc(proRataTypes.size() > 0 ? proRataTypes.get(0).getItemValue() : ""   );
+				saveCover.setFreeCoverLimit(StringUtils.isBlank(req.getFreeCoverLimit()) ? BigDecimal.ZERO : new BigDecimal(req.getFreeCoverLimit())) ;
 				repo.saveAndFlush(saveCover);
 
 				log.info("Saved Details is ---> " + json.toJson(saveCover));
@@ -1467,6 +1473,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 					saveData.setTaxAmount(req.getTaxAmount()==null ?BigDecimal.ZERO :new BigDecimal(req.getTaxAmount()));
 					saveData.setTaxCode(req.getTaxCode());
 				}
+				saveData.setFreeCoverLimit(StringUtils.isBlank(req.getFreeCoverLimit()) ? BigDecimal.ZERO : new BigDecimal(req.getFreeCoverLimit())) ;
 				repo.saveAndFlush(saveData);
 			
 				

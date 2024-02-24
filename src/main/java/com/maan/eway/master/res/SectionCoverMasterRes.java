@@ -137,4 +137,7 @@ public class SectionCoverMasterRes {
 	
 	@JsonProperty("ExcessDesc")
 	private String excessDesc;
+	
+	@JsonProperty("FreeCoverLimit")
+	private String freeCoverLimit;
 }

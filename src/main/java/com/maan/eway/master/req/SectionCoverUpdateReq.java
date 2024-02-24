@@ -143,4 +143,7 @@ public class SectionCoverUpdateReq {
 	@JsonProperty("ExcessDesc")
 	private String excessDesc;
 	
+	@JsonProperty("FreeCoverLimit")
+	private String freeCoverLimit;
+	
 }

@@ -292,6 +292,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="ORIGINAL_POLICY_NO")
     private String originalPolicyNo ;
+    
+    @Column(name="FREE_COVER_LIMIT")
+    private BigDecimal     freeCoverLimit;
 }
 
 

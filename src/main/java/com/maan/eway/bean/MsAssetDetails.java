@@ -463,4 +463,8 @@ public class MsAssetDetails implements Serializable {
    @Column(name="EST_ANNUAL_CARRIES_SI_FC ") 
    private Double estAnnualCarriesSiFc;
 
+   
+   @Column(name="GROUND_UNDERGROUND_SI")
+   private 	BigDecimal groundUndergroundSi;
+  
 }

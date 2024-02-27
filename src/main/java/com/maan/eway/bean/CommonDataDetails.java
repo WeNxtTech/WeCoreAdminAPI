@@ -396,7 +396,18 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="OTHER_OCCUPATION")
     private String otherOccupation;
+
+    @Column(name="RELATION_TYPE")
+    private String relationType;
     
+    @Column(name="RELATION_TYPE_DESC")
+    private String relationTypeDesc;
+    
+    @Column(name="NICK_NAME")
+    private String nickName;
+    
+    @Column(name="AGE")
+    private Integer age;
 }
 
 

@@ -66,7 +66,7 @@ public ItemWriter<Record> itemWriter(TransactionControlDetailsRepository fleetTe
 				response = request.getEwayUploadRes();
 				String typeId =response.getTypeId();
 				String productId =response.getProductId();
-				String companyId =response.getProductId();
+				String companyId =response.getCompanyId();
 				log.info("Eway batch write start with productId:" +productId);
 				if("5".equals(productId) && "100002".equalsIgnoreCase(companyId)){
 					batchInsert_1(recordsList, jdbcTemplate, response,fleetTempRepo);

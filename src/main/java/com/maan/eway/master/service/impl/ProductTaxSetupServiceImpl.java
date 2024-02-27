@@ -725,7 +725,7 @@ public class ProductTaxSetupServiceImpl implements ProductTaxSetupService {
 //					taxRes.setTaxName(filterTax.size() > 0 ? filterTax.get(0).getTaxName() : "" );
 //					taxRes.setUpdatedBy(data.getCreatedBy());
 //					taxRes.setUpdatedDate(new Date());
-					taxRes.setValue(data.getValue()== null ? "" : new BigDecimal(data.getValue()).toPlainString() ) ;
+					taxRes.setValue(data.getValue()== null ? "" : data.getValue().toString() ) ;
 					taxRes.setDependentYn(data.getDependentYn()==null? "" :data.getDependentYn());
 					taxRes.setMinimumAmount(data.getMinimumAmount()==null?"" :data.getMinimumAmount().toPlainString() );
 					taxList.add(taxRes);
@@ -899,7 +899,7 @@ public class ProductTaxSetupServiceImpl implements ProductTaxSetupService {
 //					taxRes.setTaxName(filterTax.size() > 0 ? filterTax.get(0).getTaxName() : "" );
 //					taxRes.setUpdatedBy(data.getCreatedBy());
 //					taxRes.setUpdatedDate(new Date());
-					taxRes.setValue(data.getValue()== null ? "" : new BigDecimal(data.getValue()).toPlainString() ) ;
+					taxRes.setValue(data.getValue()== null ? "" : data.getValue().toString() ) ;
 					taxRes.setDependentYn(data.getDependentYn()==null? "" :data.getDependentYn());
 					taxRes.setMinimumAmount(data.getMinimumAmount()==null?"" :data.getMinimumAmount().toPlainString() );
 					taxList.add(taxRes);

@@ -549,6 +549,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					res.setStatus(data.getStatus());
 					resList.add(res);
 				}
+				resList.sort(Comparator.comparing(DropDownRes :: getCode ));
 			} catch (Exception e) {
 				e.printStackTrace();
 				log.info("Exception is ---> " + e.getMessage());

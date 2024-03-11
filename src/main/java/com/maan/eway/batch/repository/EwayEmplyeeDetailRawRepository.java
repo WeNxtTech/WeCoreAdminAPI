@@ -133,4 +133,10 @@ public interface EwayEmplyeeDetailRawRepository extends JpaRepository<EwayEmplye
 			Integer companyId, Integer productId, String quoteNo, Integer valueOf, String sectionId,
 			String requestReferenceNo);
 	
+	
+	@Modifying
+	@Transactional
+	@Query(nativeQuery=true,value="UPDATE eway_employee_details_raw emp SET emp.pass_relation_id=(SELECT DISTINCT item_code FROM EWAY_LIST_ITEM_VALUE WHERE item_type='RATING_RELATION_TYPE' AND company_id=?1 AND TRIM(UPPER(item_value))=TRIM(UPPER(emp.relation_desc)) AND STATUS='Y') WHERE request_reference_no=?2")
+	Integer updateHealthRelation(String companyId,String refNol);
+	
 }

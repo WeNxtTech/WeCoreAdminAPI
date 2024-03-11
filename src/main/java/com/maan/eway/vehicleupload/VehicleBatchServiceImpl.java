@@ -1,6 +1,7 @@
 package com.maan.eway.vehicleupload;
 
 import java.io.ByteArrayOutputStream;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -55,10 +56,15 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.maan.eway.batch.entity.EserviceMotorDetailsRaw;
@@ -122,6 +128,15 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 	@Value("${employee.count.api}")
 	private String employeeCountApi;
 	
+	@Value(value = "${EwayBasicAuthPass}")
+	private String EwayBasicAuthPass;
+	
+	@Value(value = "${EwayBasicAuthName}")
+	private String EwayBasicAuthName;
+	
+	@Value(value = "${SequenceGenerateUrl}")
+	private String SequenceGenerateUrl;
+	
 	@Autowired
 	private ProductEmployeesDetailsRepository employeesDetailsRepository;
 	
@@ -184,7 +199,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			uploadRes.setExcelFileName(file.getOriginalFilename());
 			uploadRes.setProgressStatus("P");
 			uploadRes.setProgressdesc("Uploading...");
-			uploadRes.setRequestReferenceNo(StringUtils.isBlank(req.getRequestReferenceNo())?getRequestRefNo(req.getCompanyId(), req.getBranchCode(), req.getProductId())
+			uploadRes.setRequestReferenceNo(StringUtils.isBlank(req.getRequestReferenceNo())?generateSeqCall(req)
 					:getTransactionId(req.getRequestReferenceNo(),req.getCompanyId(),req.getProductId()));
 			uploadRes.setToken(token);
 			uploadRes.setBrokerBranchCode(StringUtils.isBlank(req.getBrokerBranchCode())?"":req.getBrokerBranchCode());
@@ -645,7 +660,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 				}
 			}else {
 				employeeRawRepo.updateLocationId(requestReferenceNo,productId.toString(),sectionId);
-			
+				employeeRawRepo.updateHealthRelation(companyId.toString(), requestReferenceNo);
 				List<EwayEmplyeeDetailRaw> passList=employeeRawRepo.findByCompanyIdAndProductIdAndRequestReferenceNo(companyId, productId, requestReferenceNo);
 				if(!CollectionUtils.isEmpty(passList)) {
 					
@@ -1108,7 +1123,43 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 		
 		return refNo;
 	}
+	
+	
+	public synchronized String generateSeqCall(EwayUploadReq req ) {
+	       try {
+	    	   
+	    	Map<String,Object> request = new HashMap<String,Object>();   
+	    	request.put("ProductId", req.getProductId());
+	    	request.put("InsuranceId", req.getCompanyId());
+	    	request.put("Type", "2");
+	    	request.put("TypeDesc", "REQUEST_REFERENCE_NO");
+	    	
+	    	String url = SequenceGenerateUrl;
+	   		String auth = EwayBasicAuthName +":"+ EwayBasicAuthPass;
+	         byte[] encodedAuth = org.apache.tomcat.util.codec.binary.Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
+	         String authHeader = "Basic " + new String( encodedAuth );
+	      
+	   		RestTemplate restTemplate = new RestTemplate();
+	   		HttpHeaders headers = new HttpHeaders();
+	   		headers.setAccept(Arrays.asList(new org.springframework.http.MediaType[] { org.springframework.http.MediaType.APPLICATION_JSON }));
+	   		headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+	   		 headers.set("Authorization",authHeader);
+	   		HttpEntity<Object> entityReq = new HttpEntity<Object>(request, headers);
 
+	   		ResponseEntity<CommonRes> response = restTemplate.postForEntity(url, entityReq, CommonRes.class);
+	   		ObjectMapper mapper = new ObjectMapper();
+	   		SequenceGenerateRes res = mapper.convertValue(response.getBody().getCommonResponse() ,new TypeReference<SequenceGenerateRes>(){});
+
+	   		String seq = res.getGeneratedValue();
+	   		System.out.println("Generated Sequence --> " + seq );
+	    	 return seq ;
+	        } catch (Exception e) {
+				e.printStackTrace();
+				log.info( "Exception is ---> " + e.getMessage());
+	            return null;
+	        }
+	       
+	 }
 	@Override
 	public CommonRes deleteRecords(DeleteRecordReq req) {
 		CommonRes res = new CommonRes();
@@ -1410,6 +1461,7 @@ public CommonRes getUploadMaster(GetUploadTypeReq req) {
 	LinkedHashMap<Object,Object> mapRes =new LinkedHashMap<Object,Object>();
 	CommonRes response = new CommonRes();
 	String ewayReferenceNo ="";
+	Object generateReq =null;
 	try {
          log.info("MoveRecords request || "+printReq.toJson(req));
 		 Integer companyId=Integer.valueOf(req.getCompanyId());
@@ -1525,6 +1577,8 @@ public CommonRes getUploadMaster(GetUploadTypeReq req) {
 			        	 }
 			        	 arrayList.add(map); 
 			         }
+			         
+			         generateReq =arrayList;
 		         }if(StringUtils.isNotBlank(objectDynQuery.toString())){
 		        	 
 		        	 String [] apiJsonFields=objectJsonKey.toString().split(",");
@@ -1538,30 +1592,27 @@ public CommonRes getUploadMaster(GetUploadTypeReq req) {
 					 Object [] array = new Object[1];
 					 
 					 array =queryResult.get(0) instanceof Object[]?array=queryResult.get(0):queryResult.get(0);
-					 
-					/* if(queryResult.get(0) instanceof Object[]) {
-						 
-					 }else {
-						 Object objString=(Object)queryResult.get(0);
-						 array[0]=objString;
-					 }*/
+					
 					 int key =0;
 					 for(Object o : array) {
 						 request.put(apiJsonFields[key], o==null?"":o.toString());
 						 key++;
 					 }
 			         
+					 if(arrayList.size()>0) {
+			        	 request.put(objectListJsonKey.toString(), arrayList);
+			         }
+					 
+					 generateReq =request;
 		         }
 		        
-		         if(arrayList.size()>0) {
-		        	 request.put(objectListJsonKey.toString(), arrayList);
-		         }
+		        
 		         
 		         if("100019".equals(String.valueOf(companyId)) && "5".equals(String.valueOf(productId))) {
 		        	 request.put("RequestReferenceNo", ewayReferenceNo);
 		         }
 		         
-		        String apiReq =printReq.toJson(request);
+		        String apiReq =printReq.toJson(generateReq);
 		        Map<String,Object> apiRes= asyncProcess.callApi(apiReq, token, mediaType, apiUrl);
 		        log.info("Api Response ==>" +printReq.toJson(apiRes));
 		        String statusCode=apiRes.get("StatusCode")==null?"": apiRes.get("StatusCode").toString();

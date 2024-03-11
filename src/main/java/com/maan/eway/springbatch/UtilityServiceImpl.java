@@ -1070,13 +1070,13 @@ public class UtilityServiceImpl {
 				entity.setEffectiveDateStart(req.getEffectiveDateStart());
 				entity.setEffectiveDateEnd(req.getEffectiveDateEnd());
 				entity.setRemarks(req.getRemarks());
-				entity.setStatus(req.getStatus());
+				entity.setStatus(p.getStatus());
 				entity.setCreatedBy(StringUtils.isBlank(req.getCreatedBy())?"":req.getCreatedBy());
 				entity.setTranId(tranId);
 				entity.setGroupingColumn(discreateColumns);
 				entity.setErrorDesc(errors.size()>0?print.toJson(errors).length()>10000?print.toJson(errors).substring(0,10000):print.toJson(errors)
 					:null);
-				entity.setErrorStatus(CollectionUtils.isEmpty(errors)?"":"E");
+				entity.setErrorStatus(CollectionUtils.isEmpty(errors)?"Y":"E");
 				entity.setEntryDate(new Date());
 				entity.setXlAgencyCode(StringUtils.isBlank(p.getXlAgencyCode())?"":p.getXlAgencyCode());
 				entity.setParam13(StringUtils.isBlank(p.getParam13())?null:p.getParam13());

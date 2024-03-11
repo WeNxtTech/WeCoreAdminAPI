@@ -645,7 +645,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 				}
 			}else {
 				employeeRawRepo.updateLocationId(requestReferenceNo,productId.toString(),sectionId);
-			
+				criteriaQuery.updateOccupationId(companyId, productId, quoteNo, requestReferenceNo,sectionId);
 				List<EwayEmplyeeDetailRaw> passList=employeeRawRepo.findByCompanyIdAndProductIdAndRequestReferenceNo(companyId, productId, requestReferenceNo);
 				if(!CollectionUtils.isEmpty(passList)) {
 					

@@ -455,6 +455,7 @@ private static final long serialVersionUID = 1L;
        
        @Column(name="RELATION_TYPE_DESC")
        private String relationTypeDesc;
+     
        
        @Column(name="NICK_NAME")
        private String nickName;
@@ -487,7 +488,14 @@ private static final long serialVersionUID = 1L;
        @Column(name = "PTD_SUM_INSURED_LC")
        private Integer ptdSumInsuredLc;
        
+       @Column(name="Group_ID")
+       private Integer groupId;
+
+       @Column(name="PROFESSIONAL_TYPE ")
+       private String professionaltype ;
        
+       @Column(name="PROFESSIONAL_TYPE_DESC")
+       private String professionaltypedesc ;
 }
 
 

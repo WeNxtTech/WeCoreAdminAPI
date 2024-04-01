@@ -643,6 +643,9 @@ private static final long serialVersionUID = 1L;
     
 	@Column(name = "REGISTRATION_STATUS", length = 10)
 	private String registrationStatus;
+	
+	@Column(name ="CUST_RENEWAL_YN", length = 5)
+	private String custRenewalYn;
 }
 
 

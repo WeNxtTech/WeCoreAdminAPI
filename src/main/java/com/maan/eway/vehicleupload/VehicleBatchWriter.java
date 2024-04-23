@@ -64,15 +64,14 @@ public ItemWriter<Record> itemWriter(TransactionControlDetailsRepository fleetTe
 				EwayBatchReq request = new EwayBatchReq();
 				request = mapper.readValue(batchRequest, EwayBatchReq.class);
 				response = request.getEwayUploadRes();
-				String typeId =response.getTypeId();
 				String productId =response.getProductId();
-				String companyId =response.getCompanyId();
 				log.info("Eway batch write start with productId:" +productId);
-				if("5".equals(productId) && "100002".equalsIgnoreCase(companyId)){
+				if(("5".equals(productId) || "46".equals(productId))){
 					batchInsert_1(recordsList, jdbcTemplate, response,fleetTempRepo);
-				}else if ("100019".equalsIgnoreCase(companyId)){
-					batchInsert_3(recordsList, jdbcTemplate, response,fleetTempRepo);// for ugandaCompany
-				}else {
+				}//else if ("100019".equalsIgnoreCase(companyId)){
+				//	batchInsert_3(recordsList, jdbcTemplate, response,fleetTempRepo);// for ugandaCompany
+				//}
+				else {
 					batchInsert_2(recordsList, jdbcTemplate, response,fleetTempRepo);
 
 				}
@@ -121,7 +120,7 @@ protected int[][] batchInsert_1(List<Record> records, JdbcTemplate jdbcTemplate,
 						DateFormat dateformat = new SimpleDateFormat("dd/MM/yyyy");
 						ps.setInt(1, Integer.valueOf(response.getCompanyId()));
 						ps.setInt(2, Integer.valueOf(response.getProductId()));
-						ps.setInt(3, 0);
+						ps.setInt(3, StringUtils.isBlank(response.getSectionId())?0:Integer.valueOf(response.getSectionId()));
 						ps.setString(4,  StringUtils.isBlank(response.getRequestReferenceNo())?null:response.getRequestReferenceNo());
 						ps.setInt(5, Integer.valueOf(response.getTypeId()));
 						ps.setString(6,  StringUtils.isBlank(error) ?null:error);

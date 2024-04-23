@@ -70,6 +70,10 @@ public interface EserviceMotorDetailsRawRepository  extends JpaRepository<Eservi
 	@Query(value="UPDATE eservice_motor_details_raw ra SET motor_usage_id =( SELECT distinct vehicle_usage_id FROM Motor_VehicleUsage_master WHERE REPLACE( UPPER( TRIM(VEHICLE_USAGE_DESC)), '\\r\\n', '' )= REPLACE( UPPER( TRIM(ra.MOTOR_USAGE_DESC) ), '\\\\r\\\\n', '' ) AND( section_id = ra.section_id OR section_id = '99999' ) AND( BRANCH_CODE = ra.BRANCH_CODE OR BRANCH_CODE = '99999' ) AND STATUS = 'Y' AND (SELECT CURRENT_DATE FROM DUAL) BETWEEN effective_date_start AND effective_date_end AND company_id = ra.company_id AND amend_id = ( SELECT MAX(amend_id) FROM Motor_VehicleUsage_master WHERE REPLACE( UPPER( TRIM(VEHICLE_USAGE_DESC) ), '\\\\r\\\\n', '' )= REPLACE( UPPER( TRIM(ra.MOTOR_USAGE_DESC) ), '\\\\r\\\\n', '' ) AND ( section_id = ra.section_id OR section_id = '99999' ) AND ( BRANCH_CODE = ra.BRANCH_CODE OR BRANCH_CODE = '99999' ) AND STATUS = 'Y' AND (SELECT CURRENT_DATE FROM DUAL) BETWEEN effective_date_start AND effective_date_end AND company_id = ra.company_id )) WHERE ra.company_id = ?1 AND ra.product_id = ?2 AND ra.typeid = ?3 AND ra.request_reference_no = ?4",nativeQuery=true)
 	Integer updateMotorUsageId(Integer companyId,Integer productId,Integer typeId,String requestRefNo );
 	
+	@Modifying
+	@Transactional
+	@Query(value ="UPDATE eservice_motor_details_raw ra SET motor_usage_id=(SELECT DISTINCT vehicle_usage_id FROM Motor_VehicleUsage_master WHERE REPLACE( UPPER( TRIM(VEHICLE_USAGE_DESC)), '\\r\\n', '' )= REPLACE( UPPER( TRIM(ra.MOTOR_USAGE_DESC) ), '\\\\r\\\\n', '' ) AND STATUS = 'Y' AND section_id ='99999' AND amend_id =(SELECT MAX(amend_id) FROM Motor_VehicleUsage_master WHERE REPLACE( UPPER( TRIM(VEHICLE_USAGE_DESC) ), '\\r\\n', '' )= REPLACE( UPPER( TRIM(ra.MOTOR_USAGE_DESC) ), '\\\\r\\\\n', '' ) AND STATUS = 'Y' AND section_id ='99999' )) WHERE ra.company_id = ?1 AND ra.product_id = ?2 AND ra.typeid = ?3 AND ra.request_reference_no = ?4",nativeQuery=true)
+	Integer updateVehUsageId(Integer companyId,Integer productId,Integer typeId,String requestRefNo );
 	
 	@Modifying
 	@Transactional

@@ -1,6 +1,8 @@
 package com.maan.eway.vehicleupload;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.maan.eway.batch.repository.UgandaVehicleDetailsRepository;
 import com.maan.eway.batch.req.DeleteRecordReq;
 import com.maan.eway.batch.req.EditRecordReq;
 import com.maan.eway.batch.req.EwayUploadReq;
@@ -37,6 +40,9 @@ public class VehicleBatchController {
 	
 	@Autowired
 	private VehicleBatchService service;
+	
+	@Autowired
+	private UgandaVehicleDetailsRepository repository ;
 	
 	
 	@PostMapping(value="/batch/upload", consumes = "multipart/form-data", produces = {"application/json", "application/xml"})
@@ -127,5 +133,18 @@ public class VehicleBatchController {
     public CommonRes updateEmployeeRecord(@RequestBody UpdateEmployeeRecordReq req) {
     	return service.updateEmployeeRecord(req);
     }
+    
+    @PostMapping("/renewalQuote")
+    public Map<String,Object> getRenewalQuote(@RequestBody RenewalQuoteReq req){
+    	 Map<String,Object> response = new  HashMap<String,Object>();
+    	try {
+    		List<Map<String,Object>> list =repository.getrenewalData(req.getRegistrationNo(), req.getCompanyId());
+    		response =list.get(0);
+    	}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return response;
+    }
+    
 
 }

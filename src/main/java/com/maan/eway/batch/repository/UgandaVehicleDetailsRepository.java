@@ -1,6 +1,7 @@
 package com.maan.eway.batch.repository;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.transaction.Transactional;
 
@@ -32,6 +33,9 @@ public interface UgandaVehicleDetailsRepository extends JpaRepository<UgandaVehi
 
 	List<UgandaVehicleDetailsRaw> findByEwayReferenceNo(String requestReferenceNo);
 
+	
+	@Query(nativeQuery=true,value ="SELECT registration_number,chassis_number,tira_motor_usage,tira_body_type,color_desc,sum_insured, actual_premium_lc AS premium,vat_premium AS VAT ,overall_premium_lc AS total_premium , policy_start_date AS inception_date , policy_end_date AS expiry_date, request_reference_no FROM eservice_motor_details WHERE registration_number=?1 AND company_id=?2 ORDER BY entry_date DESC LIMIT 1")
+	public List<Map<String,Object>> getrenewalData(String regNo,String companyId);
 	
 
 }

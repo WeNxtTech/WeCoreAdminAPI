@@ -2,6 +2,7 @@ package com.maan.eway.vehicleupload;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -181,12 +182,17 @@ public class VehicleAsynchronousProcess {
 			vehicleRequest.put("Idnumber", StringUtils.isBlank(p.getIdNumber())?"":p.getIdNumber());
 			vehicleRequest.put("VehicleId", vehicleId);
 			vehicleRequest.put("AcccessoriesSumInsured", p.getAccessoriesSuminsured());
-			vehicleRequest.put("AxelDistance", StringUtils.isBlank(p.getAxelDistance())?"":p.getAxelDistance());
-			vehicleRequest.put("Chassisnumber", StringUtils.isBlank(p.getReqChassisNo())?"":p.getReqChassisNo());
+			
+			if("100002".equals(p.getCompanyId().toString()))
+				vehicleRequest.put("AxelDistance", StringUtils.isBlank(p.getAxelDistance())?"":p.getAxelDistance());
+			
+			
+			
+			vehicleRequest.put("Chassisnumber", StringUtils.isBlank(p.getReqChassisNo())?p.getChassisNumber():p.getReqChassisNo());
 			vehicleRequest.put("CreatedBy", StringUtils.isBlank(p.getCreatedBy())?p.getLoginId():p.getCreatedBy());
-			vehicleRequest.put("Insurancetype", StringUtils.isBlank(p.getInsuranceTypeId())?"":p.getInsuranceTypeId());
+			vehicleRequest.put("Insurancetype", StringUtils.isBlank(p.getInsuranceTypeId())?"":Arrays.asList(p.getInsuranceTypeId()));
 			vehicleRequest.put("InsuranceId", p.getCompanyId());
-			vehicleRequest.put("InsuranceClass", StringUtils.isBlank(p.getInsuranceClassId())?"":p.getInsuranceClassId());
+			vehicleRequest.put("InsuranceClass", StringUtils.isBlank(p.getInsuranceClassId())?"3":p.getInsuranceClassId());
 			vehicleRequest.put("BranchCode", StringUtils.isBlank(p.getBranchCode())?"":p.getBranchCode());
 			vehicleRequest.put("AgencyCode", StringUtils.isBlank(p.getAgencyCode())?"":p.getAgencyCode());
 			vehicleRequest.put("ProductId", p.getProductId());
@@ -199,16 +205,21 @@ public class VehicleAsynchronousProcess {
 			vehicleRequest.put("PolicyEndDate", StringUtils.isBlank(p.getPolicyEndDate())?"":p.getPolicyEndDate());
 			vehicleRequest.put("Currency", StringUtils.isBlank(p.getCurrency())?"":p.getCurrency());
 			vehicleRequest.put("ExchangeRate", StringUtils.isBlank(p.getExchangeRate())?"":p.getExchangeRate());
-			vehicleRequest.put("SavedFrom", StringUtils.isBlank(p.getSavedFrom())?"":p.getSavedFrom());					
+			vehicleRequest.put("SavedFrom", StringUtils.isBlank(p.getSavedFrom())?"WEB":p.getSavedFrom());					
 			vehicleRequest.put("UserType", StringUtils.isBlank(p.getUserType())?"":p.getUserType()); 
 			vehicleRequest.put("SourceType",StringUtils.isBlank(p.getSourceType())?"":p.getSourceType()); 
 			vehicleRequest.put("CustomerCode",StringUtils.isBlank(p.getCustomerCode())?"":p.getCustomerCode());
-			vehicleRequest.put("ClaimYn", StringUtils.isBlank(p.getClaimYn())?"N":p.getClaimYn());
+			String claimYn =StringUtils.isBlank(p.getClaimYn())?"N":"yes".equalsIgnoreCase(p.getClaimYn())?"Y":"N";
+			vehicleRequest.put("ClaimYn", claimYn);
 			vehicleRequest.put("CustomerName",StringUtils.isBlank(p.getCustomerName())?"":p.getCustomerName());
 			vehicleRequest.put("BdmCode", StringUtils.isBlank(p.getBdmCode())?"":p.getBdmCode());
+			vehicleRequest.put("Registrationnumber", StringUtils.isBlank(p.getReqChassisNo())?p.getChassisNumber():p.getReqChassisNo());
+			vehicleRequest.put("SearchFromApi", "100019".equals(p.getCompanyId().toString())?false:true);
+
+			vehicleRequest.put("EngineNumber", StringUtils.isBlank(p.getEngineNumber())?"":p.getEngineNumber());
+			vehicleRequest.put("ManufactureYear", StringUtils.isBlank(p.getManufactureYear())?"":p.getManufactureYear());
 			String EndorsementYn =StringUtils.isBlank(p.getEndorsementYn())?"N":p.getEndorsementYn();
-			String claimYn =StringUtils.isBlank(p.getClaimYn())?"N":p.getClaimYn();
-			String collateralYn =StringUtils.isBlank(p.getCollateral())?"NO":p.getCollateral();
+			String collateralYn =StringUtils.isBlank(p.getCollateralYn())?"NO":p.getCollateralYn();
 			String promcodeYn =StringUtils.isBlank(p.getHavePromocode())?"N":p.getHavePromocode();
 			
 			if("Y".equalsIgnoreCase(promcodeYn)) {
@@ -220,7 +231,7 @@ public class VehicleAsynchronousProcess {
 			}
 			if("Yes".equalsIgnoreCase(collateralYn)) {
 				vehicleRequest.put("CollateralYn", "Y");
-				vehicleRequest.put("BorrowerType", StringUtils.isBlank(p.getBorrowerType())?"":p.getBorrowerType());
+				vehicleRequest.put("BorrowerType", StringUtils.isBlank(p.getBorrowerType())?"":"Bank".equalsIgnoreCase(p.getBorrowerType())?"1":"2");
 				vehicleRequest.put("CollateralName", StringUtils.isBlank(p.getFirstLossPayee())?"":p.getFirstLossPayee());
 				vehicleRequest.put("FirstLossPayee", StringUtils.isBlank(p.getFirstLossPayee())?"":p.getFirstLossPayee());
 			}else {
@@ -266,7 +277,9 @@ public class VehicleAsynchronousProcess {
 			String responseStatus =vehResponse.get("Message")==null?"":vehResponse.get("Message").toString();
 			if("Success".equalsIgnoreCase(responseStatus)) {
 					
-					Map<String,Object> data =(Map<String, Object>) vehResponse.get("Result");
+					List<Map<String,Object>> resultList =(List<Map<String,Object>>) vehResponse.get("Result");
+					
+					Map<String,Object> data =resultList.get(0);
 					// calc request
 					calcRequest.put("InsuranceId", p.getCompanyId());
 					calcRequest.put("BranchCode", p.getBranchCode());
@@ -328,7 +341,7 @@ public class VehicleAsynchronousProcess {
 			
 			if(mediaType==null)
 				mediaType=this.mediaType;
-	        log.info("Api Request ==>" +req);
+	      //  log.info("Api Request ==>" +req);
 
 			RequestBody requestBody =RequestBody.create(req,mediaType);
 			
@@ -342,7 +355,7 @@ public class VehicleAsynchronousProcess {
 			
 			response =httpClient.newCall(request).execute();
 			String responseString =response.body().string();
-	        log.info("Api Response ==>" +responseString);
+	        //log.info("Api Response ==>" +responseString);
 
 			Integer statusCode =response.code();
 			@SuppressWarnings("unchecked")

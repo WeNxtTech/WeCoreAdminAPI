@@ -713,9 +713,9 @@ public class CriteriaQueryServiceImpl {
 		        Predicate condition2 = criteriaBuilder.equal(root.get("productId"), productId);
 		        Predicate condition3 = criteriaBuilder.equal(root.get("typeid"), typeId);
 		        Predicate condition4 = criteriaBuilder.equal(root.get("requestReferenceNo"), referenceNo);
-		        Predicate condition5 = criteriaBuilder.equal(root.get("sectionId"), sectionId);
+		        //Predicate condition5 = criteriaBuilder.equal(root.get("sectionId"), sectionId);
 		        
-		        updateQuery.where(criteriaBuilder.and(condition1, condition2, condition3, condition4,condition5));
+		        updateQuery.where(criteriaBuilder.and(condition1, condition2, condition3, condition4));
 
 		        // Perform the update operation
 		        entityManager.createQuery(updateQuery).executeUpdate();
@@ -725,6 +725,41 @@ public class CriteriaQueryServiceImpl {
 		}
 	   
 	  }
+	   
+	   
+	   public void updateMotorErrorStatus(Object companyId, Object productId, Object typeId, Object referenceNo,Object sectionId) {
+		   try {
+			   CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+		        CriteriaUpdate<EserviceMotorDetailsRaw> updateQuery = criteriaBuilder.createCriteriaUpdate(EserviceMotorDetailsRaw.class);
+		        Root<EserviceMotorDetailsRaw> root = updateQuery.from(EserviceMotorDetailsRaw.class);
+		        //Set the status column based on the error_desc value using another CASE expression
+		        updateQuery.set(
+		            root.<String>get("status"),
+		            criteriaBuilder.selectCase()
+		                .when(
+		                      criteriaBuilder.isNotNull(root.get("errorDesc")),
+		                    "E"
+		                )
+		                .otherwise("Y").as(String.class)
+		        );
+		        // Set the WHERE clause conditions
+		        Predicate condition1 = criteriaBuilder.equal(root.get("companyId"), companyId);
+		        Predicate condition2 = criteriaBuilder.equal(root.get("productId"), productId);
+		        Predicate condition3 = criteriaBuilder.equal(root.get("typeid"), typeId);
+		        Predicate condition4 = criteriaBuilder.equal(root.get("requestReferenceNo"), referenceNo);
+		        //Predicate condition5 = criteriaBuilder.equal(root.get("sectionId"), sectionId);
+		        
+		        updateQuery.where(criteriaBuilder.and(condition1, condition2, condition3, condition4));
+
+		        // Perform the update operation
+		        entityManager.createQuery(updateQuery).executeUpdate();
+		   }catch (Exception e) {
+			   e.printStackTrace();
+				log.error(e);
+		}
+	   
+	  }
+	   
 	   
 	  public Integer updateOccupationId(Object companyId,Object productId,Object quoteNo,Object refNo,Object sectionId) {
 		  try {

@@ -398,6 +398,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="BDM_CODE")
     private String       bdmCode ;
     
+    @Column(name="CAR_ALARAMYN")
+    private String       carAlaramyn ;
+    
+    @Column(name="COLLATERAL_YN")
+    private String       collateralYn ;
+    
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

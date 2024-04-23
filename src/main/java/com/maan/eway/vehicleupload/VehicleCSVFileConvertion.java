@@ -90,6 +90,7 @@ public class VehicleCSVFileConvertion {
 						
 						List<EwayXlconfigMaster> xlConfigData =list.stream().filter(p ->StringUtils.isNotBlank(p.getExcelheaderName()))
 								.filter(p ->StringUtils.isNotBlank(p.getFieldNameRaw()))
+								.filter(p ->"Y".equalsIgnoreCase(p.getStatus()))
 								.collect(Collectors.toList());
 						
 						if(xlConfigData!=null&&xlConfigData.size()>0) {

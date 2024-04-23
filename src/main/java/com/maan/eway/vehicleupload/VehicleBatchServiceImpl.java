@@ -6,7 +6,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.chrono.ChronoPeriod;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -516,24 +519,8 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			fileUploadProgress(uploadResponse,"P","Uploading","Validating raw table records","50");
 			
 			// for motor validation block
-			if("5".equals(product) && "100002".equals(companyId.toString())) {
-				List<String> status =Arrays.asList(new String[] {"Y","E"});
-				List<EserviceMotorDetailsRaw> list =eserviceRepository.findByCompanyIdAndProductIdAndRequestReferenceNoAndStatusIgnoreCaseInAndApiStatusIsNull(Integer.valueOf(uploadResponse.getCompanyId()),
-						Integer.valueOf(uploadResponse.getProductId()),uploadResponse.getRequestReferenceNo(),status);
-				
-				log.info("validateRawTableRecords || Partitions size "+list.size());
-				List<List<EserviceMotorDetailsRaw>> partitionsList =nPartition(list,list.size()>10?list.size()/10:10);
-				for(List<EserviceMotorDetailsRaw> eList :partitionsList) {
-					//parallel call
-					List<CompletableFuture<String>> comFutures = eList.parallelStream()
-							.map(e -> asyncProcess.validateTira(e, uploadResponse))
-							.collect(Collectors.toList());
-							
-					@SuppressWarnings("unchecked")
-					CompletableFuture<String> [] array =new CompletableFuture[comFutures.size()];
-					comFutures.toArray(array);
-					CompletableFuture.allOf(array).join();
-				}
+			if("5".equals(product) &&( "100002".equals(companyId.toString()) || "100019".equals(companyId.toString()))) {
+			
 				//eserviceRepository.updateInsuranceTypeId(companyId, productId, typeId, requestReferenceNo);
 				criteriaQuery.updateInsuranceType(companyId, productId, typeId, requestReferenceNo);
 				//eserviceRepository.updateSectionIdByRequestRefNo(companyId, productId, typeId, requestReferenceNo);
@@ -543,27 +530,74 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 				//eserviceRepository.updateInsuranceClassId(companyId, productId, typeId, requestReferenceNo);
 				criteriaQuery.updateInsuranceClassId(companyId, productId, typeId, requestReferenceNo);
 				//eserviceRepository.updateMotorUsageId(companyId, productId, typeId, requestReferenceNo);
-				criteriaQuery.updateMotorUsageId(companyId, productId, typeId, requestReferenceNo);
 				//eserviceRepository.updateSuminsuredValidationByPolicyType(companyId, productId, typeId, requestReferenceNo);
+			
+				if("100002".equals(companyId.toString())) {
+					List<String> status =Arrays.asList(new String[] {"Y","E"});
+					List<EserviceMotorDetailsRaw> list =eserviceRepository.findByCompanyIdAndProductIdAndRequestReferenceNoAndStatusIgnoreCaseInAndApiStatusIsNull(Integer.valueOf(uploadResponse.getCompanyId()),
+							Integer.valueOf(uploadResponse.getProductId()),uploadResponse.getRequestReferenceNo(),status);
+					
+					log.info("validateRawTableRecords || Partitions size "+list.size());
+					List<List<EserviceMotorDetailsRaw>> partitionsList =nPartition(list,list.size()>10?list.size()/10:10);
+					for(List<EserviceMotorDetailsRaw> eList :partitionsList) {
+						//parallel call
+						List<CompletableFuture<String>> comFutures = eList.parallelStream()
+								.map(e -> asyncProcess.validateTira(e, uploadResponse))
+								.collect(Collectors.toList());
+								
+						@SuppressWarnings("unchecked")
+						CompletableFuture<String> [] array =new CompletableFuture[comFutures.size()];
+						comFutures.toArray(array);
+						CompletableFuture.allOf(array).join();
+					}
+					
+					//eserviceRepository.updateEmptyErrorStatus(companyId, productId, typeId, requestReferenceNo);
+					eserviceRepository.updateDupicateSearchBydata(companyId, productId, typeId, requestReferenceNo);
+					//criteriaQuery.updateDuplicateData(companyId, productId, typeId, requestReferenceNo);
+					eserviceRepository.overrideExistingErrorRecord(typeId, requestReferenceNo, companyId, productId);		
+					//criteriaQuery.overirdeExistingErrorRecord(typeId, requestReferenceNo, companyId, productId);
+					criteriaQuery.updateMotorUsageId(companyId, productId, typeId, requestReferenceNo);
+
+				}else if("100019".equals(companyId.toString())) {
+					
+					ugandaVehicleDetailsRepo.updateDuplicateRegistrationNo(requestReferenceNo);
+					//ugandaVehicleDetailsRepo.updateMotorCategory(requestReferenceNo);
+					criteriaQuery.updateMotorUsageId(companyId, productId, typeId, requestReferenceNo);
+
+
+				}
+				
 				criteriaQuery.updateSuminsuredValidation(companyId, productId, typeId, requestReferenceNo);
 				//eserviceRepository.updateCollateralValidation(companyId, productId, typeId, requestReferenceNo);
 				criteriaQuery.updateColleteralValidation(companyId, productId, typeId, requestReferenceNo);
 				//eserviceRepository.updateMasterIdEmptyValidation(companyId, productId, typeId, requestReferenceNo);
 				criteriaQuery.updateEmptyDataError(companyId, productId, typeId, requestReferenceNo);
-				criteriaQuery.updateErrorStatus(companyId, productId, typeId, requestReferenceNo,"0");
-				//eserviceRepository.updateEmptyErrorStatus(companyId, productId, typeId, requestReferenceNo);
-				eserviceRepository.updateDupicateSearchBydata(companyId, productId, typeId, requestReferenceNo);
-				//criteriaQuery.updateDuplicateData(companyId, productId, typeId, requestReferenceNo);
-				eserviceRepository.overrideExistingErrorRecord(typeId, requestReferenceNo, companyId, productId);		
-				//criteriaQuery.overirdeExistingErrorRecord(typeId, requestReferenceNo, companyId, productId);
+				criteriaQuery.updateMotorErrorStatus(companyId, productId, typeId, requestReferenceNo,"0");
+					List<EserviceMotorDetailsRaw> dlist =eserviceRepository.findByCompanyIdAndProductIdAndRequestReferenceNo(companyId,productId,requestReferenceNo);
+				validRecords =dlist.stream().filter(p ->"Y".equals(p.getStatus()) && "Y".equals(p.getTiraStatus())).count();
+				errorRecords =dlist.stream().filter(p ->"E".equals(p.getStatus()) ||  "E".equals(p.getTiraStatus())).count();
+				totalRecords =validRecords + errorRecords;
+			} /*else if("5".equals(product) && "100019".equals(companyId.toString())) {
+				
+			    ugandaVehicleDetailsRepo.updateDuplicateRegistrationNo(requestReferenceNo);
+				ugandaVehicleDetailsRepo.updateMotorCategory(requestReferenceNo);
+				criteriaQuery.updateEmptyDataError(companyId, productId, typeId, requestReferenceNo);
+				criteriaQuery.updateErrorStatus(companyId, productId, typeId, requestReferenceNo,sectionId);
+			
 				List<EserviceMotorDetailsRaw> dlist =eserviceRepository.findByCompanyIdAndProductIdAndRequestReferenceNo(companyId,productId,requestReferenceNo);
 				validRecords =dlist.stream().filter(p ->"Y".equals(p.getStatus()) && "Y".equals(p.getTiraStatus())).count();
 				errorRecords =dlist.stream().filter(p ->"E".equals(p.getStatus()) ||  "E".equals(p.getTiraStatus())).count();
 				totalRecords =validRecords + errorRecords;
-			} else if("5".equals(product) && "100019".equals(companyId.toString())) {
+		
+			}*/else if("46".equals(product) && "100002".equals(companyId.toString())) {
 				
 			    ugandaVehicleDetailsRepo.updateDuplicateRegistrationNo(requestReferenceNo);
-				ugandaVehicleDetailsRepo.updateMotorCategory(requestReferenceNo);
+				//ugandaVehicleDetailsRepo.updateMotorCategory(requestReferenceNo);
+				criteriaQuery.updateBodyTypeId(companyId, productId, typeId, requestReferenceNo);
+				//criteriaQuery.updateMotorUsageId(companyId, productId, typeId, requestReferenceNo);
+				eserviceRepository.updateVehUsageId(companyId, productId, typeId, requestReferenceNo);
+
+				
 				List<UgandaVehicleDetailsRaw> vehiList =ugandaVehicleDetailsRepo.findByRequestReferenceNo(requestReferenceNo);
 				
 				if(!CollectionUtils.isEmpty(vehiList)) {
@@ -642,7 +676,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 					
 					
 				}
-			}else if("3".equals(product) ||"26".equals(product) || "24".equals(product)) {
+			}else if("59".equals(product) ||"26".equals(product) || "24".equals(product)) {
 				employeeRawRepo.updateDuplicateSerialNo(requestReferenceNo);
 			//	employeeRawRepo.updateContentAndAllriskSumInsured(requestReferenceNo);
 				employeeRawRepo.updateLocationId(requestReferenceNo,product,sectionId);
@@ -1468,17 +1502,28 @@ public CommonRes getUploadMaster(GetUploadTypeReq req) {
 		 Integer companyId=Integer.valueOf(req.getCompanyId());
 		 Integer productId=Integer.valueOf(req.getProductId());
 		// Motor main table insert block
-		if("5".equalsIgnoreCase(req.getProductId()) && "100002".equals(req.getCompanyId())) {
+		if(("5".equalsIgnoreCase(req.getProductId()) || "46".equalsIgnoreCase(req.getProductId()))) {
 			List<EserviceMotorDetailsRaw> list =eserviceRepository.findByCompanyIdAndProductIdAndRequestReferenceNo(companyId,productId,req.getRequestRefNo());
 								
 			if(!CollectionUtils.isEmpty(list)) {
-							
+					
+				
+				List<EserviceMotorDetailsRaw> data = new ArrayList<>();
+				
+				if("5".equalsIgnoreCase(req.getProductId())) {
 				// filter valid records
-			List<EserviceMotorDetailsRaw> data =list.stream()
+					data =list.stream()
 					.filter(p -> "Y".equalsIgnoreCase(p.getStatus()) )
-					.filter(p -> "Y".equalsIgnoreCase(p.getTiraStatus()))
+					.filter(p -> "100002".equals(companyId.toString())?"Y".equalsIgnoreCase(p.getTiraStatus()):StringUtils.isBlank(p.getTiraStatus()))
 					.filter(p -> StringUtils.isBlank(p.getApiStatus()))
 					.collect(Collectors.toList());
+				}else if("46".equalsIgnoreCase(req.getProductId())) {
+					// filter valid records
+					data =list.stream()
+					.filter(p -> "Y".equalsIgnoreCase(p.getStatus()) )
+					.filter(p -> StringUtils.isBlank(p.getApiStatus()))
+					.collect(Collectors.toList());
+				}
 							
 			// made the partitions based by 10
 			List<List<EserviceMotorDetailsRaw>> partitions =nPartition(data, data.size()>10?data.size()/10:10);						
@@ -1498,11 +1543,14 @@ public CommonRes getUploadMaster(GetUploadTypeReq req) {
 			CompletableFuture.allOf(comArray).join();
 									
 			}
-								
-				response.setCommonResponse("SUCCESS");
-				response.setMessage("SUCCESS");
+			mapRes.put("Message", "SUCCESS");
+			mapRes.put("RequestRefNo", req.getRequestRefNo());
+			response.setCommonResponse(mapRes);
+			response.setMessage("SUCCESS");
 			}else {
-				response.setCommonResponse("FAILED");
+				mapRes.put("Message", "FAILED");
+				mapRes.put("RequestRefNo",req.getRequestRefNo());
+				response.setCommonResponse(mapRes);
 				response.setMessage("FAILED");
 			}
 				
@@ -1860,8 +1908,19 @@ public CommonRes updateEmployeeRecord(UpdateEmployeeRecordReq req) {
 	 
 	 return list;
 	 
-	 
  }
 
+ public void testDepreciations() {
+	 try {
+		
+		 LocalDate manufacturedate =LocalDate.now().minusYears(20);
+		 LocalDate todayDate =LocalDate.now();
+		 long years =ChronoUnit.YEARS.between(manufacturedate, todayDate);
+		 
+		 
+	 }catch (Exception e) {
+		e.printStackTrace();
+	}
+ }
    
 }

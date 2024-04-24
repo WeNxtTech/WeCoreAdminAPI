@@ -573,10 +573,11 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 				//eserviceRepository.updateMasterIdEmptyValidation(companyId, productId, typeId, requestReferenceNo);
 				criteriaQuery.updateEmptyDataError(companyId, productId, typeId, requestReferenceNo);
 				criteriaQuery.updateMotorErrorStatus(companyId, productId, typeId, requestReferenceNo,"0");
-					List<EserviceMotorDetailsRaw> dlist =eserviceRepository.findByCompanyIdAndProductIdAndRequestReferenceNo(companyId,productId,requestReferenceNo);
-				validRecords =dlist.stream().filter(p ->"Y".equals(p.getStatus()) && "Y".equals(p.getTiraStatus())).count();
-				errorRecords =dlist.stream().filter(p ->"E".equals(p.getStatus()) ||  "E".equals(p.getTiraStatus())).count();
+				List<EserviceMotorDetailsRaw> dlist =eserviceRepository.findByCompanyIdAndProductIdAndRequestReferenceNo(companyId,productId,requestReferenceNo);
+				validRecords =dlist.stream().filter(p ->"100002".equals(companyId.toString())?"Y".equals(p.getStatus()) && "Y".equals(p.getTiraStatus()):"Y".equals(p.getStatus())).count();
+				errorRecords =dlist.stream().filter(p ->"100002".equals(companyId.toString())?"E".equals(p.getStatus()) ||  "E".equals(p.getTiraStatus()):"E".equals(p.getStatus())).count();
 				totalRecords =validRecords + errorRecords;
+			
 			} /*else if("5".equals(product) && "100019".equals(companyId.toString())) {
 				
 			    ugandaVehicleDetailsRepo.updateDuplicateRegistrationNo(requestReferenceNo);

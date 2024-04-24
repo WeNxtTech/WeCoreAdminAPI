@@ -172,6 +172,10 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="MOTOR_CATEGORY", length=200)
     private String     motorCategory ;
+    
+    @Column(name="MOTOR_CATEGORY_ID", length=200)
+    private String     motorCategoryId ;
+
 
     @Column(name="NUMBER_OF_AXELS", length=20)
     private String     numberOfAxels ;

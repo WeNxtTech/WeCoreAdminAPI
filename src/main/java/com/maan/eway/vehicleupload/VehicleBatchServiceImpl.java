@@ -8,7 +8,6 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.chrono.ChronoPeriod;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -234,6 +233,9 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			}
 			uploadRes.setExchangeRate(StringUtils.isBlank(req.getExchangeRate())?"":req.getExchangeRate());
 			uploadRes.setHavePromoCode(StringUtils.isBlank(req.getHavePromoCode())?"":req.getHavePromoCode());
+			uploadRes.setOwnerCategory(StringUtils.isBlank(req.getOwnerCategory())?"":req.getOwnerCategory());
+			uploadRes.setResOwnerName(StringUtils.isBlank(req.getResOwnerName())?"":req.getResOwnerName());
+			
 			uploadRes.setIsFinanceEndt(StringUtils.isBlank(req.getIsFinanceEndt())?"":req.getIsFinanceEndt());
 			uploadRes.setLoginId(StringUtils.isBlank(req.getLoginId())?"":req.getLoginId());
 			uploadRes.setNoOfVehicles(StringUtils.isBlank(req.getNoOfVehicles())?"":req.getNoOfVehicles());
@@ -567,6 +569,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 
 				}
 				
+				eserviceRepository.updateMotorCatgeoryId(requestReferenceNo,companyId);
 				criteriaQuery.updateSuminsuredValidation(companyId, productId, typeId, requestReferenceNo);
 				//eserviceRepository.updateCollateralValidation(companyId, productId, typeId, requestReferenceNo);
 				criteriaQuery.updateColleteralValidation(companyId, productId, typeId, requestReferenceNo);

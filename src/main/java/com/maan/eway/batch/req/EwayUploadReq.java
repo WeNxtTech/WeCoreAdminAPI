@@ -103,4 +103,9 @@ public class EwayUploadReq {
 	private String customerName;
 	@JsonProperty("BdmCode")
 	private String bdmCode;
+	
+	@JsonProperty("OwnerCategory")
+	private String ownerCategory;
+	@JsonProperty("ResOwnerName")
+	private String resOwnerName;
 }

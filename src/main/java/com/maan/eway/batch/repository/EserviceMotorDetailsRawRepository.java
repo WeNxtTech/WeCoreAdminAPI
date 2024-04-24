@@ -210,6 +210,12 @@ public interface EserviceMotorDetailsRawRepository  extends JpaRepository<Eservi
 	@Transactional
 	@Query(nativeQuery=true,value="DELETE FROM eservice_motor_details WHERE request_reference_no=(SELECT eway_Reference_no FROM uganda_vehicle_details_raw WHERE request_reference_no=?1 AND eway_Reference_no IS NOT NULL LIMIT 1)")
 	Integer deleteUgandaVehicleDetailsFromMainTable(String requestReferenceNo);
+
+
+	@Modifying
+	@Transactional
+	@Query(nativeQuery=true,value="UPDATE eservice_motor_details_raw MOT SET MOTOR_CATEGORY_ID =(SELECT ITEM_CODE FROM EWAY_LIST_ITEM_VALUE WHERE COMPANY_ID=MOT.COMPANY_ID AND STATUS='Y' AND SYSDATE() BETWEEN EFFECTIVE_DATE_START AND EFFECTIVE_DATE_END AND ITEM_TYPE='MOTOR_CATEGORY' AND UPPER(TRIM(REPLACE(ITEM_VALUE,'\\n','')))=UPPER(TRIM(REPLACE(MOT.MOTOR_CATEGORY,'\\n','')))) WHERE REQUEST_REFERENCE_NO=?1 AND COMPANY_ID=?2")
+	Integer updateMotorCatgeoryId(String requestReferenceNo,Integer companyId);
 	
 }
 	

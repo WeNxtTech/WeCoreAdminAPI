@@ -66,6 +66,9 @@ public class VehicleAsynchronousProcess {
 	@Value("${passenger.save.api}")
 	private  String travelSaveApi;
 	
+	@Value("${save.vehicleInfo.api}")
+	private String saveVehicleApi;
+	
 	@Autowired
 	private EserviceMotorDetailsRawRepository eserviceRepository;
 	
@@ -168,6 +171,44 @@ public class VehicleAsynchronousProcess {
 		try {
 			HashMap<String, Object> vehicleRequest =new LinkedHashMap<String,Object>();
 			HashMap<String, Object> calcRequest =new LinkedHashMap<String,Object>();
+			HashMap<String, Object> saveVehicleInfo =new LinkedHashMap<String,Object>();
+			
+			//save vehicle info 
+			if("100019".equals(p.getCompanyId().toString())) {
+				saveVehicleInfo.put("Insuranceid", p.getCompanyId());
+				saveVehicleInfo.put("BranchCode", p.getBranchCode());
+				saveVehicleInfo.put("AxelDistance", "");
+				saveVehicleInfo.put("Chassisnumber", p.getChassisNumber());
+				saveVehicleInfo.put("Color", p.getColor());
+				saveVehicleInfo.put("CreatedBy", StringUtils.isBlank(p.getCreatedBy())?p.getLoginId():p.getCreatedBy());
+				saveVehicleInfo.put("EngineNumber", p.getEngineNumber());
+				saveVehicleInfo.put("FuelType", p.getFuelType());
+				saveVehicleInfo.put("Grossweight", p.getGrossWeight());
+				saveVehicleInfo.put("ManufactureYear", p.getManufactureYear());
+				saveVehicleInfo.put("MotorCategory", p.getMotorCategoryId());
+				saveVehicleInfo.put("Motorusage", p.getMotorUsageDesc());
+				saveVehicleInfo.put("NumberOfAxels", "");
+				saveVehicleInfo.put("OwnerCategory",StringUtils.isBlank(p.getOwnerCategory())?"1":p.getOwnerCategory());
+				saveVehicleInfo.put("Registrationnumber", StringUtils.isBlank(p.getReqChassisNo())?p.getChassisNumber():p.getReqChassisNo());
+				saveVehicleInfo.put("ResEngineCapacity", p.getResEngineCapacity());
+				saveVehicleInfo.put("ResOwnerName", StringUtils.isBlank(p.getCustomerName())?"":p.getCustomerName());
+				saveVehicleInfo.put("ResStatusCode", "Y");
+				saveVehicleInfo.put("ResStatusDesc", "None");
+				saveVehicleInfo.put("SeatingCapacity", p.getSeatingCapacity());
+				saveVehicleInfo.put("Tareweight", p.getTareWeight());
+				saveVehicleInfo.put("Vehcilemodel", StringUtils.isBlank(p.getVehicleModel())?"":p.getVehicleModel());
+				saveVehicleInfo.put("VehicleType", StringUtils.isBlank(p.getBodyTypeId())?"":p.getBodyTypeId());
+				saveVehicleInfo.put("Vehiclemake", StringUtils.isBlank(p.getVehicleMake())?"":p.getVehicleMake());
+				saveVehicleInfo.put("RegistrationDate", null);
+				
+				String saveVehicleReq =print.toJson(saveVehicleInfo);
+				log.info("callCreateQuote || saveVehicleInfoReq " + saveVehicleReq);
+			
+				Map<String,Object> vehResponse =callApi(saveVehicleReq,auth,mediaType,saveVehicleApi);
+				log.info("callCreateQuote || saveVehicleInfoRes " + print.toJson(vehResponse));
+				
+
+			}
 			
 			// vehicle request
 			vehicleRequest.put("BrokerBranchCode", StringUtils.isBlank(p.getBrokerBranchcode())?"":p.getBrokerBranchcode());
@@ -182,12 +223,7 @@ public class VehicleAsynchronousProcess {
 			vehicleRequest.put("Idnumber", StringUtils.isBlank(p.getIdNumber())?"":p.getIdNumber());
 			vehicleRequest.put("VehicleId", vehicleId);
 			vehicleRequest.put("AcccessoriesSumInsured", p.getAccessoriesSuminsured());
-			
-			if("100002".equals(p.getCompanyId().toString()))
-				vehicleRequest.put("AxelDistance", StringUtils.isBlank(p.getAxelDistance())?"":p.getAxelDistance());
-			
-			
-			
+			vehicleRequest.put("AxelDistance", StringUtils.isBlank(p.getAxelDistance())?"":p.getAxelDistance());
 			vehicleRequest.put("Chassisnumber", StringUtils.isBlank(p.getReqChassisNo())?p.getChassisNumber():p.getReqChassisNo());
 			vehicleRequest.put("CreatedBy", StringUtils.isBlank(p.getCreatedBy())?p.getLoginId():p.getCreatedBy());
 			vehicleRequest.put("Insurancetype", StringUtils.isBlank(p.getInsuranceTypeId())?"":Arrays.asList(p.getInsuranceTypeId()));
@@ -214,7 +250,9 @@ public class VehicleAsynchronousProcess {
 			vehicleRequest.put("CustomerName",StringUtils.isBlank(p.getCustomerName())?"":p.getCustomerName());
 			vehicleRequest.put("BdmCode", StringUtils.isBlank(p.getBdmCode())?"":p.getBdmCode());
 			vehicleRequest.put("Registrationnumber", StringUtils.isBlank(p.getReqChassisNo())?p.getChassisNumber():p.getReqChassisNo());
-			vehicleRequest.put("SearchFromApi", "100019".equals(p.getCompanyId().toString())?false:true);
+			//vehicleRequest.put("SearchFromApi", "100019".equals(p.getCompanyId().toString())?false:true);
+
+			vehicleRequest.put("TppdIncreaeLimit", "0");
 
 			vehicleRequest.put("EngineNumber", StringUtils.isBlank(p.getEngineNumber())?"":p.getEngineNumber());
 			vehicleRequest.put("ManufactureYear", StringUtils.isBlank(p.getManufactureYear())?"":p.getManufactureYear());
@@ -269,10 +307,10 @@ public class VehicleAsynchronousProcess {
 			vehicleRequest.put("Status","Y");
 			
 			String vehRequest =print.toJson(vehicleRequest);
-			log.info("callCreateQuote || vehRequest " + vehRequest);
+			log.info("callCreateQuote || saveMotorReq " + vehRequest);
 		
 			Map<String,Object> vehResponse =callApi(vehRequest,auth,mediaType,vehicleApi);
-			log.info("callCreateQuote || vehResponse " + print.toJson(vehResponse));
+			log.info("callCreateQuote || saveMotorRes " + print.toJson(vehResponse));
 			
 			String responseStatus =vehResponse.get("Message")==null?"":vehResponse.get("Message").toString();
 			if("Success".equalsIgnoreCase(responseStatus)) {

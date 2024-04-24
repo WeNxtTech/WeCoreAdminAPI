@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,6 +40,8 @@ import io.swagger.annotations.Api;
 @Api(tags ="PRODUCTS : Excel Upload Api's")
 public class VehicleBatchController {
 	
+	Logger log =LogManager.getLogger(VehicleBatchServiceImpl.class);
+	
 	@Autowired
 	private VehicleBatchService service;
 	
@@ -49,6 +53,7 @@ public class VehicleBatchController {
 	public EwayUploadRes batchUpload(@RequestParam ("file") MultipartFile file ,@RequestParam("uploadReq") String uploadReq
 			,@RequestHeader("Authorization") String token) {
 		try {
+			log.info("/batch/upload request : "+uploadReq);
 			EwayUploadReq req =null;
 			if(StringUtils.isNotBlank(uploadReq)) {
 				ObjectMapper mapper =new ObjectMapper();

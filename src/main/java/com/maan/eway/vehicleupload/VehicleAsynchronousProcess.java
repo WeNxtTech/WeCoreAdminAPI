@@ -166,7 +166,7 @@ public class VehicleAsynchronousProcess {
 	
 	@SuppressWarnings("unchecked")
 	@Async("fileUploadExeuter")
-	public CompletableFuture<Object> createQuote(EserviceMotorDetailsRaw p, String auth,Long vehicleId){
+	public synchronized CompletableFuture<Object> createQuote(EserviceMotorDetailsRaw p, String auth,Long vehicleId){
 		String response ="Success";
 		try {
 			HashMap<String, Object> vehicleRequest =new LinkedHashMap<String,Object>();
@@ -197,7 +197,7 @@ public class VehicleAsynchronousProcess {
 				saveVehicleInfo.put("SeatingCapacity", p.getSeatingCapacity());
 				saveVehicleInfo.put("Tareweight", p.getTareWeight());
 				saveVehicleInfo.put("Vehcilemodel", StringUtils.isBlank(p.getVehicleModel())?"":p.getVehicleModel());
-				saveVehicleInfo.put("VehicleType", StringUtils.isBlank(p.getBodyTypeDesc())?"":p.getBodyTypeDesc());
+				saveVehicleInfo.put("VehicleType", StringUtils.isBlank(p.getBodyTypeId())?"":p.getBodyTypeId());
 				saveVehicleInfo.put("Vehiclemake", StringUtils.isBlank(p.getVehicleMake())?"":p.getVehicleMake());
 				saveVehicleInfo.put("RegistrationDate", null);
 				
@@ -235,7 +235,6 @@ public class VehicleAsynchronousProcess {
 			vehicleRequest.put("SumInsured", StringUtils.isBlank(p.getVehicleSuminsured())?"":p.getVehicleSuminsured());
 			vehicleRequest.put("Vehcilemodel",StringUtils.isBlank(p.getVehicleModel())?"":p.getVehicleModel());
 			vehicleRequest.put("VehicleType", StringUtils.isBlank(p.getBodyTypeId())?"":p.getBodyTypeId());
-			vehicleRequest.put("VehicleTypeId", StringUtils.isBlank(p.getBodyTypeId())?"":p.getBodyTypeId());
 			vehicleRequest.put("Vehiclemake",StringUtils.isBlank(p.getVehicleMake())?"":p.getVehicleMake());
 			vehicleRequest.put("WindScreenSumInsured", StringUtils.isBlank(p.getWindshieldSuminsured())?"":p.getWindshieldSuminsured());
 			vehicleRequest.put("PolicyStartDate", StringUtils.isBlank(p.getPolicyStartDate())?"":p.getPolicyStartDate());

@@ -251,7 +251,7 @@ public class VehicleAsynchronousProcess {
 			vehicleRequest.put("ClaimYn", claimYn);
 			vehicleRequest.put("CustomerName",StringUtils.isBlank(p.getCustomerName())?"":p.getCustomerName());
 			vehicleRequest.put("BdmCode", StringUtils.isBlank(p.getBdmCode())?"":p.getBdmCode());
-			vehicleRequest.put("Registrationnumber", StringUtils.isBlank(p.getReqChassisNo())?p.getChassisNumber():p.getReqChassisNo());
+			vehicleRequest.put("Registrationnumber", StringUtils.isBlank(p.getSearchByData())?p.getChassisNumber():p.getSearchByData());
 			//vehicleRequest.put("SearchFromApi", "100019".equals(p.getCompanyId().toString())?false:true);
 
 

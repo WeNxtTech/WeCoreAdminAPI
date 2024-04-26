@@ -189,7 +189,7 @@ public class VehicleAsynchronousProcess {
 				saveVehicleInfo.put("Motorusage", p.getMotorUsageDesc());
 				saveVehicleInfo.put("NumberOfAxels", "");
 				saveVehicleInfo.put("OwnerCategory",StringUtils.isBlank(p.getOwnerCategory())?"1":p.getOwnerCategory());
-				saveVehicleInfo.put("Registrationnumber", StringUtils.isBlank(p.getReqChassisNo())?p.getChassisNumber():p.getReqChassisNo());
+				saveVehicleInfo.put("Registrationnumber", StringUtils.isBlank(p.getSearchByData())?p.getChassisNumber():p.getSearchByData());
 				saveVehicleInfo.put("ResEngineCapacity", p.getResEngineCapacity());
 				saveVehicleInfo.put("ResOwnerName", StringUtils.isBlank(p.getCustomerName())?"":p.getCustomerName());
 				saveVehicleInfo.put("ResStatusCode", "Y");
@@ -270,7 +270,7 @@ public class VehicleAsynchronousProcess {
 			}
 			
 			
-			vehicleRequest.put("CarAlarmYn", StringUtils.isBlank(p.getCarAlaramyn())?"N":p.getBorrowerType().equalsIgnoreCase("yes")?"Y":"N");
+			vehicleRequest.put("CarAlarmYn", StringUtils.isBlank(p.getCarAlaramyn())?"N":p.getCarAlaramyn().equalsIgnoreCase("yes")?"Y":"N");
 
 			if("Yes".equalsIgnoreCase(collateralYn)) {
 				vehicleRequest.put("CollateralYn", "Y");

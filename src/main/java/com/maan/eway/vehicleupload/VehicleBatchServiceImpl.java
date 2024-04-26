@@ -533,7 +533,8 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 				criteriaQuery.updateInsuranceClassId(companyId, productId, typeId, requestReferenceNo);
 				//eserviceRepository.updateMotorUsageId(companyId, productId, typeId, requestReferenceNo);
 				//eserviceRepository.updateSuminsuredValidationByPolicyType(companyId, productId, typeId, requestReferenceNo);
-			
+				eserviceRepository.updateBankCode(companyId,requestReferenceNo);
+
 				if("100002".equals(companyId.toString())) {
 					List<String> status =Arrays.asList(new String[] {"Y","E"});
 					List<EserviceMotorDetailsRaw> list =eserviceRepository.findByCompanyIdAndProductIdAndRequestReferenceNoAndStatusIgnoreCaseInAndApiStatusIsNull(Integer.valueOf(uploadResponse.getCompanyId()),
@@ -563,9 +564,10 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 				}else if("100019".equals(companyId.toString())) {
 					
 					ugandaVehicleDetailsRepo.updateDuplicateRegistrationNo(requestReferenceNo);
-					//ugandaVehicleDetailsRepo.updateMotorCategory(requestReferenceNo);
-					criteriaQuery.updateMotorUsageId(companyId, productId, typeId, requestReferenceNo);
+					ugandaVehicleDetailsRepo.updateMotorUsageId(requestReferenceNo);
 
+					//criteriaQuery.updateMotorUsageId(companyId, productId, typeId, requestReferenceNo);
+					
 
 				}
 				

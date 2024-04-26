@@ -254,7 +254,6 @@ public class VehicleAsynchronousProcess {
 			vehicleRequest.put("Registrationnumber", StringUtils.isBlank(p.getReqChassisNo())?p.getChassisNumber():p.getReqChassisNo());
 			//vehicleRequest.put("SearchFromApi", "100019".equals(p.getCompanyId().toString())?false:true);
 
-			vehicleRequest.put("TppdIncreaeLimit", "0");
 
 			vehicleRequest.put("EngineNumber", StringUtils.isBlank(p.getEngineNumber())?"":p.getEngineNumber());
 			vehicleRequest.put("ManufactureYear", StringUtils.isBlank(p.getManufactureYear())?"":p.getManufactureYear());
@@ -269,11 +268,22 @@ public class VehicleAsynchronousProcess {
 				vehicleRequest.put("HavePromoCode",promcodeYn);
 				vehicleRequest.put("PromoCode", null);
 			}
+			
+			
+			vehicleRequest.put("CarAlarmYn", StringUtils.isBlank(p.getCarAlaramyn())?"N":p.getBorrowerType().equalsIgnoreCase("yes")?"Y":"N");
+
 			if("Yes".equalsIgnoreCase(collateralYn)) {
 				vehicleRequest.put("CollateralYn", "Y");
 				vehicleRequest.put("BorrowerType", StringUtils.isBlank(p.getBorrowerType())?"":"Bank".equalsIgnoreCase(p.getBorrowerType())?"1":"2");
-				vehicleRequest.put("CollateralName", StringUtils.isBlank(p.getFirstLossPayee())?"":p.getFirstLossPayee());
+				
+				if("Bank".equalsIgnoreCase(p.getBorrowerType())){
+					vehicleRequest.put("CollateralName",p.getBankId());
+				}else {
+					vehicleRequest.put("CollateralName", p.getCollateral());
+				}
+			
 				vehicleRequest.put("FirstLossPayee", StringUtils.isBlank(p.getFirstLossPayee())?"":p.getFirstLossPayee());
+				
 			}else {
 				vehicleRequest.put("CollateralYn", "N");
 
@@ -304,7 +314,7 @@ public class VehicleAsynchronousProcess {
 			}
 
 			// default values
-			vehicleRequest.put("TppdIncreaeLimit", ""); 
+			vehicleRequest.put("TppdIncreaeLimit", StringUtils.isBlank(p.getExtendedSuminsured())?"":p.getExtendedSuminsured()); 
 			vehicleRequest.put("FleetOwnerYn", "N");
 			vehicleRequest.put("Status","Y");
 			

@@ -408,6 +408,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="COLLATERAL_YN")
     private String       collateralYn ;
     
+    @Column(name="COLLATERAL_BANKNAME")
+    private String       collateralBankName ;
+    
+    @Column(name="BANK_ID")
+    private String       bankId ;
+    
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

@@ -116,7 +116,7 @@ protected int[][] batchInsert_1(List<Record> records, JdbcTemplate jdbcTemplate,
 					public void setValues(PreparedStatement ps, Record argument) throws SQLException {
 						log.info("Eway batch data========>"+argument==null?"":print.toJson(argument));
 						
-						String error =validateDetails(argument,response);
+						final String error =validateDetails(argument,response);
 						DateFormat dateformat = new SimpleDateFormat("dd/MM/yyyy");
 						ps.setInt(1, Integer.valueOf(response.getCompanyId()));
 						ps.setInt(2, Integer.valueOf(response.getProductId()));
@@ -202,7 +202,7 @@ protected int[][] batchInsert_2(List<Record> records, JdbcTemplate jdbcTemplate,
 		String[] listcol = rawTableFields.split(",");
 		int length = listcol.length;
 		String prepareValues =map.get("PREPARE_VALUES").toString();
-					
+			
 		String finalquery = "INSERT INTO " + excelTableName + "(COMPANY_ID,PRODUCT_ID,REQUEST_REFERENCE_NO,TYPEID,RISK_ID,"
 				+ "QUOTE_NO,CREATED_BY,ERROR_DESC,STATUS,SECTION_ID,PASS_STATE_CODE,ENDORSEMENT_TYPE,EMPLOYEE_TYPE,UPLOAD_TYPE,"+ rawTableFields + ") VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,"+prepareValues + ")";					
 		
@@ -211,8 +211,7 @@ protected int[][] batchInsert_2(List<Record> records, JdbcTemplate jdbcTemplate,
 				new ParameterizedPreparedStatementSetter<Record>() {
 					public void setValues(PreparedStatement ps, Record argument) throws SQLException {
 						log.info("Eway batch data========>"+argument==null?"":print.toJson(argument));
-						
-						String error =validateDetails(argument,response);
+						final String validationRes =validateDetails(argument,response);
 						DateFormat dateformat = new SimpleDateFormat("dd/MM/yyyy");
 						ps.setInt(1, StringUtils.isBlank(response.getCompanyId())?null:Integer.valueOf(response.getCompanyId()));
 						ps.setInt(2, StringUtils.isBlank(response.getProductId())?null:Integer.valueOf(response.getProductId()));
@@ -221,8 +220,8 @@ protected int[][] batchInsert_2(List<Record> records, JdbcTemplate jdbcTemplate,
 						ps.setInt(5, StringUtils.isBlank(response.getRiskId())?0:Integer.valueOf(response.getRiskId()));
 						ps.setString(6,  StringUtils.isBlank(response.getQuoteNo()) ?null:response.getQuoteNo());
 						ps.setString(7,  StringUtils.isBlank(response.getLoginId()) ?null:response.getLoginId());
-						ps.setString(8,  StringUtils.isBlank(error) ?null:error);
-						ps.setString(9,  StringUtils.isBlank(error) ?"Y":"E");
+						ps.setString(8,  StringUtils.isBlank(validationRes) ?null:validationRes);
+						ps.setString(9,  StringUtils.isBlank(validationRes) ?"Y":"E");
 						ps.setString(10, StringUtils.isBlank(response.getSectionId()) ?null:response.getSectionId());
 						ps.setString(11, StringUtils.isBlank(response.getStateCode()) ?null:response.getStateCode());
 						ps.setString(12, response.getEndorsementYn());
@@ -281,7 +280,6 @@ private HashMap<String,String> getTableColumns(List<XlConfigData> xlConfigData) 
 
 
 private String validateDetails(Record items, EwayUploadRes response) {
-	String errorDesc ="";
 	try {
 		
 		Object[] excelValueList =items.getColumns();//.get(0)
@@ -291,9 +289,9 @@ private String validateDetails(Record items, EwayUploadRes response) {
 		String[] mandatoryList = response.getExcelmandatorylist().split("~");
 		String[] fieldLength = response.getDataFieldLength().split("~");
 		String[] rangeColumn = response.getDataRange().split("~");
-
+		String errorDesc ="";
 		for(int i=0;i<excelValueList.length;i++) {
-			String errors = "";
+			
 			String headername = excelHeaderList.length>0?excelHeaderList[i].replace("\"", ""):"";
 			String excelValue = items.getColumnByIndex(i).toString();//.get(0)
 			String mandatoryYn = mandatoryList.length>0?mandatoryList[i]:"";
@@ -301,7 +299,7 @@ private String validateDetails(Record items, EwayUploadRes response) {
 			String dateFormat = dateformatList.length>0?dateformatList[i]:"";
 			String dataLength =fieldLength.length>0?fieldLength[i]:"";
 			String rangeCondition =rangeColumn.length>0?rangeColumn[i]:"";
-
+			String errors = "";
 			if(StringUtils.isNotBlank(mandatoryYn)&&mandatoryYn.equalsIgnoreCase("Y")&&StringUtils.isBlank(excelValue)) {
 				errors = headername + " value is Mandatory";
 			}else if(StringUtils.isNotBlank(excelValue)) {
@@ -371,11 +369,13 @@ private String validateDetails(Record items, EwayUploadRes response) {
 				errorDesc +=errors+"~";
 			}
 		
-		}								
+		}	
+		
+		return errorDesc;
 	}catch (Exception e) {
 		e.printStackTrace();
 	}
-	return errorDesc;
+	return "";
 }
 
 

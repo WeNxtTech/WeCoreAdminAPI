@@ -574,10 +574,10 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 				}
 				
 				eserviceRepository.updateMotorCatgeoryId(requestReferenceNo,companyId);
-				criteriaQuery.updateSuminsuredValidation(companyId, productId, typeId, requestReferenceNo);
+				//criteriaQuery.updateSuminsuredValidation(companyId, productId, typeId, requestReferenceNo);
 				//eserviceRepository.updateCollateralValidation(companyId, productId, typeId, requestReferenceNo);
-				criteriaQuery.updateColleteralValidation(companyId, productId, typeId, requestReferenceNo);
-				//eserviceRepository.updateMasterIdEmptyValidation(companyId, productId, typeId, requestReferenceNo);
+				//criteriaQuery.updateColleteralValidation(companyId, productId, typeId, requestReferenceNo);
+				eserviceRepository.updateMasterIdEmptyValidation(companyId, productId, typeId, requestReferenceNo);
 				criteriaQuery.updateEmptyDataError(companyId, productId, typeId, requestReferenceNo);
 				criteriaQuery.updateMotorErrorStatus(companyId, productId, typeId, requestReferenceNo,"0");
 				List<EserviceMotorDetailsRaw> dlist =eserviceRepository.findByCompanyIdAndProductIdAndRequestReferenceNo(companyId,productId,requestReferenceNo);

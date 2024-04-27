@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -208,6 +209,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			uploadRes.setAcExecutiveId(StringUtils.isBlank(req.getAcExecutiveId())?"":req.getAcExecutiveId());
 			uploadRes.setApplicationId(StringUtils.isBlank(req.getApplicationId())?"":req.getApplicationId());
 			uploadRes.setBeokerCode(StringUtils.isBlank(req.getBeokerCode())?"":req.getBeokerCode());
+			uploadRes.setSourceTypeId(StringUtils.isBlank(req.getSourceTypeId())?"":req.getSourceTypeId());
 			uploadRes.setBranchCode("");
 			uploadRes.setCurrency(StringUtils.isBlank(req.getCurrency())?"":req.getCurrency());
 			if("E".equalsIgnoreCase(req.getEndorsementYn()) && "5".equals(req.getProductId())) {
@@ -972,23 +974,30 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 					
 					// made the partitions based by 10
 					List<List<EserviceMotorDetailsRaw>> partitions =nPartition(data, data.size()>10?data.size()/10:10);						
+					List<Map<String,Object>> listOfError = new ArrayList<>();
 					for(List<EserviceMotorDetailsRaw> eservice :partitions) {
-						List<CompletableFuture<Object>> comFuture = new ArrayList<CompletableFuture<Object>>();
+						List<CompletableFuture<List<Map<String,Object>>>> comFuture = new ArrayList<CompletableFuture<List<Map<String,Object>>>>();
 						Long maxVehId =transRepo.getVehicleId(eservice.get(0).getRequestReferenceNo(), eservice.get(0).getProductId().toString());
 						Long countVeh =1L;
 						for(EserviceMotorDetailsRaw raw :eservice) {
 							 Long vehicleId =maxVehId+countVeh;
-							 CompletableFuture<Object> asyncList =asyncProcess.createQuote(raw, auth,vehicleId);
+							 CompletableFuture<List<Map<String,Object>>> asyncList =asyncProcess.createQuote(raw, auth,vehicleId);
 							 comFuture.add(asyncList);
 							 countVeh++;
 						}							
 						@SuppressWarnings("unchecked")
-						CompletableFuture<Object>[] comArray =new CompletableFuture[comFuture.size()];
+						CompletableFuture<List<Map<String,Object>>>[] comArray =new CompletableFuture[comFuture.size()];
 						comFuture.toArray(comArray);
 						CompletableFuture.allOf(comArray).join();
-							
+						List<List<Map<String, Object>>> array_list = 
+					            new ArrayList<List<Map<String,Object>>>((Collection<? extends List<Map<String, Object>>>) Arrays.asList(comArray));
+
+						System.out.println(new Gson().toJson(array_list));
 						}
 						
+					
+
+			        
 						res.setCommonResponse("SUCCESS");
 						res.setMessage("SUCCESS");
 				}else {
@@ -1497,10 +1506,10 @@ public CommonRes getUploadMaster(GetUploadTypeReq req) {
 
 @Override
 @Transactional
- public  CommonRes moveRecords(MoveRecordsReq req, String token) {
+ public Object moveRecords(MoveRecordsReq req, String token) {
 	LinkedHashMap<Object,Object> request =new LinkedHashMap<Object,Object>();
 	LinkedHashMap<Object,Object> mapRes =new LinkedHashMap<Object,Object>();
-	CommonRes response = new CommonRes();
+	VehicleUploadErrorMsg response = new VehicleUploadErrorMsg();
 	String ewayReferenceNo ="";
 	Object generateReq =null;
 	try {
@@ -1532,27 +1541,55 @@ public CommonRes getUploadMaster(GetUploadTypeReq req) {
 				}
 							
 			// made the partitions based by 10
-			List<List<EserviceMotorDetailsRaw>> partitions =nPartition(data, data.size()>10?data.size()/10:10);						
+			List<List<EserviceMotorDetailsRaw>> partitions =nPartition(data, data.size()>10?data.size():10);						
+			List<List<CompletableFuture<List<Map<String,Object>>>>> listOfList = new ArrayList<>();
 			for(List<EserviceMotorDetailsRaw> eservice :partitions) {
-				List<CompletableFuture<Object>> comFuture = new ArrayList<CompletableFuture<Object>>();
+				List<CompletableFuture<List<Map<String,Object>>>> comFuture = new ArrayList<CompletableFuture<List<Map<String,Object>>>>();
 				Long maxVehId =transRepo.getVehicleId(eservice.get(0).getRequestReferenceNo(), eservice.get(0).getProductId().toString());
 				Long countVeh =1L;
 				for(EserviceMotorDetailsRaw raw :eservice) {
 					Long vehicleId =maxVehId+countVeh;
-					CompletableFuture<Object> asyncList =asyncProcess.createQuote(raw, token,vehicleId);
+					CompletableFuture<List<Map<String,Object>>> asyncList =asyncProcess.createQuote(raw, token,vehicleId);
 					comFuture.add(asyncList);
 					countVeh++;
 				}							
 			@SuppressWarnings("unchecked")
-			CompletableFuture<Object>[] comArray =new CompletableFuture[comFuture.size()];
+			CompletableFuture<List<Map<String,Object>>>[] comArray =new CompletableFuture[comFuture.size()];
 			comFuture.toArray(comArray);
 			CompletableFuture.allOf(comArray).join();
+			
+			listOfList.add(comFuture);
 									
 			}
-			mapRes.put("Message", "SUCCESS");
-			mapRes.put("RequestRefNo", req.getRequestRefNo());
-			response.setCommonResponse(mapRes);
-			response.setMessage("SUCCESS");
+			
+			List<Map<String, Object>> flatList =listOfList.stream()
+					.flatMap(a -> a.stream())
+					.flatMap(b ->{
+						try {
+							return b.get().stream();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						return null;
+					})
+					.collect(Collectors.toList());
+			
+			
+			if(!flatList.isEmpty()) {
+				response.setCommonResponse(null);
+				response.setMessage("FAILED");
+				response.setIsError(true);
+				response.setErrorMessage(flatList);
+			}else {
+				
+				mapRes.put("Message", "SUCCESS");
+				mapRes.put("RequestRefNo",req.getRequestRefNo());
+				response.setCommonResponse(mapRes);
+				response.setMessage("SUCCESS");
+				response.setIsError(false);
+				response.setErrorMessage(Collections.emptyList());
+			}
+			
 			}else {
 				mapRes.put("Message", "FAILED");
 				mapRes.put("RequestRefNo",req.getRequestRefNo());

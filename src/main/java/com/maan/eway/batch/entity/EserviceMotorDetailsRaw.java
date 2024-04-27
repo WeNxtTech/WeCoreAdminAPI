@@ -414,6 +414,10 @@ private static final long serialVersionUID = 1L;
     @Column(name="BANK_ID")
     private String       bankId ;
     
+    @Column(name="SOURCE_TYPEID")
+    private String       sourceTypeId ;
+    
+    
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

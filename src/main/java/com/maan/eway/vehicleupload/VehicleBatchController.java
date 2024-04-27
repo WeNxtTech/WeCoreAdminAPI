@@ -124,7 +124,7 @@ public class VehicleBatchController {
 	}
 	
     @PostMapping("/insert/records")
-    public CommonRes moveRecords(@RequestBody MoveRecordsReq req,@RequestHeader("Authorization") String token) {
+    public Object moveRecords(@RequestBody MoveRecordsReq req,@RequestHeader("Authorization") String token) {
     	return service.moveRecords(req,token.replaceAll("Bearer ", "").split(",")[0]);
     }
     

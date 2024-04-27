@@ -2,11 +2,8 @@ package com.maan.eway.batch.res;
 
 import java.util.List;
 
-import org.springframework.batch.core.configuration.annotation.JobScope;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.maan.eway.batch.entity.EwayXlconfigMaster;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -16,6 +13,8 @@ import lombok.Setter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EwayUploadRes {
 	
+	@JsonProperty("SourceTypeId")
+	private String sourceTypeId;
 	@JsonProperty("CompanyId")
 	private String companyId;
 	@JsonProperty("ProductId")

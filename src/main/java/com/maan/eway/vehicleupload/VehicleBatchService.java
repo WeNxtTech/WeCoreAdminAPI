@@ -43,7 +43,7 @@ public interface VehicleBatchService {
 
 	CommonRes getUploadMaster(GetUploadTypeReq req);
 
-	CommonRes moveRecords(MoveRecordsReq req, String token);
+	Object moveRecords(MoveRecordsReq req, String token);
 
 	CommonRes saveExcelField(List<SaveXlConfigReq> req);
 

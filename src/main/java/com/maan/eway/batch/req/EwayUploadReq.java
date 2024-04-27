@@ -108,4 +108,7 @@ public class EwayUploadReq {
 	private String ownerCategory;
 	@JsonProperty("ResOwnerName")
 	private String resOwnerName;
+	
+	@JsonProperty("SourceTypeId")
+	private String sourceTypeId;
 }

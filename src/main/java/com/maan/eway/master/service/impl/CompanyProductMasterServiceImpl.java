@@ -650,7 +650,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			res.setSumInsuredEnd(list.get(0).getSumInsuredEnd()==null?"":list.get(0).getSumInsuredEnd().toString());;
 			res.setDisplayOrder(list.get(0).getDisplayOrder()==null?"":list.get(0).getDisplayOrder().toString());
 			res.setSectionEndtYn(list.get(0).getSectionEndtYn());
-		
+		    res.setMinimumpremium(list.get(0).getMinimumPremium()==null? 0.0 : list.get(0).getMinimumPremium());
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -1197,6 +1197,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			saveData.setEntryDate(entryDate);
 			saveData.setAmendId(amendId);
 			saveData.setCoreAppCode(req.getCoreAppCode());
+			saveData.setMinimumPremium(req.getMinimumpremium()==null ?0: req.getMinimumpremium());
 			String currencyIds =  String.join(",", req.getCurrencyIds()); ;
 			currencyIds = currencyIds.replace("[", "").replace("]", "");
 			saveData.setCurrencyIds(currencyIds);

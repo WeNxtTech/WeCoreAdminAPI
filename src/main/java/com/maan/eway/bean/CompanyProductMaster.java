@@ -166,6 +166,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="SECTION_ENDT_YN", length=500)
     private String    sectionEndtYn;
     
+    @Column(name="MINIMUM_PREMIUM")
+    private Double minimumPremium;
+    
     
     
 }

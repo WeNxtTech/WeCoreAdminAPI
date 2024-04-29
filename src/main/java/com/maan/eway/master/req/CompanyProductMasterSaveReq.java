@@ -1,8 +1,11 @@
 package com.maan.eway.master.req;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+
+import javax.persistence.Column;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -90,5 +93,9 @@ public class CompanyProductMasterSaveReq implements Serializable {
 
 	@JsonProperty("SectionEndtYn")
 	private String sectionEndtYn;
+	
+	@JsonProperty("MINIMUM_PREMIUM")
+	private Double  minimumpremium;
+	
 	
 }

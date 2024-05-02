@@ -14,7 +14,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -41,6 +40,7 @@ import javax.persistence.*;
 @DynamicInsert
 @DynamicUpdate
 @Builder
+@IdClass(MenuMasterId.class)
 @Table(name="eway_menu_master")
 
 
@@ -49,9 +49,19 @@ public class MenuMaster implements Serializable {
 private static final long serialVersionUID = 1L;
  
     //--- ENTITY PRIMARY KEY 
-    @Id
-    @Column(name="MENU_ID", nullable=false)
-    private Integer    menuId ;
+@Id
+
+@Column(name="MENU_ID", nullable=false)
+private Integer    menuId ;
+
+@Id
+@Column(name="USERTYPE", length=100,nullable=false)
+private String     usertype ;
+
+@Id
+@Column(name="COMPANY_ID", length=50,nullable=false)
+private String     companyId ; 
+    
 
     //--- ENTITY DATA FIELDS 
     @Column(name="MENU_NAME", length=300)
@@ -75,8 +85,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="RSACODE", length=25)
     private String     rsacode ;
 
-    @Column(name="USERTYPE", length=100)
-    private String     usertype ;
 
     @Column(name="ISCLICK", length=100)
     private String     isclick ;

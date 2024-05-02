@@ -14,11 +14,11 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.*;
@@ -41,6 +41,7 @@ import javax.persistence.*;
 @DynamicInsert
 @DynamicUpdate
 @Builder
+@IdClass(MenuMasterId.class)
 @Table(name="eway_menu_master")
 
 
@@ -52,6 +53,15 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="MENU_ID", nullable=false)
     private Integer    menuId ;
+    
+
+    @Id
+    @Column(name="USERTYPE", length=100,nullable=false)
+    private String     usertype ;
+    
+    @Id
+    @Column(name="COMPANY_ID", length=50,nullable=false)
+    private String     companyId ;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="MENU_NAME", length=300)
@@ -75,8 +85,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="RSACODE", length=25)
     private String     rsacode ;
 
-    @Column(name="USERTYPE", length=100)
-    private String     usertype ;
+
 
     @Column(name="ISCLICK", length=100)
     private String     isclick ;
@@ -89,6 +98,12 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="MENU_LOGO", length=200)
     private String     menuLogo ;
+    
+    @Column(name="CREATED_BY")
+   	private String createdBy;
+       
+       @Column(name="ENTRY_DATE")
+   	private Date entryDate;
 
 
     //--- ENTITY LINKS ( RELATIONSHIP )

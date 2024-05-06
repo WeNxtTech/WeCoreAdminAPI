@@ -90,4 +90,20 @@ public class InsuranceCompanyMasterRes implements Serializable {
 	@JsonProperty("PoBox")
 	private String poBox;
 	
+	
+	@JsonProperty("Character")
+	private String character;
+	
+	@JsonProperty("NumericDigits")
+	private String numericdigits;
+	
+	@JsonProperty("Symbols")
+	private String symbols;
+	
+	@JsonProperty("TotalLengthMin")
+	private String totallengthmin;
+	
+	@JsonProperty("TotalLengthMax")
+	private String TotalLengthMax;
+	
 }

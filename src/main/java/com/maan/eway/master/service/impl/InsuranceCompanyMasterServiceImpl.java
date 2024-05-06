@@ -578,6 +578,12 @@ this.repository = repo;
 			saveData.setUpdatedBy(req.getCreatedBy());
 			saveData.setAmendId(amendId);
 			saveData.setCurrencyId(req.getCurrencyId());
+			//*$
+			saveData.setAlphabet(req.getCharacter().isEmpty() ? null : req.getCharacter());
+			saveData.setNumericDigits(req.getNumericdigits().isEmpty() ? null : req.getNumericdigits());
+			saveData.setSymbols(req.getSymbols().isEmpty() ? null : req.getSymbols());
+			saveData.setTotalmin(req.getTotallengthmin().isEmpty() ? null : req.getTotallengthmin());
+			saveData.setTotalmax(req.getTotalLengthMax().isEmpty() ? null : req.getTotalLengthMax());
 			repository.saveAndFlush(saveData);
 
 			
@@ -790,7 +796,7 @@ this.repository = repo;
 		InsuranceCompanyMasterRes res = new InsuranceCompanyMasterRes();
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-
+		String charactertype="";
 		try {
 			Date today = new Date();
 			Calendar cal = new GregorianCalendar();
@@ -836,10 +842,29 @@ this.repository = repo;
 			list = result.getResultList();
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCompanyId()))).collect(Collectors.toList());
 			list.sort(Comparator.comparing(InsuranceCompanyMaster :: getCompanyName ));
-			
+			{
+				//get charactertype
+					String company_id="99999";
+					if(StringUtils.isNotBlank(list.get(0).getAlphabet()) ) {
+						if(list.get(0).getAlphabet().equals("A-Z"))
+						{
+							charactertype="Upper Case";
+						}else if(list.get(0).getAlphabet().equals("a-z"))
+						{
+							charactertype="Lower Case";	
+						}
+						else {
+							charactertype="Both";		
+						}
+					}
+				}
 			res = dozerMapper.map(list.get(0) , InsuranceCompanyMasterRes.class);
 			res.setEntryDate(list.get(0).getEntryDate());
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
+			res.setCharacter(charactertype);
+			res.setSymbols(StringUtils.isBlank(list.get(0).getSymbols()) ? "" : list.get(0).getSymbols());
+			res.setTotallengthmin(StringUtils.isBlank(list.get(0).getTotalmin()) ? "" : list.get(0).getTotalmin());
+			res.setTotalLengthMax(StringUtils.isBlank(list.get(0).getTotalmax()) ? "" : list.get(0).getTotalmax());
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());

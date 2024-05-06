@@ -579,6 +579,7 @@ this.repository = repo;
 			saveData.setAmendId(amendId);
 			saveData.setCurrencyId(req.getCurrencyId());
 			//*$
+			saveData.setPOBox(req.getPoBox().isEmpty() ? null : req.getPoBox());
 			saveData.setAlphabet(req.getCharacter().isEmpty() ? null : req.getCharacter());
 			saveData.setNumericDigits(req.getNumericdigits().isEmpty() ? null : req.getNumericdigits());
 			saveData.setSymbols(req.getSymbols().isEmpty() ? null : req.getSymbols());
@@ -842,30 +843,16 @@ this.repository = repo;
 			list = result.getResultList();
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCompanyId()))).collect(Collectors.toList());
 			list.sort(Comparator.comparing(InsuranceCompanyMaster :: getCompanyName ));
-			{
-				//get charactertype
-					String company_id="99999";
-					if(StringUtils.isNotBlank(list.get(0).getAlphabet()) ) {
-						if(list.get(0).getAlphabet().equals("A-Z"))
-						{
-							charactertype="Upper Case";
-						}else if(list.get(0).getAlphabet().equals("a-z"))
-						{
-							charactertype="Lower Case";	
-						}
-						else {
-							charactertype="Both";		
-						}
-					}
-				}
+			
 			res = dozerMapper.map(list.get(0) , InsuranceCompanyMasterRes.class);
 			res.setEntryDate(list.get(0).getEntryDate());
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
-			res.setCharacter(charactertype);
+			res.setCharacter(StringUtils.isBlank(list.get(0).getAlphabet()) ? "" : list.get(0).getAlphabet());
 			res.setNumericdigits(StringUtils.isBlank(list.get(0).getNumericDigits()) ? "" : list.get(0).getNumericDigits());
 			res.setSymbols(StringUtils.isBlank(list.get(0).getSymbols()) ? "" : list.get(0).getSymbols());
 			res.setTotallengthmin(StringUtils.isBlank(list.get(0).getTotalmin()) ? "" : list.get(0).getTotalmin());
 			res.setTotalLengthMax(StringUtils.isBlank(list.get(0).getTotalmax()) ? "" : list.get(0).getTotalmax());
+		   res.setPoBox(list.get(0).getPOBox());
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());

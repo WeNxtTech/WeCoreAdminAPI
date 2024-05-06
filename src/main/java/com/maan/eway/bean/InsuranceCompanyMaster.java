@@ -143,6 +143,10 @@ private static final long serialVersionUID = 1L;
     @Column(name="VRN_NUMBER", length=100)
     private String     vrnNumber;
     
+    
+    @Column(name="PO_BOX", length=100)
+    private String  pOBox;
+    
     @Column(name="ALPHABET", length=20)
     private String  alphabet;
     
@@ -157,6 +161,8 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="TOTALPSMAX", length=20)
     private String  Totalmax;
+    
+ 
 
 }
 

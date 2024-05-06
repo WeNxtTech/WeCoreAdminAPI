@@ -862,6 +862,7 @@ this.repository = repo;
 			res.setEntryDate(list.get(0).getEntryDate());
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
 			res.setCharacter(charactertype);
+			res.setNumericdigits(StringUtils.isBlank(list.get(0).getNumericDigits()) ? "" : list.get(0).getNumericDigits());
 			res.setSymbols(StringUtils.isBlank(list.get(0).getSymbols()) ? "" : list.get(0).getSymbols());
 			res.setTotallengthmin(StringUtils.isBlank(list.get(0).getTotalmin()) ? "" : list.get(0).getTotalmin());
 			res.setTotalLengthMax(StringUtils.isBlank(list.get(0).getTotalmax()) ? "" : list.get(0).getTotalmax());

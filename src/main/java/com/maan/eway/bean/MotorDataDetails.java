@@ -550,6 +550,34 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="PAYMENT_FREQUENCY", length=20)
     private Integer     paymentFrequency ;
+    
+    @Column(name="SERIES", length=50)
+    private String     series ;
+    
+    @Column(name="NO_OF_CYCLINDERS", length=20)
+    private Integer     nocyclinders ;
+    
+    @Column(name="NO_OF_CYCLINDERS_DESC", length=50)
+    private String   nocyclindersdesc ; 
+    
+    @Column(name="PLATE_TYPE_ID", length=5)
+    private String   platetypeid ; 
+    
+    @Column(name="PLATE_TYPE_DESC", length=50)
+    private String   platetypedesc ;
+    
+    @Column(name="PLATE_COLOR", length=50)
+    private String   platecolor ;
+    
+    @Column(name="NO_OF_DOORS", length=10)
+    private Integer     noofdoors ;
+    
+    @Column(name="NO_OF_DOORS_DESC", length=10)
+    private String   noofdoorsdesc ;
+    
+    @Column(name="ENGINE_TYPE", length=100)
+    private String   enginetype ; 
+    
 }
 
 

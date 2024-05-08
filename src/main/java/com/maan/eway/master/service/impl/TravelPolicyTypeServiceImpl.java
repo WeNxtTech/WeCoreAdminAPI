@@ -245,14 +245,16 @@ public class TravelPolicyTypeServiceImpl implements TravelPolicyTypeService {
 			Date entryDate = null;
 			String createdBy ="";
 			Integer coverId = 0;
-			
+			Integer id=0;
 			List<TravelPolicyType> old = repository.findByProductIdAndBranchCodeAndCompanyIdAndPolicyTypeIdAndPlanTypeIdOrderByCoverIdDesc(
 					Integer.valueOf(req.getProductId()), req.getBranchCode(), req.getCompanyId(),
 					Integer.valueOf(req.getPolicyTypeId()),Integer.valueOf(req.getPlanTypeId()) );
 			
 			if(StringUtils.isBlank(req.getCoverId())) {   //Insert
-				
-				coverId = old.get(0).getCoverId() + 1;
+				if(old.size()>0 && old!=null) {
+				id= old.get(0).getCoverId()==null?0:old.get(0).getCoverId();
+				}
+				coverId = id + 1;
 				entryDate = new Date();
 				createdBy = req.getCreatedBy();
 				res.setResponse("Saved Successfully");

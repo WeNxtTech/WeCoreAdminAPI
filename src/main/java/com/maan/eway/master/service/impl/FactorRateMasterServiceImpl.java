@@ -1815,7 +1815,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				saveData.setStatus(StringUtils.isBlank(data.getStatus()) ? req.getStatus()  : data.getStatus());
 				saveData.setAgencyCode(StringUtils.isBlank(req.getAgencyCode()) ? "99999" : req.getAgencyCode());
 				saveData.setBranchCode(StringUtils.isBlank(req.getBranchCode()) ? "99999"  : req.getBranchCode());
-				saveData.setSubCoverId(StringUtils.isBlank(req.getSubCoverId()) ? null :Integer.valueOf(req.getSubCoverId()));
+				saveData.setSubCoverId(StringUtils.isBlank(req.getSubCoverId()) ? 0 :Integer.valueOf(req.getSubCoverId()));
 				saveData.setCoverName(coverMD.size()>0 &&  coverMD.get("CoverName")!=null ? coverMD.get("CoverName").toString() : "") ;
 				saveData.setCoverDesc(coverMD.size()>0 &&  coverMD.get("CoverDesc")!=null ? coverMD.get("CoverDesc").toString() : "") ;
 				saveData.setSubCoverName(coverMD.size()>0 &&  coverMD.get("SubCoverName")!=null ? coverMD.get("SubCoverName").toString() : "") ;

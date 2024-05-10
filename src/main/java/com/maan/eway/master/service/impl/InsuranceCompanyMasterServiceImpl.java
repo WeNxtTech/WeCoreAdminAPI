@@ -361,6 +361,21 @@ this.repository = repo;
 		//	errors.add(new Error("12", "PoBox", "Please Enter Po Box within 20 Numbers"));
 			errors.add("1432");
 		}
+		if(!StringUtils.isBlank(req.getNumericdigits())&& !isNumericDigits(req.getNumericdigits(),"numericDigits"))
+		{
+			errors.add("2242"); // please enter valid numeric digits
+		}
+	    if(!StringUtils.isBlank(req.getSymbols()) && !isNumericDigits(req.getSymbols(),"Symbols"))
+	    {
+		  errors.add("2243");//please enter only symbols...
+	    }
+	    if(!StringUtils.isBlank(req.getTotalLengthMax())&& !StringUtils.isBlank(req.getTotallengthmin()))
+	    {
+	    if(Integer.parseInt(req.getTotallengthmin())>= Integer.parseInt(req.getTotalLengthMax()))
+	    {
+	    	errors.add("2244"); 
+	    }
+	    }
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
@@ -368,7 +383,36 @@ this.repository = repo;
 		}
 		return errors;
 	}
+
+	public boolean isNumericDigits(String value,String type)
+	{
+		try {
+		if(type.equalsIgnoreCase("numericDigits")) {
 	
+		String regex ="([0-9])-([0-9])";
+		if(StringUtils.isBlank(value))return false;
+	    int firstnum1=Character.getNumericValue(value.charAt(0));
+		int thirdnum=Character.getNumericValue(value.charAt(2));
+		if(value.matches(regex)&&(firstnum1<thirdnum))return true;
+		}
+		if(type.equalsIgnoreCase("Symbols"))
+		{
+			 String regex = ".*[~`!@#$%^&*()_\\-+=./;:{}\\[\\]\\\\|,*/<>?].*";
+			 String regex2 = ".*[^A-Za-z0-9].*";
+		if(value.matches(regex)&& !value.matches(regex2))return true;
+		return false;
+		}
+		}catch(Exception Problem)
+		{
+		System.out.println("***********Exception in NumbericDigits Method********************");
+		System.out.println(Problem.getMessage());
+		Problem.printStackTrace();
+		return false;	
+		}
+		
+		
+	return false;	
+	}
 
 	public boolean isNotValidMail(String mail) {
 		String regex = "^[a-zA-Z0-9_+&*-]+(?:\\." + "[a-zA-Z0-9_+&*-]+)*@" + "(?:[a-zA-Z0-9-]+\\.)+[a-z"

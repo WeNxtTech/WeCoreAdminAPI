@@ -361,11 +361,17 @@ this.repository = repo;
 		//	errors.add(new Error("12", "PoBox", "Please Enter Po Box within 20 Numbers"));
 			errors.add("1432");
 		}
+		if(StringUtils.isBlank(req.getCharacter()))errors.add("2246");
+		 if(StringUtils.isBlank(req.getNumericdigits()))errors.add("2245");
+		if(StringUtils.isBlank(req.getSymbols()))errors.add("2243");
+		if(StringUtils.isBlank(req.getTotallengthmin()))errors.add("2247");
+		if(StringUtils.isBlank(req.getTotalLengthMax()))errors.add("2247");	
+		
 		if(!StringUtils.isBlank(req.getNumericdigits())&& !isNumericDigits(req.getNumericdigits(),"numericDigits"))
 		{
 			errors.add("2242"); // please enter valid numeric digits
 		}
-	    if(!StringUtils.isBlank(req.getSymbols()) && !isNumericDigits(req.getSymbols(),"Symbols"))
+	    if(!StringUtils.isBlank(req.getSymbols()) && isNumericDigits(req.getSymbols(),"Symbols"))
 	    {
 		  errors.add("2243");//please enter only symbols...
 	    }
@@ -397,10 +403,12 @@ this.repository = repo;
 		}
 		if(type.equalsIgnoreCase("Symbols"))
 		{
-			 String regex = ".*[~`!@#$%^&*()_\\-+=./;:{}\\[\\]\\\\|,*/<>?].*";
-			 String regex2 = ".*[^A-Za-z0-9].*";
-		if(value.matches(regex)&& !value.matches(regex2))return true;
-		return false;
+			 String symbolRegex = "[\\!\\@\\#\\$%\\^\\&\\*\\(\\)\\?\\'\\-\\_\\=\\+\\{\\}\\:\\;\\,\\.\\/\\|]";
+		        Pattern pattern = Pattern.compile("^[" + symbolRegex + "]+$");
+			        Matcher matcher = pattern.matcher(value);
+			  if(matcher.matches())return false;
+			  
+	   return true;		  
 		}
 		}catch(Exception Problem)
 		{

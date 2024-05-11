@@ -40,4 +40,7 @@ public interface ProductSectionMasterRepository  extends JpaRepository<ProductSe
 
 	List<ProductSectionMaster> findByProductIdAndSectionIdOrderByEffectiveDateStartDesc(int parseInt, int parseInt2);
 
+	List<ProductSectionMaster> findByCompanyIdAndProductIdAndSectionIdOrderByEffectiveDateStartDesc(String insuranceId,
+			int parseInt, int parseInt2);
+
 }

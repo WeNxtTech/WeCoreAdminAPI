@@ -106,12 +106,12 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					String tablename="MsVehicleDetails";
 					String oneProduct  = "A" ;
 					if(StringUtils.isNotBlank(req.getSectionId())) {
-						List<ProductSectionMaster> idfortable = sectionRepo.findByProductIdAndSectionIdOrderByEffectiveDateStartDesc(Integer.parseInt(req.getProductId()) , Integer.parseInt(req.getSectionId()));
+						List<ProductSectionMaster> idfortable = sectionRepo.findByCompanyIdAndProductIdAndSectionIdOrderByEffectiveDateStartDesc(req.getInsuranceId(),Integer.parseInt(req.getProductId()) , Integer.parseInt(req.getSectionId()));
 						oneProduct = idfortable.size() > 0 ? idfortable.get(0).getMotorYn() : "P";
 					} else {
 						List<ProductMaster> idfortable = productrepo.findByProductIdOrderByEffectiveDateStartDesc(Integer.parseInt(req.getProductId()));
 						oneProduct = idfortable.get(0).getMotorYn();
-					}
+					}    
 						
 					if(oneProduct.equals("M"))
 						tablename="MsVehicleDetails";

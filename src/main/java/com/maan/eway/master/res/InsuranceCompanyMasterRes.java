@@ -3,6 +3,8 @@ package com.maan.eway.master.res;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.Column;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -94,8 +96,12 @@ public class InsuranceCompanyMasterRes implements Serializable {
 	@JsonProperty("Character")
 	private String character;
 	
-	@JsonProperty("NumericDigits")
-	private String numericdigits;
+	@JsonProperty("NumericDigitsStart")
+	private String numericdigitsStart;
+	
+	@JsonProperty("NumericDigitsEnd")
+	private String numericdigitsEnd;
+	
 	
 	@JsonProperty("Symbols")
 	private String symbols;
@@ -105,5 +111,8 @@ public class InsuranceCompanyMasterRes implements Serializable {
 	
 	@JsonProperty("TotalLengthMax")
 	private String TotalLengthMax;
+	
+	  @Column(name="PATTERN_STATUS", length=1)
+	    private String     patternstatus ;
 	
 }

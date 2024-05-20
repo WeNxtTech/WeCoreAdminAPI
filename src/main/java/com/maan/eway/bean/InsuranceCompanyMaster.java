@@ -150,8 +150,11 @@ private static final long serialVersionUID = 1L;
     @Column(name="ALPHABET", length=20)
     private String  alphabet;
     
-    @Column(name="NUMERICDIGITS", length=20)
-    private String  numericDigits;
+    @Column(name="NUMERICDIGITS_START", length=20)
+    private String  numericDigitsStart;
+    
+    @Column(name="NUMERICDIGITS_END", length=20)
+    private String  numericDigitsEnd;
     
     @Column(name="SYMBOLS", length=20)
     private String  symbols;

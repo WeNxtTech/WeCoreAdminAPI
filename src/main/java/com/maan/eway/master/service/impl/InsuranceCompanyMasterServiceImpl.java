@@ -365,14 +365,18 @@ this.repository = repo;
 		if(req.getPatternstatus().equals("Y"))
 		{
 		if(StringUtils.isBlank(req.getCharacter()))errors.add("2246");
-		 if(StringUtils.isBlank(req.getNumericdigits()))errors.add("2245");
+		if(StringUtils.isBlank(req.getNumericdigitsEnd()))errors.add("2245");
+		if(StringUtils.isBlank(req.getNumericdigitsStart()))errors.add("2245");
 		if(StringUtils.isBlank(req.getSymbols()))errors.add("2243");
 		if(StringUtils.isBlank(req.getTotallengthmin()))errors.add("2247");
 		if(StringUtils.isBlank(req.getTotalLengthMax()))errors.add("2247");	
 		
-		if(!StringUtils.isBlank(req.getNumericdigits())&& !isNumericDigits(req.getNumericdigits(),"numericDigits"))
+	
+		if(!StringUtils.isBlank(req.getNumericdigitsStart()) && !StringUtils.isBlank(req.getNumericdigitsEnd()) )
 		{
-			errors.add("2242"); // please enter valid numeric digits
+			String numberic=req.getNumericdigitsStart()+"-"+req.getNumericdigitsEnd();
+			if(!isNumericDigits(numberic,"numericDigits"))errors.add("2242"); 
+			// please enter valid numeric digits
 		}
 	    if(!StringUtils.isBlank(req.getSymbols()) && isNumericDigits(req.getSymbols(),"Symbols"))
 	    {
@@ -402,6 +406,7 @@ this.repository = repo;
 		if(type.equalsIgnoreCase("numericDigits")) {
 	
 		String regex ="([0-9])-([0-9])";
+	     System.out.println("NumericDigit-----------"+regex);
 		if(StringUtils.isBlank(value))return false;
 	    int firstnum1=Character.getNumericValue(value.charAt(0));
 		int thirdnum=Character.getNumericValue(value.charAt(2));
@@ -639,7 +644,8 @@ this.repository = repo;
 			//*$
 			saveData.setPOBox(req.getPoBox().isEmpty() ? null : req.getPoBox());
 			saveData.setAlphabet(StringUtils.isBlank(req.getCharacter())? null : req.getCharacter());
-			saveData.setNumericDigits(StringUtils.isBlank(req.getNumericdigits()) ? null : req.getNumericdigits());
+			saveData.setNumericDigitsStart(StringUtils.isBlank(req.getNumericdigitsStart())? null : req.getNumericdigitsStart());
+			saveData.setNumericDigitsEnd(StringUtils.isBlank(req.getNumericdigitsEnd())? null : req.getNumericdigitsEnd());			
 			saveData.setSymbols(StringUtils.isBlank(req.getSymbols()) ? null : req.getSymbols());
 			saveData.setTotalmin(StringUtils.isBlank(req.getTotallengthmin())? null : req.getTotallengthmin());
 			saveData.setTotalmax(StringUtils.isBlank(req.getTotalLengthMax()) ? null : req.getTotalLengthMax());
@@ -907,7 +913,9 @@ this.repository = repo;
 			res.setEntryDate(list.get(0).getEntryDate());
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
 			res.setCharacter(StringUtils.isBlank(list.get(0).getAlphabet()) ? "" : list.get(0).getAlphabet());
-			res.setNumericdigits(StringUtils.isBlank(list.get(0).getNumericDigits()) ? "" : list.get(0).getNumericDigits());
+			res.setNumericdigitsEnd(StringUtils.isBlank(list.get(0).getNumericDigitsEnd()) ? "" : list.get(0).getNumericDigitsEnd());
+			res.setNumericdigitsStart(StringUtils.isBlank(list.get(0).getNumericDigitsStart()) ? "" : list.get(0).getNumericDigitsStart());
+			res.setPatternstatus(StringUtils.isBlank(list.get(0).getPatternstatus()) ? "" : list.get(0).getPatternstatus());
 			res.setSymbols(StringUtils.isBlank(list.get(0).getSymbols()) ? "" : list.get(0).getSymbols());
 			res.setTotallengthmin(StringUtils.isBlank(list.get(0).getTotalmin()) ? "" : list.get(0).getTotalmin());
 			res.setTotalLengthMax(StringUtils.isBlank(list.get(0).getTotalmax()) ? "" : list.get(0).getTotalmax());

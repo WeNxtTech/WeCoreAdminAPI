@@ -101,8 +101,11 @@ public class InsuranceCompanyMasterSaveReq {
 	@JsonProperty("Character")
 	private String character;
 	
-	@JsonProperty("NumericDigits")
-	private String numericdigits;
+	@JsonProperty("NumericDigitsStart")
+	private String numericdigitsStart;
+	
+	@JsonProperty("NumericDigitsEnd")
+	private String numericdigitsEnd;
 	
 	@JsonProperty("Symbols")
 	private String symbols;

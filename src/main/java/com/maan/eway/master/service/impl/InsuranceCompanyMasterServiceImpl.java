@@ -361,6 +361,9 @@ this.repository = repo;
 		//	errors.add(new Error("12", "PoBox", "Please Enter Po Box within 20 Numbers"));
 			errors.add("1432");
 		}
+		if(StringUtils.isBlank(req.getPatternstatus()))errors.add("2248");
+		if(req.getPatternstatus().equals("Y"))
+		{
 		if(StringUtils.isBlank(req.getCharacter()))errors.add("2246");
 		 if(StringUtils.isBlank(req.getNumericdigits()))errors.add("2245");
 		if(StringUtils.isBlank(req.getSymbols()))errors.add("2243");
@@ -377,9 +380,12 @@ this.repository = repo;
 	    }
 	    if(!StringUtils.isBlank(req.getTotalLengthMax())&& !StringUtils.isBlank(req.getTotallengthmin()))
 	    {
+	    if(Integer.parseInt(req.getTotallengthmin())>20) errors.add("2249"); 
+	    	
 	    if(Integer.parseInt(req.getTotallengthmin())>= Integer.parseInt(req.getTotalLengthMax()))
 	    {
 	    	errors.add("2244"); 
+	    }
 	    }
 	    }
 		} catch (Exception e) {
@@ -632,11 +638,12 @@ this.repository = repo;
 			saveData.setCurrencyId(req.getCurrencyId());
 			//*$
 			saveData.setPOBox(req.getPoBox().isEmpty() ? null : req.getPoBox());
-			saveData.setAlphabet(req.getCharacter().isEmpty() ? null : req.getCharacter());
-			saveData.setNumericDigits(req.getNumericdigits().isEmpty() ? null : req.getNumericdigits());
-			saveData.setSymbols(req.getSymbols().isEmpty() ? null : req.getSymbols());
-			saveData.setTotalmin(req.getTotallengthmin().isEmpty() ? null : req.getTotallengthmin());
-			saveData.setTotalmax(req.getTotalLengthMax().isEmpty() ? null : req.getTotalLengthMax());
+			saveData.setAlphabet(StringUtils.isBlank(req.getCharacter())? null : req.getCharacter());
+			saveData.setNumericDigits(StringUtils.isBlank(req.getNumericdigits()) ? null : req.getNumericdigits());
+			saveData.setSymbols(StringUtils.isBlank(req.getSymbols()) ? null : req.getSymbols());
+			saveData.setTotalmin(StringUtils.isBlank(req.getTotallengthmin())? null : req.getTotallengthmin());
+			saveData.setTotalmax(StringUtils.isBlank(req.getTotalLengthMax()) ? null : req.getTotalLengthMax());
+			saveData.setPatternstatus(StringUtils.isBlank(req.getPatternstatus()) ? "N" : req.getPatternstatus());
 			repository.saveAndFlush(saveData);
 
 			

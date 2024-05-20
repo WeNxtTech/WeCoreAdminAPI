@@ -162,7 +162,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="TOTALPSMAX", length=20)
     private String  Totalmax;
     
- 
+    @Column(name="PATTERN_STATUS", length=1)
+    private String     patternstatus ;
 
 }
 

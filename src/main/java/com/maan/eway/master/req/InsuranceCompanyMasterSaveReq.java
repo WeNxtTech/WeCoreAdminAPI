@@ -112,5 +112,10 @@ public class InsuranceCompanyMasterSaveReq {
 	
 	@JsonProperty("TotalLengthMax")
 	private String TotalLengthMax;
+	
+	
+	@JsonProperty("PatternStatus")
+	private String patternstatus;
+	
 
 }

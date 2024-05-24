@@ -1388,7 +1388,8 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				saveCover.setBranchCode(StringUtils.isNotBlank(req.getBranchCode()) ? req.getBranchCode() : "99999");
 				saveCover.setProRataYn( StringUtils.isNotBlank(req.getProRataYn() ) ? req.getProRataYn()  : "N");
 				List<ListItemValue> proRataTypes =  getListItem("99999" , saveData.getProRataYn()   ,"PRO_RATA_TYPE");
-				String proRata = saveData.getProRataYn() ;
+				//String proRata = saveData.getProRataYn() ;
+				String proRata = StringUtils.isNotBlank(req.getProRataYn() ) ? req.getProRataYn()  : "N";
 				proRataTypes = proRataTypes.stream().filter( o -> proRata.equalsIgnoreCase(o.getItemCode())   ).collect(Collectors.toList());
 				saveCover.setProRataDesc(proRataTypes.size() > 0 ? proRataTypes.get(0).getItemValue() : ""   );
 				saveCover.setFreeCoverLimit(StringUtils.isBlank(req.getFreeCoverLimit()) ? BigDecimal.ZERO : new BigDecimal(req.getFreeCoverLimit())) ;

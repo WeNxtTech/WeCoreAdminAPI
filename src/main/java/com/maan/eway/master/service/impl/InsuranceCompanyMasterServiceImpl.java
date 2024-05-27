@@ -368,15 +368,15 @@ this.repository = repo;
 		if(StringUtils.isBlank(req.getNumericdigitsEnd()))errors.add("2245");
 		if(StringUtils.isBlank(req.getNumericdigitsStart()))errors.add("2245");
 		if(StringUtils.isBlank(req.getSymbols()))errors.add("2243");
-		if(StringUtils.isBlank(req.getTotallengthmin()))errors.add("2247");
-		if(StringUtils.isBlank(req.getTotalLengthMax()))errors.add("2247");	
+		if((StringUtils.isBlank(req.getTotallengthmin())) ||req.getTotallengthmin().equalsIgnoreCase("0"))errors.add("2247");
+		if((StringUtils.isBlank(req.getTotalLengthMax())) ||req.getTotalLengthMax().equalsIgnoreCase("0") )errors.add("2247");	
 		
 	
 		if(!StringUtils.isBlank(req.getNumericdigitsStart()) && !StringUtils.isBlank(req.getNumericdigitsEnd()) )
 		{
 			String numberic=req.getNumericdigitsStart()+"-"+req.getNumericdigitsEnd();
-			if(!isNumericDigits(numberic,"numericDigits"))errors.add("2242"); 
-			// please enter valid numeric digits
+			if(!isNumericDigits(numberic,"numericDigits"))errors.add("2245"); // please enter valid numeric digits
+		    
 		}
 	    if(!StringUtils.isBlank(req.getSymbols()) && isNumericDigits(req.getSymbols(),"Symbols"))
 	    {
@@ -384,12 +384,8 @@ this.repository = repo;
 	    }
 	    if(!StringUtils.isBlank(req.getTotalLengthMax())&& !StringUtils.isBlank(req.getTotallengthmin()))
 	    {
-	    if(Integer.parseInt(req.getTotallengthmin())>20) errors.add("2249"); 
-	    	
-	    if(Integer.parseInt(req.getTotallengthmin())>= Integer.parseInt(req.getTotalLengthMax()))
-	    {
-	    	errors.add("2244"); 
-	    }
+	    if((!(Integer.parseInt(req.getTotallengthmin())>=1) ) && (!(Integer.parseInt(req.getTotallengthmin())<=20))) errors.add("2247"); 
+	    if(Integer.parseInt(req.getTotallengthmin())>= Integer.parseInt(req.getTotalLengthMax()))errors.add("2247"); 
 	    }
 	    }
 		} catch (Exception e) {

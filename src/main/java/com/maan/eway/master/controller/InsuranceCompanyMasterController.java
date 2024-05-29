@@ -5,8 +5,8 @@
 */
 package com.maan.eway.master.controller;
 
-import java.util.Collections;
-import java.util.List;
+
+
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,7 @@ import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.DropdownCommonRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
-
+import java.util.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -74,6 +74,9 @@ public class InsuranceCompanyMasterController {
 		CommonRes data = new CommonRes();
 		List<String> validationCodes = insService.validateCompanySaveReq(req);
 		List<Error> validation = null;
+		
+		
+		
 		if(validationCodes!=null && validationCodes.size() > 0 ) {
 			CommonErrorModuleReq comErrDescReq = new CommonErrorModuleReq();
 			comErrDescReq.setBranchCode("99999");
@@ -83,10 +86,13 @@ public class InsuranceCompanyMasterController {
 			comErrDescReq.setModuleName("MASTERS");
 			
 			validation = errorDescService.getErrorDesc(validationCodes ,comErrDescReq);
-		}
-	
-		
-		//// validation
+			{
+				//Remove Duplicate ErrorCode Entry.
+			validation = validation.stream().collect(Collectors.collectingAndThen(Collectors.toMap(Error::getCode, e -> e, (existing, replacement) -> existing),
+		     map -> new ArrayList<>(map.values())));
+			}
+		    }
+	//// validation
 		if (validation != null && validation.size() != 0) {
 			data.setCommonResponse(null);
 			data.setIsError(true);

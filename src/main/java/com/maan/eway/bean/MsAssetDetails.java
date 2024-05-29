@@ -466,5 +466,11 @@ public class MsAssetDetails implements Serializable {
    
    @Column(name="GROUND_UNDERGROUND_SI")
    private 	BigDecimal groundUndergroundSi;
+   
+   @Column(name="WALL_TYPE") 
+   private String wallType;
+   
+   @Column(name="ROOF_TYPE") 
+   private String roofType;
   
 }

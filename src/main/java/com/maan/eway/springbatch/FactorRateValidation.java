@@ -59,10 +59,10 @@ public class FactorRateValidation {
 					factor.setParam6(p.getParam6()==null?"0":new BigDecimal(p.getParam6()).toPlainString());
 					factor.setParam7(p.getParam7()==null?"0":new BigDecimal(p.getParam7()).toPlainString());
 					factor.setParam8(p.getParam8()==null?"0":new BigDecimal(p.getParam8()).toPlainString());
-					factor.setParam9(StringUtils.isBlank(p.getParam9())?"0":new BigDecimal(p.getParam9()).toPlainString());
-					factor.setParam10(StringUtils.isBlank(p.getParam10())?"0":new BigDecimal(p.getParam10()).toPlainString());
-					factor.setParam11(StringUtils.isBlank(p.getParam11())?"0":new BigDecimal(p.getParam11()).toPlainString());
-					factor.setParam12(StringUtils.isBlank(p.getParam12())?"0":new BigDecimal(p.getParam12()).toPlainString());
+					factor.setParam9(StringUtils.isBlank(p.getParam9())?"0":p.getParam9());
+					factor.setParam10(StringUtils.isBlank(p.getParam10())?"0":p.getParam10());
+					factor.setParam11(StringUtils.isBlank(p.getParam11())?"0":p.getParam11());
+					factor.setParam12(StringUtils.isBlank(p.getParam12())?"0":p.getParam12());
 					factor.setXlAgencyCode(StringUtils.isBlank(p.getXlAgencyCode())?"":p.getXlAgencyCode());
 					factor.setParam13(StringUtils.isBlank(p.getParam13())?null:new BigDecimal(p.getParam13()).toPlainString());
 					factor.setParam14(StringUtils.isBlank(p.getParam14())?null:new BigDecimal(p.getParam14()).toPlainString());

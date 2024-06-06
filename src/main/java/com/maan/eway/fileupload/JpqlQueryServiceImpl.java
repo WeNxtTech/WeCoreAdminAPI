@@ -124,8 +124,10 @@ public class JpqlQueryServiceImpl {
 		List<Object[][]> object =null;
 		try {
 			query=em.createQuery("select agencyCode," +columns+ ",rate,calcType,minPremium,regulatoryCode,excessPercent,excessAmount,excessDesc,status from FactorRateMaster where  companyId=:companyId "
-					+ "and productId=:productId and factorTypeId=:factorTypeId and coverId=:coverId and sectionId=:sectionId and agencyCode=:agencyCode and branchCode=:branchCode and"
-					+ " sysdate() between effectiveDateStart and effectiveDateEnd and subCoverId=:subCoverId");
+					+ "and productId=:productId and factorTypeId=:factorTypeId and coverId=:coverId and sectionId=:sectionId and agencyCode=:agencyCode and branchCode=:branchCode and "
+					+ "sysdate() between effectiveDateStart and effectiveDateEnd and subCoverId=:subCoverId and amendId =(select max(amendId) from FactorRateMaster "
+					+ "where companyId=:companyId and productId=:productId and factorTypeId=:factorTypeId and coverId=:coverId and sectionId=:sectionId and agencyCode=:agencyCode and branchCode=:branchCode and "
+					+ "sysdate() between effectiveDateStart and effectiveDateEnd and subCoverId=:subCoverId)");
 			
 			query.setParameter("companyId", req.getCompanyId());
 			query.setParameter("productId", Integer.valueOf(req.getProductId()));

@@ -472,5 +472,11 @@ public class MsAssetDetails implements Serializable {
    
    @Column(name="ROOF_TYPE") 
    private String roofType;
+   
+   @Column(name="DOMESTIC_SERVENT_SI")
+   private BigDecimal       domesticServentSi;
+   
+   @Column(name="DOMESTIC_SERVENT_SI_LC")
+   private BigDecimal       domesticServentSiLc;
   
 }

@@ -504,7 +504,14 @@ private static final long serialVersionUID = 1L;
        private String indemnitytypedesc ;
        
        @Column(name="INDEMNITY_SUMINSURED")
-       private Double indemnitysi ;}
+       private Double indemnitysi ;
+       
+       @Column(name="DOMESTIC_SERVENT_SI")
+       private BigDecimal       domesticServentSi;
+       
+       @Column(name="DOMESTIC_SERVENT_SI_LC")
+       private BigDecimal       domesticServentSiLc;
+}
 
 
 

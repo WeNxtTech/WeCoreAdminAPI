@@ -95,6 +95,12 @@ public class PaymentMaster {
 	
 	@Column(name="UPDATED_BY",length=100)
 	private String updatedBy;
+	
+	@Column(name="OA_CODE",length=100)
+	private String oaCode;
+	
+	@Column(name="MOBILE_PAYMENT_YN",length=20)
+	private String mobilePaymentYn;
 
 	
 	

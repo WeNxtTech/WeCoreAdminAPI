@@ -473,6 +473,14 @@ public class MsAssetDetails implements Serializable {
    @Column(name="ROOF_TYPE") 
    private String roofType;
    
-
+     //Bond
+   @Column(name="BOND_SUMINSURED")
+   private BigDecimal bondSuminsured;
+   
+    @Column(name="BOND_TYPE")
+   private String bondType;
+   
+   @Column(name="BOND_YEAR")
+   private String bondYear;
   
 }

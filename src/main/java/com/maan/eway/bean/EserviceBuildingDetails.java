@@ -830,6 +830,19 @@ private static final long serialVersionUID = 1L;
       private 	BigDecimal groundUndergroundSi;
    
       
+    //Bond
+      @Column(name="BOND_SUMINSURED_LC")
+      private BigDecimal bondSuminsuredLc;
+      
+      @Column(name="BOND_SUMINSURED_FC")
+      private BigDecimal bondSuminsuredFc;
+      
+      @Column(name="BOND_TYPE")
+      private String bondType;
+      
+      @Column(name="BOND_YEAR")
+      private String bondYear;
+      
 }
 
 

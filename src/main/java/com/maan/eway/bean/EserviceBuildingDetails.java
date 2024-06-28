@@ -831,11 +831,8 @@ private static final long serialVersionUID = 1L;
    
       
     //Bond
-      @Column(name="BOND_SUMINSURED_LC")
-      private BigDecimal bondSuminsuredLc;
-      
-      @Column(name="BOND_SUMINSURED_FC")
-      private BigDecimal bondSuminsuredFc;
+      @Column(name="BOND_SUMINSURED")
+      private BigDecimal bondSuminsured;
       
       @Column(name="BOND_TYPE")
       private String bondType;

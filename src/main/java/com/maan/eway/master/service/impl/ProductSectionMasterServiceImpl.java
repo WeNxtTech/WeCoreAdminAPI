@@ -753,14 +753,31 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			TypedQuery<ProductSectionMaster> result = em.createQuery(query);			
 			list =  result.getResultList();  
 			
+			
+			
 			for(ProductSectionMaster data : list ) {
 				// Response
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getSectionId().toString());
 				res.setCodeDesc(data.getSectionName());
 				res.setStatus(data.getStatus());
+				
+				
 				resList.add(res);
-			}	
+			}
+			if(req.getProductId().equals("6") )
+			{
+				resList = resList.stream()
+						  .peek(a -> {
+						    String code = a.getCode();
+						    if (Arrays.asList("113", "114", "115", "116").contains(code)) {
+						      a.setIndustryType("G");}
+						   else {
+						      a.setIndustryType("N & M"); // 
+						    }
+						  })
+						  .collect(Collectors.toList()); 
+			}
 			
 			resList.sort( Comparator.comparing(DropDownRes :: getCodeDesc )) ;
 			

@@ -652,7 +652,13 @@ private static final long serialVersionUID = 1L;
 	
 	@Column(name = "INFLATION_SI"  )
 	private BigDecimal inflationSi;
+	
 
+	@Column(name = "HORSE_POWER")
+	private Double horsePower;
+	
+	 @Column(name = "ZONE")
+	 private Double zone;
 }
 
 

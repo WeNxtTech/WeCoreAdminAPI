@@ -337,6 +337,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="POL_CUST_CODE", length=50)
     private String     polCustCode ;
+    
+    @Column(name = "ZONE")
+	private Integer zone;
 }
 
 

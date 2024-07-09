@@ -232,7 +232,7 @@ public class VehicleAsynchronousProcess {
 				vehicleRequest.put("Chassisnumber", StringUtils.isBlank(p.getReqChassisNo())?p.getChassisNumber():p.getReqChassisNo());
 				vehicleRequest.put("CreatedBy", StringUtils.isBlank(p.getCreatedBy())?p.getLoginId():p.getCreatedBy());
 				vehicleRequest.put("Insurancetype", StringUtils.isBlank(p.getInsuranceTypeId())?"":Arrays.asList(p.getInsuranceTypeId()));
-				vehicleRequest.put("SectionId", StringUtils.isBlank(p.getInsuranceTypeId())?"":Arrays.asList(p.getInsuranceTypeId()));
+				vehicleRequest.put("SectionId", StringUtils.isBlank(p.getInsuranceTypeId())?"":p.getInsuranceTypeId());
 				vehicleRequest.put("InsuranceId", p.getCompanyId());
 				vehicleRequest.put("InsuranceClass", StringUtils.isBlank(p.getInsuranceClassId())?"3":p.getInsuranceClassId());
 				vehicleRequest.put("BranchCode", StringUtils.isBlank(p.getBranchCode())?"":p.getBranchCode());

@@ -106,7 +106,7 @@ public interface EserviceMotorDetailsRawRepository  extends JpaRepository<Eservi
 	@Modifying
 	@Transactional
 	//@Query(value ="UPDATE eservice_motor_details_raw SET error_desc = CASE WHEN(SECTION_ID IS NULL OR SECTION_ID = '') THEN '~Sectionid not found' WHEN INSURANCE_TYPE_ID IS NULL OR INSURANCE_TYPE_ID = '' THEN '~InsuranceType id not found' WHEN INSURANCE_CLASS_ID IS NULL OR INSURANCE_CLASS_ID = '' THEN '~InsuranceClass id not found' WHEN BODY_TYPE_ID IS NULL OR BODY_TYPE_ID = '' THEN '~BodyType id not found' WHEN MOTOR_USAGE_ID IS NULL OR MOTOR_USAGE_ID = '' THEN '~MotorUsageId not found' ELSE '' END, STATUS = CASE WHEN error_desc IS NOT NULL AND error_desc!='' THEN 'E' ELSE 'Y' END WHERE company_id =?1 AND product_id = ?2 AND typeid =?3 AND request_reference_no =?4",nativeQuery=true)
-	@Query(value="UPDATE eservice_motor_details_raw SET error_desc = CASE WHEN(motor_usage_id IS NULL) THEN '~motor_usage_id not found' ELSE error_desc END, status =decode(error_desc,'','E','Y')"
+	@Query(value="UPDATE eservice_motor_details_raw SET error_desc = CASE WHEN(motor_usage_id IS NULL) THEN '~motor_usage_id not found' ELSE error_desc END, status =IF(error_desc IS NOT NULL,'E','Y')"
 			+ " WHERE company_id = ?1 AND product_id = ?2 AND typeid = ?3 AND request_reference_no = ?4",nativeQuery=true)
 	Integer updateMasterIdEmptyValidation(Integer companyId, Integer productId, Integer typeId, String requestReferenceNo);
 

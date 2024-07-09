@@ -1197,7 +1197,7 @@ public class UtilityServiceImpl {
 			log.info("FactorRateRawInsert  Error Records count : "+count);
 			if(count==0) {
 				status =true;	
-				count=rawMasterRepository.countByTranIdAndStatus(tranId,"Y");
+				count=rawMasterRepository.countByTranId(tranId);
 				log.info("Maintable batch job calling .... : "+count);
 				JobParameters jobParameters = new JobParametersBuilder()
 						.addLong("time", System.currentTimeMillis())

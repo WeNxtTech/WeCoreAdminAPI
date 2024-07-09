@@ -31,4 +31,6 @@ public interface FactorRateRawMasterRepository extends JpaRepository<FactorRateR
 
 	List<FactorRateRawInsert> findByTranIdAndStatus(String tranId, String string);
 
+	Long countByTranId(String tranId);
+
 }

@@ -200,6 +200,13 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="PRO_RATA_DESC")
     private String       proRataDesc;
+    
+    @Column(name = "CODE_DESC_LOCAL")
+    private String codeDescLocal;
+    
+    
+    
+    
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

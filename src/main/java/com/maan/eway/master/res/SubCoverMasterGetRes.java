@@ -122,4 +122,7 @@ public class SubCoverMasterGetRes implements Serializable {
 
 	@JsonProperty("ProRataYn")
 	private String proRataYn;
+	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
 }

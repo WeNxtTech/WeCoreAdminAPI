@@ -430,6 +430,7 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 				saveData.setSubCoverYn("Y");
 				saveData.setMinSuminsured(StringUtils.isBlank(req.getSumInsuredStart())? BigDecimal.ZERO : new BigDecimal(req.getSumInsuredStart()));
 				saveData.setCoverageLimit(StringUtils.isBlank(req.getCoverageLimit())? BigDecimal.ZERO : new BigDecimal(req.getCoverageLimit()));
+				saveData.setCodeDescLocal( StringUtils.isNotBlank(req.getCodeDescLocal()) ? req.getCodeDescLocal() : "" );
 				
 				// Amount Details
 			if(req.getCalcType().equalsIgnoreCase("F") || req.getCalcType().equalsIgnoreCase("FD") ) {
@@ -758,6 +759,10 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 		res.setSumInsuredStart(list.get(0).getMinSuminsured() == null ? "" :df.format(list.get(0).getMinSuminsured()));
 		res.setBaseRate(list.get(0).getBaseRate() == null ? "" : df.format(list.get(0).getBaseRate()));
 		res.setCoverageLimit(list.get(0).getCoverageLimit() == null ? "" : df.format(list.get(0).getCoverageLimit()));
+		
+		if (null != list && !list.isEmpty() && StringUtils.isNotBlank(list.get(0).getCodeDescLocal())) {
+			res.setCodeDescLocal(list.get(0).getCodeDescLocal());
+		}		
 			
 	} catch (Exception e) {
 		e.printStackTrace();
@@ -812,6 +817,9 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 			for (CoverMaster data : coverList) {
 				SubCoverMasterGetAllRes res = new SubCoverMasterGetAllRes();
 				res = dozerMapper.map(data, SubCoverMasterGetAllRes.class);
+				if (StringUtils.isNotBlank(data.getCodeDescLocal())) {
+					res.setCodeDescLocal(data.getCodeDescLocal());
+				}
 				resList.add(res);
 			}
 

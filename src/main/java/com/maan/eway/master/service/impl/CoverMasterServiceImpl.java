@@ -502,6 +502,7 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			saveData.setDependentCoverYn(StringUtils.isNotBlank(req.getDependentCoverYn()) ? req.getDependentCoverYn() : "N" );
 			saveData.setMultiSelectYn( StringUtils.isNotBlank(req.getMultiSelectYn() ) ? req.getMultiSelectYn()  : "N");
 			saveData.setProRataYn( StringUtils.isNotBlank(req.getProRataYn() ) ? req.getProRataYn()  : "N");
+			saveData.setCodeDescLocal(StringUtils.isNotBlank(req.getCodeDescLocal()) ? req.getCodeDescLocal() : ""  );
 			
 			List<ListItemValue> proRataTypes =  getListItem("99999" , saveData.getProRataYn()   ,"PRO_RATA_TYPE");
 			String proRata = saveData.getProRataYn() ;
@@ -735,6 +736,9 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			for (CoverMaster  data : list) {
 				CoverMasterGetAllRes res = new CoverMasterGetAllRes();
 				res = mapper.map(data, CoverMasterGetAllRes.class);
+				if (StringUtils.isNotBlank(data.getCodeDescLocal())) {
+					res.setCodeDescLocal(data.getCodeDescLocal());
+				}
 				resList.add(res);
 			}
 			
@@ -815,6 +819,10 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			res.setExcessPercent(list.get(0).getExcessPercent() == null ? "" :df.format(list.get(0).getExcessPercent()));
 			res.setExcessAmount(list.get(0).getExcessAmount() == null ? "" :df.format(list.get(0).getExcessAmount()));
 			res.setExcessDesc(list.get(0).getExcessDesc() == null ? "" :list.get(0).getExcessDesc());
+			
+			if (null != list && !list.isEmpty() && StringUtils.isNotBlank(list.get(0).getCodeDescLocal())) {
+				res.setCodeDescLocal(list.get(0).getCodeDescLocal());
+			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();

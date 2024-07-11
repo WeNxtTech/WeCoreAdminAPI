@@ -113,4 +113,8 @@ public class SubCoverMasterSaveReq implements Serializable {
 	
 	@JsonProperty("ExcessDesc")
 	private String excessDesc;
+	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
+	
 }

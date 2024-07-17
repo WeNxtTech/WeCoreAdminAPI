@@ -41,7 +41,7 @@ import javax.persistence.*;
 @DynamicInsert
 @DynamicUpdate
 @Builder
-@Table(name="CreditLimitDetail")
+@Table(name="CREDIT_LIMIT_DETAIL")
 
 
 public class CreditLimitDetail implements Serializable {

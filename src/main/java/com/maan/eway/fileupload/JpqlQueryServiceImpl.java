@@ -307,13 +307,22 @@ public class JpqlQueryServiceImpl {
 		StringJoiner display_columns = new StringJoiner(",");
 		StringJoiner select_columns = new StringJoiner(",");
 		Map<String,Object> res =new HashMap<String,Object>();
+		List<PremiaConfigDataMaster> premiaList=null;
 		try {
 			query =em.createQuery("SELECT p FROM PremiaConfigDataMaster p where"
 					+ " p.companyId=:companyId and p.productId=:productId and p.premiaId=:premiaId");
 			query.setParameter("companyId", req.getCompanyId());
 			query.setParameter("productId", req.getProductId());
 			query.setParameter("premiaId",premiaId );
-			List<PremiaConfigDataMaster> premiaList=query.getResultList(); 
+			premiaList=query.getResultList(); 
+			if(CollectionUtils.isEmpty(premiaList)) {
+				query =em.createQuery("SELECT p FROM PremiaConfigDataMaster p where"
+						+ " p.companyId=:companyId and p.productId=:productId and p.premiaId=:premiaId");
+				query.setParameter("companyId", req.getCompanyId());
+				query.setParameter("productId", "99999");
+				query.setParameter("premiaId",premiaId );
+				premiaList=query.getResultList(); 
+			}
 			if(!CollectionUtils.isEmpty(premiaList)) {
 					for (PremiaConfigDataMaster fac :premiaList) {
 							display_columns.add(fac.getColumnName());

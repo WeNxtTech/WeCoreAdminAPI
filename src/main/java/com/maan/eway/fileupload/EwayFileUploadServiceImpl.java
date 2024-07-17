@@ -371,7 +371,9 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 		FileDownloadRes  res =new FileDownloadRes();
 		List<Error> errors = new ArrayList<Error>();
 		try {
+			System.out.println("Premia Intergration Excel Download Starts............................");
 			Map<String,Object> premia=getallPremiaConfig(req);
+			System.out.println("Premia Config Master  : "+premia);
 			int count=0;
 			String[] tableList=null;
 			if(premia!=null) {
@@ -389,7 +391,8 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 			premiaId=premiaId+1;
 			
 			tableString=capitalizeWordsWithoutUnderscore(table1.replaceAll("\\s", ""));
-			
+			System.out.println("Premia Id  : "+premiaId);
+			System.out.println("Premia Table  : "+tableString);
 			Map<String,Object> object=queryService.getPremiaXlColumns(req,premiaId);
 			if(object!=null) {
 				String input =object.get("QUERY_COLUMNS").toString();
@@ -563,8 +566,10 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
 			Predicate n6 = cb.equal(b.get("productId"),req.getProductId());
+			Predicate n7 = cb.equal(b.get("productId"), "99999");
+			Predicate n8 = cb.or(n6,n7);
 			if((StringUtils.isNotBlank(req.getProductId()))) {
-			query.where(n1,n2,n6).orderBy(orderList);
+			query.where(n1,n2,n8).orderBy(orderList);
 			}
 			
 			else {

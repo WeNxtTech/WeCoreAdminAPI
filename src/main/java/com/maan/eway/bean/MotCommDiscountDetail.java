@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -59,6 +58,14 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="REQUESTREFERENCENO", nullable=false, length=15)
     private String     requestreferenceno ;
+    
+    @Id
+    @Column(name="RISK_ID")
+    private Integer     riskId ;
+    
+    @Id
+    @Column(name="CVR_ID")
+    private Integer     cvrId ;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="SERVICE_ID", length=50)
@@ -111,14 +118,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="DISCOUNT_AMOUNT")
     private Double discountAmount ;
 
-    @Column(name="CVR_ID")
-    private Integer     cvrId ;
-    
     @Column(name="COVER_CODE")
     private Integer     coverCode ;
-    
-    @Column(name="RISK_ID")
-    private Integer     riskId ;
     
     @Column(name="COVER_DESC", length=100)
     private String     coverDesc ;

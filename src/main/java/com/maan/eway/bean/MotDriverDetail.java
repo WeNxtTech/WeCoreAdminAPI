@@ -12,9 +12,9 @@
 
 package com.maan.eway.bean;
 
-
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -58,6 +58,10 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="SERIAL_NO", nullable=false)
     private Double     serialNo ;
+    
+    @Id
+    @Column(name="RISK_ID")
+    private Integer    riskId ;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="SERVICE_ID", length=40)
@@ -127,10 +131,8 @@ private static final long serialVersionUID = 1L;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="LICENSE_ISSUED_ON")
     private Date       licenseIssuedOn ;
-
-    @Column(name="RISK_ID")
-    private Integer riskId;
-
+    
+    
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

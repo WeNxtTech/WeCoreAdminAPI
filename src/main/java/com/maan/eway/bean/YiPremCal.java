@@ -59,6 +59,10 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="REQUESTREFERENCENO", nullable=false, length=15)
     private String     requestreferenceno ;
+    
+    @Id
+    @Column(name="RISK_ID", length=40)
+    private String     riskId ;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="SERVICE_ID", length=40)
@@ -70,19 +74,16 @@ private static final long serialVersionUID = 1L;
     @Column(name="ITERATION_NO", length=5)
     private String     iterationNo ;
 
-    @Column(name="RISK_ID", length=40)
-    private String     riskId ;
-
     @Column(name="SEC_CODE", length=40)
     private String     secCode ;
 
     @Column(name="COVER_DESCRIPTION", length=500)
     private String     coverDescription ;
 
-    @Column(name="COVER_PREMIUM", length=100)
-    private String     coverPremium ;
+    @Column(name="COVER_PREMIUM",length=100)
+    private String    coverPremium ;
 
-    @Column(name="SUM_INSURED", length=100)
+    @Column(name="SUM_INSURED",length=100)
     private String   sumInsured ;
 
     @Temporal(TemporalType.TIMESTAMP)

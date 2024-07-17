@@ -14,7 +14,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -88,7 +87,7 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="VAT_MODIFIED_YN")
     private Double     vatModifiedYn ;
-
+    
     @Column(name="PROD_CODE", length=12)
     private String     prodCode ;
 

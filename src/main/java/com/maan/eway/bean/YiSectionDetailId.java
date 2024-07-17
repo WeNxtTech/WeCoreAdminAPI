@@ -24,16 +24,15 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 @Builder
-public class YiPremCalId implements Serializable {
+public class YiSectionDetailId implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     //--- ENTITY KEY ATTRIBUTES 
-    private String     coverCode ;
-    
+
     private String     requestreferenceno ;
-    
-    private String     riskId ;
+
+    private String riskId;
     
      
 }

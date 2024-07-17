@@ -1129,8 +1129,8 @@ this.repository = repo;
 			Predicate n12 = cb.or(n1,n11);
 			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			Predicate n4 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
-			Predicate n5 = e0.in(comapanyIds) ;
-			query.where(n12,n2,n4,n5).orderBy(orderList);
+			//Predicate n5 = e0.in(comapanyIds) ;
+			query.where(n12,n2,n4).orderBy(orderList);
 			// Get Result
 			TypedQuery<InsuranceCompanyMaster> result = em.createQuery(query);
 			list = result.getResultList();

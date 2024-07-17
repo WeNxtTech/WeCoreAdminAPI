@@ -582,9 +582,12 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 					premiaId.add(fac.getPremiaId());
 					}
 		}
-			res.put("TABLE_NAME", tableName.toString());
-			res.put("PREMIA_ID", premiaId.toString());
-			log.info("getPremiaTable Response || "+json.toJson(res));
+			
+			 res.put("TABLE_NAME", tableName.toString());
+			 res.put("PREMIA_ID", premiaId.toString());
+			 res.put("TABLE_NAME", tableName.get(0).toString());
+			 res.put("PREMIA_ID", premiaId.get(0).toString());
+			 log.info("getPremiaTable Response || "+json.toJson(res));
 	
 		}catch (Exception e) {
 			e.printStackTrace();

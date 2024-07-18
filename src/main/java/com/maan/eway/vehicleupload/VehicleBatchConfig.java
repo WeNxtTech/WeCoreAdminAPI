@@ -96,11 +96,11 @@ public Job importUserJob(@Qualifier("VehicleListener")JobExecutionListener liste
 @Bean
 public TaskExecutor taskExecutor(){
 	  asyncTaskExecutor=new ThreadPoolTaskExecutor();
-	 	asyncTaskExecutor.setCorePoolSize(10);
-	 	asyncTaskExecutor.setMaxPoolSize(10);
+	 	asyncTaskExecutor.setCorePoolSize(100);
+	 	asyncTaskExecutor.setMaxPoolSize(500);
 	 	asyncTaskExecutor.setWaitForTasksToCompleteOnShutdown(true);
 	 	asyncTaskExecutor.setAwaitTerminationSeconds(15);	
-	 	asyncTaskExecutor.setQueueCapacity(1000);
+	 	asyncTaskExecutor.setQueueCapacity(10000);
 	 	asyncTaskExecutor.setThreadNamePrefix("spring_batch");
 	 	asyncTaskExecutor.initialize();
     return asyncTaskExecutor;

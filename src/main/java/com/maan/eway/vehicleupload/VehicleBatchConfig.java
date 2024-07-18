@@ -109,7 +109,7 @@ public TaskExecutor taskExecutor(){
 @Bean
 public Step step1() {
     return stepBuilderFactory.get("VehicleJob")
-            .<Record, Record>chunk(1000)
+            .<Record, Record>chunk(4000)
             .reader(reader(OVERRIDDEN_BY_EXPRESSION,OVERRIDDEN_BY_EXPRESSION,OVERRIDDEN_BY_EXPRESSION))
            // .processor(synchProcessor())
             .writer(batchWriter.itemWriter(transactionDetailRepo,jdbcTemplate))///em,dataSource,,emf

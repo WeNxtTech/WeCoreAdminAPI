@@ -167,7 +167,7 @@ public class VehicleAsynchronousProcess {
 	
 	@SuppressWarnings("unchecked")
 	@Async("fileUploadExeuter")
-	public synchronized CompletableFuture<List<Map<String,Object>>> createQuote(EserviceMotorDetailsRaw p, String auth,Long vehicleId){
+	public  CompletableFuture<List<Map<String,Object>>> createQuote(EserviceMotorDetailsRaw p, String auth,Long vehicleId){
 		String response ="Success";
 		List<Map<String,Object>> errorList =new ArrayList<>();
 		try {

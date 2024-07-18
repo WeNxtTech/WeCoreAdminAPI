@@ -525,7 +525,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			// for motor validation block
 			if("5".equals(product) &&( "100002".equals(companyId.toString()) || "100019".equals(companyId.toString()))) {
 			
-				//eserviceRepository.updateInsuranceTypeId(companyId, productId, typeId, requestReferenceNo);
+			/*	//eserviceRepository.updateInsuranceTypeId(companyId, productId, typeId, requestReferenceNo);
 				criteriaQuery.updateInsuranceType(companyId, productId, typeId, requestReferenceNo);
 				//eserviceRepository.updateSectionIdByRequestRefNo(companyId, productId, typeId, requestReferenceNo);
 				//criteriaQuery.updateSectionId(companyId, productId, typeId, requestReferenceNo);
@@ -579,7 +579,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 				//criteriaQuery.updateColleteralValidation(companyId, productId, typeId, requestReferenceNo);
 				eserviceRepository.updateMasterIdEmptyValidation(companyId, productId, typeId, requestReferenceNo);
 				criteriaQuery.updateEmptyDataError(companyId, productId, typeId, requestReferenceNo);
-				criteriaQuery.updateMotorErrorStatus(companyId, productId, typeId, requestReferenceNo,"0");
+				criteriaQuery.updateMotorErrorStatus(companyId, productId, typeId, requestReferenceNo,"0");*/
 				List<EserviceMotorDetailsRaw> dlist =eserviceRepository.findByCompanyIdAndProductIdAndRequestReferenceNo(companyId,productId,requestReferenceNo);
 				validRecords =dlist.stream().filter(p ->"100002".equals(companyId.toString())?"Y".equals(p.getStatus()) && "Y".equals(p.getTiraStatus()):"Y".equals(p.getStatus())).count();
 				errorRecords =dlist.stream().filter(p ->"100002".equals(companyId.toString())?"E".equals(p.getStatus()) ||  "E".equals(p.getTiraStatus()):"E".equals(p.getStatus())).count();

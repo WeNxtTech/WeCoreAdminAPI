@@ -184,6 +184,9 @@ private static final long serialVersionUID = 1L;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ROAD_WORTHEXP_DT")
     private Date       roadWorthexpDt ;
+    
+    @Column(name = "HORSE_POWER")
+	private Integer horsePower;
 
 }
 

@@ -338,6 +338,15 @@ private static final long serialVersionUID = 1L;
 
 	@Column(name = "PREVIOUS_INSURANCE_YN")
 	private String previousInsuranceYN;
+	
+	@Column(name = "CLASS")
+	private String clasS;
+
+	@Column(name = "NO_OF_CARDS")
+	private Integer noOfCards;
+
+	@Column(name = "PAYLOAD")
+	private BigDecimal payload;
 
 }
 

@@ -340,7 +340,7 @@ private static final long serialVersionUID = 1L;
 	private String previousInsuranceYN;
 	
 	@Column(name = "CLASS")
-	private String clasS;
+	private String class_Type;
 
 	@Column(name = "NO_OF_CARDS")
 	private Integer noOfCards;

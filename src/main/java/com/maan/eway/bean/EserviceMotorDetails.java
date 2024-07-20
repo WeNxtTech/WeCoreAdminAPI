@@ -661,7 +661,7 @@ private static final long serialVersionUID = 1L;
 	private Integer zone;
 
 	@Column(name = "CLASS")
-	private String class_Type;
+	private String clasS;
 
 	@Column(name = "NO_OF_CARDS")
 	private Integer noOfCards;

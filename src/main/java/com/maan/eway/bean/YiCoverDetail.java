@@ -15,6 +15,7 @@ package com.maan.eway.bean;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
@@ -43,14 +44,14 @@ import javax.persistence.*;
 @DynamicUpdate
 @Builder
 @IdClass(YiCoverDetailId.class)
-@Table(name="yi_cover_detail")
+@Table(name="Yi_Cover_Detail")
 
 
 public class YiCoverDetail implements Serializable {
  
 private static final long serialVersionUID = 1L;
- 
-    //--- ENTITY PRIMARY KEY 
+
+// --- ENTITY PRIMARY KEY
 @Id
 @Column(name = "QUOTATION_POLICY_NO", length = 100)
 private String quotationPolicyNo;
@@ -159,6 +160,10 @@ private String prcPremFc;
 
 @Column(name = "PRC_PREM_LC_1", length = 200)
 private String prcPremLc1;
+
+@Column(name="CVR_END_NO_IDX", length=100)
+private String     cvrEndNoIdx ;
+
 }
 
 

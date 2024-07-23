@@ -43,7 +43,7 @@ import lombok.ToString;
 @DynamicUpdate
 //@Builder
 @IdClass(PgithPolRiskAddlInfoId.class)
-@Table(name="PGIT_POL_RISK_ADDL_INFO_01")
+@Table(name="PGIT_POL_RISK_ADDL_INFO_01") 
 
 
 public class PgithPolRiskAddlInfo implements Serializable {
@@ -77,7 +77,7 @@ private static final long serialVersionUID = 1L;
     
 
     //--- ENTITY DATA FIELDS 
-    @Column(name="PRAIH_SYS_ID", nullable=false)
+    @Column(name="PRAIH_SYS_ID")
     private BigDecimal praihSysId ;
     
     @Column(name="PRAIH_POL_SYS_ID")
@@ -1047,21 +1047,21 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="P_WS_ERROR")
     private String     pWsError ;
-
     @Column(name="SERVICE_ACTION")
     private String     serviceAction ;
-
-
-
-    @Column(name="PRAI_SYS_ID")
-    private String     praiSysId ;
-
     @Column(name="REQUEST_REFERENCE_NO")
     private String     requestReferenceNo ;
 
     @Column(name = "POL_DS_CODE", length = 200)
     private String polDsCode;
   
+
+    @Column(name="PRAI_SYS_ID")
+    private String     praiSysId ;
+    
+
+    @Column(name = "PRAI_END_NO_IDX", length = 200)
+    private String praiEndNoIdx;
 }
 
 

@@ -102,6 +102,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="PRODUCT", length=12)
     private String   product;
     
+    @Column(name="CRD_END_NO_IDX", length=100)
+    private String     crdEndNoIdx ;
+    
 
 }
 

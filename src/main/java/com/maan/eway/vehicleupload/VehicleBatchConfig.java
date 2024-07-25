@@ -1,7 +1,7 @@
 package com.maan.eway.vehicleupload;
 
 import java.io.IOException;
-import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.Step;
@@ -58,8 +58,7 @@ private VehicleBatchWriter batchWriter =new VehicleBatchWriter();
 private TransactionControlDetailsRepository transactionDetailRepo;
 
 private ThreadPoolTaskExecutor asyncTaskExecutor;
-@Autowired
-public StepBuilderFactory stepBuilderFactory;
+
 
 @StepScope
 @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -114,27 +113,39 @@ public Job importUserJob(@Qualifier("VehicleListener")JobExecutionListener liste
 @Bean
 public TaskExecutor taskExecutor(){
 	  asyncTaskExecutor=new ThreadPoolTaskExecutor();
-	 	asyncTaskExecutor.setCorePoolSize(100);
-	 	asyncTaskExecutor.setMaxPoolSize(500);
+	 	asyncTaskExecutor.setCorePoolSize(10);
+	 	asyncTaskExecutor.setMaxPoolSize(10);
 	 	asyncTaskExecutor.setWaitForTasksToCompleteOnShutdown(true);
 	 	asyncTaskExecutor.setAwaitTerminationSeconds(15);	
-	 	asyncTaskExecutor.setQueueCapacity(10000);
+	 	asyncTaskExecutor.setQueueCapacity(1000);
 	 	asyncTaskExecutor.setThreadNamePrefix("spring_batch");
 	 	asyncTaskExecutor.initialize();
     return asyncTaskExecutor;
 }
 
-@Bean
-public Step step1() {
-    return stepBuilderFactory.get("VehicleJob")
-            .<Record, Record>chunk(4000)
+//@Bean
+//public Step step1() {
+//    return stepBuilderFactory.get("VehicleJob")
+//            .<Record, Record>chunk(1000)
+//            .reader(reader(OVERRIDDEN_BY_EXPRESSION,OVERRIDDEN_BY_EXPRESSION,OVERRIDDEN_BY_EXPRESSION))
+//           // .processor(synchProcessor())
+//            .writer(batchWriter.itemWriter(transactionDetailRepo,jdbcTemplate))///em,dataSource,,emf
+//            .listener(listener())
+//            .taskExecutor(taskExecutor())
+//            .build();
+//}
+
+   @Bean
+   public Step step1() {
+         return new StepBuilder("VehicleJob",jobRepository)
+            .<Record, Record>chunk(1000 , transactionManager)
             .reader(reader(OVERRIDDEN_BY_EXPRESSION,OVERRIDDEN_BY_EXPRESSION,OVERRIDDEN_BY_EXPRESSION))
            // .processor(synchProcessor())
             .writer(batchWriter.itemWriter(transactionDetailRepo,jdbcTemplate))///em,dataSource,,emf
             .listener(listener())
             .taskExecutor(taskExecutor())
             .build();
-}
+   }
 
     @Bean(name="VehicleListener")
 	public VehicleJobListener listener() {

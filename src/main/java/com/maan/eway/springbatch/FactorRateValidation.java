@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.dozer.DozerBeanMapper;

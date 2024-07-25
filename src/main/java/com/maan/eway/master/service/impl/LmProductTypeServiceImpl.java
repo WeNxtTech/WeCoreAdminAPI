@@ -3,22 +3,13 @@
  */
 package com.maan.eway.master.service.impl;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.dozer.DozerBeanMapper;
@@ -36,6 +27,16 @@ import com.maan.eway.master.service.LmProductTypeService;
 import com.maan.eway.repository.LmProductTypeRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 /**
  * @author Shanishg
@@ -129,7 +130,7 @@ public class LmProductTypeServiceImpl implements LmProductTypeService {
 				
 				
 				
-				javax.persistence.criteria.Predicate p1 = cb.equal(root.get("ptType"), req.getPT_TYPE());
+				jakarta.persistence.criteria.Predicate p1 = cb.equal(root.get("ptType"), req.getPT_TYPE());
 				
 				query.where(p1);
 				
@@ -159,8 +160,8 @@ public class LmProductTypeServiceImpl implements LmProductTypeService {
 
 				List<Order> orderList = new ArrayList<Order>();
 
-		       javax.persistence.criteria.Predicate p2 = cb1.equal(b.get("ptType"), req.getPT_TYPE());
-		       javax.persistence.criteria.Predicate n1 = cb1.equal(b.get("status"), "Y");
+		       jakarta.persistence.criteria.Predicate p2 = cb1.equal(b.get("ptType"), req.getPT_TYPE());
+		       jakarta.persistence.criteria.Predicate n1 = cb1.equal(b.get("status"), "Y");
 
 				query1.where(p2,n1).orderBy(orderList);
 
@@ -210,7 +211,7 @@ public class LmProductTypeServiceImpl implements LmProductTypeService {
 				
 				
 				
-				javax.persistence.criteria.Predicate p1 = cb2.equal(root2.get("ptTypeDesc"), req.getPT_TYPE_DESC());
+				jakarta.persistence.criteria.Predicate p1 = cb2.equal(root2.get("ptTypeDesc"), req.getPT_TYPE_DESC());
 				
 				query2.where(p1);
 				
@@ -536,28 +537,28 @@ public class LmProductTypeServiceImpl implements LmProductTypeService {
 
 			query.select(c);
 
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<LmProductType> ocpm1 = effectiveDate.from(LmProductType.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("ptType"), ocpm1.get("ptType"));
-			javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			jakarta.persistence.criteria.Predicate a1 = cb.equal(c.get("ptType"), ocpm1.get("ptType"));
+			jakarta.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			
 			effectiveDate.where(a1, a2);
 			
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<LmProductType> ocpm2 = effectiveDate2.from(LmProductType.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 
-			javax.persistence.criteria.Predicate a10 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			jakarta.persistence.criteria.Predicate a10 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			effectiveDate2.where( a10);
 		
 
 			Predicate n1 = cb.equal(c.get("status"), "Y");
 			Predicate n11 = cb.equal(c.get("status"), "R");
 			Predicate n12 = cb.or(n1, n11);
-			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
-			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("ptType"), req.getPT_TYPE());;
-			javax.persistence.criteria.Predicate n6 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			jakarta.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			jakarta.persistence.criteria.Predicate n3 = cb.equal(c.get("ptType"), req.getPT_TYPE());;
+			jakarta.persistence.criteria.Predicate n6 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 
 			query.where(n12, n2, n3, n6);
 

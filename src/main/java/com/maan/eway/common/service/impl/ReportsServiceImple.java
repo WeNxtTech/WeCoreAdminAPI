@@ -1,25 +1,14 @@
 package com.maan.eway.common.service.impl;
 
 import java.io.File;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceException;
-import javax.persistence.Query;
 
 import org.apache.commons.lang3.StringUtils;
 import org.dozer.DozerBeanMapper;
-import org.hibernate.exception.SQLGrammarException;
-import org.hibernate.query.internal.NativeQueryImpl;
-import org.hibernate.transform.AliasToEntityMapResultTransformer;
+import org.hibernate.query.NativeQuery;
+import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -27,14 +16,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.UnexpectedRollbackException;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.batch.repository.TirraErrorHistoryRepository;
-import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.MailDataDetails;
-import com.maan.eway.bean.MailDetails;
 import com.maan.eway.bean.MotorVehicleInfo;
 import com.maan.eway.bean.PaymentDetail;
 import com.maan.eway.bean.PersonalInfo;
@@ -69,13 +54,16 @@ import com.maan.eway.common.service.ReportsService;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.MailDataDetailsRepository;
-import com.maan.eway.repository.MailDetailsRepository;
 import com.maan.eway.repository.MotorVehicleInfoRepository;
 import com.maan.eway.repository.PaymentDetailRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.SmsDataDetailsRepository;
 import com.maan.eway.repository.TiraTrackingDetailsRepository;
 import com.maan.eway.res.SuccessRes2;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 
 @Service
 //@Transactional(noRollbackFor = { SQLException.class , SQLGrammarException.class ,UnexpectedRollbackException.class ,PersistenceException.class })
@@ -512,8 +500,9 @@ public class ReportsServiceImple implements ReportsService {
 			Query query=null;
 			query = em.createNativeQuery(req.getQuery());
 			
-			query.unwrap(NativeQueryImpl.class).setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-			list = query.getResultList();
+			query.unwrap(NativeQuery.class)
+            .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+            list = query.getResultList();
 		
 		} catch(Exception e ) {
 		   e.printStackTrace();

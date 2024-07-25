@@ -5,6 +5,7 @@
 */
 package com.maan.eway.master.service.impl;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,18 +19,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -39,10 +28,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.ProductMaster;
-import com.maan.eway.error.Error;
 import com.maan.eway.master.req.GlobalCommonValidationReq;
 import com.maan.eway.master.req.ProductChangeStatusReq;
 import com.maan.eway.master.req.ProductMasterGetAllReq;
@@ -56,6 +43,17 @@ import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.ProductMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 /**
 * <h2>ProductMasterServiceimpl</h2>
 */
@@ -130,7 +128,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 					// Effective Date Max Filter
 //					Subquery<Long> effectiveDate = query.subquery(Long.class);
 //					Root<ProductMaster> ocpm1 = effectiveDate.from(ProductMaster.class);
-//					effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+//					effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 //					Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 //					Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , startDate);
 //					effectiveDate.where(a1,a2);
@@ -315,9 +313,9 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			Root<ProductMaster> ocpm2 = product.from(ProductMaster.class);
 		
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<ProductMaster> ocpm1 = effectiveDate.from(ProductMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart"))).distinct(true);
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart"))).distinct(true);
 			Predicate a1 = cb.equal(ocpm1.get("productId"), ocpm2.get("productId"));
 			effectiveDate.where(a1);
 									
@@ -583,25 +581,25 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			orderList.add(cb.asc(c.get("productName")));
 			
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<ProductMaster> ocpm1 = effectiveDate.from(ProductMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("productId"),ocpm1.get("productId") );
-			javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			jakarta.persistence.criteria.Predicate a1 = cb.equal(c.get("productId"),ocpm1.get("productId") );
+			jakarta.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1,a2);
 			
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<ProductMaster> ocpm2 = effectiveDate2.from(ProductMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
-			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("productId"),ocpm2.get("productId") );
-			javax.persistence.criteria.Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			jakarta.persistence.criteria.Predicate a3 = cb.equal(c.get("productId"),ocpm2.get("productId") );
+			jakarta.persistence.criteria.Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			effectiveDate2.where(a3,a4);
 			
 		    // Where	
-			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
-			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
-			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			jakarta.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
+			jakarta.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			jakarta.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 			Predicate n4 = cb.equal(c.get("status"),"R");
 			Predicate n5 = cb.or(n1,n4);
 			query.where(n5,n2,n3).orderBy(orderList);
@@ -615,6 +613,7 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getProductId().toString());
 				res.setCodeDesc(data.getProductName());
+				res.setCodeDescLocal(data.getProductNameLocal());
 				resList.add(res);
 			}		
 		} catch (Exception e) {

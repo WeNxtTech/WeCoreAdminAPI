@@ -5,7 +5,7 @@
 */
 package com.maan.eway.master.service.impl;
 
-import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,72 +17,39 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.maan.eway.auth.dto.LoginBranchDetailsRes;
-import com.maan.eway.bean.BranchMaster;
-import com.maan.eway.bean.CompanyCityMaster;
 import com.maan.eway.bean.CompanyProrataMaster;
-import com.maan.eway.bean.CompanyRegionMaster;
-import com.maan.eway.bean.CompanyStateMaster;
-import com.maan.eway.bean.CompanyProrataMaster;
-import com.maan.eway.bean.CountryMaster;
-import com.maan.eway.bean.CompanyProrataMaster;
-import com.maan.eway.bean.FactorRateMaster;
-import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.bean.OccupationMaster;
-import com.maan.eway.error.Error;
-
-import com.maan.eway.master.req.CompanyBranchGetReq;
-import com.maan.eway.master.req.CompanyBranchReq;
 import com.maan.eway.master.req.CompanyProrataChangeStatusReq;
 import com.maan.eway.master.req.CompanyProrataGetAllReq;
 import com.maan.eway.master.req.CompanyProrataGetReq;
 import com.maan.eway.master.req.CompanyProrataSaveReq;
-import com.maan.eway.master.req.CompanyTaxChangeStatusReq;
-
-import com.maan.eway.master.req.FactorParamsInsert;
 import com.maan.eway.master.req.ProrataMultiInsertReq;
-import com.maan.eway.master.req.TaxMultiInsertReq;
 import com.maan.eway.master.res.CompanyProrataGetAllRes;
 import com.maan.eway.master.res.CompanyProrataGetRes;
-import com.maan.eway.master.res.CompanyTaxGetRes;
 import com.maan.eway.master.service.CompanyProrataService;
-
-import com.maan.eway.repository.BranchMasterRepository;
 import com.maan.eway.repository.CompanyProrataRepository;
-
-import com.maan.eway.repository.ListItemValueRepository;
-import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
-import com.maan.eway.service.impl.BasicValidationService;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.CriteriaUpdate;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 /**
 * <h2>BranchMasterServiceimpl</h2>
 */
@@ -317,9 +284,9 @@ public List<String> validateCompanyProrata(CompanyProrataSaveReq req) {
 			// Select
 			query.select(b);
 			//Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<CompanyProrataMaster> ocpm1 = effectiveDate.from(CompanyProrataMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("sno"), b.get("sno"));
 			Predicate a2 = cb.equal(ocpm1.get("insuranceid"), b.get("insuranceid"));
 			effectiveDate.where(a1,a2);
@@ -437,9 +404,9 @@ public List<String> validateCompanyProrata(CompanyProrataSaveReq req) {
 			query.select(b);
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<CompanyProrataMaster> ocpm1 = effectiveDate.from(CompanyProrataMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("sno"), b.get("sno"));
 			Predicate a2 = cb.equal(ocpm1.get("insuranceid"), b.get("insuranceid"));
 			Predicate a3 = cb.equal(ocpm1.get("policyTypeId"), b.get("policyTypeId"));

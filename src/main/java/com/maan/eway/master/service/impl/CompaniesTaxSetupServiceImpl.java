@@ -1,31 +1,14 @@
 package com.maan.eway.master.service.impl;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -36,39 +19,28 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.maan.eway.bean.BranchMaster;
-import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.CompaniesTaxSetup;
 import com.maan.eway.bean.CountryTaxSetup;
-import com.maan.eway.bean.FactorRateMaster;
-import com.maan.eway.bean.FactorTypeDetails;
 import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.bean.SectionCoverMaster;
-import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CompaniesTaxGetAllReq;
 import com.maan.eway.master.req.CompaniesTaxGetRes;
 import com.maan.eway.master.req.CompaniesTaxSaveReq;
 import com.maan.eway.master.req.CompanyTaxMuiltiInsertReq;
-import com.maan.eway.master.req.CountryChangeStatusReq;
-import com.maan.eway.master.req.CountryTaxDropDownReq;
-import com.maan.eway.master.req.CountryTaxGetAllReq;
-import com.maan.eway.master.req.CountryTaxGetReq;
-import com.maan.eway.master.req.CountryTaxSaveReq;
-import com.maan.eway.master.req.FactorParamsInsert;
-import com.maan.eway.master.req.FactorRateSaveReq;
-import com.maan.eway.master.res.CityMasterRes;
-import com.maan.eway.master.res.CountryTaxGetRes;
-import com.maan.eway.master.res.DocumentMasterGetRes;
-import com.maan.eway.master.res.FactorRateGetAllRes;
 import com.maan.eway.master.service.CompaniesTaxSetupService;
-import com.maan.eway.master.service.CountryTaxSetupService;
-import com.maan.eway.repository.CityMasterRepository;
 import com.maan.eway.repository.CompaniesTaxSetupRepository;
-import com.maan.eway.repository.CountryTaxSetupRepository;
-import com.maan.eway.res.DropDownRes;
-import com.maan.eway.res.SuccessRes;
 import com.maan.eway.res.SuccessRes2;
-import com.maan.eway.service.impl.BasicValidationService;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.CriteriaUpdate;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 @Service
 @Transactional
@@ -435,9 +407,9 @@ public class CompaniesTaxSetupServiceImpl implements CompaniesTaxSetupService {
 				Root<CountryTaxSetup> b2 = query2.from(CountryTaxSetup.class);
 	
 				// Effective Date Max Filter
-				Subquery<Long> effectiveDate2 = query2.subquery(Long.class);
+				Subquery<Timestamp> effectiveDate2 = query2.subquery(Timestamp.class);
 				Root<CountryTaxSetup> ocpm2 = effectiveDate2.from(CountryTaxSetup.class);
-				effectiveDate2.select(cb2.max(ocpm2.get("effectiveDateStart")));
+				effectiveDate2.select(cb2.greatest(ocpm2.get("effectiveDateStart")));
 				Predicate a10 = cb2.equal(ocpm2.get("countryId"), b2.get("countryId"));
 				Predicate a11 = cb2.equal(ocpm2.get("taxId"), b2.get("taxId"));
 				effectiveDate2.where(a10,a11);
@@ -554,16 +526,16 @@ public class CompaniesTaxSetupServiceImpl implements CompaniesTaxSetupService {
 			
 			
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1,a2);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			effectiveDate2.where(a3,a4);
@@ -616,16 +588,16 @@ public class CompaniesTaxSetupServiceImpl implements CompaniesTaxSetupService {
 			
 			
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1,a2);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			effectiveDate2.where(a3,a4);

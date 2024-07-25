@@ -5,11 +5,11 @@
 */
 package com.maan.eway.master.service.impl;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -17,20 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -41,35 +27,36 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.maan.eway.bean.BankMaster;
-import com.maan.eway.bean.CompanyStateMaster;
-import com.maan.eway.bean.CompanyTaxSetup;
-import com.maan.eway.bean.CoverMaster;
-import com.maan.eway.bean.FactorRateMaster;
 import com.maan.eway.bean.FactorTypeDetails;
 import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.bean.OccupationMaster;
-import com.maan.eway.bean.ProductMaster;
-import com.maan.eway.bean.RatingFieldMaster;
-import com.maan.eway.error.Error;
 import com.maan.eway.master.req.FactorTypeDetailsSaveReq;
 import com.maan.eway.master.req.FactorTypeDropDownReq;
 import com.maan.eway.master.req.FactorTypeGetAllReq;
 import com.maan.eway.master.req.FactorTypeGetReq;
 import com.maan.eway.master.req.FactorUpdateStatusReq;
-import com.maan.eway.master.req.GlobalCommonValidationReq;
 import com.maan.eway.master.req.RatingFieldDetails;
 import com.maan.eway.master.req.RatingFieldDetailsRes;
 import com.maan.eway.master.res.FactorTypeDetailsGetRes;
 import com.maan.eway.master.res.FactorTypeGetAllRes;
-import com.maan.eway.master.res.ProductMasterRes;
 import com.maan.eway.master.service.FactorTypeDetailsService;
 import com.maan.eway.master.service.MasterCommonValidationService;
 import com.maan.eway.repository.FactorTypeDetailsRepository;
 import com.maan.eway.repository.ListItemValueRepository;
-import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.RatingFieldDropDownRes;
 import com.maan.eway.res.SuccessRes;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaDelete;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.CriteriaUpdate;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 /**
 * <h2>FactorTypeDetailsServiceimpl</h2>
 */
@@ -288,9 +275,9 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 			query.select(b);
 	
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<FactorTypeDetails> ocpm1 = effectiveDate.from(FactorTypeDetails.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a2 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a3 = cb.equal(ocpm1.get("factorTypeId"), b.get("factorTypeId"));
@@ -333,9 +320,9 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 			query.select(b);
 	
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<FactorTypeDetails> ocpm1 = effectiveDate.from(FactorTypeDetails.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("factorTypeName"), b.get("factorTypeName"));
@@ -559,18 +546,18 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 			
 			
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate b1= cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
 			Predicate b2 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
 			effectiveDate.where(a1,a2,b1,b2);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate b3= cb.equal(c.get("companyId"),ocpm2.get("companyId"));
@@ -629,9 +616,9 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 			Root<FactorTypeDetails> ocpm2 = facorType.from(FactorTypeDetails.class);
 		
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<FactorTypeDetails> ocpm1 = effectiveDate.from(FactorTypeDetails.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart"))).distinct(true);
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart"))).distinct(true);
 			Predicate a1 = cb.equal(ocpm1.get("productId"), ocpm2.get("productId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), ocpm2.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("factorTypeId"), ocpm2.get("factorTypeId"));
@@ -848,9 +835,9 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 			query.select(b);
 	
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<FactorTypeDetails> ocpm1 = effectiveDate.from(FactorTypeDetails.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("factorTypeId"), b.get("factorTypeId"));
@@ -860,9 +847,9 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 			effectiveDate.where(a1,a2,a3,a4,a5);
 	
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<FactorTypeDetails> ocpm2 = effectiveDate2.from(FactorTypeDetails.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a6 = cb.equal(ocpm2.get("productId"), b.get("productId"));
 			Predicate a7 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
 			Predicate a8 = cb.equal(ocpm2.get("factorTypeId"), b.get("factorTypeId"));
@@ -950,9 +937,9 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 			query.select(b);
 	
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<FactorTypeDetails> ocpm1 = effectiveDate.from(FactorTypeDetails.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("factorTypeId"), b.get("factorTypeId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a3 = cb.equal(ocpm1.get("productId"), b.get("productId"));
@@ -1075,9 +1062,9 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 			query.select(b);
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<FactorTypeDetails> ocpm1 = effectiveDate.from(FactorTypeDetails.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("factorTypeId"), b.get("factorTypeId"));
@@ -1087,9 +1074,9 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 			effectiveDate.where(a1,a2,a3,a4,a5);
 	
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<FactorTypeDetails> ocpm2 = effectiveDate2.from(FactorTypeDetails.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a6 = cb.equal(ocpm2.get("productId"), b.get("productId"));
 			Predicate a7 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
 			Predicate a8 = cb.equal(ocpm2.get("factorTypeId"), b.get("factorTypeId"));
@@ -1163,19 +1150,19 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 		List<Order> orderList = new ArrayList<Order>();
 		orderList.add(cb.asc(c.get("factorTypeName")));
 		// Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 		Root<FactorTypeDetails> ocpm1 = effectiveDate.from(FactorTypeDetails.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-		javax.persistence.criteria.Predicate a1 = cb.equal(c.get("factorTypeId"), ocpm1.get("factorTypeId"));
-		javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-		javax.persistence.criteria.Predicate a3 = cb.equal(c.get("productId"),ocpm1.get("productId"));
-		javax.persistence.criteria.Predicate a4 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+		jakarta.persistence.criteria.Predicate a1 = cb.equal(c.get("factorTypeId"), ocpm1.get("factorTypeId"));
+		jakarta.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+		jakarta.persistence.criteria.Predicate a3 = cb.equal(c.get("productId"),ocpm1.get("productId"));
+		jakarta.persistence.criteria.Predicate a4 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
 
 		effectiveDate.where(a1, a2,a3,a4);
 		// Effective Date End
-		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 		Root<FactorTypeDetails> ocpm2 = effectiveDate2.from(FactorTypeDetails.class);
-		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 		Predicate a5 = cb.equal(c.get("factorTypeId"), ocpm2.get("factorTypeId"));
 		Predicate a6 = cb.greaterThanOrEqualTo(c.get("effectiveDateEnd"), todayEnd);
 		Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
@@ -1187,10 +1174,10 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 		Predicate n1 = cb.equal(c.get("status"),"Y");
 		Predicate n11 = cb.equal(c.get("status"),"R");
 		Predicate n12 = cb.or(n1,n11);
-		javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
-		javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
-		javax.persistence.criteria.Predicate n4 = cb.equal(c.get("productId"), req.getProductId());
-		javax.persistence.criteria.Predicate n5 = cb.equal(c.get("companyId"),req.getCompanyId());
+		jakarta.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+		jakarta.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+		jakarta.persistence.criteria.Predicate n4 = cb.equal(c.get("productId"), req.getProductId());
+		jakarta.persistence.criteria.Predicate n5 = cb.equal(c.get("companyId"),req.getCompanyId());
 		
 		query.where(n12, n2, n3, n4,n5).orderBy(orderList);
 

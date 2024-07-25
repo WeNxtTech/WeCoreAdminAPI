@@ -5,6 +5,7 @@
 */
 package com.maan.eway.master.service.impl;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,63 +17,43 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.maan.eway.auth.dto.LoginBranchDetailsRes;
-import com.maan.eway.bean.BranchMaster;
-import com.maan.eway.bean.CompanyCityMaster;
-import com.maan.eway.bean.CompanyRegionMaster;
-import com.maan.eway.bean.CompanyStateMaster;
 import com.maan.eway.bean.CompanyTaxSetup;
-import com.maan.eway.bean.CountryMaster;
-import com.maan.eway.bean.FactorRateMaster;
 import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.error.Error;
-
-import com.maan.eway.master.req.CompanyBranchGetReq;
-import com.maan.eway.master.req.CompanyBranchReq;
 import com.maan.eway.master.req.CompanyTaxChangeStatusReq;
 import com.maan.eway.master.req.CompanyTaxSetupGetAllReq;
 import com.maan.eway.master.req.CompanyTaxSetupGetReq;
 import com.maan.eway.master.req.CompanyTaxSetupSaveReq;
 import com.maan.eway.master.req.TaxMultiInsertReq;
-
 import com.maan.eway.master.res.CompanyTaxGetRes;
 import com.maan.eway.master.service.CompanyTaxSetupService;
 import com.maan.eway.repository.BranchMasterRepository;
 import com.maan.eway.repository.CompanyTaxSetupRepository;
 import com.maan.eway.repository.ListItemValueRepository;
-import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.impl.BasicValidationService;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.CriteriaUpdate;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 /**
 * <h2>BranchMasterServiceimpl</h2>
 */
@@ -361,9 +342,9 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 			orderList.add(cb.asc(c.get("branchCode")));
 
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("itemId"), ocpm1.get("itemId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate b1= cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
@@ -371,9 +352,9 @@ public List<Error> validateCompanyTax(CompanyTaxSetupSaveReq req) {
 			effectiveDate.where(a1,a2,b1,b2);
 			
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a3 = cb.equal(c.get("itemId"), ocpm2.get("itemId"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate b3= cb.equal(c.get("companyId"),ocpm2.get("companyId"));
@@ -431,16 +412,16 @@ public synchronized List<ListItemValue> getCalcType(String insuranceId , String 
 		
 		
 		// Effective Date Start Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 		Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
 		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 		effectiveDate.where(a1,a2);
 		// Effective Date End Max Filter
-		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 		Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 		Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
 		Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 		effectiveDate2.where(a3,a4);
@@ -487,9 +468,9 @@ public synchronized List<ListItemValue> getCalcType(String insuranceId , String 
 		query.select(b);
 
 		//Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 		Root<CompanyTaxSetup> ocpm1 = effectiveDate.from(CompanyTaxSetup.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(ocpm1.get("taxId"), b.get("taxId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("productId"), b.get("productId"));
@@ -612,9 +593,9 @@ public synchronized List<ListItemValue> getCalcType(String insuranceId , String 
 			query.select(b);
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<CompanyTaxSetup> ocpm1 = effectiveDate.from(CompanyTaxSetup.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("taxId"), b.get("taxId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));

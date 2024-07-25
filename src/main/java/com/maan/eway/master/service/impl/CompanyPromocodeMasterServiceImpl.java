@@ -5,6 +5,7 @@
 */
 package com.maan.eway.master.service.impl;
 
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -16,18 +17,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -58,6 +47,18 @@ import com.maan.eway.master.service.SectionCoverMasterService;
 import com.maan.eway.repository.CompanyPromocodeMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.res.SuccessRes;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaDelete;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 /**
  * <h2>CompanyPromocodeMasterServiceimpl</h2>
@@ -339,9 +340,9 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 			query.select(b);
 	
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<CompanyPromocodeMaster> ocpm1 = effectiveDate.from(CompanyPromocodeMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("promocodeId"), b.get("promocodeId"));
 			Predicate a2 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
 			Predicate a3 = cb.equal(ocpm1.get("productId"), b.get("productId"));
@@ -572,9 +573,9 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 			// Select
 			query.select(b);
 			//Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<CompanyPromocodeMaster> ocpm1 = effectiveDate.from(CompanyPromocodeMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("promocodeId"), b.get("promocodeId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			effectiveDate.where(a1,a2);
@@ -1044,9 +1045,9 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 			Root<CoverMaster> ocpm2 = cover.from(CoverMaster.class);
 		
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<CoverMaster> ocpm1 = effectiveDate.from(CoverMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart"))).distinct(true);
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart"))).distinct(true);
 			Predicate a1 = cb.equal(ocpm1.get("coverId"), ocpm2.get("coverId"));
 			effectiveDate.where(a1);
 									
@@ -1370,11 +1371,11 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 				Root<CompanyPromocodeMaster> pm = delete.from(CompanyPromocodeMaster.class);
 
 				// Where
-				javax.persistence.criteria.Predicate n6 = cb.equal(pm.get("productId"), req.getProductId());
-				javax.persistence.criteria.Predicate n7 = cb.equal(pm.get("sectionId"), req.getSectionId());
-				javax.persistence.criteria.Predicate n8 = cb.equal(pm.get("promocodeId"), req.getPromocodeId());
-				javax.persistence.criteria.Predicate n9 = cb.equal(pm.get("effectiveDateStart"), today);
-				javax.persistence.criteria.Predicate n10 = cb.equal(pm.get("companyId"), req.getCompanyId());
+				jakarta.persistence.criteria.Predicate n6 = cb.equal(pm.get("productId"), req.getProductId());
+				jakarta.persistence.criteria.Predicate n7 = cb.equal(pm.get("sectionId"), req.getSectionId());
+				jakarta.persistence.criteria.Predicate n8 = cb.equal(pm.get("promocodeId"), req.getPromocodeId());
+				jakarta.persistence.criteria.Predicate n9 = cb.equal(pm.get("effectiveDateStart"), today);
+				jakarta.persistence.criteria.Predicate n10 = cb.equal(pm.get("companyId"), req.getCompanyId());
 				delete.where(n6, n7, n8, n9, n10);
 				em.createQuery(delete).executeUpdate();
 				// Insert Updated Record

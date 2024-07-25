@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
 import org.springframework.batch.core.configuration.annotation.JobScope;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,12 +43,13 @@ public class ItemWritter  implements ItemWriter<FactorBatchRecordRes> {
 	private static DozerBeanMapper mapper =new DozerBeanMapper();
 	
 	@Override
-	public void write(List<? extends FactorBatchRecordRes> items) throws Exception {
+	public void write(Chunk<? extends FactorBatchRecordRes> itemChunks) throws Exception {
 		Integer amendId =0;
 		List<ListItemValue> itemValues =new ArrayList<ListItemValue>();
 		FactorRateSaveReq req = new FactorRateSaveReq();
 		try {	
-			
+		    List<? extends FactorBatchRecordRes> items = itemChunks.getItems();
+		    
 			if(isExeute) {
 				req=mapper.map(items.get(0), FactorRateSaveReq.class);
 				amendId=service.upadateOldFactor(req);
@@ -74,5 +76,6 @@ public class ItemWritter  implements ItemWriter<FactorBatchRecordRes> {
 		}
 		
 	}
+
 
 }

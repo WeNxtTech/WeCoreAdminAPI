@@ -6,14 +6,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -64,13 +64,13 @@ public class MailCriteriaServiceImpl {
 			// Insurance Company Name
 			Subquery<String> insName = query.subquery(String.class);
 			insName.select(i.get("companyName") );
-			javax.persistence.criteria.Predicate i1 = cb.equal(c.get("companyId"), i.get("companyId"));
+			jakarta.persistence.criteria.Predicate i1 = cb.equal(c.get("companyId"), i.get("companyId"));
 			insName.where(i1);
 			
 			// Branch Name
 			Subquery<String> branchName = query.subquery(String.class);
 			branchName.select(b.get("branchName") );
-			javax.persistence.criteria.Predicate b1 = cb.equal(c.get("companyId"), b.get("companyId"));
+			jakarta.persistence.criteria.Predicate b1 = cb.equal(c.get("companyId"), b.get("companyId"));
 			insName.where(b1);
 			
 			// Select
@@ -83,8 +83,8 @@ public class MailCriteriaServiceImpl {
 							  b.get("branchName").alias("BRANCH_NAME"));
 							
 			// Where
-			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("productId"),productId);
-			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("productName"), p.get("productName"));
+			jakarta.persistence.criteria.Predicate n1 = cb.equal(c.get("productId"),productId);
+			jakarta.persistence.criteria.Predicate n2 = cb.equal(c.get("productName"), p.get("productName"));
 			
 			query.where(n1,n2);
 				
@@ -133,12 +133,12 @@ try {
 	// Insurace Company Name
 	Subquery<String> insName = query.subquery(String.class);
 	insName.select(i.get("companyName"));
-	javax.persistence.criteria.Predicate i1 = cb.equal(c.get("companyId"),i.get("companyId"));
+	jakarta.persistence.criteria.Predicate i1 = cb.equal(c.get("companyId"),i.get("companyId"));
 	insName.where(i1);
 	//Branch Name
 	Subquery<String> branchName = query.subquery(String.class);
 	branchName.select(b.get("branchName"));
-	javax.persistence.criteria.Predicate b1 = cb.equal(c.get("companyId"), b.get("companyId"));
+	jakarta.persistence.criteria.Predicate b1 = cb.equal(c.get("companyId"), b.get("companyId"));
 	insName.where(b1);
 	// Select
 	query.multiselect(c.get("entryDate").alias("ENTRY_DATE"),
@@ -152,8 +152,8 @@ try {
 			);
 	
 	//Where 
-	javax.persistence.criteria.Predicate n1 = cb.equal(c.get("sectionName"),p.get("sectionName"));
-	javax.persistence.criteria.Predicate n2 = cb.equal(c.get("sectionId"),sectionId);
+	jakarta.persistence.criteria.Predicate n1 = cb.equal(c.get("sectionName"),p.get("sectionName"));
+	jakarta.persistence.criteria.Predicate n2 = cb.equal(c.get("sectionId"),sectionId);
 	query.where(n1,n2);
 	
 	TypedQuery<Tuple> result = em.createQuery(query);
@@ -198,12 +198,12 @@ try {
 			// Insurace Company Name
 			Subquery<String> insName = query.subquery(String.class);
 			insName.select(i.get("companyName"));
-			javax.persistence.criteria.Predicate i1 = cb.equal(c.get("companyId"),i.get("companyId"));
+			jakarta.persistence.criteria.Predicate i1 = cb.equal(c.get("companyId"),i.get("companyId"));
 			insName.where(i1);
 			//Branch Name
 			Subquery<String> branchName = query.subquery(String.class);
 			branchName.select(b.get("branchName"));
-			javax.persistence.criteria.Predicate b1 = cb.equal(c.get("companyId"), b.get("companyId"));
+			jakarta.persistence.criteria.Predicate b1 = cb.equal(c.get("companyId"), b.get("companyId"));
 			insName.where(b1);
 			// Select
 			query.multiselect(c.get("entryDate").alias("ENTRY_DATE"),
@@ -218,8 +218,8 @@ try {
 					);
 			
 			//Where 
-			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("coverName"),p.get("coverName"));
-			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("coverId"),coverId);
+			jakarta.persistence.criteria.Predicate n1 = cb.equal(c.get("coverName"),p.get("coverName"));
+			jakarta.persistence.criteria.Predicate n2 = cb.equal(c.get("coverId"),coverId);
 			query.where(n1,n2);
 			
 			TypedQuery<Tuple> result = em.createQuery(query);

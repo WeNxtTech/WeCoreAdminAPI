@@ -5,6 +5,7 @@
 */
 package com.maan.eway.master.service.impl;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,51 +18,42 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.maan.eway.bean.CompanyRegionMaster;
 import com.maan.eway.bean.CoverDocumentMaster;
-import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.DocumentMaster;
 import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.bean.ProductMaster;
-import com.maan.eway.bean.RegionMaster;
-import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CoverDocumentChangeStatusReq;
 import com.maan.eway.master.req.CoverDocumentMasterGetAllReq;
 import com.maan.eway.master.req.CoverDocumentMasterGetReq;
 import com.maan.eway.master.req.CoverDocumentMasterSaveReq;
 import com.maan.eway.master.req.CoverDocumentMasterUpdateReq;
-import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.res.CoverDocumentMasterGetRes;
-import com.maan.eway.master.res.CoverMasterGetAllRes;
 import com.maan.eway.master.res.DocumentMasterGetRes;
 import com.maan.eway.master.service.CoverDocumentMasterService;
 import com.maan.eway.repository.CoverDocumentMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 /**
  * <h2>ReferalMasterServiceimpl</h2>
@@ -136,19 +128,19 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 				query.select(c);
 
 				// Effective Date Max Filter
-				Subquery<Long> effectiveDate = query.subquery(Long.class);
+				Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 				Root<DocumentMaster> ocpm1 = effectiveDate.from(DocumentMaster.class);
-				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-				javax.persistence.criteria.Predicate a1 = cb.equal(c.get("documentId"), ocpm1.get("documentId"));
-				javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+				effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+				jakarta.persistence.criteria.Predicate a1 = cb.equal(c.get("documentId"), ocpm1.get("documentId"));
+				jakarta.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 				effectiveDate.where(a1, a2);
 
 				// Effective Date Max Filter
-				Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+				Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 				Root<DocumentMaster> ocpm2 = effectiveDate2.from(DocumentMaster.class);
-				effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
-				javax.persistence.criteria.Predicate a4 = cb.equal(c.get("documentId"), ocpm2.get("documentId"));
-				javax.persistence.criteria.Predicate a5 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"),todayEnd);
+				effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+				jakarta.persistence.criteria.Predicate a4 = cb.equal(c.get("documentId"), ocpm2.get("documentId"));
+				jakarta.persistence.criteria.Predicate a5 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"),todayEnd);
 				effectiveDate2.where(a4, a5);
 
 
@@ -158,9 +150,9 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 
 				
 				// Where
-				javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
-				javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
-				javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+				jakarta.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
+				jakarta.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+				jakarta.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 				Predicate n4 = cb.equal(c.get("documentId"), docId);
 				query.where(n1, n2, n3, n4);
 
@@ -225,18 +217,18 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 			
 			
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate b1= cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
 			Predicate b2 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
 			effectiveDate.where(a1,a2,b1,b2);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate b3= cb.equal(c.get("companyId"),ocpm2.get("companyId"));
@@ -784,9 +776,9 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 			query.select(b);
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<CoverDocumentMaster> ocpm1 = effectiveDate.from(CoverDocumentMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a2 = cb.equal(ocpm1.get("coreAppCode"), b.get("coreAppCode"));
 			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), effStartDate);
@@ -794,9 +786,9 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 			effectiveDate.where(a1, a2, a3);
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<CoverDocumentMaster> ocpm2 = effectiveDate2.from(CoverDocumentMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateStart")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateStart")));
 			Predicate a4 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
 			Predicate a5 = cb.equal(ocpm2.get("coreAppCode"), b.get("coreAppCode"));
 			Predicate a6 = cb.lessThanOrEqualTo(ocpm2.get("effectiveDateEnd"), effEndDate);
@@ -864,7 +856,7 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 			// Effective Date Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
 			Root<CoverDocumentMaster> ocpm1 = effectiveDate.from(CoverDocumentMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("documentId"), b.get("documentId"));
 			Predicate a2 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
 			Predicate a3 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
@@ -976,20 +968,20 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 			orderList.add(cb.asc(c.get("documentName")));
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<CoverDocumentMaster> ocpm1 = effectiveDate.from(CoverDocumentMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
-			javax.persistence.criteria.Predicate a2 = cb.equal(c.get("productId"), ocpm1.get("productId"));
-			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("sectionId"), ocpm1.get("sectionId"));
-			javax.persistence.criteria.Predicate a4 = cb.equal(c.get("coverId"), ocpm1.get("coverId"));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			jakarta.persistence.criteria.Predicate a1 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			jakarta.persistence.criteria.Predicate a2 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+			jakarta.persistence.criteria.Predicate a3 = cb.equal(c.get("sectionId"), ocpm1.get("sectionId"));
+			jakarta.persistence.criteria.Predicate a4 = cb.equal(c.get("coverId"), ocpm1.get("coverId"));
 			Predicate a11 = cb.equal(c.get("documentId"), ocpm1.get("documentId"));
-			javax.persistence.criteria.Predicate a5 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			jakarta.persistence.criteria.Predicate a5 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1, a2, a3, a4, a5,a11);
 			// Effective Date End
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<CoverDocumentMaster> ocpm2 = effectiveDate2.from(CoverDocumentMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a6 = cb.equal(c.get("sectionId"), ocpm2.get("sectionId"));
 			Predicate a7 = cb.equal(c.get("coverId"), ocpm2.get("coverId"));
 			Predicate a8 = cb.equal(c.get("companyId"), ocpm2.get("companyId") );
@@ -1002,12 +994,12 @@ public class CoverDocumentMasterServiceImpl implements CoverDocumentMasterServic
 			Predicate n1 = cb.equal(c.get("status"),"Y");
 			Predicate n11 = cb.equal(c.get("status"),"R");
 			Predicate n12 = cb.or(n1,n11);
-			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
-			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"), req.getCompanyId());
-			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("productId"), req.getProductId());
-			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("sectionId"), req.getSectionId());
-			javax.persistence.criteria.Predicate n6 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
-			javax.persistence.criteria.Predicate n7 = cb.equal(c.get("documentType"), req.getDocumentType());
+			jakarta.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			jakarta.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"), req.getCompanyId());
+			jakarta.persistence.criteria.Predicate n4 = cb.equal(c.get("productId"), req.getProductId());
+			jakarta.persistence.criteria.Predicate n5 = cb.equal(c.get("sectionId"), req.getSectionId());
+			jakarta.persistence.criteria.Predicate n6 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			jakarta.persistence.criteria.Predicate n7 = cb.equal(c.get("documentType"), req.getDocumentType());
 			query.where(n12, n2, n3, n4, n5,n6,n7).orderBy(orderList);
 
 			// Get Result

@@ -1,5 +1,6 @@
 package com.maan.eway.auth.service.impl;
 
+import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.Instant;
@@ -15,18 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -65,7 +54,6 @@ import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginMasterId;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginUserInfo;
-import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.SessionMaster;
 import com.maan.eway.repository.BranchMasterRepository;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
@@ -75,6 +63,18 @@ import com.maan.eway.repository.LoginProductMasterRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.ProductMasterRepository;
 import com.maan.eway.repository.SessionMasterRepository;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
+import jakarta.servlet.http.HttpServletRequest;
 
 
 @Lazy
@@ -295,9 +295,9 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 				
 				
 				// Effective Date Max Filter
-				Subquery<Long> effectiveDate = query.subquery(Long.class);
+				Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 				Root<LoginProductMaster> ocpm1 = effectiveDate.from(LoginProductMaster.class);
-				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+				effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 				Predicate a1 = cb.equal(c.get("productId"),ocpm1.get("productId") );
 				Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
 				Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
@@ -305,9 +305,9 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 				effectiveDate.where(a1,a2,a3,a4);
 				
 				// Effective Date Max Filter
-				Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+				Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 				Root<LoginProductMaster> ocpm2 = effectiveDate2.from(LoginProductMaster.class);
-				effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+				effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 				Predicate a5 = cb.equal(c.get("productId"),ocpm2.get("productId") );
 				Predicate a6 = cb.equal(c.get("companyId"),ocpm2.get("companyId") );
 				Predicate a7 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
@@ -319,17 +319,17 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 				Root<CompanyProductMaster> cm = productIds.from(CompanyProductMaster.class);
 				
 				
-				Subquery<Long> effectiveDate3 = query.subquery(Long.class);
+				Subquery<Timestamp> effectiveDate3 = query.subquery(Timestamp.class);
 				Root<CompanyProductMaster> ocpm4 = effectiveDate3.from(CompanyProductMaster.class);
-				effectiveDate3.select(cb.max(ocpm4.get("effectiveDateStart")));
+				effectiveDate3.select(cb.greatest(ocpm4.get("effectiveDateStart")));
 				Predicate a9 = cb.equal(cm.get("productId"),ocpm4.get("productId") );
 				Predicate a10 = cb.equal(cm.get("companyId"),ocpm4.get("companyId") );
 				Predicate a11 = cb.lessThanOrEqualTo(ocpm4.get("effectiveDateStart"), today);
 				effectiveDate3.where(a9,a10,a11);
 				
-				Subquery<Long> effectiveDate4 = query.subquery(Long.class);
+				Subquery<Timestamp> effectiveDate4 = query.subquery(Timestamp.class);
 				Root<CompanyProductMaster> ocpm5 = effectiveDate4.from(CompanyProductMaster.class);
-				effectiveDate4.select(cb.max(ocpm5.get("effectiveDateEnd")));
+				effectiveDate4.select(cb.greatest(ocpm5.get("effectiveDateEnd")));
 				Predicate a12 = cb.equal(cm.get("productId"),ocpm5.get("productId") );
 				Predicate a13 = cb.equal(cm.get("companyId"),ocpm5.get("companyId") );
 				Predicate a14 = cb.greaterThanOrEqualTo(ocpm5.get("effectiveDateEnd"), todayEnd);
@@ -423,17 +423,17 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			orderList.add(cb.asc(c.get("productName")));
 			
 			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("productId"),ocpm1.get("productId"));
 			Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
 			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1,a2,a3);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a4 = cb.equal(c.get("productId"),ocpm2.get("productId"));
 			Predicate a5 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
 			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
@@ -535,9 +535,9 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			// Company Effective Date Max Filter
 			Subquery<Long> company = query.subquery(Long.class);
 			Root<InsuranceCompanyMaster> ins = company.from(InsuranceCompanyMaster.class);
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<InsuranceCompanyMaster> ocpm2 = effectiveDate2.from(InsuranceCompanyMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateStart")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateStart")));
 			Predicate ceff1 = cb.equal(ocpm2.get("companyId"), ins.get("companyId"));
 			Predicate ceff2 = cb.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"), today);
 			effectiveDate2.where(ceff1,ceff2);
@@ -553,7 +553,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 //			Root<InsuranceCompanyMaster> logo = companyLogo.from(InsuranceCompanyMaster.class);
 //			Subquery<Long> effectiveDate5 = query.subquery(Long.class);
 //			Root<InsuranceCompanyMaster> ocpm5 = effectiveDate5.from(InsuranceCompanyMaster.class);
-//			effectiveDate5.select(cb.max(ocpm5.get("effectiveDateStart")));
+//			effectiveDate5.select(cb.greatest(ocpm5.get("effectiveDateStart")));
 //			Predicate iceff1 = cb.equal(ocpm5.get("companyId"), logo.get("companyId"));
 //			Predicate iceff2 = cb.lessThanOrEqualTo(ocpm5.get("effectiveDateStart"), today);
 //			effectiveDate5.where(iceff1,iceff2);
@@ -567,9 +567,9 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			// Company Currency Effective Date Max Filter
 			Subquery<Long> currency = query.subquery(Long.class);
 			Root<InsuranceCompanyMaster> currencyId = currency.from(InsuranceCompanyMaster.class);
-			Subquery<Long> effectiveDate6 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate6 = query.subquery(Timestamp.class);
 			Root<InsuranceCompanyMaster> ocpm6 = effectiveDate6.from(InsuranceCompanyMaster.class);
-			effectiveDate6.select(cb.max(ocpm6.get("effectiveDateStart")));
+			effectiveDate6.select(cb.greatest(ocpm6.get("effectiveDateStart")));
 			Predicate iceff3 = cb.equal(ocpm6.get("companyId"), currencyId.get("companyId"));
 			Predicate iceff4 = cb.lessThanOrEqualTo(ocpm6.get("effectiveDateStart"), today);
 			effectiveDate6.where(iceff3,iceff4);
@@ -587,7 +587,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 //			Root<RegionMaster> rm = region.from(RegionMaster.class);
 //			Subquery<Long> effectiveDate3 = query.subquery(Long.class);
 //			Root<RegionMaster> ocpm3 = effectiveDate3.from(RegionMaster.class);
-//			effectiveDate3.select(cb.max(ocpm3.get("effectiveDateStart")));
+//			effectiveDate3.select(cb.greatest(ocpm3.get("effectiveDateStart")));
 //			Predicate reff2 = cb.equal(ocpm3.get("regionCode"), rm.get("regionCode"));
 //			Predicate reff3 = cb.lessThanOrEqualTo(ocpm3.get("effectiveDateStart"), today);
 //			effectiveDate3.where(reff2,reff3);
@@ -607,9 +607,9 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 					currency.alias("currencyId") );
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<BranchMaster> ocpm1 = effectiveDate.from(BranchMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate eff1 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
 		//	Predicate eff2 = cb.equal(ocpm1.get("regionCode"), b.get("regionCode"));
 			Predicate eff3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));

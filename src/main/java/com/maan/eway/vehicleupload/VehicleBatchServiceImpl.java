@@ -1,10 +1,11 @@
 package com.maan.eway.vehicleupload;
 
 import java.io.ByteArrayOutputStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,18 +27,6 @@ import java.util.StringJoiner;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-import javax.transaction.Transactional;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -112,6 +101,17 @@ import com.maan.eway.error.Error;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.springbatch.TransactionControlDetails;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
+import jakarta.transaction.Transactional;
 import okhttp3.MediaType;
 
 
@@ -1186,7 +1186,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 	    	
 	    	String url = SequenceGenerateUrl;
 	   		String auth = EwayBasicAuthName +":"+ EwayBasicAuthPass;
-	         byte[] encodedAuth = org.apache.tomcat.util.codec.binary.Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
+	   		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(StandardCharsets.US_ASCII));
 	         String authHeader = "Basic " + new String( encodedAuth );
 	      
 	   		RestTemplate restTemplate = new RestTemplate();
@@ -1367,9 +1367,9 @@ public synchronized String getListItem(String insuranceId , String branchCode, S
 		
 		
 		// Effective Date Start Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 		Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
 		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 		Predicate b1= cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
@@ -1377,9 +1377,9 @@ public synchronized String getListItem(String insuranceId , String branchCode, S
 		effectiveDate.where(a1,a2,b1,b2);
 		
 		// Effective Date End Max Filter
-		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+		Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 		Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 		Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
 		Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 		Predicate b3= cb.equal(c.get("companyId"),ocpm2.get("companyId"));

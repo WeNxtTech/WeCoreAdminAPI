@@ -42,4 +42,7 @@ public class CountryTaxGetRes {
 
 		@JsonProperty("CreatedBy")
 		private String createdBy;
+		
+		@JsonProperty("CodeDescLocal")
+		private String codeDescLocal;
 }

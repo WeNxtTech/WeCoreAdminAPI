@@ -5,6 +5,7 @@
 */
 package com.maan.eway.master.service.impl;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,33 +18,18 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.maan.eway.master.req.CityChangeStatusReq;
-import com.maan.eway.master.req.CityMasterDropDownReq;
-import com.maan.eway.master.req.CityMasterGetAllReq;
-import com.maan.eway.master.req.CityMasterGetReq;
-import com.maan.eway.master.req.CityMasterSaveReq;
+import com.maan.eway.bean.CityMaster;
+import com.maan.eway.bean.CompanyCityMaster;
+import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CompanyCityChangeStatusReq;
 import com.maan.eway.master.req.CompanyCityMasterDropDownReq;
 import com.maan.eway.master.req.CompanyCityMasterGetAllReq;
@@ -51,20 +37,23 @@ import com.maan.eway.master.req.CompanyCityMasterGetReq;
 import com.maan.eway.master.req.CompanyCityMasterMultiInsertSaveReq;
 import com.maan.eway.master.req.CompanyCityMasterSaveReq;
 import com.maan.eway.master.req.CompanyCityNonSelectedReq;
-
 import com.maan.eway.master.res.CompanyCityMasterRes;
-
 import com.maan.eway.master.service.CompanyCityMasterService;
-
-import com.maan.eway.bean.CityMaster;
-import com.maan.eway.bean.CompanyCityMaster;
-
-import com.maan.eway.error.Error;
-
 import com.maan.eway.repository.CompanyCityMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.impl.BasicValidationService;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 /**
  * <h2>CityMasterServiceimpl</h2>
@@ -185,9 +174,9 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 			query.select(b);
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<CompanyCityMaster> ocpm1 = effectiveDate.from(CompanyCityMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a2 = cb.equal(ocpm1.get("coreAppCode"), b.get("coreAppCode"));
 			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), effStartDate);
@@ -195,9 +184,9 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 			effectiveDate.where(a1, a2, a3);
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<CompanyCityMaster> ocpm2 = effectiveDate.from(CompanyCityMaster.class);
-			effectiveDate.select(cb.max(ocpm2.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm2.get("effectiveDateStart")));
 			Predicate a4 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
 			Predicate a5 = cb.equal(ocpm2.get("coreAppCode"), b.get("coreAppCode"));
 			Predicate a6 = cb.lessThanOrEqualTo(ocpm2.get("effectiveDateEnd"), effEndDate);
@@ -345,9 +334,9 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 			query.multiselect(cb.count(b));
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<CompanyCityMaster> ocpm1 = effectiveDate.from(CompanyCityMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("cityId"), b.get("cityId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 
@@ -538,7 +527,7 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 			Subquery<Long> amendId = query.subquery(Long.class);
 			Root<CompanyCityMaster> ocpm1 = amendId.from(CompanyCityMaster.class);
 			amendId.select(cb.max(ocpm1.get("amendId")));
-			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("cityId"), ocpm1.get("cityId"));
+			jakarta.persistence.criteria.Predicate a1 = cb.equal(c.get("cityId"), ocpm1.get("cityId"));
 			Predicate a2 = cb.equal(c.get("countryId"), ocpm1.get("countryId"));
 			Predicate a3 = cb.equal(c.get("regionId"), ocpm1.get("regionId"));
 			Predicate a4 = cb.equal(c.get("stateId"), ocpm1.get("stateId"));
@@ -553,8 +542,8 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 
 			// Where
 
-			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("amendId"), amendId);
-			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("cityId"), req.getCityId());
+			jakarta.persistence.criteria.Predicate n1 = cb.equal(c.get("amendId"), amendId);
+			jakarta.persistence.criteria.Predicate n2 = cb.equal(c.get("cityId"), req.getCityId());
 			Predicate n3 = cb.equal(c.get("countryId"), req.getCountryId());
 			Predicate n5 = cb.equal(c.get("stateId"), req.getStateId());
 			Predicate n6 = cb.equal(c.get("companyId"), req.getCompanyId());
@@ -628,37 +617,37 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 			orderList.add(cb.asc(c.get("cityName")));
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<CompanyCityMaster> ocpm1 = effectiveDate.from(CompanyCityMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("cityId"), ocpm1.get("cityId"));
-			javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("countryId"), ocpm1.get("countryId"));
-			javax.persistence.criteria.Predicate a4 = cb.equal(c.get("regionId"), ocpm1.get("regionId"));
-			javax.persistence.criteria.Predicate a5 = cb.equal(c.get("stateId"), ocpm1.get("stateId"));
-			javax.persistence.criteria.Predicate a6 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			jakarta.persistence.criteria.Predicate a1 = cb.equal(c.get("cityId"), ocpm1.get("cityId"));
+			jakarta.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			jakarta.persistence.criteria.Predicate a3 = cb.equal(c.get("countryId"), ocpm1.get("countryId"));
+			jakarta.persistence.criteria.Predicate a4 = cb.equal(c.get("regionId"), ocpm1.get("regionId"));
+			jakarta.persistence.criteria.Predicate a5 = cb.equal(c.get("stateId"), ocpm1.get("stateId"));
+			jakarta.persistence.criteria.Predicate a6 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
 
 			effectiveDate.where(a1, a2, a3, a4, a5, a6);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<CompanyCityMaster> ocpm2 = effectiveDate2.from(CompanyCityMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
-			javax.persistence.criteria.Predicate a11 = cb.equal(c.get("countryId"), ocpm2.get("countryId"));
-			javax.persistence.criteria.Predicate a7 = cb.equal(c.get("regionId"), ocpm2.get("regionId"));
-			javax.persistence.criteria.Predicate a8 = cb.equal(c.get("stateId"), ocpm2.get("stateId"));
-			javax.persistence.criteria.Predicate a9 = cb.equal(c.get("cityId"), ocpm2.get("cityId"));
-			javax.persistence.criteria.Predicate a10 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-			javax.persistence.criteria.Predicate a12 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			jakarta.persistence.criteria.Predicate a11 = cb.equal(c.get("countryId"), ocpm2.get("countryId"));
+			jakarta.persistence.criteria.Predicate a7 = cb.equal(c.get("regionId"), ocpm2.get("regionId"));
+			jakarta.persistence.criteria.Predicate a8 = cb.equal(c.get("stateId"), ocpm2.get("stateId"));
+			jakarta.persistence.criteria.Predicate a9 = cb.equal(c.get("cityId"), ocpm2.get("cityId"));
+			jakarta.persistence.criteria.Predicate a10 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			jakarta.persistence.criteria.Predicate a12 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
 
 			effectiveDate2.where(a7, a8, a9, a10, a11, a12);
 
 			// Where
-			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
-			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
-			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("countryId"), req.getCountryId());
-			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("stateId"), req.getStateId());
-			javax.persistence.criteria.Predicate n6 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
-			javax.persistence.criteria.Predicate n7 = cb.equal(c.get("companyId"), req.getCompanyId());
+			jakarta.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
+			jakarta.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			jakarta.persistence.criteria.Predicate n3 = cb.equal(c.get("countryId"), req.getCountryId());
+			jakarta.persistence.criteria.Predicate n5 = cb.equal(c.get("stateId"), req.getStateId());
+			jakarta.persistence.criteria.Predicate n6 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			jakarta.persistence.criteria.Predicate n7 = cb.equal(c.get("companyId"), req.getCompanyId());
 
 			query.where(n1, n2, n3,  n5, n6, n7).orderBy(orderList);
 
@@ -762,9 +751,9 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 			query.select(b);
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<CityMaster> ocpm1 = effectiveDate.from(CityMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("regionId"), b.get("regionId"));
 			Predicate a2 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
 			Predicate a3 = cb.equal(ocpm1.get("stateId"), b.get("stateId"));
@@ -774,9 +763,9 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 			effectiveDate.where(a1, a2, a3, a4, a5);
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate5 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate5 = query.subquery(Timestamp.class);
 			Root<CityMaster> ocpm5 = effectiveDate5.from(CityMaster.class);
-			effectiveDate5.select(cb.max(ocpm5.get("effectiveDateEnd")));
+			effectiveDate5.select(cb.greatest(ocpm5.get("effectiveDateEnd")));
 			Predicate a6 = cb.equal(ocpm5.get("regionId"), b.get("regionId"));
 			Predicate a7 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"), today);
 			Predicate a8 = cb.equal(ocpm5.get("countryId"), b.get("countryId"));
@@ -792,9 +781,9 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 			// Company City Effective Date Max Filter
 			Subquery<Long> city = query.subquery(Long.class);
 			Root<CompanyCityMaster> ps = city.from(CompanyCityMaster.class);
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<CompanyCityMaster> ocpm2 = effectiveDate2.from(CompanyCityMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateStart")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateStart")));
 			Predicate eff1 = cb.equal(ocpm2.get("regionId"), ps.get("regionId"));
 			Predicate eff3 = cb.equal(ocpm2.get("companyId"), ps.get("companyId"));
 			Predicate eff4 = cb.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"), today);
@@ -956,35 +945,35 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 				orderList.add(cb.asc(c.get("cityName")));
 
 				// Effective Date Max Filter
-				Subquery<Long> effectiveDate = query.subquery(Long.class);
+				Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 				Root<CityMaster> ocpm1 = effectiveDate.from(CityMaster.class);
-				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-				javax.persistence.criteria.Predicate a1 = cb.equal(c.get("countryId"), ocpm1.get("countryId"));
-				javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-				javax.persistence.criteria.Predicate a3 = cb.equal(c.get("regionId"), ocpm1.get("regionId"));
-				javax.persistence.criteria.Predicate a4 = cb.equal(c.get("stateId"), ocpm1.get("stateId"));
+				effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+				jakarta.persistence.criteria.Predicate a1 = cb.equal(c.get("countryId"), ocpm1.get("countryId"));
+				jakarta.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+				jakarta.persistence.criteria.Predicate a3 = cb.equal(c.get("regionId"), ocpm1.get("regionId"));
+				jakarta.persistence.criteria.Predicate a4 = cb.equal(c.get("stateId"), ocpm1.get("stateId"));
 
 				effectiveDate.where(a1, a2, a3, a4);
 
 				// Effective Date Max Filter
-				Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+				Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 				Root<CityMaster> ocpm2 = effectiveDate2.from(CityMaster.class);
-				effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
-				javax.persistence.criteria.Predicate a5 = cb.equal(c.get("countryId"), ocpm2.get("countryId"));
-				javax.persistence.criteria.Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"),
+				effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+				jakarta.persistence.criteria.Predicate a5 = cb.equal(c.get("countryId"), ocpm2.get("countryId"));
+				jakarta.persistence.criteria.Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"),
 						todayEnd);
-				javax.persistence.criteria.Predicate a7 = cb.equal(c.get("regionId"), ocpm2.get("regionId"));
-				javax.persistence.criteria.Predicate a8 = cb.equal(c.get("stateId"), ocpm2.get("stateId"));
+				jakarta.persistence.criteria.Predicate a7 = cb.equal(c.get("regionId"), ocpm2.get("regionId"));
+				jakarta.persistence.criteria.Predicate a8 = cb.equal(c.get("stateId"), ocpm2.get("stateId"));
 
 				effectiveDate2.where(a7, a8, a5, a6);
 
 				// Where
-				javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
-				javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
-				javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
-				javax.persistence.criteria.Predicate n4 = cb.equal(c.get("countryId"), req.getCountryId());
-				javax.persistence.criteria.Predicate n6 = cb.equal(c.get("stateId"), req.getStateId());
-				javax.persistence.criteria.Predicate n7 = cb.equal(c.get("cityId"), req.getCityId());
+				jakarta.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
+				jakarta.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+				jakarta.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+				jakarta.persistence.criteria.Predicate n4 = cb.equal(c.get("countryId"), req.getCountryId());
+				jakarta.persistence.criteria.Predicate n6 = cb.equal(c.get("stateId"), req.getStateId());
+				jakarta.persistence.criteria.Predicate n7 = cb.equal(c.get("cityId"), req.getCityId());
 
 				query.where(n1, n2, n3, n4, n6, n7).orderBy(orderList);
 
@@ -1056,36 +1045,36 @@ public class CompanyCityMasterServiceImpl implements CompanyCityMasterService {
 			orderList.add(cb.asc(c.get("cityName")));
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<CompanyCityMaster> ocpm1 = effectiveDate.from(CompanyCityMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("cityId"), ocpm1.get("cityId"));
-			javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("countryId"), ocpm1.get("countryId"));
-			javax.persistence.criteria.Predicate a4 = cb.equal(c.get("regionId"), ocpm1.get("regionId"));
-			javax.persistence.criteria.Predicate a5 = cb.equal(c.get("stateId"), ocpm1.get("stateId"));
-			javax.persistence.criteria.Predicate a6 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			jakarta.persistence.criteria.Predicate a1 = cb.equal(c.get("cityId"), ocpm1.get("cityId"));
+			jakarta.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			jakarta.persistence.criteria.Predicate a3 = cb.equal(c.get("countryId"), ocpm1.get("countryId"));
+			jakarta.persistence.criteria.Predicate a4 = cb.equal(c.get("regionId"), ocpm1.get("regionId"));
+			jakarta.persistence.criteria.Predicate a5 = cb.equal(c.get("stateId"), ocpm1.get("stateId"));
+			jakarta.persistence.criteria.Predicate a6 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
 
 			effectiveDate.where(a1, a2, a3, a4, a5, a6);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<CompanyCityMaster> ocpm2 = effectiveDate2.from(CompanyCityMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
-			javax.persistence.criteria.Predicate a11 = cb.equal(c.get("countryId"), ocpm2.get("countryId"));
-			javax.persistence.criteria.Predicate a7 = cb.equal(c.get("regionId"), ocpm2.get("regionId"));
-			javax.persistence.criteria.Predicate a8 = cb.equal(c.get("stateId"), ocpm2.get("stateId"));
-			javax.persistence.criteria.Predicate a9 = cb.equal(c.get("cityId"), ocpm2.get("cityId"));
-			javax.persistence.criteria.Predicate a10 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-			javax.persistence.criteria.Predicate a12 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			jakarta.persistence.criteria.Predicate a11 = cb.equal(c.get("countryId"), ocpm2.get("countryId"));
+			jakarta.persistence.criteria.Predicate a7 = cb.equal(c.get("regionId"), ocpm2.get("regionId"));
+			jakarta.persistence.criteria.Predicate a8 = cb.equal(c.get("stateId"), ocpm2.get("stateId"));
+			jakarta.persistence.criteria.Predicate a9 = cb.equal(c.get("cityId"), ocpm2.get("cityId"));
+			jakarta.persistence.criteria.Predicate a10 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			jakarta.persistence.criteria.Predicate a12 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
 
 			effectiveDate2.where(a7, a8, a9, a10, a11, a12);
 
 			// Where
-			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
-			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
-			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("countryId"), req.getCountryId());
-			javax.persistence.criteria.Predicate n6 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
-			javax.persistence.criteria.Predicate n7 = cb.equal(c.get("companyId"), req.getCompanyId());
+			jakarta.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
+			jakarta.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			jakarta.persistence.criteria.Predicate n3 = cb.equal(c.get("countryId"), req.getCountryId());
+			jakarta.persistence.criteria.Predicate n6 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			jakarta.persistence.criteria.Predicate n7 = cb.equal(c.get("companyId"), req.getCompanyId());
 
 			query.where(n1, n2, n3,  n6, n7).orderBy(orderList);
 

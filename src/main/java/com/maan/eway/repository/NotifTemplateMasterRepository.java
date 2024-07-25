@@ -39,6 +39,6 @@ public interface NotifTemplateMasterRepository  extends JpaRepository<NotifTempl
 			Date today);
 
 	List<NotifTemplateMaster> findByNotifTemplateCodeAndStatusAndCompanyIdAndEffectiveDateStartLessThanEqualOrderByEntryDateDesc(
-			Integer sno, String string, String insuranceId, Date date);
+			String sno, String string, String insuranceId, Date date);
 
 }

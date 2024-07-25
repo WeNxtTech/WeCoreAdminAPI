@@ -1,14 +1,17 @@
 package com.maan.eway.vehicleupload;
 
 import java.io.IOException;
-
+import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+//import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
+//import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
+import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
@@ -22,6 +25,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -38,10 +42,14 @@ public class VehicleBatchConfig{
 
 private static final String OVERRIDDEN_BY_EXPRESSION = null;
 
+//@Autowired
+//public JobBuilderFactory jobBuilderFactory;
+//@Autowired
+//public StepBuilderFactory stepBuilderFactory;
 @Autowired
-public JobBuilderFactory jobBuilderFactory;
+private JobRepository jobRepository;
 @Autowired
-public StepBuilderFactory stepBuilderFactory;
+private PlatformTransactionManager transactionManager;
 @Autowired
 private JdbcTemplate jdbcTemplate;  
 
@@ -50,7 +58,8 @@ private VehicleBatchWriter batchWriter =new VehicleBatchWriter();
 private TransactionControlDetailsRepository transactionDetailRepo;
 
 private ThreadPoolTaskExecutor asyncTaskExecutor;
-
+@Autowired
+public StepBuilderFactory stepBuilderFactory;
 
 @StepScope
 @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -84,15 +93,24 @@ public FlatFileItemReader<Record> reader(@Value("#{jobParameters[EwayBatchReq]}"
     return reader;
 }
 
+
+//@Bean(name = "VehicleJob")
+//public Job importUserJob(@Qualifier("VehicleListener") JobExecutionListener listener) {
+//	return jobBuilderFactory.get("VehicleJob").incrementer(new RunIdIncrementer()).listener(listener).flow(step1())
+//			.end().build();
+//}
+ 
+
 @Bean(name="VehicleJob")
 public Job importUserJob(@Qualifier("VehicleListener")JobExecutionListener listener) {
-    return jobBuilderFactory.get("VehicleJob")
+    return new JobBuilder("VehicleJob", jobRepository)
             .incrementer(new RunIdIncrementer())
             .listener(listener)
             .flow(step1())
             .end()
             .build();
 }
+
 @Bean
 public TaskExecutor taskExecutor(){
 	  asyncTaskExecutor=new ThreadPoolTaskExecutor();

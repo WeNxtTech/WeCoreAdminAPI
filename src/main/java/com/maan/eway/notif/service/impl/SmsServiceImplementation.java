@@ -3,7 +3,7 @@ package com.maan.eway.notif.service.impl;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

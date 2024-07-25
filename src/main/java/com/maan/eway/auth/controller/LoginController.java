@@ -1,6 +1,6 @@
 package com.maan.eway.auth.controller;
 
-import javax.servlet.http.HttpServletRequest;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +19,7 @@ import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @Api(  tags="LOGIN : Login Token Creation", description = "API.")

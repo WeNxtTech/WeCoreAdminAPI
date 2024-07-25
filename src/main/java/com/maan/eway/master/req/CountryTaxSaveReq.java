@@ -43,4 +43,7 @@ public class CountryTaxSaveReq {
 
     @JsonProperty("InsuranceId")
 	private String insuranceId;
+    
+    @JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
 }

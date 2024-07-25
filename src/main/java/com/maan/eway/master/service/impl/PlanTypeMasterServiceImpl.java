@@ -5,6 +5,7 @@
 */
 package com.maan.eway.master.service.impl;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,16 +18,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,7 +27,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.maan.eway.bean.PlanTypeMaster;
 import com.maan.eway.bean.PlanTypeMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.PlanTypeDropDownReq;
@@ -50,6 +40,16 @@ import com.maan.eway.repository.PlanTypeMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.impl.BasicValidationService;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 @Service
 @Transactional
@@ -224,9 +224,9 @@ try {
 	orderList.add(cb.asc(c.get("branchCode")));
 
 	// Effective Date Start Max Filter
-	Subquery<Long> effectiveDate = query.subquery(Long.class);
+	Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 	Root<PlanTypeMaster> ocpm1 = effectiveDate.from(PlanTypeMaster.class);
-	effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+	effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 	Predicate a1 = cb.equal(c.get("planTypeId"), ocpm1.get("planTypeId"));
 	Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 	Predicate a3 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
@@ -236,9 +236,9 @@ try {
 	effectiveDate.where(a1, a2,a3,a4,a5,a6);
 	
 	// Effective Date End Max Filter
-	Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+	Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 	Root<PlanTypeMaster> ocpm2 = effectiveDate2.from(PlanTypeMaster.class);
-	effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+	effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 	Predicate a7 = cb.equal(c.get("planTypeId"), ocpm2.get("planTypeId"));
 	Predicate a8 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 	Predicate a9 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
@@ -271,6 +271,7 @@ try {
 		DropDownRes res = new DropDownRes();
 		res.setCode(data.getPlanTypeId().toString());
 		res.setCodeDesc(data.getPlanTypeDescription());
+		res.setCodeDesc(data.getPlanTypeDescriptionLocal());
 		res.setStatus(data.getStatus());
 		resList.add(res);
 	}
@@ -410,9 +411,9 @@ public SuccessRes insertPlanType(PlanTypeMasterSaveReq req) {
 			query.select(b);
 
 			//Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<PlanTypeMaster> ocpm1 = effectiveDate.from(PlanTypeMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("planTypeId"), b.get("planTypeId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));

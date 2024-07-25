@@ -1,21 +1,12 @@
 package com.maan.eway.notif.service.impl;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -26,15 +17,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.bean.SmsConfigMaster;
-import com.maan.eway.error.Error;
 import com.maan.eway.notif.req.SmsConfigInsertReq;
 import com.maan.eway.notif.req.SmsGetReq;
 import com.maan.eway.notif.res.SmsMasterGetRes;
 import com.maan.eway.notif.service.SmsConfigMasterService;
 import com.maan.eway.repository.SmsMasterRepository;
 import com.maan.eway.res.SuccessRes;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 @Service
 @Transactional
@@ -207,9 +206,9 @@ public class SmsConfigMasterServiceImpl implements SmsConfigMasterService{
 				// Select
 				query.select(b);
 				// Effective Date Max Filter
-				Subquery<Long> effectiveDate = query.subquery(Long.class);
+				Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 				Root<SmsConfigMaster> ocpm1= effectiveDate.from(SmsConfigMaster.class);
-				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+				effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 				Predicate a1 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
 				effectiveDate.where(a1);
 				//where
@@ -287,9 +286,9 @@ public class SmsConfigMasterServiceImpl implements SmsConfigMasterService{
 			// Select
 			query.multiselect(cb.count(b));
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<SmsConfigMaster> ocpm1 = effectiveDate.from(SmsConfigMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 
 			effectiveDate.where(a1);
@@ -323,9 +322,9 @@ public class SmsConfigMasterServiceImpl implements SmsConfigMasterService{
 			query.select(b);
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<SmsConfigMaster> ocpm1 = effectiveDate.from(SmsConfigMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a2 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
 
@@ -428,9 +427,9 @@ public class SmsConfigMasterServiceImpl implements SmsConfigMasterService{
 				query.select(b);
 
 				// Effective Date Max Filter
-				Subquery<Long> effectiveDate = query.subquery(Long.class);
+				Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 				Root<SmsConfigMaster> ocpm1 = effectiveDate.from(SmsConfigMaster.class);
-				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+				effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 				Predicate a1 = cb.equal(ocpm1.get("sNo"), b.get("sNo"));
 				Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 				Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));

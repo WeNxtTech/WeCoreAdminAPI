@@ -5,7 +5,7 @@
 package com.maan.eway.batch.entity;
 
 import lombok.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 

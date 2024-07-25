@@ -5,6 +5,7 @@
 */
 package com.maan.eway.notif.service.impl;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,16 +18,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,16 +27,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.maan.eway.bean.DocumentMaster;
 import com.maan.eway.bean.MailMaster;
-import com.maan.eway.error.Error;
-import com.maan.eway.master.res.DocumentMasterGetRes;
 import com.maan.eway.notif.req.MailMasterGetReq;
 import com.maan.eway.notif.req.MailMasterSaveReq;
 import com.maan.eway.notif.res.MailMasterGetRes;
 import com.maan.eway.notif.service.MailMasterService;
 import com.maan.eway.repository.MailMasterRepository;
 import com.maan.eway.res.SuccessRes;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 /**
  * <h2>BankMasterServiceimpl</h2>
@@ -77,9 +75,9 @@ public class MailMasterServiceImpl implements MailMasterService {
 			// Select
 			query.multiselect(cb.count(b));
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<MailMaster> ocpm1 = effectiveDate.from(MailMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 
 			effectiveDate.where(a1);
@@ -113,9 +111,9 @@ public class MailMasterServiceImpl implements MailMasterService {
 			query.select(b);
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<MailMaster> ocpm1 = effectiveDate.from(MailMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			effectiveDate.where(a1);
 
@@ -294,9 +292,9 @@ public class MailMasterServiceImpl implements MailMasterService {
 			query.select(b);
 	
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<MailMaster> ocpm1 = effectiveDate.from(MailMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("sNo"), b.get("sNo"));
 			Predicate a2 = cb.equal(ocpm1.get("coreAppCode"), b.get("coreAppCode"));
 			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), effStartDate );
@@ -304,9 +302,9 @@ public class MailMasterServiceImpl implements MailMasterService {
 			
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<MailMaster> ocpm2 = effectiveDate2.from(MailMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a4 = cb.equal(ocpm2.get("sNo"), b.get("sNo"));
 			Predicate a5 = cb.equal(ocpm2.get("coreAppCode"), b.get("coreAppCode"));
 			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), effEndDate );
@@ -345,9 +343,9 @@ public class MailMasterServiceImpl implements MailMasterService {
 			query.select(b);
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<MailMaster> ocpm1 = effectiveDate.from(MailMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("sNo"), b.get("sNo"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			effectiveDate.where(a1, a2);
@@ -402,9 +400,9 @@ public class MailMasterServiceImpl implements MailMasterService {
 				// Select
 				query.select(b);
 				// Effective Date Max Filter
-				Subquery<Long> effectiveDate = query.subquery(Long.class);
+				Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 				Root<MailMaster> ocpm1 = effectiveDate.from(MailMaster.class);
-				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+				effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 				Predicate a1 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
 				effectiveDate.where(a1);
 

@@ -1,6 +1,7 @@
 package com.maan.eway.admin.service.impl;
 
 import java.lang.reflect.Field;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -11,16 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -43,6 +34,16 @@ import com.maan.eway.req.SubUserTypeReq;
 import com.maan.eway.res.ColummnDropRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SubUserTypeDropDownRes;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 @Service
 public class AdminDropDownServiceImpl  implements AdminDropDownService{
@@ -78,6 +79,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					res.setCode(data.getItemCode());
 					res.setCodeDesc(data.getItemValue());
 					res.setStatus(data.getStatus());
+					res.setCodeDescLocal(data.getItemValueLocal());
 					resList.add(res);
 				}
 			} catch (Exception e) {
@@ -87,7 +89,6 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 			}
 			return resList;
 		}
-		
 		@Override
 		public List<ColummnDropRes> getTableDetails(GetTableDropDownReq req) {
 			List<ColummnDropRes> resList = new ArrayList<ColummnDropRes>();
@@ -214,9 +215,9 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 									res.setCodeDesc(data.getItemValue());
 									res.setDisplayName(data.getParam1());
 									res.setStatus(data.getStatus());
+									res.setCodeDescLocal(data.getItemValueLocal());
 									resList.add(res);
-								}
-								
+								}			
 							} else  {
 								if(loginData.getSubUserType().equalsIgnoreCase(data.getItemCode()) ) {
 									if(! data.getItemCode().equalsIgnoreCase("both") ) {
@@ -224,6 +225,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 										res.setCodeDesc(data.getItemValue());
 										res.setDisplayName(data.getParam1());
 										res.setStatus(data.getStatus());
+										res.setCodeDescLocal(data.getItemValueLocal());
 										resList.add(res);
 									}
 								}
@@ -234,6 +236,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 								res.setCodeDesc(data.getItemValue());
 								res.setDisplayName(data.getParam1());
 								res.setStatus(data.getStatus());
+								res.setCodeDescLocal(data.getItemValueLocal());
 								resList.add(res);
 							}
 						}
@@ -242,6 +245,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 						res.setCodeDesc(data.getItemValue());
 						res.setDisplayName(data.getParam1());
 						res.setStatus(data.getStatus());
+						res.setCodeDescLocal(data.getItemValueLocal());
 						resList.add(res);
 					}
 					
@@ -254,10 +258,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 				return null;
 			}
 			return resList;
-		}
-
-	
-	
+		}		
 		@Override
 		public List<DropDownRes> getProductIcons(LovDropDownReq req) {
 			List<DropDownRes> resList = new ArrayList<DropDownRes>();
@@ -269,6 +270,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getItemCode());
 					res.setCodeDesc(data.getItemValue());
+					res.setCodeDescLocal(data.getItemValueLocal());
 					res.setStatus(data.getStatus());
 					resList.add(res);
 				}
@@ -291,6 +293,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getItemCode());
 					res.setCodeDesc(data.getItemValue());
+					res.setCodeDescLocal(data.getItemValueLocal());
 					res.setStatus(data.getStatus());
 					resList.add(res);
 				}
@@ -312,6 +315,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 				for (ListItemValue data : list) {
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getItemCode());
+					res.setCodeDescLocal(data.getItemValueLocal());
 					res.setCodeDesc(data.getItemValue());
 					res.setStatus(data.getStatus());
 					resList.add(res);
@@ -335,6 +339,8 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getItemCode());
 					res.setCodeDesc(data.getItemValue());
+					res.setCodeDescLocal(data.getItemValueLocal());
+					
 					res.setStatus(data.getStatus());
 					resList.add(res);
 				}
@@ -357,6 +363,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getItemCode());
 					res.setCodeDesc(data.getItemValue());
+					res.setCodeDescLocal(data.getItemValueLocal());
 					res.setStatus(data.getStatus());
 					resList.add(res);
 				}
@@ -380,6 +387,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getItemCode());
 					res.setCodeDesc(data.getItemValue());
+					res.setCodeDescLocal(data.getItemTypeLocal());
 					res.setStatus(data.getStatus());
 					resList.add(res);
 				}
@@ -420,9 +428,9 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 				
 				
 				// Effective Date Start Max Filter
-				Subquery<Long> effectiveDate = query.subquery(Long.class);
+				Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 				Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+				effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 				Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
 				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 				Predicate b1= cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
@@ -430,9 +438,9 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 				effectiveDate.where(a1,a2,b1,b2);
 				
 				// Effective Date End Max Filter
-				Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+				Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 				Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-				effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+				effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 				Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
 				Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 				Predicate b3= cb.equal(c.get("companyId"),ocpm2.get("companyId"));
@@ -480,6 +488,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getItemCode());
 					res.setCodeDesc(data.getItemValue());
+					res.setCodeDescLocal(data.getItemTypeLocal());
 					res.setStatus(data.getStatus());
 					resList.add(res);
 				}
@@ -502,6 +511,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getItemCode());
 					res.setCodeDesc(data.getItemValue());
+					res.setCodeDescLocal(data.getItemValueLocal());
 					res.setStatus(data.getStatus());
 					resList.add(res);
 				}
@@ -524,6 +534,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getItemCode());
 					res.setCodeDesc(data.getItemValue());
+					res.setCodeDescLocal(data.getItemValueLocal());
 					res.setStatus(data.getStatus());
 					resList.add(res);
 				}
@@ -546,6 +557,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getItemCode());
 					res.setCodeDesc(data.getItemValue());
+					res.setCodeDescLocal(data.getItemValueLocal());
 					res.setStatus(data.getStatus());
 					resList.add(res);
 				}
@@ -569,6 +581,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getItemCode());
 					res.setCodeDesc(data.getItemValue());
+					res.setCodeDescLocal(data.getItemValueLocal());
 					res.setStatus(data.getStatus());
 					resList.add(res);
 				}

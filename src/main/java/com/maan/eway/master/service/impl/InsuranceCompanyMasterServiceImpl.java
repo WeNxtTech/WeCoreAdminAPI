@@ -6,6 +6,7 @@
 */
 package com.maan.eway.master.service.impl;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,18 +22,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -44,8 +33,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.gson.Gson;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.LoginMaster;
-import com.maan.eway.bean.OccupationMaster;
-import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CompanyChangeStatusReq;
 import com.maan.eway.master.req.CompanyDropDownReq;
 import com.maan.eway.master.req.InsuranceCompanyMasterGetAllReq;
@@ -58,6 +45,17 @@ import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 /**
 * <h2>InsuranceCompanyMasterServiceimpl</h2>
 */
@@ -361,33 +359,39 @@ this.repository = repo;
 		//	errors.add(new Error("12", "PoBox", "Please Enter Po Box within 20 Numbers"));
 			errors.add("1432");
 		}
-		if(StringUtils.isBlank(req.getPatternstatus()))errors.add("2248");
-		if(req.getPatternstatus().equals("Y"))
-		{
-		if(StringUtils.isBlank(req.getCharacter()))errors.add("2246");
-		if(StringUtils.isBlank(req.getNumericdigitsEnd()))errors.add("2245");
-		if(StringUtils.isBlank(req.getNumericdigitsStart()))errors.add("2245");
-		if(StringUtils.isBlank(req.getSymbols()))errors.add("2243");
-		if((StringUtils.isBlank(req.getTotallengthmin())) ||req.getTotallengthmin().equalsIgnoreCase("0"))errors.add("2247");
-		if((StringUtils.isBlank(req.getTotalLengthMax())) ||req.getTotalLengthMax().equalsIgnoreCase("0") )errors.add("2247");	
-		
-	
-		if(!StringUtils.isBlank(req.getNumericdigitsStart()) && !StringUtils.isBlank(req.getNumericdigitsEnd()) )
-		{
-			String numberic=req.getNumericdigitsStart()+"-"+req.getNumericdigitsEnd();
-			if(!isNumericDigits(numberic,"numericDigits"))errors.add("2245"); // please enter valid numeric digits
-		    
+		if (StringUtils.isBlank(req.getPatternstatus())) {
+			errors.add("2248");
+		} else if (req.getPatternstatus().equals("Y")) {
+			if (StringUtils.isBlank(req.getCharacter()))
+				errors.add("2246");
+			if (StringUtils.isBlank(req.getNumericdigitsEnd()))
+				errors.add("2245");
+			if (StringUtils.isBlank(req.getNumericdigitsStart()))
+				errors.add("2245");
+			if (StringUtils.isBlank(req.getSymbols()))
+				errors.add("2243");
+			if ((StringUtils.isBlank(req.getTotallengthmin())) || req.getTotallengthmin().equalsIgnoreCase("0"))
+				errors.add("2247");
+			if ((StringUtils.isBlank(req.getTotalLengthMax())) || req.getTotalLengthMax().equalsIgnoreCase("0"))
+				errors.add("2247");
+
+			if (!StringUtils.isBlank(req.getNumericdigitsStart()) && !StringUtils.isBlank(req.getNumericdigitsEnd())) {
+				String numberic = req.getNumericdigitsStart() + "-" + req.getNumericdigitsEnd();
+				if (!isNumericDigits(numberic, "numericDigits"))
+					errors.add("2245"); // please enter valid numeric digits
+
+			}
+			if (!StringUtils.isBlank(req.getSymbols()) && isNumericDigits(req.getSymbols(), "Symbols")) {
+				errors.add("2243");// please enter only symbols...
+			}
+			if (!StringUtils.isBlank(req.getTotalLengthMax()) && !StringUtils.isBlank(req.getTotallengthmin())) {
+				if ((!(Integer.parseInt(req.getTotallengthmin()) >= 1))
+						&& (!(Integer.parseInt(req.getTotallengthmin()) <= 20)))
+					errors.add("2247");
+				if (Integer.parseInt(req.getTotallengthmin()) >= Integer.parseInt(req.getTotalLengthMax()))
+					errors.add("2247");
+			}
 		}
-	    if(!StringUtils.isBlank(req.getSymbols()) && isNumericDigits(req.getSymbols(),"Symbols"))
-	    {
-		  errors.add("2243");//please enter only symbols...
-	    }
-	    if(!StringUtils.isBlank(req.getTotalLengthMax())&& !StringUtils.isBlank(req.getTotallengthmin()))
-	    {
-	    if((!(Integer.parseInt(req.getTotallengthmin())>=1) ) && (!(Integer.parseInt(req.getTotallengthmin())<=20))) errors.add("2247"); 
-	    if(Integer.parseInt(req.getTotallengthmin())>= Integer.parseInt(req.getTotalLengthMax()))errors.add("2247"); 
-	    }
-	    }
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
@@ -461,9 +465,9 @@ this.repository = repo;
 			query.select(b);
 	
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<InsuranceCompanyMaster> ocpm1 = effectiveDate.from(InsuranceCompanyMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			effectiveDate.where(a1);
 	
@@ -504,9 +508,9 @@ this.repository = repo;
 			query.select(b);
 	
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<InsuranceCompanyMaster> ocpm1 = effectiveDate.from(InsuranceCompanyMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a2 = cb.equal(ocpm1.get("coreAppCode"), b.get("coreAppCode"));
 			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), effStartDate );
@@ -514,9 +518,9 @@ this.repository = repo;
 			
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<InsuranceCompanyMaster> ocpm2 = effectiveDate2.from(InsuranceCompanyMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a4 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
 			Predicate a5 = cb.equal(ocpm2.get("coreAppCode"), b.get("coreAppCode"));
 			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), effEndDate );
@@ -585,7 +589,7 @@ this.repository = repo;
 				orderList.add(cb.desc(b.get("effectiveDateStart")));
 				
 				// Effective Date Max Filter
-				Subquery<Long> effectiveDate = query.subquery(Long.class);
+				Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 				Root<InsuranceCompanyMaster> ocpm1 = effectiveDate.from(InsuranceCompanyMaster.class);
 				Predicate n1 = cb.equal(b.get("companyId"), req.getInsuranceId());
 
@@ -677,9 +681,9 @@ this.repository = repo;
 			query.select(b);
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<InsuranceCompanyMaster> ocpm1 = effectiveDate.from(InsuranceCompanyMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			effectiveDate.where(a1);
 			// Order By
@@ -882,7 +886,7 @@ this.repository = repo;
 			Subquery<Long> amendId = query.subquery(Long.class);
 			Root<InsuranceCompanyMaster> ocpm1 = amendId.from(InsuranceCompanyMaster.class);
 			amendId.select(cb.max(ocpm1.get("amendId")));
-			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
+			jakarta.persistence.criteria.Predicate a1 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
 			amendId.where(a1);
 			
 			
@@ -957,27 +961,27 @@ this.repository = repo;
 			orderList.add(cb.asc(c.get("companyName")));
 			
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<InsuranceCompanyMaster> ocpm1 = effectiveDate.from(InsuranceCompanyMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
-			javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			jakarta.persistence.criteria.Predicate a1 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
+			jakarta.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1,a2);
 			
 			// Effective Date End
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<InsuranceCompanyMaster> ocpm2 = effectiveDate2.from(InsuranceCompanyMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
-			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("companyId"),ocpm2.get("companyId") );
-			javax.persistence.criteria.Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			jakarta.persistence.criteria.Predicate a3 = cb.equal(c.get("companyId"),ocpm2.get("companyId") );
+			jakarta.persistence.criteria.Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			effectiveDate2.where(a3,a4);
 			
 		    // Where	
 			Predicate n1 = cb.equal(c.get("status"),"Y");
 			Predicate n11 = cb.equal(c.get("status"),"R");
 			Predicate n12 = cb.or(n1,n11);
-			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
-			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			jakarta.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			jakarta.persistence.criteria.Predicate n4 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 			
 			if(StringUtils.isNotBlank(req.getBrokerCompanyYn()) ) {
 			//	Predicate n3 = cb.equal(c.get("brokerYn"), req.getBrokerCompanyYn());
@@ -1105,17 +1109,17 @@ this.repository = repo;
 			orderList.add(cb.asc(c.get("companyName")));
 			
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<InsuranceCompanyMaster> ocpm1 = effectiveDate.from(InsuranceCompanyMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1,a2);
 			
 			// Effective Date End
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<InsuranceCompanyMaster> ocpm2 = effectiveDate2.from(InsuranceCompanyMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a3 = cb.equal(c.get("companyId"),ocpm2.get("companyId") );
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			effectiveDate2.where(a3,a4);

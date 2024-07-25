@@ -5,34 +5,11 @@
 */
 package com.maan.eway.master.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import com.maan.eway.repository.SectionMasterRepository;
-import com.maan.eway.res.SuccessRes;
-import com.google.gson.Gson;
-import com.maan.eway.bean.SectionMaster;
-import com.maan.eway.bean.InsuranceCompanyMaster;
-import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.bean.OccupationMaster;
-import com.maan.eway.bean.ProductMaster;
-import com.maan.eway.bean.SectionMaster;
-import com.maan.eway.bean.SectionMaster;
-import com.maan.eway.error.Error;
-import com.maan.eway.master.req.ProductSectionsGetReq;
-import com.maan.eway.master.req.SectionMasterChangeStatusReq;
-import com.maan.eway.master.req.SectionMasterGetAllReq;
-import com.maan.eway.master.req.SectionMasterGetReq;
-import com.maan.eway.master.req.SectionMasterSaveReq;
-import com.maan.eway.master.res.ProductSectionGetRes;
-import com.maan.eway.master.res.SectionMasterRes;
-import com.maan.eway.master.service.SectionMasterService;
-
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -41,22 +18,35 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
-import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.google.gson.Gson;
+import com.maan.eway.bean.SectionMaster;
+import com.maan.eway.master.req.ProductSectionsGetReq;
+import com.maan.eway.master.req.SectionMasterChangeStatusReq;
+import com.maan.eway.master.req.SectionMasterGetReq;
+import com.maan.eway.master.req.SectionMasterSaveReq;
+import com.maan.eway.master.res.ProductSectionGetRes;
+import com.maan.eway.master.res.SectionMasterRes;
+import com.maan.eway.master.service.SectionMasterService;
+import com.maan.eway.repository.SectionMasterRepository;
+import com.maan.eway.res.SuccessRes;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 /**
 * <h2>SectionMasterServiceimpl</h2>
@@ -185,9 +175,9 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			query.select(b);
 	
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<SectionMaster> ocpm1 = effectiveDate.from(SectionMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
 			effectiveDate.where(a1);
 	
@@ -256,7 +246,7 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 //					// Effective Date Max Filter
 //					Subquery<Long> effectiveDate = query.subquery(Long.class);
 //					Root<SectionMaster> ocpm1 = effectiveDate.from(SectionMaster.class);
-//					effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+//					effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 //					Predicate a1 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
 //					Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , startDate);
 //					effectiveDate.where(a1,a2);
@@ -352,9 +342,9 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<SectionMaster> ocpm1 = effectiveDate.from(SectionMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
 			effectiveDate.where(a1);
 	
@@ -398,9 +388,9 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			query.select(b);
 	
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<SectionMaster> ocpm1 = effectiveDate.from(SectionMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
 			effectiveDate.where(a1);
 			
@@ -463,7 +453,7 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			Subquery<Long> amendId = query.subquery(Long.class);
 			Root<SectionMaster> ocpm1 = amendId.from(SectionMaster.class);
 			amendId.select(cb.max(ocpm1.get("amendId")));
-			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("sectionId"),ocpm1.get("sectionId") );
+			jakarta.persistence.criteria.Predicate a1 = cb.equal(c.get("sectionId"),ocpm1.get("sectionId") );
 			amendId.where(a1);
 			
 			
@@ -474,8 +464,8 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			
 		    // Where	
 		
-			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("amendId"), amendId);		
-			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("sectionId"),req.getSectionId()) ;
+			jakarta.persistence.criteria.Predicate n1 = cb.equal(c.get("amendId"), amendId);		
+			jakarta.persistence.criteria.Predicate n2 = cb.equal(c.get("sectionId"),req.getSectionId()) ;
 			query.where(n1 ,n2).orderBy(orderList);
 			
 			// Get Result

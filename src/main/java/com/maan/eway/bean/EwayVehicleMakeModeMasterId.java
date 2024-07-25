@@ -5,7 +5,7 @@
 package com.maan.eway.bean;
 
 import lombok.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
@@ -37,6 +37,20 @@ public class EwayVehicleMakeModeMasterId implements Serializable {
 	 private String  model;
    
   	 private String  bodytype;
+  	 
+  	private Integer makeId;
+  	
+  	private String companyId;
+  	
+  	private Integer productId;
+  	
+  	private Integer amendId;
+  	
+  	private Integer modelgroupId;
+  	
+  	private Integer sectionId;
+  	
+  	private Integer bodyId;
 
     
      

@@ -13,6 +13,10 @@ public class CompanyProductDropDownRes {
 	@JsonProperty("CodeDesc")
 	private String codeDesc ;
 	
+	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
+	
 	@JsonProperty("ProductIconId")
 	private String productIconId;
 	

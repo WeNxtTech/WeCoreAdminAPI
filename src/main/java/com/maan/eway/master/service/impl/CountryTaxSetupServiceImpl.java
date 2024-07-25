@@ -1,5 +1,6 @@
 package com.maan.eway.master.service.impl;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -9,16 +10,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -40,6 +31,16 @@ import com.maan.eway.master.service.CountryTaxSetupService;
 import com.maan.eway.repository.CountryTaxSetupRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes2;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 @Service
 @Transactional
@@ -339,6 +340,7 @@ public class CountryTaxSetupServiceImpl implements CountryTaxSetupService {
 			saveData.setCreatedBy(createdBy);
 			saveData.setUpdatedBy(req.getCreatedBy());
 			saveData.setUpdatedDate(new Date());
+			saveData.setTaxNameLocal(req.getCodeDescLocal());
 			repo.saveAndFlush(saveData);
 
 			log.info("Saved Details is ---> " + json.toJson(saveData));
@@ -395,6 +397,7 @@ public class CountryTaxSetupServiceImpl implements CountryTaxSetupService {
 
 				res = mapper.map(data, CountryTaxGetRes.class);
 				res.setTaxId(data.getTaxId().toString());
+				res.setCodeDescLocal(data.getTaxNameLocal());
 				resList.add(res);
 			}
 
@@ -466,6 +469,7 @@ public class CountryTaxSetupServiceImpl implements CountryTaxSetupService {
 			res.setEntryDate(list.get(0).getEntryDate());
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
 			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
+			res.setCodeDescLocal(list.get(0).getTaxNameLocal());
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -562,18 +566,18 @@ public class CountryTaxSetupServiceImpl implements CountryTaxSetupService {
 			orderList.add(cb.asc(c.get("taxName")));
 
 			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<CountryTaxSetup> ocpm1 = effectiveDate.from(CountryTaxSetup.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("taxId"), ocpm1.get("taxId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a3 = cb.equal(c.get("countryId"), ocpm1.get("countryId"));
 
 			effectiveDate.where(a1, a2, a3);
 			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<CountryTaxSetup> ocpm2 = effectiveDate2.from(CountryTaxSetup.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
 			Predicate a6 = cb.equal(c.get("countryId"), ocpm2.get("countryId"));
 			Predicate a8 = cb.equal(c.get("taxId"), ocpm2.get("taxId"));
 			Predicate a10 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
@@ -600,6 +604,7 @@ public class CountryTaxSetupServiceImpl implements CountryTaxSetupService {
 				res.setCode(data.getTaxId().toString());
 				res.setCodeDesc(data.getTaxName());
 				res.setStatus(data.getStatus());
+				res.setCodeDescLocal(data.getTaxNameLocal());
 				resList.add(res);
 			}
 		} catch (Exception e) {

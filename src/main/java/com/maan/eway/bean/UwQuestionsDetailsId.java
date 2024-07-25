@@ -5,12 +5,12 @@
 package com.maan.eway.bean;
 
 import lombok.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.List;
  
-import javax.persistence.Column;
-import javax.persistence.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

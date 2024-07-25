@@ -6,6 +6,7 @@
 package com.maan.eway.master.service.impl;
 
 import java.lang.reflect.Field;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,16 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -48,6 +39,16 @@ import com.maan.eway.master.res.NotificationTempleteMasterGetRes;
 import com.maan.eway.master.service.NotifTemplateMasterService;
 import com.maan.eway.repository.NotifTemplateMasterRepository;
 import com.maan.eway.res.SuccessRes;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 /**
  * <h2>NotifTemplateMasterServiceimpl</h2>
@@ -493,9 +494,9 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 				// Select
 				query.select(b);
 				// Effective Date Max Filter
-				Subquery<Long> effectiveDate = query.subquery(Long.class);
+				Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 				Root<NotifTemplateMaster> ocpm1 = effectiveDate.from(NotifTemplateMaster.class);
-				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+				effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 				Predicate a1 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
 				effectiveDate.where(a1);
 
@@ -600,9 +601,9 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 			query.select(b);
 
 			//Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<NotifTemplateMaster> ocpm1 = effectiveDate.from(NotifTemplateMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("notifTemplateCode"), b.get("notifTemplateCode"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			effectiveDate.where(a1,a2);
@@ -701,8 +702,8 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 
 			// Where
 
-			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("amendId"), amendId);
-			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("notifTemplateCode"), req.getNotifTemplateCode());
+			jakarta.persistence.criteria.Predicate n1 = cb.equal(c.get("amendId"), amendId);
+			jakarta.persistence.criteria.Predicate n2 = cb.equal(c.get("notifTemplateCode"), req.getNotifTemplateCode());
 			Predicate n3 = cb.equal(c.get("companyId"), req.getInsuranceId());
 			Predicate n4 = cb.equal(c.get("productId"), req.getProductId());
 			query.where(n1,n2,n3,n4).orderBy(orderList);

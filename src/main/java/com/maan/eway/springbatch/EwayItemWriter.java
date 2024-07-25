@@ -3,6 +3,7 @@ package com.maan.eway.springbatch;
 import java.util.List;
 
 import org.springframework.batch.core.configuration.annotation.JobScope;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,8 +36,9 @@ public class EwayItemWriter implements ItemWriter<FactorRateRawInsert>{
 	
 		
 	@Override
-	public void write(List<? extends FactorRateRawInsert> items) throws Exception {
+	public void write(Chunk<? extends FactorRateRawInsert> itemChunks) throws Exception {
 		try {
+			List<? extends FactorRateRawInsert> items = itemChunks.getItems();
 			repository.saveAll(items);
 		}catch (Exception e) {
 			e.printStackTrace();

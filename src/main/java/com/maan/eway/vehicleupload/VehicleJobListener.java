@@ -1,12 +1,12 @@
 package com.maan.eway.vehicleupload;
 
-import javax.batch.api.chunk.listener.ChunkListener;
+
 
 import org.springframework.batch.core.BatchStatus;
+import org.springframework.batch.core.ChunkListener;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.listener.JobExecutionListenerSupport;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
@@ -43,17 +43,17 @@ public class VehicleJobListener extends JobExecutionListenerSupport implements C
 	
 
 	
-	@Override
+	//@Override
 	public void beforeChunk() throws Exception {
 		// TODO Auto-generated method stub
 		
 	}
-	@Override
+	//@Override
 	public void onError(Exception ex) throws Exception {
 		// TODO Auto-generated method stub
 		
 	}
-	@Override
+	//@Override
 	public void afterChunk() throws Exception {
 		// TODO Auto-generated method stub
 		

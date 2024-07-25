@@ -1,9 +1,10 @@
 package com.maan.eway.master.service.impl;
 
-import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
+import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
@@ -13,24 +14,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-import javax.transaction.Transactional;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.tomcat.util.codec.binary.Base64;
-import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -56,6 +42,19 @@ import com.maan.eway.master.service.PremiaCustomerDetailsService;
 import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.PremiaCustomerDetailsRepository;
 import com.maan.eway.res.BrokerCustCodeRes;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
+import jakarta.transaction.Transactional;
 @Service
 @Transactional
 public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsService {
@@ -225,7 +224,7 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 			orderList.add(cb.desc(l.get("updatedDate")));
 			
 			
-			Subquery<Long> loginId = query.subquery(Long.class);
+			Subquery<String> loginId = query.subquery(String.class);
 			Root<LoginBranchMaster> ocpm6 = loginId.from(LoginBranchMaster.class);
 			loginId.select(ocpm6.get("loginId"));
 			Predicate a19 = cb.equal(ocpm6.get("companyId"),b.get("companyId") );
@@ -234,18 +233,18 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 			
 			loginId.where(a19,a20);
 			
-			Subquery<Long> effectiveDate3 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate3 = query.subquery(Timestamp.class);
 			Root<LoginProductMaster> ocpm4 = effectiveDate3.from(LoginProductMaster.class);
-			effectiveDate3.select(cb.max(ocpm4.get("effectiveDateStart")));
+			effectiveDate3.select(cb.greatest(ocpm4.get("effectiveDateStart")));
 			Predicate a9 = cb.equal(c.get("productId"),ocpm4.get("productId") );
 			Predicate a10 = cb.equal(c.get("companyId"),ocpm4.get("companyId") );
 			Predicate a11 = cb.lessThanOrEqualTo(ocpm4.get("effectiveDateStart"), today);
 			Predicate a15 = cb.equal(c.get("loginId"),ocpm4.get("loginId") );
 			effectiveDate3.where(a9,a10,a11,a15);
 			
-			Subquery<Long> effectiveDate4 = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate4 = query.subquery(Timestamp.class);
 			Root<LoginProductMaster> ocpm5 = effectiveDate4.from(LoginProductMaster.class);
-			effectiveDate4.select(cb.max(ocpm5.get("effectiveDateEnd")));
+			effectiveDate4.select(cb.greatest(ocpm5.get("effectiveDateEnd")));
 			Predicate a12 = cb.equal(c.get("productId"),ocpm5.get("productId") );
 			Predicate a13 = cb.equal(c.get("companyId"),ocpm5.get("companyId") );
 			Predicate a14 = cb.greaterThanOrEqualTo(ocpm5.get("effectiveDateEnd"), todayEnd);
@@ -330,7 +329,7 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 					req.setBranchCoreAppCode("");
 				}
 				
-		        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
+				byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(StandardCharsets.US_ASCII));
 		        String authHeader = "Basic " + new String( encodedAuth );
 		     	RestTemplate restTemplate = new RestTemplate();
 				HttpHeaders headers = new HttpHeaders();

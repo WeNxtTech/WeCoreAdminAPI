@@ -1,6 +1,6 @@
 package com.maan.eway.master.req;
 
-import javax.persistence.Column;
+import jakarta.persistence.Column;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

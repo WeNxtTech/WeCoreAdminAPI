@@ -19,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.batch.core.configuration.annotation.JobScope;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -54,7 +55,6 @@ public void setEwayRequest(String batchRequest) {
 @JobScope
 public ItemWriter<Record> itemWriter(TransactionControlDetailsRepository fleetTempRepo, JdbcTemplate jdbcTemplate) {
 	return new ItemWriter<Record>() {/// EntityManager,DataSource dataSource, EntityManagerFactory em,
-		@Override
 		public void write(List<? extends Record> items) throws Exception {
 			try {
 				@SuppressWarnings("unchecked")
@@ -84,6 +84,12 @@ public ItemWriter<Record> itemWriter(TransactionControlDetailsRepository fleetTe
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		}
+
+		@Override
+		public void write(Chunk<? extends Record> chunk) throws Exception {
+			// TODO Auto-generated method stub
+			
 		}
 	};
 }

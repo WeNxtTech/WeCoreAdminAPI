@@ -36,7 +36,7 @@ public interface CompanyCityMasterRepository  extends JpaRepository<CompanyCityM
 	Long countByCityNameOrderByEntryDateDesc(String cityName);
 
 	Long countByCityIdAndStateIdAndCountryIdAndStatusAndEffectiveDateStartLessThanEqual(Integer valueOf,
-			Integer valueOf2, String valueOf3, String string, Date today);
+			String valueOf2, String valueOf3, String string, Date today);
 
 
 

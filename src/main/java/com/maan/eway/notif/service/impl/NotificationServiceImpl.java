@@ -275,7 +275,7 @@ public class NotificationServiceImpl implements NotificationService {
 		
 		try {
 			
-			List<NotifTemplateMaster>  notifDetails = notifRepo.findByNotifTemplateCodeAndStatusAndCompanyIdAndEffectiveDateStartLessThanEqualOrderByEntryDateDesc(req.getSno(),"Y",req.getInsuranceId(), new Date()); 
+			List<NotifTemplateMaster>  notifDetails = notifRepo.findByNotifTemplateCodeAndStatusAndCompanyIdAndEffectiveDateStartLessThanEqualOrderByEntryDateDesc(String.valueOf(req.getSno()),"Y",req.getInsuranceId(), new Date()); 
 			
 			ModelMapper mapper = new ModelMapper();
 			res = mapper.map(notifDetails.get(0), NotifTemplateRes.class);

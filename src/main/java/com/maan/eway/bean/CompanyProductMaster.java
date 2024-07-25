@@ -17,13 +17,13 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import lombok.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
 import java.util.Date;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 
 
@@ -169,7 +169,11 @@ private static final long serialVersionUID = 1L;
     @Column(name="MINIMUM_PREMIUM")
     private Double minimumPremium;
     
+    @Column(name="PRODUCT_NAME_LOCAL", length=100)
+    private String    productNameLocal;
     
+    @Column(name="PRODUCT_DESC_LOCAL", length=100)
+    private String    productDescLocal;
     
 }
 

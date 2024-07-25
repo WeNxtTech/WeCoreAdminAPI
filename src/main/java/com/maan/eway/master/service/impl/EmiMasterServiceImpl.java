@@ -5,7 +5,7 @@
 */
 package com.maan.eway.master.service.impl;
 
-import java.text.DecimalFormat;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,19 +20,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,30 +30,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.EmiMaster;
-import com.maan.eway.bean.EmiMaster;
-import com.maan.eway.bean.EmiMaster;
-import com.maan.eway.bean.EmiMaster;
-import com.maan.eway.bean.EmiMaster;
-import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.bean.PolicyTypeMaster;
-import com.maan.eway.bean.EmiMaster;
-import com.maan.eway.error.Error;
 import com.maan.eway.master.req.EmiMasterChangeStatusReq;
 import com.maan.eway.master.req.EmiMasterGetAllReq;
 import com.maan.eway.master.req.EmiMasterGetReq;
 import com.maan.eway.master.req.EmiMasterSaveReq;
-import com.maan.eway.master.req.OfsGridGetRes;
-import com.maan.eway.master.req.OfsGridSaveReq;
-import com.maan.eway.master.req.PolicyTypeMasterGetAllReq;
-import com.maan.eway.master.res.EmiMasterRes;
-import com.maan.eway.master.res.EmiMasterRes;
 import com.maan.eway.master.res.EmiMasterRes;
 import com.maan.eway.master.service.EmiMasterService;
 import com.maan.eway.repository.EmiMasterRepository;
-import com.maan.eway.repository.ListItemValueRepository;
-import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 /**
  * <h2>EmiMasterServiceimpl</h2>
@@ -253,9 +235,9 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			Root<EmiMaster> s = query.from(EmiMaster.class);
 			
 			// State Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<EmiMaster> ocpm1 = effectiveDate.from(EmiMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate c1 = cb.equal(ocpm1.get("emiId"), s.get("emiId"));
 			Predicate c2 = cb.equal(ocpm1.get("status"),s.get("status"));
 			Predicate c3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
@@ -421,9 +403,9 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			// Select
 			query.select(b);
 			//Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<EmiMaster> ocpm1 = effectiveDate.from(EmiMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("emiId"), b.get("emiId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			effectiveDate.where(a1,a2);

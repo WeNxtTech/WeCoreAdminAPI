@@ -4,11 +4,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+//import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
+//import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
+import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
@@ -23,6 +25,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -30,11 +33,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @EnableAsync
 public class SpringBatchConfig {
 	
-	 @Autowired
-	 public JobBuilderFactory jobBuilderFactory;
-	 @Autowired
-	 private StepBuilderFactory stepBuilderFactory;
-	
+//	 @Autowired
+//	 public JobBuilderFactory jobBuilderFactory;
+//	 @Autowired
+//	 private StepBuilderFactory stepBuilderFactory;
+	@Autowired
+	private JobRepository jobRepository;
+	@Autowired
+	private PlatformTransactionManager transactionManager;
 	 Logger log =LogManager.getLogger(getClass());
 	 
 	 private static final String item_reader_input =null;
@@ -98,10 +104,21 @@ public class SpringBatchConfig {
 	 	  
 		
 		//Step Object
+//		@Bean
+//	    public Step stepA() {
+//	       return stepBuilderFactory.get("EwayStep")
+//	               .<FactorRateRawInsert,FactorRateRawInsert>chunk(2000)
+//	               .reader(reader(item_reader_input))
+//	               .processor(processor())
+//	               .writer(writer())
+//	               .taskExecutor(taskExecutor())
+//	               .build(); 
+//	       
+//	    }
 		@Bean
 	    public Step stepA() {
-	       return stepBuilderFactory.get("EwayStep")
-	               .<FactorRateRawInsert,FactorRateRawInsert>chunk(2000)
+	       return new StepBuilder("EwayStep",jobRepository)
+	               .<FactorRateRawInsert,FactorRateRawInsert>chunk(2000, transactionManager)
 	               .reader(reader(item_reader_input))
 	               .processor(processor())
 	               .writer(writer())
@@ -112,15 +129,23 @@ public class SpringBatchConfig {
 	    
 	    
 		//Job Object
+//	    @Bean(name = "ewayJobProcess")
+//		 public Job ewayJobProcess() {
+//		     return jobBuilderFactory.get("ewayJobProcess")
+//		             .incrementer(new RunIdIncrementer())
+//		             .start(stepA())
+//		             .listener(listener())
+//		             .build();
+//		 }
+		//Job Object
 	    @Bean(name = "ewayJobProcess")
 		 public Job ewayJobProcess() {
-		     return jobBuilderFactory.get("ewayJobProcess")
+		     return new JobBuilder("ewayJobProcess", jobRepository)
 		             .incrementer(new RunIdIncrementer())
 		             .start(stepA())
 		             .listener(listener())
 		             .build();
 		 }
-	    
 	 
 	
 	 

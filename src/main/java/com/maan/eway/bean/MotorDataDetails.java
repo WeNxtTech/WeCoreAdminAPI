@@ -179,12 +179,12 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="ACTUAL_PREMIUM_LC")
     private Double     actualPremiumLc ;
-
-    @Column(name="COVERNOTE_NO", length=20)
-    private String     covernoteNo ;
-
-    @Column(name="STICKER_NO", length=20)
-    private String     stickerNo ;
+//
+//    @Column(name="COVERNOTE_NO", length=20)
+//    private String     covernoteNo ;
+//
+//    @Column(name="STICKER_NO", length=20)
+//    private String     stickerNo ;
 
     @Column(name="OVERALL_PREMIUM_LC")
     private Double     overallPremiumLc ;
@@ -201,8 +201,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="ACCCESSORIES_SUM_INSURED")
     private Double     acccessoriesSumInsured ;
 
-    @Column(name="ACCESSORIES_INFORMATION", length=200)
-    private String     accessoriesInformation ;
+//    @Column(name="ACCESSORIES_INFORMATION", length=200)
+//    private String     accessoriesInformation ;
 
     @Column(name="NUMBER_OF_AXELS")
     private Integer    numberOfAxels ;
@@ -213,26 +213,26 @@ private static final long serialVersionUID = 1L;
     @Column(name="SUM_INSURED")
     private Double     sumInsured ;
 
-    @Column(name="OVERRIDE_PERCENTAGE")
-    private Double     overridePercentage ;
+//    @Column(name="OVERRIDE_PERCENTAGE")
+//    private Double     overridePercentage ;
 
     @Column(name="TPPD_FREE_LIMIT")
     private Double     tppdFreeLimit ;
 
     @Column(name="TPPD_INCREAE_LIMIT")
     private Double     tppdIncreaeLimit ;
-
-    @Column(name="INSURER_SETTLEMENT")
-    private Double     insurerSettlement ;
+//
+//    @Column(name="INSURER_SETTLEMENT")
+//    private Double     insurerSettlement ;
 
     @Column(name="POLICY_TYPE", length=5)
     private String     policyType ;
 
     @Column(name="POLICY_TYPE_DESC", length=100)
     private String     policyTypeDesc ;
-
-    @Column(name="RADIOORCASSETEPLAYER")
-    private Double     radioorcasseteplayer ;
+//
+//    @Column(name="RADIOORCASSETEPLAYER")
+//    private Double     radioorcasseteplayer ;
 
     @Column(name="ROOF_RACK")
     private Double     roofRack ;

@@ -43,7 +43,7 @@ public class FactorRateValidation {
 				FactorRateSaveReq factorRateSaveReq=mapper.map(list.get(0), FactorRateSaveReq.class);
 				List<FactorParamsInsert> factorParams =list.parallelStream().map(p ->{
 					FactorParamsInsert factor =new FactorParamsInsert();
-					factor.setSno(p.getSNo()==null?"0":p.getSNo().toString());
+					factor.setSno(p.getSno()==null?"0":p.getSno().toString());
 					factor.setStatus(p.getStatus());
 					factor.setRegulatoryCode(StringUtils.isBlank(p.getRegulatoryCode())?"":p.getRegulatoryCode());
 					factor.setRate(p.getRate()==null?"":new BigDecimal(p.getRate()).toPlainString());

@@ -24,7 +24,7 @@ public class FactorRateRawMasterId implements Serializable {
 	    //--- ENTITY KEY ATTRIBUTES 
 	    private Integer    factorTypeId ;
 	    
-	    private Integer    sNo ;
+	    private Integer    sno ;
 	    
 	    private String     companyId ;
 	    

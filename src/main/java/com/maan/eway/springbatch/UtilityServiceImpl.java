@@ -1051,7 +1051,7 @@ public class UtilityServiceImpl {
 				entity.setParam10(StringUtils.isBlank(p.getParam10())?"0":p.getParam10());
 				entity.setParam11(StringUtils.isBlank(p.getParam11())?"0":p.getParam11());
 				entity.setParam12(StringUtils.isBlank(p.getParam12())?"0":p.getParam12());
-				entity.setSNo(Integer.valueOf(p.getSno()));
+				entity.setSno(Integer.valueOf(p.getSno()));
 				entity.setApiUrl(StringUtils.isBlank(p.getApiUrl())?"":p.getApiUrl());
 				entity.setCalcType(StringUtils.isBlank(p.getCalType())?"":p.getCalType());
 				entity.setMasterYn(StringUtils.isBlank(p.getMasterYn())?"":p.getMasterYn());

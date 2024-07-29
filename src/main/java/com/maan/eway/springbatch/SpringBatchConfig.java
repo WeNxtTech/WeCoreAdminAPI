@@ -4,8 +4,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
-//import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-//import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
@@ -17,6 +15,7 @@ import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
+import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -25,7 +24,6 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.transaction.PlatformTransactionManager;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -33,14 +31,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @EnableAsync
 public class SpringBatchConfig {
 	
-//	 @Autowired
-//	 public JobBuilderFactory jobBuilderFactory;
-//	 @Autowired
-//	 private StepBuilderFactory stepBuilderFactory;
-	@Autowired
-	private JobRepository jobRepository;
-	@Autowired
-	private PlatformTransactionManager transactionManager;
+	 @Autowired
+	 public JobRepository jobRepository;
+	 
 	 Logger log =LogManager.getLogger(getClass());
 	 
 	 private static final String item_reader_input =null;
@@ -104,21 +97,10 @@ public class SpringBatchConfig {
 	 	  
 		
 		//Step Object
-//		@Bean
-//	    public Step stepA() {
-//	       return stepBuilderFactory.get("EwayStep")
-//	               .<FactorRateRawInsert,FactorRateRawInsert>chunk(2000)
-//	               .reader(reader(item_reader_input))
-//	               .processor(processor())
-//	               .writer(writer())
-//	               .taskExecutor(taskExecutor())
-//	               .build(); 
-//	       
-//	    }
 		@Bean
 	    public Step stepA() {
-	       return new StepBuilder("EwayStep",jobRepository)
-	               .<FactorRateRawInsert,FactorRateRawInsert>chunk(2000, transactionManager)
+	       return new StepBuilder("stepA", jobRepository)
+	               .<FactorRateRawInsert,FactorRateRawInsert>chunk(10000,new ResourcelessTransactionManager())
 	               .reader(reader(item_reader_input))
 	               .processor(processor())
 	               .writer(writer())
@@ -129,23 +111,15 @@ public class SpringBatchConfig {
 	    
 	    
 		//Job Object
-//	    @Bean(name = "ewayJobProcess")
-//		 public Job ewayJobProcess() {
-//		     return jobBuilderFactory.get("ewayJobProcess")
-//		             .incrementer(new RunIdIncrementer())
-//		             .start(stepA())
-//		             .listener(listener())
-//		             .build();
-//		 }
-		//Job Object
 	    @Bean(name = "ewayJobProcess")
 		 public Job ewayJobProcess() {
-		     return new JobBuilder("ewayJobProcess", jobRepository)
+		     return new JobBuilder("ewayJobProcess",jobRepository)
 		             .incrementer(new RunIdIncrementer())
 		             .start(stepA())
 		             .listener(listener())
 		             .build();
 		 }
+	    
 	 
 	
 	 
@@ -153,11 +127,11 @@ public class SpringBatchConfig {
 	   @Bean
 		 public TaskExecutor taskExecutor(){
 			  asyncTaskExecutor=new ThreadPoolTaskExecutor();
-			 	asyncTaskExecutor.setCorePoolSize(500);
-			 	asyncTaskExecutor.setMaxPoolSize(1000);
+			 	asyncTaskExecutor.setCorePoolSize(100);
+			 	asyncTaskExecutor.setMaxPoolSize(500);
 			 	asyncTaskExecutor.setWaitForTasksToCompleteOnShutdown(true);
 			 	asyncTaskExecutor.setAwaitTerminationSeconds(15);	
-			 	asyncTaskExecutor.setQueueCapacity(10000);
+			 	asyncTaskExecutor.setQueueCapacity(1000);
 			 	asyncTaskExecutor.setThreadNamePrefix("eway_spring_batch");
 			 	asyncTaskExecutor.initialize();
 	    	return asyncTaskExecutor;
@@ -165,8 +139,9 @@ public class SpringBatchConfig {
 	    
 	    
 	    
-	    @Bean("FactorListener")
+	   @Bean("FactorListener")
 	    public Joblistener listener() {
 	       return new Joblistener();
 	    }
+	    
 }

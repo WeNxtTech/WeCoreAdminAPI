@@ -31,8 +31,8 @@ public class FactorRateRawInsert {
 	    private Integer    factorTypeId ;
 
 	    @Id
-	    @Column(name="S_NO", nullable=false)
-	    private Integer    sNo ;
+	    @Column(name="SNO", nullable=false)
+	    private Integer    sno ;
 
 	    @Id
 	    @Column(name="COMPANY_ID", nullable=false, length=100)

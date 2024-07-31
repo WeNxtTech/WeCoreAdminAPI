@@ -25,7 +25,7 @@ public class ItemReader_2 extends JdbcCursorItemReader<FactorBatchRecordRes> imp
 	 {
 		String[] dataOfArray =data.split("~");
 		setDataSource(primaryDataSource);
-		setSql("SELECT FACTOR_TYPE_ID,S_NO,COMPANY_ID,PRODUCT_ID,BRANCH_CODE,AGENCY_CODE,SECTION_ID,COVER_ID,SUB_COVER_ID,"
+		setSql("SELECT FACTOR_TYPE_ID,SNO,COMPANY_ID,PRODUCT_ID,BRANCH_CODE,AGENCY_CODE,SECTION_ID,COVER_ID,SUB_COVER_ID,"
 				+ "CREATED_BY,EFFECTIVE_DATE_START,EFFECTIVE_DATE_END,STATUS,REMARKS,PARAM_1,PARAM_2,PARAM_3,PARAM_4,PARAM_5,PARAM_6,"
 				+ "PARAM_7,PARAM_8,PARAM_9,PARAM_10,PARAM_11,PARAM_12,UPDATED_BY,RATE,CALC_TYPE,MIN_PREMIUM,REGULATORY_CODE,MASTER_YN,"
 				+ "PARAM_13,PARAM_14,PARAM_15,PARAM_16,PARAM_17,PARAM_18,PARAM_19,PARAM_20,PARAM_21,PARAM_22,PARAM_23,PARAM_24,PARAM_25,"
@@ -68,7 +68,7 @@ public class ItemReader_2 extends JdbcCursorItemReader<FactorBatchRecordRes> imp
 					.regulatoryCode(rs.getString("REGULATORY_CODE"))
 					.remarks(StringUtils.isBlank(rs.getString("REMARKS"))?"":rs.getString("REMARKS"))
 					.sectionId(String.valueOf(rs.getInt("SECTION_ID")))
-					.sno(String.valueOf(rs.getInt("S_NO")))
+					.sno(String.valueOf(rs.getInt("SNO")))
 					.status(StringUtils.isBlank(rs.getString("STATUS"))?"":rs.getString("STATUS"))
 					.subCoverId(String.valueOf((rs.getInt("SUB_COVER_ID"))))
 					.subCoverYn(rs.getInt("SUB_COVER_ID")==0?"Y":"N")

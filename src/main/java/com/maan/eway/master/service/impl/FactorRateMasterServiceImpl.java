@@ -1525,6 +1525,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 	}
 	
 	
+	@Transactional
 	public Integer upadateOldFactor(FactorRateSaveReq req) {
 		List<FactorRateMaster> list = new ArrayList<FactorRateMaster>();
 		Integer amendId = 0 ;
@@ -1592,30 +1593,29 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					amendId = list.get(0).getAmendId() + 1 ;
 					entryDate = new Date() ;
 					
-					//UPDATE
 					CriteriaBuilder cb2 = em.getCriteriaBuilder();
-					// create update
 					CriteriaUpdate<FactorRateMaster> update = cb2.createCriteriaUpdate(FactorRateMaster.class);
-					// set the root class
 					Root<FactorRateMaster> m = update.from(FactorRateMaster.class);
-					// set update and where clause
-					update.set("updatedBy", req.getCreatedBy());
-					update.set("updatedDate", entryDate);
-					update.set("effectiveDateEnd", oldEndDate);
-					
-					n1 = cb.equal(m.get("companyId"), req.getCompanyId());
-					n2 = cb.equal(m.get("productId"), req.getProductId());
-					n3 = cb.equal(m.get("sectionId"), req.getSectionId());
-					n4 = cb.equal(m.get("coverId"), req.getCoverId());
-					n5 = cb.equal(m.get("subCoverId"), StringUtils.isBlank(req.getSubCoverId())?"0":req.getSubCoverId());
-					n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
-					n7 = cb.equal(m.get("branchCode"), "99999");
-					n8 = cb.or(n6,n7);
-					n9 = cb.equal(m.get("factorTypeId"), factorTypeId);
-					n10 = cb.equal(m.get("amendId"), list.get(0).getAmendId());
-					n11 = cb.equal(b.get("agencyCode"),StringUtils.isBlank(req.getAgencyCode())?"99999":req.getAgencyCode());
-					update.where(n1,n2,n3,n4,n5,n8,n9,n10,n11);
-					// perform update
+
+					update.set("updatedBy", req.getCreatedBy())
+					      .set("updatedDate", entryDate)
+					      .set("effectiveDateEnd", oldEndDate);
+
+					Predicate updatePredicate = cb2.and(
+					    cb2.equal(m.get("companyId"), req.getCompanyId()),
+					    cb2.equal(m.get("productId"), req.getProductId()),
+					    cb2.equal(m.get("sectionId"), req.getSectionId()),
+					    cb2.equal(m.get("coverId"), req.getCoverId()),
+					    cb2.equal(m.get("subCoverId"), StringUtils.isBlank(req.getSubCoverId()) ? "0" : req.getSubCoverId()),
+					    cb2.or(
+					        cb2.equal(m.get("branchCode"), req.getBranchCode()),
+					        cb2.equal(m.get("branchCode"), "99999")
+					    ),
+					    cb2.equal(m.get("factorTypeId"), factorTypeId),
+					    cb2.equal(m.get("amendId"), list.get(0).getAmendId()),
+					    cb2.equal(m.get("agencyCode"), StringUtils.isBlank(req.getAgencyCode()) ? "99999" : req.getAgencyCode())
+					);
+					update.where(updatePredicate);
 					em.createQuery(update).executeUpdate();
 					
 				} else {
@@ -1631,7 +1631,6 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 	}
 	return amendId;
 	}
-	
 	public Map<String,Object> coverMasterDetails(FactorRateSaveReq req) {
 		Map<String,Object>  cover = new HashMap<String,Object>();
 		try {

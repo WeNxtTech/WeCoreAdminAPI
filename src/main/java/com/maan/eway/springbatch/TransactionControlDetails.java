@@ -80,9 +80,13 @@ private static final long serialVersionUID = 1L;
     @Column(name="FILE_NAME", length=200)
     private String     fileName ;
 
-    @Column(name="FILE_PATH", length=300)
+    @Column(name="EXCEL_FILE_PATH", length=300)
     private String     filePath ;
 
+    @Column(name="CSV_FILE_PATH", length=300)
+    private String     csvFilePath ;
+
+    
     @Column(name="FILE_TYPE", length=70)
     private String     fileType ;
 

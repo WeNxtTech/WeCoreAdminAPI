@@ -23,5 +23,7 @@ public class TransactionResponse {
 	private Object errorRecord;
 	@JsonProperty("ExcelFilePath")
 	private Object excelFilePath;
+	@JsonProperty("ExcelFileName")
+	private String excelFileName;
 
 }

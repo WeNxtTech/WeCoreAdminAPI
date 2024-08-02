@@ -76,10 +76,10 @@ public class UtilityServiceImpl {
 	
 	Logger log =LogManager.getLogger(getClass());
 	
-	@Value("${eway.xl.path}")
+	@Value("${excel.upload.path}")
 	private String xlpath;
 	
-	@Value("${eway.csv.path}")
+	@Value("${csv.upload.path}")
 	private String csvPath;
 	
 	@PersistenceContext

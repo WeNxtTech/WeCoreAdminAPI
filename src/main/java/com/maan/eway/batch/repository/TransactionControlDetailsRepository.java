@@ -38,6 +38,7 @@ public interface TransactionControlDetailsRepository  extends JpaRepository<Tran
 
 	TransactionControlDetails findByCompanyIdAndProductIdAndRequestReferenceNo(Integer companyId, Integer productId,
 			String requestRefNo);
+		
 
 	@Modifying
 	@Transactional

@@ -442,6 +442,7 @@ public class EwaySpringBatchServiceImpl implements EwaySpringBatchService {
 					.validRecord(transaction.getValidRecords()==null?0:transaction.getValidRecords())
 					.totalRecord(transaction.getTotalRecords()==null?0:transaction.getTotalRecords())
 					.excelFilePath(StringUtils.isBlank(transaction.getFilePath())?"":transaction.getFilePath())
+					.excelFileName(StringUtils.isBlank(transaction.getFileName())?"":transaction.getFileName())
 					.tranId(tranId)
 					.build();
 			res.setCommonResponse(response);

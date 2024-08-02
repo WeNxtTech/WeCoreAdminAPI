@@ -88,7 +88,7 @@ public class FactorRateValidation {
 				
 				factorRateSaveReq.setFactorParams(factorParams);
 				
-				System.out.println("Group  "+new Gson().toJson(factorRateSaveReq));
+				System.out.println("GROUP "+factorRateSaveReq.getFactorParams().size());
 				
 				List<Error> errors =obj.factorRatingsValidation(factorRateSaveReq, dropDownList);
 				

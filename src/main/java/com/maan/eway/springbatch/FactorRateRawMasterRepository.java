@@ -2,17 +2,19 @@ package com.maan.eway.springbatch;
 
 import java.util.List;
 
-import jakarta.transaction.Transactional;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import jakarta.transaction.Transactional;
+
 @Repository
 public interface FactorRateRawMasterRepository extends JpaRepository<FactorRateRawInsert, FactorRateRawMasterId> {
 
-	List<FactorRateRawInsert> findByTranId(String tranId);
+	Page<FactorRateRawInsert> findByTranIdAndSnoBetween(String tranId ,Integer start, Integer end,PageRequest page);
 
 	List<FactorRateRawInsert> findByTranIdAndErrorDescIsNull(String tranId);
 
@@ -23,6 +25,8 @@ public interface FactorRateRawMasterRepository extends JpaRepository<FactorRateR
 	Long countByTranIdAndErrorStatus(String tranId, String status);
 
 	Long countByTranIdAndStatus(String tranId, String status);
+	
+	List<FactorRateRawInsert> findByTranId(String tranId);
 
 	@Transactional
 	@Modifying
@@ -32,5 +36,12 @@ public interface FactorRateRawMasterRepository extends JpaRepository<FactorRateR
 	List<FactorRateRawInsert> findByTranIdAndStatus(String tranId, String string);
 
 	Long countByTranId(String tranId);
+
+	@Query(nativeQuery=true,value="select * from factor_rate_raw_master where TRAN_ID=?1 and SNO=?2 and ERROR_STATUS IS NULL")
+	FactorRateRawInsert findByTranIdAndSnoAndErrorStatusIsNull(String tran_id, int i);
+
+	Long countByTranIdAndErrorStatusIsNull(String tran_id);
+
+	FactorRateRawInsert findByTranIdAndSno(String tran_id,Integer sno);
 
 }

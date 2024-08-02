@@ -1,5 +1,6 @@
 package com.maan.eway.springbatch;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -23,9 +24,14 @@ import lombok.Setter;
 @IdClass(FactorRateRawMasterId.class)
 @Entity
 @Table(name = "factor_rate_raw_master")
-public class FactorRateRawInsert {
+public class FactorRateRawInsert implements Serializable{
 	
 	
+		/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 		@Id
 	    @Column(name="FACTOR_TYPE_ID", nullable=false)
 	    private Integer    factorTypeId ;

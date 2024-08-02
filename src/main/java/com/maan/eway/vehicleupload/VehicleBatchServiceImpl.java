@@ -119,7 +119,7 @@ import okhttp3.MediaType;
 public class VehicleBatchServiceImpl implements VehicleBatchService {
 	
 	
-	@Value("${eway.xl.path}")
+	@Value("${excel.upload.path}")
 	private String filePath ;
 	
 	@Value("${tira.api}")

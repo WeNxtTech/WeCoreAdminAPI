@@ -54,7 +54,7 @@ public class VehicleCSVFileConvertion {
 	
 	static Logger log =LogManager.getLogger(VehicleCSVFileConvertion.class);
 	
-	@Value("${eway.csv.path}")
+	@Value("${csv.upload.path}")
     private String csvFilePath;
 	
 	@PersistenceContext

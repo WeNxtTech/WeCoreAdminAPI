@@ -840,6 +840,13 @@ private static final long serialVersionUID = 1L;
       @Column(name="BOND_YEAR")
       private String bondYear;
       
+ 	 @Column(name="Business_Interruption")
+  	 private String  businessInterruption;
+  	 
+ 	 @Column(name="FIRST_LOSS_PAYEE")
+  	 private String  firstLossPayee;
+
+      
 }
 
 

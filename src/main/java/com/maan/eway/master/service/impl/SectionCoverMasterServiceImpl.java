@@ -1369,7 +1369,8 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				saveCover.setCoverDesc(req.getCoverDesc());
 				saveCover.setCreatedBy(req.getCreatedBy());
 				saveCover.setRegulatoryCode(req.getRegulatoryCode());
-				saveCover.setEffectiveDateStart(startDate);
+				//saveCover.setEffectiveDateStart(startDate);
+				saveCover.setEffectiveDateStart(new Date());
 				saveCover.setEffectiveDateEnd(endDate);
 				saveCover.setEntryDate(new Date());
 				saveCover.setAmendId(amendId);
@@ -1403,7 +1404,8 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				saveData.setSectionId(Integer.valueOf(req.getSectionId()));
 				saveData.setProductId(Integer.valueOf(req.getProductId()));
 				saveData.setCompanyId(req.getCompanyId());
-				saveData.setEffectiveDateStart(startDate);
+				//saveCover.setEffectiveDateStart(startDate);
+				saveData.setEffectiveDateStart(new Date());
 				saveData.setEffectiveDateEnd(endDate);
 				saveData.setEntryDate(entryDate);
 				saveData.setAmendId(amendId);

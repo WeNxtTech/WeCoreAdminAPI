@@ -1,8 +1,6 @@
 package com.maan.eway.factorrating.batch.configuration;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -17,7 +15,6 @@ import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -50,12 +47,12 @@ public class FactorValidationSpringBatchConfig {
     public Job groupingJob() {
         return new JobBuilder("groupingJob",jobRepository)
         		.incrementer(new RunIdIncrementer())
-                .start(masterStep())
+                .start(groupingStep())
                 .listener(listener())
                 .build();
     }
 
-    @Bean("groupingMasterStep")
+   // @Bean("groupingMasterStep")
     public Step masterStep() {
         return new StepBuilder("groupingMasterStep",jobRepository)
                 .partitioner(groupingStep.getName(), groupingPartitions("","","",0L))
@@ -66,33 +63,37 @@ public class FactorValidationSpringBatchConfig {
     @Bean("groupingStep")
     public Step groupingStep() {
         return new StepBuilder("groupingStep",jobRepository)
-                .<Map.Entry<String, List<FactorRateRawInsert>>, List<FactorRateRawInsert>>chunk(1000,new ResourcelessTransactionManager())
-                .reader(groupingItemReader(null))
-                .processor(itemProcessor(""))
+                .<List<FactorRateRawInsert>, List<FactorRateRawInsert>>chunk(1000,new ResourcelessTransactionManager())
+                .reader(groupingItemReader(null,null,null,null))
+                .processor(itemProcessor(null,null,null,null))
                 .writer(itemWriter())
                 .build();
     }
 
-    /*@Bean("groupingItemReader")
+    @Bean("groupingItemReader")
     @StepScope
     public ItemReader<List<FactorRateRawInsert>> groupingItemReader(@Value("#{jobParameters[factor_id]}") String factor_id,@Value("#{jobParameters[discreate_columns]}") String discreate_columns,
     		@Value("#{jobParameters[isDiscreate]}") String isDiscreate,@Value("#{jobParameters[total_records]}") Long total_records) {
        
-    	//GroupingItemReader gir = new GroupingItemReader(factorRateRawMasterRepository,factor_id,discreate_columns,isDiscreate,total_records);
-    	//List<FactorRateRawInsert> records = gir.read();
-    	
-    	return new GroupingItemReader(factorRateRawMasterRepository,factor_id,discreate_columns,isDiscreate,total_records);
-    }*/
-    
-    @Bean("groupingItemReader")
-    @StepScope
-    public ItemReader<Map.Entry<String, List<FactorRateRawInsert>>> groupingItemReader(@Value("#{stepExecutionContext['data']}") Map<String, List<FactorRateRawInsert>> dataMap) {
-        List<Map.Entry<String, List<FactorRateRawInsert>>> entries = new ArrayList<>(dataMap.entrySet());
-        return new ListItemReader<>(entries);
+    	    return new GroupingItemReader(factorRateRawMasterRepository,factor_id,discreate_columns,isDiscreate,total_records);
     }
     
-    @Bean("groupingPartitions")
+    /*@Bean("groupingItemReader")
     @StepScope
+    public ItemReader<Map.Entry<String, List<FactorRateRawInsert>>> groupingItemReader(@Value("#{stepExecutionContext['data']}") List<String> dataMap,@Value("#{jobParameters[factor_id]}") String factor_id) {
+    	List<Map.Entry<String, List<FactorRateRawInsert>>> entries=null;
+    	try {
+	    	Map<String, List<FactorRateRawInsert>> map = FactorRatingBatchServiceImpl.LOCAL_DATA_STORAGE.get(factor_id);   	
+	    	Map<String, List<FactorRateRawInsert>> fliter_data =dataMap.stream().collect(Collectors.toMap(k ->k, map::get));
+	    	entries = new ArrayList<>(fliter_data.entrySet());
+    	}catch (Exception e) {
+			e.printStackTrace();
+		}
+        return new ListItemReader<>(entries);
+    }*/
+    
+  //  @Bean("groupingPartitions")
+  //  @StepScope
     public Partitioner groupingPartitions(@Value("#{jobParameters[factor_id]}") String factor_id,@Value("#{jobParameters[discreate_columns]}") String discreate_columns,
     		@Value("#{jobParameters[isDiscreate]}") String isDiscreate,@Value("#{jobParameters[total_records]}") Long total_records) {
     	
@@ -101,8 +102,9 @@ public class FactorValidationSpringBatchConfig {
 
     @Bean("groupingItemProcessor")
     @StepScope
-    public ItemProcessor<Map.Entry<String, List<FactorRateRawInsert>>, List<FactorRateRawInsert>> itemProcessor(@Value("#{jobParameters[dropdown_data]}") String dropdown_data) {    	
-    	return new GroupByItemProcessor(dropdown_data);         	
+    public ItemProcessor<List<FactorRateRawInsert>, List<FactorRateRawInsert>> itemProcessor(@Value("#{jobParameters[dropdown_data]}") String dropdown_data,
+    		@Value("#{jobParameters[rage_columns]}") String rage_columns,@Value("#{jobParameters[discreate_columns]}") String isDiscreate,@Value("#{jobParameters[factor_id]}") String factor_id) {    	
+    	return new GroupByItemProcessor(dropdown_data,rage_columns,isDiscreate,factor_id);         	
     }
 
     @Bean("groupingItemWriter")
@@ -128,7 +130,7 @@ public class FactorValidationSpringBatchConfig {
     	return new GroupingJobListener();
     }
     
-    @Bean("groupingPartitionHandler")
+   // @Bean("groupingPartitionHandler")
     public PartitionHandler partitionHandler() {
         TaskExecutorPartitionHandler handler = new TaskExecutorPartitionHandler();
         handler.setTaskExecutor(taskExecutor());

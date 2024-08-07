@@ -14,6 +14,7 @@ import java.util.stream.IntStream;
 import org.springframework.batch.core.partition.support.Partitioner;
 import org.springframework.batch.item.ExecutionContext;
 
+import com.maan.eway.factorrating.batch.FactorRatingBatchServiceImpl;
 import com.maan.eway.springbatch.FactorRateRawInsert;
 import com.maan.eway.springbatch.FactorRateRawMasterRepository;
 
@@ -50,7 +51,7 @@ public class GroupByRecordsPartitions implements Partitioner {
             partition.put(entry.getKey(), entry.getValue());
             if (partition.size() >= partitionSize) {
                 ExecutionContext context = new ExecutionContext();
-                context.put("data", new HashMap<>(partition));
+                context.put("data", new ArrayList<>(partition.keySet()));
                 result.put("partition" + partitionNumber, context);
                 partition.clear();
                 partitionNumber++;
@@ -79,18 +80,21 @@ public class GroupByRecordsPartitions implements Partitioner {
 			
 			groupByData =groupByRecords(records, fieldList);
 			
+			FactorRatingBatchServiceImpl.LOCAL_DATA_STORAGE.put(factor_id, groupByData);
+			
 			return groupByData;
 		}else if("N".equals(isDiscreate)){
 			
 			int partitionSize =records.size();
 		    List<List<FactorRateRawInsert>> partitions = partition(records, partitionSize);
-		  
+
 		    int index=0;
 		    for(List<FactorRateRawInsert> data : partitions) {
 		    	groupByData.put(String.valueOf(index), data);   	
 		    	index++;
 		    }
 		    
+
 		    return groupByData;
 		}
 		return null;

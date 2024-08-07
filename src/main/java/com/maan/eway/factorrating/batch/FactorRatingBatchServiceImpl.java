@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.InputStreamReader;
+import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,6 +17,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
@@ -32,6 +36,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.google.gson.Gson;
@@ -56,7 +61,13 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
 @Service
-public class FactorRatingBatchServiceImpl implements FactorRatingBatchService {
+public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Serializable {
+	
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	Logger log = LogManager.getLogger(FactorRatingBatchServiceImpl.class);
 	
@@ -67,6 +78,8 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService {
 	
 	@Value("${csv.upload.path}")
 	private String csv_upload_path;
+	
+	
 	
 	@PersistenceContext
 	private EntityManager em;
@@ -99,7 +112,8 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService {
    	@Qualifier("groupingJob")
     Job groupingJob;
     
-    
+	public static Map<String,Map<String, List<FactorRateRawInsert>>> LOCAL_DATA_STORAGE= new HashMap<>();
+
     @Autowired
 	private TransactionControlDetailsRepository controlDetailsRepository;
     
@@ -107,6 +121,7 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService {
 	private FactorRateMasterServiceImpl service; 
 	
 	
+
 	
 	@Override
 	public CommonRes convertExcelToCSV(MultipartFile file,Integer product_id) {
@@ -222,7 +237,7 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService {
 			List<SectionCoverMaster> sectionCov=queryService.getSectionCoverMaster(res); 
 			String factorTypeId = StringUtils.isBlank(sectionCov.get(0).getFactorTypeId().toString())?"":sectionCov.get(0).getFactorTypeId().toString();
 			Date effectiveDate =sectionCov.get(0).getEffectiveDateStart().toString()==null?null:sectionCov.get(0).getEffectiveDateStart(); 
-			String effDate =new SimpleDateFormat("dd/MM/yyyy hh:MM:ss").format(effectiveDate);
+			String effDate =new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(effectiveDate);
 			String remarks = StringUtils.isBlank(sectionCov.get(0).getRemarks())?"":sectionCov.get(0).getRemarks();  
 			String createdBy = StringUtils.isBlank(sectionCov.get(0).getCreatedBy())?"":sectionCov.get(0).getCreatedBy();  
 
@@ -231,7 +246,9 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService {
 			StringJoiner entityColumns =new StringJoiner("~");
 		    StringJoiner xlheaderCol =new StringJoiner("~");
 		    StringJoiner discreateColumns =new StringJoiner("~");
-					         	
+		    StringJoiner range_columns =new StringJoiner("~");
+		
+		    
 			entityColumns.add("sNo");
 			xlheaderCol.add("AgencyCode");// default XL columns
 			entityColumns.add("xlAgencyCode");// default entity columns
@@ -242,6 +259,9 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService {
 			        		entityColumns.add(fac.getRangeToColumn());
 			        		xlheaderCol.add(fac.getFromDisplayName());
 			        		xlheaderCol.add(fac.getToDisplayName());
+			        		range_columns.add(fac.getRangeFromColumn());
+			        		range_columns.add(fac.getRangeToColumn());
+
 			        }else if(fac.getRangeYn().equalsIgnoreCase("N")) {	            			
 			        		entityColumns.add(fac.getDiscreteColumn());
 			        		xlheaderCol.add(fac.getDiscreteDisplayName());
@@ -280,6 +300,7 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService {
 			       res.setStatus("P");
 			       res.setProgressDesc("Pending");
 			       res.setProgressErrorDesc("");
+			       res.setRangeColumns(range_columns.toString());
 			       Boolean columnStatus =checkMismatchedColumns(res);
 			     
 			  if(columnStatus) {  
@@ -554,8 +575,12 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService {
         	String discreate_columns =flist.stream().filter(p -> "N".equals(p.getRangeYn())).map(p -> p.getDiscreteColumn())
         	            .collect(Collectors.joining("~"));
         	
+        	String rageColumns =flist.stream().filter(p -> "Y".equals(p.getRangeYn())).map(p -> p.getRangeFromColumn()+"~"+ p.getRangeToColumn())
+    	            .collect(Collectors.joining("~"));
+        	
         	String isDiscreate =StringUtils.isBlank(discreate_columns)?"N":"Y";
 			Map<String,List<DropDownRes>> dropDownList =new HashMap<String,List<DropDownRes>>();
+			
 
         	FactorRateSaveReq factorRateSaveReq = new FactorRateSaveReq();
 			factorRateSaveReq.setAgencyCode(frri.getAgencyCode());
@@ -569,7 +594,7 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService {
         	  
 			String dropwon_data =print.toJson(dropDownList);
 			Grouping_Thread_Job thread_Job = new Grouping_Thread_Job(tran_id,discreate_columns,isDiscreate
-					,groupingJob,jobLauncher,total_records,dropwon_data);
+					,groupingJob,jobLauncher,total_records,dropwon_data,rageColumns);
 			Thread thread = new Thread(thread_Job);
 			thread.setName("GROUP_RECORDS");
 			thread.setPriority(Thread.MAX_PRIORITY);
@@ -598,5 +623,292 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService {
 		}
 		return response;
 	}
+	
+	@Transactional
+	public List<FactorRateRawInsert> factorRangeValidation(List<FactorRateRawInsert> list,String rangeColumns,String discreateColumns,String factor_id, Map<String, List<DropDownRes>> drop) {
+		try {
+			
+			
+			// RANGE VALIDATION BLOCK			
+			String [] range_array=rangeColumns.split("~");
+			List<Integer> sno =list.parallelStream().map(s -> s.getSno()).collect(Collectors.toList());
+			Double[][] values =getValues(range_array, list);	
+			Integer[][] paramColumns =getParamValues(range_array);
+			List<Integer> checkForDuplicates=checkForDuplicates(values,paramColumns,sno);			
+			
+			if(!checkForDuplicates.isEmpty()) {				
+				queryService.updateErrorRecords(factor_id, checkForDuplicates, "Duplicate range or between range has found with this row in your uploaded excel");											
+			}
+							
+			// DUPLOCATE ROWS FIND BLOCK			
+			if (StringUtils.isNotBlank(discreateColumns)) {
+				
+				List<String> groupByColumns =new ArrayList<>();
+				List<String> discreate =Arrays.stream(discreateColumns.split("~")).collect(Collectors.toList());
+				List<String> range =Arrays.stream(rangeColumns.split("~")).collect(Collectors.toList());
+				groupByColumns.addAll(range);
+				groupByColumns.addAll(discreate);
+				
+				List<FactorRateRawInsert> duplicateRecordsList =new ArrayList<>();
+			    Map<List<Object>,List<FactorRateRawInsert>> groupByData=groupByRecords(list, groupByColumns);
+			    groupByData.entrySet().parallelStream().forEach(gp ->{		    	
+			    	if(gp.getValue().size()>1) {
+			    		duplicateRecordsList.addAll(gp.getValue());
+			    		System.out.println(duplicateRecordsList.size());
+			    	}			    	
+			    });
+			    
+			    List<Integer> snoIds =duplicateRecordsList.parallelStream().map(map -> map.getSno()).collect(Collectors.toList());
+				if(!snoIds.isEmpty())
+					queryService.updateErrorRecords(factor_id, snoIds, "Duplicate rows have found with this row in your uploaded excel");											
+			
+			
+				
+				// Discreate Coulmns Checking
+				
+				List<String> originalKeys =new ArrayList<>(drop.keySet());
+				
+				Map<String, List<DropDownRes>> filterKeyData =discreate.stream().filter(p ->originalKeys.contains(p))
+						.collect(Collectors.toMap(k -> k, drop ::get));
+				
+				//List<Integer> invalidSnoIds = new ArrayList<>();
+							
+				
+				// Process entries
+		        for (Map.Entry<String, List<DropDownRes>> entry : filterKeyData.entrySet()) {
+		            String keyName = entry.getKey();
+		            Set<String> masterValues = entry.getValue().stream()
+		                                               .map(DropDownRes::getCode)
+		                                               .collect(Collectors.toSet());
+		            
+		            masterValues.add("99999");
+		            
+		            // Filter invalid entries
+		            //List<Integer> invalidMaster = list.stream()
+		                                           //   .filter(item -> isInvalid(item, keyName, masterValues))
+		                                            //  .map(FactorRateRawInsert::getSno)
+		                                             // .collect(Collectors.toList());
+		            
+		           // invalidSnoIds.addAll(invalidMaster);
+		            
+		            List<String> rawMasterIds = list.stream().map(p -> getMapValues(p,keyName)).distinct().collect(Collectors.toList());
+		            		
+		            List<String> inValidMasterId =rawMasterIds.stream().filter(p ->!masterValues.contains(p)).distinct().collect(Collectors.toList());
+		            
+		            if(!inValidMasterId.isEmpty()) {
+						List<String> filterDuplicateSno =inValidMasterId.parallelStream().distinct().collect(Collectors.toList());
+						queryService.updateErrorRecords(keyName,factor_id, filterDuplicateSno, "Invalid Discreate values found in this row");											
+					}
+				
+		            
+		        }
+			    	      
+		   
+			}else if(StringUtils.isBlank(discreateColumns)) {
+				
+				String groupbyColumns =rangeColumns+"~rate~calcType~minPremium";
+				List<String> groupbyColumnsList =Arrays.stream(groupbyColumns.split("~")).collect(Collectors.toList());
+				List<FactorRateRawInsert> duplicateRecordsList =new ArrayList<>();
+			    Map<List<Object>,List<FactorRateRawInsert>> groupByData=groupByRecords(list, groupbyColumnsList);
+			    groupByData.entrySet().parallelStream().forEach(gp ->{		    	
+			    	if(gp.getValue().size()>1) {
+			    		duplicateRecordsList.addAll(gp.getValue());
+			    		System.out.println(duplicateRecordsList.size());
+			    	}			    	
+			    });
+			    
+			    List<Integer> snoIds =duplicateRecordsList.parallelStream().map(map -> map.getSno()).collect(Collectors.toList());
+				if(!snoIds.isEmpty())
+					queryService.updateErrorRecords(factor_id, snoIds, "Duplicate rows have found with this row in your uploaded excel");											
+			
+			}
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 		
+		return null;
+	}
+	
+    private static <T> boolean isInvalid(T item, String fieldName, Set<String> masterValues) {
+        try {
+            Field field = item.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+            String fieldValue = field.get(item).toString();
+            return !masterValues.contains(fieldValue);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private static <T> String getMapValues(T item, String fieldName) {
+        try {
+            Field field = item.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+            String fieldValue = field.get(item).toString();
+            return fieldValue;
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+		return fieldName;
+    }
+
+	
+	
+	
+	 public static List<Integer> checkForDuplicates1(Double[][] table, Integer[][] paramColumns, List<Integer> sno) {
+	    	List<Integer> list = new ArrayList<>();
+	    	List<Double[]> ranges = new ArrayList<>();
+	    	for (int i = 0; i < table.length; i++) {
+	    		Double[] row = table[i];	            
+	        	for (Double[] range : ranges) {
+	                if (isOverlapping(range, row, paramColumns)) {
+	                	list.add(sno.get(i));
+	                }
+	            }
+	         
+	        	
+	        		ranges.add(row);
+	        	
+	        }
+	        return list; // No duplicates found
+	    }
+
+	    public static boolean isOverlapping(Double[] oldRow, Double[] newRow, Integer[][] paramColumns) {
+	        for (Integer[] cols : paramColumns) {
+	            if (oldRow[cols[0]] < newRow[cols[1]] && newRow[cols[0]] < oldRow[cols[1]]) {
+	                return true;
+	            }
+	        }
+	        return false;
+	    }
+	    
+	    public static Double[][] getValues(String[] fieldNames, List<FactorRateRawInsert> list) throws Exception {
+	        // Initialize base array with appropriate dimensions
+	    	Double[][] base = new Double[list.size()][fieldNames.length];
+	        int index = 0;
+	        for (FactorRateRawInsert obj : list) {
+	        	Double[] data = new Double[fieldNames.length];
+	            for (int i = 0; i < fieldNames.length; i++) {
+	                try {
+	                    Field field = FactorRateRawInsert.class.getDeclaredField(fieldNames[i]);
+	                    field.setAccessible(true);
+	                    data[i] = Double.valueOf(field.get(obj).toString());
+	                } catch (NoSuchFieldException | IllegalAccessException e) {
+	                    // Handle or log the exception as needed
+	                    data[i] = null; // or handle the error case appropriately
+	                }
+	            }
+	            base[index] = data;
+	            index++;
+	        }
+	        
+	        return base;
+	    }
+	    
+	    public static Integer[][] getParamValues(String [] inputArray){
+	    	int length =inputArray.length/2;
+	    	Integer[][] output = new Integer[length][2];
+	    	int start =0;
+	    	for(int i =0;i<length;i++) {
+	    		int end = start + 1; // End index is start + 1
+	            
+	            // Initialize the inner array and assign start and end values
+	            output[i] = new Integer[] { start, end };
+	            
+	            // Update start for the next iteration
+	            start = end + 1;
+	    		
+	    	}
+	    	
+	    	return output;
+	    }
+	    
+	    public static Map<List<Object>, List<FactorRateRawInsert>> groupByRecords(List<FactorRateRawInsert> list, List<String> fieldNames) {
+	        return list.stream().collect(Collectors.groupingBy(obj -> {
+	          List<Object> key =new ArrayList<>();
+	            for (String fieldName : fieldNames) {
+	                try {
+	                    Field field = obj.getClass().getDeclaredField(fieldName);
+	                    field.setAccessible(true);
+	                    key.add(field.get(obj));
+	                } catch (Exception e) {
+	                    throw new RuntimeException(e);
+	                }
+	            }
+	            return key;
+	        }));
+	    }
+	    
+	    
+	    
+	    public static List<Integer> checkForDuplicates(Double[][] table, Integer[][] paramColumns, List<Integer> sno) {
+	        List<Range> ranges = new ArrayList<>();
+	        for (int i = 0; i < table.length; i++) {
+	            Double[] row = table[i];
+	            ranges.add(new Range(row, sno.get(i)));
+	        }
+
+	        // Sort ranges by their start position
+	        ranges.sort((r1, r2) -> Double.compare(r1.row[0], r2.row[0]));
+
+	        List<Integer> result = new ArrayList<>();
+	        PriorityQueue<Range> activeRanges = new PriorityQueue<>((r1, r2) -> Double.compare(r1.row[1], r2.row[1]));
+
+	        for (Range current : ranges) {
+	            // Remove inactive ranges
+	            while (!activeRanges.isEmpty() && activeRanges.peek().row[1] < current.row[0]) {
+	                activeRanges.poll();
+	            }
+
+	            // Check for overlaps
+	            for (Range active : activeRanges) {
+	                if (isOverlapping(active, current, paramColumns)) {
+	                    result.add(current.sno);
+	                    break;
+	                }
+	            }
+
+	            // Add the current range to active ranges
+	            activeRanges.add(current);
+	        }
+
+	        return result;
+	    }
+
+	    private static boolean isOverlapping(Range r1, Range r2, Integer[][] paramColumns) {
+	        Double[] oldRow = r1.row;
+	        Double[] newRow = r2.row;
+
+	        for (Integer[] cols : paramColumns) {
+	            double oldStart = oldRow[cols[0]];
+	            double oldEnd = oldRow[cols[1]];
+	            double newStart = newRow[cols[0]];
+	            double newEnd = newRow[cols[1]];
+	            
+	            if((newStart>oldStart && newStart<oldEnd) || (newEnd>oldStart &&  newEnd<oldEnd)) {	            	
+	            	return true;
+	            }
+
+	        }
+			return false;
+	       
+	    }
+
+	    private static class Range {
+	        Double[] row;
+	        Integer sno;
+
+	        Range(Double[] row, Integer sno) {
+	            this.row = row;
+	            this.sno = sno;
+	        }
+	    }
+	    
+	    
+	    
+	
 }
+		
+

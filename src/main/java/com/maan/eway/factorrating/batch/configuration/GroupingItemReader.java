@@ -66,15 +66,17 @@ public class GroupingItemReader implements ItemReader<List<FactorRateRawInsert>>
 			
 			return groupByData;
 		}else if("N".equals(isDiscreate)){
+				
+			groupByData.put("discreate_records", records);
 			
-			int partitionSize =records.size();
+			/*int partitionSize =records.size();
 		    List<List<FactorRateRawInsert>> partitions = partition(records, partitionSize);
 		  
 		    int index=0;
 		    for(List<FactorRateRawInsert> data : partitions) {
 		    	groupByData.put(String.valueOf(index), data);   	
 		    	index++;
-		    }
+		    }*/
 		    
 		    return groupByData;
 		}

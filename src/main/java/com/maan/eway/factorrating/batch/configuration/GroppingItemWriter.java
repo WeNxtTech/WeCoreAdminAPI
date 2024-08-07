@@ -20,12 +20,12 @@ public class GroppingItemWriter  implements ItemWriter<List<FactorRateRawInsert>
 
 	@Override
 	public void write(Chunk<? extends List<FactorRateRawInsert>> items) throws Exception {
-		Predicate<FactorRateRawInsert> error_check = e -> "E".equals(e.getErrorStatus());
+		//Predicate<FactorRateRawInsert> error_check = e -> "E".equals(e.getErrorStatus());
 		
-		List<FactorRateRawInsert> facRate =items.getItems().stream().flatMap(p -> p.stream()).filter(error_check)
-				.collect(Collectors.toList());
+		//List<FactorRateRawInsert> facRate =items.getItems().stream().flatMap(p -> p.stream()).filter(error_check)
+				//.collect(Collectors.toList());
 		
-		factorRateRawMasterRepository.saveAll(facRate);	
+		//factorRateRawMasterRepository.saveAll(facRate);	
 			
 		
 	}

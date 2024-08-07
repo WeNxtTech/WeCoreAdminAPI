@@ -41,6 +41,8 @@ public class FileUploadInputRequest {
 	private String effectiveDate ;
 	@JsonProperty("TotalRecordsCount")
 	private String totalRecordsCount ;
+	@JsonProperty("RangeColumns")
+	private String rangeColumns ;
 	@JsonProperty("DiscreteColumn")
 	private String discreteColumn ;
 	@JsonProperty("TranId")

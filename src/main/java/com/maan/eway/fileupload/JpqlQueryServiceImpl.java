@@ -46,6 +46,7 @@ import com.maan.eway.chart.ChartParentRequest;
 import com.maan.eway.chart.ChildChartInfoReq;
 import com.maan.eway.embedded.EmbeddedReq;
 import com.maan.eway.embedded.GroupMedicalDetails;
+import com.maan.eway.springbatch.FactorRateRawInsert;
 
 @Component
 public class JpqlQueryServiceImpl {
@@ -156,8 +157,9 @@ public class JpqlQueryServiceImpl {
 //			query=em.createQuery("select f from FactorTypeDetails f where f.companyId=:companyId and f.productId=:productId and f.factorTypeId=:factorTypeId"
 //					+ " and sysdate() between f.effectiveDateStart and f.effectiveDateEnd and f.amendId=(select max(amendId) from FactorTypeDetails where "
 //					+ " companyId=f.companyId and productId=f.productId and factorTypeId=f.factorTypeId and ratingFieldId=f.ratingFieldId) order by f.columnsId asc");
-			query = em.createQuery("select f from FactorTypeDetails f where f.companyId = :companyId and f.productId = :productId and f.factorTypeId = :factorTypeId and sysdate() between f.effectiveDateStart and f.effectiveDateEnd and f.amendId = (select max(f2.amendId) from FactorTypeDetails f2 where f2.companyId = f.companyId and f2.productId = f.productId and f2.factorTypeId = f.factorTypeId and f2.ratingFieldId = f.ratingFieldId and sysdate() between f2.effectiveDateStart and f2.effectiveDateEnd) order by f.columnsId asc");
+			query = em.createQuery("select f from FactorTypeDetails f where f.status=:status and f.companyId = :companyId and f.productId = :productId and f.factorTypeId = :factorTypeId and sysdate() between f.effectiveDateStart and f.effectiveDateEnd and f.amendId = (select max(f2.amendId) from FactorTypeDetails f2 where f2.companyId = f.companyId and f2.productId = f.productId and f2.factorTypeId = f.factorTypeId and f2.ratingFieldId = f.ratingFieldId and sysdate() between f2.effectiveDateStart and f2.effectiveDateEnd) order by f.columnsId asc");
 			query.setParameter("companyId", req.getInsuranceId());
+			query.setParameter("status", "Y");
 			query.setParameter("productId", Integer.valueOf(req.getProductId()));
 			query.setParameter("factorTypeId", Integer.valueOf(factorTypeId));
 		 list=query.getResultList();
@@ -197,11 +199,12 @@ public class JpqlQueryServiceImpl {
 //			query =em.createQuery("select s from SectionCoverMaster s where s.companyId=:companyId and s.productId=:productId and s.coverId=:coverId and s.sectionId=:sectionId and s.subCoverId=:subCoverId and sysdate() between effectiveDateStart and effectiveDateEnd and s.amendId=(SELECT MAX(amendId) FROM SectionCoverMaster WHERE"
 //					+ " companyId=s.companyId AND productId=s.productId AND coverId=s.coverId AND "
 //					+ " sectionId=s.sectionId AND subCoverId=s.subCoverId and sysdate() between effectiveDateStart and effectiveDateEnd )");
-			query = em.createQuery("select s from SectionCoverMaster s where s.companyId = :companyId and s.productId = :productId and s.coverId = :coverId and s.sectionId = :sectionId and s.subCoverId = :subCoverId and sysdate() between s.effectiveDateStart and s.effectiveDateEnd and s.amendId = (SELECT MAX(s2.amendId) FROM SectionCoverMaster s2 WHERE s2.companyId = s.companyId AND s2.productId = s.productId AND s2.coverId = s.coverId AND s2.sectionId = s.sectionId AND s2.subCoverId = s.subCoverId and sysdate() between s2.effectiveDateStart and s2.effectiveDateEnd)");
+			query = em.createQuery("select s from SectionCoverMaster s where s.companyId = :companyId and s.status=:status and s.productId = :productId and s.coverId = :coverId and s.sectionId = :sectionId and s.subCoverId = :subCoverId and sysdate() between s.effectiveDateStart and s.effectiveDateEnd and s.amendId = (SELECT MAX(s2.amendId) FROM SectionCoverMaster s2 WHERE s2.companyId = s.companyId AND s2.productId = s.productId AND s2.coverId = s.coverId AND s2.sectionId = s.sectionId AND s2.subCoverId = s.subCoverId and sysdate() between s2.effectiveDateStart and s2.effectiveDateEnd)");
 			query.setParameter("companyId", req.getInsuranceId());
 			query.setParameter("productId", Integer.valueOf(req.getProductId()));
 			query.setParameter("coverId", Integer.valueOf(req.getCoverId()));
 			query.setParameter("sectionId", Integer.valueOf(req.getSectionId()));
+			query.setParameter("status", "Y");
 			query.setParameter("subCoverId", StringUtils.isBlank(req.getSubCoverId())?Integer.valueOf("0"):Integer.valueOf(req.getSubCoverId()));
 			sectionMaster=query.getResultList(); 
 			
@@ -593,6 +596,46 @@ public class JpqlQueryServiceImpl {
 		
 		return amendId;
 	}
+	
+	public void updateErrorRecords(String tranId,List<Integer> sno,String error_desc) {
+		try {
+			
+			String queryText ="update FactorRateRawInsert fri set fri.errorStatus=:error_status,fri.errorDesc"
+					+ "=concat(concat(CASE WHEN fri.errorStatus IS NULL THEN '' ELSE fri.errorStatus END,'~'),:error_desc) where fri.tranId=:tranId and fri.sno in(:sno)";
+
+		Integer updateCount=em.createQuery(queryText)
+				.setParameter("error_status", "E")
+				.setParameter("error_desc", error_desc)
+				.setParameter("tranId", tranId)
+				.setParameter("sno", sno)
+				.executeUpdate();
+			
+			log.info("updateErrorRecords update rows is "+updateCount+"");
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void updateErrorRecords(String keyName, String factor_id, List<String> filterDuplicateSno, String error_desc) {
+		try {
+			
+			String queryText ="update FactorRateRawInsert fri set fri.errorStatus=:error_status,fri.errorDesc"
+					+ "=concat(concat(CASE WHEN fri.errorStatus IS NULL THEN '' ELSE fri.errorStatus END,'~'),:error_desc) where fri.tranId=:tranId and fri."+keyName+" in(:data)";
+	
+			Integer updateCount=em.createQuery(queryText)
+					.setParameter("error_status", "E")
+					.setParameter("error_desc", error_desc)
+					.setParameter("tranId", factor_id)
+					.setParameter("data", filterDuplicateSno)
+					.executeUpdate();
+			
+			log.info("updateErrorRecords update rows is "+updateCount+"");
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+		
+	
 
 
 }

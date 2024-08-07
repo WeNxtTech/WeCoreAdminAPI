@@ -31,6 +31,8 @@ public class SpringBatchMapperResponse {
 	private String discreteColumn;
 	private String totalRecordsCount;
 	private String authorization;
+	private String rangeColumns;
+
 	
 }
 

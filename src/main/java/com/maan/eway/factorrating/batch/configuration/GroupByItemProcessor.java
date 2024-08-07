@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.maan.eway.error.Error;
+import com.maan.eway.factorrating.batch.FactorRatingBatchServiceImpl;
 import com.maan.eway.master.req.FactorParamsInsert;
 import com.maan.eway.master.req.FactorRateSaveReq;
 import com.maan.eway.master.service.impl.FactorRateMasterServiceImpl;
@@ -25,46 +26,51 @@ import com.maan.eway.res.DropDownRes;
 import com.maan.eway.springbatch.FactorRateRawInsert;
 
 @Component
-public class GroupByItemProcessor implements ItemProcessor<Map.Entry<String, List<FactorRateRawInsert>>,List<FactorRateRawInsert>>{
+public class GroupByItemProcessor implements ItemProcessor<List<FactorRateRawInsert>,List<FactorRateRawInsert>>{
 
 	public GroupByItemProcessor() {};
 	public static DozerBeanMapper mapper =new DozerBeanMapper();
 	public static ObjectMapper map = new ObjectMapper();
 	public static Gson print = new Gson();
 	private String dropdown_data;
+	private String range_columns;
+	private String isDiscreate;
+	private String factor_id;
 	private Map<String, List<Map<String,Object>>> dropDownMap; 
 	private Map<String, List<DropDownRes>> drop = new HashMap<>(); 
 
 	
 	@Autowired
-    private FactorRateMasterServiceImpl factorValidation;
-	
-	public GroupByItemProcessor(String dropdown_data) {
-		this.dropdown_data=dropdown_data;
-		try {
-			dropDownMap =map.readValue(dropdown_data, Map.class);
-			for (Map.Entry<String, List<Map<String, Object>>> entry : dropDownMap.entrySet()) {
-	            String category = entry.getKey();
-	            List<DropDownRes> dropDownResList = entry.getValue().stream()
-	                .map(map -> new DropDownRes(
-	                     map.get("code")==null?"":map.get("code").toString(),
-	                     map.get("codeDesc")==null?"":map.get("codeDesc").toString(),
-	                    	 "",
-	                     map.get("status")==null?"":map.get("status").toString(),
-	                    		 ""
-	                   	    	          
-	                ))
-	                .collect(Collectors.toList());
-	            drop.put(category, dropDownResList);
-	        }
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+    private FactorRatingBatchServiceImpl validation;
 
+	
+	public GroupByItemProcessor(String dropdown_data, String rage_columns, String isDiscreate,String factor_id) {
+		this.range_columns=rage_columns;
+		this.isDiscreate=isDiscreate;
+		this.dropdown_data=dropdown_data;
+		this.factor_id =factor_id;
+		
+		try {
+				dropDownMap =map.readValue(dropdown_data, Map.class);
+				for (Map.Entry<String, List<Map<String, Object>>> entry : dropDownMap.entrySet()) {
+		            String category = entry.getKey();
+		            List<DropDownRes> dropDownResList = entry.getValue().stream()
+		                .map(map -> new DropDownRes(
+		                     map.get("code")==null?"":map.get("code").toString(),
+		                     map.get("codeDesc")==null?"":map.get("codeDesc").toString(),		                    	 "",
+		                     map.get("status")==null?"":map.get("status").toString(),		                    		 ""
+		                   	    	          
+		                ))
+		                .collect(Collectors.toList());
+		            drop.put(category, dropDownResList);
+				}
+	        }catch (Exception e) {
+				e.printStackTrace();
+			}
 	}
 
-	
-	public List<FactorRateRawInsert> process(List<FactorRateRawInsert> item) throws Exception {	  
+
+	/*public List<FactorRateRawInsert> process(List<FactorRateRawInsert> item) throws Exception {	  
 	
 		  return doFactorValidation(item);
 		    		
@@ -148,13 +154,12 @@ public class GroupByItemProcessor implements ItemProcessor<Map.Entry<String, Lis
 			e.printStackTrace();
 		}
 		return updateList;
-	}
+	}*/
+
 
 	@Override
-	public List<FactorRateRawInsert> process(Entry<String, List<FactorRateRawInsert>> item)
-			throws Exception {
-		 
-		return doFactorValidation(item.getValue());
+	public List<FactorRateRawInsert> process(List<FactorRateRawInsert> item) throws Exception {
+		return validation.factorRangeValidation(item, this.range_columns, this.isDiscreate,factor_id,drop);
 	}
 
 }

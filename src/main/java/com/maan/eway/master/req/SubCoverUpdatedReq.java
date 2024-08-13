@@ -123,4 +123,7 @@ public class SubCoverUpdatedReq {
 		
 		@JsonProperty("ExcessDesc")
 		private String excessDesc;
+		
+		@JsonProperty("CodeDescLocal")
+		private String codeDescLocal;
 }

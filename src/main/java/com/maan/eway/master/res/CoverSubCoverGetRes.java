@@ -139,4 +139,7 @@ public class CoverSubCoverGetRes {
 	    
 		@JsonProperty("DependentCoverId")
 	    private String dependentCoverId;
+		
+		@JsonProperty("CodeDescLocal")
+		private String codeDescLocal;
 }

@@ -344,6 +344,7 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 	
 				res = dozerMapper.map(data, ProductSectionMasterRes.class);
 				res.setSectionId(data.getSectionId().toString());
+				res.setCodeDescLocal(StringUtils.isBlank(data.getSectionNameLocal()) ? "" :data.getSectionNameLocal());
 				resList.add(res);
 			}
 	
@@ -417,6 +418,8 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			res.setEntryDate(list.get(0).getEntryDate());
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
 			res.setMinimumPremium(list.get(0).getMinPremium() ==null ? "0" :list.get(0).getMinPremium().toPlainString() );
+
+			res.setCodeDescLocal(StringUtils.isBlank(list.get(0).getSectionNameLocal()) ? "":list.get(0).getSectionNameLocal());
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -1087,6 +1090,7 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 				saveData.setUpdatedBy(req.getCreatedBy());
 				saveData.setMotorYn(req.getMotorYn());
 				saveData.setMinPremium(StringUtils.isBlank(req.getMinimumPremium()) ? BigDecimal.ZERO : new BigDecimal(req.getMinimumPremium()) );
+				saveData.setSectionNameLocal(StringUtils.isBlank(req.getCodeDescLocal()) ? "" : req.getCodeDescLocal());
 				repo.saveAndFlush(saveData);
 			
 				log.info("Saved Details is ---> " + json.toJson(saveData));

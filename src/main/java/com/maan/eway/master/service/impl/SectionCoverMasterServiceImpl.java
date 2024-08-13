@@ -359,6 +359,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				datas.sort(Comparator.comparing(SectionCoverMaster :: getStatus).reversed());
 				SectionCoverMasterGetAllRes res = new SectionCoverMasterGetAllRes();
 				res = mapper.map(datas.get(0), SectionCoverMasterGetAllRes.class);
+				res.setCodeDescLocal( (datas!=null && datas.size()>0) ? datas.get(0).getCoverNameLocal(): "");
 				resList.add(res);
 			}
 			
@@ -462,6 +463,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				res.setExcessPercent(list.get(0).getExcessPercent() == null ? "" :df.format(list.get(0).getExcessPercent()));
 				res.setExcessAmount(list.get(0).getExcessAmount() == null ? "" :df.format(list.get(0).getExcessAmount()));
 				res.setExcessDesc(list.get(0).getExcessDesc()==null ?"": list.get(0).getExcessDesc());	
+				res.setCodeDescLocal(list.get(0).getCoverNameLocal()==null ? "":list.get(0).getCoverNameLocal());
 			}
 			
 		} catch (Exception e) {
@@ -1390,6 +1392,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				proRataTypes = proRataTypes.stream().filter( o -> proRata.equalsIgnoreCase(o.getItemCode())   ).collect(Collectors.toList());
 				saveCover.setProRataDesc(proRataTypes.size() > 0 ? proRataTypes.get(0).getItemValue() : ""   );
 				saveCover.setFreeCoverLimit(StringUtils.isBlank(req.getFreeCoverLimit()) ? BigDecimal.ZERO : new BigDecimal(req.getFreeCoverLimit())) ;
+				saveCover.setCoverNameLocal(StringUtils.isBlank(req.getCodeDescLocal()) ? "" : req.getCodeDescLocal());
 				repo.saveAndFlush(saveCover);
 
 				log.info("Saved Details is ---> " + json.toJson(saveCover));
@@ -1473,6 +1476,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 					saveData.setTaxCode(req.getTaxCode());
 				}
 				saveData.setFreeCoverLimit(StringUtils.isBlank(req.getFreeCoverLimit()) ? BigDecimal.ZERO : new BigDecimal(req.getFreeCoverLimit())) ;
+				saveData.setCoverNameLocal(StringUtils.isBlank(req.getCodeDescLocal()) ? "" : req.getCodeDescLocal());
 				repo.saveAndFlush(saveData);
 			
 				

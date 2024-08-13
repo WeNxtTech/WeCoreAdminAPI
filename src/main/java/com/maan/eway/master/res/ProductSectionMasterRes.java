@@ -78,5 +78,8 @@ public class ProductSectionMasterRes implements Serializable {
 	
 	@JsonProperty("MinimumPremium")
 	private String minimumPremium;
+	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
       
 }

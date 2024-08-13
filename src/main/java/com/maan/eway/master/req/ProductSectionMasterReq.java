@@ -52,4 +52,7 @@ public class ProductSectionMasterReq {
 	
 	@JsonProperty("MinimumPremium")
 	private String minimumPremium;
+	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
 }

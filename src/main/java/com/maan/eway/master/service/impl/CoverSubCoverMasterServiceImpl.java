@@ -328,7 +328,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 
 				res = mapper.map(data, CoverSubCoverGetRes.class);
 				res.setCoreAppCode(data.getCoreAppCode());
-
+				res.setCodeDescLocal(StringUtils.isBlank(data.getSubCoverNameLocal()) ? "" : data.getSubCoverNameLocal());
 				resList.add(res);
 			}
 
@@ -430,7 +430,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			res.setCoverageLimit(list.get(0).getCoverageLimit() == null ? "" :df.format(list.get(0).getCoverageLimit()));
 			
 			res.setBaseRate(list.get(0).getBaseRate() == null ? "" : df.format(list.get(0).getBaseRate()));
-			
+			res.setCodeDescLocal(StringUtils.isBlank(list.get(0).getSubCoverNameLocal()) ? "" : list.get(0).getSubCoverNameLocal() );
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -1123,7 +1123,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			String proRata = saveData.getProRataYn() ;
 			proRataTypes = proRataTypes.stream().filter( o -> proRata.equalsIgnoreCase(o.getItemCode())   ).collect(Collectors.toList());
 			saveData.setProRataDesc(proRataTypes.size() > 0 ? proRataTypes.get(0).getItemValue() : ""   );
-			
+			saveData.setSubCoverNameLocal(StringUtils.isBlank(req.getCodeDescLocal()) ? "" : req.getCodeDescLocal());
 			repo.saveAndFlush(saveData);
 
 			

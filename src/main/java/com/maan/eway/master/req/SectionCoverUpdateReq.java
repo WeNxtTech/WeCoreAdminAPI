@@ -146,4 +146,7 @@ public class SectionCoverUpdateReq {
 	@JsonProperty("FreeCoverLimit")
 	private String freeCoverLimit;
 	
+	@JsonProperty("CodeDescLocal")
+	private String codeDescLocal;
+	
 }

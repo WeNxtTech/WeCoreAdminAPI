@@ -55,10 +55,10 @@ public void setEwayRequest(String batchRequest) {
 @JobScope
 public ItemWriter<Record> itemWriter(TransactionControlDetailsRepository fleetTempRepo, JdbcTemplate jdbcTemplate) {
 	return new ItemWriter<Record>() {/// EntityManager,DataSource dataSource, EntityManagerFactory em,
-		public void write(List<? extends Record> items) throws Exception {
+		public void write(Chunk<? extends Record> items) throws Exception {
 			try {
 				@SuppressWarnings("unchecked")
-				List<Record> recordsList = (List<Record>) items;
+				List<Record> recordsList = (List<Record>) items.getItems();
 				EwayUploadRes response = new EwayUploadRes();
 				ObjectMapper mapper = new ObjectMapper();
 				EwayBatchReq request = new EwayBatchReq();
@@ -86,11 +86,6 @@ public ItemWriter<Record> itemWriter(TransactionControlDetailsRepository fleetTe
 			}
 		}
 
-		@Override
-		public void write(Chunk<? extends Record> chunk) throws Exception {
-			// TODO Auto-generated method stub
-			
-		}
 	};
 }
 
@@ -120,7 +115,7 @@ protected int[][] batchInsert_1(List<Record> records, JdbcTemplate jdbcTemplate,
 			int[][] updateCounts = jdbcTemplate.batchUpdate(finalquery, records, batchSize,
 				new ParameterizedPreparedStatementSetter<Record>() {
 					public void setValues(PreparedStatement ps, Record argument) throws SQLException {
-						log.info("Eway batch data========>"+argument==null?"":print.toJson(argument));
+						//log.info("Eway batch data========>"+argument==null?"":print.toJson(argument));
 						
 						final String error =validateDetails(argument,response);
 						DateFormat dateformat = new SimpleDateFormat("dd/MM/yyyy");
@@ -173,13 +168,13 @@ protected int[][] batchInsert_1(List<Record> records, JdbcTemplate jdbcTemplate,
 						for (int i = 1; i <= length; i++) {
 							ps.setString(i + 44, argument.getColumnByIndex(i - 1) == null ? null
 									: argument.getColumnByIndex(i - 1).toString().trim());
-							log.info("rowid: "+i+", rowvalue : "+argument.getColumnByIndex(i - 1) );
+							//log.info("rowid: "+i+", rowvalue : "+argument.getColumnByIndex(i - 1) );
 						}
-						log.info("entryDate:"+dateformat.format(new Date()) );
-						log.info("finalquery:"+finalquery);
+						//log.info("entryDate:"+dateformat.format(new Date()) );
+						//log.info("finalquery:"+finalquery);
 					}
 				});
-		log.info("batchSize:"+batchSize+", updateCounts : "+updateCounts +finalquery);
+		//log.info("batchSize:"+batchSize+", updateCounts : "+updateCounts +finalquery);
 		 
 		return updateCounts;
 	} catch (Exception e) {

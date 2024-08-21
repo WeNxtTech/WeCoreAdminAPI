@@ -44,4 +44,14 @@ public interface FactorRateRawMasterRepository extends JpaRepository<FactorRateR
 
 	FactorRateRawInsert findByTranIdAndSno(String tran_id,Integer sno);
 
+	@Transactional
+	@Modifying
+	@Query(nativeQuery=true,value="delete from factor_rate_raw_master where TRAN_ID=?1")
+	void deleteFactorData(String referenceNo);
+
+	@Transactional
+	@Modifying
+	@Query(nativeQuery=true,value="DELETE FROM eservice_motor_details_raw WHERE request_reference_no=?1")
+	void deleteMotorRawData(String referenceNo);
+
 }

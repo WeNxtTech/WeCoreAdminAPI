@@ -55,6 +55,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="ROW_NUM", nullable=false)
     private Integer    rowNum ;
     
+    @Column(name="SNO", nullable=false)
+    private Integer    sno ;
+    
     //------------------------------------
     
     @Column(name="COMPANY_ID")
@@ -154,6 +157,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="COLOR", length=200)
     private String     color ;
+    
+    @Column(name="COLOR_ID", length=200)
+    private String     colorId ;
 
     @Column(name="CREATED_BY", length=200)
     private String     createdBy ;

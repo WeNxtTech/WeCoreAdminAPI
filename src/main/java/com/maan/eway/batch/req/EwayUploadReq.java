@@ -10,7 +10,6 @@ import lombok.Setter;
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EwayUploadReq {
-	
 	@JsonProperty("CompanyId")
 	private String companyId;
 	@JsonProperty("ProductId")
@@ -103,12 +102,15 @@ public class EwayUploadReq {
 	private String customerName;
 	@JsonProperty("BdmCode")
 	private String bdmCode;
-	
 	@JsonProperty("OwnerCategory")
 	private String ownerCategory;
 	@JsonProperty("ResOwnerName")
 	private String resOwnerName;
-	
 	@JsonProperty("SourceTypeId")
 	private String sourceTypeId;
+	
+	@JsonProperty("FactorId")
+	private String FactorId;
+	
+	
 }

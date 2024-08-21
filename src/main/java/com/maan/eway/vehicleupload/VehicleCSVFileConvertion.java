@@ -75,9 +75,6 @@ public class VehicleCSVFileConvertion {
 	
 	public void doCSVCovertion(EwayUploadRes uploadRes, EwayUploadTypeMaster uploadTypeMaster) {
 		try {
-			log.info("CSVFileConvertion || doRawdataInsert || CSV file convertion starting");
-			uploadRes =convertExceltoCsv(uploadRes);
-			log.info("CSVFileConvertion || doRawdataInsert || CSV file convertion completed");
 			if(StringUtils.isNotBlank(uploadRes.getCsvfilepath())) {
 				File csvFile = new File(uploadRes.getCsvfilepath());
 				if(csvFile.exists() && csvFile.canRead()) {
@@ -524,6 +521,7 @@ public class VehicleCSVFileConvertion {
 		public  Map<String,Object> matchColumns(String[] excelColumns, List<EwayXlconfigMaster> dbColumns) {
 			System.out.println("matchColumns() - Enter");
 			String unmatchedColumns = "";
+			
 			Long dbColumnLength = Long.valueOf(dbColumns.size());
 			Long excelColumnLength = Long.valueOf(excelColumns.length);
 			EwayXlconfigMaster columnInfo = new EwayXlconfigMaster();

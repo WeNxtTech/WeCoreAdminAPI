@@ -41,6 +41,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.google.gson.Gson;
 import com.maan.eway.batch.repository.TransactionControlDetailsRepository;
+import com.maan.eway.batch.req.EwayUploadReq;
 import com.maan.eway.bean.FactorTypeDetails;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.SectionCoverMaster;
@@ -56,6 +57,7 @@ import com.maan.eway.res.DropDownRes;
 import com.maan.eway.springbatch.FactorRateRawInsert;
 import com.maan.eway.springbatch.FactorRateRawMasterRepository;
 import com.maan.eway.springbatch.TransactionControlDetails;
+import com.maan.eway.vehicleupload.VehicleBatchServiceImpl;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -94,6 +96,9 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 	private FactorRateMasterServiceImpl rateMasterServiceImpl;
 	
 	@Autowired
+	private VehicleBatchServiceImpl sequence;
+	
+	@Autowired
     JobLauncher jobLauncher;
 	
     @Autowired
@@ -124,7 +129,7 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 
 	
 	@Override
-	public CommonRes convertExcelToCSV(MultipartFile file,Integer product_id) {
+	public CommonRes convertExcelToCSV(MultipartFile file,Integer product_id,Integer company_id) {
 		CommonRes response = new CommonRes();
 		try {
 			
@@ -146,11 +151,14 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 	        	f.createNewFile();
 	        }
 	        
-	        TransactionControlDetails controlDetails =null;
-			Long count=controlDetailsRepository.count();
-    		Long tranId =count==0?1:count+1;
-    		String refeNo ="FACTOR_"+String.valueOf(tranId);
+	    
 	        
+    		EwayUploadReq seqReq = new EwayUploadReq();
+    		seqReq.setCompanyId(company_id.toString());
+    		seqReq.setProductId(product_id.toString());
+    		
+    		String refeNo =sequence.generateSeqCall(seqReq);
+    		
 	        JobParameters jobParameters = new JobParametersBuilder()
 	        		.addString("csv_file_path", csv_file)
 	        		.addString("excel_file_path", xlfilePath)
@@ -160,11 +168,10 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 	        jobLauncher.run(excelToCsvJob, jobParameters);
        
 			log.info("convertExcelToCSV end time : "+new Date());
-			
-			
-			 controlDetails = TransactionControlDetails.builder()
+						
+			TransactionControlDetails controlDetails = TransactionControlDetails.builder()
 					.branchCode(null)
-					.companyId(null)
+					.companyId(company_id)
 					.entryDate(new Date())
 					.errorDescription(null)
 					.errorRecords(0)
@@ -419,8 +426,7 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 	  
 	  public void updateMainDataDetails(String tranId,String progressStatus,String errordesc,String progrssDesc,String loading){
 	    	TransactionControlDetails t =null;
-	    	try {
-				
+	    	try {				
 				t =controlDetailsRepository.findByRequestReferenceNo(tranId);
 				t.setProgressDescription(progressStatus); 
 				t.setErrorDescription(errordesc); 

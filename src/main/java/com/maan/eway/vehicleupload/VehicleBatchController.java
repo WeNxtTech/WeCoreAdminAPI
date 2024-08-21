@@ -8,6 +8,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -49,22 +51,14 @@ public class VehicleBatchController {
 	private UgandaVehicleDetailsRepository repository ;
 	
 	
-	@PostMapping(value="/batch/upload", consumes = "multipart/form-data", produces = {"application/json", "application/xml"})
-	public EwayUploadRes batchUpload(@RequestParam ("file") MultipartFile file ,@RequestParam("uploadReq") String uploadReq
-			,@RequestHeader("Authorization") String token) {
-		try {
-			log.info("/batch/upload request : "+uploadReq);
-			EwayUploadReq req =null;
-			if(StringUtils.isNotBlank(uploadReq)) {
-				ObjectMapper mapper =new ObjectMapper();
-				req =mapper.readValue(uploadReq, EwayUploadReq.class);
-			}
-			return service.batchUpload(file,req,token.replaceAll("Bearer ", "").split(",")[0]);
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		return null;
+	@PostMapping(value="/batch/upload")
+	public CommonRes batchUpload(@RequestBody EwayUploadReq req,@RequestHeader("Authorization") String token) {				
+		return service.batchUpload(req,token.replaceAll("Bearer ", "").split(",")[0]);		
+	}
+	
+	@GetMapping("/vehicle/validation/{request_ref_no}")
+	public CommonRes vehicleValidation(@PathVariable("request_ref_no") String request_ref_no) {
+		return service.vehicleValidation(request_ref_no);
 	}
 	
 	@PostMapping("/get/transaction/status")
@@ -151,5 +145,14 @@ public class VehicleBatchController {
 		return response;
     }
     
+    @GetMapping("/batch/createquote/{request_ref_no}")
+    public Object batchCreateQuote(@PathVariable("request_ref_no") String request_ref_no,@RequestHeader("Authorization") String authorization) {
+    	return service.batchCreateQuote(request_ref_no,authorization.replaceAll("Bearer ", "").split(",")[0]);
+    }
+    
+    @GetMapping("/delete/rawdata/{request_ref_no}")
+    public void deleteRawData(@PathVariable("request_ref_no") String request_ref_no) {
+    	service.deleteRawData(request_ref_no);
+    }
 
 }

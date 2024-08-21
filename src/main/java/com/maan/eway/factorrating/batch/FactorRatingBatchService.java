@@ -7,7 +7,7 @@ import com.maan.eway.fileupload.FileUploadInputRequest;
 
 public interface FactorRatingBatchService {
 
-	CommonRes convertExcelToCSV(MultipartFile file,Integer product_id);
+	CommonRes convertExcelToCSV(MultipartFile file,Integer product_id, Integer company_id);
 
 	CommonRes rawdataInsert(FileUploadInputRequest req);
 

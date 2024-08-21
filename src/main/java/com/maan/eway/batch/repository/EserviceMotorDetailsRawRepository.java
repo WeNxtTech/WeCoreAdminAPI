@@ -13,9 +13,10 @@
 package com.maan.eway.batch.repository;
 
 import java.util.List;
+import java.util.Map;
 
-import jakarta.transaction.Transactional;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -23,15 +24,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.ctc.wstx.shaded.msv_core.datatype.SerializationContext;
 import com.maan.eway.batch.entity.EserviceMotorDetailsRaw;
 import com.maan.eway.batch.entity.EserviceMotorDetailsRawId;
-/**
- * <h2>EserviceMotorDetailsRawRepository</h2>
- *
- * createdAt : 2023-05-11 - Time 16:43:49
- * <p>
- * Description: "EserviceMotorDetailsRaw" Repository
- */
+
+import jakarta.transaction.Transactional;
  
  
  
@@ -40,10 +37,14 @@ import com.maan.eway.batch.entity.EserviceMotorDetailsRawId;
  *
  */
 @Repository
-public interface EserviceMotorDetailsRawRepository  extends JpaRepository<EserviceMotorDetailsRaw,EserviceMotorDetailsRawId > , JpaSpecificationExecutor<EserviceMotorDetailsRaw> {
+public interface EserviceMotorDetailsRawRepository  extends JpaRepository<EserviceMotorDetailsRaw,EserviceMotorDetailsRawId > , JpaSpecificationExecutor<EserviceMotorDetailsRaw>{
 
 	List<EserviceMotorDetailsRaw> findByRequestReferenceNo(String requestReferenceNo);
 	
+	Page<EserviceMotorDetailsRaw> findByRequestReferenceNoAndSnoBetween(String tranId ,Integer start, Integer end,PageRequest page);
+
+	Page<EserviceMotorDetailsRaw> findByRequestReferenceNoAndStatusNotAndSnoBetween(String tranId ,String error_status,Integer start, Integer end,PageRequest page);
+
 	
 	@Modifying
 	@Transactional
@@ -222,6 +223,37 @@ public interface EserviceMotorDetailsRawRepository  extends JpaRepository<Eservi
 	@Transactional
 	@Query(nativeQuery=true,value="UPDATE eservice_motor_details_raw mot SET bank_id=(SELECT bank_code FROM eway_bank_master WHERE COMPANY_ID =?1 AND TRIM(UPPER(BANK_FULL_NAME))= TRIM(UPPER(mot.COLLATERAL_BANKNAME)) AND STATUS ='Y' AND SYSDATE() BETWEEN EFFECTIVE_DATE_START AND EFFECTIVE_DATE_END) WHERE REQUEST_REFERENCE_NO=?2 AND COMPANY_ID=?1")
 	Integer updateBankCode(Integer companyId, String requestReferenceNo);
+	
+	Integer countByRequestReferenceNoAndStatusNot(String request_ref_no,String status);
+
+	@Query(nativeQuery=true,value="SELECT ITEM_CODE,ITEM_VALUE FROM EWAY_LIST_ITEM_VALUE WHERE COMPANY_ID=?1 AND STATUS='Y' AND "
+			+ "SYSDATE() BETWEEN EFFECTIVE_DATE_START AND EFFECTIVE_DATE_END AND ITEM_TYPE='MOTOR_CATEGORY'")
+	List<Map<String, String>> getMotorCategory(String companyId);
+
+	@Query(nativeQuery=true,value="SELECT SECTION_ID,SECTION_NAME FROM Product_Section_Master WHERE company_id=?1 AND product_id=?2 "
+			+ "AND CURRENT_DATE BETWEEN effective_date_start AND effective_date_end AND STATUS='Y'")
+	List<Map<String, String>> getSections(String companyId,String productId);
+
+	@Query(nativeQuery=true,value="SELECT BODY_ID,BODY_NAME_EN FROM eway_motor_bodytype_master WHERE company_id=?1 "
+			+ "AND CURRENT_DATE BETWEEN effective_date_start AND effective_date_end AND STATUS='Y'")
+	List<Map<String, String>> getBodyTypes(String companyId);
+
+	@Query(nativeQuery=true,value="SELECT BANK_CODE,BANK_FULL_NAME FROM eway_bank_master WHERE company_id=?1 "
+			+ "AND CURRENT_DATE BETWEEN effective_date_start AND effective_date_end AND STATUS='Y'")
+	List<Map<String, String>> getBanktypes(String companyId);
+
+	@Query(nativeQuery=true,value="SELECT VEHICLE_USAGE_ID,VEHICLE_USAGE_DESC FROM motor_vehicleusage_master WHERE company_id=?1 "
+			+ "AND CURRENT_DATE BETWEEN effective_date_start AND effective_date_end AND STATUS='Y'")
+	List<Map<String, String>> getVehicleUsage(String companyId);
+
+	@Query(nativeQuery=true,value="SELECT POLICY_TYPE_ID,POLICY_TYPE_NAME FROM Policy_Type_Master WHERE company_id=?1 AND product_id=?2 "
+			+ "AND CURRENT_DATE BETWEEN effective_date_start AND effective_date_end AND STATUS='Y'")
+	List<Map<String, String>> getPolicyTypes(String companyId,String productId);
+	
+	@Query(nativeQuery=true,value="SELECT COLOR_ID,COLOR_DESC FROM motor_color_master WHERE company_id=?1 AND STATUS='Y' AND CURRENT_DATE BETWEEN effective_date_start AND effective_date_end")
+	List<Map<String, String>> getColorTypes(String companyId);
+	
+
 	
 }
 	

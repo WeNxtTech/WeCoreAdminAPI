@@ -1,6 +1,8 @@
 package com.maan.eway.vehicleupload;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,7 +30,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -48,13 +49,14 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -99,8 +101,10 @@ import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.ProductEmployeeDetails;
 import com.maan.eway.error.Error;
 import com.maan.eway.res.CommonRes;
+import com.maan.eway.springbatch.FactorRateRawMasterRepository;
 import com.maan.eway.springbatch.TransactionControlDetails;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
@@ -166,11 +170,22 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 	private CriteriaQueryServiceImpl criteriaQuery;
 	
 	@Autowired
+	private FactorRateRawMasterRepository repository;
+	
+	@Autowired
     JobLauncher jobLauncher;
 	
     @Autowired
-    @Qualifier(value="VehicleJob")
-    Job processJob;
+    @Qualifier(value="vehicle_raw_job")
+    Job vehicle_raw_job;
+    
+    @Autowired
+    @Qualifier(value="veh_validation_job")
+    Job veh_validation_job;
+    
+    @Autowired
+    @Qualifier(value="veh_apicall_job")
+    Job veh_apicall_job;
     
     @Autowired
     private EwayEmplyeeDetailRawRepository employeeRawRepo;
@@ -188,22 +203,22 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
     private static SimpleDateFormat sdf =new SimpleDateFormat("dd/MM/yyyy");
     
 	@Override
-	public EwayUploadRes batchUpload(MultipartFile file,EwayUploadReq req,String token) {
+	public CommonRes batchUpload(EwayUploadReq req,String token) {
 		EwayUploadRes uploadRes =new EwayUploadRes();
+		CommonRes response =new CommonRes();
 		try {
-			String fileName =FilenameUtils.getBaseName(file.getOriginalFilename());
-			String extension =FilenameUtils.getExtension(file.getOriginalFilename());
 			String endorsmentType =StringUtils.isBlank(req.getEndorsementYn())?"":req.getEndorsementYn();
 			
 			uploadRes.setEndorsementYn(endorsmentType);
 			uploadRes.setTypeId(req.getTypeId());
 			uploadRes.setProductId(req.getProductId());
 			uploadRes.setCompanyId(req.getCompanyId());
-			uploadRes.setExcelFileName(file.getOriginalFilename());
 			uploadRes.setProgressStatus("P");
 			uploadRes.setProgressdesc("Uploading...");
-			uploadRes.setRequestReferenceNo(StringUtils.isBlank(req.getRequestReferenceNo())?generateSeqCall(req)
-					:getTransactionId(req.getRequestReferenceNo(),req.getCompanyId(),req.getProductId()));
+			//uploadRes.setRequestReferenceNo(StringUtils.isBlank(req.getRequestReferenceNo())?generateSeqCall(req)
+					//:getTransactionId(req.getRequestReferenceNo(),req.getCompanyId(),req.getProductId()));
+			
+			uploadRes.setRequestReferenceNo(req.getRequestReferenceNo());
 			uploadRes.setToken(token);
 			uploadRes.setBrokerBranchCode(StringUtils.isBlank(req.getBrokerBranchCode())?"":req.getBrokerBranchCode());
 			uploadRes.setAcExecutiveId(StringUtils.isBlank(req.getAcExecutiveId())?"":req.getAcExecutiveId());
@@ -261,13 +276,6 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			uploadRes.setUploadType(StringUtils.isBlank(req.getUploadType())?"Add":req.getUploadType());
 			uploadRes.setCustomerName(StringUtils.isBlank(req.getCustomerName())?"":req.getCustomerName());
 			uploadRes.setBdmCode(StringUtils.isBlank(req.getBdmCode())?"":req.getBdmCode());
-			LocalDateTime dateTime =LocalDateTime.now();
-			String excelFilePath=filePath+fileName+dateTime.getNano()+"."+extension;
-			Path path =Paths.get(excelFilePath);
-			file.transferTo(path);
-			
-			uploadRes.setExcelFilePath(excelFilePath);
-			
 			Integer sectionId =StringUtils.isBlank(req.getSectionId())?0:Integer.valueOf(req.getSectionId());
 			
 			EwayUploadTypeMaster uploadTypeMaster=uploadTypeRepo.findByCompanyIdAndProductIdAndSectionIdAndStatus
@@ -276,21 +284,37 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			
 			uploadRes.setTypeId(uploadTypeMaster.getTypeid().toString());
 			uploadRes.setSectionId(uploadTypeMaster.getSectionId().toString());
-			saveUploadTransactionData(uploadRes);
+			String csvFilePath =saveUploadTransactionData(uploadRes);
+			uploadRes.setCsvfilepath(csvFilePath);
 			
 			VehicleThread_CSV_Convertion thread = new VehicleThread_CSV_Convertion(uploadRes,csvFileConvertion,uploadTypeMaster);
 			Thread job =new Thread(thread);
-			job.setName("EWAY_BATCH_UPLOAD");
+			job.setName("VEHILCE_UPLOAD");
 			job.setDaemon(false);
 			job.start();
 			
+			 Map<String,String> map = new HashMap<>();
+		     map.put("progress_description", "Progressing..");
+		     map.put("status", "P");
+		     map.put("request_reference_no",req.getRequestReferenceNo());
+		        			
+		     response.setMessage("Success");
+		     response.setErrorMessage(Collections.EMPTY_LIST);
+		     response.setIsError(false);
+		     response.setCommonResponse(map);
 			
 		}catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
+			e.printStackTrace();
+			response.setMessage("Failed");
+		    response.setErrorMessage(Collections.EMPTY_LIST);
+		    response.setIsError(true);
+		    response.setCommonResponse(null);
+		    return response;
 		}
 		
-		return uploadRes;
+		return response;
 	}
 
 	private synchronized String getTransactionId(String requestReferenceNo, String companyId, String productId) {
@@ -370,10 +394,12 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			List<XlConfigData> datas =new ArrayList<XlConfigData>();
 			StringJoiner dataFieldLength = new StringJoiner("~");
 			StringJoiner dataRangeList = new StringJoiner("~");
-
+			List<String> rawTableCol =xlConfigData.stream().map(p -> p.getFieldNameRaw()).collect(Collectors.toList());
+			rawTableCol.add(0,"SNO");
 			for(int i=0;i<xlConfigData.size();i++) {
 				EwayXlconfigMaster updatedData = xlConfigData.get(i);
-		    	rawtablecolumns = updatedData.getFieldNameRaw()==null?"":updatedData.getFieldNameRaw();
+				
+		    	rawtablecolumns = rawTableCol.get(i)==null?"":rawTableCol.get(i);
 		    	String excelHeaderDuplicateColumn=updatedData.getExcelheaderName()==null?"":updatedData.getExcelheaderName();
 		    	if(StringUtils.isNotBlank(excelHeaderName)) {
 		    		rawtablecolumnslist = rawtablecolumnslist+"\""+rawtablecolumns+ "\""+",";
@@ -452,13 +478,21 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 
 			}
 			
+			 Long totalRows =0L;
+			 Resource resource = (new FileSystemResource(uploadResponse.getCsvfilepath()));
+		     	try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream()))) {
+		        	totalRows = reader.lines().count();
+		        }
+			  
 			JobParameters jobParameters = new JobParametersBuilder()
 			     	.addLong("time", System.currentTimeMillis())
 			     	.addString("EwayBatchReq", ewayBatchReq)
 			     	.addString("RequestReferenceNo", uploadResponse.getRequestReferenceNo())
 			     	.addString("ExcelHeaderNames", StringUtils.chop(headerList))
+			     	.addLong("totalRecords", totalRows)
+					.addLong("gridSize", 10L)
 			        .toJobParameters();
-					jobLauncher.run(processJob, jobParameters);
+					jobLauncher.run(vehicle_raw_job, jobParameters);
 					
 		}catch (Exception e) {
 			log.error(e);
@@ -476,34 +510,19 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			}catch (Exception e) {log.error(e);}
 	}
 	
-	public void saveUploadTransactionData(EwayUploadRes res ) {
+	public String saveUploadTransactionData(EwayUploadRes res ) {
 		try {
-			TransactionControlDetails controlDetails = TransactionControlDetails.builder()
-					.branchCode(StringUtils.isBlank(res.getBranchCode())?"":res.getBranchCode())
-					.companyId(StringUtils.isBlank(res.getCompanyId())?null:Integer.valueOf(res.getCompanyId()))
-					.entryDate(new Date())
-					.errorDescription(StringUtils.isBlank(res.getProgressErrordesc())?"":res.getProgressErrordesc())
-					.errorRecords(StringUtils.isBlank(res.getErrorRecords())?0:Integer.valueOf(res.getErrorRecords()))
-					.validRecords(StringUtils.isBlank(res.getValidRecords())?0:Integer.valueOf(res.getValidRecords()))
-					.totalRecords(StringUtils.isBlank(res.getToatalRows())?0:Integer.valueOf(res.getToatalRows()))
-					.fileName(StringUtils.isBlank(res.getExcelFileName())?"":res.getExcelFileName())
-					.filePath(StringUtils.isBlank(res.getExcelFilePath())?"":res.getExcelFilePath())
-					.lastUpdatedDate(new Date())
-					.loadPercentage(null)
-					.loginName(StringUtils.isBlank(res.getUploadedBy())?"":res.getUploadedBy())
-					.productId(StringUtils.isBlank(res.getProductId())?null:Integer.valueOf(res.getProductId()))
-					.progressDescription(StringUtils.isBlank(res.getProgressdesc())?"":res.getProgressdesc())
-					.requestReferenceNo(res.getRequestReferenceNo())
-					.sectionId(StringUtils.isBlank(res.getSectionId())?null:Integer.valueOf(res.getSectionId()))
-					.status(StringUtils.isBlank(res.getProgressStatus())?"":res.getProgressStatus())
-					.typeId(Long.valueOf(res.getTypeId()))
-					.tranDate(new Date())
-					.build();
-			transRepo.saveAndFlush(controlDetails);
+			TransactionControlDetails tcd =transRepo.findByRequestReferenceNo(res.getRequestReferenceNo());
+			tcd.setStatus("P");
+			tcd.setProgressDescription("Progressing..");
+			tcd.setCompanyId(Integer.valueOf(res.getCompanyId()));
+			transRepo.saveAndFlush(tcd);
+			return tcd.getCsvFilePath();
 		}catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
 		}
+		return "";
 	}
 
 	public void validateRawTableRecords(EwayUploadRes uploadResponse) {
@@ -525,7 +544,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			// for motor validation block
 			if("5".equals(product) &&( "100002".equals(companyId.toString()) || "100019".equals(companyId.toString()))) {
 			
-			/*	//eserviceRepository.updateInsuranceTypeId(companyId, productId, typeId, requestReferenceNo);
+				//eserviceRepository.updateInsuranceTypeId(companyId, productId, typeId, requestReferenceNo);
 				criteriaQuery.updateInsuranceType(companyId, productId, typeId, requestReferenceNo);
 				//eserviceRepository.updateSectionIdByRequestRefNo(companyId, productId, typeId, requestReferenceNo);
 				//criteriaQuery.updateSectionId(companyId, productId, typeId, requestReferenceNo);
@@ -579,7 +598,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 				//criteriaQuery.updateColleteralValidation(companyId, productId, typeId, requestReferenceNo);
 				eserviceRepository.updateMasterIdEmptyValidation(companyId, productId, typeId, requestReferenceNo);
 				criteriaQuery.updateEmptyDataError(companyId, productId, typeId, requestReferenceNo);
-				criteriaQuery.updateMotorErrorStatus(companyId, productId, typeId, requestReferenceNo,"0");*/
+				criteriaQuery.updateMotorErrorStatus(companyId, productId, typeId, requestReferenceNo,"0");
 				List<EserviceMotorDetailsRaw> dlist =eserviceRepository.findByCompanyIdAndProductIdAndRequestReferenceNo(companyId,productId,requestReferenceNo);
 				validRecords =dlist.stream().filter(p ->"100002".equals(companyId.toString())?"Y".equals(p.getStatus()) && "Y".equals(p.getTiraStatus()):"Y".equals(p.getStatus())).count();
 				errorRecords =dlist.stream().filter(p ->"100002".equals(companyId.toString())?"E".equals(p.getStatus()) ||  "E".equals(p.getTiraStatus()):"E".equals(p.getStatus())).count();
@@ -1176,8 +1195,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 	
 	
 	public synchronized String generateSeqCall(EwayUploadReq req ) {
-	       try {
-	    	   
+	       try { 	   
 	    	Map<String,Object> request = new HashMap<String,Object>();   
 	    	request.put("ProductId", req.getProductId());
 	    	request.put("InsuranceId", req.getCompanyId());
@@ -1965,5 +1983,111 @@ public CommonRes updateEmployeeRecord(UpdateEmployeeRecordReq req) {
 		e.printStackTrace();
 	}
  }
+
+	@Override
+	public Object batchCreateQuote(String request_ref_no, String authorization) {
+		CommonRes response = new CommonRes();
+		try {
+			Integer total_records =eserviceRepository.countByRequestReferenceNoAndStatusNot(request_ref_no,"E");
+			
+			TransactionControlDetails controlDetails=transRepo.findByRequestReferenceNo(request_ref_no);
+			controlDetails.setProgressDescription("Progressing..");
+			controlDetails.setStatus("P");
+
+			TransactionControlDetails tcd= transRepo.save(controlDetails);
+			
+			JobParameters jobParameters=new JobParametersBuilder()
+					.addString("request_ref_no", request_ref_no)
+					.addString("Authorization", authorization)
+					.addLong("totalRecords", total_records.longValue())
+					.addLong("gridSize", 10L)
+					.addLocalDateTime("time", LocalDateTime.now())
+					.toJobParameters();
+			jobLauncher.run(veh_apicall_job, jobParameters);
+			
+			
+			 Map<String,String> map = new HashMap<>();
+		     map.put("progress_description", tcd.getProgressDescription());
+		     map.put("status", tcd.getStatus());
+		     map.put("request_reference_no",request_ref_no);
+		        			
+		     response.setMessage("Success");
+		     response.setErrorMessage(Collections.EMPTY_LIST);
+		     response.setIsError(false);
+		     response.setCommonResponse(map);
+			
+		}catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+			response.setMessage("Failed");
+		    response.setErrorMessage(Collections.EMPTY_LIST);
+		    response.setIsError(true);
+		    response.setCommonResponse(null);
+		    return response;
+		}
+		return response;
+	}
+	
+	@Override
+	public CommonRes vehicleValidation(String request_ref_no) {
+		CommonRes response =new CommonRes();
+		try {
+			
+			Integer total_records =eserviceRepository.countByRequestReferenceNoAndStatusNot(request_ref_no,"E");
+			
+			TransactionControlDetails controlDetails=transRepo.findByRequestReferenceNo(request_ref_no);
+			controlDetails.setProgressDescription("Progressing..");
+			controlDetails.setStatus("P");
+
+			TransactionControlDetails tcd= transRepo.save(controlDetails);
+		
+			JobParameters jobParameters = new JobParametersBuilder()
+					.addString("company_id", tcd.getCompanyId().toString())
+					.addString("productId", tcd.getProductId().toString())
+					.addString("request_ref_no", request_ref_no)
+					.addLong("totalRecords", total_records.longValue())
+					.addLong("gridSize",10L)
+					.addLocalDateTime("time", LocalDateTime.now())
+					.toJobParameters();
+			jobLauncher.run(veh_validation_job, jobParameters);
+			
+			
+			 Map<String,String> map = new HashMap<>();
+		     map.put("progress_description", tcd.getProgressDescription());
+		     map.put("status", tcd.getStatus());
+		     map.put("request_reference_no",request_ref_no);
+		        			
+		     response.setMessage("Success");
+		     response.setErrorMessage(Collections.EMPTY_LIST);
+		     response.setIsError(false);
+		     response.setCommonResponse(map);
+			
+		}catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+			response.setMessage("Failed");
+		    response.setErrorMessage(Collections.EMPTY_LIST);
+		    response.setIsError(true);
+		    response.setCommonResponse(null);
+		    return response;
+		}
+		return response;
+	}
+
+	@Override
+	public void deleteRawData(String request_ref_no) {
+		try {
+			
+			Thread_RawData_Delete thread = new Thread_RawData_Delete(request_ref_no, repository);
+			thread.setDaemon(false);
+			thread.setPriority(Thread.MIN_PRIORITY);
+			thread.setName("DELETE-"+request_ref_no+"");
+			
+		}catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+		}
+		
+	}
    
 }

@@ -423,10 +423,55 @@ private static final long serialVersionUID = 1L;
     @Column(name="SOURCE_TYPEID")
     private String       sourceTypeId ;
     
+    @Column(name="HORSE_POWER")
+    private String       horsePower ;
+    
+    @Column(name="NO_OF_CYLINDERS")
+    private String       noOfCylinders ;
+    
+    @Column(name="REGISTRATION_DATE")
+    private String       registration_date ;
+    
+    @Column(name="TONNAGE")
+    private String       tonnage ;
+    
+    @Column(name="DEDUCTIBLES_ID")
+    private String       deductiblesId ;
+    
+    @Column(name="DEDUCTIBLES_DESC")
+    private String       deductiblesDesc ;
+    
+    @Column(name="AGGREGATED_VALUE_ID")
+    private String       aggregatedValueId ;
+    
+    @Column(name="AGGREGATED_VALUE_DESC")
+    private String       aggregatedValueDesc ;
+    
+    @Column(name="NO_OF_PASSENGERS")
+    private String       noOfPassengers ;
+    
+    @Column(name="NO_OF_CARDS")
+    private String       noOfCards ;
+    
+    @Column(name="MUNICIPALITY_OF_TRAFFIC_DESC")
+    private String       municipalityOfTrafficDesc ;
+    
+    @Column(name="MUNICIPALITY_OF_TRAFFIC_ID")
+    private String       municipalityOfTrafficId ;
+    
+    @Column(name="TRANSPORTATION_OF_HYDROCARBONS")
+    private String       transportationOdHydrocarbons ;
+    
+    @Column(name="VEHICLE_VALUE_TYPE_DESC")
+    private String       vehicleValueTypeDesc ;
+    
+    @Column(name="VEHICLE_VALUE_TYPE_ID")
+    private String       vehicleValueTypeId ;
+    
     
     //--- ENTITY LINKS ( RELATIONSHIP )
 
-
+fdfdf
 }
 
 

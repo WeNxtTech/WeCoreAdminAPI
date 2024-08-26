@@ -84,21 +84,49 @@ public class VehicleValBatchInsertListener implements JobExecutionListener {
 		String productId = jobExecution.getJobParameters().getString("productId");
 
 		List<Map<String,String>> motorCategory =eserviceMotorDetailsRaw.getMotorCategory(companyId);
-		List<Map<String,String>> section =eserviceMotorDetailsRaw.getSections(companyId,productId);
 		List<Map<String,String>> bodyTypes =eserviceMotorDetailsRaw.getBodyTypes(companyId);
 		List<Map<String,String>> banktypes =eserviceMotorDetailsRaw.getBanktypes(companyId);
-		List<Map<String,String>> vehicleUsage =eserviceMotorDetailsRaw.getVehicleUsage(companyId);
-		List<Map<String,String>> policyTypes =eserviceMotorDetailsRaw.getPolicyTypes(companyId,productId);
 		List<Map<String,String>> color_types =eserviceMotorDetailsRaw.getColorTypes(companyId);
 
+		if(!"100040".equals(companyId)) {
+			List<Map<String,String>> section =eserviceMotorDetailsRaw.getSections(companyId,productId);
+			List<Map<String,String>> vehicleUsage =eserviceMotorDetailsRaw.getVehicleUsage(companyId);
+			List<Map<String,String>> policyTypes =eserviceMotorDetailsRaw.getPolicyTypes(companyId,productId);
+	
+			
+	        jobExecution.getExecutionContext().put("colorTypes", print.toJson(color_types));
+	        jobExecution.getExecutionContext().put("motorCategory", print.toJson(motorCategory));
+			jobExecution.getExecutionContext().put("section",  print.toJson(section));
+			jobExecution.getExecutionContext().put("bodyTypes", print.toJson(bodyTypes));
+			jobExecution.getExecutionContext().put("banktypes",  print.toJson(banktypes));
+			jobExecution.getExecutionContext().put("vehicleUsage",  print.toJson(vehicleUsage));
+			jobExecution.getExecutionContext().put("policyTypes", print.toJson(policyTypes));
+			
+		}else if("100040".equals(companyId)) {
+			
+			List<Map<String,String>> insurance_class =eserviceMotorDetailsRaw.getSanlamInsuranceTypeClass(companyId);
+			List<Map<String,String>> deductibles =eserviceMotorDetailsRaw.getSanlamDeductibles(companyId);
+			List<Map<String,String>> aggregated_value =eserviceMotorDetailsRaw.getSanlamAggregatorValue(companyId);
+			List<Map<String,String>> municipal_traffic =eserviceMotorDetailsRaw.getSanlamMuniTraff(companyId);
+			List<Map<String,String>> insurance_type =eserviceMotorDetailsRaw.getVehicleUsage(companyId);
+			List<Map<String,String>> vehicleValue =eserviceMotorDetailsRaw.getSanlamVehValue(companyId);
+			
+			
+	        jobExecution.getExecutionContext().put("insurance_class", print.toJson(insurance_class));
+	        jobExecution.getExecutionContext().put("deductibles", print.toJson(deductibles));
+			jobExecution.getExecutionContext().put("aggregated_value",  print.toJson(aggregated_value));
+			jobExecution.getExecutionContext().put("municipal_traffic", print.toJson(municipal_traffic));
+			jobExecution.getExecutionContext().put("insurance_type",  print.toJson(insurance_type));
+			jobExecution.getExecutionContext().put("vehicleValue",  print.toJson(vehicleValue));
+	
+		}
 		
-        jobExecution.getExecutionContext().put("colorTypes", print.toJson(color_types));
-        jobExecution.getExecutionContext().put("motorCategory", print.toJson(motorCategory));
-		jobExecution.getExecutionContext().put("section",  print.toJson(section));
-		jobExecution.getExecutionContext().put("bodyTypes", print.toJson(bodyTypes));
-		jobExecution.getExecutionContext().put("banktypes",  print.toJson(banktypes));
-		jobExecution.getExecutionContext().put("vehicleUsage",  print.toJson(vehicleUsage));
-		jobExecution.getExecutionContext().put("policyTypes", print.toJson(policyTypes));
+		    jobExecution.getExecutionContext().put("colorTypes", print.toJson(color_types));
+	        jobExecution.getExecutionContext().put("motorCategory", print.toJson(motorCategory));
+			jobExecution.getExecutionContext().put("bodyTypes", print.toJson(bodyTypes));
+			jobExecution.getExecutionContext().put("banktypes",  print.toJson(banktypes));
+		    jobExecution.getExecutionContext().put("companyId", companyId);
+
 	}
 
 }

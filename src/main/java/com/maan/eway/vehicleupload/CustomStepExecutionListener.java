@@ -33,61 +33,139 @@ public class CustomStepExecutionListener implements StepExecutionListener {
 
     private List<HashMap<String,Object>> colorTypes;
 
-   
+    private List<HashMap<String,Object>> insurance_class;
+    
+    private List<HashMap<String,Object>> deductibles;
+    
+    private List<HashMap<String,Object>> aggregated_value;
+
+    private List<HashMap<String,Object>> municipal_traffic;
+
+    private List<HashMap<String,Object>> insurance_type;
+    
+    private List<HashMap<String,Object>> vehicleValue;
     
     
     @Override
     public void beforeStep(StepExecution stepExecution) {
-        // Retrieve data from JobExecution context and store in StepExecution context
+       
+    	String companyId = (String) stepExecution.getJobExecution().getExecutionContext().get("companyId");
     	String motorcategor_string = (String) stepExecution.getJobExecution().getExecutionContext().get("motorCategory");
-    	String section_string = (String) stepExecution.getJobExecution().getExecutionContext().get("section");
     	String banktypes_string = (String) stepExecution.getJobExecution().getExecutionContext().get("banktypes");
     	String bodyType_string = (String) stepExecution.getJobExecution().getExecutionContext().get("bodyTypes");
-    	String vehicleUsage_string = (String) stepExecution.getJobExecution().getExecutionContext().get("vehicleUsage");
-    	String policyTypes_string = (String) stepExecution.getJobExecution().getExecutionContext().get("policyTypes");
     	String colorTypes_string = (String) stepExecution.getJobExecution().getExecutionContext().get("colorTypes");
 
-    	try {
-			List<HashMap<String, Object>> section_list = objectMapper.readValue(
-					section_string, new TypeReference<List<HashMap<String, Object>>>() {}
-			    );
+    	if(!"100040".equals(companyId)) {
+    	
+	    	// Retrieve data from JobExecution context and store in StepExecution context
+	    	String section_string = (String) stepExecution.getJobExecution().getExecutionContext().get("section");
+	    	String vehicleUsage_string = (String) stepExecution.getJobExecution().getExecutionContext().get("vehicleUsage");
+	    	String policyTypes_string = (String) stepExecution.getJobExecution().getExecutionContext().get("policyTypes");
+	
+	    	try {
+	    		
+				List<HashMap<String, Object>> section_list = objectMapper.readValue(
+						section_string, new TypeReference<List<HashMap<String, Object>>>() {}
+				    );
+				
+				
+				List<HashMap<String, Object>> vehicleUsage_list = objectMapper.readValue(
+						vehicleUsage_string, new TypeReference<List<HashMap<String, Object>>>() {}
+				    );
+				
+				List<HashMap<String, Object>> policyTypes_list = objectMapper.readValue(
+						policyTypes_string, new TypeReference<List<HashMap<String, Object>>>() {}
+				    );
+				
+				
+				this.section_list=section_list.stream().distinct().collect(Collectors.toList());
+				this.policyTypes_list=policyTypes_list.stream().distinct().collect(Collectors.toList());
+				this.vehicleUsage_list=vehicleUsage_list.stream().distinct().collect(Collectors.toList());
+	    	
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				} 
+	    	
+    	}else if("100040".equals(companyId)) {
+    		
+    		// Retrieve data from JobExecution context and store in StepExecution context
+	    	String insurance_class_string = (String) stepExecution.getJobExecution().getExecutionContext().get("insurance_class");
+	    	String deductibles_string = (String) stepExecution.getJobExecution().getExecutionContext().get("deductibles");
+	    	String aggregated_value_string = (String) stepExecution.getJobExecution().getExecutionContext().get("aggregated_value");
+	    	String municipal_traffic_string = (String) stepExecution.getJobExecution().getExecutionContext().get("municipal_traffic");
+	    	String insurance_type_string = (String) stepExecution.getJobExecution().getExecutionContext().get("insurance_type");
+	    	String vehicleValue_string = (String) stepExecution.getJobExecution().getExecutionContext().get("vehicleValue");
+	
+    		try {
+				List<HashMap<String, Object>> insurance_class = objectMapper.readValue(
+						insurance_class_string, new TypeReference<List<HashMap<String, Object>>>() {}
+				    );
+				
+				
+				List<HashMap<String, Object>> deductibles = objectMapper.readValue(
+						deductibles_string, new TypeReference<List<HashMap<String, Object>>>() {}
+				    );
+				
+				List<HashMap<String, Object>> aggregated_value = objectMapper.readValue(
+						aggregated_value_string, new TypeReference<List<HashMap<String, Object>>>() {}
+				    );
+				
+				List<HashMap<String, Object>> municipal_traffic = objectMapper.readValue(
+						municipal_traffic_string, new TypeReference<List<HashMap<String, Object>>>() {}
+				    );
+				
+				
+				List<HashMap<String, Object>> insurance_type = objectMapper.readValue(
+						insurance_type_string, new TypeReference<List<HashMap<String, Object>>>() {}
+				    );
+				
+				List<HashMap<String, Object>> vehicleValue = objectMapper.readValue(
+						vehicleValue_string, new TypeReference<List<HashMap<String, Object>>>() {}
+				    );
+				
+				
+				this.insurance_class=insurance_class.stream().distinct().collect(Collectors.toList());
+				this.deductibles=deductibles.stream().distinct().collect(Collectors.toList());
+				this.aggregated_value=aggregated_value.stream().distinct().collect(Collectors.toList());
+				this.municipal_traffic=municipal_traffic.stream().distinct().collect(Collectors.toList());
+				this.insurance_type=insurance_type.stream().distinct().collect(Collectors.toList());
+				this.vehicleValue=vehicleValue.stream().distinct().collect(Collectors.toList());
 			
-			List<HashMap<String, Object>> motorCategory_list = objectMapper.readValue(
+			} catch (Exception e) {
+				e.printStackTrace();
+			} 
+    		
+    	}
+    	
+    	try {
+	    	List<HashMap<String, Object>> motorCategory_list = objectMapper.readValue(
 					motorcategor_string, new TypeReference<List<HashMap<String, Object>>>() {}
 			    );
-			
-			List<HashMap<String, Object>> banktypes_list = objectMapper.readValue(
+	    	
+	    	List<HashMap<String, Object>> banktypes_list = objectMapper.readValue(
 					banktypes_string, new TypeReference<List<HashMap<String, Object>>>() {}
 			    );
 			
 			List<HashMap<String, Object>> bodyTypes_list = objectMapper.readValue(
 					bodyType_string, new TypeReference<List<HashMap<String, Object>>>() {}
 			    );
-			
-			List<HashMap<String, Object>> vehicleUsage_list = objectMapper.readValue(
-					vehicleUsage_string, new TypeReference<List<HashMap<String, Object>>>() {}
-			    );
-			
-			List<HashMap<String, Object>> policyTypes_list = objectMapper.readValue(
-					policyTypes_string, new TypeReference<List<HashMap<String, Object>>>() {}
-			    );
-			
+	    	
+	
 			List<HashMap<String, Object>> colorTypes_list = objectMapper.readValue(
 					colorTypes_string, new TypeReference<List<HashMap<String, Object>>>() {}
 			    );
 			
-			this.section_list=section_list.stream().distinct().collect(Collectors.toList());
-			this.motor_list=motorCategory_list.stream().distinct().collect(Collectors.toList());
 			this.banktypes_list=banktypes_list.stream().distinct().collect(Collectors.toList());
-			this.bodyType_list=bodyTypes_list.stream().distinct().collect(Collectors.toList());
-			this.policyTypes_list=policyTypes_list.stream().distinct().collect(Collectors.toList());
-			this.vehicleUsage_list=vehicleUsage_list.stream().distinct().collect(Collectors.toList());
 			this.colorTypes=colorTypes_list.stream().distinct().collect(Collectors.toList());
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		} 
-
+			this.motor_list=motorCategory_list.stream().distinct().collect(Collectors.toList());
+			this.bodyType_list=bodyTypes_list.stream().distinct().collect(Collectors.toList());
+			
+			
+    	}catch (Exception e) {
+    		e.printStackTrace();
+		}
+    	
     }
 
     @Override
@@ -152,6 +230,55 @@ public class CustomStepExecutionListener implements StepExecutionListener {
 		this.colorTypes = colorTypes;
 	}
 
+	public List<HashMap<String, Object>> getInsurance_class() {
+		return insurance_class;
+	}
+
+	public void setInsurance_class(List<HashMap<String, Object>> insurance_class) {
+		this.insurance_class = insurance_class;
+	}
+
+	public List<HashMap<String, Object>> getDeductibles() {
+		return deductibles;
+	}
+
+	public void setDeductibles(List<HashMap<String, Object>> deductibles) {
+		this.deductibles = deductibles;
+	}
+
+	public List<HashMap<String, Object>> getAggregated_value() {
+		return aggregated_value;
+	}
+
+	public void setAggregated_value(List<HashMap<String, Object>> aggregated_value) {
+		this.aggregated_value = aggregated_value;
+	}
+
+	public List<HashMap<String, Object>> getMunicipal_traffic() {
+		return municipal_traffic;
+	}
+
+	public void setMunicipal_traffic(List<HashMap<String, Object>> municipal_traffic) {
+		this.municipal_traffic = municipal_traffic;
+	}
+
+	public List<HashMap<String, Object>> getInsurance_type() {
+		return insurance_type;
+	}
+
+	public void setInsurance_type(List<HashMap<String, Object>> insurance_type) {
+		this.insurance_type = insurance_type;
+	}
+
+	public List<HashMap<String, Object>> getVehicleValue() {
+		return vehicleValue;
+	}
+
+	public void setVehicleValue(List<HashMap<String, Object>> vehicleValue) {
+		this.vehicleValue = vehicleValue;
+	}
+
+	
 	
   
     

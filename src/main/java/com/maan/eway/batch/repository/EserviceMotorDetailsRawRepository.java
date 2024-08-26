@@ -252,9 +252,23 @@ public interface EserviceMotorDetailsRawRepository  extends JpaRepository<Eservi
 	
 	@Query(nativeQuery=true,value="SELECT COLOR_ID,COLOR_DESC FROM motor_color_master WHERE company_id=?1 AND STATUS='Y' AND CURRENT_DATE BETWEEN effective_date_start AND effective_date_end")
 	List<Map<String, String>> getColorTypes(String companyId);
+		
+	@Query(nativeQuery=true,value="SELECT INDUSTRY_TYPE_ID,INDUSTRY_TYPE_DESC FROM insurance_type_master WHERE company_id=?1 AND CURRENT_DATE BETWEEN effective_date_start AND effective_date_end AND STATUS='Y' ")
+	List<Map<String,String>> getSanlamInsuranceTypeClass(String companyId);
 	
-
+	@Query(nativeQuery=true,value="SELECT ITEM_CODE,ITEM_VALUE FROM eway_list_item_value WHERE company_id=?1 AND item_type='DEDUCTIBLE' AND CURRENT_DATE BETWEEN effective_date_start AND effective_date_end AND STATUS='Y'")
+	List<Map<String,String>> getSanlamDeductibles(String companyId);
+	
+	@Query(nativeQuery=true,value="SELECT ITEM_CODE,ITEM_VALUE FROM eway_list_item_value WHERE company_id=?1 AND item_type='AGGREGATED_VALUE' AND CURRENT_DATE BETWEEN effective_date_start AND effective_date_end AND STATUS='Y' ")
+	List<Map<String,String>> getSanlamAggregatorValue(String companyId);
+	
+	@Query(nativeQuery=true,value="SELECT ITEM_CODE,ITEM_VALUE FROM eway_list_item_value WHERE company_id=?1 AND item_type='MUNICIPALITY_TRAFFIC' AND CURRENT_DATE BETWEEN effective_date_start AND effective_date_end AND STATUS='Y' ")
+	List<Map<String,String>> getSanlamMuniTraff(String companyId);
+	
+	@Query(nativeQuery=true,value="SELECT ITEM_CODE,ITEM_VALUE FROM eway_list_item_value WHERE company_id=?1 AND item_type='VEHICLE_VALUE_TYPE' AND CURRENT_DATE BETWEEN effective_date_start AND effective_date_end AND STATUS='Y' ")
+	List<Map<String,String>> getSanlamVehValue(String companyId);
 	
 }
+
 	
 

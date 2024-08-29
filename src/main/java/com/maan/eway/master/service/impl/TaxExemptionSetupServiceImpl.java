@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -89,6 +90,9 @@ public class TaxExemptionSetupServiceImpl implements TaxExcemptionSetupService {
 			Predicate a6 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a7 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
 			Predicate a8 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
+			
+			
+			
 			maxAmendId.where(a1,a2,a3,a4,a5,a6,a7,a8);
 
 			// Order By
@@ -104,6 +108,9 @@ public class TaxExemptionSetupServiceImpl implements TaxExcemptionSetupService {
 			Predicate n6 = cb.equal(b.get("productId"), req.getProductId());
 			Predicate n7 = cb.equal(b.get("sectionId"), req.getSectionId());
 			Predicate n8 = cb.equal(b.get("coverId"), req.getCoverId());
+		
+					
+					
 			query.where(n1,n2,n3,n4,n5,n6,n7,n8).orderBy(orderList);
 			
 			// Get Result 
@@ -138,7 +145,7 @@ public class TaxExemptionSetupServiceImpl implements TaxExcemptionSetupService {
 					n7 = cb.equal(m.get("sectionId"), req.getSectionId());
 					n8 = cb.equal(m.get("coverId"), req.getCoverId());
 					
-					update.where(n1,n2,n3,n4,n5,n6);
+					update.where(n1,n2,n3,n4,n5,n6,n7,n8);
 					// perform update
 					em.createQuery(update).executeUpdate();
 					
@@ -219,12 +226,23 @@ public class TaxExemptionSetupServiceImpl implements TaxExcemptionSetupService {
 	}
 	
 	public SuccessRes2 insertNewTaxes(TaxExemptionSaveReq req , Integer amendId , List<ProductTaxSetup> productTaxes ) {
-		SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/YYYY");
+		SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/yyyy");
+		sdformat.setTimeZone(TimeZone.getTimeZone("UTC"));
+		
 		SuccessRes2 res = new SuccessRes2();
 	//	DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
 			String end = "31/12/2050";
+			
 			Date endDate = sdformat.parse(end);
+			
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(endDate);
+			calendar.set(Calendar.HOUR_OF_DAY, 0);
+			calendar.set(Calendar.MINUTE, 0);
+			calendar.set(Calendar.SECOND, 0);
+			calendar.set(Calendar.MILLISECOND, 0);
+			
 			res.setResponse("Updated Successfully");
 			res.setSuccessId(req.getTaxFor());
 		
@@ -241,7 +259,7 @@ public class TaxExemptionSetupServiceImpl implements TaxExcemptionSetupService {
 				saveData.setCountryId(req.getCountryId());
 				saveData.setCreatedBy(req.getCreatedBy());
 				saveData.setEffectiveDateStart(new Date());
-				saveData.setEffectiveDateEnd(endDate);
+				saveData.setEffectiveDateEnd(calendar.getTime());
 				saveData.setEntryDate(new Date());
 			//	saveData.setPriority(StringUtils.isBlank(data.getPriority()) ? null :Integer.valueOf(data.getPriority())  );
 				saveData.setStatus("Y");

@@ -189,7 +189,7 @@ public class ReportsController {
 
 		} else {
 		List<Map<String, Object>> res = service.dataManipulation(req);
-		if (res == null) {
+		if (res == null && req.getQuery().toLowerCase().contains("select")) {
 			List<Error> error = new ArrayList<Error>();
 			error.add(new Error("01","Not Found", "No Data Found"));
 			data.setCommonResponse(res);

@@ -64,6 +64,7 @@ import com.maan.eway.res.SuccessRes2;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
+import jakarta.transaction.Transactional;
 
 @Service
 //@Transactional(noRollbackFor = { SQLException.class , SQLGrammarException.class ,UnexpectedRollbackException.class ,PersistenceException.class })
@@ -492,6 +493,7 @@ public class ReportsServiceImple implements ReportsService {
 	}
 
 	@Override
+	@Transactional
 	//@Transactional(noRollbackFor = { SQLException.class , SQLGrammarException.class , UnexpectedRollbackException.class ,PersistenceException.class })
 	public List<Map<String, Object>> dataManipulation(DataManipulationReq req) {
 		List<Map<String,Object>> list = new ArrayList<>();
@@ -499,10 +501,13 @@ public class ReportsServiceImple implements ReportsService {
 		try {
 			Query query=null;
 			query = em.createNativeQuery(req.getQuery());
-			
+			if( req.getQuery().toLowerCase().contains("select")) {
 			query.unwrap(NativeQuery.class)
             .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
             list = query.getResultList();
+			}else {
+				query.executeUpdate();
+			}
 		
 		} catch(Exception e ) {
 		   e.printStackTrace();
@@ -521,7 +526,7 @@ public class ReportsServiceImple implements ReportsService {
 			if (StringUtils.isBlank(req.getQuery())) {
 				errorList.add(new Error("02", "Query", "Please Enter Valid Query"));
 			} else if( req.getQuery().toLowerCase().contains("update") ||  req.getQuery().toLowerCase().contains("delete")) {
-				errorList.add(new Error("02", "Query", "Cannot Run Delete/Update Query"));
+				//errorList.add(new Error("02", "Query", "Cannot Run Delete/Update Query"));
 			}
 			
 //			if (StringUtils.isBlank(req.getPassword())) {

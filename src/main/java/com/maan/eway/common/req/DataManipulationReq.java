@@ -9,7 +9,8 @@ public class DataManipulationReq {
 
 	@JsonProperty("Query")
 	private String query ;
-	
+	@JsonProperty("UserId")
+	private String userId;
 	@JsonProperty("Password")
 	private String password;
 }

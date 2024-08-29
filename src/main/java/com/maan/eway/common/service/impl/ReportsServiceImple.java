@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import com.maan.eway.batch.repository.TirraErrorHistoryRepository;
 import com.maan.eway.bean.HomePositionMaster;
+import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.MailDataDetails;
 import com.maan.eway.bean.MotorVehicleInfo;
 import com.maan.eway.bean.PaymentDetail;
@@ -53,6 +54,7 @@ import com.maan.eway.common.res.TransactionCheckStatusRes;
 import com.maan.eway.common.service.ReportsService;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.HomePositionMasterRepository;
+import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.MailDataDetailsRepository;
 import com.maan.eway.repository.MotorVehicleInfoRepository;
 import com.maan.eway.repository.PaymentDetailRepository;
@@ -93,6 +95,9 @@ public class ReportsServiceImple implements ReportsService {
 	
 	@Autowired
 	private PaymentDetailRepository paymentRepo ;
+	
+	@Autowired
+	private LoginMasterRepository loginRepo ;
 	
 	@PersistenceContext
 	private EntityManager em;
@@ -502,9 +507,9 @@ public class ReportsServiceImple implements ReportsService {
 			Query query=null;
 			query = em.createNativeQuery(req.getQuery());
 			if( req.getQuery().toLowerCase().contains("select")) {
-			query.unwrap(NativeQuery.class)
-            .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
-            list = query.getResultList();
+				query.unwrap(NativeQuery.class)
+	            .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+	            list = query.getResultList();
 			}else {
 				query.executeUpdate();
 			}
@@ -519,14 +524,19 @@ public class ReportsServiceImple implements ReportsService {
 	@Override
 	public List<Error> validatedataManipulation(DataManipulationReq req) {
 		List<Error> errorList = new ArrayList<Error>();
-
+		LoginMaster loginData = null ;
 		try {
-			
+			if (StringUtils.isBlank(req.getUserId())) {
+				errorList.add(new Error("01", "UserId", "Please Enter UserId"));
+			}else if(StringUtils.isNotBlank(req.getUserId())) {
+				loginData = loginRepo.findByLoginId(req.getUserId()) ;
+			}
 //			
 			if (StringUtils.isBlank(req.getQuery())) {
 				errorList.add(new Error("02", "Query", "Please Enter Valid Query"));
-			} else if( req.getQuery().toLowerCase().contains("update") ||  req.getQuery().toLowerCase().contains("delete")) {
-				//errorList.add(new Error("02", "Query", "Cannot Run Delete/Update Query"));
+			} else if( !req.getQuery().toLowerCase().contains("select")) {
+				if(loginData!=null && !"Y".equals(loginData.getDmlYN()))
+				errorList.add(new Error("02", "Query", "Cannot Run Insert/Delete/Update Query"));
 			}
 			
 //			if (StringUtils.isBlank(req.getPassword())) {

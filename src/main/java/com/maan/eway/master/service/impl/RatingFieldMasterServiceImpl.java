@@ -358,7 +358,7 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 				// Effective Date Max Filter
 				Subquery<Long> amendId = query.subquery(Long.class);
 				Root<RatingFieldMaster> ocpm1 = amendId.from(RatingFieldMaster.class);
-				amendId.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+				amendId.select(cb.greatest(ocpm1.get("amendId")));
 				Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 				Predicate a2 = cb.equal(ocpm1.get("ratingId"),b.get("ratingId"));
 				amendId.where(a1,a2);

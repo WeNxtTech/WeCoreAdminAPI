@@ -61,6 +61,7 @@ import com.maan.eway.repository.PaymentDetailRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.SmsDataDetailsRepository;
 import com.maan.eway.repository.TiraTrackingDetailsRepository;
+import com.maan.eway.res.LogDetailsRes;
 import com.maan.eway.res.SuccessRes2;
 
 import jakarta.persistence.EntityManager;
@@ -551,5 +552,27 @@ public class ReportsServiceImple implements ReportsService {
 			e.printStackTrace();
 		}
 		return errorList;
+	}
+
+	@Override
+	public List<LogDetailsRes> LogDetails(String filePath) {
+		List<LogDetailsRes> resp=new ArrayList<>();
+		filePath = filePath.substring(0, filePath.lastIndexOf("\\"));
+		filePath = filePath.substring(0, filePath.lastIndexOf("\\"));
+		filePath = filePath.substring(0, filePath.lastIndexOf("\\"));
+		filePath = filePath +"\\logs";
+		System.out.println(filePath);
+		File file = new File(filePath);
+		if(file.exists() && file.isDirectory()){
+			File[] files = file.listFiles();
+			for(int i=0;i<files.length;i++){
+				LogDetailsRes res=new LogDetailsRes();
+				res.setFileName(files[i].getName());
+				res.setFilePath(filePath+"\\"+files[i].getName());
+				resp.add(res);
+			}
+				
+		}
+		return resp;
 	}
 }

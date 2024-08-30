@@ -17,6 +17,7 @@ import com.maan.eway.common.res.TiraPushedDetailsRes;
 import com.maan.eway.common.res.TiraPushedListDetailsRes;
 import com.maan.eway.common.res.TransactionCheckStatusRes;
 import com.maan.eway.error.Error;
+import com.maan.eway.res.LogDetailsRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.res.SuccessRes2;
 
@@ -39,5 +40,7 @@ public interface ReportsService {
 	List<Map<String, Object>> dataManipulation(DataManipulationReq req);
 
 	List<Error> validatedataManipulation(DataManipulationReq req);
+
+	List<LogDetailsRes> LogDetails(String filePath);
 
 }

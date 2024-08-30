@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,11 +31,13 @@ import com.maan.eway.common.res.TransactionCheckStatusRes;
 import com.maan.eway.common.service.ReportsService;
 import com.maan.eway.error.Error;
 import com.maan.eway.res.CommonRes;
+import com.maan.eway.res.LogDetailsRes;
 import com.maan.eway.res.SuccessRes2;
 import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/reports")
@@ -210,5 +213,25 @@ public class ReportsController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 		}
+	}
+	@GetMapping("/LogDetails")
+	public ResponseEntity<CommonRes> LogDetails(HttpServletRequest http) {
+		CommonRes data = new CommonRes();
+		String filePath=http.getServletContext().getRealPath("/");
+		
+		List<LogDetailsRes> res = service.LogDetails(filePath);
+		
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+		
 	}
 }

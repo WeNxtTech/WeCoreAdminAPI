@@ -800,7 +800,8 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 	                try {
 	                    Field field = FactorRateRawInsert.class.getDeclaredField(fieldNames[i]);
 	                    field.setAccessible(true);
-	                    data[i] = Double.valueOf(field.get(obj).toString());
+	                    
+	                    data[i] = Double.valueOf(field.get(obj)==null||field.get(obj).toString().isEmpty() ?"0":field.get(obj).toString());
 	                } catch (NoSuchFieldException | IllegalAccessException e) {
 	                    // Handle or log the exception as needed
 	                    data[i] = null; // or handle the error case appropriately

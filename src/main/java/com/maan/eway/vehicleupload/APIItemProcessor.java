@@ -77,23 +77,22 @@ public class APIItemProcessor implements ItemProcessor<EserviceMotorDetailsRaw, 
 			HashMap<String, Object> saveVehicleInfo =new LinkedHashMap<String,Object>();
 			
 			//save vehicle info 
-			if("100019".equals(p.getCompanyId().toString())) {
+			if(!"100002".equals(p.getCompanyId().toString())) {
 				saveVehicleInfo.put("Insuranceid", p.getCompanyId());
 				saveVehicleInfo.put("BranchCode", p.getBranchCode());
-				saveVehicleInfo.put("AxelDistance", "");
+				saveVehicleInfo.put("AxelDistance", "1");
 				saveVehicleInfo.put("Chassisnumber", p.getChassisNumber());
 				saveVehicleInfo.put("Color", p.getColorId());
 				saveVehicleInfo.put("CreatedBy", StringUtils.isBlank(p.getCreatedBy())?p.getLoginId():p.getCreatedBy());
 				saveVehicleInfo.put("EngineNumber", p.getEngineNumber());
 				saveVehicleInfo.put("FuelType", p.getFuelType());
-				saveVehicleInfo.put("Grossweight", p.getGrossWeight());
-				saveVehicleInfo.put("ManufactureYear", p.getManufactureYear());
-				saveVehicleInfo.put("MotorCategory", p.getMotorCategoryId());
-				saveVehicleInfo.put("Motorusage", p.getMotorUsageDesc());
-				saveVehicleInfo.put("NumberOfAxels", "");
+				saveVehicleInfo.put("Grossweight", StringUtils.isBlank(p.getGrossWeight())?"500":p.getGrossWeight());
+				saveVehicleInfo.put("MotorCategory", StringUtils.isBlank(p.getMotorCategoryId())?"1":p.getMotorCategory());
+				saveVehicleInfo.put("Motorusage", StringUtils.isBlank(p.getMotorUsageDesc())?"Ambulance":p.getMotorUsageDesc());
+				saveVehicleInfo.put("NumberOfAxels", "1");
 				saveVehicleInfo.put("OwnerCategory",StringUtils.isBlank(p.getOwnerCategory())?"1":p.getOwnerCategory());
 				saveVehicleInfo.put("Registrationnumber", StringUtils.isBlank(p.getSearchByData())?p.getChassisNumber():p.getSearchByData());
-				saveVehicleInfo.put("ResEngineCapacity", p.getResEngineCapacity());
+				saveVehicleInfo.put("ResEngineCapacity", StringUtils.isBlank(p.getResEngineCapacity())?"1":p.getResEngineCapacity());
 				saveVehicleInfo.put("ResOwnerName", StringUtils.isBlank(p.getCustomerName())?"":p.getCustomerName());
 				saveVehicleInfo.put("ResStatusCode", "Y");
 				saveVehicleInfo.put("ResStatusDesc", "None");
@@ -101,8 +100,15 @@ public class APIItemProcessor implements ItemProcessor<EserviceMotorDetailsRaw, 
 				saveVehicleInfo.put("Tareweight", p.getTareWeight());
 				saveVehicleInfo.put("Vehcilemodel", StringUtils.isBlank(p.getVehicleModel())?"":p.getVehicleModel());
 				saveVehicleInfo.put("VehicleType", StringUtils.isBlank(p.getBodyTypeDesc())?"":p.getBodyTypeDesc());
+				saveVehicleInfo.put("HorsePower", StringUtils.isBlank(p.getHorsePower())?"":p.getHorsePower());
+				saveVehicleInfo.put("RegistrationDate", StringUtils.isBlank(p.getRegistration_date())?"":p.getRegistration_date());
+				saveVehicleInfo.put("NumberOfCylinders", StringUtils.isBlank(p.getNoOfCylinders())?"":p.getNoOfCylinders());
 				saveVehicleInfo.put("Vehiclemake", StringUtils.isBlank(p.getVehicleMake())?"":p.getVehicleMake());
-				saveVehicleInfo.put("RegistrationDate", null);
+
+				String manufacture_year =100040==p.getCompanyId()?p.getRegistration_date().split("/")[2]
+						:p.getManufactureYear();
+				saveVehicleInfo.put("ManufactureYear", manufacture_year);
+
 				
 				String saveVehicleReq =print.toJson(saveVehicleInfo);
 				log.info("callCreateQuote || saveVehicleInfoReq " + saveVehicleReq);
@@ -114,10 +120,10 @@ public class APIItemProcessor implements ItemProcessor<EserviceMotorDetailsRaw, 
 
 			}
 			
-			if("100019".equals(p.getCompanyId().toString()) && errorList.isEmpty()) {
+			if(("100019".equals(p.getCompanyId().toString()) && errorList.isEmpty()) || (100019!=p.getCompanyId())) {
 				// vehicle request
 				vehicleRequest.put("BrokerBranchCode", StringUtils.isBlank(p.getBrokerBranchcode())?"":p.getBrokerBranchcode());
-				vehicleRequest.put("SectionId", StringUtils.isBlank(p.getInsuranceTypeId())?null:Arrays.asList(p.getInsuranceTypeId()));	
+				vehicleRequest.put("SectionId", p.getSectionId()==null?null:Arrays.asList(p.getSectionId().toString()));	
 				vehicleRequest.put("AcExecutiveId", StringUtils.isBlank(p.getAcExecutiveid())?"":p.getAcExecutiveid());
 				vehicleRequest.put("BrokerCode", StringUtils.isBlank(p.getBrokerCode())?"":p.getBrokerCode());
 				vehicleRequest.put("LoginId", StringUtils.isBlank(p.getLoginId())?"":p.getLoginId());
@@ -143,7 +149,6 @@ public class APIItemProcessor implements ItemProcessor<EserviceMotorDetailsRaw, 
 				vehicleRequest.put("Vehcilemodel",StringUtils.isBlank(p.getVehicleModel())?"":p.getVehicleModel());
 				vehicleRequest.put("VehicleType", StringUtils.isBlank(p.getBodyTypeId())?"":p.getBodyTypeId());
 				vehicleRequest.put("VehicleTypeId", StringUtils.isBlank(p.getBodyTypeId())?"":p.getBodyTypeId());
-				vehicleRequest.put("Vehiclemake",StringUtils.isBlank(p.getVehicleMake())?"":p.getVehicleMake());
 				vehicleRequest.put("WindScreenSumInsured", StringUtils.isBlank(p.getWindshieldSuminsured())?"":p.getWindshieldSuminsured());
 				vehicleRequest.put("PolicyStartDate", StringUtils.isBlank(p.getPolicyStartDate())?"":p.getPolicyStartDate());
 				vehicleRequest.put("PolicyEndDate", StringUtils.isBlank(p.getPolicyEndDate())?"":p.getPolicyEndDate());
@@ -160,8 +165,28 @@ public class APIItemProcessor implements ItemProcessor<EserviceMotorDetailsRaw, 
 				vehicleRequest.put("Registrationnumber", StringUtils.isBlank(p.getSearchByData())?p.getChassisNumber():p.getSearchByData());
 				vehicleRequest.put("SourceTypeId", StringUtils.isBlank(p.getSourceTypeId())?"":p.getSourceTypeId());
 		
+				String manufacture_year =100040==p.getCompanyId()?p.getRegistration_date().split("/")[2]
+						:p.getManufactureYear();
+				
+				// sanlanm ivory mapping
+				vehicleRequest.put("Deductibles", StringUtils.isBlank(p.getDeductiblesId())?"":p.getDeductiblesId());
+				vehicleRequest.put("TransportHydro", StringUtils.isBlank(p.getTransportationOfHydrocarbons())?"":p.getTransportationOfHydrocarbons());
+				vehicleRequest.put("MunicipalityTraffic", StringUtils.isBlank(p.getMunicipalityOfTrafficId())?"":p.getMunicipalityOfTrafficId());
+				vehicleRequest.put("NumberOfCards", StringUtils.isBlank(p.getNoOfCards())?"":p.getNoOfCards());
+				vehicleRequest.put("AggregatedValue", StringUtils.isBlank(p.getAggregatedValueId())?"":p.getAggregatedValueId());
+				vehicleRequest.put("MarketValue", StringUtils.isBlank(p.getMarketValue())?"":p.getMarketValue());
+				vehicleRequest.put("VehicleValueType", StringUtils.isBlank(p.getVehicleValueTypeId())?"":p.getVehicleValueTypeId());			
+				vehicleRequest.put("NoOfPassengers", StringUtils.isBlank(p.getNoOfPassengers())?"":p.getNoOfPassengers());
+				vehicleRequest.put("HorsePower", StringUtils.isBlank(p.getHorsePower())?"":p.getHorsePower());
+				vehicleRequest.put("RegistrationDate", StringUtils.isBlank(p.getRegistration_date())?"":p.getRegistration_date());
+				vehicleRequest.put("Vehiclemake",StringUtils.isBlank(p.getVehicleMake())?"":p.getVehicleMake());
+				vehicleRequest.put("VehiclemakeId",StringUtils.isBlank(p.getVehicleMakeId())?"":p.getVehicleMakeId());
+				vehicleRequest.put("VehcilemodelId",StringUtils.isBlank(p.getVehicleModelId())?"":p.getVehicleModelId());
+				vehicleRequest.put("VehicleModel",StringUtils.isBlank(p.getVehicleModel())?"":p.getVehicleModel());
+
+				
 				vehicleRequest.put("EngineNumber", StringUtils.isBlank(p.getEngineNumber())?"":p.getEngineNumber());
-				vehicleRequest.put("ManufactureYear", StringUtils.isBlank(p.getManufactureYear())?"":p.getManufactureYear());
+				vehicleRequest.put("ManufactureYear",manufacture_year);
 				String EndorsementYn =StringUtils.isBlank(p.getEndorsementYn())?"N":p.getEndorsementYn();
 				String collateralYn =StringUtils.isBlank(p.getCollateralYn())?"NO":p.getCollateralYn();
 				String promcodeYn =StringUtils.isBlank(p.getHavePromocode())?"N":p.getHavePromocode();

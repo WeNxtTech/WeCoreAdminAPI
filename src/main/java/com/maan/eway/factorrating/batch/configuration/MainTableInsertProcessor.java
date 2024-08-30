@@ -85,6 +85,7 @@ public class MainTableInsertProcessor implements ItemProcessor<FactorRateRawInse
 		saveData.setParam19(data.getParam19());
 		saveData.setParam20(data.getParam20());
 		
+		saveData.setMinimumRate(StringUtils.isBlank(data.getMinimumRate()) ? null :new BigDecimal(data.getMinimumRate()));
 		saveData.setRate(StringUtils.isBlank(data.getRate()) ? null :new BigDecimal(data.getRate()) );
 		saveData.setMinPremium(StringUtils.isBlank(data.getMinPremium()) ? null :new BigDecimal(data.getMinPremium()) );
 		saveData.setCalcType(data.getCalcType() );

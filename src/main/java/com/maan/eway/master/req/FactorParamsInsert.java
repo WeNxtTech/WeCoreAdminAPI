@@ -49,6 +49,9 @@ public class FactorParamsInsert {
     @JsonProperty("Rate" )
     private String rate ;
     
+    @JsonProperty("MinimumRate" )
+    private String minimumRate ;
+    
     @JsonProperty("MinimumPremium" )
     private String minimumPremium ;
     

@@ -91,6 +91,9 @@ public class SectionCoverUpdateReq {
 	@JsonProperty("BaseRate")
 	private String baseRate;
 	
+	@JsonProperty("MinimumRate")
+	private String minimumRate;
+	
 	@JsonProperty("SumInsuredStart")
 	private String sumInsuredStart;
 	

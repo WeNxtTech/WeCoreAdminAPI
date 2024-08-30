@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
@@ -70,13 +71,7 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 	private JpqlQueryServiceImpl queryService;
 	
 	@Autowired
-	private FactorRateMasterRepository repository;
-	
-	@Autowired
 	private FactorRateMasterService entityService;
-	
-	@Autowired
-	private ListItemValueRepository listRepo ;
 
 	@PersistenceContext
 	private EntityManager em;
@@ -100,7 +95,7 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 				
 				String columns =object.get("QUERY_COLUMNS").toString();
 				String factorId =object.get("FACTOR_ID").toString();
-				String defaultColumns =",Rate,CalcType,MinimumPremium,RegulatoryCode,ExcessPercent,ExcessAmount,ExcessDesc,Status";
+				String defaultColumns =",Rate,MinimumRate,CalcType,MinimumPremium,RegulatoryCode,ExcessPercent,ExcessAmount,ExcessDesc,Status";
 				String xlColumns ="AgencyCode,"+object.get("XL_COLUMNS").toString()+defaultColumns;
 				List<Object[][]> obj =queryService.getFactorRateDetails(req, columns, factorId);
 				
@@ -135,8 +130,7 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 		            
 		        }
 				
-				if(!CollectionUtils.isEmpty(obj)) { 
-					
+				if(obj.size()>0) { 
 					for(Object [] ob :obj) {
 						row =sheet.createRow(rowNum++);
 						int col =0;
@@ -151,7 +145,7 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 					workbook.close();
 					byteArry = bos.toByteArray();
 					String prefix = "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,";
-					String base64 = Base64Utils.encodeToString(byteArry);
+					String base64 =Base64.getEncoder().encodeToString(byteArry);
 					res.setFile(prefix+base64);
 					response.setCommonResponse(res);
 				

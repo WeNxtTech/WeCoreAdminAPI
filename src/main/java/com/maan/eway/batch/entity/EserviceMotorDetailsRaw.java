@@ -415,7 +415,7 @@ private static final long serialVersionUID = 1L;
     private String       collateralYn ;
     
     @Column(name="COLLATERAL_BANKNAME")
-    private String       collateralBankName ;
+    private String       collateralBankname ;
     
     @Column(name="BANK_ID")
     private String       bankId ;
@@ -460,13 +460,25 @@ private static final long serialVersionUID = 1L;
     private String       municipalityOfTrafficId ;
     
     @Column(name="TRANSPORTATION_OF_HYDROCARBONS")
-    private String       transportationOdHydrocarbons ;
+    private String       transportationOfHydrocarbons ;
     
     @Column(name="VEHICLE_VALUE_TYPE_DESC")
     private String       vehicleValueTypeDesc ;
     
     @Column(name="VEHICLE_VALUE_TYPE_ID")
     private String       vehicleValueTypeId ;
+    
+    @Column(name="MARKET_VALUE")
+    private String       marketValue ;
+    
+    @Column(name="VEHICLE_MAKEID")
+    private String       vehicleMakeId ;
+    
+    @Column(name="VEHICLE_MODELID")
+    private String       vehicleModelId ;
+    
+    
+    
     
     
     //--- ENTITY LINKS ( RELATIONSHIP )

@@ -41,21 +41,61 @@ public class VehValidationProcessor implements ItemProcessor<EserviceMotorDetail
 
 	private EserviceMotorDetailsRaw updateSanlamCompanyMasterIds(EserviceMotorDetailsRaw item) {
 		String error_desc="";
-		
 		try {
+			
+			
+			// make Id update
+			List<HashMap<String, Object>> make_list =stepExecutionListener.getMake()
+					.stream().filter( p ->StringUtils.isBlank(item.getVehicleMake().toUpperCase())?
+					 null:item.getVehicleMake().toUpperCase().replace(" ", "")
+					.equalsIgnoreCase(p.get("MAKE_NAME_EN").toString().toUpperCase().replace(" ", "")))
+					.collect(Collectors.toList());
+			
+			
+			if(make_list.size()>0) {
+				String make_id = make_list.get(0).size()>0?make_list.get(0).get("MAKE_ID").toString():"";
+				item.setVehicleMakeId(make_id);			
+			}
+			
+			// model id update block
+			
+			if(StringUtils.isNotBlank(item.getVehicleMakeId())) {
+				
+				java.util.function.Predicate<Map<String,Object>> make_filter =p ->item.getVehicleMakeId().equals(p.get("MAKE_ID")==null?"":p.get("MAKE_ID").toString());
+				// make Id update
+				List<HashMap<String, Object>> model_list =stepExecutionListener.getModel()
+						.stream()
+						.filter(make_filter)
+						.filter( p ->StringUtils.isBlank(item.getVehicleModel().toUpperCase())?
+								null:item.getVehicleModel().toUpperCase().replace(" ", "")
+								.equalsIgnoreCase(p.get("MODEL_NAME_EN").toString().toUpperCase().replace(" ", "")))						
+						.collect(Collectors.toList());
+				
+				
+				if(model_list.size()>0) {
+					String model_id = model_list.get(0).size()>0?model_list.get(0).get("MODEL_ID").toString():"";
+					item.setVehicleModelId(model_id);			
+				}
+				
+			}
+			
+			
+			
+			
 			
 			// insurance_class id update block
 			
 			List<HashMap<String, Object>> insurance_classList =stepExecutionListener.getInsurance_class()
 					.stream().filter( p ->StringUtils.isBlank(item.getInsuranceClassDesc().toUpperCase())?
-					 null:item.getInsuranceTypeDesc().toUpperCase().replace(" ", "")
-					.equalsIgnoreCase(p.get("INDUSTRY_TYPE_ID").toString().toUpperCase().replace(" ", "")))
+					 null:item.getInsuranceClassDesc().toUpperCase().replace(" ", "")
+					.equalsIgnoreCase(p.get("INDUSTRY_TYPE_DESC").toString().toUpperCase().replace(" ", "")))
 					.collect(Collectors.toList());
 			
 			
 			if(insurance_classList.size()>0) {
 				String insurance_class_id =insurance_classList.get(0).size()>0?insurance_classList.get(0).get("INDUSTRY_TYPE_ID").toString():"";
 				item.setInsuranceClassId(insurance_class_id);
+				item.setSectionId(Integer.valueOf(insurance_class_id));
 			}
 			
 			
@@ -118,7 +158,7 @@ public class VehValidationProcessor implements ItemProcessor<EserviceMotorDetail
 			
 			// insurance_type_id update block
 	
-			List<HashMap<String, Object>> vehicle_usage_list =stepExecutionListener.getVehicleUsage_list()
+			List<HashMap<String, Object>> vehicle_usage_list =stepExecutionListener.getInsurance_type()
 					.stream().filter( p ->StringUtils.isBlank(item.getInsuranceTypeDesc().toUpperCase())?
 					 null:item.getInsuranceTypeDesc().toUpperCase().replace(" ", "")
 					.equalsIgnoreCase(p.get("VEHICLE_USAGE_DESC").toString().toUpperCase().replace(" ", "")))
@@ -130,15 +170,14 @@ public class VehValidationProcessor implements ItemProcessor<EserviceMotorDetail
 				String vehicle_usage_id =vehicle_usage_list.get(0).size()>0?vehicle_usage_list.get(0).get("VEHICLE_USAGE_ID").toString():"";
 				item.setMotorUsageId(vehicle_usage_id);
 				item.setInsuranceTypeId(vehicle_usage_id);
-				item.setSectionId(Integer.valueOf(vehicle_usage_id));
 			}
 			
 			// bank id update
 			if("Bank".equalsIgnoreCase(item.getBorrowerType())) {
 				
 				List<HashMap<String, Object>> bank_list =stepExecutionListener.getBanktypes_list()
-						.stream().filter( p ->StringUtils.isBlank(item.getCollateralBankName().toUpperCase())?
-						 null:item.getCollateralBankName().toUpperCase().replace(" ", "")
+						.stream().filter( p ->StringUtils.isBlank(item.getCollateralBankname().toUpperCase())?
+						 null:item.getCollateralBankname().toUpperCase().replace(" ", "")
 						.equalsIgnoreCase(p.get("BANK_FULL_NAME").toString().toUpperCase().replace(" ", "")))
 						.collect(Collectors.toList());
 				
@@ -152,7 +191,7 @@ public class VehValidationProcessor implements ItemProcessor<EserviceMotorDetail
 			
 			// motorcategory type id update block
 			
-			List<HashMap<String, Object>> motor_category_list =stepExecutionListener.getMotor_list()
+			/*List<HashMap<String, Object>> motor_category_list =stepExecutionListener.getMotor_list()
 					.stream().filter( p ->StringUtils.isBlank(item.getMotorCategory().toUpperCase())?
 					 null:item.getMotorCategory().toUpperCase().replace(" ", "")
 					.equalsIgnoreCase(p.get("ITEM_VALUE").toString().toUpperCase().replace(" ", "")))
@@ -161,7 +200,7 @@ public class VehValidationProcessor implements ItemProcessor<EserviceMotorDetail
 			if(motor_category_list.size()>0) {
 				String motor_category_id =motor_category_list.get(0).size()>0?motor_category_list.get(0).get("ITEM_CODE").toString():"";
 				item.setMotorCategoryId(motor_category_id);
-			}
+			}*/
 			
 		// color type id update block
 			
@@ -191,10 +230,18 @@ public class VehValidationProcessor implements ItemProcessor<EserviceMotorDetail
 			}
 			
 			// error update block
-			
-			error_desc+=StringUtils.isBlank(item.getMotorCategoryId())?"Please type valid MotorCategory~":"";
+
+			error_desc+=StringUtils.isBlank(item.getInsuranceClassId())?"Please type valid InsuranceClassDesc~":"";
+			error_desc+=StringUtils.isBlank(item.getDeductiblesId())?"Please type valid Deductibles~":"";
+			error_desc+=StringUtils.isBlank(item.getAggregatedValueId())?"Please type valid AggregatedValue~":"";
+			error_desc+=StringUtils.isBlank(item.getVehicleValueTypeId())?"Please type valid VehicleValueType~":"";
+			error_desc+=StringUtils.isBlank(item.getMunicipalityOfTrafficId())?"Please type valid MunicipalityOfTraffic~":"";
 			error_desc+=StringUtils.isBlank(item.getBodyTypeId())?"Please type valid BodyTypeDesc~":"";
 			error_desc+=StringUtils.isBlank(item.getColorId())?"Please type valid ColorDesc~":"";
+			error_desc+=StringUtils.isBlank(item.getInsuranceTypeId())?"Please type valid InsuranceType~":"";
+			error_desc+=StringUtils.isBlank(item.getVehicleMakeId())?"Please type valid make~":"";
+			error_desc+=StringUtils.isBlank(item.getVehicleModelId())?"Please type valid make and model~":"";
+
 			
 			if("Bank".equalsIgnoreCase(item.getBorrowerType())) 
 				error_desc+=StringUtils.isBlank(item.getBankId())?"Please type valid BankNameDesc":"";
@@ -264,8 +311,8 @@ public class VehValidationProcessor implements ItemProcessor<EserviceMotorDetail
 				if("Bank".equalsIgnoreCase(item.getBorrowerType())) {
 					
 					List<HashMap<String, Object>> bank_list =stepExecutionListener.getBanktypes_list()
-							.stream().filter( p ->StringUtils.isBlank(item.getCollateralBankName().toUpperCase())?
-							 null:item.getCollateralBankName().toUpperCase().replace(" ", "")
+							.stream().filter( p ->StringUtils.isBlank(item.getCollateralBankname().toUpperCase())?
+							 null:item.getCollateralBankname().toUpperCase().replace(" ", "")
 							.equalsIgnoreCase(p.get("BANK_FULL_NAME").toString().toUpperCase().replace(" ", "")))
 							.collect(Collectors.toList());
 					

@@ -107,15 +107,16 @@ public class CSVSpringBatchConfiguration {
 			            DataFormatter dataFormatter = new DataFormatter();
 			            Sheet sheet = workbook.getSheetAt(0);
 			            
+		            	int cell_count =sheet.getRow(0).getLastCellNum();
+
 			            int rowindex =0;
 			            for (Row row : sheet) {
 			            	
-			            	int cell_count =row.getLastCellNum();
 
 			            	String data ="";
 			            	for (int i =0 ;i<cell_count ;i++) {
 			            		Cell cell =row.getCell(i);
-			            		data+=cell==null || cell.getCellType()==CellType.BLANK?null+"~":
+			            		data+=cell==null || cell.getCellType()==CellType.BLANK?""+"~":
 			            			dataFormatter.formatCellValue(cell).
 		                    		replace("\t", "").replace("\n", "").replace("\r", "").replace("'", "").replaceAll("^\"|\"$", "").replace(",", "")+"~";;
 			            		
@@ -137,15 +138,17 @@ public class CSVSpringBatchConfiguration {
 	        				DataFormatter dataFormatter = new DataFormatter();
 				            Sheet sheet = workbook.getSheetAt(0);
 			            
+				            
+			            	int cell_count =sheet.getRow(0).getLastCellNum();
+
 				            int rowindex =0;
 				            for (Row row : sheet) {
-				            	
-				            	int cell_count =row.getLastCellNum();
+
 
 				            	String data ="";
 				            	for (int i =0 ;i<cell_count ;i++) {
 				            		Cell cell =row.getCell(i);
-				            		data+=cell==null || cell.getCellType()==CellType.BLANK?null+"~":
+				            		data+=cell==null || cell.getCellType()==CellType.BLANK?""+"~":
 				            			dataFormatter.formatCellValue(cell).
 			                    		replace("\t", "").replace("\n", "").replace("\r", "").replace("'", "").replaceAll("^\"|\"$", "").replace(",", "")+"~";;
 				            		

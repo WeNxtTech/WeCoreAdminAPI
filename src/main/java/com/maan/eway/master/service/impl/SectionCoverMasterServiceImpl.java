@@ -450,6 +450,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCoverId() ,o.getSubCoverId() ))).collect(Collectors.toList());
 			if(list.size()>0) {
 				res = mapper.map(list.get(0), SectionCoverMasterRes.class);
+				res.setMinimumRate(list.get(0).getMinimumRate()==null?"0":list.get(0).getMinimumRate().toPlainString());
 				res.setCoverId(list.get(0).getCoverId()==null?"" : list.get(0).getCoverId().toString() );
 				res.setEntryDate(list.get(0).getEntryDate());
 				res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
@@ -938,7 +939,13 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 					errorList.add("1502");
 				}	
 			} 
-			
+				  if (StringUtils.isBlank(req.getMinimumRate())) {
+				//	errorList.add(new Error("09", "CoverId", "Please Enter CoverId  "));
+					errorList.add("5000");
+				  } else if (! req.getMinimumRate().matches("[0-9]+") ) {
+						//	errorList.add(new Error("09", "CoverId", "Please Enter Valid Number CoverId "));
+						errorList.add("5001");
+					} 
 
 			if (StringUtils.isBlank(req.getCreatedBy())) {
 		//		errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy "));
@@ -1380,6 +1387,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				saveCover.setSubCoverId(Integer.valueOf(0));
 				saveCover.setSubCoverYn(req.getSubCoverYn());
 				saveCover.setIsSelectedYn(req.getIsSelectedYn());
+				saveCover.setMinimumRate(new BigDecimal(req.getMinimumRate()));
 				saveCover.setRemarks(req.getRemarks());
 				saveCover.setDependentCoverYn(StringUtils.isNotBlank(req.getDependentCoverYn()) ? req.getDependentCoverYn() : "N");
 				saveCover.setMultiSelectYn( StringUtils.isNotBlank(req.getMultiSelectYn() ) ? req.getMultiSelectYn()  : "N");
@@ -1422,6 +1430,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				saveData.setCreatedBy(req.getCreatedBy());
 				saveData.setUpdatedDate(new Date());
 				saveData.setUpdatedBy(req.getCreatedBy());
+				saveData.setMinimumRate(new BigDecimal(req.getMinimumRate()));
 				saveData.setMultiSelectYn( StringUtils.isNotBlank(req.getMultiSelectYn() ) ? req.getMultiSelectYn()  : "N");
 				saveData.setAgencyCode(StringUtils.isNotBlank(req.getAgencyCode()) ? req.getAgencyCode() : "99999") ;
 				saveData.setBranchCode(StringUtils.isNotBlank(req.getBranchCode()) ? req.getBranchCode() : "99999");

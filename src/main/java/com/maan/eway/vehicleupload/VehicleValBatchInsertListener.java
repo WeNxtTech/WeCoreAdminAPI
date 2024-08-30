@@ -110,6 +110,8 @@ public class VehicleValBatchInsertListener implements JobExecutionListener {
 			List<Map<String,String>> municipal_traffic =eserviceMotorDetailsRaw.getSanlamMuniTraff(companyId);
 			List<Map<String,String>> insurance_type =eserviceMotorDetailsRaw.getVehicleUsage(companyId);
 			List<Map<String,String>> vehicleValue =eserviceMotorDetailsRaw.getSanlamVehValue(companyId);
+			List<Map<String,String>> make =eserviceMotorDetailsRaw.getMakeList(companyId);
+			List<Map<String,String>> model =eserviceMotorDetailsRaw.getModelList(companyId);
 			
 			
 	        jobExecution.getExecutionContext().put("insurance_class", print.toJson(insurance_class));
@@ -118,6 +120,8 @@ public class VehicleValBatchInsertListener implements JobExecutionListener {
 			jobExecution.getExecutionContext().put("municipal_traffic", print.toJson(municipal_traffic));
 			jobExecution.getExecutionContext().put("insurance_type",  print.toJson(insurance_type));
 			jobExecution.getExecutionContext().put("vehicleValue",  print.toJson(vehicleValue));
+			jobExecution.getExecutionContext().put("make",  print.toJson(make));
+			jobExecution.getExecutionContext().put("model",  print.toJson(model));
 	
 		}
 		

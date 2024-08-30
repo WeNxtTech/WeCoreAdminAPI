@@ -45,8 +45,30 @@ public class CustomStepExecutionListener implements StepExecutionListener {
     
     private List<HashMap<String,Object>> vehicleValue;
     
+    private List<HashMap<String,Object>> make;
     
-    @Override
+    private List<HashMap<String,Object>> model;
+    
+    
+    
+    
+    public List<HashMap<String, Object>> getMake() {
+		return make;
+	}
+
+	public void setMake(List<HashMap<String, Object>> make) {
+		this.make = make;
+	}
+
+	public List<HashMap<String, Object>> getModel() {
+		return model;
+	}
+
+	public void setModel(List<HashMap<String, Object>> model) {
+		this.model = model;
+	}
+
+	@Override
     public void beforeStep(StepExecution stepExecution) {
        
     	String companyId = (String) stepExecution.getJobExecution().getExecutionContext().get("companyId");
@@ -96,8 +118,10 @@ public class CustomStepExecutionListener implements StepExecutionListener {
 	    	String municipal_traffic_string = (String) stepExecution.getJobExecution().getExecutionContext().get("municipal_traffic");
 	    	String insurance_type_string = (String) stepExecution.getJobExecution().getExecutionContext().get("insurance_type");
 	    	String vehicleValue_string = (String) stepExecution.getJobExecution().getExecutionContext().get("vehicleValue");
-	
-    		try {
+	    	String make_string = (String) stepExecution.getJobExecution().getExecutionContext().get("make");
+	    	String model_string = (String) stepExecution.getJobExecution().getExecutionContext().get("model");
+
+	    	try {
 				List<HashMap<String, Object>> insurance_class = objectMapper.readValue(
 						insurance_class_string, new TypeReference<List<HashMap<String, Object>>>() {}
 				    );
@@ -124,6 +148,14 @@ public class CustomStepExecutionListener implements StepExecutionListener {
 						vehicleValue_string, new TypeReference<List<HashMap<String, Object>>>() {}
 				    );
 				
+				List<HashMap<String, Object>> make_list = objectMapper.readValue(
+						make_string, new TypeReference<List<HashMap<String, Object>>>() {}
+				    );
+				
+				List<HashMap<String, Object>> model_list = objectMapper.readValue(
+						model_string, new TypeReference<List<HashMap<String, Object>>>() {}
+				    );
+				
 				
 				this.insurance_class=insurance_class.stream().distinct().collect(Collectors.toList());
 				this.deductibles=deductibles.stream().distinct().collect(Collectors.toList());
@@ -131,6 +163,9 @@ public class CustomStepExecutionListener implements StepExecutionListener {
 				this.municipal_traffic=municipal_traffic.stream().distinct().collect(Collectors.toList());
 				this.insurance_type=insurance_type.stream().distinct().collect(Collectors.toList());
 				this.vehicleValue=vehicleValue.stream().distinct().collect(Collectors.toList());
+				
+				this.make=make_list.stream().distinct().collect(Collectors.toList());
+				this.model=model_list.stream().distinct().collect(Collectors.toList());
 			
 			} catch (Exception e) {
 				e.printStackTrace();

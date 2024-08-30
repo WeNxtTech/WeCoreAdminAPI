@@ -1231,6 +1231,12 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 						errorList.add(new Error("05","Rate", "Please Enter Valid Rate in Row No : " + row ));
 					}
 					
+					if (StringUtils.isBlank(data.getMinimumRate())) {
+						errorList.add(new Error("05", "MinimumRate", "Please Enter MinimumRate In Row No : " + row ));
+					}else if(! data.getMinimumRate().matches("[0-9.]+")) {
+						errorList.add(new Error("05","MinimumRate", "Please Enter Valid MinimumRate in Row No : " + row ));
+					}
+					
 					if (StringUtils.isBlank(data.getMinimumPremium())) {
 						errorList.add(new Error("05", "MinimumPremium", "Please Enter MinimumPremium In Row No : " + row ));
 					}else if(! data.getMinimumPremium().matches("[0-9.]+")) {
@@ -1804,6 +1810,8 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				saveData.setParam20(data.getParam20());
 				
 				saveData.setRate(StringUtils.isBlank(data.getRate()) ? null :new BigDecimal(data.getRate()) );
+				saveData.setMinimumRate(StringUtils.isBlank(data.getMinimumRate()) ? null :new BigDecimal(data.getMinimumRate()) );
+
 				saveData.setMinPremium(StringUtils.isBlank(data.getMinimumPremium()) ? null :new BigDecimal(data.getMinimumPremium()) );
 				saveData.setCalcType(data.getCalType() );
 				saveData.setCalcTypeDesc(calcTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(data.getCalType()) ).collect(Collectors.toList()).get(0).getItemValue());

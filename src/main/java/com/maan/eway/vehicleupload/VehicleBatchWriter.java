@@ -168,10 +168,10 @@ protected int[][] batchInsert_1(List<Record> records, JdbcTemplate jdbcTemplate,
 						for (int i = 1; i <= length; i++) {
 							ps.setString(i + 44, argument.getColumnByIndex(i - 1) == null ? null
 									: argument.getColumnByIndex(i - 1).toString().trim());
-							//log.info("rowid: "+i+", rowvalue : "+argument.getColumnByIndex(i - 1) );
+							log.info("rowid: "+i+", rowvalue : "+argument.getColumnByIndex(i - 1) );
 						}
-						//log.info("entryDate:"+dateformat.format(new Date()) );
-						//log.info("finalquery:"+finalquery);
+						log.info("entryDate:"+dateformat.format(new Date()) );
+						log.info("finalquery:"+finalquery);
 					}
 				});
 		//log.info("batchSize:"+batchSize+", updateCounts : "+updateCounts +finalquery);
@@ -179,6 +179,7 @@ protected int[][] batchInsert_1(List<Record> records, JdbcTemplate jdbcTemplate,
 		return updateCounts;
 	} catch (Exception e) {
 		log.error(e);
+		e.printStackTrace();
 		
 	}finally {
 		try {

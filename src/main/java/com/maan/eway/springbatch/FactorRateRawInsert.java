@@ -166,7 +166,6 @@ public class FactorRateRawInsert implements Serializable{
 
 	    @Column(name="PARAM_12", length=100)
 	    private String     param12 ;
-
 	        
 	    @Column(name="UPDATED_BY", length=100)
 	    private String     updatedBy ;
@@ -174,10 +173,12 @@ public class FactorRateRawInsert implements Serializable{
 	    @Temporal(TemporalType.TIMESTAMP)
 	    @Column(name="UPDATED_DATE")
 	    private Date updatedDate ;
-	 
-	        
+	     
 	    @Column(name="RATE")
 	    private String     rate ;
+	    
+	    @Column(name="MINIMUM_RATE")
+	    private String     minimumRate ;
 
 	    @Column(name="CALC_TYPE", length=1)
 	    private String     calcType ;

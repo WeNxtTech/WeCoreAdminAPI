@@ -277,6 +277,7 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 			      }
 			        	// entity columns,// default entity columns
 			       entityColumns.add("rate");
+			       entityColumns.add("minimumRate");
 			       entityColumns.add("calcType");
 			       entityColumns.add("minPremium");
 			       entityColumns.add("regulatoryCode");
@@ -286,6 +287,7 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 			       entityColumns.add("status");
 			        	// default xl headercolumns
 			       xlheaderCol.add("Rate");
+			       xlheaderCol.add("MinimumRate");
 			       xlheaderCol.add("CalcType");
 			       xlheaderCol.add("MinimumPremium");
 			       xlheaderCol.add("RegulatoryCode");
@@ -712,14 +714,13 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 		   
 			}else if(StringUtils.isBlank(discreateColumns)) {
 				
-				String groupbyColumns =rangeColumns+"~rate~calcType~minPremium";
+				String groupbyColumns =rangeColumns+"~rate~minimumRate~calcType~minPremium";
 				List<String> groupbyColumnsList =Arrays.stream(groupbyColumns.split("~")).collect(Collectors.toList());
 				List<FactorRateRawInsert> duplicateRecordsList =new ArrayList<>();
 			    Map<List<Object>,List<FactorRateRawInsert>> groupByData=groupByRecords(list, groupbyColumnsList);
 			    groupByData.entrySet().parallelStream().forEach(gp ->{		    	
 			    	if(gp.getValue().size()>1) {
 			    		duplicateRecordsList.addAll(gp.getValue());
-			    		System.out.println(duplicateRecordsList.size());
 			    	}			    	
 			    });
 			    

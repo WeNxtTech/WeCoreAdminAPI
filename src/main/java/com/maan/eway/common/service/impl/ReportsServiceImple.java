@@ -1,9 +1,21 @@
 package com.maan.eway.common.service.impl;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.dozer.DozerBeanMapper;
@@ -503,17 +515,33 @@ public class ReportsServiceImple implements ReportsService {
 	//@Transactional(noRollbackFor = { SQLException.class , SQLGrammarException.class , UnexpectedRollbackException.class ,PersistenceException.class })
 	public List<Map<String, Object>> dataManipulation(DataManipulationReq req) {
 		List<Map<String,Object>> list = new ArrayList<>();
-		
+		String listquery[];
 		try {
-			Query query=null;
-			query = em.createNativeQuery(req.getQuery());
-			if( req.getQuery().toLowerCase().contains("select")) {
-				query.unwrap(NativeQuery.class)
-	            .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
-	            list = query.getResultList();
-			}else {
-				query.executeUpdate();
-			}
+			listquery=req.getQuery().split(";");
+			if(listquery == null || listquery.length <= 0)
+	        {
+				listquery = new String[1];
+				listquery[0] = req.getQuery();
+	        }
+			for(int q = 0; q < listquery.length; q++)
+            {
+                if(listquery[q] == null)
+                {
+                	listquery[q] = "";
+                } else
+                {
+                	listquery[q] = listquery[q].replaceAll(";", "");
+                }
+				Query query=null;
+				query = em.createNativeQuery(listquery[q]);
+				if( listquery[q].toLowerCase().contains("select")) {
+					query.unwrap(NativeQuery.class)
+		            .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+		            list = query.getResultList();
+				}else {
+					query.executeUpdate();
+				}
+            }
 		
 		} catch(Exception e ) {
 		   e.printStackTrace();
@@ -554,8 +582,8 @@ public class ReportsServiceImple implements ReportsService {
 		return errorList;
 	}
 
-	@Override
-	public List<LogDetailsRes> LogDetails(String filePath) {
+	//@Override
+	public List<LogDetailsRes> LogDetails1(String filePath) {
 		List<LogDetailsRes> resp=new ArrayList<>();
 		filePath = filePath.substring(0, filePath.lastIndexOf("\\"));
 		filePath = filePath.substring(0, filePath.lastIndexOf("\\"));
@@ -565,6 +593,25 @@ public class ReportsServiceImple implements ReportsService {
 		File file = new File(filePath);
 		if(file.exists() && file.isDirectory()){
 			File[] files = file.listFiles();
+			/*Arrays.sort(files, new Comparator<File>()
+            {
+                public int compare(File f1, File f2)
+                {
+                    return Long.valueOf(f2.lastModified()).compareTo
+                            (
+                            f1.lastModified());
+                }
+            });
+            //System.out.println(Arrays.asList(files));
+            for(int i=0, length=Math.min(files.length, 3); i<length; i++) {
+            	System.out.println(files[i]);
+        
+            }*/
+			
+			
+			
+			
+			
 			for(int i=0;i<files.length;i++){
 				LogDetailsRes res=new LogDetailsRes();
 				res.setFileName(files[i].getName());
@@ -575,4 +622,44 @@ public class ReportsServiceImple implements ReportsService {
 		}
 		return resp;
 	}
+	
+	public List<LogDetailsRes> LogDetails(String filePath) {
+		List<LogDetailsRes> resp=new ArrayList<>();
+		filePath = filePath.substring(0, filePath.lastIndexOf("\\"));
+		filePath = filePath.substring(0, filePath.lastIndexOf("\\"));
+		filePath = filePath.substring(0, filePath.lastIndexOf("\\"));
+		filePath = filePath +"\\logs";
+		System.out.println(filePath);
+		File file = new File(filePath);
+		if(file.exists() && file.isDirectory()){
+			Path dir = Paths.get(filePath);
+	        LocalDateTime tenDaysAgo = LocalDateTime.now().minus(10, ChronoUnit.DAYS);
+	        Instant tenDaysAgoInstant = tenDaysAgo.atZone(ZoneId.systemDefault()).toInstant();
+	        try (Stream<Path> files = Files.list(dir)) {
+	        	Stream<Path> files1=   files.filter(path -> { 
+	                try {
+	                    // Get file attributes
+	                    BasicFileAttributes attrs = Files.readAttributes(path, BasicFileAttributes.class);
+	                    Instant fileTime = attrs.lastModifiedTime().toInstant();
+	                    System.out.println(""+fileTime) ;                  // Check if the file was modified in the last 10 days
+	                    return fileTime.isAfter(tenDaysAgoInstant);
+	                } catch (Exception e) {
+	                    e.printStackTrace();
+	                    return false;
+	                }
+	            });
+	        	List<Path> pathList = files1.collect(Collectors.toList());
+	        	for (Path path : pathList) {
+	        		LogDetailsRes res=new LogDetailsRes();
+					res.setFileName(path.getFileName().toString());
+					res.setFilePath(path.toString());
+					resp.add(res);
+	        	   // System.out.println(path);
+	        	}
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+		}
+		return resp;
+    }
 }

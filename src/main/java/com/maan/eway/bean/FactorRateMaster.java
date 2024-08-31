@@ -183,7 +183,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="RATE")
     private BigDecimal     rate ;
     
-    @Column(name="MININUM_RATE")
+    @Column(name="MINIMUM_RATE")
     private BigDecimal     minimumRate ;
 
     @Column(name="CALC_TYPE", length=1)

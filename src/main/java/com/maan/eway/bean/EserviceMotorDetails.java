@@ -765,6 +765,9 @@ private static final long serialVersionUID = 1L;
 	
 	  @Column(name="LOCATION_ID")
 	  private Integer    locationId ;
+	  
+	  @Column(name = "NO_OF_CYLINDERS")
+	    private String noOfCylinders;
 	
 }
 

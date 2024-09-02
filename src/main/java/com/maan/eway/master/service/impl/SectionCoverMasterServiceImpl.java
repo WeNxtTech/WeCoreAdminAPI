@@ -942,7 +942,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				  if (StringUtils.isBlank(req.getMinimumRate())) {
 				//	errorList.add(new Error("09", "CoverId", "Please Enter CoverId  "));
 					errorList.add("5000");
-				  } else if (! req.getMinimumRate().matches("[0-9]+") ) {
+				  } else if (! req.getMinimumRate().matches("[0-9]+(\\.[0-9]+)?") ) {
 						//	errorList.add(new Error("09", "CoverId", "Please Enter Valid Number CoverId "));
 						errorList.add("5001");
 					} 

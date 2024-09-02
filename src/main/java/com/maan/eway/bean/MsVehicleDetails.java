@@ -356,6 +356,9 @@ private static final long serialVersionUID = 1L;
 
 	@Column(name = "CLAIM_TYPE_DESC", length = 100)
 	private String claimTypeDesc;
+	
+	@Column(name = "NO_OF_CYLINDERS")
+    private String noOfCylinders;
 }
 
 

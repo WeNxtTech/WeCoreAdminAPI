@@ -65,7 +65,7 @@ public class FactorValidationSpringBatchConfig {
         return new StepBuilder("groupingStep",jobRepository)
                 .<List<FactorRateRawInsert>, List<FactorRateRawInsert>>chunk(1000,new ResourcelessTransactionManager())
                 .reader(groupingItemReader(null,null,null,null))
-                .processor(itemProcessor(null,null,null,null))
+                .processor(itemProcessor(null,null,null,null,null))
                 .writer(itemWriter())
                 .build();
     }
@@ -103,8 +103,9 @@ public class FactorValidationSpringBatchConfig {
     @Bean("groupingItemProcessor")
     @StepScope
     public ItemProcessor<List<FactorRateRawInsert>, List<FactorRateRawInsert>> itemProcessor(@Value("#{jobParameters[dropdown_data]}") String dropdown_data,
-    		@Value("#{jobParameters[rage_columns]}") String rage_columns,@Value("#{jobParameters[discreate_columns]}") String isDiscreate,@Value("#{jobParameters[factor_id]}") String factor_id) {    	
-    	return new GroupByItemProcessor(dropdown_data,rage_columns,isDiscreate,factor_id);         	
+    		@Value("#{jobParameters[rage_columns]}") String rage_columns,@Value("#{jobParameters[discreate_columns]}") String isDiscreate,
+    		@Value("#{jobParameters[factor_id]}") String factor_id,@Value("#{jobParameters[minimum_rate_yn]}") String minimum_rate_yn) {    	
+    	return new GroupByItemProcessor(dropdown_data,rage_columns,isDiscreate,factor_id,minimum_rate_yn);         	
     }
 
     @Bean("groupingItemWriter")

@@ -38,18 +38,18 @@ public class GroupByItemProcessor implements ItemProcessor<List<FactorRateRawIns
 	private String factor_id;
 	private Map<String, List<Map<String,Object>>> dropDownMap; 
 	private Map<String, List<DropDownRes>> drop = new HashMap<>(); 
-
+	private String minimum_rate_yn ;
 	
 	@Autowired
     private FactorRatingBatchServiceImpl validation;
 
 	
-	public GroupByItemProcessor(String dropdown_data, String rage_columns, String isDiscreate,String factor_id) {
+	public GroupByItemProcessor(String dropdown_data, String rage_columns, String isDiscreate,String factor_id,String minimum_rate_yn) {
 		this.range_columns=rage_columns;
 		this.isDiscreate=isDiscreate;
 		this.dropdown_data=dropdown_data;
 		this.factor_id =factor_id;
-		
+		this.minimum_rate_yn = minimum_rate_yn;
 		try {
 				dropDownMap =map.readValue(dropdown_data, Map.class);
 				for (Map.Entry<String, List<Map<String, Object>>> entry : dropDownMap.entrySet()) {
@@ -159,7 +159,7 @@ public class GroupByItemProcessor implements ItemProcessor<List<FactorRateRawIns
 
 	@Override
 	public List<FactorRateRawInsert> process(List<FactorRateRawInsert> item) throws Exception {
-		return validation.factorRangeValidation(item, this.range_columns, this.isDiscreate,factor_id,drop);
+		return validation.factorRangeValidation(item, this.range_columns, this.isDiscreate,factor_id,drop,minimum_rate_yn);
 	}
 
 }

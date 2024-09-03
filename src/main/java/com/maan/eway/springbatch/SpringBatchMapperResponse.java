@@ -32,6 +32,7 @@ public class SpringBatchMapperResponse {
 	private String totalRecordsCount;
 	private String authorization;
 	private String rangeColumns;
+	private String minimumRateYn;
 
 	
 }

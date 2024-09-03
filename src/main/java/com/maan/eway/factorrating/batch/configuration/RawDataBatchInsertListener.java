@@ -24,11 +24,11 @@ public class RawDataBatchInsertListener implements JobExecutionListener  {
 		try {
 			if (jobExecution.getStatus() == BatchStatus.COMPLETED) {
 				
-			    service.updateRawDataRecords(tranId, "Raw Data Inserted " ,"","completed","S");
+				service.updateBatchTransaction (tranId, "RawData Validation Updated" ,"","Completed","S");
 			   
 			}else {
 				
-			    service.updateRawDataRecords(tranId, "Raw Data Inserted Failed " ,"","completed","F");
+				service.updateBatchTransaction (tranId, "RawData Validation Failed" ,"","Completed","E");
 
 				//service.updateBatchTransaction (tranId, "Raw Data insert failed" ,"","Failed","E");
 

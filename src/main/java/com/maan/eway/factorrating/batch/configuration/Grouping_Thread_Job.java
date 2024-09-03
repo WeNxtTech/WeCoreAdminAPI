@@ -25,9 +25,10 @@ public class Grouping_Thread_Job implements Runnable {
 	private Long total_records;
 	private String dropwon_data;
 	private String rageColumns;
+	private String minimumRateYn;
 	
 	public Grouping_Thread_Job(String tran_id, String discreate_columns, String isDiscreate, Job groupingJob, JobLauncher jobLauncher,
-			Long total_records,String dropwon_data,String rageColumns) {
+			Long total_records,String dropwon_data,String rageColumns,String minimumRateYn) {
 		this.tran_id=tran_id;
 		this.discreate_columns=discreate_columns;
 		this.groupingJob=groupingJob;
@@ -36,6 +37,7 @@ public class Grouping_Thread_Job implements Runnable {
 		this.total_records=total_records;
 		this.dropwon_data=dropwon_data;
 		this.rageColumns=rageColumns;
+		this.minimumRateYn = minimumRateYn;
 	}
 
 	@Override
@@ -51,6 +53,7 @@ public class Grouping_Thread_Job implements Runnable {
 					.addString("rage_columns", rageColumns)
 					.addString("dropdown_data", dropwon_data)
 					.addLong("total_records", total_records)
+					.addString("", minimumRateYn)
 					.toJobParameters();
 			jobLauncher.run(groupingJob, jobParameters);
 			

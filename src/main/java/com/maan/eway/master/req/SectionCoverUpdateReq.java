@@ -152,4 +152,9 @@ public class SectionCoverUpdateReq {
 	@JsonProperty("CodeDescLocal")
 	private String codeDescLocal;
 	
+	@JsonProperty("MinimumRateYN")
+	private String minimumRateYN;
+	
+	
+	
 }

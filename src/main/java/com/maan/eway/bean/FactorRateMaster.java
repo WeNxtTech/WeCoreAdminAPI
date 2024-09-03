@@ -13,19 +13,26 @@
 package com.maan.eway.bean;
 
 
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
+
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import lombok.*;
-import jakarta.persistence.*;
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.List;
-
-import java.util.Date;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 
 

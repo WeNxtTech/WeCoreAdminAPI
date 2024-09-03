@@ -85,9 +85,11 @@ public class JpqlQueryServiceImpl {
 			query.setParameter("sectionId", Integer.valueOf(req.getSectionId()));
 			query.setParameter("subCoverId", StringUtils.isBlank(req.getSubCoverId())?0:Integer.valueOf(req.getSubCoverId()));
 			List<SectionCoverMaster> sectionMaster=query.getResultList(); 
+			String minimum_rateyn ="N";
 			if(!CollectionUtils.isEmpty(sectionMaster)) {
 				factorId =StringUtils.isBlank(sectionMaster.get(0).getFactorTypeId().toString())?"":sectionMaster.get(0).getFactorTypeId().toString();
-				log.info("FactorTypeId : "+factorId);
+				minimum_rateyn = StringUtils.isBlank(sectionMaster.get(0).getMinimumRateYn())?"N":sectionMaster.get(0).getMinimumRateYn();
+				log.info("getFactorXlColumns :: FactorTypeId : "+factorId+" && minimum_rateyn is "+minimum_rateyn+" ");
 				query = em.createQuery("select f from FactorTypeDetails f where f.companyId = :companyId and f.productId = :productId and f.factorTypeId = :factorTypeId and sysdate() between f.effectiveDateStart and f.effectiveDateEnd"
 				        + " and f.amendId = (select max(f2.amendId) from FactorTypeDetails f2 where f2.companyId = f.companyId and f2.productId = f.productId and f2.factorTypeId = f.factorTypeId and sysdate() between f2.effectiveDateStart and f2.effectiveDateEnd) order by f.columnsId asc");
 //				query=em.createQuery("select f from FactorTypeDetails f where f.companyId=:companyId and f.productId=:productId and f.factorTypeId=:factorTypeId and sysdate() between effectiveDateStart and effectiveDateEnd"
@@ -115,6 +117,7 @@ public class JpqlQueryServiceImpl {
 			res.put("XL_COLUMNS", display_columns.toString());
 			res.put("QUERY_COLUMNS", select_columns.toString());
 			res.put("FACTOR_ID", factorId);
+			res.put("MINIMUM_RATEYN", minimum_rateyn);
 			log.info("getFactorXlColumns Response || "+json.toJson(res));
 		}catch (Exception e) {
 			log.error(e);
@@ -127,7 +130,7 @@ public class JpqlQueryServiceImpl {
 	public List<Object[][]> getFactorRateDetails(FileDownloadRequest req,String columns,String factorId){
 		List<Object[][]> object =null;
 		try {
-			query=em.createQuery("select agencyCode," +columns+ ",rate,minimumRate,calcType,minPremium,regulatoryCode,excessPercent,excessAmount,excessDesc,status from FactorRateMaster where  companyId=:companyId "
+			query=em.createQuery("select "+columns+" from FactorRateMaster where  companyId=:companyId "
 					+ "and productId=:productId and factorTypeId=:factorTypeId and coverId=:coverId and sectionId=:sectionId and agencyCode=:agencyCode and branchCode=:branchCode and "
 					+ "sysdate() between effectiveDateStart and effectiveDateEnd and subCoverId=:subCoverId and amendId =(select max(amendId) from FactorRateMaster "
 					+ "where companyId=:companyId and productId=:productId and factorTypeId=:factorTypeId and coverId=:coverId and sectionId=:sectionId and agencyCode=:agencyCode and branchCode=:branchCode and "

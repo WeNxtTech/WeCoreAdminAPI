@@ -92,12 +92,23 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 			req.setSubCoverId(subCoverId);
 			Map<String,Object> object=queryService.getFactorXlColumns(req);
 			if(object!=null) {
-				
+				String excel_columns ="";
+				String minimum_rateyn =object.get("MINIMUM_RATEYN").toString();
 				String columns =object.get("QUERY_COLUMNS").toString();
+				String query_columns ="";
+							
+				if("Y".equalsIgnoreCase(minimum_rateyn)) {			
+					excel_columns =",Rate,MinimumRate,CalcType,MinimumPremium,RegulatoryCode,ExcessPercent,ExcessAmount,ExcessDesc,Status";
+					query_columns="agencyCode," +columns+ ",rate,minimumRate,calcType,minPremium,regulatoryCode,excessPercent,excessAmount,excessDesc,status";
+				}else {
+					excel_columns =",Rate,CalcType,MinimumPremium,RegulatoryCode,ExcessPercent,ExcessAmount,ExcessDesc,Status";
+					query_columns="agencyCode," +columns+ ",rate,calcType,minPremium,regulatoryCode,excessPercent,excessAmount,excessDesc,status";
+				}	
+							
 				String factorId =object.get("FACTOR_ID").toString();
-				String defaultColumns =",Rate,MinimumRate,CalcType,MinimumPremium,RegulatoryCode,ExcessPercent,ExcessAmount,ExcessDesc,Status";
-				String xlColumns ="AgencyCode,"+object.get("XL_COLUMNS").toString()+defaultColumns;
-				List<Object[][]> obj =queryService.getFactorRateDetails(req, columns, factorId);
+				//String defaultColumns =",Rate,MinimumRate,CalcType,MinimumPremium,RegulatoryCode,ExcessPercent,ExcessAmount,ExcessDesc,Status";
+				String xlColumns ="AgencyCode,"+object.get("XL_COLUMNS").toString()+excel_columns;
+				List<Object[][]> obj =queryService.getFactorRateDetails(req, query_columns, factorId);
 				
 					
 				XSSFWorkbook workbook = new XSSFWorkbook();

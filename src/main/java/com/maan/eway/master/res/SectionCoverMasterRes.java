@@ -146,4 +146,7 @@ public class SectionCoverMasterRes {
 	
 	@JsonProperty("CodeDescLocal")
 	private String codeDescLocal;
+	
+	@JsonProperty("MinimumRateYN")
+	private String minimumRateYN;
 }

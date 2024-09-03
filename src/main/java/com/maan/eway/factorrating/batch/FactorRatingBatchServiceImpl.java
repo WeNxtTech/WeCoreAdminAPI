@@ -49,6 +49,7 @@ import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.factorrating.batch.configuration.Grouping_Thread_Job;
 import com.maan.eway.factorrating.batch.configuration.MainInsert_Thread_Job;
 import com.maan.eway.factorrating.batch.configuration.RawInsert_Thread_Job;
+import com.maan.eway.fileupload.FileDownloadRequest;
 import com.maan.eway.fileupload.FileUploadInputRequest;
 import com.maan.eway.fileupload.JpqlQueryServiceImpl;
 import com.maan.eway.master.req.FactorRateSaveReq;
@@ -247,7 +248,7 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 			String effDate =new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(effectiveDate);
 			String remarks = StringUtils.isBlank(sectionCov.get(0).getRemarks())?"":sectionCov.get(0).getRemarks();  
 			String createdBy = StringUtils.isBlank(sectionCov.get(0).getCreatedBy())?"":sectionCov.get(0).getCreatedBy();  
-
+			String minimum_rateyn =StringUtils.isBlank(sectionCov.get(0).getMinimumRateYn())?"N":sectionCov.get(0).getMinimumRateYn();  
 			List<FactorTypeDetails> flist=queryService.getFactorRateColumns(res,factorTypeId);
 			        	
 			StringJoiner entityColumns =new StringJoiner("~");
@@ -275,27 +276,52 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 			        		discreateColumns.add(fac.getDiscreteColumn());
 			        }	
 			      }
-			        	// entity columns,// default entity columns
-			       entityColumns.add("rate");
-			       entityColumns.add("minimumRate");
-			       entityColumns.add("calcType");
-			       entityColumns.add("minPremium");
-			       entityColumns.add("regulatoryCode");
-			       entityColumns.add("excessPercent");
-			       entityColumns.add("excessAmount");
-			       entityColumns.add("excessDesc");
-			       entityColumns.add("status");
-			        	// default xl headercolumns
-			       xlheaderCol.add("Rate");
-			       xlheaderCol.add("MinimumRate");
-			       xlheaderCol.add("CalcType");
-			       xlheaderCol.add("MinimumPremium");
-			       xlheaderCol.add("RegulatoryCode");
-			       xlheaderCol.add("ExcessPercent");
-			       xlheaderCol.add("ExcessAmount");
-			       xlheaderCol.add("ExcessDesc");
-			       xlheaderCol.add("Status");
+			        
+					if("Y".equalsIgnoreCase(minimum_rateyn)) {
+
+						// entity columns,// default entity columns
+					       entityColumns.add("rate");
+					       entityColumns.add("minimumRate");
+					       entityColumns.add("calcType");
+					       entityColumns.add("minPremium");
+					       entityColumns.add("regulatoryCode");
+					       entityColumns.add("excessPercent");
+					       entityColumns.add("excessAmount");
+					       entityColumns.add("excessDesc");
+					       entityColumns.add("status");
+					        	// default xl headercolumns
+					       xlheaderCol.add("Rate");
+					       xlheaderCol.add("MinimumRate");
+					       xlheaderCol.add("CalcType");
+					       xlheaderCol.add("MinimumPremium");
+					       xlheaderCol.add("RegulatoryCode");
+					       xlheaderCol.add("ExcessPercent");
+					       xlheaderCol.add("ExcessAmount");
+					       xlheaderCol.add("ExcessDesc");
+					       xlheaderCol.add("Status");
+					}else {
+						
+						// entity columns,// default entity columns
+					       entityColumns.add("rate");
+					       entityColumns.add("calcType");
+					       entityColumns.add("minPremium");
+					       entityColumns.add("regulatoryCode");
+					       entityColumns.add("excessPercent");
+					       entityColumns.add("excessAmount");
+					       entityColumns.add("excessDesc");
+					       entityColumns.add("status");
+					        	// default xl headercolumns
+					       xlheaderCol.add("Rate");
+					       xlheaderCol.add("CalcType");
+					       xlheaderCol.add("MinimumPremium");
+					       xlheaderCol.add("RegulatoryCode");
+					       xlheaderCol.add("ExcessPercent");
+					       xlheaderCol.add("ExcessAmount");
+					       xlheaderCol.add("ExcessDesc");
+					       xlheaderCol.add("Status");
+					}
 			        	
+				   res.setMinimumRateYn(minimum_rateyn);
 			       res.setExcelHeaderColumns(xlheaderCol.toString());
 			       res.setColumns(entityColumns.toString());
 			       res.setRemarks(remarks);
@@ -471,8 +497,7 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 
 	  public void updateRawDataRecords(String tranId,String progressStatus,String errordesc,String progrssDesc,String loading){
 	    	TransactionControlDetails t =null;
-	    	try {
-				
+	    	try {			
 					t =controlDetailsRepository.findByRequestReferenceNo(tranId);
 					t.setProgressDescription(progrssDesc); 
 					t.setErrorDescription(errordesc); 
@@ -578,6 +603,18 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 			req.setFactorTypeId(frri.getFactorTypeId().toString());
 			req.setCreatedBy(frri.getCreatedBy());
 
+			FileDownloadRequest getMinimumRateYnReq = new FileDownloadRequest();
+			getMinimumRateYnReq.setAgencyCode(frri.getAgencyCode());
+			getMinimumRateYnReq.setBranchCode(frri.getBranchCode());
+			getMinimumRateYnReq.setCompanyId(frri.getCompanyId());
+			getMinimumRateYnReq.setProductId(frri.getProductId().toString());
+			getMinimumRateYnReq.setSectionId(frri.getSectionId().toString());
+			getMinimumRateYnReq.setSubCoverId(frri.getSubCoverId().toString());
+			getMinimumRateYnReq.setCoverId(frri.getCoverId().toString());
+			
+			Map<String,Object> factorMap =queryService.getFactorXlColumns(getMinimumRateYnReq);
+			String minimumRateYn = factorMap.get("MINIMUM_RATEYN").toString();
+			
 			List<FactorTypeDetails> flist=queryService.getFactorRateColumns(req,frri.getFactorTypeId().toString());
         	
         	String discreate_columns =flist.stream().filter(p -> "N".equals(p.getRangeYn())).map(p -> p.getDiscreteColumn())
@@ -602,7 +639,7 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
         	  
 			String dropwon_data =print.toJson(dropDownList);
 			Grouping_Thread_Job thread_Job = new Grouping_Thread_Job(tran_id,discreate_columns,isDiscreate
-					,groupingJob,jobLauncher,total_records,dropwon_data,rageColumns);
+					,groupingJob,jobLauncher,total_records,dropwon_data,rageColumns,minimumRateYn);
 			Thread thread = new Thread(thread_Job);
 			thread.setName("GROUP_RECORDS");
 			thread.setPriority(Thread.MAX_PRIORITY);
@@ -633,7 +670,7 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 	}
 	
 	@Transactional
-	public List<FactorRateRawInsert> factorRangeValidation(List<FactorRateRawInsert> list,String rangeColumns,String discreateColumns,String factor_id, Map<String, List<DropDownRes>> drop) {
+	public List<FactorRateRawInsert> factorRangeValidation(List<FactorRateRawInsert> list,String rangeColumns,String discreateColumns,String factor_id, Map<String, List<DropDownRes>> drop,String minimum_rate_yn) {
 		try {
 			
 			
@@ -713,8 +750,12 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 			    	      
 		   
 			}else if(StringUtils.isBlank(discreateColumns)) {
-				
-				String groupbyColumns =rangeColumns+"~rate~minimumRate~calcType~minPremium";
+				String groupbyColumns ="";
+				if("Y".equalsIgnoreCase(minimum_rate_yn))
+					groupbyColumns =rangeColumns+"~rate~minimumRate~calcType~minPremium";
+				else
+					groupbyColumns =rangeColumns+"~rate~calcType~minPremium";
+
 				List<String> groupbyColumnsList =Arrays.stream(groupbyColumns.split("~")).collect(Collectors.toList());
 				List<FactorRateRawInsert> duplicateRecordsList =new ArrayList<>();
 			    Map<List<Object>,List<FactorRateRawInsert>> groupByData=groupByRecords(list, groupbyColumnsList);
@@ -914,8 +955,8 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 	        }
 	    }
 	    
-	    
-	    
+	  
+	  
 	
 }
 		

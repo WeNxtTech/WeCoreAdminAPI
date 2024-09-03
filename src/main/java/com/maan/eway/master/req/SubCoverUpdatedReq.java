@@ -126,4 +126,10 @@ public class SubCoverUpdatedReq {
 		
 		@JsonProperty("CodeDescLocal")
 		private String codeDescLocal;
+		
+		@JsonProperty("MinimumRateYN")
+		private String minimumRateYN;
+		
+		@JsonProperty("MinimumRate")
+		private String minimumRate;
 }

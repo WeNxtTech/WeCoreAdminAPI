@@ -1,5 +1,6 @@
 package com.maan.eway.factorrating.batch.configuration;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -35,15 +36,24 @@ public class RawDataItemProcessor  implements ItemProcessor<FactorRateRawInsert,
 					e.printStackTrace();
 				}
 			    
-			    String min_premium =item.getMinPremium().replace(",", "");
-			    if(!min_premium.matches("[0-9.]+")) {
-			    	error_desc+="MinPremium field only allows number or decimal digits~";			    	
+			    String min_premium = StringUtils.isBlank(item.getMinPremium())?"":item.getMinPremium().replace(",", "");			   
+			    boolean rate_check = true;
+			    if(StringUtils.isBlank(min_premium)) {
+			    	error_desc+="MinPremium field cannot be empty or blank~";	
+			    	rate_check = false;
+			    }else if(!min_premium.matches("[0-9.]+")) {
+			    	error_desc+="MinPremium field only allows number or decimal digits~";	
+			    	rate_check = false;
 			    }
 			    
-			    String rate =item.getRate().replace(",", "");
-			    if(!rate.matches("[0-9.]+")) {
+			    
+			    String rate = StringUtils.isBlank(item.getRate())?"":item.getRate().replace(",", "");
+			    if(StringUtils.isBlank(rate)) {
+			    	error_desc+="Rate field cannot be empty or blank~";			    	
+			    }else if(!rate.matches("[0-9.]+")) {
 			    	error_desc+="Rate field only allows number or decimal digits~";
 			    }
+			    
 			    
 			    if(StringUtils.isBlank(item.getCalcType())) {
 			    	error_desc+="CalcType should not be empty~";
@@ -64,11 +74,10 @@ public class RawDataItemProcessor  implements ItemProcessor<FactorRateRawInsert,
 			    }else if(item.getRegulatoryCode().length()>20) {
 					error_desc+="RegulatoryCode within 20 Characters~";
 				}
-			    
+			    			    
 			    if (StringUtils.isNotBlank(item.getExcessPercent())) {
 					  if (!item.getExcessPercent().matches("[0-9.]+") ) {
-						  error_desc+="ExcessPercent field only allows number or decimal digits~";			    	
-					  }
+						  error_desc+="ExcessPercent field only allows number or decimal digits~";			    						  }
 				}
 			    
 				if (StringUtils.isNotBlank(item.getExcessAmount())) {
@@ -95,6 +104,26 @@ public class RawDataItemProcessor  implements ItemProcessor<FactorRateRawInsert,
 	            if(StringUtils.isBlank(factorData.getFactorTypeId()))
 	            	 error_desc+="FactorTypeId is empty in section_cover_master~";
 	            
+	         
+	            // minimium_rate validation            
+	            if("Y".equalsIgnoreCase(factorData.getMinimumRateYn())) {
+	            	String minimum_rate =StringUtils.isBlank(item.getMinimumRate())?"":item.getMinimumRate();
+	            	if(StringUtils.isBlank(minimum_rate)) {
+	            		error_desc +="MinimumRate cannot be blank~";
+	            	}else if(!minimum_rate.matches("[0-9.]+")) {
+				    	error_desc+="MinimumRate field only allows number or decimal digits~";
+	            	}else {	            		
+	            		if(rate_check) { // checking whether rate is valid or not
+	            			if(new BigDecimal(minimum_rate).compareTo(new BigDecimal(rate)) == 1) {
+	            				error_desc += "MinimumRate should not be greaterthan Rate..!~";
+	            			}
+	            			
+	            		}           			            		
+	            	}
+	            	
+	            }
+	            
+	            
 			    item.setCompanyId(factorData.getInsuranceId());
 			    item.setCoverId(Integer.valueOf(factorData.getCoverId()));
 			    item.setSubCoverId(StringUtils.isBlank(factorData.getSubCoverId())?0:Integer.valueOf(factorData.getSubCoverId()));
@@ -110,7 +139,11 @@ public class RawDataItemProcessor  implements ItemProcessor<FactorRateRawInsert,
 			    item.setTranId(factorData.getTranId());
 			    item.setEntryDate(new Date());
 			    item.setAmendId(0);	
-			    			    			    			    
+			    
+			    if(StringUtils.isBlank(error_desc)) {
+			    	item.setErrorDesc(error_desc);
+			    	item.setErrorStatus("E");
+			    }
 			}catch (Exception e) {
 				e.printStackTrace();
 			}

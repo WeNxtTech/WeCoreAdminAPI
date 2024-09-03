@@ -60,6 +60,9 @@ public class FileUploadInputRequest {
 	private String progressErrorDesc ;
 	@JsonProperty("ProgressStatus")
 	private String progressStatus ;
+	@JsonProperty("MinimumRateYn")
+	private String minimumRateYn ;
+
 
 
 }

@@ -416,6 +416,8 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			
 			list.sort(Comparator.comparing(SectionCoverMaster :: getSubCoverName ));
 			res = mapper.map(list.get(0), CoverSubCoverGetRes.class);
+			res.setMinimumRateYN(list.get(0).getMinimumRateYn());
+			res.setMinimumRate(df.format(list.get(0).getMinimumRate()));
 			res.setCoverId(list.get(0).getCoverId().toString());
 			res.setEntryDate(list.get(0).getEntryDate());
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
@@ -905,6 +907,26 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 				} else if (!req.getMinimumPremium().matches("[0-9.]+")) {
 					errorList.add(new Error("09", "MinimumPremium", "Please Enter Valid Number In MinimumPremium"));
 				}
+				
+				String mininmum_rateYn = StringUtils.isBlank(req.getMinimumRateYN())?"N":req.getMinimumRateYN();
+				if("Y".equalsIgnoreCase(mininmum_rateYn)) {					
+				if (StringUtils.isBlank(req.getMinimumRate())) {
+				//	errorList.add(new Error("09", "CoverId", "Please Enter CoverId  "));
+					errorList.add(new Error("09", "MinimumRateYn", "MinimumRateYn cannot be blank"));
+				} else if (! req.getMinimumRate().matches("[0-9]+(\\.[0-9]+)?") ) {
+					//	errorList.add(new Error("09", "CoverId", "Please Enter Valid Number CoverId "));
+					errorList.add(new Error("09", "MinimumRateYn", "MinimumRateYn should  be digits"));
+				}else { 
+					
+					String rate = req.getBaseRate();
+					String min_rate = req.getMinimumRate();
+					if(new BigDecimal(min_rate).compareTo(new BigDecimal(rate)) == 1) {
+						errorList.add(new Error("09", "MinimumPremium", "MinimumPremium should not be greaterthan Rate"));
+					}
+				}
+			}
+
+				
 			}
 
 		} catch (Exception e) {
@@ -1073,7 +1095,9 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			saveData.setBranchCode(StringUtils.isNotBlank(req.getBranchCode()) ? req.getBranchCode() : "99999");
 			saveData.setMinSuminsured(StringUtils.isBlank(req.getSumInsuredStart())? BigDecimal.ZERO : new BigDecimal(req.getSumInsuredStart()));
 			saveData.setCoverageLimit(StringUtils.isBlank(req.getCoverageLimit())? BigDecimal.ZERO : new BigDecimal(req.getCoverageLimit()));
-			
+			saveData.setMinimumRateYn(StringUtils.isBlank(req.getMinimumRateYN())? "N": req.getMinimumRateYN());
+			saveData.setMinimumRate(StringUtils.isBlank(req.getMinimumRate())? BigDecimal.ZERO : new BigDecimal(req.getMinimumRate()));
+
 			// Amount Details
 			if ( req.getCalcType().equalsIgnoreCase("F") || req.getCalcType().equalsIgnoreCase("FD")) {
 

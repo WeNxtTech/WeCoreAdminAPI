@@ -417,7 +417,8 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			list.sort(Comparator.comparing(SectionCoverMaster :: getSubCoverName ));
 			res = mapper.map(list.get(0), CoverSubCoverGetRes.class);
 			res.setMinimumRateYN(list.get(0).getMinimumRateYn());
-			res.setMinimumRate(df.format(list.get(0).getMinimumRate()));
+			
+			res.setMinimumRate(list.get(0).getMinimumRate()==null?"0":df.format(list.get(0).getMinimumRate()));
 			res.setCoverId(list.get(0).getCoverId().toString());
 			res.setEntryDate(list.get(0).getEntryDate());
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());

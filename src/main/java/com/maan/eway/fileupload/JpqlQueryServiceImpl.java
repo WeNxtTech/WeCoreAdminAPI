@@ -145,7 +145,7 @@ public class JpqlQueryServiceImpl {
 			query.setParameter("branchCode", req.getBranchCode());
 			query.setParameter("subCoverId", Integer.valueOf(req.getSubCoverId()));
 			object =query.getResultList();
-			log.info("getFactorRateDetails Response || "+json.toJson(object));
+			//log.info("getFactorRateDetails Response || "+json.toJson(object));
 		}catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
@@ -467,6 +467,8 @@ public class JpqlQueryServiceImpl {
 		   
 		}catch (Exception e) {
 			e.printStackTrace();
+			log.error(e);
+
 		}
 		
 		return amendId;
@@ -491,6 +493,8 @@ public class JpqlQueryServiceImpl {
 			
 		}catch (Exception e) {
 			e.printStackTrace();
+			log.error(e);
+
 		}
 		return null;
 		
@@ -507,6 +511,8 @@ public class JpqlQueryServiceImpl {
 			return coverDatas;
 		}catch (Exception e) {
 			e.printStackTrace();
+			log.error(e);
+
 		}
 		return null;
 	}
@@ -522,6 +528,8 @@ public class JpqlQueryServiceImpl {
 			return coverDatas;
 		}catch (Exception e) {
 			e.printStackTrace();
+			log.error(e);
+
 		}
 		return null;
 	}
@@ -546,6 +554,8 @@ public class JpqlQueryServiceImpl {
 			return filterList;
 		}catch (Exception e) {
 			e.printStackTrace();
+			log.error(e);
+
 		}
 		return list;
 	}
@@ -595,6 +605,8 @@ public class JpqlQueryServiceImpl {
 		   
 		}catch (Exception e) {
 			e.printStackTrace();
+			log.error(e);
+
 		}
 		
 		return amendId;
@@ -616,6 +628,7 @@ public class JpqlQueryServiceImpl {
 			log.info("updateErrorRecords update rows is "+updateCount+"");
 		}catch (Exception e) {
 			e.printStackTrace();
+			log.error(e);
 		}
 	}
 
@@ -635,9 +648,27 @@ public class JpqlQueryServiceImpl {
 			log.info("updateErrorRecords update rows is "+updateCount+"");
 		}catch (Exception e) {
 			e.printStackTrace();
+			log.error(e);
+
 		}
 	}
 		
+	public List<Object[]> getRawErrorRecords(String tranId,String queryColumns){
+		try {
+			
+			String queryText ="select "+queryColumns+",errorStatus,errorDesc from FactorRateRawInsert f where f.tranId = :tranId and f.errorStatus = :errorStatus";
+			query = em.createQuery(queryText);
+			query.setParameter("tranId", tranId);
+			query.setParameter("errorStatus", "E");
+			@SuppressWarnings("unchecked")
+			List<Object[]> data = query.getResultList();
+			return data;
+		}catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
 
 

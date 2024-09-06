@@ -15,4 +15,6 @@ public interface FactorRatingBatchService {
 
 	CommonRes validateReocrds(String tran_id,String token);
 
+	CommonRes getErrorRecords(String tranId);
+
 }

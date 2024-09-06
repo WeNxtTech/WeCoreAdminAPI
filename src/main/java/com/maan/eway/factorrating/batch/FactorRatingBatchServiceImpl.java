@@ -245,7 +245,11 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 			List<SectionCoverMaster> sectionCov=queryService.getSectionCoverMaster(res); 
 			String factorTypeId = StringUtils.isBlank(sectionCov.get(0).getFactorTypeId().toString())?"":sectionCov.get(0).getFactorTypeId().toString();
 			Date effectiveDate =sectionCov.get(0).getEffectiveDateStart().toString()==null?null:sectionCov.get(0).getEffectiveDateStart(); 
-			String effDate =new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(effectiveDate);
+			
+			//String effDate =new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(effectiveDate);
+			
+			String effDate =new SimpleDateFormat("dd/MM/yyyy").format(effectiveDate);
+			
 			String remarks = StringUtils.isBlank(sectionCov.get(0).getRemarks())?"":sectionCov.get(0).getRemarks();  
 			String createdBy = StringUtils.isBlank(sectionCov.get(0).getCreatedBy())?"":sectionCov.get(0).getCreatedBy();  
 			String minimum_rateyn =StringUtils.isBlank(sectionCov.get(0).getMinimumRateYn())?"N":sectionCov.get(0).getMinimumRateYn();  
@@ -685,13 +689,20 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 				queryService.updateErrorRecords(factor_id, checkForDuplicates, "Duplicate range or between range has found with this row in your uploaded excel");											
 			}
 							
-			// DUPLOCATE ROWS FIND BLOCK			
+			// DUPLICATE ROWS FIND BLOCK			
 			if (StringUtils.isNotBlank(discreateColumns)) {
 				
 				List<String> groupByColumns =new ArrayList<>();
-				List<String> discreate =Arrays.stream(discreateColumns.split("~")).collect(Collectors.toList());
-				List<String> range =Arrays.stream(rangeColumns.split("~")).collect(Collectors.toList());
-				groupByColumns.addAll(range);
+				List<String> range = new ArrayList<>(5);
+				List<String> discreate = new ArrayList<>(5);
+				
+				if(StringUtils.isNotBlank(discreateColumns))
+					discreate =Arrays.stream(discreateColumns.split("~")).collect(Collectors.toList());
+				
+				if(StringUtils.isNotBlank(rangeColumns))
+					range =Arrays.stream(rangeColumns.split("~")).collect(Collectors.toList());
+	
+				groupByColumns.addAll(range);				
 				groupByColumns.addAll(discreate);
 				
 				List<FactorRateRawInsert> duplicateRecordsList =new ArrayList<>();
@@ -725,20 +736,12 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 		            Set<String> masterValues = entry.getValue().stream()
 		                                               .map(DropDownRes::getCode)
 		                                               .collect(Collectors.toSet());
-		            
-		            masterValues.add("99999");
-		            
-		            // Filter invalid entries
-		            //List<Integer> invalidMaster = list.stream()
-		                                           //   .filter(item -> isInvalid(item, keyName, masterValues))
-		                                            //  .map(FactorRateRawInsert::getSno)
-		                                             // .collect(Collectors.toList());
-		            
-		           // invalidSnoIds.addAll(invalidMaster);
-		            
+		            		            
 		            List<String> rawMasterIds = list.stream().map(p -> getMapValues(p,keyName)).distinct().collect(Collectors.toList());
 		            		
-		            List<String> inValidMasterId =rawMasterIds.stream().filter(p ->!masterValues.contains(p)).distinct().collect(Collectors.toList());
+		            List<String> inValidMasterId =rawMasterIds.stream()
+		            		.filter(p ->!masterValues.contains(p) && !"99999".equals(p)).distinct()
+		            		.collect(Collectors.toList());
 		            
 		            if(!inValidMasterId.isEmpty()) {
 						List<String> filterDuplicateSno =inValidMasterId.parallelStream().distinct().collect(Collectors.toList());
@@ -954,6 +957,118 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 	            this.sno = sno;
 	        }
 	    }
+
+		@Override
+		public CommonRes getErrorRecords(String tranId) {
+			CommonRes response = new CommonRes();
+			try {
+				
+				FactorRateRawInsert frri = rawMasterRepository.findByTranIdAndSno(tranId, 1);
+				
+				FileUploadInputRequest req = new FileUploadInputRequest();
+				req.setInsuranceId(frri.getCompanyId());
+				req.setProductId(frri.getProductId().toString());
+				req.setCoverId(frri.getCoverId().toString());
+				req.setSectionId(frri.getSectionId().toString());
+				req.setSubCoverId(frri.getSubCoverId().toString());
+				
+				// get dynamic columns from DB
+				List<SectionCoverMaster> sectionCov=queryService.getSectionCoverMaster(req); 
+				String factorTypeId = StringUtils.isBlank(sectionCov.get(0).getFactorTypeId().toString())?"":sectionCov.get(0).getFactorTypeId().toString();
+				
+				//String effDate =new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(effectiveDate);
+				String minimum_rateyn =StringUtils.isBlank(sectionCov.get(0).getMinimumRateYn())?"N":sectionCov.get(0).getMinimumRateYn();  
+				List<FactorTypeDetails> flist=queryService.getFactorRateColumns(req,factorTypeId);
+				        	
+				StringJoiner entityColumns =new StringJoiner(",");
+			    StringJoiner xlheaderCol =new StringJoiner("~");
+			  
+			    
+				entityColumns.add("sno");
+				xlheaderCol.add("RowNumber");
+				xlheaderCol.add("AgencyCode");// default XL columns
+				entityColumns.add("xlAgencyCode");// default entity columns
+					for(int i=0;i<flist.size();i++) {	            		
+						FactorTypeDetails fac =flist.get(i);	            	
+				        if(fac.getRangeYn().equalsIgnoreCase("Y")) {
+				        		entityColumns.add(fac.getRangeFromColumn());
+				        		entityColumns.add(fac.getRangeToColumn());
+				        		xlheaderCol.add(fac.getFromDisplayName());
+				        		xlheaderCol.add(fac.getToDisplayName());
+				        	
+
+				        }else if(fac.getRangeYn().equalsIgnoreCase("N")) {	            			
+				        		entityColumns.add(fac.getDiscreteColumn());
+				        		xlheaderCol.add(fac.getDiscreteDisplayName());
+				        }	
+				      }
+				        
+						if("Y".equalsIgnoreCase(minimum_rateyn)) {
+
+							// entity columns,// default entity columns
+						       entityColumns.add("rate");
+						       entityColumns.add("minimumRate");
+						       entityColumns.add("calcType");
+						       entityColumns.add("minPremium");
+						       entityColumns.add("regulatoryCode");
+						       entityColumns.add("excessPercent");
+						       entityColumns.add("excessAmount");
+						       entityColumns.add("excessDesc");
+						       entityColumns.add("status");
+						        	// default xl headercolumns
+						       xlheaderCol.add("Rate");
+						       xlheaderCol.add("MinimumRate");
+						       xlheaderCol.add("CalcType");
+						       xlheaderCol.add("MinimumPremium");
+						       xlheaderCol.add("RegulatoryCode");
+						       xlheaderCol.add("ExcessPercent");
+						       xlheaderCol.add("ExcessAmount");
+						       xlheaderCol.add("ExcessDesc");
+						       xlheaderCol.add("Status");
+						}else {
+							
+							// entity columns,// default entity columns
+						       entityColumns.add("rate");
+						       entityColumns.add("calcType");
+						       entityColumns.add("minPremium");
+						       entityColumns.add("regulatoryCode");
+						       entityColumns.add("excessPercent");
+						       entityColumns.add("excessAmount");
+						       entityColumns.add("excessDesc");
+						       entityColumns.add("status");
+						        	// default xl headercolumns
+						       xlheaderCol.add("Rate");
+						       xlheaderCol.add("CalcType");
+						       xlheaderCol.add("MinimumPremium");
+						       xlheaderCol.add("RegulatoryCode");
+						       xlheaderCol.add("ExcessPercent");
+						       xlheaderCol.add("ExcessAmount");
+						       xlheaderCol.add("ExcessDesc");
+						       xlheaderCol.add("Status");
+						}
+						
+						xlheaderCol.add("ErrorStatus");
+						xlheaderCol.add("ErrorDescription");
+						
+				String [] table_header = xlheaderCol.toString().split("~");
+				List<Object[]> data = queryService.getRawErrorRecords(tranId, entityColumns.toString());
+				Map<String,Object> map = new HashMap<String, Object>();
+				map.put("Headers", table_header);
+				map.put("Values", data);
+				
+				response.setMessage("Success");
+				response.setErrorMessage(Collections.emptyList());
+				response.setCommonResponse(map);
+				
+			}catch (Exception e) {
+				e.printStackTrace();
+				response.setMessage("Failed");
+				response.setErrorMessage(Collections.emptyList());
+				response.setCommonResponse(e.getMessage());
+				return response;
+			}
+			return response;
+		}
 	    
 	  
 	  

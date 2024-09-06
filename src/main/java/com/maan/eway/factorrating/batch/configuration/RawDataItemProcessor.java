@@ -1,14 +1,21 @@
 package com.maan.eway.factorrating.batch.configuration;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.Locale;
+import java.util.StringJoiner;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.batch.item.ItemProcessor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.maan.eway.bean.FactorRateMaster;
 import com.maan.eway.springbatch.FactorRateRawInsert;
 import com.maan.eway.springbatch.SpringBatchMapperResponse;
 
@@ -28,6 +35,8 @@ public class RawDataItemProcessor  implements ItemProcessor<FactorRateRawInsert,
 	@Override
 	public FactorRateRawInsert process(FactorRateRawInsert item) throws Exception {
 		String error_desc="";
+	    String dynamic_errors="";
+
 		try {
 				SpringBatchMapperResponse factorData =new SpringBatchMapperResponse();
 			    try {
@@ -35,6 +44,22 @@ public class RawDataItemProcessor  implements ItemProcessor<FactorRateRawInsert,
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+			    
+			    
+			    String[] discreate = StringUtils.isBlank(factorData.getDiscreteColumn())?null:factorData.getDiscreteColumn().split("~");
+			    String[] range_cloumns = StringUtils.isBlank(factorData.getRangeColumns())?null:factorData.getRangeColumns().split("~");
+			   
+			    if(discreate!=null) {
+			    	dynamic_errors = doDynamicValidation(discreate, item);
+			    	if(StringUtils.isNotBlank(dynamic_errors))
+			    		error_desc += dynamic_errors;
+			    }
+			    
+			    if(range_cloumns!=null) {
+			    	dynamic_errors = doDynamicValidation(range_cloumns, item);
+			    	if(StringUtils.isNotBlank(dynamic_errors))
+			    		error_desc += dynamic_errors;
+			    }
 			    
 			    String min_premium = StringUtils.isBlank(item.getMinPremium())?"":item.getMinPremium().replace(",", "");			   
 			    boolean rate_check = true;
@@ -96,9 +121,11 @@ public class RawDataItemProcessor  implements ItemProcessor<FactorRateRawInsert,
 	            if(StringUtils.isBlank(factorData.getEffectiveDate())) {
 	            	error_desc+="EffectiveDate should not be null in section_cover_master table for this factor_id "+factorData.getFactorTypeId()+"~";
 	            }else if(StringUtils.isNotBlank(factorData.getEffectiveDate())) {
-	            	effectiveDate =formatter.parse(factorData.getEffectiveDate()); 
-			        Date current_date = new Date();			        
-	            	error_desc+=effectiveDate.before(current_date)?"EffectiveDate should be not pastdate or expirydate~":error_desc;
+	            	LocalDate current_date = LocalDate.now();
+	            	LocalDate effective_date =LocalDate.parse(factorData.getEffectiveDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));	        	            	
+	            	error_desc+=effective_date.isBefore(current_date)?"EffectiveDate should be not pastdate or expirydate~":"";
+	            	effectiveDate = Date.from(effective_date.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
 	            }
 	            
 	            if(StringUtils.isBlank(factorData.getFactorTypeId()))
@@ -132,7 +159,7 @@ public class RawDataItemProcessor  implements ItemProcessor<FactorRateRawInsert,
 			    item.setBranchCode(StringUtils.isBlank(factorData.getBranchCode())?"99999":factorData.getBranchCode());
 			    item.setFactorTypeId(StringUtils.isBlank(factorData.getFactorTypeId())?0:Integer.valueOf(factorData.getFactorTypeId()));
 			    item.setProductId(StringUtils.isBlank(factorData.getProductId())?0:Integer.valueOf(factorData.getProductId()));			   
-			    item.setEffectiveDateStart(effectiveDate);
+			    item.setEffectiveDateStart(effectiveDate==null?new Date():effectiveDate);
 			    item.setEffectiveDateEnd(formatter.parse("12/30/2050 00:00:00"));			   
 			    item.setRemarks(StringUtils.isBlank(factorData.getRemarks())?"":factorData.getRemarks());
 			    item.setCreatedBy(factorData.getCreatedBy());
@@ -140,7 +167,7 @@ public class RawDataItemProcessor  implements ItemProcessor<FactorRateRawInsert,
 			    item.setEntryDate(new Date());
 			    item.setAmendId(0);	
 			    
-			    if(StringUtils.isBlank(error_desc)) {
+			    if(StringUtils.isNotBlank(error_desc)) {
 			    	item.setErrorDesc(error_desc);
 			    	item.setErrorStatus("E");
 			    }
@@ -148,6 +175,45 @@ public class RawDataItemProcessor  implements ItemProcessor<FactorRateRawInsert,
 				e.printStackTrace();
 			}
 		return item;
+	}
+	
+	private String doDynamicValidation(String [] arr ,FactorRateRawInsert data) {
+		StringJoiner joiner = new StringJoiner("~");
+		try {
+			
+			for(String s : arr) {
+				
+				 Field field = FactorRateRawInsert.class.getDeclaredField(s);
+                 field.setAccessible(true);
+                 
+                 String value =field.get(data)==null || String.valueOf(field.get(data)).isEmpty() ?null:String.valueOf(field.get(data));
+                 
+                 // Get the Field object for the specified field name
+				 Field fields = FactorRateMaster.class.getDeclaredField(s);
+                 String typeName =fields.getType().getSimpleName();
+                 
+                 if("Integer".equals(typeName) || "int".equals(typeName) || "Double".equalsIgnoreCase(typeName) || 
+                		 "Long".equalsIgnoreCase(typeName) || "BigDecimal".equals(typeName)) {
+                	 
+                	 if(StringUtils.isBlank(value)) {
+                		 joiner.add(s.toUpperCase(Locale.US)+" cannot be blank or empty"); 
+                	 }else if(!value.matches("[0-9.]+")) {
+                		 joiner.add(s.toUpperCase(Locale.US)+" should not allow any special characters except [0-9.]"); 
+
+                	 }
+                	 
+                 } 
+                 
+                 else if("String".equals(typeName) && StringUtils.isBlank(value)) {
+                	 joiner.add(s.toUpperCase(Locale.US)+" cannot be blank or empty"); 
+                 }
+                
+			}
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return joiner.toString();
 	}
    
 }

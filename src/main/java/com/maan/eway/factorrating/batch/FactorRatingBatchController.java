@@ -42,6 +42,9 @@ public class FactorRatingBatchController {
 		return service.validateReocrds(tran_id,token);
 	}
 	
-	
+	@GetMapping("/get/errorRecords/{tran_id}")
+	public CommonRes getErrorRecords(@PathVariable("tran_id") String tranId) {
+		return service.getErrorRecords(tranId);
+	}
 	
 }

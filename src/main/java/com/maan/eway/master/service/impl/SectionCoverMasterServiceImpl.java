@@ -1147,7 +1147,9 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				
 				
 				String mininmum_rateYn = StringUtils.isBlank(req.getMinimumRateYN())?"N":req.getMinimumRateYN();
-				if("Y".equalsIgnoreCase(mininmum_rateYn)) {					
+				
+				if("Y".equalsIgnoreCase(mininmum_rateYn)) {	
+					
 				if (StringUtils.isBlank(req.getMinimumRate())) {
 				//	errorList.add(new Error("09", "CoverId", "Please Enter CoverId  "));
 					errorList.add("5000");

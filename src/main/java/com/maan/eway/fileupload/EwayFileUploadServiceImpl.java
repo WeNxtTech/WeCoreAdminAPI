@@ -96,10 +96,9 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 				String minimum_rateyn =object.get("MINIMUM_RATEYN").toString();
 				String columns =object.get("QUERY_COLUMNS").toString();
 				String query_columns ="";
-							
 				if("Y".equalsIgnoreCase(minimum_rateyn)) {			
 					excel_columns =",Rate,MinimumRate,CalcType,MinimumPremium,RegulatoryCode,ExcessPercent,ExcessAmount,ExcessDesc,Status";
-					query_columns="agencyCode," +columns+ ",rate,minimumRate,calcType,minPremium,regulatoryCode,excessPercent,excessAmount,excessDesc,status";
+					query_columns="agencyCode," +columns+ ",COALESCE(rate,'0'),COALESCE(minimumRate,'0'),calcType,COALESCE(minPremium,'0'),regulatoryCode,COALESCE(excessPercent,'0'),COALESCE(excessAmount,'0'),excessDesc,status";
 				}else {
 					excel_columns =",Rate,CalcType,MinimumPremium,RegulatoryCode,ExcessPercent,ExcessAmount,ExcessDesc,Status";
 					query_columns="agencyCode," +columns+ ",rate,calcType,minPremium,regulatoryCode,excessPercent,excessAmount,excessDesc,status";

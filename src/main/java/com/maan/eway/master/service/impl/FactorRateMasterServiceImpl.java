@@ -1231,12 +1231,17 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 						errorList.add(new Error("05","Rate", "Please Enter Valid Rate in Row No : " + row ));
 					}
 					
-					if (StringUtils.isBlank(data.getMinimumRate())) {
+					if(data.getMinimumRateYN()!=null && data.getMinimumRateYN().equals("Y")) {
+					if (StringUtils.isBlank(data.getMinimumRate()) ) {
 						errorList.add(new Error("05", "MinimumRate", "Please Enter MinimumRate In Row No : " + row ));
 					}else if(! data.getMinimumRate().matches("[0-9.]+")) {
 						errorList.add(new Error("05","MinimumRate", "Please Enter Valid MinimumRate in Row No : " + row ));
 					}
-					
+					else if(data.getMinimumRate()!=null && data.getMinimumRate()!=" " && data.getRate()!=null && data.getRate()!=" " && Integer.valueOf(data.getMinimumRate())> Integer.valueOf(data.getRate()))
+					{
+						errorList.add(new Error("05","MinimumRate", " MinimumRate Should Be Lower Than BaseRate in Row No : " + row ));
+					}
+					}
 					if (StringUtils.isBlank(data.getMinimumPremium())) {
 						errorList.add(new Error("05", "MinimumPremium", "Please Enter MinimumPremium In Row No : " + row ));
 					}else if(! data.getMinimumPremium().matches("[0-9.]+")) {

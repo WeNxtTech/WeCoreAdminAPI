@@ -1156,7 +1156,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				} else if (! req.getMinimumRate().matches("[0-9]+(\\.[0-9]+)?") ) {
 					//	errorList.add(new Error("09", "CoverId", "Please Enter Valid Number CoverId "));
 						errorList.add("5001");
-				}else { 
+				}else if(req.getCalcType()!=null &&req.getCalcType().equals("F") ||req.getCalcType().equals("FD")&& req.getBaseRate()!=null || Integer.valueOf(req.getBaseRate()!=null ?"0":req.getBaseRate())>0) { 
 					
 					String rate = req.getBaseRate();
 					String min_rate = req.getMinimumRate();

@@ -921,7 +921,8 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 					
 					String rate = req.getBaseRate();
 					String min_rate = req.getMinimumRate();
-					if(new BigDecimal(min_rate).compareTo(new BigDecimal(rate)) == 1) {
+					
+					if(req.getCalcType()!=null &&req.getCalcType().equals("F") ||req.getCalcType().equals("FD")&& req.getBaseRate()!=null || Integer.valueOf(req.getBaseRate()!=null ?"0":req.getBaseRate())>0 &&new BigDecimal(min_rate).compareTo(new BigDecimal(rate)) == 1  ) {
 						errorList.add(new Error("09", "MinimumPremium", "MinimumPremium should not be greaterthan Rate"));
 					}
 				}

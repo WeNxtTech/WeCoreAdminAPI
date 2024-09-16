@@ -37,12 +37,12 @@ import jakarta.persistence.*;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
+//@AllArgsConstructor
 @ToString
 @Entity
 @DynamicInsert
 @DynamicUpdate
-@Builder
+//@Builder
 @IdClass(EserviceBuildingDetailsId.class)
 @Table(name="eservice_building_details")
 
@@ -845,7 +845,12 @@ private static final long serialVersionUID = 1L;
   	 
  	 @Column(name="FIRST_LOSS_PAYEE")
   	 private String  firstLossPayee;
-
+ 	 
+ 	   @Column(name="SUM_INSURED")
+ 	   private BigDecimal     sumInsured ;
+ 	   
+ 	   @Column(name="SUM_INSURED_LC")
+ 	   private BigDecimal     sumInsuredLc ;
       
 }
 

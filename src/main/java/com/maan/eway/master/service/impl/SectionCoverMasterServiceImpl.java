@@ -2236,6 +2236,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate a26 = cb2.greaterThanOrEqualTo(ocpm3.get("effectiveDateEnd"), today);
 			Predicate a27 = cb2.equal(ocpm3.get("agencyCode"), b2.get("agencyCode"));
 			Predicate a28 = cb2.equal(ocpm3.get("branchCode"), b2.get("branchCode"));
+			
 			effectiveDate2.where(a21,a22,a23,a24,a25,a26,a27,a28);
 
 			// Select
@@ -2254,13 +2255,13 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 			Predicate n14 = cb2.equal(b2.get("companyId"), req.getInsuranceId());
 			Predicate n15 = cb2.equal(b2.get("sectionId"), req.getSectionId());
 			Predicate n8 = cb2.equal(b2.get("agencyCode"), req.getAgencyCode());
-			//Predicate n9 = cb2.equal(b2.get("agencyCode"), "99999");
-			//Predicate n10 = cb2.or(n8,n9);
+			Predicate n9 = cb2.equal(b2.get("agencyCode"), "99999");
+			Predicate n10 = cb2.or(n8,n9);
 			Predicate n11 = cb2.equal(b2.get("branchCode"), req.getBranchCode());
 			//Predicate n12 = cb2.equal(b2.get("branchCode"), "99999");
 			//Predicate n13 = cb2.or(n11,n12 );
 			//Predicate n16 = cb2.equal(b2.get("status"),"Y");
-			query2.where(n4,n5,n6,n7,n14,n15,n8,n11).orderBy(orderList2);
+			query2.where(n4,n5,n6,n7,n14,n15,n10,n11).orderBy(orderList2);
 
 			// Get Result
 			TypedQuery<SectionCoverMaster> result2 = em.createQuery(query2);

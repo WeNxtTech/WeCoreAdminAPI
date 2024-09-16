@@ -219,6 +219,7 @@ public class ReportsController {
 		CommonRes data = new CommonRes();
 		String filePath=http.getServletContext().getRealPath("/");
 		
+		System.out.println("filePath==>"+filePath);
 		List<LogDetailsRes> res = service.LogDetails(filePath);
 		
 		data.setCommonResponse(res);

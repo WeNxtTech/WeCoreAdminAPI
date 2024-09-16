@@ -625,6 +625,7 @@ public class ReportsServiceImple implements ReportsService {
 	
 	public List<LogDetailsRes> LogDetails(String filePath) {
 		List<LogDetailsRes> resp=new ArrayList<>();
+		try {
 		filePath = filePath.substring(0, filePath.lastIndexOf("\\"));
 		filePath = filePath.substring(0, filePath.lastIndexOf("\\"));
 		filePath = filePath.substring(0, filePath.lastIndexOf("\\"));
@@ -659,6 +660,9 @@ public class ReportsServiceImple implements ReportsService {
 	        } catch (Exception e) {
 	            e.printStackTrace();
 	        }
+		}
+		}catch (Exception e) {
+			e.printStackTrace();
 		}
 		return resp;
     }

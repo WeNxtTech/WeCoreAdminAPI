@@ -656,7 +656,7 @@ public class JpqlQueryServiceImpl {
 	public List<Object[]> getRawErrorRecords(String tranId,String queryColumns){
 		try {
 			
-			String queryText ="select "+queryColumns+",errorStatus,errorDesc from FactorRateRawInsert f where f.tranId = :tranId and f.errorStatus = :errorStatus";
+			String queryText ="select errorDesc,xlAgencyCode,"+queryColumns+" from FactorRateRawInsert f where f.tranId = :tranId and f.errorStatus = :errorStatus";
 			query = em.createQuery(queryText);
 			query.setParameter("tranId", tranId);
 			query.setParameter("errorStatus", "E");

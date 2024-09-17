@@ -56,30 +56,23 @@ public class GroupingItemReader implements ItemReader<List<FactorRateRawInsert>>
 		List<FactorRateRawInsert> records = new ArrayList<>(total_records.intValue());		
 		Map<String,List<FactorRateRawInsert>> groupByData = new HashMap<>();
 		records = factorRateRawMasterRepository.findByTranId(factor_id);
-		
-		if("Y".equals(isDiscreate)) {
-			
-			String[] discreate_array =discreate_columns.split("~");
-			List<String> fieldList =Arrays.asList(discreate_array);
-			
-			groupByData =groupByRecords(records, fieldList);
-			
-			return groupByData;
-		}else if("N".equals(isDiscreate)){
 				
-			groupByData.put("discreate_records", records);
-			
-			/*int partitionSize =records.size();
-		    List<List<FactorRateRawInsert>> partitions = partition(records, partitionSize);
-		  
-		    int index=0;
-		    for(List<FactorRateRawInsert> data : partitions) {
-		    	groupByData.put(String.valueOf(index), data);   	
-		    	index++;
-		    }*/
-		    
-		    return groupByData;
-		}
+			if("Y".equals(isDiscreate)) {
+				
+				String[] discreate_array =discreate_columns.split("~");
+				List<String> fieldList =Arrays.asList(discreate_array);
+				
+				groupByData =groupByRecords(records, fieldList);
+				
+				return groupByData;
+			}else if("N".equals(isDiscreate)){
+				
+				groupByData = records.stream().collect(Collectors.groupingBy(FactorRateRawInsert :: getAgencyCode));
+				
+			    return groupByData;
+			}
+		
+	       
 		return null;
 	}
 

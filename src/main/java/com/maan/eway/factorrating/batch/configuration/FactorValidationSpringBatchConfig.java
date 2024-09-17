@@ -75,7 +75,7 @@ public class FactorValidationSpringBatchConfig {
     public ItemReader<List<FactorRateRawInsert>> groupingItemReader(@Value("#{jobParameters[factor_id]}") String factor_id,@Value("#{jobParameters[discreate_columns]}") String discreate_columns,
     		@Value("#{jobParameters[isDiscreate]}") String isDiscreate,@Value("#{jobParameters[total_records]}") Long total_records) {
        
-    	    return new GroupingItemReader(factorRateRawMasterRepository,factor_id,discreate_columns,isDiscreate,total_records);
+    	    return new GroupingItemReader(factorRateRawMasterRepository,factor_id,"xlAgencyCode~"+discreate_columns,isDiscreate,total_records);
     }
     
     /*@Bean("groupingItemReader")

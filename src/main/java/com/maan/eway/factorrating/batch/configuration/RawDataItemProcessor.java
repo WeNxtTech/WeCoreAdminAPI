@@ -151,6 +151,12 @@ public class RawDataItemProcessor  implements ItemProcessor<FactorRateRawInsert,
 	            }
 	            
 	            
+	            if(StringUtils.isBlank(item.getXlAgencyCode()) || "0".equalsIgnoreCase(item.getXlAgencyCode())) {
+	            	
+	            	error_desc =error_desc+"AgencyCode cannot be empty or blank or null";
+	            }
+	            
+	            
 			    item.setCompanyId(factorData.getInsuranceId());
 			    item.setCoverId(Integer.valueOf(factorData.getCoverId()));
 			    item.setSubCoverId(StringUtils.isBlank(factorData.getSubCoverId())?0:Integer.valueOf(factorData.getSubCoverId()));
@@ -171,6 +177,8 @@ public class RawDataItemProcessor  implements ItemProcessor<FactorRateRawInsert,
 			    	item.setErrorDesc(error_desc);
 			    	item.setErrorStatus("E");
 			    }
+			    
+			    
 			}catch (Exception e) {
 				e.printStackTrace();
 			}

@@ -260,7 +260,7 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 		    StringJoiner discreateColumns =new StringJoiner("~");
 		    StringJoiner range_columns =new StringJoiner("~");
 		
-		    
+
 			entityColumns.add("sNo");
 			xlheaderCol.add("AgencyCode");// default XL columns
 			entityColumns.add("xlAgencyCode");// default entity columns
@@ -755,9 +755,9 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 			}else if(StringUtils.isBlank(discreateColumns)) {
 				String groupbyColumns ="";
 				if("Y".equalsIgnoreCase(minimum_rate_yn))
-					groupbyColumns =rangeColumns+"~rate~minimumRate~calcType~minPremium";
+					groupbyColumns ="xlAgencyCode~"+rangeColumns+"~rate~minimumRate~calcType~minPremium";
 				else
-					groupbyColumns =rangeColumns+"~rate~calcType~minPremium";
+					groupbyColumns ="xlAgencyCode~"+rangeColumns+"~rate~calcType~minPremium";
 
 				List<String> groupbyColumnsList =Arrays.stream(groupbyColumns.split("~")).collect(Collectors.toList());
 				List<FactorRateRawInsert> duplicateRecordsList =new ArrayList<>();
@@ -984,10 +984,8 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 			    StringJoiner xlheaderCol =new StringJoiner("~");
 			  
 			    
-				entityColumns.add("sno");
-				xlheaderCol.add("RowNumber");
+				xlheaderCol.add("ErrorDescription");
 				xlheaderCol.add("AgencyCode");// default XL columns
-				entityColumns.add("xlAgencyCode");// default entity columns
 					for(int i=0;i<flist.size();i++) {	            		
 						FactorTypeDetails fac =flist.get(i);	            	
 				        if(fac.getRangeYn().equalsIgnoreCase("Y")) {
@@ -1047,8 +1045,6 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 						       xlheaderCol.add("Status");
 						}
 						
-						xlheaderCol.add("ErrorStatus");
-						xlheaderCol.add("ErrorDescription");
 						
 				String [] table_header = xlheaderCol.toString().split("~");
 				List<Object[]> data = queryService.getRawErrorRecords(tranId, entityColumns.toString());

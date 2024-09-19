@@ -130,21 +130,40 @@ public class JpqlQueryServiceImpl {
 	public List<Object[][]> getFactorRateDetails(FileDownloadRequest req,String columns,String factorId){
 		List<Object[][]> object =null;
 		try {
-			query=em.createQuery("select "+columns+" from FactorRateMaster where  companyId=:companyId "
-					+ "and productId=:productId and factorTypeId=:factorTypeId and coverId=:coverId and sectionId=:sectionId and agencyCode=:agencyCode and branchCode=:branchCode and "
-					+ "sysdate() between effectiveDateStart and effectiveDateEnd and subCoverId=:subCoverId and amendId =(select max(amendId) from FactorRateMaster "
-					+ "where companyId=:companyId and productId=:productId and factorTypeId=:factorTypeId and coverId=:coverId and sectionId=:sectionId and agencyCode=:agencyCode and branchCode=:branchCode and "
-					+ "sysdate() between effectiveDateStart and effectiveDateEnd and subCoverId=:subCoverId)");
 			
-			query.setParameter("companyId", req.getCompanyId());
-			query.setParameter("productId", Integer.valueOf(req.getProductId()));
-			query.setParameter("factorTypeId", Integer.valueOf(factorId));
-			query.setParameter("coverId", Integer.valueOf(req.getCoverId()));
-			query.setParameter("sectionId", Integer.valueOf(req.getSectionId()));
-			query.setParameter("agencyCode", req.getAgencyCode());
-			query.setParameter("branchCode", req.getBranchCode());
-			query.setParameter("subCoverId", Integer.valueOf(req.getSubCoverId()));
-			object =query.getResultList();
+			if(StringUtils.isNotBlank(req.getAgencyCode())) {
+			query=em.createQuery("select "+columns+" from FactorRateMaster where  companyId=:companyId "
+						+ "and productId=:productId and factorTypeId=:factorTypeId and coverId=:coverId and sectionId=:sectionId and agencyCode=:agencyCode and branchCode=:branchCode and "
+						+ "sysdate() between effectiveDateStart and effectiveDateEnd and subCoverId=:subCoverId and amendId =(select max(amendId) from FactorRateMaster "
+						+ "where companyId=:companyId and productId=:productId and factorTypeId=:factorTypeId and coverId=:coverId and sectionId=:sectionId and agencyCode=:agencyCode and branchCode=:branchCode and "
+						+ "sysdate() between effectiveDateStart and effectiveDateEnd and subCoverId=:subCoverId)");
+				
+				query.setParameter("companyId", req.getCompanyId());
+				query.setParameter("productId", Integer.valueOf(req.getProductId()));
+				query.setParameter("factorTypeId", Integer.valueOf(factorId));
+				query.setParameter("coverId", Integer.valueOf(req.getCoverId()));
+				query.setParameter("sectionId", Integer.valueOf(req.getSectionId()));
+				query.setParameter("agencyCode", req.getAgencyCode());
+				query.setParameter("branchCode", req.getBranchCode());
+				query.setParameter("subCoverId", Integer.valueOf(req.getSubCoverId()));
+				object =query.getResultList();
+			}else {
+				query=em.createQuery("select "+columns+" from FactorRateMaster where  companyId=:companyId "
+						+ "and productId=:productId and factorTypeId=:factorTypeId and coverId=:coverId and sectionId=:sectionId and branchCode=:branchCode and "
+						+ "sysdate() between effectiveDateStart and effectiveDateEnd and subCoverId=:subCoverId and amendId =(select max(amendId) from FactorRateMaster "
+						+ "where companyId=:companyId and productId=:productId and factorTypeId=:factorTypeId and coverId=:coverId and sectionId=:sectionId and branchCode=:branchCode and "
+						+ "sysdate() between effectiveDateStart and effectiveDateEnd and subCoverId=:subCoverId)");
+				
+				query.setParameter("companyId", req.getCompanyId());
+				query.setParameter("productId", Integer.valueOf(req.getProductId()));
+				query.setParameter("factorTypeId", Integer.valueOf(factorId));
+				query.setParameter("coverId", Integer.valueOf(req.getCoverId()));
+				query.setParameter("sectionId", Integer.valueOf(req.getSectionId()));
+				//query.setParameter("agencyCode", req.getAgencyCode());
+				query.setParameter("branchCode", req.getBranchCode());
+				query.setParameter("subCoverId", Integer.valueOf(req.getSubCoverId()));
+				object =query.getResultList();
+			}
 			//log.info("getFactorRateDetails Response || "+json.toJson(object));
 		}catch (Exception e) {
 			log.error(e);
@@ -656,7 +675,7 @@ public class JpqlQueryServiceImpl {
 	public List<Object[]> getRawErrorRecords(String tranId,String queryColumns){
 		try {
 			
-			String queryText ="select errorDesc,xlAgencyCode,"+queryColumns+" from FactorRateRawInsert f where f.tranId = :tranId and f.errorStatus = :errorStatus";
+			String queryText ="select errorDesc,sno,xlAgencyCode,"+queryColumns+" from FactorRateRawInsert f where f.tranId = :tranId and f.errorStatus = :errorStatus";
 			query = em.createQuery(queryText);
 			query.setParameter("tranId", tranId);
 			query.setParameter("errorStatus", "E");

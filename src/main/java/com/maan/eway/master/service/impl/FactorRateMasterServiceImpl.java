@@ -5,6 +5,7 @@
 */
 package com.maan.eway.master.service.impl;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
@@ -17,7 +18,9 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -44,6 +47,9 @@ import com.maan.eway.bean.RatingFieldMaster;
 import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.common.service.RatingFactorsUtil;
 import com.maan.eway.error.Error;
+import com.maan.eway.factorrating.batch.FactorRatingBatchServiceImpl;
+import com.maan.eway.fileupload.FileUploadInputRequest;
+import com.maan.eway.fileupload.JpqlQueryServiceImpl;
 import com.maan.eway.master.req.DuplicateParamCheckingReq;
 import com.maan.eway.master.req.FactorParamsInsert;
 import com.maan.eway.master.req.FactorRateGetAllReq;
@@ -98,19 +104,276 @@ private EntityManager em;
 @Autowired
 private RatingFactorsUtil rating;
 
+@Autowired
+private JpqlQueryServiceImpl queryService;
+
+@Autowired
+private FactorRateMasterServiceImpl rateMasterServiceImpl;
+
+@Autowired
+private FactorRatingBatchServiceImpl factorValidation;
+
 Gson json = new Gson();
 
 private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 
 
 	@Override
-	public List<Error> validateFactorRateDetails(FactorRateSaveReq req, String token) {
+	public List<Error> validateFactorRateDetails(FactorRateSaveReq facReq, String token) {
 		List<Error> errorList = new ArrayList<Error>();
 		try {
 			
-			Map<String,List<DropDownRes>>  apiResList = masterDiscreteApiCall(req ,token ) ;
+			//Map<String,List<DropDownRes>>  apiResList = masterDiscreteApiCall(req ,token ) ;
 			
-			errorList =  factorRatingsValidation( req , apiResList);
+			//errorList =  factorRatingsValidation( req , apiResList);
+			
+			
+				// Check if factorTypeId is blank
+			    if (StringUtils.isBlank(facReq.getFactorTypeId())) {
+			        errorList.add(new Error("100", "FactorTypeId", "FactorTypeId cannot be empty or blank~"));
+			    }
+
+			    // Check if companyId is blank
+			    if (StringUtils.isBlank(facReq.getCompanyId())) {
+			        errorList.add(new Error("100", "CompanyId", "CompanyId cannot be empty or blank~"));
+			    }
+
+			    // Check if productId is blank
+			    if (StringUtils.isBlank(facReq.getProductId())) {
+			        errorList.add(new Error("100", "ProductId", "ProductId cannot be empty or blank~"));
+			    }
+
+			    // Check if branchCode is blank
+			    if (StringUtils.isBlank(facReq.getBranchCode())) {
+			       // errorList.add(new Error("100", "BranchCode", "BranchCode cannot be empty or blank~"));
+			    }
+
+			    // Check if agencyCode is blank
+			    if (StringUtils.isBlank(facReq.getAgencyCode())) {
+			       // errorList.add(new Error("100", "AgencyCode", "AgencyCode cannot be empty or blank~"));
+			    }
+
+			    // Check if sectionId is blank
+			    if (StringUtils.isBlank(facReq.getSectionId())) {
+			        errorList.add(new Error("100", "SectionId", "SectionId cannot be empty or blank~"));
+			    }
+
+			    // Check if coverId is blank
+			    if (StringUtils.isBlank(facReq.getCoverId())) {
+			        errorList.add(new Error("100", "CoverId", "CoverId cannot be empty or blank~"));
+			    }
+
+			    // Check if subCoverId is blank
+			    if (StringUtils.isBlank(facReq.getSubCoverId())) {
+			        //errorList.add(new Error("100", "SubCoverId", "SubCoverId cannot be empty or blank~"));
+			    }
+
+			    // Validate effectiveDateStart
+			    if (facReq.getEffectiveDateStart() == null || isFutureOrToday(facReq.getEffectiveDateStart())) {
+			        errorList.add(new Error("100", "EffectiveDateStart", "EffectiveDateStart should be today or a future date."));
+			    }
+
+			    // Validate effectiveDateEnd
+			    if (facReq.getEffectiveDateEnd() == null || isFutureOrToday(facReq.getEffectiveDateEnd())) {
+			        //errorList.add(new Error("100", "EffectiveDateEnd", "EffectiveDateEnd should be today or a future date."));
+			    }
+
+			    // Check if status is blank
+			    if (StringUtils.isBlank(facReq.getStatus())) {
+			        errorList.add(new Error("100", "Status", "Status cannot be empty or blank~"));
+			    }
+
+			    // Check if subCoverYn is blank
+			    if (StringUtils.isBlank(facReq.getSubCoverYn())) {
+			        errorList.add(new Error("100", "SubCoverYn", "SubCoverYn cannot be empty or blank~"));
+			    }
+
+			    // Check if createdBy is blank
+			    if (StringUtils.isBlank(facReq.getCreatedBy())) {
+			        errorList.add(new Error("100", "CreatedBy", "CreatedBy cannot be empty or blank~"));
+			    }
+
+			    // Check if remarks is blank
+			    if (StringUtils.isBlank(facReq.getRemarks())) {
+			        errorList.add(new Error("100", "Remarks", "Remarks cannot be empty or blank~"));
+			    }
+				
+			    
+			  if(errorList.isEmpty()) { 
+				  
+				  
+				  FileUploadInputRequest req = new FileUploadInputRequest();
+					req.setAgencyCode(facReq.getAgencyCode());
+					req.setBranchCode(facReq.getBranchCode());
+					req.setInsuranceId(facReq.getCompanyId());
+					req.setProductId(facReq.getProductId().toString());
+					req.setSectionId(facReq.getSectionId().toString());
+					req.setSubCoverId(StringUtils.isBlank(facReq.getSubCoverId())?"0":facReq.getSubCoverId());
+					req.setCoverId(facReq.getCoverId().toString());
+					req.setFactorTypeId(facReq.getFactorTypeId().toString());
+					req.setCreatedBy(facReq.getCreatedBy());
+					
+
+				List<FactorTypeDetails> flist=queryService.getFactorRateColumns(req,facReq.getFactorTypeId().toString());
+		        	
+		        List<String> discreate_columns =flist.stream().filter(p -> "N".equals(p.getRangeYn())).map(p -> p.getDiscreteColumn())
+		        	            .collect(Collectors.toList());
+		        	
+		        String discreate_columns_str =flist.stream().filter(p -> "N".equals(p.getRangeYn())).map(p -> p.getDiscreteColumn())
+		    	           .collect(Collectors.joining("~"));
+		        	
+		        String rageColumns =flist.stream().filter(p -> "Y".equals(p.getRangeYn())).map(p -> p.getRangeFromColumn()+"~"+ p.getRangeToColumn())
+		    	           .collect(Collectors.joining("~"));
+		       
+				  
+				for(FactorParamsInsert item : facReq.getFactorParams()){
+					
+					String dynamic_errors ="";
+					String min_premium = StringUtils.isBlank(item.getMinimumPremium())?"":item.getMinimumPremium().replace(",", "");			   
+				    boolean rate_check = true;
+				    if(StringUtils.isBlank(min_premium)) {
+				    	errorList.add(new Error("100","MinimumPremium","MinPremium field cannot be empty or blank~"));	
+				    	rate_check = false;
+				    }else if(!min_premium.matches("[0-9.]+")) {
+				    	errorList.add(new Error("100","MinimumPremium","MinPremium field only allows number or decimal digits("+min_premium+")"));	
+				    	rate_check = false;
+				    }else if(!min_premium.matches("\\d+(\\.\\d+)?")) {
+				    	errorList.add(new Error("100","MinimumPremium","Please enter valid minpremium("+min_premium+")"));	
+				    	rate_check = false;
+				    }
+				    
+				    
+				    String[] discreate = StringUtils.isBlank(discreate_columns_str)?null:discreate_columns_str.split("~");
+				    String[] range_cloumns = StringUtils.isBlank(rageColumns)?null:rageColumns.split("~");
+				   
+				    if(discreate!=null) {
+				    	dynamic_errors = doDynamicValidation(discreate, item);
+				    	if(StringUtils.isNotBlank(dynamic_errors))
+					    	errorList.add(new Error("100","DISCREATE_COLUMNS","ROW_NO :"+item.getSno()+"::"+dynamic_errors));	
+
+				    }
+				    
+				    if(range_cloumns!=null) {
+				    	dynamic_errors = doDynamicValidation(range_cloumns, item);
+				    	if(StringUtils.isNotBlank(dynamic_errors))
+				    		errorList.add(new Error("100","RANGE_COLUMNS","ROW_NO :"+item.getSno()+"::"+dynamic_errors));	
+
+				    }
+				    
+				    String rate = StringUtils.isBlank(item.getRate())?"":item.getRate().replace(",", "");
+				    if(StringUtils.isBlank(rate)) {
+				    	errorList.add(new Error("100","Rate","Rate field cannot be empty or blank~"));
+				    }else if(!rate.matches("[0-9.]+")) {
+				    	errorList.add(new Error("100","Rate","Rate field only allows number or decimal digits"));
+				    }else if(!rate.matches("\\d+(\\.\\d+)?")) {
+				    	errorList.add(new Error("100","Rate","Please enter valid rate("+rate+")"));	
+				    	rate_check = false;
+				    }
+				    
+				    
+				    if(StringUtils.isBlank(item.getCalType())) {
+				    	errorList.add(new Error("100","CalcType","CalcType should not be empty"));
+				    }else if(item.getCalType().length()>1) {
+				    	errorList.add(new Error("100","CalcType","CalcType should not be graterthan one character"));
+				    }
+				    
+				    if (StringUtils.isBlank(item.getStatus())) {
+				    	errorList.add(new Error("100","Status","Status should not be empty"));
+					} else if (item.getStatus().length() > 1) {
+						errorList.add(new Error("100","Status","Status should not be graterthan one character"));
+					}else if(!("Y".equalsIgnoreCase(item.getStatus())||"N".equalsIgnoreCase(item.getStatus())||"R".equalsIgnoreCase(item.getStatus())|| "P".equalsIgnoreCase(item.getStatus()))) {
+						errorList.add(new Error("100","status","Anyone of status is required - Active or Deactive or Pending or Referral"));
+					}
+				    
+				    if (StringUtils.isBlank(item.getRegulatoryCode())) {
+				    	errorList.add(new Error("100","RegulatoryCode","RegulatoryCode should not be empty"));
+				    }else if(item.getRegulatoryCode().length()>20) {
+				    	errorList.add(new Error("100","RegulatoryCode","RegulatoryCode within 20 Characters"));
+					}
+				    			    
+				    if (StringUtils.isNotBlank(item.getExcessPercent())) {
+						  if (!item.getExcessPercent().matches("[0-9.]+") ) {
+							  errorList.add(new Error("100","ExcessPercent","ExcessPercent field only allows number or decimal digits"));			    						  }
+					}
+				    
+					if (StringUtils.isNotBlank(item.getExcessAmount())) {
+						if (! item.getExcessAmount().matches("[0-9.]+") ) {
+							errorList.add(new Error("100","ExcessAmount","ExcessAmount field only allows number or decimal digits"));
+						}
+					}  
+				    
+					if (StringUtils.isNotBlank(item.getExcessDesc())) {
+						 if (item.getExcessDesc().length() > 500) {
+							 errorList.add(new Error("100","ExcessDesc","ExcessDesc should be  within 500 Characters"));
+						}
+					}
+					
+		                     
+		            // minimium_rate validation            
+		            if("Y".equalsIgnoreCase(item.getMinimumRateYN())) {
+		            	String minimum_rate =StringUtils.isBlank(item.getMinimumRate())?"":item.getMinimumRate();
+		            	if(StringUtils.isBlank(minimum_rate)) {
+		            		errorList.add(new Error("100","MinimumRate","MinimumRate cannot be blank"));
+		            	}else if(!minimum_rate.matches("[0-9.]+")) {
+		            		errorList.add(new Error("100","MinimumRate","MinimumRate field only allows number or decimal digits"));
+		            	}else {	            		
+		            		if(rate_check) { // checking whether rate is valid or not
+		            			if(new BigDecimal(minimum_rate).compareTo(new BigDecimal(rate)) == 1) {
+		            				errorList.add(new Error("100","MinimumRate","MinimumRate should not be greaterthan Rate..!"));
+		            			}
+		            			
+		            		}           			            		
+		            	}
+		            	
+		            }
+		            
+		            
+		            if(StringUtils.isBlank(item.getXlAgencyCode()) || "0".equalsIgnoreCase(item.getXlAgencyCode())) {
+		            	errorList.add(new Error("100","AgencyCode","AgencyCode cannot be empty or blank or null"));
+		            }
+		            
+				}
+				 
+				
+				if(errorList.isEmpty()) {
+				
+		        	String isDiscreate =discreate_columns.isEmpty()?"N":"Y";
+					Map<String,List<DropDownRes>> dropDownList =new HashMap<String,List<DropDownRes>>();
+					
+		        	FactorRateSaveReq factorRateSaveReq = new FactorRateSaveReq();
+					factorRateSaveReq.setAgencyCode(facReq.getAgencyCode());
+					factorRateSaveReq.setBranchCode(facReq.getBranchCode());
+					factorRateSaveReq.setCompanyId(facReq.getCompanyId());
+					factorRateSaveReq.setCoverId(facReq.getCoverId().toString());
+					factorRateSaveReq.setSectionId(facReq.getSectionId().toString());
+					factorRateSaveReq.setProductId(facReq.getProductId().toString());
+					factorRateSaveReq.setFactorTypeId(facReq.getFactorTypeId().toString());
+					dropDownList= rateMasterServiceImpl.masterDiscreteApiCall(factorRateSaveReq,token);						
+		        
+					discreate_columns.add(0, "xlAgencyCode");
+					
+					Map<List<Object>,List<FactorParamsInsert>> groupByRecord = groupByRecords(facReq.getFactorParams(),discreate_columns);
+					String minimum_rate_yn = StringUtils.isBlank(facReq.getFactorParams().get(0).getMinimumRateYN())?"N":facReq.getFactorParams().get(0).getMinimumRateYN();
+					
+					for(Map.Entry<List<Object>, List<FactorParamsInsert>> entry : groupByRecord.entrySet()) {
+						
+						List<Error> error =	factorValidation.factorRangeValidationForInsertFactorRate(
+									entry.getValue(), rageColumns, discreate_columns_str, facReq.getFactorTypeId(), dropDownList, minimum_rate_yn);
+							
+						if(!error.isEmpty())
+							errorList.addAll(error);
+						
+					}
+				}else {
+					
+					return errorList;
+				}
+				
+			  }else {
+				  
+				  return errorList;
+			  }
+			
 			
 		} catch (Exception e) {
 			log.error(e);
@@ -119,6 +382,69 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 		}
 		return errorList;
 	}
+	
+	
+	private String doDynamicValidation(String [] arr ,FactorParamsInsert data) {
+		StringJoiner joiner = new StringJoiner("~");
+		try {
+			
+			for(String s : arr) {
+				
+				 Field field = FactorParamsInsert.class.getDeclaredField(s);
+                 field.setAccessible(true);
+                 
+                 String value =field.get(data)==null || String.valueOf(field.get(data)).isEmpty() ?null:String.valueOf(field.get(data));
+                 
+                 // Get the Field object for the specified field name
+				 Field fields = FactorRateMaster.class.getDeclaredField(s);
+                 String typeName =fields.getType().getSimpleName();
+                 
+                 if("Integer".equals(typeName) || "int".equals(typeName) || "Double".equalsIgnoreCase(typeName) || 
+                		 "Long".equalsIgnoreCase(typeName) || "BigDecimal".equals(typeName)) {
+                	 
+                	 if(StringUtils.isBlank(value)) {
+                		 joiner.add(s.toUpperCase(Locale.US)+" cannot be blank or empty"); 
+                	 }else if(!value.matches("[0-9.]+")) {
+                		 joiner.add(s.toUpperCase(Locale.US)+" should not allow any special characters except [0-9.]"); 
+
+                	 }else if(!value.matches("[0-9.]+")) {
+                		 joiner.add(s.toUpperCase(Locale.US)+" should not allow any special characters except [0-9.]"); 
+
+                	 }else if(!value.matches("\\d+(\\.\\d+)?")) {
+                		 joiner.add(s.toUpperCase(Locale.US)+" should be valid format("+value+")"); 
+
+                	 }
+                	 
+                 } 
+                 
+                 else if("String".equals(typeName) && StringUtils.isBlank(value)) {
+                	 joiner.add(s.toUpperCase(Locale.US)+" cannot be blank or empty"); 
+                 }
+                
+			}
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return joiner.toString();
+	}
+	
+	
+	 public static Map<List<Object>, List<FactorParamsInsert>> groupByRecords(List<FactorParamsInsert> list, List<String> fieldNames) {
+	        return list.stream().collect(Collectors.groupingBy(obj -> {
+	          List<Object> key =new ArrayList<>();
+	            for (String fieldName : fieldNames) {
+	                try {
+	                    Field field = obj.getClass().getDeclaredField(fieldName);
+	                    field.setAccessible(true);
+	                    key.add(field.get(obj));
+	                } catch (Exception e) {
+	                    throw new RuntimeException(e);
+	                }
+	            }
+	            return key;
+	        }));
+	    }
 	
 	public Map<String,List<DropDownRes>>  masterDiscreteApiCall(FactorRateSaveReq req , String token) {
 		Map<String,List<DropDownRes>>  apiResList = new HashMap<String,List<DropDownRes>>();
@@ -1813,7 +2139,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				saveData.setParam18(data.getParam18());
 				saveData.setParam19(data.getParam19());
 				saveData.setParam20(data.getParam20());
-				
+				saveData.setAgencyCode(data.getXlAgencyCode());
 				saveData.setRate(StringUtils.isBlank(data.getRate()) ? null :new BigDecimal(data.getRate()) );
 				saveData.setMinimumRate(StringUtils.isBlank(data.getMinimumRate()) ? null :new BigDecimal(data.getMinimumRate()) );
 
@@ -1821,7 +2147,7 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				saveData.setCalcType(data.getCalType() );
 				saveData.setCalcTypeDesc(calcTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(data.getCalType()) ).collect(Collectors.toList()).get(0).getItemValue());
 				saveData.setStatus(StringUtils.isBlank(data.getStatus()) ? req.getStatus()  : data.getStatus());
-				saveData.setAgencyCode(StringUtils.isBlank(req.getAgencyCode()) ? "99999" : req.getAgencyCode());
+				//saveData.setAgencyCode(StringUtils.isBlank(req.getAgencyCode()) ? "99999" : req.getAgencyCode());
 				saveData.setBranchCode(StringUtils.isBlank(req.getBranchCode()) ? "99999"  : req.getBranchCode());
 				saveData.setSubCoverId(StringUtils.isBlank(req.getSubCoverId()) ? 0 :Integer.valueOf(req.getSubCoverId()));
 				saveData.setCoverName(coverMD.size()>0 &&  coverMD.get("CoverName")!=null ? coverMD.get("CoverName").toString() : "") ;
@@ -2282,7 +2608,9 @@ public Integer getMasterTableCount(String companyId , String branchCode) {
 					 fParam.setParam27( data.getParam27()==null?"" : data.getParam27().stripTrailingZeros().toPlainString());
 					 fParam.setParam28( data.getParam28()==null?"" : data.getParam28().stripTrailingZeros().toPlainString());
 					 fParam.setSno(data.getSNo()==null?"" : data.getSNo().toString());
-					fParam.setRate(data.getRate()==null?"" : data.getRate().stripTrailingZeros().toPlainString());
+					 fParam.setXlAgencyCode(StringUtils.isBlank(data.getAgencyCode())?"":data.getAgencyCode());
+					 
+					 fParam.setRate(data.getRate()==null?"" : data.getRate().stripTrailingZeros().toPlainString());
 					fParam.setCalType(data.getCalcType());
 					fParam.setMinimumPremium(data.getMinPremium() == null ? null : minPreFormat.format(data.getMinPremium()));
 					// Excess
@@ -2599,7 +2927,10 @@ public Integer getMasterTableCount(String companyId , String branchCode) {
 		return list ;
 	}
 
-
+	private boolean isFutureOrToday(Date date) {
+	    Date today = new Date();
+	    return !date.before(today);
+	}
 
 
 }

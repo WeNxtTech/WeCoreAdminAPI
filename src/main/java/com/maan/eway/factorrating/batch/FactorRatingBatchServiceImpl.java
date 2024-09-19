@@ -46,12 +46,14 @@ import com.maan.eway.bean.FactorTypeDetails;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.error.Error;
 import com.maan.eway.factorrating.batch.configuration.Grouping_Thread_Job;
 import com.maan.eway.factorrating.batch.configuration.MainInsert_Thread_Job;
 import com.maan.eway.factorrating.batch.configuration.RawInsert_Thread_Job;
 import com.maan.eway.fileupload.FileDownloadRequest;
 import com.maan.eway.fileupload.FileUploadInputRequest;
 import com.maan.eway.fileupload.JpqlQueryServiceImpl;
+import com.maan.eway.master.req.FactorParamsInsert;
 import com.maan.eway.master.req.FactorRateSaveReq;
 import com.maan.eway.master.service.impl.FactorRateMasterServiceImpl;
 import com.maan.eway.res.DropDownRes;
@@ -130,7 +132,7 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 
 	
 	@Override
-	public CommonRes convertExcelToCSV(MultipartFile file,Integer product_id,Integer company_id) {
+	public CommonRes convertExcelToCSV(MultipartFile file,Integer product_id,Integer company_id,String request_ref_no) {
 		CommonRes response = new CommonRes();
 		try {
 			
@@ -153,12 +155,16 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 	        }
 	        
 	    
-	        
-    		EwayUploadReq seqReq = new EwayUploadReq();
-    		seqReq.setCompanyId(company_id.toString());
-    		seqReq.setProductId(product_id.toString());
-    		
-    		String refeNo =sequence.generateSeqCall(seqReq);
+	        String refeNo="";
+	        if("0".equals(request_ref_no)|| StringUtils.isBlank(request_ref_no)) {
+	    		EwayUploadReq seqReq = new EwayUploadReq();
+	    		seqReq.setCompanyId(company_id.toString());
+	    		seqReq.setProductId(product_id.toString());
+	    		
+	    		refeNo =sequence.generateSeqCall(seqReq);
+	        }else {
+	        	refeNo = request_ref_no;
+	        }
     		
 	        JobParameters jobParameters = new JobParametersBuilder()
 	        		.addString("csv_file_path", csv_file)
@@ -859,6 +865,30 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 	        return base;
 	    }
 	    
+	    public static Double[][] getValuesForFactorParamInsert(String[] fieldNames, List<FactorParamsInsert> list) throws Exception {
+	        // Initialize base array with appropriate dimensions
+	    	Double[][] base = new Double[list.size()][fieldNames.length];
+	        int index = 0;
+	        for (FactorParamsInsert obj : list) {
+	        	Double[] data = new Double[fieldNames.length];
+	            for (int i = 0; i < fieldNames.length; i++) {
+	                try {
+	                    Field field = FactorParamsInsert.class.getDeclaredField(fieldNames[i]);
+	                    field.setAccessible(true);
+	                    
+	                    data[i] = Double.valueOf(field.get(obj)==null||field.get(obj).toString().isEmpty() ?"0":field.get(obj).toString());
+	                } catch (NoSuchFieldException | IllegalAccessException e) {
+	                    // Handle or log the exception as needed
+	                    data[i] = null; // or handle the error case appropriately
+	                }
+	            }
+	            base[index] = data;
+	            index++;
+	        }
+	        
+	        return base;
+	    }
+	    
 	    public static Integer[][] getParamValues(String [] inputArray){
 	    	int length =inputArray.length/2;
 	    	Integer[][] output = new Integer[length][2];
@@ -894,6 +924,21 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 	    }
 	    
 	    
+	    public static Map<List<Object>, List<FactorParamsInsert>> groupByRecords_1(List<FactorParamsInsert> list, List<String> fieldNames) {
+	        return list.stream().collect(Collectors.groupingBy(obj -> {
+	          List<Object> key =new ArrayList<>();
+	            for (String fieldName : fieldNames) {
+	                try {
+	                    Field field = obj.getClass().getDeclaredField(fieldName);
+	                    field.setAccessible(true);
+	                    key.add(field.get(obj));
+	                } catch (Exception e) {
+	                    throw new RuntimeException(e);
+	                }
+	            }
+	            return key;
+	        }));
+	    }
 	    
 	    public static List<Integer> checkForDuplicates(Double[][] table, Integer[][] paramColumns, List<Integer> sno) {
 	        List<Range> ranges = new ArrayList<>();
@@ -985,6 +1030,7 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 			  
 			    
 				xlheaderCol.add("ErrorDescription");
+				xlheaderCol.add("RowNumber");
 				xlheaderCol.add("AgencyCode");// default XL columns
 					for(int i=0;i<flist.size();i++) {	            		
 						FactorTypeDetails fac =flist.get(i);	            	
@@ -1066,6 +1112,126 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 			return response;
 		}
 	    
+		
+		//@Transactional
+		public List<Error> factorRangeValidationForInsertFactorRate(List<FactorParamsInsert> list,String rangeColumns,String discreateColumns,String factor_id, Map<String, List<DropDownRes>> drop,String minimum_rate_yn) {
+			List<Error> errorList = new ArrayList<Error>();
+			try {
+				
+				// RANGE VALIDATION BLOCK			
+				String [] range_array=rangeColumns.split("~");
+				List<Integer> sno =list.parallelStream().map(s -> Integer.valueOf(s.getSno())).collect(Collectors.toList());
+				Double[][] values =getValuesForFactorParamInsert(range_array, list);	
+				Integer[][] paramColumns =getParamValues(range_array);
+				List<Integer> checkForDuplicates=checkForDuplicates(values,paramColumns,sno);			
+				
+				if(!checkForDuplicates.isEmpty()) {				
+					//queryService.updateErrorRecords(factor_id, checkForDuplicates, "Duplicate range or between range has found with this row in your uploaded excel");																
+					String str = checkForDuplicates.parallelStream().map(m -> m.toString()).collect(Collectors.joining(","));
+					
+					errorList.add(new Error("100","DUPLICATE RANGE VALUES HAVE FOUND BELOW ROWS ::",""+str+" "));
+				
+				}
+								
+				// DUPLICATE ROWS FIND BLOCK			
+				if (StringUtils.isNotBlank(discreateColumns)) {
+					
+					List<String> groupByColumns =new ArrayList<>();
+					List<String> range = new ArrayList<>(5);
+					List<String> discreate = new ArrayList<>(5);
+					
+					if(StringUtils.isNotBlank(discreateColumns))
+						discreate =Arrays.stream(discreateColumns.split("~")).collect(Collectors.toList());
+					
+					if(StringUtils.isNotBlank(rangeColumns))
+						range =Arrays.stream(rangeColumns.split("~")).collect(Collectors.toList());
+		
+					groupByColumns.addAll(range);				
+					groupByColumns.addAll(discreate);
+					
+					List<FactorParamsInsert> duplicateRecordsList =new ArrayList<>();
+				    Map<List<Object>,List<FactorParamsInsert>> groupByData=groupByRecords_1(list, groupByColumns);
+				    groupByData.entrySet().parallelStream().forEach(gp ->{		    	
+				    	if(gp.getValue().size()>1) {
+				    		duplicateRecordsList.addAll(gp.getValue());
+				    	}			    	
+				    });
+				    
+				    List<Integer> snoIds =duplicateRecordsList.parallelStream().map(map -> Integer.valueOf(map.getSno())).collect(Collectors.toList());
+					if(!snoIds.isEmpty()) {
+						String str = snoIds.parallelStream().map(m -> m.toString()).collect(Collectors.joining(","));
+						errorList.add(new Error("100","DUPLICATE ROWS VALUES HAVE FOUND BELOW ROWS::",""+str+" "));
+
+						//queryService.updateErrorRecords(factor_id, snoIds, "Duplicate rows have found with this row in your uploaded excel");											
+					}
+				
+					
+					// Discreate Coulmns Checking
+					
+					List<String> originalKeys =new ArrayList<>(drop.keySet());
+					
+					Map<String, List<DropDownRes>> filterKeyData =discreate.stream().filter(p ->originalKeys.contains(p))
+							.collect(Collectors.toMap(k -> k, drop ::get));
+					
+					//List<Integer> invalidSnoIds = new ArrayList<>();
+								
+					
+					// Process entries
+			        for (Map.Entry<String, List<DropDownRes>> entry : filterKeyData.entrySet()) {
+			            String keyName = entry.getKey();
+			            Set<String> masterValues = entry.getValue().stream()
+			                                               .map(DropDownRes::getCode)
+			                                               .collect(Collectors.toSet());
+			            		            
+			            List<String> rawMasterIds = list.stream().map(p -> getMapValues(p,keyName)).distinct().collect(Collectors.toList());
+			            		
+			            List<String> inValidMasterId =rawMasterIds.stream()
+			            		.filter(p ->!masterValues.contains(p) && !"99999".equals(p)).distinct()          		
+			            		.collect(Collectors.toList());
+			            
+			            if(!inValidMasterId.isEmpty()) {
+							List<String> filterDuplicateSno =inValidMasterId.parallelStream().distinct().collect(Collectors.toList());
+							String str = filterDuplicateSno.parallelStream().map(m -> m).collect(Collectors.joining(","));
+							errorList.add(new Error("100","INVALID DISCREATE VALUES HAVE FOUND FOR BELOW VALUES ::",""+str+" "));
+
+							//queryService.updateErrorRecords(keyName,factor_id, filterDuplicateSno, "Invalid Discreate values found in this row");											
+						}
+					
+			            
+			        }
+				    	      
+			   
+				}else if(StringUtils.isBlank(discreateColumns)) {
+					String groupbyColumns ="";
+					if("Y".equalsIgnoreCase(minimum_rate_yn))
+						groupbyColumns ="xlAgencyCode~"+rangeColumns+"~rate~minimumRate~calcType~minPremium";
+					else
+						groupbyColumns ="xlAgencyCode~"+rangeColumns+"~rate~calcType~minPremium";
+
+					List<String> groupbyColumnsList =Arrays.stream(groupbyColumns.split("~")).collect(Collectors.toList());
+					List<FactorParamsInsert> duplicateRecordsList =new ArrayList<>();
+				    Map<List<Object>,List<FactorParamsInsert>> groupByData=groupByRecords_1(list, groupbyColumnsList);
+				    groupByData.entrySet().parallelStream().forEach(gp ->{		    	
+				    	if(gp.getValue().size()>1) {
+				    		duplicateRecordsList.addAll(gp.getValue());
+				    	}			    	
+				    });
+				    
+				    List<Integer> snoIds =duplicateRecordsList.parallelStream().map(map -> Integer.valueOf(map.getSno())).collect(Collectors.toList());
+					if(!snoIds.isEmpty()) {
+						String str = snoIds.parallelStream().map(m -> m.toString()).collect(Collectors.joining(","));
+						errorList.add(new Error("100","DUPLICATE ROWS HAVE FOUND BELOW ROWS::",""+str+" "));
+					}
+						//queryService.updateErrorRecords(factor_id, snoIds, "Duplicate rows have found with this row in your uploaded excel");											
+				
+				}
+				
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			return errorList;
+		}
 	  
 	  
 	

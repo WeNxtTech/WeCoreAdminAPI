@@ -6,16 +6,22 @@ import java.util.Map;
 
 import jakarta.transaction.Transactional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.maan.eway.batch.entity.EserviceMotorDetailsRaw;
 import com.maan.eway.batch.entity.EwayEmplyeeDetailRaw;
 
 @Repository
 public interface EwayEmplyeeDetailRawRepository extends JpaRepository<EwayEmplyeeDetailRaw, Integer> {
+
+	
+	Page<EwayEmplyeeDetailRaw> findByRequestReferenceNoAndStatusNotAndSnoBetween(String tranId ,String error_status,Integer start, Integer end,PageRequest page);
 
 	List<EwayEmplyeeDetailRaw> findByRequestReferenceNo(String requestReferenceNo);
 
@@ -138,5 +144,30 @@ public interface EwayEmplyeeDetailRawRepository extends JpaRepository<EwayEmplye
 	@Transactional
 	@Query(nativeQuery=true,value="UPDATE eway_employee_details_raw emp SET emp.pass_relation_id=(SELECT DISTINCT item_code FROM EWAY_LIST_ITEM_VALUE WHERE item_type='RATING_RELATION_TYPE' AND company_id=?1 AND TRIM(UPPER(item_value))=TRIM(UPPER(emp.relation_desc)) AND STATUS='Y') WHERE request_reference_no=?2")
 	Integer updateHealthRelation(String companyId,String refNol);
+
+	Integer countByRequestReferenceNoAndStatusNot(String tranId, String string);
+
+	@Query(nativeQuery=true,value="SELECT OCCUPATION_ID ITEM_CODE,OCCUPATION_NAME ITEM_VALUE FROM eway_occupation_master WHERE company_id=?1 AND product_id=?2 AND STATUS='Y' AND CURRENT_DATE BETWEEN effective_date_start AND effective_date_end")
+	List<Map<String, String>> getOccupation(String companyId,String productId);
+
+	
+	@Query(nativeQuery=true,value="SELECT RISK_ID ITEM_CODE,LOCATION_NAME ITEM_VALUE FROM eservice_section_details WHERE REQUEST_REFERENCE_NO=?1")
+	List<Map<String, String>> getBuildingDet(String refNo);
+
+	@Query(nativeQuery=true,value="SELECT COUNTRY_ID ITEM_CODE,COUNTRY_NAME ITEM_VALUE FROM EWAY_COUNTRY_MASTER WHERE COMPANY_ID =?1 AND CURRENT_DATE BETWEEN EFFECTIVE_DATE_START AND EFFECTIVE_DATE_END AND STATUS ='Y'")
+	List<Map<String, String>> getCountry(String companyId);
+
+	@Query(nativeQuery=true,value="SELECT ITEM_CODE,ITEM_VALUE FROM eway_list_item_value WHERE item_type=?2 AND COMPANY_ID=?1 AND CURRENT_DATE BETWEEN EFFECTIVE_DATE_START AND EFFECTIVE_DATE_END AND STATUS='Y'")
+	List<Map<String, String>> getContentType(String companyId,String itemType);
+	
+	@Query(nativeQuery=true,value="SELECT ITEM_CODE,ITEM_VALUE FROM EWAY_LIST_ITEM_VALUE WHERE company_id=?1 and item_type='RATING_RELATION_TYPE' AND CURRENT_DATE BETWEEN EFFECTIVE_DATE_START AND EFFECTIVE_DATE_END AND STATUS='Y'")
+	List<Map<String, String>> getRelationType(String companyId);
+
+	@Query(nativeQuery=true,value=" SELECT ITEM_CODE,ITEM_VALUE FROM eway_list_item_value WHERE ITEM_TYPE = 'MONTHS' AND STATUS = 'Y'")
+	List<Map<String, String>> getMonthOfYear();
+
+
+	
+
 	
 }

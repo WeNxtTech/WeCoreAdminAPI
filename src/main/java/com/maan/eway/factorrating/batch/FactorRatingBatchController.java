@@ -23,8 +23,9 @@ public class FactorRatingBatchController {
 	
 	
 	@PostMapping("/convertExcelToCSV/{product_id}/{company_id}")
-	public CommonRes convertExcelToCSV(@PathVariable("product_id") Integer product_id,@PathVariable("company_id") Integer company_id,@RequestParam("file") MultipartFile file) {
-		return service.convertExcelToCSV(file,product_id,company_id);
+	public CommonRes convertExcelToCSV(@PathVariable("product_id") Integer product_id,
+			@PathVariable("company_id") Integer company_id,@RequestParam("file") MultipartFile file) {
+		return service.convertExcelToCSV(file,product_id,company_id,"");
 	}
 	
 	@PostMapping("/rawdata/insert")

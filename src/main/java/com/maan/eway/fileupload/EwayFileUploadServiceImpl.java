@@ -3,6 +3,8 @@ package com.maan.eway.fileupload;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -31,6 +33,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -84,10 +87,8 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 		FileDownloadRes  res =new FileDownloadRes();
 		List<Error> errors = new ArrayList<Error>();
 		try {
-			String agencyCode =StringUtils.isBlank(req.getAgencyCode())?"99999":req.getAgencyCode();
 			String branchCode=StringUtils.isBlank(req.getBranchCode())?"99999":req.getBranchCode();
 			String subCoverId=StringUtils.isBlank(req.getSubCoverId())?"0":req.getSubCoverId();
-			req.setAgencyCode(agencyCode);
 			req.setBranchCode(branchCode);
 			req.setSubCoverId(subCoverId);
 			Map<String,Object> object=queryService.getFactorXlColumns(req);
@@ -112,10 +113,13 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 					
 				XSSFWorkbook workbook = new XSSFWorkbook();
 				XSSFSheet sheet =workbook.createSheet("FACTOR_RATE_DETAILS");
-					
+				CreationHelper createHelper = workbook.getCreationHelper();
+
 				XSSFCellStyle cellStyle =workbook.createCellStyle();
 				XSSFFont font = workbook.createFont();
-					
+
+				cellStyle.setDataFormat(createHelper.createDataFormat().getFormat("####"));
+
 				font.setBold(true);
 				font.setFontHeight(10);
 				font.setFontName("Arial");
@@ -145,8 +149,19 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 						row =sheet.createRow(rowNum++);
 						int col =0;
 						for(Object str : ob) {
-							Cell cell =row.createCell(col++);
-							cell.setCellValue(str==null?"":str.toString());
+							Cell cell =row.createCell(col++);							
+							NumberFormat nf = NumberFormat.getInstance();
+					        if(str instanceof Integer) {
+								cell.setCellValue(str==null?"":nf.format(str));
+					        }else if(str instanceof Double){
+					            nf.setMinimumFractionDigits(2);
+								cell.setCellValue(str==null?"":nf.format(str));
+					        }else if(str instanceof BigDecimal){
+					        	cell.setCellValue(str==null?"0":new BigDecimal(str.toString()).stripTrailingZeros().toPlainString());
+					        }else {
+					        	cell.setCellValue(str==null?"":str.toString());
+					        }
+
 						}
 					}
 				}

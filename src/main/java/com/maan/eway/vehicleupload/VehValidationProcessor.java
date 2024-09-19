@@ -22,8 +22,6 @@ public class VehValidationProcessor implements ItemProcessor<EserviceMotorDetail
 	 @Autowired
 	 private CustomStepExecutionListener stepExecutionListener;
 	 
-
-
 	@Override
 	public EserviceMotorDetailsRaw process(EserviceMotorDetailsRaw item) throws Exception {
 		
@@ -36,7 +34,6 @@ public class VehValidationProcessor implements ItemProcessor<EserviceMotorDetail
 			
 		return item;
 	}
-
 
 
 	private EserviceMotorDetailsRaw updateSanlamCompanyMasterIds(EserviceMotorDetailsRaw item) {

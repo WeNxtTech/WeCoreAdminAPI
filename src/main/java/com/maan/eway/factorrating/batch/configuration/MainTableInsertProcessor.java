@@ -49,7 +49,7 @@ public class MainTableInsertProcessor implements ItemProcessor<FactorRateRawInse
 		saveData.setCoverId(data.getCoverId());
 		saveData.setSubCoverId(data.getSubCoverId()==null?0:data.getSubCoverId());
 		saveData.setCreatedBy(data.getCreatedBy());
-		saveData.setAgencyCode(data.getAgencyCode());
+		saveData.setAgencyCode(data.getXlAgencyCode());
 		saveData.setBranchCode(data.getBranchCode());
 		saveData.setSectionId(data.getSectionId());
 		
@@ -85,10 +85,18 @@ public class MainTableInsertProcessor implements ItemProcessor<FactorRateRawInse
 		saveData.setParam19(data.getParam19());
 		saveData.setParam20(data.getParam20());
 		
-		saveData.setMinimumRate(StringUtils.isBlank(data.getMinimumRate()) ? null :new BigDecimal(data.getMinimumRate()));
-		saveData.setRate(StringUtils.isBlank(data.getRate()) ? null :new BigDecimal(data.getRate()) );
-		saveData.setMinPremium(StringUtils.isBlank(data.getMinPremium()) ? null :new BigDecimal(data.getMinPremium()) );
-		saveData.setCalcType(data.getCalcType() );
+		try {
+			saveData.setMinimumRate(StringUtils.isBlank(data.getMinimumRate()) ? null :new BigDecimal(data.getMinimumRate()));
+			saveData.setRate(StringUtils.isBlank(data.getRate()) ? null :new BigDecimal(data.getRate()) );
+			saveData.setMinPremium(StringUtils.isBlank(data.getMinPremium()) ? null :new BigDecimal(data.getMinPremium()) );
+			saveData.setCalcType(data.getCalcType() );
+		}catch (Exception e) {
+			System.out.println(data.getRate());
+			System.out.println(data.getSno());
+
+			e.printStackTrace();
+			
+		}
 		//saveData.setCalcTypeDesc(calcTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(data.getCalcType()) ).collect(Collectors.toList()).get(0).getItemValue());		
 		List<String> calcTypeArray =calcTypes.stream().filter(p -> p.get("itemCode").toString().equalsIgnoreCase(data.getCalcType()))
 				.map(p ->p.get("itemValue").toString()).collect(Collectors.toList());

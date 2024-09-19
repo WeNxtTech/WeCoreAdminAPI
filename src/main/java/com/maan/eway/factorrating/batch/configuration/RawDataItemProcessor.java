@@ -67,7 +67,10 @@ public class RawDataItemProcessor  implements ItemProcessor<FactorRateRawInsert,
 			    	error_desc+="MinPremium field cannot be empty or blank~";	
 			    	rate_check = false;
 			    }else if(!min_premium.matches("[0-9.]+")) {
-			    	error_desc+="MinPremium field only allows number or decimal digits~";	
+			    	error_desc+="MinPremium field only allows number or decimal digits("+min_premium+")~";	
+			    	rate_check = false;
+			    }else if(!min_premium.matches("\\d+(\\.\\d+)?")) {
+			    	error_desc+="Please enter valid minpremium("+min_premium+")~";	
 			    	rate_check = false;
 			    }
 			    
@@ -77,6 +80,9 @@ public class RawDataItemProcessor  implements ItemProcessor<FactorRateRawInsert,
 			    	error_desc+="Rate field cannot be empty or blank~";			    	
 			    }else if(!rate.matches("[0-9.]+")) {
 			    	error_desc+="Rate field only allows number or decimal digits~";
+			    }else if(!rate.matches("\\d+(\\.\\d+)?")) {
+			    	error_desc+="Please enter valid rate("+rate+")~";	
+			    	rate_check = false;
 			    }
 			    
 			    
@@ -207,6 +213,12 @@ public class RawDataItemProcessor  implements ItemProcessor<FactorRateRawInsert,
                 		 joiner.add(s.toUpperCase(Locale.US)+" cannot be blank or empty"); 
                 	 }else if(!value.matches("[0-9.]+")) {
                 		 joiner.add(s.toUpperCase(Locale.US)+" should not allow any special characters except [0-9.]"); 
+
+                	 }else if(!value.matches("[0-9.]+")) {
+                		 joiner.add(s.toUpperCase(Locale.US)+" should not allow any special characters except [0-9.]"); 
+
+                	 }else if(!value.matches("\\d+(\\.\\d+)?")) {
+                		 joiner.add(s.toUpperCase(Locale.US)+" should be valid format("+value+")"); 
 
                 	 }
                 	 

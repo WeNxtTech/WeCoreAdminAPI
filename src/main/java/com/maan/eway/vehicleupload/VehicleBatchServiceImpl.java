@@ -145,6 +145,9 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 	private String SequenceGenerateUrl;
 	
 	@Autowired
+	private EwayEmplyeeDetailRawRepository emplyeeDetailRawRepo;;
+	
+	@Autowired
 	private ProductEmployeesDetailsRepository employeesDetailsRepository;
 	
 	Logger log =LogManager.getLogger(VehicleBatchServiceImpl.class);
@@ -186,6 +189,14 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
     @Autowired
     @Qualifier(value="veh_apicall_job")
     Job veh_apicall_job;
+    
+    @Autowired
+    @Qualifier(value="nonmot_raw_job")
+    Job nonmot_raw_job;
+    
+    @Autowired
+    @Qualifier(value="nonmot_validation_job")
+    Job nonmot_validation_job;
     
     @Autowired
     private EwayEmplyeeDetailRawRepository employeeRawRepo;
@@ -484,15 +495,30 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 		        	totalRows = reader.lines().count();
 		        }
 			  
-			JobParameters jobParameters = new JobParametersBuilder()
-			     	.addLong("time", System.currentTimeMillis())
-			     	.addString("EwayBatchReq", ewayBatchReq)
-			     	.addString("RequestReferenceNo", uploadResponse.getRequestReferenceNo())
-			     	.addString("ExcelHeaderNames", StringUtils.chop(headerList))
-			     	.addLong("totalRecords", totalRows)
-					.addLong("gridSize", 10L)
-			        .toJobParameters();
-					jobLauncher.run(vehicle_raw_job, jobParameters);
+		     	
+		    if("5".equals(uploadResponse.getProductId())) { 	
+				JobParameters jobParameters = new JobParametersBuilder()
+				     	.addLong("time", System.currentTimeMillis())
+				     	.addString("EwayBatchReq", ewayBatchReq)
+				     	.addString("RequestReferenceNo", uploadResponse.getRequestReferenceNo())
+				     	.addString("ExcelHeaderNames", StringUtils.chop(headerList))
+				     	.addLong("totalRecords", totalRows)
+						.addLong("gridSize", 10L)
+				        .toJobParameters();
+						jobLauncher.run(vehicle_raw_job, jobParameters);
+		    }else {
+		    	
+		    	JobParameters jobParameters = new JobParametersBuilder()
+				     	.addLong("time", System.currentTimeMillis())
+				     	.addString("EwayBatchReq", ewayBatchReq)
+				     	.addString("RequestReferenceNo", uploadResponse.getRequestReferenceNo())
+				     	.addString("ExcelHeaderNames", StringUtils.chop(headerList))
+				     	.addLong("totalRecords", totalRows)
+						.addLong("gridSize", 10L)
+				        .toJobParameters();
+						jobLauncher.run(nonmot_raw_job, jobParameters);
+		    	
+		    }
 					
 		}catch (Exception e) {
 			log.error(e);
@@ -2033,7 +2059,6 @@ public CommonRes updateEmployeeRecord(UpdateEmployeeRecordReq req) {
 		CommonRes response =new CommonRes();
 		try {
 			
-			Integer total_records =eserviceRepository.countByRequestReferenceNoAndStatusNot(request_ref_no,"E");
 			
 			TransactionControlDetails controlDetails=transRepo.findByRequestReferenceNo(request_ref_no);
 			controlDetails.setProgressDescription("Progressing..");
@@ -2041,15 +2066,39 @@ public CommonRes updateEmployeeRecord(UpdateEmployeeRecordReq req) {
 
 			TransactionControlDetails tcd= transRepo.save(controlDetails);
 		
-			JobParameters jobParameters = new JobParametersBuilder()
-					.addString("company_id", tcd.getCompanyId().toString())
-					.addString("productId", tcd.getProductId().toString())
-					.addString("request_ref_no", request_ref_no)
-					.addLong("totalRecords", total_records.longValue())
-					.addLong("gridSize",10L)
-					.addLocalDateTime("time", LocalDateTime.now())
-					.toJobParameters();
-			jobLauncher.run(veh_validation_job, jobParameters);
+			if(5 == tcd.getProductId()) {
+				
+				Integer total_records =eserviceRepository.countByRequestReferenceNoAndStatusNot(request_ref_no,"E");
+
+				JobParameters jobParameters = new JobParametersBuilder()
+						.addString("company_id", tcd.getCompanyId().toString())
+						.addString("productId", tcd.getProductId().toString())
+						.addString("request_ref_no", request_ref_no)
+						.addLong("totalRecords", total_records.longValue())
+						.addLong("gridSize",10L)
+						.addLocalDateTime("time", LocalDateTime.now())
+						.toJobParameters();
+				jobLauncher.run(veh_validation_job, jobParameters);
+			}else {
+				
+				Integer total_records =emplyeeDetailRawRepo.countByRequestReferenceNoAndStatusNot(request_ref_no,"E");
+				
+				List<EwayEmplyeeDetailRaw> list = emplyeeDetailRawRepo.findByRequestReferenceNo(request_ref_no) ; 
+				
+				JobParameters jobParameters = new JobParametersBuilder()
+						.addString("company_id", tcd.getCompanyId().toString())
+						.addString("productId", tcd.getProductId().toString())
+						.addString("quote_no", list.get(0).getQuoteNo())
+						.addString("section_id", list.get(0).getSectionId())
+						.addString("request_ref_no", request_ref_no)
+						.addLong("totalRecords", total_records.longValue())
+						.addLong("gridSize",10L)
+						.addLocalDateTime("time", LocalDateTime.now())
+						.toJobParameters();
+				jobLauncher.run(nonmot_validation_job, jobParameters);
+			}
+			
+			
 			
 			
 			 Map<String,String> map = new HashMap<>();

@@ -1915,9 +1915,15 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 			Predicate n8 = cb.or(n6,n7);
 			Predicate n9 = cb.equal(b.get("factorTypeId"), factorTypeId);
 			Predicate n10 = cb.equal(b.get("amendId"), maxAmendId);
-			Predicate n11 = cb.equal(b.get("agencyCode"),StringUtils.isBlank(req.getAgencyCode())?"99999":req.getAgencyCode());
-			
-			query.where(n1,n2,n3,n4,n5,n8,n9,n10,n11).orderBy(orderList);
+			/*Predicate n11 =null;
+			if(req.getAgencyCode().contains("~")) {
+				List<String> agencyCodes = Arrays.asList(req.getAgencyCode().split("~"));
+		        n11 = b.get("agencyCode").in(agencyCodes);
+			}else {
+				n11 = cb.equal(b.get("agencyCode"),StringUtils.isBlank(req.getAgencyCode())?"99999":req.getAgencyCode());
+			}*/
+
+			query.where(n1,n2,n3,n4,n5,n8,n9,n10).orderBy(orderList);
 			
 			// Get Result 
 			TypedQuery<FactorRateMaster> result = em.createQuery(query);
@@ -1949,9 +1955,17 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 					        cb2.equal(m.get("branchCode"), "99999")
 					    ),
 					    cb2.equal(m.get("factorTypeId"), factorTypeId),
-					    cb2.equal(m.get("amendId"), list.get(0).getAmendId()),
-					    cb2.equal(m.get("agencyCode"), StringUtils.isBlank(req.getAgencyCode()) ? "99999" : req.getAgencyCode())
+					    cb2.equal(m.get("amendId"), list.get(0).getAmendId())
+					    //cb2.equal(m.get("agencyCode"), StringUtils.isBlank(req.getAgencyCode()) ? "99999" : req.getAgencyCode())
 					);
+					
+					/*if(req.getAgencyCode().contains("~")) {
+						List<String> agencyCodes = Arrays.asList(req.getAgencyCode().split("~"));
+				        n11 = b.get("agencyCode").in(agencyCodes);
+					}else {
+						n11 = cb.equal(b.get("agencyCode"),StringUtils.isBlank(req.getAgencyCode())?"99999":req.getAgencyCode());
+					}*/
+					
 					update.where(updatePredicate);
 					em.createQuery(update).executeUpdate();
 					
@@ -2546,9 +2560,9 @@ public Integer getMasterTableCount(String companyId , String branchCode) {
 			} else {
 				n7 =  cb.equal(b.get("subCoverId"), req.getSubCoverId()); 
 			}
-			n8 = cb.equal(  b.get("agencyCode"), req.getAgencyCode());
-			n9 = cb.equal(b.get("agencyCode"), "99999");
-			Predicate n10 = cb.or(n8 , n9);
+			//n8 = cb.equal(  b.get("agencyCode"), req.getAgencyCode());
+		//	n9 = cb.equal(b.get("agencyCode"), "99999");
+			//Predicate n10 = cb.or(n8 , n9);
 			Predicate n11 = cb.equal(b.get("branchCode"), req.getBranchCode());
 			Predicate n12 = cb.equal(b.get("branchCode"), "99999");
 			Predicate n13 = cb.or(n11 , n12);
@@ -2556,27 +2570,31 @@ public Integer getMasterTableCount(String companyId , String branchCode) {
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("sNo")));
-			query.where(n1, n2, n3,n4,n5,n6,n7,n10,n13).orderBy(orderList);
+			//query.where(n1, n2, n3,n4,n5,n6,n7,n10,n13).orderBy(orderList);
+			query.where(n1, n2, n3,n4,n5,n6,n7,n13).orderBy(orderList);
+
 		
 			// Get Result
 			TypedQuery<FactorRateMaster> result = em.createQuery(query);
 			list = result.getResultList();
 			
 			// Filter By Agency Code & Branch Code
-			String agencyCode = StringUtils.isNotBlank(req.getAgencyCode()) ? req.getAgencyCode() : "99999"  ;
+			//String agencyCode = StringUtils.isNotBlank(req.getAgencyCode()) ? req.getAgencyCode() : "99999"  ;
 			String branchCode = StringUtils.isNotBlank(req.getBranchCode()) ? req.getBranchCode() : "99999"  ;
 		
-			List<FactorRateMaster> filerByAgencyCodeBranchCode = list.stream().filter( o -> o.getAgencyCode().equalsIgnoreCase(agencyCode) &&  o.getBranchCode().equalsIgnoreCase(branchCode) ).collect(Collectors.toList());
-			List<FactorRateMaster> filerByAgencyCode = list.stream().filter( o ->  o.getAgencyCode().equalsIgnoreCase(agencyCode) &&  o.getBranchCode().equalsIgnoreCase("99999")  ).collect(Collectors.toList());
+			List<FactorRateMaster> filerByAgencyCodeBranchCode = list.stream().filter( o -> o.getBranchCode().equalsIgnoreCase(branchCode) ).collect(Collectors.toList());
+			//List<FactorRateMaster> filerByAgencyCodeBranchCode = list.stream().filter( o -> o.getAgencyCode().equalsIgnoreCase(agencyCode) &&  o.getBranchCode().equalsIgnoreCase(branchCode) ).collect(Collectors.toList());
+
+			//List<FactorRateMaster> filerByAgencyCode = list.stream().filter( o ->  o.getAgencyCode().equalsIgnoreCase(agencyCode) &&  o.getBranchCode().equalsIgnoreCase("99999")  ).collect(Collectors.toList());
 			List<FactorRateMaster> filerByCommon = list.stream().filter( o ->  o.getAgencyCode().equalsIgnoreCase("99999") &&  o.getBranchCode().equalsIgnoreCase("99999")  ).collect(Collectors.toList());
 			
 			if(filerByAgencyCodeBranchCode.size() > 0) {
 				list = filerByAgencyCodeBranchCode;
 				
-			} else if (filerByAgencyCode.size() > 0) {
+			} /*else if (filerByAgencyCode.size() > 0) {
 				list = filerByAgencyCode;
 				
-			} else if (filerByCommon.size() > 0) {
+			} */else if (filerByCommon.size() > 0) {
 				list = filerByCommon;
 			}
 		

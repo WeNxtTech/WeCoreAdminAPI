@@ -53,5 +53,8 @@ public interface FactorRateRawMasterRepository extends JpaRepository<FactorRateR
 	@Modifying
 	@Query(nativeQuery=true,value="DELETE FROM eservice_motor_details_raw WHERE request_reference_no=?1")
 	void deleteMotorRawData(String referenceNo);
+	
+	@Query(nativeQuery=true,value ="SELECT xl_agency_code FROM factor_rate_raw_master WHERE tran_id=?1 AND xl_agency_code IS NOT NULL GROUP BY xl_agency_code")
+	List<String> getXlAgencyCode(String request_ref);
 
 }

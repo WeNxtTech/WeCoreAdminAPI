@@ -537,7 +537,7 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 			Long total_records =rawMasterRepository.countByTranIdAndErrorStatusIsNull(tran_id);
 			FactorRateRawInsert frri =rawMasterRepository.findByTranIdAndSno(tran_id,1);
 			FactorRateSaveReq req = new FactorRateSaveReq();
-			req.setAgencyCode(frri.getAgencyCode());
+			//req.setAgencyCode(frri.get);
 			req.setBranchCode(frri.getBranchCode());
 			req.setCompanyId(frri.getCompanyId());
 			req.setProductId(frri.getProductId().toString());
@@ -548,6 +548,9 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 			req.setCreatedBy(frri.getCreatedBy());
 			req.setEffectiveDateStart(frri.getEffectiveDateStart());
 			
+			List<String> list = rawMasterRepository.getXlAgencyCode(tran_id);
+			String agency_codes = list.stream().collect(Collectors.joining("~"));
+			req.setAgencyCode(agency_codes);
 			Integer amendId = service.upadateOldFactor(req);
 			List<ListItemValue> itemValues=service.getListItem("99999",req.getBranchCode(),"CALCULATION_TYPE");
 			Map<String,Object> coverDetails=service.coverMasterDetails(req);

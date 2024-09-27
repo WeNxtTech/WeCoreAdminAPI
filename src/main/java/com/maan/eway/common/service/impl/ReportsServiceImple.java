@@ -626,10 +626,10 @@ public class ReportsServiceImple implements ReportsService {
 	public List<LogDetailsRes> LogDetails(String filePath) {
 		List<LogDetailsRes> resp=new ArrayList<>();
 		try {
-		filePath = filePath.substring(0, filePath.lastIndexOf("\\"));
-		filePath = filePath.substring(0, filePath.lastIndexOf("\\"));
-		filePath = filePath.substring(0, filePath.lastIndexOf("\\"));
-		filePath = filePath +"\\logs";
+		//filePath = filePath.substring(0, filePath.lastIndexOf("\\"));
+		//filePath = filePath.substring(0, filePath.lastIndexOf("\\"));
+		//filePath = filePath.substring(0, filePath.lastIndexOf("\\"));
+		//filePath = filePath +"/logs";
 		System.out.println(filePath);
 		File file = new File(filePath);
 		if(file.exists() && file.isDirectory()){
@@ -642,7 +642,7 @@ public class ReportsServiceImple implements ReportsService {
 	                    // Get file attributes
 	                    BasicFileAttributes attrs = Files.readAttributes(path, BasicFileAttributes.class);
 	                    Instant fileTime = attrs.lastModifiedTime().toInstant();
-	                    System.out.println(""+fileTime) ;                  // Check if the file was modified in the last 10 days
+	                   // System.out.println(""+fileTime) ;                  // Check if the file was modified in the last 10 days
 	                    return fileTime.isAfter(tenDaysAgoInstant);
 	                } catch (Exception e) {
 	                    e.printStackTrace();

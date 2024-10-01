@@ -489,4 +489,7 @@ public class MsAssetDetails implements Serializable {
    @Column(name="SUM_INSURED_LC")
    private BigDecimal     sumInsuredLc ;
   
+   @Column(name="INDEMITY_PERIOD")
+   private String indemityPeriod;
+   
 }

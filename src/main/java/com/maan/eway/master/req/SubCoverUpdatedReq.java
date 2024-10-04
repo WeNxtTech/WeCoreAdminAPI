@@ -92,6 +92,9 @@ public class SubCoverUpdatedReq {
 		@JsonProperty("IsTaxExcempted")
 		private String isTaxExcempted;
 		
+		@JsonProperty("IsSelectedYn")
+		private String isSelectedYn;
+		
 		@JsonProperty("TaxAmount")
 		private String taxAmount;
 		

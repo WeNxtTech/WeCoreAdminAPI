@@ -245,6 +245,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 				saveData.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
 				saveData.setEntryDate(new Date());
 				saveData.setAmendId(amendId);
+				saveData.setIsSelectedYn(StringUtils.isBlank(coverDetails.getIsSelectedYn())?"N":coverDetails.getIsSelectedYn());
 				saveData.setSectionId(Integer.valueOf(req.getSectionId()));
 				saveData.setProductId(Integer.valueOf(req.getProductId()));
 				saveData.setCompanyId(req.getCompanyId());
@@ -1074,7 +1075,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			saveData.setCoverName(coverDetails.getCoverName());
 			saveData.setCoverDesc(coverDetails.getCoverDesc());
 			saveData.setCoverageType(StringUtils.isNotBlank(req.getCoverageType()) ?  req.getCoverageType() : coverDetails.getCoverageType());
-			saveData.setIsSelectedYn(coverDetails.getIsSelectedYn());
+			saveData.setIsSelectedYn(StringUtils.isBlank(coverDetails.getIsSelectedYn())?"N":coverDetails.getIsSelectedYn());
 			saveData.setProRataYn(StringUtils.isNotBlank(req.getProRataYn()) ?  req.getProRataYn() : coverDetails.getProRataYn() );
 			saveData.setRegulatoryCode(StringUtils.isNotBlank(req.getRegulatoryCode()) ?  req.getRegulatoryCode() : coverDetails.getRegulatoryCode() );
 			saveData.setMultiSelectYn(coverDetails.getMultiSelectYn() );

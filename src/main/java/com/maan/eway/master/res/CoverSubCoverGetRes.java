@@ -148,4 +148,7 @@ public class CoverSubCoverGetRes {
 		
 		@JsonProperty("MinimumRate")
 		private String minimumRate;
+		
+		@JsonProperty("IsSelectedYn")
+		private String isSelectedYn;
 }

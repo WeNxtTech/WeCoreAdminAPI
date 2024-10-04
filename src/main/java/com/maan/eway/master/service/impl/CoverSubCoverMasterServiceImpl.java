@@ -432,7 +432,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 		//	res.setSumInsuredEnd(list.get(0).getMaxSuminsured() == null ? "" :df.format(list.get(0).getMaxSuminsured()));
 			res.setSumInsuredStart(list.get(0).getMinSuminsured() == null ? "" :df.format(list.get(0).getMinSuminsured()));
 			res.setCoverageLimit(list.get(0).getCoverageLimit() == null ? "" :df.format(list.get(0).getCoverageLimit()));
-			
+			res.setIsSelectedYn(StringUtils.isBlank(list.get(0).getIsSelectedYn()) ? "N" :list.get(0).getIsSelectedYn());
 			res.setBaseRate(list.get(0).getBaseRate() == null ? "" : df.format(list.get(0).getBaseRate()));
 			res.setCodeDescLocal(StringUtils.isBlank(list.get(0).getSubCoverNameLocal()) ? "" : list.get(0).getSubCoverNameLocal() );
 		} catch (Exception e) {
@@ -1075,7 +1075,7 @@ public class CoverSubCoverMasterServiceImpl implements CoverSubCoverMasterServic
 			saveData.setCoverName(coverDetails.getCoverName());
 			saveData.setCoverDesc(coverDetails.getCoverDesc());
 			saveData.setCoverageType(StringUtils.isNotBlank(req.getCoverageType()) ?  req.getCoverageType() : coverDetails.getCoverageType());
-			saveData.setIsSelectedYn(StringUtils.isBlank(coverDetails.getIsSelectedYn())?"N":coverDetails.getIsSelectedYn());
+			saveData.setIsSelectedYn(StringUtils.isBlank(req.getIsSelectedYn())?"N":req.getIsSelectedYn());
 			saveData.setProRataYn(StringUtils.isNotBlank(req.getProRataYn()) ?  req.getProRataYn() : coverDetails.getProRataYn() );
 			saveData.setRegulatoryCode(StringUtils.isNotBlank(req.getRegulatoryCode()) ?  req.getRegulatoryCode() : coverDetails.getRegulatoryCode() );
 			saveData.setMultiSelectYn(coverDetails.getMultiSelectYn() );

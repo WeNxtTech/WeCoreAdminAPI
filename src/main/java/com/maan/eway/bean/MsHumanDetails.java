@@ -283,6 +283,9 @@ private static final long serialVersionUID = 1L;
 	    
 	    @Column(name="DOMESTIC_SERVENT_SI_LC")
 	    private BigDecimal       domesticServentSiLc;
+	    
+	    @Column(name="COUNT")
+	    private Integer count;
 }
 
 

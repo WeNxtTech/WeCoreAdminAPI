@@ -37,12 +37,12 @@ import jakarta.persistence.*;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
+//@AllArgsConstructor
 @ToString
 @Entity
 @DynamicInsert
 @DynamicUpdate
-@Builder
+//@Builder
 @IdClass(EserviceMotorDetailsId.class)
 @Table(name="eservice_motor_details")
 
@@ -771,8 +771,165 @@ private static final long serialVersionUID = 1L;
 	  
 	  @Column(name = "NO_OF_CYLINDERS")
 	    private Integer noOfCylinders;
+	  
+	@Column(name = "EXCESS_LIMIT_LC")
+	private BigDecimal excessLimitLc;
+	
+	@Column(name = "EXCESS_LIMIT")
+	private BigDecimal excessLimit;
+	
+	@Column(name = "REFERAL_CODES", length = 500)
+	private String referalCodes;
+	
+	@Column(name = "DRIVER_YN", length = 20)
+	private String driverYn;
+
+	@Column(name = "MANUAL_REFERAL_YN", length = 10)
+	private String manualReferalYn;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "ENDORSEMENT_DATE")
+	private Date endorsementDate;
+	
+	@Column(name = "ENDORSEMENT_REMARKS", length = 500)
+	private String endorsementRemarks;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "ENDORSEMENT_EFFDATE")
+	private Date endorsementEffdate;
+	
+	@Column(name = "ORIGINAL_POLICY_NO", length = 500)
+	private String originalPolicyNo;
+	
+	@Column(name = "ENDT_PREV_POLICY_NO", length = 500)
+	private String endtPrevPolicyNo;
+	
+	@Column(name = "ENDT_PREV_QUOTE_NO", length = 500)
+	private String endtPrevQuoteNo;
+	
+	@Column(name = "ENDT_COUNT")
+	private BigDecimal endtCount;
+	
+	@Column(name = "ENDT_STATUS", length = 10)
+	private String endtStatus;
+	
+	@Column(name = "IS_FINYN", length = 5)
+	private String IsFinaceYn;
+	
+	@Column(name = "ENDT_CATEG_DESC", length = 100)
+	private String endtCategDesc;
+	
+	@Column(name = "FINALIZE_YN", length = 2)
+	private String finalizeYn;
+	
+	@Column(name = "NON_ELEC_ACCESSORIES_SI")
+	private BigDecimal nonElecAccessoriesSi;
+	
+	@Column(name = "NON_ELEC_ACCESSORIES_SI_LC")
+	private BigDecimal nonElecAccessoriesSiLc;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "LICENSE_ISSUED_DATE")
+	private Date licenseIssuedDate;
+	
+	@Column(name = "LICESENSE_DURATION")
+	private Integer licesenseDuration;
+	
+	@Column(name = "RENEWAL_DATE_YN", length = 5)
+	private String renewalDateYn;
+	
+	@Column(name = "CLAIM_TYPE", length = 20)
+	private String claimType;
+	
+	@Column(name = "CLAIM_TYPE_DESC", length = 100)
+	private String claimTypeDesc;
+	
+	@Column(name = "RENEWAL_YN", length = 2)
+	private String renewalYn;
+	
+	@Column(name = "PREVIOUS_INSURED", length = 50)
+	private String previousInsured;
+	
+	@Column(name = "SERIES", length = 50)
+	private String series;
+	
+//	@Column(name = "NO_OF_CYCLINDERS")
+//	private Integer noOfCyclinders;
+	
+	@Column(name = "ENGINE_TYPE", length = 100)
+	private String engineType;
+	
+	@Column(name = "PLATE_COLOR", length = 50)
+	private String plateColor;
+	
+	@Column(name = "NO_OF_TRAILERS")
+	private Integer noOfTrailers;
+	
+	@Column(name = "NO_OF_DOORS")
+	private Integer noOfDoors;
+	
+	@Column(name = "NO_OF_PASSENGERS")
+	private Integer noOfPassengers;
+	
+	@Column(name = "PLATE_TYPE_ID", length = 5)
+	private String plateTypeId;
+	
+	@Column(name = "PLATE_TYPE_DESC", length = 50)
+	private String plateTypeDesc;
+	
+	@Column(name = "MILEAGE")
+	private Integer mileage;
+	
+	@Column(name = "NO_CLAIM_DOCUMENT_ID")
+	private Integer noClaimDocumentId;
+	
+	@Column(name = "NO_CLAIM_DOCUMENT_DESC", length = 100)
+	private String noClaimDocumentDesc;
+	
+	@Column(name = "NO_CLAIM_YEARS")
+	private Integer noClaimYears;
+	
+	@Column(name = "REGISTERED_AT")
+	private Integer registeredAt;
+	
+	@Column(name = "MODALITY_SELECTION", length = 5)
+	private String modalitySelection;
+	
+	@Column(name = "DEPRECIATION_VEHICLE_VALUE")
+	private BigDecimal depreciationVehicleValue;
+	
+	@Column(name = "DANGEROUS_GOODS_YN", length = 2)
+	private String dangerousGoodsYn;
+	
+	@Column(name = "LOSS_RATIO")
+	private Double lossRatio;
+	
+	@Column(name = "PREVIOUS_INSURANCE_YN", length = 2)
+	private String previousInsuranceYn;
+	
+	@Column(name = "NEW_VALUE")
+	private Integer newValue;
+	
+	@Column(name = "MARKET_VALUE")
+	private Integer marketValue;
+	
+	@Column(name = "AGGREGATED_VALUE")
+	private Integer aggregatedValue;
+	
+	@Column(name = "MUNICIPALITY_TRAFFIC")
+	private String municipalityTraffic;
+	
+	@Column(name = "TRANSPORT_HYDRO")
+	private String transportHydro;
+	
+	@Column(name = "DISPLACEMENT_CM3")
+    private String displacementInCM3;
+	
+	@Column(name = "PLATE_TYPE")
+	private String plateType;
 	
 }
+
 
 
 

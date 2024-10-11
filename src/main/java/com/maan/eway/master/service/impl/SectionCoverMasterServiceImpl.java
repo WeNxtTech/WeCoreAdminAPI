@@ -1449,7 +1449,9 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				saveData.setCreatedBy(req.getCreatedBy());
 				saveData.setUpdatedDate(new Date());
 				saveData.setUpdatedBy(req.getCreatedBy());
-				saveData.setMinimumRate(new BigDecimal(req.getMinimumRate()));
+				
+				saveData.setMinimumRate(req.getMinimumRate()!=null ?new BigDecimal(req.getMinimumRate()):BigDecimal.ZERO);
+				
 				saveData.setMinimumRateYn(StringUtils.isBlank(req.getMinimumRateYN()) ? "N" : req.getMinimumRateYN());
 
 				

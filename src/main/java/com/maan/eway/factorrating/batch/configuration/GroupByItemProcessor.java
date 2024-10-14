@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.dozer.DozerBeanMapper;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,6 +25,7 @@ import com.maan.eway.master.req.FactorRateSaveReq;
 import com.maan.eway.master.service.impl.FactorRateMasterServiceImpl;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.springbatch.FactorRateRawInsert;
+import com.maan.eway.vehicleupload.CustomStepExecutionListener;
 
 @Component
 public class GroupByItemProcessor implements ItemProcessor<List<FactorRateRawInsert>,List<FactorRateRawInsert>>{
@@ -43,30 +45,16 @@ public class GroupByItemProcessor implements ItemProcessor<List<FactorRateRawIns
 	@Autowired
     private FactorRatingBatchServiceImpl validation;
 
+	 @Autowired
+	 @Qualifier("groupingStepJobListener")
+	 private FactorStepExecutionListener stepExecutionListener;
+
 	
-	public GroupByItemProcessor(String dropdown_data, String rage_columns, String isDiscreate,String factor_id,String minimum_rate_yn) {
+	public GroupByItemProcessor(String rage_columns, String isDiscreate,String factor_id,String minimum_rate_yn) {
 		this.range_columns=rage_columns;
 		this.isDiscreate=isDiscreate;
-		this.dropdown_data=dropdown_data;
 		this.factor_id =factor_id;
 		this.minimum_rate_yn = minimum_rate_yn;
-		try {
-				dropDownMap =map.readValue(dropdown_data, Map.class);
-				for (Map.Entry<String, List<Map<String, Object>>> entry : dropDownMap.entrySet()) {
-		            String category = entry.getKey();
-		            List<DropDownRes> dropDownResList = entry.getValue().stream()
-		                .map(map -> new DropDownRes(
-		                     map.get("code")==null?"":map.get("code").toString(),
-		                     map.get("codeDesc")==null?"":map.get("codeDesc").toString(),		                    	 "",
-		                     map.get("status")==null?"":map.get("status").toString(),		                    		 ""
-		                   	    	          
-		                ))
-		                .collect(Collectors.toList());
-		            drop.put(category, dropDownResList);
-				}
-	        }catch (Exception e) {
-				e.printStackTrace();
-			}
 	}
 
 
@@ -159,6 +147,7 @@ public class GroupByItemProcessor implements ItemProcessor<List<FactorRateRawIns
 
 	@Override
 	public List<FactorRateRawInsert> process(List<FactorRateRawInsert> item) throws Exception {
+		drop = stepExecutionListener.getDropDownList();
 		return validation.factorRangeValidation(item, this.range_columns, this.isDiscreate,factor_id,drop,minimum_rate_yn);
 	}
 

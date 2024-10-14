@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
@@ -65,8 +66,9 @@ public class FactorValidationSpringBatchConfig {
         return new StepBuilder("groupingStep",jobRepository)
                 .<List<FactorRateRawInsert>, List<FactorRateRawInsert>>chunk(1000,new ResourcelessTransactionManager())
                 .reader(groupingItemReader(null,null,null,null))
-                .processor(itemProcessor(null,null,null,null,null))
+                .processor(itemProcessor(null,null,null,null))
                 .writer(itemWriter())
+                .listener(groupingStepJobListener())
                 .build();
     }
 
@@ -102,10 +104,10 @@ public class FactorValidationSpringBatchConfig {
 
     @Bean("groupingItemProcessor")
     @StepScope
-    public ItemProcessor<List<FactorRateRawInsert>, List<FactorRateRawInsert>> itemProcessor(@Value("#{jobParameters[dropdown_data]}") String dropdown_data,
+    public ItemProcessor<List<FactorRateRawInsert>, List<FactorRateRawInsert>> itemProcessor(
     		@Value("#{jobParameters[rage_columns]}") String rage_columns,@Value("#{jobParameters[discreate_columns]}") String isDiscreate,
     		@Value("#{jobParameters[factor_id]}") String factor_id,@Value("#{jobParameters[minimum_rate_yn]}") String minimum_rate_yn) {    	
-    	return new GroupByItemProcessor(dropdown_data,rage_columns,isDiscreate,factor_id,minimum_rate_yn);         	
+    	return new GroupByItemProcessor(rage_columns,isDiscreate,factor_id,minimum_rate_yn);         	
     }
 
     @Bean("groupingItemWriter")
@@ -129,6 +131,11 @@ public class FactorValidationSpringBatchConfig {
     @Bean("groupingJobListener")
     public GroupingJobListener listener() {
     	return new GroupingJobListener();
+    }
+    
+    @Bean("groupingStepJobListener")
+    public FactorStepExecutionListener groupingStepJobListener() {
+    	return new FactorStepExecutionListener();
     }
     
    // @Bean("groupingPartitionHandler")

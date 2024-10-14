@@ -637,7 +637,6 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
     	            .collect(Collectors.joining("~"));
         	
         	String isDiscreate =StringUtils.isBlank(discreate_columns)?"N":"Y";
-			Map<String,List<DropDownRes>> dropDownList =new HashMap<String,List<DropDownRes>>();
 			
 
         	FactorRateSaveReq factorRateSaveReq = new FactorRateSaveReq();
@@ -648,11 +647,11 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 			factorRateSaveReq.setSectionId(frri.getSectionId().toString());
 			factorRateSaveReq.setProductId(frri.getProductId().toString());
 			factorRateSaveReq.setFactorTypeId(frri.getFactorTypeId().toString());
-			dropDownList= rateMasterServiceImpl.masterDiscreteApiCall(factorRateSaveReq,token.replaceAll("Bearer ", "").split(",")[0]);						
+			//dropDownList= rateMasterServiceImpl.masterDiscreteApiCall(factorRateSaveReq,token.replaceAll("Bearer ", "").split(",")[0]);						
         	  
-			String dropwon_data =print.toJson(dropDownList);
+			//String dropwon_data =print.toJson(dropDownList);
 			Grouping_Thread_Job thread_Job = new Grouping_Thread_Job(tran_id,discreate_columns,isDiscreate
-					,groupingJob,jobLauncher,total_records,dropwon_data,rageColumns,minimumRateYn);
+					,groupingJob,jobLauncher,total_records,token,rageColumns,minimumRateYn);
 			Thread thread = new Thread(thread_Job);
 			thread.setName("GROUP_RECORDS");
 			thread.setPriority(Thread.MAX_PRIORITY);

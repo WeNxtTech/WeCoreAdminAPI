@@ -84,6 +84,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="PRODUCT_ID", nullable=false, length=20)
     private String     productId ;
+    
+    @Column(name = "LOCATION_ID", length = 20)
+	private String locationId;
 
     @Column(name="POLICY_NO", length=100)
     private String     policyNo;

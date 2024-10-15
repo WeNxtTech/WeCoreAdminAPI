@@ -387,7 +387,9 @@ private static final long serialVersionUID = 1L;
     private BigDecimal endtVatPremium;
     
   
-
+    
+    @Column(name="LOCATION_ID")
+    private Integer    locationId ;
     
 }
 

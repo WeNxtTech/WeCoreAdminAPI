@@ -319,6 +319,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="MS_REFNO", length=20)
     private String     msRefno ;
+    
+    @Column(name="LOCATION_ID")
+    private Integer    locationId ;
 
 }
 

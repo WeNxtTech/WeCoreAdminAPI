@@ -87,7 +87,7 @@ public class APIItemProcessor implements ItemProcessor<EserviceMotorDetailsRaw, 
 				saveVehicleInfo.put("EngineNumber", p.getEngineNumber());
 				saveVehicleInfo.put("FuelType", p.getFuelType());
 				saveVehicleInfo.put("Grossweight", StringUtils.isBlank(p.getGrossWeight())?"500":p.getGrossWeight());
-				saveVehicleInfo.put("MotorCategory", StringUtils.isBlank(p.getMotorCategoryId())?"1":p.getMotorCategory());
+				saveVehicleInfo.put("MotorCategory", StringUtils.isBlank(p.getMotorCategoryId())?"1":p.getMotorCategoryId());
 				saveVehicleInfo.put("Motorusage", StringUtils.isBlank(p.getMotorUsageDesc())?"Ambulance":p.getMotorUsageDesc());
 				saveVehicleInfo.put("NumberOfAxels", "1");
 				saveVehicleInfo.put("OwnerCategory",StringUtils.isBlank(p.getOwnerCategory())?"1":p.getOwnerCategory());

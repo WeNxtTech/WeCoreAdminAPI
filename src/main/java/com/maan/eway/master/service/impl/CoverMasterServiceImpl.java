@@ -657,7 +657,8 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			Root<CoverMaster> ocpm1 = effectiveDate.from(CoverMaster.class);
 			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart"))).distinct(true);
 			Predicate a1 = cb.equal(ocpm1.get("coverId"), ocpm2.get("coverId"));
-			effectiveDate.where(a1);
+			Predicate a00 = ocpm2.get("coverId").in("90001", "90002").not();
+			effectiveDate.where(a1,a00);
 									
 			
 			// Cover ID Date Max Filter

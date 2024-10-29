@@ -19,11 +19,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import lombok.*;
 import jakarta.persistence.*;
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.List;
-
 import java.util.Date;
-import jakarta.persistence.*;
 
 
 
@@ -340,6 +336,19 @@ private static final long serialVersionUID = 1L;
     
     @Column(name = "ZONE")
 	private Integer zone;
+    
+    @Column(name="COUNTRY", length=50)
+    private String     country ;
+    
+    @Column(name="COUNTRY_NAME", length=100)
+    private String     countryName ;
+    
+    @Column(name="NATIONALITY_NAME", length=100)
+    private String     nationalityName ;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EXPIRY_DATE")
+    private Date expiryDate;
 }
 
 

@@ -2630,7 +2630,7 @@ public Integer getMasterTableCount(String companyId , String branchCode) {
 					 
 					 fParam.setRate(data.getRate()==null?"" : data.getRate().stripTrailingZeros().toPlainString());
 					fParam.setCalType(data.getCalcType());
-					fParam.setMinimumPremium(data.getMinPremium() == null ? null : minPreFormat.format(data.getMinPremium()));
+					fParam.setMinimumPremium(data.getMinPremium() == null ? null : String.valueOf(data.getMinPremium()));
 					// Excess
 					fParam.setExcessAmount( data.getExcessAmount()==null?"" : data.getExcessAmount().stripTrailingZeros().toPlainString());
 					fParam.setExcessPercent( data.getExcessPercent()==null?"" : data.getExcessPercent().stripTrailingZeros().toPlainString());

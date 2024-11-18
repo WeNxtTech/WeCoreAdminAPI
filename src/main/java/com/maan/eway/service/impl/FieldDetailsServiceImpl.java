@@ -1,0 +1,149 @@
+package com.maan.eway.service.impl;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.maan.eway.bean.ScreenFieldMaster;
+import com.maan.eway.bean.ScreenFieldMaster.ScreenFieldMasterBuilder;
+import com.maan.eway.master.req.Fieldvalues;
+import com.maan.eway.master.req.SaveFieldDetailsReq;
+import com.maan.eway.repository.ScreenFieldMasterRepository;
+import com.maan.eway.res.CommonRes;
+import com.maan.eway.service.FieldDetailsService;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
+
+@Service
+public class FieldDetailsServiceImpl implements FieldDetailsService {
+
+	private Logger logger = LogManager.getLogger(FieldDetailsServiceImpl.class);
+	
+	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+	
+	private ObjectMapper objectMapper = new ObjectMapper();
+	
+	@PersistenceContext
+	private EntityManager em;
+	
+	@Autowired
+	private ScreenFieldMasterRepository fieldMasterRepo;
+	
+	@Override
+	public CommonRes saveFieldDetails(SaveFieldDetailsReq req) {
+		CommonRes res = new CommonRes();
+		logger.info("saveField Req :: "+req.toString());
+		try {
+			Integer fieldId = 0;
+			if(StringUtils.isBlank(req.getFieldId())) {
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<Integer> cq = cb.createQuery(Integer.class);
+				Root<ScreenFieldMaster> fmRoot = cq.from(ScreenFieldMaster.class);
+				cq.multiselect(cb.coalesce(cb.sum(cb.max(fmRoot.get("fieldId")),1), 1).as(Integer.class));
+				fieldId = em.createQuery(cq).getSingleResult();
+			}else {
+				fieldId = Integer.parseInt(req.getFieldId());
+			}
+			
+			Optional<ScreenFieldMaster> existData = fieldMasterRepo.findById(fieldId);
+			
+			ScreenFieldMasterBuilder m = ScreenFieldMaster.builder()
+				    .fieldId(fieldId)
+				    .productId(req.getProductId() == null ? null : Integer.parseInt(req.getProductId()))
+				    .sectionId(req.getSectionId() == null ? null : Integer.parseInt(req.getSectionId()))
+				    .companyId(req.getInsuranceId() == null ? null : req.getInsuranceId())
+				    .effectiveDate(req.getEffectiveDate() == null ? null : sdf.parse(req.getEffectiveDate()))
+				    .fields(objectMapper.writeValueAsString(req.getFields()))
+				    .fieldName(req.getFieldName() == null ? null : req.getFieldName())
+				    .status(req.getStatus() == null ? "N" : req.getStatus());
+				if (existData.isPresent()) {
+				    m.updatedBy(req.getLoginId() == null ? null : req.getLoginId())
+				     .updatedDate(new Date());
+				} else {
+				    m.entryDate(new Date())
+				     .createdBy(req.getLoginId() == null ? null : req.getLoginId());
+				}
+				ScreenFieldMaster screenFieldMaster = m.build();
+				fieldMasterRepo.save(screenFieldMaster);
+				
+				res.setMessage("SUCCESS");
+				res.setIsError(false);
+				res.setErrorMessage(null);
+		logger.info("Exist into saveFieldDetails");
+		}catch(Exception e) {
+			res.setMessage("FAILED");
+			res.setIsError(true);
+			logger.info("Error in saveFieldDetails :: "+e.getStackTrace());
+			e.printStackTrace();
+		}
+		return res;
+	}
+
+	@Override
+	public CommonRes getFieldDetails(String fieldId) {
+		CommonRes res = new CommonRes();
+		List<SaveFieldDetailsReq> responseList = new ArrayList<>();
+		List<ScreenFieldMaster> fieldData = new ArrayList<>();
+		if(fieldId!=null && StringUtils.isBlank(fieldId)) {
+			fieldData.add(fieldMasterRepo.findById(Integer.parseInt(fieldId)).get());
+		}else {
+			fieldData = fieldMasterRepo.findAll();
+		}
+		if(!CollectionUtils.isEmpty(fieldData)) {
+			fieldData.forEach(k -> {
+				SaveFieldDetailsReq detailsReq = new SaveFieldDetailsReq();
+				detailsReq.setFieldId(k.getFieldId()==null?null:k.getFieldId().toString());
+				detailsReq.setInsuranceId(k.getCompanyId()==null?null:k.getCompanyId());
+				detailsReq.setProductId(k.getProductId()==null?null:k.getProductId().toString());
+				detailsReq.setSectionId(k.getSectionId()==null?null:k.getSectionId().toString());
+				detailsReq.setStatus(k.getStatus()==null?null:k.getStatus());
+				detailsReq.setLoginId(k.getCreatedBy()==null?null:k.getCreatedBy());
+				detailsReq.setFieldName(k.getFieldName()==null?null:k.getFieldName());
+				detailsReq.setEffectiveDate(k.getEffectiveDate()==null?null:sdf.format(k.getEffectiveDate()));
+				try {
+					List<Map<String, Object>> fieldsList = objectMapper.readValue(k.getFields(), new TypeReference<List<Map<String, Object>>>(){});
+					List<Fieldvalues> fieldsvalues = new ArrayList<Fieldvalues>();
+					fieldsList.forEach(q -> {
+						Fieldvalues m = Fieldvalues.builder()
+								.value(q.get("Value")==null?"":q.get("Value").toString())
+								.description(q.get("Description")==null?"":q.get("Description").toString())
+								.build();
+						fieldsvalues.add(m);
+					});
+					detailsReq.setFields(fieldsvalues);
+				} catch (JsonProcessingException e) {
+					e.printStackTrace();
+				}
+				responseList.add(detailsReq);
+			});
+			res.setCommonResponse(responseList);
+			res.setMessage("SUCCESS");
+			res.setErrorMessage(null);
+			res.setIsError(false);
+		}else {
+			res.setCommonResponse(null);
+			res.setMessage("FALSE");
+			res.setIsError(true);
+		}
+		
+		return res;
+	}
+
+}

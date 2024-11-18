@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maan.eway.bean.ScreenFieldMaster;
 import com.maan.eway.bean.ScreenFieldMaster.ScreenFieldMasterBuilder;
 import com.maan.eway.master.req.Fieldvalues;
+import com.maan.eway.master.req.GetFieldDetailsReq;
 import com.maan.eway.master.req.SaveFieldDetailsReq;
 import com.maan.eway.repository.ScreenFieldMasterRepository;
 import com.maan.eway.res.CommonRes;
@@ -29,6 +30,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
 @Service
@@ -74,8 +76,11 @@ public class FieldDetailsServiceImpl implements FieldDetailsService {
 				    .fieldName(req.getFieldName() == null ? null : req.getFieldName())
 				    .status(req.getStatus() == null ? "N" : req.getStatus());
 				if (existData.isPresent()) {
+					ScreenFieldMaster exitList = existData.get();
 				    m.updatedBy(req.getLoginId() == null ? null : req.getLoginId())
-				     .updatedDate(new Date());
+				     .updatedDate(new Date())
+				     .createdBy(exitList.getCreatedBy())
+				     .entryDate(exitList.getEntryDate());
 				} else {
 				    m.entryDate(new Date())
 				     .createdBy(req.getLoginId() == null ? null : req.getLoginId());
@@ -84,6 +89,7 @@ public class FieldDetailsServiceImpl implements FieldDetailsService {
 				fieldMasterRepo.save(screenFieldMaster);
 				
 				res.setMessage("SUCCESS");
+				res.setCommonResponse("Saved Successfully");
 				res.setIsError(false);
 				res.setErrorMessage(null);
 		logger.info("Exist into saveFieldDetails");
@@ -97,14 +103,37 @@ public class FieldDetailsServiceImpl implements FieldDetailsService {
 	}
 
 	@Override
-	public CommonRes getFieldDetails(String fieldId) {
+	public CommonRes getFieldDetails(String fieldId,GetFieldDetailsReq req) {
 		CommonRes res = new CommonRes();
 		List<SaveFieldDetailsReq> responseList = new ArrayList<>();
 		List<ScreenFieldMaster> fieldData = new ArrayList<>();
-		if(fieldId!=null && StringUtils.isBlank(fieldId)) {
+		if(fieldId!=null && StringUtils.isNotBlank(fieldId)) {
 			fieldData.add(fieldMasterRepo.findById(Integer.parseInt(fieldId)).get());
 		}else {
-			fieldData = fieldMasterRepo.findAll();
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ScreenFieldMaster> cq = cb.createQuery(ScreenFieldMaster.class);
+			Root<ScreenFieldMaster> sRoot = cq.from(ScreenFieldMaster.class);
+			
+			cq.select(sRoot);
+			List<Predicate> predicates = new ArrayList<Predicate>();
+			if(StringUtils.isNotBlank(req.getInsuranceId())) {
+				predicates.add(cb.equal(sRoot.get("companyId"), req.getInsuranceId()));
+			}
+			if(StringUtils.isNotBlank(req.getProductId())) {
+				predicates.add(cb.equal(sRoot.get("productId"), Integer.parseInt(req.getProductId())));
+			}
+			if(StringUtils.isNotBlank(req.getSectionId())) {
+				predicates.add(cb.equal(sRoot.get("sectionId"), Integer.parseInt(req.getSectionId())));
+			}
+			if(StringUtils.isNotBlank(req.getStatus())) {
+				predicates.add(cb.equal(sRoot.get("status"), Integer.parseInt(req.getStatus())));
+			}
+			Predicate [] predicateArray = new Predicate[predicates.size()];
+			predicates.toArray(predicateArray);
+			
+			cq.where(predicateArray).orderBy(cb.asc(sRoot.get("fieldId")));
+			
+			fieldData = em.createQuery(cq).getResultList();
 		}
 		if(!CollectionUtils.isEmpty(fieldData)) {
 			fieldData.forEach(k -> {
@@ -114,7 +143,7 @@ public class FieldDetailsServiceImpl implements FieldDetailsService {
 				detailsReq.setProductId(k.getProductId()==null?null:k.getProductId().toString());
 				detailsReq.setSectionId(k.getSectionId()==null?null:k.getSectionId().toString());
 				detailsReq.setStatus(k.getStatus()==null?null:k.getStatus());
-				detailsReq.setLoginId(k.getCreatedBy()==null?null:k.getCreatedBy());
+				detailsReq.setLoginId(k.getUpdatedBy()==null?k.getCreatedBy()==null?"":k.getCreatedBy():k.getUpdatedBy());
 				detailsReq.setFieldName(k.getFieldName()==null?null:k.getFieldName());
 				detailsReq.setEffectiveDate(k.getEffectiveDate()==null?null:sdf.format(k.getEffectiveDate()));
 				try {
@@ -128,6 +157,10 @@ public class FieldDetailsServiceImpl implements FieldDetailsService {
 						fieldsvalues.add(m);
 					});
 					detailsReq.setFields(fieldsvalues);
+					detailsReq.setMandatoryYN(fieldsvalues.stream().filter(f -> f.getDescription().equalsIgnoreCase("Mandatory"))
+							.map(p -> p.getValue()).findFirst().orElse(""));
+					detailsReq.setFieldType(fieldsvalues.stream().filter(f -> f.getDescription().equalsIgnoreCase("FieldType"))
+							.map(p -> p.getValue()).findFirst().orElse(""));
 				} catch (JsonProcessingException e) {
 					e.printStackTrace();
 				}

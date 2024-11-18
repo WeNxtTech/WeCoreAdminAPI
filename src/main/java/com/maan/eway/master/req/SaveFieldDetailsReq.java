@@ -38,4 +38,10 @@ public class SaveFieldDetailsReq {
 	@JsonProperty("FieldName")
 	private String fieldName;
 	
+	@JsonProperty("FieldType")
+	private String fieldType;
+	
+	@JsonProperty("MandatoryYN")
+	private String mandatoryYN;
+	
 }

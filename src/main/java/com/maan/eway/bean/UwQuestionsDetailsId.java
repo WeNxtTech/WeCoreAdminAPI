@@ -8,7 +8,7 @@ import lombok.*;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.List;
- 
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 
@@ -18,10 +18,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
- 
 
 /**
- * Composite primary key for entity "UwQuestionsDetails" ( stored in table "uw_questions_details" )
+ * Composite primary key for entity "UwQuestionsDetails" ( stored in table
+ * "uw_questions_details" )
  *
  * @author Telosys
  *
@@ -35,24 +35,25 @@ import lombok.ToString;
 @Builder
 public class UwQuestionsDetailsId implements Serializable {
 
-    private static final long serialVersionUID = 1L;
- 
-    //--- ENTITY KEY ATTRIBUTES 
-    private String     companyId ;
-    
-    private Integer    productId ;
-    
-    private String     requestReferenceNo ;
-    
-    private Integer    vehicleId ;
-    
-    private Integer    uwQuestionId ;
-    
-  private String     branchCode ;
-    
-    private String questionCategory;
-    
-    
- 
-     
+	private static final long serialVersionUID = 1L;
+
+	// --- ENTITY KEY ATTRIBUTES
+	private String companyId;
+
+	private Integer productId;
+
+	private String requestReferenceNo;
+
+	private Integer vehicleId;
+
+	private Integer uwQuestionId;
+
+	private String branchCode;
+
+	private String questionCategory;
+
+	private String sectionId;
+
+	private String locationId;
+
 }

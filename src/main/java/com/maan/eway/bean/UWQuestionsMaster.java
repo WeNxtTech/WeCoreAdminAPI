@@ -72,6 +72,11 @@ private static final long serialVersionUID = 1L;
 	private String branchCode;
 	
     
+     @Id
+	 @Column(name="SECTION_ID",length=100,nullable=false) 
+	 private String sectionId ;
+    
+    
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="EFFECTIVE_DATE_START")
     private Date       effectiveDateStart ;

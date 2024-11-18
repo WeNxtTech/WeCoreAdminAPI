@@ -43,6 +43,8 @@ public class UWQuestionsMasterId implements Serializable {
     
 	private String questionCategory;
 	
+	private String sectionId;
+	
     
     
      

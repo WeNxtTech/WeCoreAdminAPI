@@ -64,6 +64,15 @@ public class UwQuestionsDetails implements Serializable {
 	@Column(name = "PRODUCT_ID", nullable = false)
 	private Integer productId;
 
+	
+	@Id
+	@Column(name = "SECTION_ID", length = 20)
+	private String sectionId;
+		
+	@Id
+	@Column(name = "LOCATION_ID", length = 20)
+	private String locationId;
+
 	@Id
 	@Column(name = "REQUEST_REFERENCE_NO", nullable = false, length = 20)
 	private String requestReferenceNo;
@@ -87,21 +96,21 @@ public class UwQuestionsDetails implements Serializable {
 
 	@Column(name = "QUESTION_CATEGORY_DESC")
 	private String questionCategoryDesc;
-	
-    @Column(name="POLICY_HOLDER_TYPE", length=2)
-    private String     policyHolderType ;
-    
-    @Column(name="POLICY_HOLDER_TYPE_DESC", length=100)
-    private String     policyHolderTypeDesc ;
-    
-    @Column(name="ID_TYPE", length=100)
-    private String     idType ;
 
-    @Column(name="ID_TYPE_DESC", length=100)
-    private String     idTypeDesc ;
+	@Column(name = "POLICY_HOLDER_TYPE", length = 2)
+	private String policyHolderType;
 
-    @Column(name="ID_NUMBER", length=100)
-    private String     idNumber ;
+	@Column(name = "POLICY_HOLDER_TYPE_DESC", length = 100)
+	private String policyHolderTypeDesc;
+
+	@Column(name = "ID_TYPE", length = 100)
+	private String idType;
+
+	@Column(name = "ID_TYPE_DESC", length = 100)
+	private String idTypeDesc;
+
+	@Column(name = "ID_NUMBER", length = 100)
+	private String idNumber;
 
 	///////////
 

@@ -107,6 +107,10 @@ private static final long serialVersionUID = 1L;
     @Column(name="BODY_TYPE",  length=20)
     private String     bodyType ;
     
+    @Column(name="CORE_APP_CODE", length=50)
+    private String coreAppCode;
+  
+    
 }
 
 

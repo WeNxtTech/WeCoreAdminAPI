@@ -67,6 +67,10 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="RISK_ID", nullable=false)
     private Integer    riskId ;
+    
+    @Column(name="SECTION_ID", nullable=false, length=20)
+    private String     sectionId ;
+    
 
     @Column(name="INSURANCE_TYPE",  length=10)
     private String     insuranceType ;
@@ -225,8 +229,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="INSURANCE_CLASS" ,length=20)
     private String     insuranceClass ;
 
-    @Column(name="SECTION_ID", nullable=false, length=20)
-    private String     sectionId ;
+  
     
     @Column(name="SECTION_NAME", length=100)
     private String     sectionName ;
@@ -934,6 +937,13 @@ private static final long serialVersionUID = 1L;
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "QUOTE_EXPIRY_DATE")
     private Date quoteExpiryDate;
+	
+	@Column(name ="NO_OF_MALE")
+	private Integer noOfMale;
+	
+    @Column(name ="NO_OF_FEMALE")
+	private Integer noOfFemale;
+    
 	
 }
 

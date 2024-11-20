@@ -578,6 +578,24 @@ private static final long serialVersionUID = 1L;
     @Column(name="ENGINE_TYPE", length=100)
     private String   enginetype ; 
     
+    @Column(name ="NO_OF_MALE")
+	private Integer noOfMale;
+	
+    @Column(name ="NO_OF_FEMALE")
+	private Integer noOfFemale;
+    
+    @Column(name="Certificate_Type", length=20)
+    private String   certificateType ; 
+   
+    @Column(name="Book_Id", length=20)
+    private String   bookId ; 
+    
+    @Column(name="Certificate_No", length=20)
+    private String   certificateNo ; 
+   
+   
+    
+    
 }
 
 

@@ -492,4 +492,7 @@ public class MsAssetDetails implements Serializable {
    @Column(name="INDEMITY_PERIOD")
    private String indemityPeriod;
    
+   @Column(name="CONTENT_ID")
+   private String contentId;
+   
 }

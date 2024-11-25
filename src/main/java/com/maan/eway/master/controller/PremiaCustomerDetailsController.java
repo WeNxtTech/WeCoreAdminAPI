@@ -20,7 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 import com.maan.eway.master.req.PremiaDropDownReq;
+import com.maan.eway.master.res.PremiaBrokerList;
 import com.maan.eway.master.res.PremiaCustomerDetailsRes;
+import com.maan.eway.master.res.PremiaCustomerList;
 import com.maan.eway.master.service.PremiaCustomerDetailsService;
 import com.maan.eway.res.BrokerCustCodeRes;
 import com.maan.eway.res.CommonRes;
@@ -117,6 +119,48 @@ public class PremiaCustomerDetailsController {
 
 		// Search
 		List<PremiaCustomerDetailsRes> res = service.searchPremiaBrokerCustomerCode(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
+	@PostMapping("/search/premiabrokerlist")
+	@ApiOperation(value = "This method is Search Premia ")
+
+	public ResponseEntity<CommonRes> searchPremiabrokerlist(@RequestBody  PremiaDropDownReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+
+		// Search
+		List<PremiaBrokerList> res = service.searchPremiabrokerlist(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
+	@PostMapping("/search/premiacustomerlist")
+	@ApiOperation(value = "This method is Search Premia ")
+
+	public ResponseEntity<CommonRes> searchPremiacustomerlist(@RequestBody  PremiaDropDownReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+
+		// Search
+		List<PremiaCustomerList> res = service.searchPremiacustomerlist(req);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());

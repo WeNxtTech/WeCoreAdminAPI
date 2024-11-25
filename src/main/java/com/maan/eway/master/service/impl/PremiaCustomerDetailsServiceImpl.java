@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,15 +31,23 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.maan.eway.bean.BranchMaster;
+import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.PremiaCustomerDetails;
 import com.maan.eway.master.req.PremiaDropDownReq;
+import com.maan.eway.master.res.PremiaBrokerDetailsRes;
+import com.maan.eway.master.res.PremiaBrokerList;
+import com.maan.eway.master.res.PremiaBrokerRes;
+import com.maan.eway.master.res.PremiaCustDetailsRes;
+import com.maan.eway.master.res.PremiaCustRes;
 import com.maan.eway.master.res.PremiaCustomerDetailsRes;
+import com.maan.eway.master.res.PremiaCustomerList;
 import com.maan.eway.master.res.PremiaCustomerRes;
 import com.maan.eway.master.service.PremiaCustomerDetailsService;
+import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.PremiaCustomerDetailsRepository;
 import com.maan.eway.res.BrokerCustCodeRes;
@@ -78,7 +87,10 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 	
 	@Value(value = "${ClaimBasicAuthName}")
 	private String ClaimBasicAuthName;
-
+	
+	
+	@Autowired
+	private ListItemValueRepository listItemValueRepository;
 	
 	private Logger log = LogManager.getLogger(PremiaCustomerDetailsServiceImpl.class);
 
@@ -427,5 +439,127 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 	private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
 	    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
 	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+	}
+
+	@Override
+	public List<PremiaBrokerList> searchPremiabrokerlist(PremiaDropDownReq req) {
+		List<PremiaBrokerList>resList=new ArrayList<PremiaBrokerList>();
+		try {
+			ListItemValue list=listItemValueRepository.findByItemTypeAndItemCode("PREMIA_BROKER_CUSTOMER", "1");
+			if(list!=null) {
+				String url = list.getItemValue() ;
+				String auth = list.getParam1()+":"+ list.getParam1();
+				byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(StandardCharsets.US_ASCII));
+		        String authHeader = "Basic " + new String( encodedAuth );
+		     	RestTemplate restTemplate = new RestTemplate();
+				HttpHeaders headers = new HttpHeaders();
+				Map<String ,Object> request=new HashMap<String, Object>();
+				request.put("queryId", "6");
+				headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
+				headers.setContentType(MediaType.APPLICATION_JSON);
+				headers.set("Authorization",authHeader);
+				HttpEntity<Object> entityReq = new HttpEntity<Object>(request, headers);
+	
+				log.info("Api Url -----------> " +  url );
+			    log.info("Request -----------> " + json.toJson(req) );
+				ResponseEntity<Object> response = restTemplate.postForEntity(url, entityReq, Object.class);
+				System.out.println(response.getBody());
+				log.info("Response -----------> " + json.toJson(response.getBody()) );
+				ObjectMapper mapper = new ObjectMapper();
+				PremiaBrokerRes resp=mapper.convertValue(response.getBody(),PremiaBrokerRes.class);
+				//List<PremiaBrokerDetailsRes> premiaResList = mapper.convertValue(resp.getData() ,new TypeReference<List<PremiaBrokerDetailsRes>>(){});
+				
+				if( resp!=null) {
+					for(PremiaBrokerDetailsRes premia :  resp.getData()) {
+						PremiaBrokerList res = new PremiaBrokerList();
+						res.setBrokerCode(premia.getBrokerCode());
+						res.setBrokerName(premia.getBrokerName());
+						res.setBrokerAddress(premia.getBrokerAddress());
+						res.setBrokerCivilId(premia.getCivilId());
+						res.setTaxApplicable(premia.getTaxApplicable());
+						res.setVatApplicable(premia.getVatApplicable());
+						res.setVatReNo(premia.getVatRegNo());
+						res.setBrokerEmail(premia.getBrokerEmail());
+						res.setBrokerFax(premia.getBrokerFax());
+						res.setBrokerMobile(premia.getBrokerMobile());
+						res.setBrokerPhone(premia.getBrokerPhone());
+						res.setBrokerCity(premia.getBrokerCity());;
+						resList.add(res);
+					}
+				}else {
+					resList = new ArrayList<PremiaBrokerList>();
+					PremiaBrokerList errRes = new PremiaBrokerList();
+					errRes.setBrokerName("No Record Found");
+					resList.add(errRes);
+					
+				}
+				
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->"+e.getMessage());
+			return null;
+		}
+ 		return resList;
+		
+	}
+
+	@Override
+	public List<PremiaCustomerList> searchPremiacustomerlist(PremiaDropDownReq req) {
+		List<PremiaCustomerList>resList=new ArrayList<PremiaCustomerList>();
+		try {
+			ListItemValue list=listItemValueRepository.findByItemTypeAndItemCode("PREMIA_BROKER_CUSTOMER", "1");
+			if(list!=null) {
+				String url = list.getItemValue() ;
+				String auth = list.getParam1()+":"+ list.getParam1();
+				byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(StandardCharsets.US_ASCII));
+		        String authHeader = "Basic " + new String( encodedAuth );
+		     	RestTemplate restTemplate = new RestTemplate();
+				HttpHeaders headers = new HttpHeaders();
+				Map<String ,Object> request=new HashMap<String, Object>();
+				request.put("queryId", "7");
+				headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
+				headers.setContentType(MediaType.APPLICATION_JSON);
+				headers.set("Authorization",authHeader);
+				HttpEntity<Object> entityReq = new HttpEntity<Object>(request, headers);
+	
+				log.info("Api Url -----------> " +  url );
+			    log.info("Request -----------> " + json.toJson(req) );
+				ResponseEntity<Object> response = restTemplate.postForEntity(url, entityReq, Object.class);
+				System.out.println(response.getBody());
+				log.info("Response -----------> " + json.toJson(response.getBody()) );
+				ObjectMapper mapper = new ObjectMapper();
+				//List<PremiaCustDetailsRes> premiaResList = mapper.convertValue(response.getBody() ,new TypeReference<List<PremiaCustDetailsRes>>(){});
+				PremiaCustRes resp=mapper.convertValue(response.getBody(),PremiaCustRes.class);
+				if(resp!=null) {
+					for(PremiaCustDetailsRes premia :  resp.getData()) {
+						PremiaCustomerList res = new PremiaCustomerList();
+						res.setCustomerCode(premia.getCustomerCode());
+						res.setCustomerName(premia.getCustomerName());
+						res.setCustomerAddress(premia.getCustomerAddress());
+						res.setCustomerCivilId(premia.getCivilId());
+						res.setTaxApplicable(premia.getTaxApplicable());
+						res.setCustomerCity(premia.getCustomerCity());
+						res.setCustomerPhone(premia.getCustomerPhone());
+						res.setCustomerEmail(premia.getCustomerEmail());
+						res.setVatApplicable(premia.getVatApplicable());
+						res.setVatReNo(premia.getVatRegNo());
+						resList.add(res);
+					}
+				}else {
+					resList = new ArrayList<PremiaCustomerList>();
+					PremiaCustomerList errRes = new PremiaCustomerList();
+					errRes.setCustomerName("No Record Found");
+					resList.add(errRes);
+					
+				}
+				
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->"+e.getMessage());
+			return null;
+		}
+ 		return resList;
 	}
 }

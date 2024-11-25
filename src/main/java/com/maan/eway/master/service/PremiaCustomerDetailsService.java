@@ -8,9 +8,10 @@ package com.maan.eway.master.service;
 import java.util.List;
 
 import com.maan.eway.master.req.PremiaDropDownReq;
+import com.maan.eway.master.res.PremiaBrokerList;
 import com.maan.eway.master.res.PremiaCustomerDetailsRes;
+import com.maan.eway.master.res.PremiaCustomerList;
 import com.maan.eway.res.BrokerCustCodeRes;
-import com.maan.eway.res.DropDownRes;
 
 public interface PremiaCustomerDetailsService  {
 
@@ -21,6 +22,10 @@ public interface PremiaCustomerDetailsService  {
 	List<BrokerCustCodeRes> getBrokerBranches(PremiaDropDownReq req);
 
 	List<PremiaCustomerDetailsRes> searchPremiaBrokerCustomerCode(PremiaDropDownReq req);
+
+	List<PremiaBrokerList> searchPremiabrokerlist(PremiaDropDownReq req);
+
+	List<PremiaCustomerList> searchPremiacustomerlist(PremiaDropDownReq req);
 
 
 	

@@ -600,6 +600,13 @@ private static final long serialVersionUID = 1L;
     private String   valCompanyName ; 
    
     
+    @Column(name = "PA_COVERID")
+    private String paCoverId;
+	
+
+	@Column(name = "PA_COVERID_DESC")
+    private String paCoveridDesc;
+    
     
 }
 

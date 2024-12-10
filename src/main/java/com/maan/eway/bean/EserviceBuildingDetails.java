@@ -129,14 +129,14 @@ private static final long serialVersionUID = 1L;
     @Column(name="BUILDING_AREA_SQM")
     private BigDecimal     buildingAreaSqm ;
 
-    @Column(name="BUILDING_SUMINSURED")
-    private BigDecimal     buildingSuminsured ;
+//    @Column(name="BUILDING_SUMINSURED")
+//    private BigDecimal     buildingSuminsured ;
 
-    @Column(name="ALLRISK_SUMINSURED")
-    private BigDecimal     allriskSuminsured ;
+//    @Column(name="ALLRISK_SUMINSURED")
+//    private BigDecimal     allriskSuminsured ;
     
-    @Column(name="CONTENT_SUMINSURED")
-    private BigDecimal     contentSuminsured ;
+//    @Column(name="CONTENT_SUMINSURED")
+//    private BigDecimal     contentSuminsured ;
     
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ENTRY_DATE")
@@ -290,14 +290,14 @@ private static final long serialVersionUID = 1L;
     @Column(name="MANUAL_REFERAL_YN", length=100)
     private String  manualReferalYn;
     
-    @Column(name="ELEC_EQUIP_SUMINSURED")
-    private BigDecimal elecEquipSuminsured;
+//    @Column(name="ELEC_EQUIP_SUMINSURED")
+//    private BigDecimal elecEquipSuminsured;
 
-    @Column(name="GOODS_SINGLECARRY_SUMINSURED")
-    private BigDecimal goodsSinglecarrySuminsured;
+//    @Column(name="GOODS_SINGLECARRY_SUMINSURED")
+//    private BigDecimal goodsSinglecarrySuminsured;
 
-    @Column(name="GOODS_TURNOVER_SUMINSURED")
-    private BigDecimal goodsTurnoverSuminsured;
+//    @Column(name="GOODS_TURNOVER_SUMINSURED")
+//    private BigDecimal goodsTurnoverSuminsured;
 
     @Column(name="INDUSTRY_ID")
     private Integer  industryId ;
@@ -479,11 +479,11 @@ private static final long serialVersionUID = 1L;
       @Column(name="REVENUE_FROM_STAMPS")
       private BigDecimal revenueFromStamps;
    
-      @Column(name="MACHINE_EQUIP_SI")
-      private BigDecimal machineEquipSi ;
+//      @Column(name="MACHINE_EQUIP_SI")
+//      private BigDecimal machineEquipSi ;
 
-      @Column(name="PLATE_GLASS_SI")
-      private BigDecimal plateGlassSi ;
+//      @Column(name="PLATE_GLASS_SI")
+//      private BigDecimal plateGlassSi ;
       
       @Column(name="FIRST_LOSS_PERCENT_ID")
       private Integer firstLossPercentId;
@@ -491,23 +491,23 @@ private static final long serialVersionUID = 1L;
       @Column(name="FIRST_LOSS_PERCENT")
       private Integer firstLossPercent;
   
-      @Column(name="POWER_PLANT_SI")
-      private BigDecimal powerPlantSi ;
+//      @Column(name="POWER_PLANT_SI")
+//      private BigDecimal powerPlantSi ;
       
-      @Column(name="ELEC_MACHINES_SI")
-      private BigDecimal elecMachinesSi ;
+//      @Column(name="ELEC_MACHINES_SI")
+//      private BigDecimal elecMachinesSi ;
       
-      @Column(name="EQUIPMENT_SI")
-      private BigDecimal equipmentSi ;
+//      @Column(name="EQUIPMENT_SI")
+//      private BigDecimal equipmentSi ;
       
-      @Column(name="GENERAL_MACHINE_SI")
-      private BigDecimal generalMachineSi ;
+//      @Column(name="GENERAL_MACHINE_SI")
+//      private BigDecimal generalMachineSi ;
       
-      @Column(name="MANU_UNITS_SI")
-      private BigDecimal manuUnitsSi ;
+//      @Column(name="MANU_UNITS_SI")
+//      private BigDecimal manuUnitsSi ;
       
-      @Column(name="BOILER_PLANTS_SI")
-      private BigDecimal boilerPlantsSi ;
+//      @Column(name="BOILER_PLANTS_SI")
+//      private BigDecimal boilerPlantsSi ;
       
       @Column(name="TIRA_COVER_NOTE_NO")
       private String tiraCoverNoteNo;
@@ -528,14 +528,14 @@ private static final long serialVersionUID = 1L;
       @Column(name="PLATE_GLASS_DESC")
       private String plateGlassDesc;
       
-      @Column(name="MINING_PLANT_SI")
-      private BigDecimal miningPlantSi;
+//      @Column(name="MINING_PLANT_SI")
+//      private BigDecimal miningPlantSi;
       
-      @Column(name="NONMINING_PLANT_SI")
-      private BigDecimal nonminingPlantSi;
+//      @Column(name="NONMINING_PLANT_SI")
+//      private BigDecimal nonminingPlantSi;
       
-      @Column(name="GENSETS_SI")
-      private BigDecimal gensetsSi;
+//      @Column(name="GENSETS_SI")
+//      private BigDecimal gensetsSi;
       
       @Column(name="COMMISSION_PERCENTAGE")
       private BigDecimal commissionPercentage;
@@ -544,57 +544,57 @@ private static final long serialVersionUID = 1L;
       private BigDecimal vatCommission;
       //LC Column
       
-      @Column(name="BUILDING_SUMINSURED_LC")
-      private BigDecimal buildingSumInsuredLC;
+//      @Column(name="BUILDING_SUMINSURED_LC")
+//      private BigDecimal buildingSumInsuredLC;
 
-      @Column(name="ALLRISK_SUMINSURED_LC")
-      private BigDecimal allRiskSumInsuredLC;
+//      @Column(name="ALLRISK_SUMINSURED_LC")
+//      private BigDecimal allRiskSumInsuredLC;
 
-      @Column(name="CONTENT_SUMINSURED_LC")
-      private BigDecimal contentSumInsuredLC;
+//      @Column(name="CONTENT_SUMINSURED_LC")
+//      private BigDecimal contentSumInsuredLC;
 
-      @Column(name="ELEC_EQUIP_SUMINSURED_LC")
-      private BigDecimal elecEquipSumInsuredLC;
+//      @Column(name="ELEC_EQUIP_SUMINSURED_LC")
+//      private BigDecimal elecEquipSumInsuredLC;
 
 
-      @Column(name="GOODS_SILCNGLECARRY_SUMINSURED_LC")
-      private BigDecimal goodsSilcnglEcarrySumInsuredLC;
+//      @Column(name="GOODS_SILCNGLECARRY_SUMINSURED_LC")
+//      private BigDecimal goodsSilcnglEcarrySumInsuredLC;
 
-      @Column(name="GOODS_TURNOVER_SUMINSURED_LC")
-      private BigDecimal goodsTurnoverSumInsuredLC;
+//      @Column(name="GOODS_TURNOVER_SUMINSURED_LC")
+//      private BigDecimal goodsTurnoverSumInsuredLC;
 
-      @Column(name="MACHINE_EQUIP_SI_LC")
-      private BigDecimal machineEquipSiLC;
+//      @Column(name="MACHINE_EQUIP_SI_LC")
+//      private BigDecimal machineEquipSiLC;
 
-      @Column(name="PLATE_GLASS_SI_LC")
-      private BigDecimal plateGlassSiLC;
+//      @Column(name="PLATE_GLASS_SI_LC")
+//      private BigDecimal plateGlassSiLC;
 
-      @Column(name="POWER_PLANT_SI_LC")
-      private BigDecimal powerPlantSiLC;
+//      @Column(name="POWER_PLANT_SI_LC")
+//      private BigDecimal powerPlantSiLC;
 
-      @Column(name="ELEC_MACHINES_SI_LC")
-      private BigDecimal elecMachinesSiLC;
+//      @Column(name="ELEC_MACHINES_SI_LC")
+//      private BigDecimal elecMachinesSiLC;
 
-      @Column(name="EQUIPMENT_SI_LC")
-      private BigDecimal equipmentSiLC;
+//      @Column(name="EQUIPMENT_SI_LC")
+//      private BigDecimal equipmentSiLC;
 
-      @Column(name="GENERAL_MACHINE_SI_LC")
-      private BigDecimal generalMachineSiLC;
+//      @Column(name="GENERAL_MACHINE_SI_LC")
+//      private BigDecimal generalMachineSiLC;
 
-      @Column(name="MANU_UNITS_SI_LC")
-      private BigDecimal manuUnitsSiLC;
+//      @Column(name="MANU_UNITS_SI_LC")
+//      private BigDecimal manuUnitsSiLC;
 
-      @Column(name="BOILER_PLANTS_SI_LC")
-      private BigDecimal boilerPlantsSiLC;
+//      @Column(name="BOILER_PLANTS_SI_LC")
+//      private BigDecimal boilerPlantsSiLC;
 
-      @Column(name="MINING_PLANT_SI_LC")
-      private BigDecimal miningPlantSiLC;
+//      @Column(name="MINING_PLANT_SI_LC")
+//      private BigDecimal miningPlantSiLC;
 
-      @Column(name="NONMINING_PLANT_SI_LC")
-      private BigDecimal nonMiningPlantSiLC;
+//      @Column(name="NONMINING_PLANT_SI_LC")
+//      private BigDecimal nonMiningPlantSiLC;
 
-      @Column(name="GENSETS_SI_LC")
-      private BigDecimal gensetsSiLC;
+//      @Column(name="GENSETS_SI_LC")
+//      private BigDecimal gensetsSiLC;
       
       @Column(name="STOCK_IN_TRADE_SI_LC")
       private BigDecimal stockInTradeSiLc;
@@ -622,22 +622,22 @@ private static final long serialVersionUID = 1L;
       @Column(name="MS_REFNO")
       private Integer     msRefno ;
       
-      @Column(name="FIRE_BUILDING_SI  ")
-      private BigDecimal fireBuildingSi  ;
+//      @Column(name="FIRE_BUILDING_SI  ")
+//      private BigDecimal fireBuildingSi  ;
     
-      @Column(name="FIRE_EQUIP_SI  ")
-      private BigDecimal fireEquipSi  ;
-      @Column(name="FIRE_STOCK_SI  ")
-      private BigDecimal fireStockSi  ;
+//      @Column(name="FIRE_EQUIP_SI  ")
+//      private BigDecimal fireEquipSi  ;
+//      @Column(name="FIRE_STOCK_SI  ")
+//      private BigDecimal fireStockSi  ;
       
 
-      @Column(name="FIRE_BUILDING_SI_LC  ")
-      private BigDecimal fireBuildingSiLc  ;
+//      @Column(name="FIRE_BUILDING_SI_LC  ")
+//      private BigDecimal fireBuildingSiLc  ;
   
-      @Column(name="FIRE_EQUIP_SI_LC  ")
-      private BigDecimal fireEquipSiLc  ;
-      @Column(name="FIRE_STOCK_SI_LC  ")
-      private BigDecimal fireStockSiLc  ;
+//      @Column(name="FIRE_EQUIP_SI_LC  ")
+//      private BigDecimal fireEquipSiLc  ;
+//      @Column(name="FIRE_STOCK_SI_LC  ")
+//      private BigDecimal fireStockSiLc  ;
      
       @Column(name="MONEY_SAFE_LIMIT")
       private BigDecimal     moneySafeLimit;
@@ -672,8 +672,8 @@ private static final long serialVersionUID = 1L;
       @Column(name="FIRE_PLANT_SI")
       private BigDecimal firePlantSi  ;
       
-      @Column(name="FIRE_PLANT_SI_LC")
-      private BigDecimal firePlantSiLc  ;
+//      @Column(name="FIRE_PLANT_SI_LC")
+//      private BigDecimal firePlantSiLc  ;
       
       
       @Column(name="MONEY_MAJOR_LOSS")
@@ -685,41 +685,41 @@ private static final long serialVersionUID = 1L;
       @Column(name="CUSTOMER_NAME")
       private String     customerName ;
 
-      @Column(name="WATER_TANK_SI")
-      private BigDecimal waterTankSi;
+//      @Column(name="WATER_TANK_SI")
+//      private BigDecimal waterTankSi;
       
-      @Column(name="WATER_TANK_SI_LC")
-      private BigDecimal waterTankSiLc;
+//      @Column(name="WATER_TANK_SI_LC")
+//      private BigDecimal waterTankSiLc;
       
-      @Column(name="ARCHITECTS_SI")
-      private BigDecimal architectsSi  ;
+//      @Column(name="ARCHITECTS_SI")
+//      private BigDecimal architectsSi  ;
       
-      @Column(name="ARCHITECTS_SI_LC")
-      private BigDecimal architectsSiLc  ;
+//      @Column(name="ARCHITECTS_SI_LC")
+//      private BigDecimal architectsSiLc  ;
       
-      @Column(name="LOSS_OF_RENT_SI")
-      private BigDecimal lossOfRentSi  ;
+//      @Column(name="LOSS_OF_RENT_SI")
+//      private BigDecimal lossOfRentSi  ;
       
-      @Column(name="LOSS_OF_RENT_SI_LC")
-      private BigDecimal lossOfRentSiLc  ;
+//      @Column(name="LOSS_OF_RENT_SI_LC")
+//      private BigDecimal lossOfRentSiLc  ;
       
-      @Column(name="JEWELLERY_SI")
-      private BigDecimal jewellerySi  ;
+//      @Column(name="JEWELLERY_SI")
+//      private BigDecimal jewellerySi  ;
       
-      @Column(name="JEWELLERY_SI_LC")
-      private BigDecimal jewellerySiLc  ;
+//      @Column(name="JEWELLERY_SI_LC")
+//      private BigDecimal jewellerySiLc  ;
       
-      @Column(name="PAITINGS_SI")
-      private BigDecimal paitingsSi  ;
+//      @Column(name="PAITINGS_SI")
+//      private BigDecimal paitingsSi  ;
       
-      @Column(name="PAITINGS_SI_LC")
-      private BigDecimal paitingsSiLc  ;
+//      @Column(name="PAITINGS_SI_LC")
+//      private BigDecimal paitingsSiLc  ;
 
-      @Column(name="CARPETS_SI")
-      private BigDecimal carpetsSi  ;
+//      @Column(name="CARPETS_SI")
+//      private BigDecimal carpetsSi  ;
       
-      @Column(name="CARPETS_SI_LC")
-      private BigDecimal carpetsSiLc  ;
+//      @Column(name="CARPETS_SI_LC")
+//      private BigDecimal carpetsSiLc  ;
       
       @Column(name="TYPE_OF_PROPERTY")
       private String typeOfProperty  ;
@@ -758,11 +758,11 @@ private static final long serialVersionUID = 1L;
       @Column(name = "ON_ASSETS_SI_LC")
 	  private BigDecimal onAssetsSiLc;
       
-      @Column(name = "BURGLARY_SI")
-	  private BigDecimal burglarySi;
+//      @Column(name = "BURGLARY_SI")
+//	    private BigDecimal burglarySi;
       
-      @Column(name = "BURGLARY_SI_LC")
-	  private BigDecimal burglarySiLc;
+//      @Column(name = "BURGLARY_SI_LC")
+//	    private BigDecimal burglarySiLc;
       
       @Column(name = "STRONGROOM_SI")
 	  private BigDecimal strongroomSi;
@@ -770,11 +770,11 @@ private static final long serialVersionUID = 1L;
       @Column(name = "STRONGROOM_SI_LC")
 	  private BigDecimal strongroomSiLc;
       
-      @Column(name = "MACHINERY_SI")
-	  private BigDecimal machinerySi;
+//      @Column(name = "MACHINERY_SI")
+//	    private BigDecimal machinerySi;
       
-      @Column(name = "MACHINERY_SI_LC")
-	  private BigDecimal machinerySiLc;
+//      @Column(name = "MACHINERY_SI_LC")
+//	    private BigDecimal machinerySiLc;
       
       @Column(name="TRANSPORTED_BY") 
       private String transportedBy;
@@ -826,13 +826,13 @@ private static final long serialVersionUID = 1L;
       private String otherOccupation;
       
 
-      @Column(name="GROUND_UNDERGROUND_SI")
-      private 	BigDecimal groundUndergroundSi;
+//      @Column(name="GROUND_UNDERGROUND_SI")
+//      private 	BigDecimal groundUndergroundSi;
    
       
     //Bond
-      @Column(name="BOND_SUMINSURED")
-      private BigDecimal bondSuminsured;
+//      @Column(name="BOND_SUMINSURED")
+//      private BigDecimal bondSuminsured;
       
       @Column(name="BOND_TYPE")
       private String bondType;

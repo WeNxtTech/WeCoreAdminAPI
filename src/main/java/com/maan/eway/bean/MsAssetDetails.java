@@ -495,4 +495,7 @@ public class MsAssetDetails implements Serializable {
    @Column(name="CONTENT_ID")
    private String contentId;
    
+   @Column(name = "COVER_ID")
+	private Integer coverId;
+   
 }

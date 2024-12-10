@@ -851,6 +851,9 @@ private static final long serialVersionUID = 1L;
  	   
  	   @Column(name="SUM_INSURED_LC")
  	   private BigDecimal     sumInsuredLc ;
+ 	   
+		@Column(name = "COVER_ID")
+		private Integer coverId;
       
 }
 

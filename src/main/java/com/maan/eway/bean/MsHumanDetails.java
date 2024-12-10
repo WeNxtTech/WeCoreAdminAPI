@@ -286,6 +286,9 @@ private static final long serialVersionUID = 1L;
 	    
 	    @Column(name="COUNT")
 	    private Integer count;
+	    
+	    @Column(name = "COVER_ID")
+		private Integer coverId;
 }
 
 

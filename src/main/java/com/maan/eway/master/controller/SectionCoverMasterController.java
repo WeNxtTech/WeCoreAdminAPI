@@ -151,7 +151,7 @@ public class SectionCoverMasterController {
 		}
 		
 		//  Get All Cover Master
-		@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
+		@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/getallsectioncoverdetails")
 		@ApiOperation("This method is getall Section Cover Details")
 		public ResponseEntity<CommonRes> getallSectionCoverDetails(@RequestBody SectionCoverMasterGetAllReq req)

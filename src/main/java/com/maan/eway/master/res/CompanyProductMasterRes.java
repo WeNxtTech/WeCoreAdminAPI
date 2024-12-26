@@ -121,4 +121,7 @@ public class CompanyProductMasterRes implements Serializable {
 	
 	@JsonProperty("MINIMUM_PREMIUM")
 	private Double  minimumpremium;
+	
+	@JsonProperty("PackageYn")
+	private String packageYn;
 }

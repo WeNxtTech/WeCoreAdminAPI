@@ -649,6 +649,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			res.setDisplayOrder(list.get(0).getDisplayOrder()==null?"":list.get(0).getDisplayOrder().toString());
 			res.setSectionEndtYn(list.get(0).getSectionEndtYn());
 		    res.setMinimumpremium(list.get(0).getMinimumPremium()==null? 0.0 : list.get(0).getMinimumPremium());
+		    res.setPackageYn(list.get(0).getPackageYn());
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());

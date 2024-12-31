@@ -284,9 +284,9 @@ public List<String> validateCompanyProrata(CompanyProrataSaveReq req) {
 			// Select
 			query.select(b);
 			//Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<CompanyProrataMaster> ocpm1 = effectiveDate.from(CompanyProrataMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("sno"), b.get("sno"));
 			Predicate a2 = cb.equal(ocpm1.get("insuranceid"), b.get("insuranceid"));
 			effectiveDate.where(a1,a2);
@@ -404,9 +404,9 @@ public List<String> validateCompanyProrata(CompanyProrataSaveReq req) {
 			query.select(b);
 
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<CompanyProrataMaster> ocpm1 = effectiveDate.from(CompanyProrataMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("sno"), b.get("sno"));
 			Predicate a2 = cb.equal(ocpm1.get("insuranceid"), b.get("insuranceid"));
 			Predicate a3 = cb.equal(ocpm1.get("policyTypeId"), b.get("policyTypeId"));

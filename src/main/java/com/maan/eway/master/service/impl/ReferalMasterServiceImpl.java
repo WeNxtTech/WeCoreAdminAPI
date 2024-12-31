@@ -123,7 +123,7 @@ public SuccessRes insertReferal(ReferalMasterSaveReq req) {
 //				// Effective Date Max Filter
 //				Subquery<Long> effectiveDate = query.subquery(Long.class);
 //				Root<ReferalMaster> ocpm1 = effectiveDate.from(ReferalMaster.class);
-//				effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+//				effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 //				Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
 //				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , startDate);
 //				effectiveDate.where(a1,a2);
@@ -218,9 +218,9 @@ public Integer getMasterTableCount() {
 		query.select(b);
 
 		// Effective Date Max Filter
-		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate = query.subquery(Date.class);
 		Root<ReferalMaster> ocpm1 = effectiveDate.from(ReferalMaster.class);
-		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 		Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
 		
 		effectiveDate.where(a1);
@@ -272,9 +272,9 @@ public synchronized String getListItem(String insuranceId , String branchCode, S
 		
 		
 		// Effective Date Start Max Filter
-		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate = query.subquery(Date.class);
 		Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 		Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
 		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 		Predicate b1= cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
@@ -282,9 +282,9 @@ public synchronized String getListItem(String insuranceId , String branchCode, S
 		effectiveDate.where(a1,a2,b1,b2);
 		
 		// Effective Date End Max Filter
-		Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 		Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 		Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
 		Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 		Predicate b3= cb.equal(c.get("companyId"),ocpm2.get("companyId"));
@@ -594,9 +594,9 @@ public List<DropDownRes> getReferalMasterDropdown() {
 		orderList.add(cb.asc(c.get("referalName")));
 		
 		// Effective Date Max Filter
-		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate = query.subquery(Date.class);
 		Root<ReferalMaster> ocpm1 = effectiveDate.from(ReferalMaster.class);
-		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 		jakarta.persistence.criteria.Predicate a1 = cb.equal(c.get("referalId"),ocpm1.get("referalId") );
 		jakarta.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 		effectiveDate.where(a1,a2);

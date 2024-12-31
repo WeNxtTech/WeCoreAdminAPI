@@ -340,9 +340,9 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 			query.select(b);
 	
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<CompanyPromocodeMaster> ocpm1 = effectiveDate.from(CompanyPromocodeMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("promocodeId"), b.get("promocodeId"));
 			Predicate a2 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
 			Predicate a3 = cb.equal(ocpm1.get("productId"), b.get("productId"));
@@ -573,9 +573,9 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 			// Select
 			query.select(b);
 			//Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<CompanyPromocodeMaster> ocpm1 = effectiveDate.from(CompanyPromocodeMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("promocodeId"), b.get("promocodeId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			effectiveDate.where(a1,a2);
@@ -1045,9 +1045,9 @@ public class CompanyPromocodeMasterServiceImpl implements CompanyPromocodeMaster
 			Root<CoverMaster> ocpm2 = cover.from(CoverMaster.class);
 		
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<CoverMaster> ocpm1 = effectiveDate.from(CoverMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart"))).distinct(true);
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class))).distinct(true);
 			Predicate a1 = cb.equal(ocpm1.get("coverId"), ocpm2.get("coverId"));
 			effectiveDate.where(a1);
 									

@@ -206,9 +206,9 @@ public class SmsConfigMasterServiceImpl implements SmsConfigMasterService{
 				// Select
 				query.select(b);
 				// Effective Date Max Filter
-				Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+				Subquery<Date> effectiveDate = query.subquery(Date.class);
 				Root<SmsConfigMaster> ocpm1= effectiveDate.from(SmsConfigMaster.class);
-				effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+				effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 				Predicate a1 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
 				effectiveDate.where(a1);
 				//where
@@ -286,9 +286,9 @@ public class SmsConfigMasterServiceImpl implements SmsConfigMasterService{
 			// Select
 			query.multiselect(cb.count(b));
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<SmsConfigMaster> ocpm1 = effectiveDate.from(SmsConfigMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 
 			effectiveDate.where(a1);
@@ -322,9 +322,9 @@ public class SmsConfigMasterServiceImpl implements SmsConfigMasterService{
 			query.select(b);
 
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<SmsConfigMaster> ocpm1 = effectiveDate.from(SmsConfigMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a2 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
 
@@ -427,9 +427,9 @@ public class SmsConfigMasterServiceImpl implements SmsConfigMasterService{
 				query.select(b);
 
 				// Effective Date Max Filter
-				Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+				Subquery<Date> effectiveDate = query.subquery(Date.class);
 				Root<SmsConfigMaster> ocpm1 = effectiveDate.from(SmsConfigMaster.class);
-				effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+				effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 				Predicate a1 = cb.equal(ocpm1.get("sNo"), b.get("sNo"));
 				Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 				Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));

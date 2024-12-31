@@ -93,9 +93,9 @@ public List<DropDownRes> tableName() {
 		
 		
 		// Effective Date Start Max Filter
-		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate = query.subquery(Date.class);
 		Root<OneTimeTableDetails> ocpm1 = effectiveDate.from(OneTimeTableDetails.class);
-		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 		Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
 		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 		Predicate b2 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
@@ -103,9 +103,9 @@ public List<DropDownRes> tableName() {
 		effectiveDate.where(a1,a2,b2,b4);
 		
 		// Effective Date End Max Filter
-		Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 		Root<OneTimeTableDetails> ocpm2 = effectiveDate2.from(OneTimeTableDetails.class);
-		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 		Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
 		Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 		Predicate b3= cb.equal(c.get("companyId"),ocpm2.get("companyId"));

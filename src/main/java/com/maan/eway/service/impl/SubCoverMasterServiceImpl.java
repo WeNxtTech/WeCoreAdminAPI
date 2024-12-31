@@ -514,18 +514,18 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 				
 				
 				// Effective Date Start Max Filter
-				Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+				Subquery<Date> effectiveDate = query.subquery(Date.class);
 				Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-				effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+				effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 				Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
 				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 				Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
 				Predicate a6 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
 				effectiveDate.where(a1,a2,a5,a6);
 				// Effective Date End Max Filter
-				Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+				Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 				Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-				effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+				effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 				Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
 				Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
 				Predicate a8 = cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
@@ -583,9 +583,9 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 		query.multiselect(cb.count(b));
 
 		// Effective Date Max Filter
-		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate = query.subquery(Date.class);
 		Root<CoverMaster> ocpm1 = effectiveDate.from(CoverMaster.class);
-		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 		Predicate a1 = cb.equal(ocpm1.get("subCoverId"), b.get("subCoverId"));
 		Predicate a2 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
 		effectiveDate.where(a1,a2);
@@ -622,9 +622,9 @@ public class SubCoverMasterServiceImpl implements SubCoverMasterService {
 			query.select(b);
 	
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<CoverMaster> ocpm1 = effectiveDate.from(CoverMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("subCoverId"), b.get("subCoverId"));
 			Predicate a2 = cb.equal(ocpm1.get("coverId"),b.get("coverId"));
 			effectiveDate.where(a1,a2);

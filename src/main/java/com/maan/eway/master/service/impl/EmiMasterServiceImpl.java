@@ -235,9 +235,9 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			Root<EmiMaster> s = query.from(EmiMaster.class);
 			
 			// State Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<EmiMaster> ocpm1 = effectiveDate.from(EmiMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate c1 = cb.equal(ocpm1.get("emiId"), s.get("emiId"));
 			Predicate c2 = cb.equal(ocpm1.get("status"),s.get("status"));
 			Predicate c3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
@@ -403,9 +403,9 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			// Select
 			query.select(b);
 			//Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<EmiMaster> ocpm1 = effectiveDate.from(EmiMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("emiId"), b.get("emiId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			effectiveDate.where(a1,a2);

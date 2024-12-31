@@ -229,7 +229,7 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 //				// Effective Date Max Filter
 //				Subquery<Long> effectiveDate = query.subquery(Long.class);
 //				Root<RatingFieldMaster> ocpm1 = effectiveDate.from(RatingFieldMaster.class);
-//				effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+//				effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 //				Predicate a1 = cb.equal(ocpm1.get("ratingId"), b.get("ratingId"));
 //				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
 //				Predicate a3 = cb.equal(ocpm1.get("productId"), b.get("productId"));
@@ -312,9 +312,9 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 			// Select
 			query.select(b);
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<RatingFieldMaster> ocpm1 = effectiveDate.from(RatingFieldMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("ratingId"), b.get("ratingId"));
 			Predicate a2 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			effectiveDate.where(a1, a2);
@@ -356,9 +356,9 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 				query.select(b);
 
 				// Effective Date Max Filter
-				Subquery<Long> amendId = query.subquery(Long.class);
+				Subquery<Integer> amendId = query.subquery(Integer.class);
 				Root<RatingFieldMaster> ocpm1 = amendId.from(RatingFieldMaster.class);
-				amendId.select(cb.greatest(ocpm1.get("amendId")));
+				amendId.select(cb.greatest(ocpm1.get("amendId").as(Integer.class)));
 				Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 				Predicate a2 = cb.equal(ocpm1.get("ratingId"),b.get("ratingId"));
 				amendId.where(a1,a2);
@@ -705,17 +705,17 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 			orderList.add(cb.asc(c.get("ratingField")));
 
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<RatingFieldMaster> ocpm1 = effectiveDate.from(RatingFieldMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(c.get("ratingId"), ocpm1.get("ratingId"));
 			Predicate a2 = cb.equal(c.get("productId"),  ocpm1.get("productId"));
 			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1,a2,a3);
 			// Effective Date End
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<RatingFieldMaster> ocpm2 = effectiveDate2.from(RatingFieldMaster.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate a4 = cb.equal(c.get("ratingId"),ocpm2.get("ratingId") );
 			Predicate a5 = cb.equal(c.get("productId"),  ocpm2.get("productId"));
 			Predicate a6 = cb.greaterThanOrEqualTo(c.get("effectiveDateEnd"), todayEnd);
@@ -775,9 +775,9 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 			
 			
 			// Effective Date Start Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate b1= cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
@@ -785,9 +785,9 @@ public class RatingFieldMasterServiceImpl implements RatingFieldMasterService {
 			effectiveDate.where(a1,a2,b1,b2);
 			
 			// Effective Date End Max Filter
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate b3= cb.equal(c.get("companyId"),ocpm2.get("companyId"));

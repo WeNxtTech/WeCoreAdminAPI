@@ -319,18 +319,18 @@ public List<String> validateProductSequence(ProductSequenceMasterSaveReq req) {
 			
 			
 			// Effective Date Start Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
 			Predicate b3 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
 			Predicate b4 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1,a2,b3,b4);
 			// Effective Date End Max Filter
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
 			Predicate b1 = cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
 			Predicate b2 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
@@ -567,9 +567,9 @@ public List<String> validateProductSequence(ProductSequenceMasterSaveReq req) {
 			orderList.add(cb.asc(c.get("branchCode")));
 
 			// Effective Date Start Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<ProductSequenceMaster> ocpm1 = effectiveDate.from(ProductSequenceMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(c.get("sequenceId"), ocpm1.get("sequenceId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a3 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
@@ -578,9 +578,9 @@ public List<String> validateProductSequence(ProductSequenceMasterSaveReq req) {
 			effectiveDate.where(a1, a2,a3,a4,a6);
 			
 			// Effective Date End Max Filter
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<ProductSequenceMaster> ocpm2 = effectiveDate2.from(ProductSequenceMaster.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate a7 = cb.equal(c.get("sequenceId"), ocpm2.get("sequenceId"));
 			Predicate a8 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a9 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));

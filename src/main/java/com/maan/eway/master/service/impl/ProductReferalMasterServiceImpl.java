@@ -145,17 +145,17 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 					query.select(b);
 			
 					// Effective Date Max Filter
-					Subquery<Long> effectiveDate = query.subquery(Long.class);
+					Subquery<Date> effectiveDate = query.subquery(Date.class);
 					Root<ReferalMaster> ocpm1 = effectiveDate.from(ReferalMaster.class);
-					effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+					effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 					Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
 					Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 					effectiveDate.where(a1,a2);
 					
 					// Effective Date Max Filter
-					Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+					Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 					Root<ReferalMaster> ocpm2 = effectiveDate2.from(ReferalMaster.class);
-					effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+					effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 					Predicate a3 = cb.equal(ocpm2.get("referalId"), b.get("referalId"));
 					Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 					effectiveDate2.where(a3,a4);
@@ -472,9 +472,9 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 			
 			
 			// Effective Date Start Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate b1= cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
@@ -482,9 +482,9 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 			effectiveDate.where(a1,a2,b1,b2);
 			
 			// Effective Date End Max Filter
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate b3= cb.equal(c.get("companyId"),ocpm2.get("companyId"));
@@ -732,9 +732,9 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 			query.select(b);
 	
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<ProductReferalMaster> ocpm1 = effectiveDate.from(ProductReferalMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
 			Predicate a3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
@@ -807,17 +807,17 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 			query.select(b);
 	
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<ReferalMaster> ocpm1 = effectiveDate.from(ReferalMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
 			effectiveDate.where(a1,a2);
 	
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate3 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate3 = query.subquery(Date.class);
 			Root<ReferalMaster> ocpm3 = effectiveDate3.from(ReferalMaster.class);
-			effectiveDate3.select(cb.greatest(ocpm3.get("effectiveDateEnd")));
+			effectiveDate3.select(cb.greatest(ocpm3.get("effectiveDateEnd").as(Date.class)));
 			Predicate a3 = cb.equal(ocpm3.get("referalId"), b.get("referalId"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm3.get("effectiveDateEnd"),todayEnd);
 			effectiveDate3.where(a3,a4);
@@ -908,18 +908,18 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 			orderList.add(cb.asc(c.get("referalName")));
 			
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<ProductReferalMaster> ocpm1 = effectiveDate.from(ProductReferalMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(c.get("referalId"),ocpm1.get("referalId") );
 			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId") );
 			Predicate a3 = cb.equal(c.get("productId"), ocpm1.get("productId") );
 			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1,a2,a3,a4);
 			// Effective Date End
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<ProductReferalMaster> ocpm2 = effectiveDate2.from(ProductReferalMaster.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate a5 = cb.equal(c.get("referalId"),ocpm2.get("referalId") );
 			Predicate a6 = cb.equal(c.get("companyId"), ocpm2.get("companyId") );
 			Predicate a7 = cb.equal(c.get("productId"), ocpm2.get("productId") );
@@ -978,9 +978,9 @@ public class ProductReferalMasterServiceImpl implements ProductReferalMasterServ
 			query.select(b);
 	
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<ProductReferalMaster> ocpm1 = effectiveDate.from(ProductReferalMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("referalId"), b.get("referalId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1,a2);

@@ -1034,9 +1034,12 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 						CompletableFuture<List<Map<String,Object>>>[] comArray =new CompletableFuture[comFuture.size()];
 						comFuture.toArray(comArray);
 						CompletableFuture.allOf(comArray).join();
-						List<List<Map<String, Object>>> array_list = 
-					            new ArrayList<List<Map<String,Object>>>((Collection<? extends List<Map<String, Object>>>) Arrays.asList(comArray));
+//						List<List<Map<String, Object>>> array_list = 
+//					            new ArrayList<List<Map<String,Object>>>((Collection<? extends List<Map<String, Object>>>) Arrays.asList(comArray));
 
+						List<List<Map<String, Object>>> array_list = Arrays.stream(comArray)
+							    .map(CompletableFuture::join) // Resolve each CompletableFuture to List<Map<String, Object>>
+							    .collect(Collectors.toList());
 						System.out.println(new Gson().toJson(array_list));
 						}
 						
@@ -1411,9 +1414,9 @@ public synchronized String getListItem(String insuranceId , String branchCode, S
 		
 		
 		// Effective Date Start Max Filter
-		Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate = query.subquery(Date.class);
 		Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 		Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
 		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 		Predicate b1= cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
@@ -1421,9 +1424,9 @@ public synchronized String getListItem(String insuranceId , String branchCode, S
 		effectiveDate.where(a1,a2,b1,b2);
 		
 		// Effective Date End Max Filter
-		Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+		Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 		Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+		effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 		Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
 		Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 		Predicate b3= cb.equal(c.get("companyId"),ocpm2.get("companyId"));

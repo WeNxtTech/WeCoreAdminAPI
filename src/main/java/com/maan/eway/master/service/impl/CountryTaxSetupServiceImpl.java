@@ -566,18 +566,18 @@ public class CountryTaxSetupServiceImpl implements CountryTaxSetupService {
 			orderList.add(cb.asc(c.get("taxName")));
 
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<CountryTaxSetup> ocpm1 = effectiveDate.from(CountryTaxSetup.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(c.get("taxId"), ocpm1.get("taxId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a3 = cb.equal(c.get("countryId"), ocpm1.get("countryId"));
 
 			effectiveDate.where(a1, a2, a3);
 			// Effective Date End Max Filter
-			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<CountryTaxSetup> ocpm2 = effectiveDate2.from(CountryTaxSetup.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 			Predicate a6 = cb.equal(c.get("countryId"), ocpm2.get("countryId"));
 			Predicate a8 = cb.equal(c.get("taxId"), ocpm2.get("taxId"));
 			Predicate a10 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);

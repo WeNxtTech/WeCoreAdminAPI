@@ -35,6 +35,6 @@ public class YiCoverDetailId implements Serializable {
     private Double cvrId;
 
     private Integer riskId;
-    
+    private String sectionId;
      
 }

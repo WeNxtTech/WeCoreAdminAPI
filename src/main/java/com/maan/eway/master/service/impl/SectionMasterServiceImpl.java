@@ -175,9 +175,9 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			query.select(b);
 	
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<SectionMaster> ocpm1 = effectiveDate.from(SectionMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
 			effectiveDate.where(a1);
 	
@@ -246,7 +246,7 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 //					// Effective Date Max Filter
 //					Subquery<Long> effectiveDate = query.subquery(Long.class);
 //					Root<SectionMaster> ocpm1 = effectiveDate.from(SectionMaster.class);
-//					effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+//					effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 //					Predicate a1 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
 //					Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , startDate);
 //					effectiveDate.where(a1,a2);
@@ -342,9 +342,9 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 
 
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<SectionMaster> ocpm1 = effectiveDate.from(SectionMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
 			effectiveDate.where(a1);
 	
@@ -388,9 +388,9 @@ public class SectionMasterServiceImpl implements SectionMasterService {
 			query.select(b);
 	
 			// Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<SectionMaster> ocpm1 = effectiveDate.from(SectionMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
 			effectiveDate.where(a1);
 			

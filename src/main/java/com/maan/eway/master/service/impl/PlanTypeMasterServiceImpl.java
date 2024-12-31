@@ -224,9 +224,9 @@ try {
 	orderList.add(cb.asc(c.get("branchCode")));
 
 	// Effective Date Start Max Filter
-	Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+	Subquery<Date> effectiveDate = query.subquery(Date.class);
 	Root<PlanTypeMaster> ocpm1 = effectiveDate.from(PlanTypeMaster.class);
-	effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+	effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 	Predicate a1 = cb.equal(c.get("planTypeId"), ocpm1.get("planTypeId"));
 	Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 	Predicate a3 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
@@ -236,9 +236,9 @@ try {
 	effectiveDate.where(a1, a2,a3,a4,a5,a6);
 	
 	// Effective Date End Max Filter
-	Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
+	Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 	Root<PlanTypeMaster> ocpm2 = effectiveDate2.from(PlanTypeMaster.class);
-	effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+	effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
 	Predicate a7 = cb.equal(c.get("planTypeId"), ocpm2.get("planTypeId"));
 	Predicate a8 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 	Predicate a9 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
@@ -411,9 +411,9 @@ public SuccessRes insertPlanType(PlanTypeMasterSaveReq req) {
 			query.select(b);
 
 			//Effective Date Max Filter
-			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<PlanTypeMaster> ocpm1 = effectiveDate.from(PlanTypeMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("planTypeId"), b.get("planTypeId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));

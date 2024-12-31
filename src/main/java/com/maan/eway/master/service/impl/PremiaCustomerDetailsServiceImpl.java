@@ -245,18 +245,18 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 			
 			loginId.where(a19,a20);
 			
-			Subquery<Timestamp> effectiveDate3 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate3 = query.subquery(Date.class);
 			Root<LoginProductMaster> ocpm4 = effectiveDate3.from(LoginProductMaster.class);
-			effectiveDate3.select(cb.greatest(ocpm4.get("effectiveDateStart")));
+			effectiveDate3.select(cb.greatest(ocpm4.get("effectiveDateStart").as(Date.class)));
 			Predicate a9 = cb.equal(c.get("productId"),ocpm4.get("productId") );
 			Predicate a10 = cb.equal(c.get("companyId"),ocpm4.get("companyId") );
 			Predicate a11 = cb.lessThanOrEqualTo(ocpm4.get("effectiveDateStart"), today);
 			Predicate a15 = cb.equal(c.get("loginId"),ocpm4.get("loginId") );
 			effectiveDate3.where(a9,a10,a11,a15);
 			
-			Subquery<Timestamp> effectiveDate4 = query.subquery(Timestamp.class);
+			Subquery<Date> effectiveDate4 = query.subquery(Date.class);
 			Root<LoginProductMaster> ocpm5 = effectiveDate4.from(LoginProductMaster.class);
-			effectiveDate4.select(cb.greatest(ocpm5.get("effectiveDateEnd")));
+			effectiveDate4.select(cb.greatest(ocpm5.get("effectiveDateEnd").as(Date.class)));
 			Predicate a12 = cb.equal(c.get("productId"),ocpm5.get("productId") );
 			Predicate a13 = cb.equal(c.get("companyId"),ocpm5.get("companyId") );
 			Predicate a14 = cb.greaterThanOrEqualTo(ocpm5.get("effectiveDateEnd"), todayEnd);

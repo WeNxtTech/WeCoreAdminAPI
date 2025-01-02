@@ -15,7 +15,7 @@ public class ClaimHistoryInfoId {
 	
 	private Integer productId;	
 	
-	private Integer quoteNo;	
+	//private Integer quoteNo;	
 	
 	private String requestReferenceNo;	
 	

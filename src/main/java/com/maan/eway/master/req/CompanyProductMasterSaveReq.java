@@ -15,25 +15,25 @@ import lombok.Data;
 @Data
 public class CompanyProductMasterSaveReq implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
 	@JsonProperty("ProductId")
 	private String productId;
 
 	@JsonProperty("InsuranceId")
 	private String companyId;
-	
+
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
-	
+
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateEnd")
 	private Date effectiveDateEnd;
 
 	@JsonProperty("CurrencyIds")
 	private List<String> currencyIds;
-	
+
 	@JsonProperty("ProductName")
 	private String productName;
 
@@ -57,45 +57,50 @@ public class CompanyProductMasterSaveReq implements Serializable {
 
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
-	
+
 	@JsonProperty("RegulatoryCode")
 	private String regulatoryCode;
 
 	@JsonProperty("Remarks")
 	private String remarks;
-	
+
 	@JsonProperty("ProductIconId")
 	private String productIconId;
-	
+
 	@JsonProperty("SumInsuredStart")
 	private String sumInsuredStart;
-	
+
 	@JsonProperty("SumInsuredEnd")
 	private String sumInsuredEnd;
-	
+
 	@JsonProperty("CommissionVatYn")
 	private String commissionVatYn;
-	
+
 	@JsonProperty("CheckerYn")
 	private String checkerYn;
-	
+
 	@JsonProperty("MakerYn")
 	private String makerYn;
-	
+
 	@JsonProperty("CustConfirmYn")
 	private String custConfirmYn;
-	
+
 	@JsonProperty("CreatedBy")
 	private String createdBy;
-	
+
 	@JsonProperty("DisplayOrder")
 	private String displayOrder;
 
 	@JsonProperty("SectionEndtYn")
 	private String sectionEndtYn;
-	
+
 	@JsonProperty("MINIMUM_PREMIUM")
-	private Double  minimumpremium;
-	
-	
+	private Double minimumpremium;
+
+	@JsonProperty("CoInsurance_YN")
+	private String coInsuranceYn;
+
+	@JsonProperty("ClaimExperience_YN")
+	private String claimExperienceYn;
+
 }

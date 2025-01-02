@@ -650,6 +650,8 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			res.setSectionEndtYn(list.get(0).getSectionEndtYn());
 		    res.setMinimumpremium(list.get(0).getMinimumPremium()==null? 0.0 : list.get(0).getMinimumPremium());
 		    res.setPackageYn(list.get(0).getPackageYn());
+		    res.setClaimExperienceYn(list.get(0).getClaimExperienceYn());
+		    res.setCoInsuranceYn(list.get(0).getCoInsuranceYn());
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -1203,6 +1205,8 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			saveData.setCurrencyIds(currencyIds);
 			saveData.setSectionEndtYn(StringUtils.isNotBlank(req.getSectionEndtYn()) ? req.getSectionEndtYn() : "N"  );
 		//	saveData.setProductIconName(filterList.size()> 0 ? filterList.get(0).getItemValue() : "");
+			saveData.setClaimExperienceYn(StringUtils.isNoneBlank(req.getClaimExperienceYn())? req.getClaimExperienceYn() :"N");
+			saveData.setCoInsuranceYn(StringUtils.isNotBlank(req.getCoInsuranceYn())? req.getCoInsuranceYn():"N");
 			repo.saveAndFlush(saveData);
 			log.info("Saved Details is --> " + json.toJson(saveData));
 			

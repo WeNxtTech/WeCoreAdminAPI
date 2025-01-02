@@ -97,4 +97,11 @@ public class CompanyProductGetAllRes {
 	
 	@JsonProperty("DisplayOrder")
 	private String displayOrder;
+	
+
+	@JsonProperty("CoInsurance_YN")
+	private String coInsuranceYn;
+
+	@JsonProperty("ClaimExperience_YN")
+	private String claimExperienceYn;
 }

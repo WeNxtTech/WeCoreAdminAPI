@@ -124,4 +124,10 @@ public class CompanyProductMasterRes implements Serializable {
 	
 	@JsonProperty("PackageYn")
 	private String packageYn;
+	
+	@JsonProperty("CoInsurance_YN")
+	private String coInsuranceYn;
+
+	@JsonProperty("ClaimExperience_YN")
+	private String claimExperienceYn;
 }

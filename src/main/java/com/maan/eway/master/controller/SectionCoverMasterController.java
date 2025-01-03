@@ -57,7 +57,7 @@ public class SectionCoverMasterController {
 	private FetchErrorDescServiceImpl errorDescService ;
 	
 	// save
-		@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
+		@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/insertsectioncover")
 		@ApiOperation(value = "This method is Insert Section  Cover Details")
 		public ResponseEntity<CommonRes> insertSectionCover(@RequestBody List<SectionCoverMasterSaveReq> req) {

@@ -66,6 +66,10 @@ public class EmiMasterSaveReq implements Serializable {
 
 	@JsonProperty("CreatedBy")
 	private String createdBy;
+	
+	@JsonProperty("InstallmentTypeId")
+    private String installmentTypeId;
+    
 
 	
 }

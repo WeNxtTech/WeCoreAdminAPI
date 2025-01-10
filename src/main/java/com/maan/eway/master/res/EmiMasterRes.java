@@ -77,5 +77,12 @@ public class EmiMasterRes implements Serializable {
 	private String amendId;
 
 
+	@JsonProperty("InstallmentTypeId")
+    private String installmentTypeId;
+    
+	@JsonProperty("InstallmentTypeDesc")
+    private String installmentTypeDesc;
+
+
 
 }

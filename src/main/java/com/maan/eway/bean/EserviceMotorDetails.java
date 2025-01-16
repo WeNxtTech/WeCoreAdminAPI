@@ -954,6 +954,11 @@ private static final long serialVersionUID = 1L;
     @Column(name="OLD_POLICY_NUMBER", length=100)
     private String   oldPolicyNumber ; 
     
+    
+    @Column(name="CREDIT_SHORTFALL_SI")
+    private BigDecimal     creditShortfallSi ;
+
+    
 	
 }
 

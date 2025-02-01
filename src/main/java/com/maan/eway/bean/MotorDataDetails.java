@@ -606,6 +606,14 @@ private static final long serialVersionUID = 1L;
     @Column(name="OLD_POLICY_NUMBER", length=100)
     private String   oldPolicyNumber ; 
     
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="Original_Registration_Date")
+    private Date       originalRegistrationDate ;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="Country_Registration_Date")
+    private Date       countryRegistrationDate ;
+    
 }
 
 

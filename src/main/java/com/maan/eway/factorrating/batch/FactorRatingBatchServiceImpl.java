@@ -410,7 +410,8 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 						}
 					}
 			}
-			System.out.println(excelHeaders.length +" || "+1+request.getExcelHeaderColumns().split("~").length);
+			String [] reqExcelHeaderCols  = request.getExcelHeaderColumns().split("~");
+			System.out.println(excelHeaders.length +" || "+ reqExcelHeaderCols.length);
 			Boolean columnLength =excelHeaders.length==request.getExcelHeaderColumns().split("~").length+1?true:false;
 			if(columnLength) {
 				

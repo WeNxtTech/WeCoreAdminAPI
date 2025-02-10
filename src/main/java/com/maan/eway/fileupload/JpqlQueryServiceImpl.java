@@ -78,23 +78,44 @@ public class JpqlQueryServiceImpl {
 //			query =em.createQuery("select s from SectionCoverMaster s where s.companyId=:companyId and s.productId=:productId and s.coverId=:coverId and s.sectionId=:sectionId and s.subCoverId=:subCoverId and sysdate() between effectiveDateStart and effectiveDateEnd and s.amendId=(SELECT MAX(amendId) FROM SectionCoverMaster WHERE"
 //					+ " companyId=s.companyId AND productId=s.productId AND coverId=s.coverId AND "
 //					+ " sectionId=s.sectionId AND subCoverId=s.subCoverId and sysdate() between effectiveDateStart and effectiveDateEnd )");
-			query = em.createQuery("select s from SectionCoverMaster s where s.companyId = :companyId and s.productId = :productId and s.coverId = :coverId and s.sectionId = :sectionId and s.subCoverId = :subCoverId and sysdate() between s.effectiveDateStart and s.effectiveDateEnd and s.amendId = (SELECT MAX(s2.amendId) FROM SectionCoverMaster s2 WHERE s2.companyId = s.companyId AND s2.productId = s.productId AND s2.coverId = s.coverId AND s2.sectionId = s.sectionId AND s2.subCoverId = s.subCoverId and sysdate() between s2.effectiveDateStart and s2.effectiveDateEnd)");
+			query = em.createQuery("select s from SectionCoverMaster s where s.companyId = :companyId and s.status = :status and s.productId = :productId and s.coverId = :coverId and s.sectionId = :sectionId and s.subCoverId = :subCoverId and sysdate() between s.effectiveDateStart and s.effectiveDateEnd and s.amendId = (SELECT MAX(s2.amendId) FROM SectionCoverMaster s2 WHERE s2.companyId = s.companyId AND s2.productId = s.productId AND s2.coverId = s.coverId AND s2.sectionId = s.sectionId AND s2.subCoverId = s.subCoverId and sysdate() between s2.effectiveDateStart and s2.effectiveDateEnd)");
 			query.setParameter("companyId", req.getCompanyId());
 			query.setParameter("productId", Integer.valueOf(req.getProductId()));
 			query.setParameter("coverId", Integer.valueOf(req.getCoverId()));
 			query.setParameter("sectionId", Integer.valueOf(req.getSectionId()));
 			query.setParameter("subCoverId", StringUtils.isBlank(req.getSubCoverId())?0:Integer.valueOf(req.getSubCoverId()));
+			query.setParameter("status", "Y");
 			List<SectionCoverMaster> sectionMaster=query.getResultList(); 
 			String minimum_rateyn ="N";
 			if(!CollectionUtils.isEmpty(sectionMaster)) {
 				factorId =StringUtils.isBlank(sectionMaster.get(0).getFactorTypeId().toString())?"":sectionMaster.get(0).getFactorTypeId().toString();
 				minimum_rateyn = StringUtils.isBlank(sectionMaster.get(0).getMinimumRateYn())?"N":sectionMaster.get(0).getMinimumRateYn();
 				log.info("getFactorXlColumns :: FactorTypeId : "+factorId+" && minimum_rateyn is "+minimum_rateyn+" ");
-				query = em.createQuery("select f from FactorTypeDetails f where f.companyId = :companyId and f.productId = :productId and f.factorTypeId = :factorTypeId and sysdate() between f.effectiveDateStart and f.effectiveDateEnd"
-				        + " and f.amendId = (select max(f2.amendId) from FactorTypeDetails f2 where f2.companyId = f.companyId and f2.productId = f.productId and f2.factorTypeId = f.factorTypeId and sysdate() between f2.effectiveDateStart and f2.effectiveDateEnd) order by f.columnsId asc");
+				query = em.createQuery("""
+						    SELECT f
+						    FROM FactorTypeDetails f
+						    WHERE f.status = :status
+						    AND f.companyId = :companyId
+						    AND f.status = :status
+						    AND f.productId = :productId
+						    AND f.factorTypeId = :factorTypeId
+						    AND sysdate() BETWEEN f.effectiveDateStart AND f.effectiveDateEnd
+						    AND f.amendId = (
+						        SELECT MAX(f2.amendId)
+						        FROM FactorTypeDetails f2
+						        WHERE f2.companyId = f.companyId
+						        AND f2.productId = f.productId
+						        AND f2.factorTypeId = f.factorTypeId
+						        AND f2.ratingFieldId = f.ratingFieldId
+						        AND sysdate() BETWEEN f2.effectiveDateStart AND f2.effectiveDateEnd
+						    )
+						    ORDER BY f.columnsId ASC
+						    """);
+				
 //				query=em.createQuery("select f from FactorTypeDetails f where f.companyId=:companyId and f.productId=:productId and f.factorTypeId=:factorTypeId and sysdate() between effectiveDateStart and effectiveDateEnd"
 //						+ " and f.amendId =(select max(amendId) from FactorTypeDetails where companyId=f.companyId and productId=f.productId and factorTypeId=f.factorTypeId and  sysdate() between effectiveDateStart and effectiveDateEnd ) order by columnsId asc");
 				query.setParameter("companyId", req.getCompanyId());
+				query.setParameter("status", "Y");
 				query.setParameter("productId", Integer.valueOf(req.getProductId()));
 				query.setParameter("factorTypeId", Integer.valueOf(factorId));
 				List<FactorTypeDetails> factorType=query.getResultList();
@@ -179,7 +200,26 @@ public class JpqlQueryServiceImpl {
 //			query=em.createQuery("select f from FactorTypeDetails f where f.companyId=:companyId and f.productId=:productId and f.factorTypeId=:factorTypeId"
 //					+ " and sysdate() between f.effectiveDateStart and f.effectiveDateEnd and f.amendId=(select max(amendId) from FactorTypeDetails where "
 //					+ " companyId=f.companyId and productId=f.productId and factorTypeId=f.factorTypeId and ratingFieldId=f.ratingFieldId) order by f.columnsId asc");
-			query = em.createQuery("select f from FactorTypeDetails f where f.status=:status and f.companyId = :companyId and f.productId = :productId and f.factorTypeId = :factorTypeId and sysdate() between f.effectiveDateStart and f.effectiveDateEnd and f.amendId = (select max(f2.amendId) from FactorTypeDetails f2 where f2.companyId = f.companyId and f2.productId = f.productId and f2.factorTypeId = f.factorTypeId and f2.ratingFieldId = f.ratingFieldId and sysdate() between f2.effectiveDateStart and f2.effectiveDateEnd) order by f.columnsId asc");
+			query = em.createQuery("""
+				    SELECT f
+				    FROM FactorTypeDetails f
+				    WHERE f.status = :status
+				    AND f.companyId = :companyId
+				    AND f.status = :status
+				    AND f.productId = :productId
+				    AND f.factorTypeId = :factorTypeId
+				    AND sysdate() BETWEEN f.effectiveDateStart AND f.effectiveDateEnd
+				    AND f.amendId = (
+				        SELECT MAX(f2.amendId)
+				        FROM FactorTypeDetails f2
+				        WHERE f2.companyId = f.companyId
+				        AND f2.productId = f.productId
+				        AND f2.factorTypeId = f.factorTypeId
+				        AND f2.ratingFieldId = f.ratingFieldId
+				        AND sysdate() BETWEEN f2.effectiveDateStart AND f2.effectiveDateEnd
+				    )
+				    ORDER BY f.columnsId ASC
+				    """);
 			query.setParameter("companyId", req.getInsuranceId());
 			query.setParameter("status", "Y");
 			query.setParameter("productId", Integer.valueOf(req.getProductId()));

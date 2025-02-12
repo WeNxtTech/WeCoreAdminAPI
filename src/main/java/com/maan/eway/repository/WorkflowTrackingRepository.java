@@ -2,14 +2,14 @@
  * @author : Ashok Kumar S 
  * @since  : 23-12-2024
  */
-package com.maan.eway.workstream.repository;
+package com.maan.eway.repository;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.maan.eway.workstream.entity.WorkflowTracking;
-import com.maan.eway.workstream.entity.WorkflowTrackingPK;
+import com.maan.eway.bean.WorkflowTracking;
+import com.maan.eway.bean.WorkflowTrackingPK;
 
 
 public interface WorkflowTrackingRepository extends JpaRepository<WorkflowTracking, WorkflowTrackingPK>{

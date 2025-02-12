@@ -2,7 +2,7 @@
  * @author : Ashok Kumar S 
  * @since  : 09-01-2025
  */
-package com.maan.eway.workstream.entity;
+package com.maan.eway.bean;
 
 import java.math.BigDecimal;
 

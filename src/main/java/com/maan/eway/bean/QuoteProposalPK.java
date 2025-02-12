@@ -2,7 +2,7 @@
  * @author : Ashok Kumar S 
  * @since  : 23-12-2024
  */
-package com.maan.eway.workstream.entity;
+package com.maan.eway.bean;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;

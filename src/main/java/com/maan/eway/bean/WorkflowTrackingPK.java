@@ -1,4 +1,4 @@
-package com.maan.eway.workstream.entity;
+package com.maan.eway.bean;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;

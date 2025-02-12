@@ -2,15 +2,15 @@
  * @author : Ashok Kumar S 
  * @since  : 23-12-2024
  */
-package com.maan.eway.workstream.repository;
+package com.maan.eway.repository;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.maan.eway.workstream.entity.HierarchyManagement;
-import com.maan.eway.workstream.entity.HierarchyManagementId;
+import com.maan.eway.bean.HierarchyManagement;
+import com.maan.eway.bean.HierarchyManagementId;
 
 
 @Repository

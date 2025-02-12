@@ -2,7 +2,7 @@
  * @author : Ashok Kumar S 
  * @since  : 23-12-2024
  */
-package com.maan.eway.workstream.repository;
+package com.maan.eway.repository;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,8 +10,8 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.maan.eway.workstream.entity.QuoteProposal;
-import com.maan.eway.workstream.entity.QuoteProposalPK;
+import com.maan.eway.bean.QuoteProposal;
+import com.maan.eway.bean.QuoteProposalPK;
 
 
 @Repository

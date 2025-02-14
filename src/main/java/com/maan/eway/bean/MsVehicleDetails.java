@@ -367,8 +367,8 @@ private static final long serialVersionUID = 1L;
 	@Column(name = "COVER_ID")
 	private Integer coverId;
 	
-	 @Column(name="CREDIT_SHORTFALL_SI")
-	  private BigDecimal     creditShortfallSi ;
+	@Column(name = "CREDIT_SHORTFALL_SI")
+	private BigDecimal creditShortfallSi;
     
 }
 

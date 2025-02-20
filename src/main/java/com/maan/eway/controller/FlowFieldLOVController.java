@@ -9,6 +9,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -69,5 +70,28 @@ public class FlowFieldLOVController {
 		response.setCommonResponse(parentJsonKeys);
 		return new ResponseEntity<>(response, HttpStatus.OK);		
 	}
+	
+	/**
+	 * Retrieves a list of available flow field data types for dropdown selection.
+	 *
+	 * @return a {@link ResponseEntity} containing a {@link CommonRes} object with the list 
+	 *         of data types if successful, or {@code BAD_REQUEST} if exception occured.
+	 */
+	@GetMapping("/flowfield-datatypes")
+	public ResponseEntity<CommonRes> dropdownToChooseDataTypes(){
+		List<ListOfValuesRes> dataTypes = flowLOVService.dropdownToChooseDatatypes();
+		
+		if(dataTypes == null) {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+		
+		CommonRes response = new CommonRes();
+		response.setMessage("Data retrieved successfully");
+		response.setIsError(false);
+		response.setCommonResponse(dataTypes);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+	
+	
 
 }

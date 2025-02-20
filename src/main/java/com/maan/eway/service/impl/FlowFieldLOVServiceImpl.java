@@ -5,7 +5,12 @@
 package com.maan.eway.service.impl;
 
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -16,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.maan.eway.bean.FlowFieldDetails;
+import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.error.Error;
 import com.maan.eway.req.FlowFieldLOVGetReq;
 import com.maan.eway.res.ListOfValuesRes;
@@ -27,13 +33,18 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 @Service
 public class FlowFieldLOVServiceImpl implements FlowFieldLOVService {	
 	private static final Logger log = LogManager.getLogger(FlowFieldLOVServiceImpl.class);
 		
-	private final String IS_HEADER_TRUE = "Yes";
-	private final String STATUS_ACTIVE = "Y";
+	private static final String IS_HEADER_TRUE = "Yes";
+	private static final String STATUS_ACTIVE = "Y";
+	
+	private static final String DEFAULT_COMPANY_ID = "99999";
+	private static final String DEFAULT_BRANCH_CODE = "99999";
+	private static final String ITEM_TYPE = "FLOW_FIELD_DATATYPE";
 
 	private EntityManager entityManager;
 	
@@ -94,6 +105,19 @@ public class FlowFieldLOVServiceImpl implements FlowFieldLOVService {
 		}	
 	}
 	
+	@Override
+	public List<ListOfValuesRes> dropdownToChooseDatatypes() {
+		try {
+			List<ListItemValue> flowFieldDatatypes = retrieveFlowFieldDatatypes();
+			
+			return flowFieldDatatypes.stream()
+					.map(ffd -> new ListOfValuesRes(ffd.getItemCode(), ffd.getItemValue()))
+					.toList();
+		} catch (Exception e) {
+			log.error("Exception : {}", e.getMessage(), e);
+			return null;
+		}	
+	}
 	
 	/**
 	 * Retrieves a list of FlowFieldDetails that serve as parent references (header keys).
@@ -136,5 +160,53 @@ public class FlowFieldLOVServiceImpl implements FlowFieldLOVService {
 		return entityManager.createQuery(query).getResultList();		
 	}
 	
+	
+	/**
+	 * Retrieves a list of flow field data types based on predefined criteria.
+	 * 
+	 * <p>This method constructs a criteria query using {@link CriteriaBuilder} to fetch 
+	 * the latest amendments of active {@link ListItemValue} records for a specific company and branch.</p>
+	 *
+	 * @return a {@code List} of {@link ListItemValue} objects that match the defined criteria.
+	 * @throws Exception if an error occurs while executing the query.
+	 */
+	private List<ListItemValue> retrieveFlowFieldDatatypes() throws Exception {
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<ListItemValue> query = cb.createQuery(ListItemValue.class);
+		
+		Root<ListItemValue> listItemRoot = query.from(ListItemValue.class);
+		
+	    // Subquery to find the maximum amendment ID
+		Subquery<Integer> maxAmendId = query.subquery(Integer.class);		
+		Root<ListItemValue> subRoot = query.from(ListItemValue.class);
+		
+		maxAmendId.select(cb.max(subRoot.get("amendId")))
+			.where(
+				cb.equal(listItemRoot.get("companyId"), subRoot.get("companyId")),
+				cb.equal(listItemRoot.get("branchCode"), subRoot.get("branchCode")),
+				cb.equal(listItemRoot.get("itemId"), subRoot.get("itemId"))
+			);
+			
+		Instant instant = LocalDate.now().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
+		Date today = Date.from(instant);
+		
+		// Define filters for the query
+		Predicate[] filters = new Predicate[] {
+				cb.equal(listItemRoot.get("companyId"), DEFAULT_COMPANY_ID),
+				cb.equal(listItemRoot.get("branchCode"), DEFAULT_BRANCH_CODE),
+				cb.equal(listItemRoot.get("itemType"), ITEM_TYPE),
+				cb.equal(listItemRoot.get("status"), STATUS_ACTIVE),
+				cb.equal(listItemRoot.get("amendId"), maxAmendId),
+				cb.lessThanOrEqualTo(listItemRoot.get("effectiveDateStart"), today),
+				cb.greaterThanOrEqualTo(listItemRoot.get("effectiveDateEnd"), today)			
+		};
+		
+	    // Build and execute the query
+		query.select(listItemRoot)
+			.where(cb.and(filters))
+			.orderBy(cb.asc(listItemRoot.get("itemId")));
+		
+		return entityManager.createQuery(query).getResultList();		
+	}
 
 }

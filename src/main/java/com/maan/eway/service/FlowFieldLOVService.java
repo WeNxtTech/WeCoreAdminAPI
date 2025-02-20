@@ -15,5 +15,7 @@ public interface FlowFieldLOVService {
 	public List<Error> validateParametersOfFlowFieldLOVGetRequest(FlowFieldLOVGetReq req);
 	
 	public List<ListOfValuesRes> dropdownToChooseParentJsonKey(FlowFieldLOVGetReq req);	
+	
+	public List<ListOfValuesRes> dropdownToChooseDatatypes();
 
 }

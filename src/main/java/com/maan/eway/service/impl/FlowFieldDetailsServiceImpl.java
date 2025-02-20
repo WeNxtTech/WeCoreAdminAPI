@@ -226,16 +226,16 @@ public class FlowFieldDetailsServiceImpl implements FlowFieldDetailsService {
 	public FlowFieldDetails saveAndUpdateFlowFieldDetails(FlowFieldDetailsSaveUpReq req) {
 		try {
         // Update: Check if Flow Field Details exist before updating
-			if(req.getKeyId() != null) {
-				FlowFieldDetailsId flowFieldDetailsId = new FlowFieldDetailsId(
-						req.getCompanyId(), req.getProductId(), req.getIntegType(), req.getKeyId());
-				
-				Optional<FlowFieldDetails> optFlowField = flowFieldRepo.findById(flowFieldDetailsId);
-				if(optFlowField.isEmpty()) {
-					throw new NoSuchElementException("Flow Field Details you are trying to update was not found");
-				}
-			}
-        // Actual save & update
+//			if(req.getKeyId() != null) {
+//				FlowFieldDetailsId flowFieldDetailsId = new FlowFieldDetailsId(
+//						req.getCompanyId(), req.getProductId(), req.getIntegType(), req.getKeyId());
+//				
+//				Optional<FlowFieldDetails> optFlowField = flowFieldRepo.findById(flowFieldDetailsId);
+//				if(optFlowField.isEmpty()) {
+//					throw new NoSuchElementException("Flow Field Details you are trying to update was not found");
+//				}
+//			}
+
 			FlowFieldDetails flowFieldDetails = settingPropertiesForFlowFieldDetails(req);
 			if(flowFieldDetails == null) {
 				throw new IllegalArgumentException("Failed to set properties for Flow Field Details.");

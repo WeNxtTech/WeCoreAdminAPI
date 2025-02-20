@@ -265,10 +265,11 @@ public class FlowFieldDetailsServiceImpl implements FlowFieldDetailsService {
 	        // Create a new instance of FlowFieldDetails
 	        FlowFieldDetails flowField = new FlowFieldDetails();
 
-	        // Set mandatory fields: Company ID and Product ID
+	        // Set mandatory fields
 	        flowField.setCompanyId(req.getCompanyId());
 	        flowField.setProductId(req.getProductId());
-
+	        flowField.setIntegType(req.getIntegType());
+	        
 	        // Assign JSON key from the request
 	        flowField.setJsonKey(req.getJsonKey());
 

@@ -33,11 +33,9 @@ public class FlowFieldDetailsServiceImpl implements FlowFieldDetailsService {
 
 	private final BigDecimal KEY_ID_FOR_ROOT = new BigDecimal(701);
 	private final BigDecimal KEY_ID_NONROOT_START = new BigDecimal(702);
-	private final String ROOT_JSON_KEY = "Root";
 	
-	private final String IS_HEADER_TRUE = "Yes";
+	private final String ROOT_JSON_KEY = "Root";	
 	private final String HEADER_KEYID_ROOT = "99999";
-	private final String DEFAULT_YN_TRUE = "Y";
 	
 	private FlowFieldDetailsRepository flowFieldRepo;	
 	private ModelMapper mapper;
@@ -120,8 +118,7 @@ public class FlowFieldDetailsServiceImpl implements FlowFieldDetailsService {
 		if(StringUtils.isBlank(req.getIsHeader())) {
 			errors.add(new Error("5", "isHeader", "IsHeader is required, It should not be blank"));
 		}		
-		if(StringUtils.isNotBlank(req.getIsHeader()) && 
-				! ROOT_JSON_KEY.equalsIgnoreCase(req.getJsonKey()) && 
+		if(! ROOT_JSON_KEY.equalsIgnoreCase(req.getJsonKey()) && 
 				StringUtils.isBlank(req.getHeaderKeyid())) {
 			errors.add(new Error("6", "headerKeyId", "Header KeyId is required, It should not be blank"));
 		}
@@ -197,29 +194,14 @@ public class FlowFieldDetailsServiceImpl implements FlowFieldDetailsService {
 	
 	/**
 	 * Saves or updates Flow Field Details based on the provided request parameters.
-	 * <p>
-	 * If a key ID is provided, the method checks whether the existing Flow Field Details 
-	 * are present before updating. If not found, a {@code NoSuchElementException} is thrown.
-	 * </p>
 	 * 
 	 * @param req the request object containing details for saving or updating Flow Field Details
 	 * @return the saved or updated FlowFieldDetails object
-	 * @throws NoSuchElementException if the Flow Field Details to update are not found
 	 * @throws IllegalArgumentException if setting properties for Flow Field Details fails
 	 */
 	@Override
 	public FlowFieldDetails saveAndUpdateFlowFieldDetails(FlowFieldDetailsSaveUpReq req) {
 		try {
-        // Update: Check if Flow Field Details exist before updating
-//			if(req.getKeyId() != null) {
-//				FlowFieldDetailsId flowFieldDetailsId = new FlowFieldDetailsId(
-//						req.getCompanyId(), req.getProductId(), req.getIntegType(), req.getKeyId());
-//				
-//				Optional<FlowFieldDetails> optFlowField = flowFieldRepo.findById(flowFieldDetailsId);
-//				if(optFlowField.isEmpty()) {
-//					throw new NoSuchElementException("Flow Field Details you are trying to update was not found");
-//				}
-//			}
 
 			FlowFieldDetails flowFieldDetails = settingPropertiesForFlowFieldDetails(req);
 			if(flowFieldDetails == null) {
@@ -247,73 +229,58 @@ public class FlowFieldDetailsServiceImpl implements FlowFieldDetailsService {
 	 */
 	private FlowFieldDetails settingPropertiesForFlowFieldDetails(FlowFieldDetailsSaveUpReq req) {
 	    try {
-	        // Create a new instance of FlowFieldDetails
+
 	        FlowFieldDetails flowField = new FlowFieldDetails();
 
 	        // Set mandatory fields
 	        flowField.setCompanyId(req.getCompanyId());
 	        flowField.setProductId(req.getProductId());
-	        flowField.setIntegType(req.getIntegType());
 	        
-	        // Assign JSON key from the request
+	        flowField.setIntegType(req.getIntegType()); 
 	        flowField.setJsonKey(req.getJsonKey());
 
-	        // If the JSON key represents the "Root" level
 	        if (ROOT_JSON_KEY.equalsIgnoreCase(req.getJsonKey())) {
-	            flowField.setKeyId(KEY_ID_FOR_ROOT); // Assign predefined Root Key ID
-	            flowField.setIsHeader(IS_HEADER_TRUE); // Mark as a header
-	            flowField.setHeaderKeyid(HEADER_KEYID_ROOT); // Assign Root Header Key ID
+	            flowField.setKeyId(KEY_ID_FOR_ROOT);
+	            flowField.setHeaderKeyid(HEADER_KEYID_ROOT); 
 	        }
 
-	        // If the JSON key is a "Non-Root" element
 	        if (!ROOT_JSON_KEY.equalsIgnoreCase(req.getJsonKey())) {
-	            // If Key ID is not provided, generate a new one
 	            if (req.getKeyId() == null) {
-	                // Retrieve the latest Key ID for the given company, product, and integration type
+
 	                FlowFieldDetails topFlowFieldDetails = flowFieldRepo.findTopByCompanyIdAndProductIdAndIntegTypeOrderByKeyIdDesc(
 	                        req.getCompanyId(), req.getProductId(), req.getIntegType());
 
-	                // If no existing record, start with default Key ID; otherwise, increment the highest Key ID
 	                if (topFlowFieldDetails == null) {  flowField.setKeyId(KEY_ID_NONROOT_START); } 
 	                else { flowField.setKeyId(topFlowFieldDetails.getKeyId().add(BigDecimal.ONE)); }	                
 	            } 
-	            else {
-	                // If Key ID is provided, use it for the update
-	                flowField.setKeyId(req.getKeyId());
-	            }
-
-	            // Assign header-related attributes
-	            flowField.setIsHeader(req.getIsHeader());
-	            if (IS_HEADER_TRUE.equalsIgnoreCase(req.getIsHeader())) {
-	                flowField.setHeaderKeyid(req.getHeaderKeyid()); // Use the provided Header Key ID
-	            } else {
-	                flowField.setHeaderKeyid(KEY_ID_FOR_ROOT.toPlainString()); // Default to Root Header Key ID
-	            }
+	            else {   flowField.setKeyId(req.getKeyId());  }
+	            
+	            flowField.setHeaderKeyid(req.getHeaderKeyid()); 
 	        }
-
-	        // Set additional attributes from the request
-	        flowField.setIsarray(req.getIsarray()); // Boolean flag indicating if this field is an array
+      
+	        flowField.setIsarray(req.getIsarray());
 	        
-	        String dataType = StringUtils.isBlank(req.getDatatype()) ? null :req.getDatatype();
+	        String dataType = StringUtils.isBlank(req.getDatatype()) ? null :req.getDatatype();	        	        
+	        flowField.setDatatype(dataType);
+	        
 	        String pattern = StringUtils.isBlank(req.getPattern())? null : req.getPattern();
-	        flowField.setDatatype(dataType); // Set the data type (e.g., String, Integer)
-	        flowField.setPattern(pattern); // Set validation pattern (if applicable)
-	        flowField.setStatus(req.getStatus()); // Set the status of the field (Active/Inactive)
-
+	        flowField.setPattern(pattern); 
+	        flowField.setStatus(req.getStatus()); 
 	        
-	        // Set default value or query-related attributes
 	        flowField.setDefaultYn(req.getDefaultYn());
-	        String defaultValue = StringUtils.isBlank(req.getDefaultValue())? null : req.getDefaultValue();
-        	
-            flowField.setDefaultValue(defaultValue); // Assign default value if applicable
+
+	        String defaultValue = StringUtils.isBlank(req.getDefaultValue())? null : req.getDefaultValue();        	
+            flowField.setDefaultValue(defaultValue); 
             
         	flowField.setQueryId(req.getQueryId());
+        	
             String queryCol = StringUtils.isBlank(req.getQueryCol()) ? null : req.getQueryCol();
-            String queryAlias = StringUtils.isBlank(req.getQueryAlias()) ? null : req.getQueryAlias();
             flowField.setQueryCol(queryCol);
+            
+            String queryAlias = StringUtils.isBlank(req.getQueryAlias()) ? null : req.getQueryAlias();            
             flowField.setQueryAlias(queryAlias);
 	        
-	        return flowField; // Return the fully populated FlowFieldDetails object
+	        return flowField; 
 
 	    } catch (Exception e) {
 	        log.error("Exception: {}", e.getMessage(), e);

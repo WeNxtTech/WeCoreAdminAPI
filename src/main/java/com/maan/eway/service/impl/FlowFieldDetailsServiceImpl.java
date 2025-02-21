@@ -238,24 +238,25 @@ public class FlowFieldDetailsServiceImpl implements FlowFieldDetailsService {
 	        
 	        flowField.setIntegType(req.getIntegType()); 
 	        flowField.setJsonKey(req.getJsonKey());
-
+	        flowField.setIsHeader(req.getIsHeader());
+	        
 	        if (ROOT_JSON_KEY.equalsIgnoreCase(req.getJsonKey())) {
 	            flowField.setKeyId(KEY_ID_FOR_ROOT);
 	            flowField.setHeaderKeyid(HEADER_KEYID_ROOT); 
-	        }
+	        }else {
+	        	if (req.getKeyId() == null) {
 
-	        if (!ROOT_JSON_KEY.equalsIgnoreCase(req.getJsonKey())) {
-	            if (req.getKeyId() == null) {
+	        		FlowFieldDetails topFlowFieldDetails = flowFieldRepo.findTopByCompanyIdAndProductIdAndIntegTypeOrderByKeyIdDesc(
+	        				req.getCompanyId(), req.getProductId(), req.getIntegType());
 
-	                FlowFieldDetails topFlowFieldDetails = flowFieldRepo.findTopByCompanyIdAndProductIdAndIntegTypeOrderByKeyIdDesc(
-	                        req.getCompanyId(), req.getProductId(), req.getIntegType());
+	        		if (topFlowFieldDetails == null) {  flowField.setKeyId(KEY_ID_NONROOT_START); } 
+	        		else { flowField.setKeyId(topFlowFieldDetails.getKeyId().add(BigDecimal.ONE)); }	                
+	        	} 
+	        	else {
+	        		flowField.setKeyId(req.getKeyId());  
+	        	}
 
-	                if (topFlowFieldDetails == null) {  flowField.setKeyId(KEY_ID_NONROOT_START); } 
-	                else { flowField.setKeyId(topFlowFieldDetails.getKeyId().add(BigDecimal.ONE)); }	                
-	            } 
-	            else {   flowField.setKeyId(req.getKeyId());  }
-	            
-	            flowField.setHeaderKeyid(req.getHeaderKeyid()); 
+	        	flowField.setHeaderKeyid(req.getHeaderKeyid()); 
 	        }
       
 	        flowField.setIsarray(req.getIsarray());

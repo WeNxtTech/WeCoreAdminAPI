@@ -1,0 +1,29 @@
+/**
+ * @author : Ashok Kumar S 
+ * @since  : 20-02-2025
+ */
+package com.maan.eway.bean;
+
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode
+public class ClausesMasterV1PK {
+	
+	private Integer companyId;
+	private Integer productId;	
+
+	private Integer sectionId;	
+	private Integer coverId;
+	
+	private Integer clausesId;
+	private Integer amendId;
+	
+}

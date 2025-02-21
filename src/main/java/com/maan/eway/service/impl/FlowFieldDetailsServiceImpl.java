@@ -136,22 +136,7 @@ public class FlowFieldDetailsServiceImpl implements FlowFieldDetailsService {
 		if(StringUtils.isBlank(req.getDefaultYn())) {
 			errors.add(new Error("9", "defaultYn", "Default YN is required, It should not be blank"));
 		}
-		if(StringUtils.isNotBlank(req.getDefaultYn()) && DEFAULT_YN_TRUE.equals(req.getDefaultYn())) {
-			if(StringUtils.isBlank(req.getDefaultValue())) {
-				errors.add(new Error("10", "defaultValue", "defaultValue is required when defaultYN is Y, It should not be blank"));
-			}
-		}
-		if(StringUtils.isNotBlank(req.getDefaultYn()) && !DEFAULT_YN_TRUE.equals(req.getDefaultYn())) {
-			if(req.getQueryId() == null) {
-				errors.add(new Error("11", "queryId", "Query ID is required when defaultYN is N, It should not be null."));
-			}
-			if(StringUtils.isBlank(req.getQueryCol())) {
-				errors.add(new Error("12", "queryCol", "Query Col is required when defaultYN is N, It should not be blank."));
-			}
-			if(StringUtils.isBlank(req.getQueryAlias())) {
-				errors.add(new Error("13", "queryAlias", "Query Alias is required when defaultYN is N, It should not be blank"));
-			}
-		}	
+
 		return errors;
 	}
 	
@@ -308,22 +293,26 @@ public class FlowFieldDetailsServiceImpl implements FlowFieldDetailsService {
 
 	        // Set additional attributes from the request
 	        flowField.setIsarray(req.getIsarray()); // Boolean flag indicating if this field is an array
-	        flowField.setDatatype(req.getDatatype()); // Set the data type (e.g., String, Integer)
-	        flowField.setPattern(req.getPattern()); // Set validation pattern (if applicable)
+	        
+	        String dataType = StringUtils.isBlank(req.getDatatype()) ? null :req.getDatatype();
+	        String pattern = StringUtils.isBlank(req.getPattern())? null : req.getPattern();
+	        flowField.setDatatype(dataType); // Set the data type (e.g., String, Integer)
+	        flowField.setPattern(pattern); // Set validation pattern (if applicable)
 	        flowField.setStatus(req.getStatus()); // Set the status of the field (Active/Inactive)
 
 	        
 	        // Set default value or query-related attributes
 	        flowField.setDefaultYn(req.getDefaultYn());
-	        if (DEFAULT_YN_TRUE.equalsIgnoreCase(req.getDefaultYn())) {
-	            flowField.setDefaultValue(req.getDefaultValue()); // Assign default value if applicable
-	        } else {
-	            // If no default value, set query-related fields for dynamic data retrieval
-	            flowField.setQueryId(req.getQueryId());
-	            flowField.setQueryCol(req.getQueryCol());
-	            flowField.setQueryAlias(req.getQueryAlias());
-	        }
-
+	        String defaultValue = StringUtils.isBlank(req.getDefaultValue())? null : req.getDefaultValue();
+        	
+            flowField.setDefaultValue(defaultValue); // Assign default value if applicable
+            
+        	flowField.setQueryId(req.getQueryId());
+            String queryCol = StringUtils.isBlank(req.getQueryCol()) ? null : req.getQueryCol();
+            String queryAlias = StringUtils.isBlank(req.getQueryAlias()) ? null : req.getQueryAlias();
+            flowField.setQueryCol(queryCol);
+            flowField.setQueryAlias(queryAlias);
+	        
 	        return flowField; // Return the fully populated FlowFieldDetails object
 
 	    } catch (Exception e) {

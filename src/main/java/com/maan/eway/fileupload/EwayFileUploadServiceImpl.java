@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import jakarta.persistence.EntityManager;
@@ -600,6 +601,7 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 			TypedQuery<PremiaConfigMaster> result = em.createQuery(query);
 
 			list = result.getResultList();
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getPremiaId()))).collect(Collectors.toList());
 			if(!CollectionUtils.isEmpty(list)) {
 				for (PremiaConfigMaster fac :list) {
 					tableName.add(fac.getPremiaTableName());
@@ -616,5 +618,10 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 			return null;
 		}
 		return res;
+	}
+	
+	private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
+	    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
 	}
 }

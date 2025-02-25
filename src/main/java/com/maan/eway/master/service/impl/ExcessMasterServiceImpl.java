@@ -3,12 +3,15 @@ package com.maan.eway.master.service.impl;
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;import java.util.Comparator;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -76,8 +79,19 @@ public class ExcessMasterServiceImpl  implements ExcessMasterService{
 			dozerMapper.map(data, saveReq);
 			if(data.getExcessId()==null || data.getExcessId()==0)
 			{
-		     Integer totalCount = getMasterTableCount(data.getCompanyId(),data.getProductId(),data.getSectionId(),data.getCoverId());
-		     ExcessId =totalCount+1;
+				List<ExcessMaster> ft = excessRepo.findByCompanyIdAndSectionIdAndCoverId(data.getCompanyId(), data.getSectionId(), data.getCoverId());
+				Integer totalCount =null;
+				if(ft!=null&&!ft.isEmpty())
+				{
+					Optional<ExcessMaster> maxExcessMasterOpt = excessRepo.findTopByOrderByExcessIdDesc();	
+					totalCount	= maxExcessMasterOpt.map(ExcessMaster::getExcessId).orElse(null);
+					 ExcessId =totalCount+1;
+				}
+				else {
+					totalCount = ft.get(0).getExcessId();	
+					ExcessId=totalCount;
+				}
+            
 		     saveReq.setExcessId(ExcessId);	
 		     
 			}
@@ -115,8 +129,13 @@ public class ExcessMasterServiceImpl  implements ExcessMasterService{
 			saveReq.setEntryDate(currentDate);
 			saveReq.setExcessId(ExcessId);
 			saveReq.setCreatedBy(CreatedBy);
+			saveReq.setStatus(data.getStatus());
 			excessRepo.saveAndFlush(saveReq);
-			log.info("Saved Details is --> " + saveReq);	
+			log.info("Saved Details is --> " + saveReq);
+			SuccessRes res = new SuccessRes();
+			res.setSuccessId(String.valueOf(saveReq.getExcessId()));
+			res.setResponse("Successfully Saved..........");
+			response.add(res);	
 
 		}
 		}
@@ -130,60 +149,6 @@ public class ExcessMasterServiceImpl  implements ExcessMasterService{
 	}
 
 	
-public Integer getMasterTableCount(String companyId, String productId, String sectionId,String CoverId)	{
-
-	Integer data =0;
-	try {
-		List<ExcessMaster> list = new ArrayList<ExcessMaster>();
-		// Find Latest Record
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<ExcessMaster> query = cb.createQuery(ExcessMaster.class);
-		//Find all
-		Root<ExcessMaster> b = query.from(ExcessMaster.class);
-		// Select
-		query.select(b);
-		// Effective Date Max Filter
-		Subquery<Date> effectiveDate = query.subquery(Date.class);
-		Root<ExcessMaster> ocpm1 = effectiveDate.from(ExcessMaster.class);
-		effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
-		Predicate a1 = cb.equal(ocpm1.get("excessId"),b.get("excessId"));
-		Predicate a2 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
-		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
-		Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
-		Predicate a5 = cb.equal(ocpm1.get("sectionId"),b.get("sectionId"));
-		Predicate a6 = cb.equal(ocpm1.get("coverId"),b.get("coverId"));
-
-		
-		effectiveDate.where(a1,a2,a3,a4,a5,a6);
-	
-		//OrderBy
-		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.desc(b.get("excessId")));
-		
-		Predicate n1 = cb.equal(b.get("effectiveDateStart"),effectiveDate);
-		Predicate n2 = cb.equal(b.get("companyId"),companyId);
-		Predicate n6 = cb.equal(b.get("productId"),productId);
-		Predicate n9 = cb.equal(b.get("sectionId"),sectionId);
-		Predicate n10 = cb.equal(b.get("coverId"),CoverId);
-		
-		
-		query.where(n1,n2,n6,n9,n10).orderBy(orderList);
-				
-		
-		// Get Result
-		TypedQuery<ExcessMaster> result = em.createQuery(query);
-		int limit = 0 , offset = 1 ;
-		result.setFirstResult(limit * offset);
-		result.setMaxResults(offset);
-		list = result.getResultList();
-		data = list.size() > 0 ? list.get(0).getExcessId() : 0 ;
-	}
-	catch(Exception e) {
-		e.printStackTrace();
-		log.info(e.getMessage());
-	}
-	return data;
-}
 
 public TypedQuery<ExcessMaster>  updaterecords(ExcessMasterReq req)
 {
@@ -317,9 +282,7 @@ public List<ExcessMasterRes> getallExcessMaster(ExcessMasterReq  req) {
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
 		Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
 		Predicate a5 = cb.equal(ocpm1.get("sectionId"),b.get("sectionId"));
-		Predicate a6 = cb.equal(ocpm1.get("coverId"),b.get("coverId"));
-
-		amendId.where(a1, a2,a3,a4,a5,a6);
+		amendId.where(a1, a2,a3,a4,a5);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -332,13 +295,14 @@ public List<ExcessMasterRes> getallExcessMaster(ExcessMasterReq  req) {
 		Predicate n4 = cb.equal(b.get("branchCode"),"99999");
       	Predicate n5 = cb.or(n3,n4);
 		Predicate n6 = cb.equal(b.get("productId"), req.getProductId());
-		
-		query.where(n1,n2,n5,n6).orderBy(orderList);
+		Predicate n7= cb.equal(b.get("status"), "Y");
+
+		query.where(n1,n2,n5,n6,n7).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<ExcessMaster> result = em.createQuery(query);
 		list =  result.getResultList();
-		list.sort(Comparator.comparing(ExcessMaster::getExcessId));
+		list.sort(Comparator.comparing(ExcessMaster::getExcessDescription));
 
 		// Map
 		for (ExcessMaster data : list) {
@@ -404,6 +368,7 @@ public ExcessMasterRes getExcessMasterById(ExcessMasterDropdownReq req) {
 		Predicate n6 = cb.equal(b.get("productId"), req.getProductId());
 		Predicate n7 = cb.equal(b.get("sectionId"), req.getSectionId());
 		Predicate n8 = cb.equal(b.get("coverId"), req.getCoverId());
+
 		Predicate n9 = cb.equal(b.get("excessId"),req.getExcessId());
 
 
@@ -412,12 +377,14 @@ public ExcessMasterRes getExcessMasterById(ExcessMasterDropdownReq req) {
 		// Get Result
 		TypedQuery<ExcessMaster> result = em.createQuery(query);
 		list =  result.getResultList();
-		
-		
-		for (Field field : ExcessMaster.class.getDeclaredFields()) {
-		    field.setAccessible(true);
-		    field.set(resList, field.get(list.get(0)));
+		list.sort(Comparator.comparing(ExcessMaster::getExcessDescription));
+
+		for(ExcessMaster res: list)
+		{
+			resList = mapper.map(res, ExcessMasterRes.class);	
 		}
+		
+	
 
 	} catch (Exception e) {
 		e.printStackTrace();

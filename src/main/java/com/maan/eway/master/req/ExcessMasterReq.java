@@ -12,7 +12,7 @@ public class ExcessMasterReq {
 	@JsonProperty("ExcessId")
 	private Integer ExcessId;
 	
-	@JsonProperty("CompanyId")
+	@JsonProperty("InsuranceId")
 	private String companyId;
 	
 	@JsonProperty("ProductId")
@@ -33,8 +33,8 @@ public class ExcessMasterReq {
 	@JsonProperty("ExcessDescription")
 	private String excessDescription;
 	
-	@JsonProperty("currency")
-	private String Currency;
+	@JsonProperty("Currency")
+	private String currency;
 	
 	@JsonProperty("CreatedBy")
 	private String createdBy;
@@ -47,5 +47,9 @@ public class ExcessMasterReq {
 	
 	@JsonProperty( "BranchCode")
 	private String branchCode;
+	
+	
+	@JsonProperty( "Status")
+	private String status;
 	
 }

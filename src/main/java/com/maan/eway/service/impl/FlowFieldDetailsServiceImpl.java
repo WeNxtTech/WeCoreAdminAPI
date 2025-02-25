@@ -144,18 +144,13 @@ public class FlowFieldDetailsServiceImpl implements FlowFieldDetailsService {
 	 *
 	 * @param req the request object containing company ID, product ID, and integration type
 	 * @return a list of FlowFieldDetailsRes objects if found, otherwise returns null
-	 * @throws NoSuchElementException if no flow field details are found for the given criteria
 	 */
 	@Override
 	public List<FlowFieldDetailsRes> getAllFlowFieldDetails(FlowFieldDetailsGetAllReq req) {
 		try {			
 			List<FlowFieldDetails> allFlowFieldDetails = flowFieldRepo.findAllByCompanyIdAndProductIdAndIntegTypeOrderByKeyId(
 					req.getCompanyId(), req.getProductId(), req.getIntegType());
-		
-			if(allFlowFieldDetails.isEmpty()) {
-				throw new NoSuchElementException("Flow Field Details looking for is not found");
-			}
-			
+				
 			return allFlowFieldDetails.stream()
 					.map(flowField -> mapper.map(flowField, FlowFieldDetailsRes.class))
 					.toList();

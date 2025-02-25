@@ -54,18 +54,13 @@ public class ApiIntegMasterServiceImpl implements ApiIntegMasterService{
 	 *
 	 * @param req The request object containing company and product identifiers.
 	 * @return A list of {@link ApiIntegMasterRes} containing API integration master details.
-	 *         Returns {@code null} if an exception occurs.
 	 */
 	@Override
 	public List<ApiIntegMasterRes> getAllApiIntegMasterDetails (ApiIntegMasterGetAllReq req) {
 		try {
 			List<ApiIntegMaster> allApiIntegMasters = apiIntegRepo.findAllByCompanyIdAndProductId(
 					req.getCompanyId(), req.getProductId());
-			
-			if(allApiIntegMasters.isEmpty()) {
-				throw new NoSuchElementException("ApiIntegMaster is looking for is not found");
-			}
-			
+						
 			List<ApiIntegMasterRes> apiIntegMasterList = allApiIntegMasters.stream()
 					.map(apiInteg -> mapper.map(apiInteg, ApiIntegMasterRes.class))
 					.collect(Collectors.toList());

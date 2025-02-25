@@ -105,17 +105,12 @@ public class FieldQueryTableQueryServiceImpl implements FieldQueryTableQueryServ
 	 *
 	 * @return A list of {@link FieldQueryTableQueryRes} containing all field query table query details.
 	 *         Returns {@code null} if an exception occurs during the operation.
-	 * @throws NoSuchElementException If no field query table query records exist.
 	 */
 	@Override
 	public List<FieldQueryTableQueryRes> getAllFieldQueryTablequeryDetails() {
 		try {
 			List<FieldQueryTablequery> allFieldQuery = fieldQueryRepo.findAllByOrderByQueryIdAsc();
-			
-			if(allFieldQuery.isEmpty()) {
-				throw new NoSuchElementException("All FieldQueryTableQuery details were empty.");
-			}
-			
+						
 			return allFieldQuery.stream()
 					.map(fieldQuery -> mapper.map(fieldQuery, FieldQueryTableQueryRes.class))
 					.toList();

@@ -1,20 +1,19 @@
+/**
+ * @author : Ashok Kumar S 
+ * @since  : 25-02-2025
+ */
 package com.maan.eway.repository;
 
-import java.util.List;
-import java.util.Optional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import com.maan.eway.bean.ExcessMaster;
 import com.maan.eway.bean.ExcessMasterId;
 
-public interface ExcessMasterRepository extends JpaRepository<ExcessMaster, ExcessMasterId>,
-JpaSpecificationExecutor<ExcessMaster> {
-
-	
-    Optional<ExcessMaster> findTopByOrderByExcessIdDesc();
+public interface ExcessMasterRepository extends JpaRepository<ExcessMaster, ExcessMasterId> {
     
-    List<ExcessMaster> findByCompanyIdAndSectionIdAndCoverId(String com,String pid,String CoverId);
+    ExcessMaster findTopByCompanyIdAndProductIdAndSectionIdOrderByExcessIdDesc(
+    		String companyId, String productId, String sectionId);
 
+    ExcessMaster findTopByCompanyIdAndProductIdAndSectionIdAndExcessIdOrderByAmendIdDesc(
+    		String companyId, String productId, String sectionId, Integer excessId);
 }

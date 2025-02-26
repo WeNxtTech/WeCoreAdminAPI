@@ -2,21 +2,20 @@ package com.maan.eway.master.service;
 
 import java.util.List;
 
-import com.maan.eway.master.req.ExcessMasterReq;
+import com.maan.eway.bean.ExcessMaster;
+import com.maan.eway.master.req.ExcessMasterGetAllReq;
+import com.maan.eway.master.req.ExcessMasterGetReq;
+import com.maan.eway.master.req.ExcessMasterSaveUpReq;
 import com.maan.eway.master.res.ExcessMasterRes;
-import com.maan.eway.master.service.impl.ExcessMasterDropdownReq;
-import com.maan.eway.res.DropDownRes;
-import com.maan.eway.res.SuccessRes;
 
 public interface ExcessMasterService {
 	
-	List<SuccessRes> saveExcess(List<ExcessMasterReq> req);
+	List<ExcessMaster> saveAndUpdateExcessMaster(List<ExcessMasterSaveUpReq> req);
 
-    List<ExcessMasterRes> getallExcessMaster(ExcessMasterReq req);  
+	List<ExcessMasterRes> getallExcessMaster(ExcessMasterGetAllReq req);
 	
-
-	List<ExcessMasterRes> getExcessMasterDropdown(ExcessMasterDropdownReq req);
+	List<ExcessMasterRes> getAllActiveExcessMaster(ExcessMasterGetAllReq req);
 	
-	ExcessMasterRes getExcessMasterById(ExcessMasterDropdownReq req);
+	ExcessMasterRes getExcessMaster (ExcessMasterGetReq req);
 
 }

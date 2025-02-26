@@ -1,13 +1,17 @@
+/**
+ * @author : Ashok Kumar S 
+ * @since  : 25-02-2025
+ */
 package com.maan.eway.master.res;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import jakarta.persistence.Column;
 import lombok.Data;
 
 @Data
 public class ExcessMasterRes {
-
 	
 	@JsonProperty("CompanyId")
 	private String companyId;
@@ -20,16 +24,16 @@ public class ExcessMasterRes {
 	
 	@JsonProperty("CoverId")
 	private String coverId;
-	
-	
+		
 	@JsonProperty("CoverName")
 	private String coverName;
-	
-	
+		
 	@JsonProperty("ExcessPercentage")
+	@JsonFormat(shape = Shape.STRING)
 	private Integer excessPercentage;
 	
 	@JsonProperty("ExcessAmount")
+	@JsonFormat(shape = Shape.STRING)
 	private Double excessAmount;	
 	
 	@JsonProperty("ExcessDescription")
@@ -50,6 +54,7 @@ public class ExcessMasterRes {
 	@JsonProperty("ExcessId")
 	private String excessId;
 	
-	
+	@JsonProperty("Status")
+	private String status;	
 	
 }

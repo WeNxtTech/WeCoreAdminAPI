@@ -5,13 +5,13 @@ import java.util.Date;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Getter
-@Setter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @IdClass(ExcessMasterId.class)
 @Table(name = "Excess_Master")
+@Getter
+@Setter
 public class ExcessMaster {
 
 	@Id
@@ -30,7 +30,6 @@ public class ExcessMaster {
 	@Column(name = "SECTION_ID")
 	private String sectionId;
 
-	@Id
 	@Column(name = "COVER_ID")
 	private String coverId;
 
@@ -79,7 +78,6 @@ public class ExcessMaster {
 	
 	@Column(name = "COVER_NAME")
 	private String coverName;
-	
 	
 
 }

@@ -7,14 +7,15 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode
 public class ExcessMasterId implements Serializable {
-	private static final long serialVersionUId = 5L;
+
+	private static final long serialVersionUID = 1L;
 	
 	private Integer excessId;
 	private String companyId;
 	private String productId;
 	private String sectionId;
-	private String coverId;
 	private Integer amendId;
 
 }

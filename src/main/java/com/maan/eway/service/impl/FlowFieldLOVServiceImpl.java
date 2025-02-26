@@ -7,12 +7,10 @@ package com.maan.eway.service.impl;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -45,7 +43,9 @@ public class FlowFieldLOVServiceImpl implements FlowFieldLOVService {
 	private static final String DEFAULT_COMPANY_ID = "99999";
 	private static final String DEFAULT_BRANCH_CODE = "99999";
 	private static final String ITEM_TYPE = "FLOW_FIELD_DATATYPE";
-
+	
+	private static final String ROOT_HEADER_KEY_ID = "99999";
+	
 	private EntityManager entityManager;
 	
 	@Autowired	
@@ -73,17 +73,15 @@ public class FlowFieldLOVServiceImpl implements FlowFieldLOVService {
 	
 	
 	/**
-	 * Retrieves a list of parent JSON keys for FlowFieldDetails.
+	 * Retrieves a dropdown list of parent JSON keys based on the provided request parameters.
 	 * <p>
-	 * This method fetches header key details from the {@code retrievingHeaderKeyIdAndDescFromParentReference} method
-	 * based on the provided company ID, product ID, and integration type.
-	 * If no header keys are found, a {@link NoSuchElementException} is thrown.
+	 * This method fetches header key details from a parent reference and converts them into  
+	 * a list of dropdown options. If no data is found, it returns a default root JSON key.
 	 * </p>
 	 *
-	 * @param req The request object {@link FlowFieldLOVGetReq} containing company ID, product ID, and integration type.
-	 * @return A list of {@link ListOfValuesRes} containing header key IDs and JSON keys,
-	 *         or {@code null} in case of an exception.
-	 * @throws NoSuchElementException if no header keys are found.
+	 * @param req the {@link FlowFieldLOVGetReq} containing company ID, product ID, and integration type.
+	 * @return a {@link List} of {@link ListOfValuesRes} representing the available parent JSON keys,  
+	 *         or {@code null} if an exception occurs.
 	 */
 	@Override
 	public List<ListOfValuesRes> dropdownToChooseParentJsonKey(FlowFieldLOVGetReq req) {
@@ -92,7 +90,7 @@ public class FlowFieldLOVServiceImpl implements FlowFieldLOVService {
 					req.getCompanyId(), req.getProductId(), req.getIntegType());
 			
 			if(headerKeyList.isEmpty()) {
-				throw new NoSuchElementException("All FlowFieldDetails header keys were empty");
+				return List.of(new ListOfValuesRes(ROOT_HEADER_KEY_ID, ROOT_HEADER_KEY_ID));
 			}
 			
 			return headerKeyList.stream()

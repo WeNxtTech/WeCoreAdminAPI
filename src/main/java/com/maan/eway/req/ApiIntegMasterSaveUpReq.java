@@ -40,7 +40,7 @@ public class ApiIntegMasterSaveUpReq {
 	private String status;
 	
 	@JsonProperty("apiDesc")
-	@NotBlank(message = "Api Desc is required, It should not be blank")
+	@NotBlank(message = "Api Description is required, It should not be blank")
 	private String apiDesc;
 	
 	@JsonProperty("apiUrl")

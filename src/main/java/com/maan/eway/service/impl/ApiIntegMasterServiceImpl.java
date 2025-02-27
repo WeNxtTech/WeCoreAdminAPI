@@ -127,7 +127,8 @@ public class ApiIntegMasterServiceImpl implements ApiIntegMasterService{
 	public ApiIntegMaster saveUpdateApiIntegMasterDetails (ApiIntegMasterSaveUpReq req) {
 		try {
 			ApiIntegMaster apiIntegMaster = mapper.map(req, ApiIntegMaster.class);
-						
+			apiIntegMaster.setApiType(req.getApiType().trim().toUpperCase());
+			
 			return apiIntegRepo.saveAndFlush(apiIntegMaster);			
 		} catch (Exception e) {
 			log.error("Exception: {}", e.getMessage(), e);

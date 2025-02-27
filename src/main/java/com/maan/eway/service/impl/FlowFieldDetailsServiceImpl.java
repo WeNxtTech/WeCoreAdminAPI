@@ -118,8 +118,8 @@ public class FlowFieldDetailsServiceImpl implements FlowFieldDetailsService {
 		if(StringUtils.isBlank(req.getIsHeader())) {
 			errors.add(new Error("5", "isHeader", "IsHeader is required, It should not be blank"));
 		}		
-		if(! ROOT_JSON_KEY.equalsIgnoreCase(req.getJsonKey()) && 
-				StringUtils.isBlank(req.getHeaderKeyid())) {
+		
+		if(StringUtils.isBlank(req.getHeaderKeyid())) {
 			errors.add(new Error("6", "headerKeyId", "Header KeyId is required, It should not be blank"));
 		}
 		
@@ -133,7 +133,10 @@ public class FlowFieldDetailsServiceImpl implements FlowFieldDetailsService {
 		if(StringUtils.isBlank(req.getDefaultYn())) {
 			errors.add(new Error("9", "defaultYn", "Default YN is required, It should not be blank"));
 		}
-
+		
+		if("Yes".equals(req.getIsarray()) && "No".equals(req.getIsHeader())) {
+			errors.add(new Error("10", "headerKeyId", "This combination is not allowed. If Array is selected Yes and Header must be Yes."));
+		}
 		return errors;
 	}
 	

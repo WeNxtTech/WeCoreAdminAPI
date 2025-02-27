@@ -7,7 +7,7 @@ package com.maan.eway.master.service.impl;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
+import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -2629,8 +2629,10 @@ public Integer getMasterTableCount(String companyId , String branchCode) {
 					 fParam.setXlAgencyCode(StringUtils.isBlank(data.getAgencyCode())?"":data.getAgencyCode());
 					 
 					 fParam.setRate(data.getRate()==null?"" : data.getRate().stripTrailingZeros().toPlainString());
-					fParam.setCalType(data.getCalcType());
-					fParam.setMinimumPremium(data.getMinPremium() == null ? null : String.valueOf(data.getMinPremium()));
+					fParam.setCalType(data.getCalcType());					
+					// Removed scientific notation from the Minimum Premium value.
+					BigInteger minPremium = data.getMinPremium() == null ? null : data.getMinPremium().toBigInteger();					
+					fParam.setMinimumPremium(String.valueOf(minPremium));
 					// Excess
 					fParam.setExcessAmount( data.getExcessAmount()==null?"" : data.getExcessAmount().stripTrailingZeros().toPlainString());
 					fParam.setExcessPercent( data.getExcessPercent()==null?"" : data.getExcessPercent().stripTrailingZeros().toPlainString());

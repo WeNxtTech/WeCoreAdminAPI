@@ -381,17 +381,19 @@ public class JpqlQueryServiceImpl {
 			query =em.createQuery("SELECT p FROM PremiaConfigDataMaster p where"
 					+ " p.companyId=:companyId and p.productId=:productId and p.premiaId=:premiaId");
 			query.setParameter("companyId", req.getCompanyId());
-			query.setParameter("productId", req.getProductId());
+			query.setParameter("productId", "99999");
 			query.setParameter("premiaId",premiaId );
 			premiaList=query.getResultList(); 
+			System.out.println(premiaList);
 			if(CollectionUtils.isEmpty(premiaList)) {
 				query =em.createQuery("SELECT p FROM PremiaConfigDataMaster p where"
 						+ " p.companyId=:companyId and p.productId=:productId and p.premiaId=:premiaId");
 				query.setParameter("companyId", req.getCompanyId());
-				query.setParameter("productId", "99999");
+				query.setParameter("productId", req.getProductId());
 				query.setParameter("premiaId",premiaId );
 				premiaList=query.getResultList(); 
 			}
+			System.out.println(premiaList);
 			if(!CollectionUtils.isEmpty(premiaList)) {
 					for (PremiaConfigDataMaster fac :premiaList) {
 							display_columns.add(fac.getColumnName());

@@ -857,10 +857,6 @@ private static final long serialVersionUID = 1L;
 		
 		@Column(name = "NO_OF_CLAIM")
 	    private Integer noOfClaim;
-		
-		@Column(name = "NO_OF_CLAIM_DESC", length = 20)
-	    private String noOfClaimDesc;
-
       
 }
 

@@ -115,6 +115,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="UPDATED_DATE")
     private Date  updatedDate ;
 
+    @Column(name="PRODUCT_ID")
+    private Date  productId ;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 

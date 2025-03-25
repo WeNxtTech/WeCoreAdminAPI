@@ -46,5 +46,7 @@ public class InsertOneTimeTableReq {
 	@JsonProperty("InsuranceId")
 	private String companyId;
 	
+	@JsonProperty("ProductId")
+	private Date  productId ;
 
 }

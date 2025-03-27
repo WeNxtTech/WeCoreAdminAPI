@@ -961,6 +961,14 @@ private static final long serialVersionUID = 1L;
     @Column(name="ABOUT_VEHICLE", length=100)
     private String   aboutvehicle ; 
 	
+    @Column(name="FORMULA_TYPE")
+    private String formulaType;
+    
+    @Column(name="VEH_LOC_TYPE")
+    private String vehiculeDeLocationType;
+
+    @Column(name = "ATT_TYPE")
+    private String attestationType;
 }
 
 

@@ -131,7 +131,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 				errorList.add("1260");
 			}
 
-			if (StringUtils.isBlank(req.getInstallmentPeriod())) {
+			/*if (StringUtils.isBlank(req.getInstallmentPeriod())) {
 			//	errorList.add(new Error("06", "InstallmentPeriod", "Please Enter InstallmentPeriod"));
 				errorList.add("1596");
 			} else if (!req.getInstallmentPeriod().matches("[0-9.]+")) {
@@ -153,7 +153,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 						errorList.add("1599");
 					}			
 				}
-			}
+			}*/
 
 			if (StringUtils.isBlank(req.getPremiumEnd())) {
 			//	errorList.add(new Error("07", "PremiumEnd", "Please Enter PremiumEnd"));
@@ -385,13 +385,29 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			saveData.setUpdatedBy(req.getCreatedBy());
 			saveData.setAmendId(amendId);
 			
-			List<ListItemValue> installmentList=getInstallmentTypeDesc(req.getCompanyId() , "99999",  "INSTALLMENT_TYPE",req.getInstallmentTypeId());
-			String installmentDesc=installmentList.get(0).getItemValue();
-			saveData.setInstallmentTypeId(req.getInstallmentTypeId());
-			saveData.setInstallmentTypeDesc(StringUtils.isBlank(installmentDesc)? "" : installmentDesc);
+			String successIds="";
+			if("100046".equalsIgnoreCase(req.getCompanyId()) || "100047".equalsIgnoreCase(req.getCompanyId()) || "100048".equalsIgnoreCase(req.getCompanyId()) || "100049".equalsIgnoreCase(req.getCompanyId()) || "100050".equalsIgnoreCase(req.getCompanyId())) {
+				String installmentTypeId[]=req.getInstallmentTypeId().split(",");
+				for(String instalId:installmentTypeId) {
+					if(req.getEmiId()==null) {
+					List<ListItemValue> installmentList=getInstallmentTypeDesc(req.getCompanyId() , "99999",  "INSTALLMENT_TYPE",instalId);
+					String installmentDesc=installmentList.get(0).getItemValue();
+					saveData.setInstallmentTypeId(instalId);
+					saveData.setInstallmentTypeDesc(StringUtils.isBlank(installmentDesc)? "" : installmentDesc);
+					successIds=successIds+" "+emiId;
+					repo.saveAndFlush(saveData);
+					 Integer i=Integer.parseInt(emiId)+1;
+					 emiId=i.toString();
+					 saveData.setEmiId(i);
+					}else {
+						repo.saveAndFlush(saveData);
+					}		
+				}
+			}else {
 			repo.saveAndFlush(saveData);
-
+			}
 			log.info("Saved Details is ---> " + json.toJson(saveData));
+			res.setSuccessId(StringUtils.isBlank(successIds)?emiId:successIds);
 
 		} catch (Exception e) {
 			e.printStackTrace();

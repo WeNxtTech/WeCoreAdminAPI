@@ -55,4 +55,7 @@ public class GetAllOneTimeTableDetailsRes {
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EntryDate")
 	private Date entryDate;
+	
+	@JsonProperty("ProductId")
+	private Date  productId ;
 }

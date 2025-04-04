@@ -36,23 +36,8 @@ public class EmiMasterSaveReq implements Serializable {
 	@JsonProperty("InsuranceId")
 	private String companyId;
 
-	@JsonProperty("PremiumStart")
-	private String premiumStart;
-
-	@JsonProperty("PremiumEnd")
-	private String premiumEnd;
-
-	@JsonProperty("InstallmentPeriod")
-	private String installmentPeriod;
-
 	@JsonProperty("PolicyType")
 	private String policyType;
-
-	@JsonProperty("InterestPercent")
-    private String  interestPercent ;
-    
-    @JsonProperty("AdvancePercent")
-    private String     advancePercent ;
 	
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
@@ -67,9 +52,6 @@ public class EmiMasterSaveReq implements Serializable {
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 	
-	@JsonProperty("InstallmentTypeId")
-    private String installmentTypeId;
-    
-
-	
+	@JsonProperty("EmiDetails")
+	private List<EmiDetailsReq> emiDetails;
 }

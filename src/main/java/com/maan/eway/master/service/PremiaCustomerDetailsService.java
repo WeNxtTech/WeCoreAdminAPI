@@ -7,6 +7,7 @@ package com.maan.eway.master.service;
 
 import java.util.List;
 
+import com.maan.eway.common.res.BrokerDetailsRes;
 import com.maan.eway.master.req.PremiaDropDownReq;
 import com.maan.eway.master.res.PremiaBrokerList;
 import com.maan.eway.master.res.PremiaCustomerDetailsRes;
@@ -26,6 +27,8 @@ public interface PremiaCustomerDetailsService  {
 	List<PremiaBrokerList> searchPremiabrokerlist(PremiaDropDownReq req);
 
 	List<PremiaCustomerList> searchPremiacustomerlist(PremiaDropDownReq req);
+	
+	public BrokerDetailsRes searchPremiaBrokerCustomerList(PremiaDropDownReq req);
 
 
 	

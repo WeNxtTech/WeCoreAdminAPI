@@ -1,11 +1,13 @@
 package com.maan.eway.master.service.impl;
 
+import java.net.ConnectException;
 import java.nio.charset.StandardCharsets;
-import java.sql.Timestamp;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -20,11 +22,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -37,6 +42,8 @@ import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.PremiaCustomerDetails;
+import com.maan.eway.common.res.BrokerDetailsRes;
+import com.maan.eway.common.res.GenerateAuthToken;
 import com.maan.eway.master.req.PremiaDropDownReq;
 import com.maan.eway.master.res.PremiaBrokerDetailsRes;
 import com.maan.eway.master.res.PremiaBrokerList;
@@ -72,7 +79,7 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 	private PremiaCustomerDetailsRepository repo;
 	
 	@PersistenceContext
-	private EntityManager em;
+	private EntityManager em; 
 	
 	@Autowired
 	private LoginBranchMasterRepository lbRepo ;
@@ -88,6 +95,11 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 	@Value(value = "${ClaimBasicAuthName}")
 	private String ClaimBasicAuthName;
 	
+	@Value(value = "${generateToken}")
+	private String generateToken;
+	
+	@Value(value = "${generatecustomerdetails}")
+	private String generatecustomerdetails;
 	
 	@Autowired
 	private ListItemValueRepository listItemValueRepository;
@@ -385,6 +397,69 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 	 		return resList;
 		}
 	
+	@Override
+	public BrokerDetailsRes searchPremiaBrokerCustomerList(PremiaDropDownReq req) {
+		BrokerDetailsRes brokerDetailsRes = new BrokerDetailsRes();
+		try {
+			ResponseEntity<String> response = null;
+			ResponseEntity<BrokerDetailsRes> brokerDetailResponse = null;
+
+			RestTemplate temp = new RestTemplateBuilder().setConnectTimeout(Duration.ofSeconds(5))
+					.setReadTimeout(Duration.ofMinutes(2)).build();
+
+			HttpHeaders header = new HttpHeaders();
+			header.setContentType(MediaType.APPLICATION_JSON);
+			GenerateAuthToken generateAuthToken = new GenerateAuthToken();
+			generateAuthToken.setUsername("admin");
+			generateAuthToken.setPassword("admin");
+			HttpEntity<?> requestent = new HttpEntity<>(generateAuthToken, header);
+			System.out.println("Calling External Api:  " + requestent);
+			try {
+				response = temp.exchange(generateToken, HttpMethod.POST, requestent, String.class);
+
+				System.out.println("response Api:  " + response.getBody());
+			} catch (RestClientException e) {
+				if (e.getCause() instanceof ConnectException) {
+					System.out.println("Connection refused: Unable to connect to the server at " + response);
+				} else {
+					System.out.println("An error occurred while making the REST call: " + e.getMessage());
+				}
+			}
+			HttpHeaders header1 = new HttpHeaders();
+			header1.setContentType(MediaType.APPLICATION_JSON);
+			header1.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+			header1.setBearerAuth(response.getBody());
+			Map<String, Object> requestBody = new HashMap<>();
+	        requestBody.put("queryId", 7);
+			HttpEntity<?> requestent1 = new HttpEntity<>(requestBody, header1);
+			System.out.println("calling second Api:  " + requestent1);
+			try {
+				brokerDetailResponse = temp.exchange(generatecustomerdetails, HttpMethod.POST, requestent1, BrokerDetailsRes.class);
+				System.out.println("report response Api:  " + brokerDetailResponse.getBody());
+
+			} catch (RestClientException e) {
+				if (e.getCause() instanceof ConnectException) {
+					System.out.println("Connection refused: Unable to connect to the server at " + brokerDetailResponse);
+				} else {
+					System.out.println("An error occurred while making the REST call: " + e.getMessage());
+				}
+			}
+			if (brokerDetailResponse != null && brokerDetailResponse.getBody() != null
+					&& !brokerDetailResponse.getBody().getData().isEmpty()) {
+				brokerDetailsRes.setData(brokerDetailResponse.getBody().getData());
+				brokerDetailsRes.setStatus(brokerDetailResponse.getBody().getStatus());
+			} 
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return brokerDetailsRes;
+
+	}
+	
+	
 	public String getByBranchCode(String branchCode) {
 		String res = "";
 		try {
@@ -454,7 +529,7 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 		     	RestTemplate restTemplate = new RestTemplate();
 				HttpHeaders headers = new HttpHeaders();
 				Map<String ,Object> request=new HashMap<String, Object>();
-				request.put("queryId", "6");
+				request.put("queryId", "7");
 				headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
 				headers.setContentType(MediaType.APPLICATION_JSON);
 				headers.set("Authorization",authHeader);

@@ -6,20 +6,13 @@
 package com.maan.eway.master.service;
 import java.util.List;
 
-import com.maan.eway.error.Error;
-import com.maan.eway.master.controller.DiscountCoverReq;
-import com.maan.eway.master.req.CoverChangeStatusReq;
-import com.maan.eway.master.req.CoverMasterGetAllReq;
-import com.maan.eway.master.req.CoverMasterGetReq;
-import com.maan.eway.master.req.CoverMasterSaveReq;
 import com.maan.eway.master.req.EmiMasterChangeStatusReq;
 import com.maan.eway.master.req.EmiMasterGetAllReq;
+import com.maan.eway.master.req.EmiMasterGetByPolicyReq;
 import com.maan.eway.master.req.EmiMasterGetReq;
 import com.maan.eway.master.req.EmiMasterSaveReq;
-import com.maan.eway.master.res.CoverMasterGetAllRes;
-import com.maan.eway.master.res.CoverMasterRes;
 import com.maan.eway.master.res.EmiMasterRes;
-import com.maan.eway.res.DropDownRes;
+import com.maan.eway.master.res.EmiMasterRes2;
 import com.maan.eway.res.SuccessRes;
 /**
 * <h2>CoverMasterServiceimpl</h2>
@@ -37,7 +30,10 @@ public interface EmiMasterService  {
 	List<EmiMasterRes> getActiveEmiDetails(EmiMasterGetAllReq req);
 
 	EmiMasterRes getByEmiId(EmiMasterGetReq req);
+	
+	List<EmiMasterRes2> getallEmiDetails2(EmiMasterGetAllReq req);
 
+	EmiMasterRes2 getByPolicyType(EmiMasterGetByPolicyReq req);
 	
 
 

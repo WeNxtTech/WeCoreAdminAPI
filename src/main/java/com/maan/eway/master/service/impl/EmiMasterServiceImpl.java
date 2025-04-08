@@ -35,9 +35,12 @@ import com.maan.eway.bean.PolicyTypeMaster;
 import com.maan.eway.master.req.EmiDetailsReq;
 import com.maan.eway.master.req.EmiMasterChangeStatusReq;
 import com.maan.eway.master.req.EmiMasterGetAllReq;
+import com.maan.eway.master.req.EmiMasterGetByPolicyReq;
 import com.maan.eway.master.req.EmiMasterGetReq;
 import com.maan.eway.master.req.EmiMasterSaveReq;
+import com.maan.eway.master.res.EmiDetailsRes;
 import com.maan.eway.master.res.EmiMasterRes;
+import com.maan.eway.master.res.EmiMasterRes2;
 import com.maan.eway.master.service.EmiMasterService;
 import com.maan.eway.repository.EmiMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
@@ -678,6 +681,81 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 		}
 		return resList;
 	}
+
+	//GET All
+	@Override
+	public List<EmiMasterRes2> getallEmiDetails2(EmiMasterGetAllReq req) {
+		List<EmiMasterRes2> resList = new ArrayList<EmiMasterRes2>();
+		DozerBeanMapper mapper = new DozerBeanMapper();
+		try {
+			
+			List<EmiMaster> list = new ArrayList<EmiMaster>();
+			
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<EmiMaster> query = cb.createQuery(EmiMaster.class);
+
+			// Find All
+			Root<EmiMaster> b = query.from(EmiMaster.class);
+
+			// Select
+			query.select(b);
+
+			// amendId Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<EmiMaster> ocpm1 = amendId.from(EmiMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("emiId"), b.get("emiId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			amendId.where(a1, a2,a3);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("companyId")));
+
+			// Where
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
+//			Predicate n3 = cb.equal(b.get("companyId"), "99999");
+//			Predicate n5 = cb.or(n3,n2);
+			Predicate n6 = cb.equal(b.get("productId"), req.getProductId());
+			query.where(n1,n2,n6).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<EmiMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getEmiId()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(EmiMaster :: getEmiId ));
+			
+			Map<String,List<EmiMaster>> groupedByPolicyType=list.stream().collect(Collectors.groupingBy(EmiMaster::getPolicyType));
+			
+			for(String policyType:groupedByPolicyType.keySet()) {
+				List<EmiMaster> emiMaster=groupedByPolicyType.get(policyType);
+				EmiMasterRes2 res = new EmiMasterRes2();
+				DozerBeanMapper map=new DozerBeanMapper();
+				res=map.map(emiMaster.get(0), EmiMasterRes2.class);
+				List<EmiDetailsRes> emiDetails=new ArrayList<EmiDetailsRes>();
+				for (EmiMaster data : emiMaster) {
+					DozerBeanMapper mapper2 = new DozerBeanMapper();
+					EmiDetailsRes e=new EmiDetailsRes();
+					e=mapper2.map(data, EmiDetailsRes.class);
+					emiDetails.add(e);
+				}
+				res.setEmiDetails(emiDetails);
+				resList.add(res);
+			}
+			;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+
+		}
+		return resList;
+	}
+
 	
 	private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
 	    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
@@ -874,6 +952,84 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 		}
 		return list ;
 	}
+	
+	
+	//Get
+	@Override
+	public EmiMasterRes2 getByPolicyType(EmiMasterGetByPolicyReq req) {
+		EmiMasterRes2 res = new EmiMasterRes2();
+		DozerBeanMapper mapper = new DozerBeanMapper();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+
+			List<EmiMaster> list = new ArrayList<EmiMaster>();
+
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<EmiMaster> query = cb.createQuery(EmiMaster.class);
+
+			// Find All
+			Root<EmiMaster> b = query.from(EmiMaster.class);
+
+			// Select
+			query.select(b);
+
+			// amendId Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<EmiMaster> ocpm1 = amendId.from(EmiMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("emiId"), b.get("emiId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
+
+			amendId.where(a1, a2);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("companyId")));
+
+			// Where
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
+			Predicate n4 = cb.equal(b.get("policyType"), req.getPolicyType());
+			Predicate n6 = cb.equal(b.get("productId"), req.getProductId());
+//			Predicate n7 = cb.or(n2,n6);
+			query.where(n1,n4,n2,n6).orderBy(orderList);
+
+			// Get Result
+			TypedQuery<EmiMaster> result = em.createQuery(query);
+
+			list = result.getResultList();
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getEmiId()))).collect(Collectors.toList());
 			
+			res=mapper.map(list.get(0), EmiMasterRes2.class);
+			List<EmiDetailsRes> emiDetails=new ArrayList<EmiDetailsRes>();
+			for (EmiMaster data : list) {
+				DozerBeanMapper mapper2 = new DozerBeanMapper();
+				EmiDetailsRes e=new EmiDetailsRes();
+				e=mapper2.map(data, EmiDetailsRes.class);
+				emiDetails.add(e);
+			}
+			res.setEmiDetails(emiDetails);
+	
+			res.setEntryDate(list.get(0).getEntryDate());
+			res.setPolicyType(list.get(0).getPolicyType());
+			res.setPolicyDesc(list.get(0).getPolicyDesc());
+			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
+			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return res;
+		
+	}
+	
+
 
 }

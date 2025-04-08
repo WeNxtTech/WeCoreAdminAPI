@@ -21,9 +21,11 @@ import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.EmiMasterChangeStatusReq;
 import com.maan.eway.master.req.EmiMasterGetAllReq;
+import com.maan.eway.master.req.EmiMasterGetByPolicyReq;
 import com.maan.eway.master.req.EmiMasterGetReq;
 import com.maan.eway.master.req.EmiMasterSaveReq;
 import com.maan.eway.master.res.EmiMasterRes;
+import com.maan.eway.master.res.EmiMasterRes2;
 import com.maan.eway.master.service.EmiMasterService;
 import com.maan.eway.req.CommonErrorModuleReq;
 import com.maan.eway.res.CommonRes;
@@ -108,7 +110,7 @@ public class EmiMasterController {
 			CommonRes data = new CommonRes();
 			
 			
-			List<EmiMasterRes> res = service.getallEmiDetails(req);
+			List<EmiMasterRes2> res = service.getallEmiDetails2(req);
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);
@@ -185,6 +187,29 @@ public class EmiMasterController {
 			}
 
 		}
+	
+	// Get By Policy type
+		@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
+			@PostMapping("/getbypolicytype")
+			@ApiOperation("This Method is to get Emi Master Details by Policy Type")
+			public ResponseEntity<CommonRes> getByPolicyType(@RequestBody EmiMasterGetByPolicyReq req)
+			{
+			CommonRes data = new CommonRes();
+			EmiMasterRes2 res = service.getByPolicyType(req);
+			data.setCommonResponse(res);
+			data.setErrorMessage(Collections.emptyList());
+			data.setIsError(false);
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+		
+
 
 
 }

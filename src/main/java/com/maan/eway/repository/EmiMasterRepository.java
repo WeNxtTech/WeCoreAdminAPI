@@ -19,5 +19,7 @@ import com.maan.eway.bean.EmiMasterId;
  
 public interface EmiMasterRepository  extends JpaRepository<EmiMaster,EmiMasterId > , JpaSpecificationExecutor<EmiMaster> {
 
+	void deleteByEmiId(Integer id);
+
 	
 }

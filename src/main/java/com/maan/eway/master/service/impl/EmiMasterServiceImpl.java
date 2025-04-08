@@ -306,6 +306,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			if (StringUtils.isBlank(req.getEmiId())) {
 				// Save
 				// Integer totalCount = repo.count();
+				findExistingEmiMaster(req);
 				Integer totalCount = getMasterTableCount(req.getCompanyId());
 				emiId = Integer.valueOf(totalCount + 1).toString();
 				saveData.setEmiId(Integer.valueOf(emiId));
@@ -443,6 +444,37 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			return null;
 		}
 		return res;
+	}
+
+	private void findExistingEmiMaster(EmiMasterSaveReq req) {
+		CriteriaBuilder cb=em.getCriteriaBuilder();
+		CriteriaQuery<Integer> q=cb.createQuery(Integer.class);
+		Root<EmiMaster> r=q.from(EmiMaster.class);
+		
+		List<Predicate> p= new ArrayList<Predicate>();
+		p.add(cb.equal(r.get("companyId"), req.getCompanyId()));
+		p.add(cb.equal(r.get("productId"), req.getProductId()));
+		p.add(cb.equal(r.get("policyType"), req.getPolicyType()));
+		
+		Predicate n1=null, n2=null, n3=null, n4=null, n5=null, n6=null, n7=null, n8=null;
+		n1=cb.equal(r.get("companyId"), req.getCompanyId());
+		n2=cb.equal(r.get("productId"), req.getProductId());
+		n3=cb.equal(r.get("policyType"), req.getPolicyType());
+	
+		for(EmiDetailsReq emiDetails:req.getEmiDetails()){
+			if(StringUtils.isBlank(emiDetails.getInstallmentPeriod())) {
+			n4=cb.equal(r.get("installmentTypeId"),emiDetails.getInstallmentTypeId());
+			}else {
+			n4=cb.equal(r.get("installmentPeriod"),emiDetails.getInstallmentPeriod());
+			}
+			q.select(r.get("emiId"));
+			q.where(n1,n2,n3,n4);
+			TypedQuery<Integer> typedQuery=em.createQuery(q);
+			List<Integer> existEmi=typedQuery.getResultList();
+			for(Integer id:existEmi) {
+				repo.deleteByEmiId(id);
+			}
+		}
 	}
 
 	public Integer getMasterTableCount(String companyId ) {

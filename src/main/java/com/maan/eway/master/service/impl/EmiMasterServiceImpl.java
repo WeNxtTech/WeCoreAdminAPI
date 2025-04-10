@@ -427,7 +427,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 					saveData.setInstallmentTypeId(r.getInstallmentTypeId());
 					saveData.setInstallmentTypeDesc(StringUtils.isBlank(installmentDesc)? "" : installmentDesc);
 					}else {
-						saveData.setInstallmentTypeId("1"+r.getInstallmentPeriod());
+						saveData.setInstallmentTypeId("0");
 						saveData.setInstallmentTypeDesc(r.getInstallmentPeriod()+" months");
 					}
 					repo.saveAndFlush(saveData);

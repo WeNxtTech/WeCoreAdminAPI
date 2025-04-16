@@ -22,6 +22,10 @@ jobs:
       - name: Build WAR with Maven
         run: mvn clean package -DskipTests
 
+      # - name: Rename WAR file
+      #   run: |
+      #     mv target/*.war target/EwayMotorApi-YourName-0.0.2-SNAPSHOT.war
+
       - name: Upload WAR to Hostinger
         uses: appleboy/scp-action@v0.1.7
         with:

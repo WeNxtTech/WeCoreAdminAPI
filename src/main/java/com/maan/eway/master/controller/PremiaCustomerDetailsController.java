@@ -111,21 +111,31 @@ public class PremiaCustomerDetailsController {
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/search/premiabrokercustomercode")
 	@ApiOperation(value = "This method is Search Premia ")
-	public ResponseEntity<CommonRes> searchPremiaBrokerCustomerCode(@RequestBody  PremiaDropDownReq req) {
+	public ResponseEntity<CommonRes> searchPremiaBrokerCustomerCode(@RequestBody PremiaDropDownReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-
-		// Search
-		//List<PremiaCustomerDetailsRes> res = service.searchPremiaBrokerCustomerCode(req);
-		BrokerDetailsRes brokerDetailsRes = service.searchPremiaBrokerCustomerList(req);
-		if (brokerDetailsRes != null) {
-			data.setCommonResponse(brokerDetailsRes.getData());
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
-			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		if (req.getCompanyId().equalsIgnoreCase("100020")) {
+			BrokerDetailsRes brokerDetailsRes = service.searchPremiaBrokerCustomerList(req);
+			if (brokerDetailsRes != null) {
+				data.setCommonResponse(brokerDetailsRes.getData());
+				data.setIsError(false);
+				data.setErrorMessage(Collections.emptyList());
+				data.setMessage("Success");
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
 		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			List<PremiaCustomerDetailsRes> res = service.searchPremiaBrokerCustomerCode(req);
+			if (res != null) {
+				data.setCommonResponse(res);
+				data.setIsError(false);
+				data.setErrorMessage(Collections.emptyList());
+				data.setMessage("Success");
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
 		}
 	}
 	

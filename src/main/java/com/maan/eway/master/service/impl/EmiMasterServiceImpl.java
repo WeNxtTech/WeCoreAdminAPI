@@ -368,20 +368,14 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 				res.setSuccessId(emiId);
 				dozerMapper.map(req, saveData);
 				saveData.setEmiId(Integer.valueOf(emiId));
-				saveData.setEffectiveDateStart(startDate);
+				
 				saveData.setPolicyType(req.getPolicyType());
 				if ("99999".equalsIgnoreCase(req.getPolicyType())) {
 					saveData.setPolicyDesc("ALL");
 				} else {
 					saveData.setPolicyDesc(policyTypeDesc);
 				}
-				saveData.setEffectiveDateEnd(endDate);
-				saveData.setCreatedBy(createdBy);
-				saveData.setStatus(req.getStatus());
-				saveData.setEntryDate(new Date());
-				saveData.setUpdatedDate(new Date());
-				saveData.setUpdatedBy(req.getCreatedBy());
-				saveData.setAmendId(list.get(0).getAmendId());
+
 				if (StringUtils.isBlank(r.getEmiId())) {
 					saveData.setPremiumStart(r.getPremiumStart());
 					saveData.setPremiumEnd(r.getPremiumEnd());
@@ -418,6 +412,14 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 						saveData.setInstallmentTypeId("0");
 						saveData.setInstallmentTypeDesc(r.getInstallmentPeriod() + " months");
 					}
+					saveData.setEffectiveDateStart(new Date());
+					saveData.setEffectiveDateEnd(endDate);
+					saveData.setCreatedBy(createdBy);
+					saveData.setStatus(req.getStatus());
+					saveData.setEntryDate(new Date());
+					saveData.setUpdatedDate(new Date());
+					saveData.setUpdatedBy(req.getCreatedBy());
+					saveData.setAmendId(list.get(0).getAmendId());
 					emiList.add(saveData);
 				}
 			}

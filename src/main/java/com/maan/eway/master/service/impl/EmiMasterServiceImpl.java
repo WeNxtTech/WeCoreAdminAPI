@@ -291,7 +291,6 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 		List<EmiMaster> emiList = new ArrayList<EmiMaster>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			Integer amendId = 0;
 			Date startDate = req.getEffectiveDateStart();
 			String end = "31/12/2050";
 			Date endDate = sdformat.parse(end);
@@ -379,7 +378,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 				saveData.setEffectiveDateEnd(endDate);
 				saveData.setCreatedBy(createdBy);
 				saveData.setStatus(req.getStatus());
-				saveData.setEntryDate(entryDate);
+				saveData.setEntryDate(new Date());
 				saveData.setUpdatedDate(new Date());
 				saveData.setUpdatedBy(req.getCreatedBy());
 				saveData.setAmendId(list.get(0).getAmendId());

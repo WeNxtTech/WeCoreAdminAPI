@@ -54,7 +54,7 @@ public class EmiMasterController {
 	private FetchErrorDescServiceImpl errorDescService ;
 	
 	// save
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	//@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 		@PostMapping("/insertemi")
 		@ApiOperation(value = "This method is Insert Emi Details")
 		public ResponseEntity<CommonRes> insertEmi(@RequestBody EmiMasterSaveReq req) {

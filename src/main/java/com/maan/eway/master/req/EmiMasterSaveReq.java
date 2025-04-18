@@ -27,9 +27,6 @@ public class EmiMasterSaveReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-	@JsonProperty("EmiId")
-	private String emiId;
-
 	@JsonProperty("ProductId")
 	private String productId;
 

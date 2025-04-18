@@ -32,4 +32,7 @@ public class EmiDetailsReq {
 	
 	@JsonProperty("InstallmentPeriod")
 	private String installmentPeriod;
+	
+	@JsonProperty("EmiId")
+	private String emiId;
 }

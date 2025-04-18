@@ -288,9 +288,9 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 		SuccessRes res = new SuccessRes();
 		EmiMaster saveData = new EmiMaster();
 		List<EmiMaster> list = new ArrayList<EmiMaster>();
+		List<EmiMaster> emiList = new ArrayList<EmiMaster>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
-
-		try {    
+		try {
 			Integer amendId = 0;
 			Date startDate = req.getEffectiveDateStart();
 			String end = "31/12/2050";
@@ -301,142 +301,132 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			String createdBy = "";
 
 			String emiId = "";
-			PolicyTypeMaster policyTypeData=getPolicyTypeDesc(req.getProductId(),req.getCompanyId(),req.getPolicyType());
-			String policyTypeDesc=policyTypeData.getPolicyTypeName();
-			if (StringUtils.isBlank(req.getEmiId())) {
-				// Save
-				// Integer totalCount = repo.count();
-				findExistingEmiMaster(req);
-				Integer totalCount = getMasterTableCount(req.getCompanyId());
-				emiId = Integer.valueOf(totalCount + 1).toString();
-				saveData.setEmiId(Integer.valueOf(emiId));
-				entryDate = new Date();
-				createdBy = req.getCreatedBy();
-				res.setResponse("Saved Successfully ");
-				res.setSuccessId(emiId);
+			PolicyTypeMaster policyTypeData = getPolicyTypeDesc(req.getProductId(), req.getCompanyId(),
+					req.getPolicyType());
+			String policyTypeDesc = policyTypeData.getPolicyTypeName();
+			List<EmiMaster> emiMasterList = getEmiMasterList(req.getCompanyId());
+			for (EmiDetailsReq r : req.getEmiDetails()) {
+				if (StringUtils.isBlank(r.getEmiId())) {
 
-			} else {
-				// Update
-				// Get Less than Equal Today Record
-				// Criteria
-				emiId = req.getEmiId();
-				CriteriaBuilder cb = em.getCriteriaBuilder();
-				CriteriaQuery<EmiMaster> query = cb.createQuery(EmiMaster.class);
+					findExistingEmiMaster(req);
+					emiId = Integer.valueOf(emiMasterList.size() + 1).toString();
+					saveData.setEmiId(Integer.valueOf(emiId));
+					entryDate = new Date();
+					createdBy = req.getCreatedBy();
+					res.setResponse("Saved Successfully ");
+					res.setSuccessId(emiId);
+				} else {
+					emiId = r.getEmiId();
+					CriteriaBuilder cb = em.getCriteriaBuilder();
+					CriteriaQuery<EmiMaster> query = cb.createQuery(EmiMaster.class);
 
-				// Find All
-				Root<EmiMaster> b = query.from(EmiMaster.class);
+					Root<EmiMaster> b = query.from(EmiMaster.class);
 
-				// Select
-				query.select(b);
+					query.select(b);
 
-				// Order By
-				List<Order> orderList = new ArrayList<Order>();
-				orderList.add(cb.desc(b.get("effectiveDateStart")));
+					List<Order> orderList = new ArrayList<Order>();
+					orderList.add(cb.desc(b.get("effectiveDateStart")));
 
-				// Where
-				Predicate n1 = cb.equal(b.get("companyId"), req.getCompanyId());
-				Predicate n3 = cb.equal(b.get("emiId"), req.getEmiId());
+					Predicate n1 = cb.equal(b.get("companyId"), req.getCompanyId());
+					Predicate n3 = cb.equal(b.get("emiId"), r.getEmiId());
 
-				query.where(n1, n3).orderBy(orderList);
+					query.where(n1, n3).orderBy(orderList);
 
-				// Get Result
-				TypedQuery<EmiMaster> result = em.createQuery(query);
-				int limit = 0, offset = 2;
-				result.setFirstResult(limit * offset);
-				result.setMaxResults(offset);
-				list = result.getResultList();
+					TypedQuery<EmiMaster> result = em.createQuery(query);
+					int limit = 0, offset = 2;
+					result.setFirstResult(limit * offset);
+					result.setMaxResults(offset);
+					list = result.getResultList();
 
-				if (list.size() > 0) {
-					Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
-
-					if (list.get(0).getEffectiveDateStart().before(beforeOneDay)) {
-						amendId = list.get(0).getAmendId() + 1;
-						entryDate = new Date();
-						createdBy = req.getCreatedBy();
-						EmiMaster lastRecord = list.get(0);
-						lastRecord.setEffectiveDateEnd(oldEndDate);
-						repo.saveAndFlush(lastRecord);
-
-					} else {
-						amendId = list.get(0).getAmendId();
-						entryDate = list.get(0).getEntryDate();
-						createdBy = list.get(0).getCreatedBy();
-						saveData = list.get(0);
-						if (list.size() > 1) {
-							EmiMaster lastRecord = list.get(1);
-							lastRecord.setEffectiveDateEnd(oldEndDate);
-							repo.saveAndFlush(lastRecord);
-						}
-
-					}
+//					if (list.size() > 0) {
+//						Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+//
+//						if (list.get(0).getEffectiveDateStart().before(beforeOneDay)) {
+//							amendId = list.get(0).getAmendId() + 1;
+//							entryDate = new Date();
+//							createdBy = req.getCreatedBy();
+//							EmiMaster lastRecord = list.get(0);
+//							lastRecord.setEffectiveDateEnd(oldEndDate);
+//							repo.saveAndFlush(lastRecord);
+//
+//						} else {
+//							amendId = list.get(0).getAmendId();
+//							entryDate = list.get(0).getEntryDate();
+//							createdBy = list.get(0).getCreatedBy();
+//							saveData = list.get(0);
+//							if (list.size() > 1) {
+//								EmiMaster lastRecord = list.get(1);
+//								lastRecord.setEffectiveDateEnd(oldEndDate);
+//								emiList.add(lastRecord);
+//							}
+//
+//						}
+//
+//						
+//					}
 				}
-
 				res.setResponse("Updated Successfully ");
 				res.setSuccessId(emiId);
-			}
-
-			dozerMapper.map(req, saveData);
-			saveData.setEmiId(Integer.valueOf(emiId));
-			saveData.setEffectiveDateStart(startDate);
-			saveData.setPolicyType(req.getPolicyType());
-			if("99999".equalsIgnoreCase(req.getPolicyType())) {
-				saveData.setPolicyDesc("ALL");
-			}else {
-				saveData.setPolicyDesc(policyTypeDesc);
-			}
-			saveData.setEffectiveDateEnd(endDate);
-			saveData.setCreatedBy(createdBy);
-			saveData.setStatus(req.getStatus());
-			saveData.setEntryDate(entryDate);
-			saveData.setUpdatedDate(new Date());
-			saveData.setUpdatedBy(req.getCreatedBy());
-			saveData.setAmendId(amendId);
-			
-			String successIds="";
-			for(EmiDetailsReq r:req.getEmiDetails()) {
-				if(StringUtils.isBlank(req.getEmiId())) {
-				saveData.setPremiumStart(r.getPremiumStart());
-				saveData.setPremiumEnd(r.getPremiumEnd());
-				saveData.setInterestPercent(r.getInterestPercent());
-				saveData.setAdvancePercent(r.getAdvancePercent());
-				saveData.setInstallmentPeriod(r.getInstallmentPeriod());
-				if(StringUtils.isBlank(r.getInstallmentPeriod())) {
-				List<ListItemValue> installmentList=getInstallmentTypeDesc(req.getCompanyId() , "99999",  "INSTALLMENT_TYPE",r.getInstallmentTypeId());
-				String installmentDesc=installmentList.get(0).getItemValue();
-				saveData.setInstallmentTypeId(r.getInstallmentTypeId());
-				saveData.setInstallmentTypeDesc(StringUtils.isBlank(installmentDesc)? "" : installmentDesc);
-				}else {
-					saveData.setInstallmentTypeId("0");
-					saveData.setInstallmentTypeDesc(r.getInstallmentPeriod()+" months");
+				dozerMapper.map(req, saveData);
+				saveData.setEmiId(Integer.valueOf(emiId));
+				saveData.setEffectiveDateStart(startDate);
+				saveData.setPolicyType(req.getPolicyType());
+				if ("99999".equalsIgnoreCase(req.getPolicyType())) {
+					saveData.setPolicyDesc("ALL");
+				} else {
+					saveData.setPolicyDesc(policyTypeDesc);
 				}
-				repo.saveAndFlush(saveData);
-				successIds=successIds+" "+emiId;
-				repo.saveAndFlush(saveData);
-				 Integer i=Integer.parseInt(emiId)+1;
-				 emiId=i.toString();
-				 saveData.setEmiId(i);
-				}else {
+				saveData.setEffectiveDateEnd(endDate);
+				saveData.setCreatedBy(createdBy);
+				saveData.setStatus(req.getStatus());
+				saveData.setEntryDate(entryDate);
+				saveData.setUpdatedDate(new Date());
+				saveData.setUpdatedBy(req.getCreatedBy());
+				saveData.setAmendId(list.get(0).getAmendId());
+				if (StringUtils.isBlank(r.getEmiId())) {
 					saveData.setPremiumStart(r.getPremiumStart());
 					saveData.setPremiumEnd(r.getPremiumEnd());
 					saveData.setInterestPercent(r.getInterestPercent());
 					saveData.setAdvancePercent(r.getAdvancePercent());
 					saveData.setInstallmentPeriod(r.getInstallmentPeriod());
-					if(StringUtils.isBlank(r.getInstallmentPeriod())) {
-					List<ListItemValue> installmentList=getInstallmentTypeDesc(req.getCompanyId() , "99999",  "INSTALLMENT_TYPE",r.getInstallmentTypeId());
-					String installmentDesc=installmentList.get(0).getItemValue();
-					saveData.setInstallmentTypeId(r.getInstallmentTypeId());
-					saveData.setInstallmentTypeDesc(StringUtils.isBlank(installmentDesc)? "" : installmentDesc);
-					}else {
+					if (StringUtils.isBlank(r.getInstallmentPeriod())) {
+						List<ListItemValue> installmentList = getInstallmentTypeDesc(req.getCompanyId(), "99999",
+								"INSTALLMENT_TYPE", r.getInstallmentTypeId());
+						String installmentDesc = installmentList.get(0).getItemValue();
+						saveData.setInstallmentTypeId(r.getInstallmentTypeId());
+						saveData.setInstallmentTypeDesc(StringUtils.isBlank(installmentDesc) ? "" : installmentDesc);
+					} else {
 						saveData.setInstallmentTypeId("0");
-						saveData.setInstallmentTypeDesc(r.getInstallmentPeriod()+" months");
+						saveData.setInstallmentTypeDesc(r.getInstallmentPeriod() + " months");
 					}
-					repo.saveAndFlush(saveData);
-					successIds=successIds+" "+emiId;
-					repo.saveAndFlush(saveData);
+					emiList.add(saveData);
+					Integer i = Integer.parseInt(emiId) + 1;
+					emiId = i.toString();
+					saveData.setEmiId(i);
+				} else {
+					saveData.setPremiumStart(r.getPremiumStart());
+					saveData.setPremiumEnd(r.getPremiumEnd());
+					saveData.setInterestPercent(r.getInterestPercent());
+					saveData.setAdvancePercent(r.getAdvancePercent());
+					saveData.setInstallmentPeriod(r.getInstallmentPeriod());
+					if (StringUtils.isBlank(r.getInstallmentPeriod())) {
+						List<ListItemValue> installmentList = getInstallmentTypeDesc(req.getCompanyId(), "99999",
+								"INSTALLMENT_TYPE", r.getInstallmentTypeId());
+						String installmentDesc = installmentList.get(0).getItemValue();
+						saveData.setInstallmentTypeId(r.getInstallmentTypeId());
+						saveData.setInstallmentTypeDesc(StringUtils.isBlank(installmentDesc) ? "" : installmentDesc);
+					} else {
+						saveData.setInstallmentTypeId("0");
+						saveData.setInstallmentTypeDesc(r.getInstallmentPeriod() + " months");
+					}
+					emiList.add(saveData);
 				}
 			}
+			repo.saveAllAndFlush(emiList);
+			String collect = emiList.stream().distinct().map(e -> String.valueOf(e.getEmiId()))
+					.collect(Collectors.joining(","));
 			log.info("Saved Details is ---> " + json.toJson(saveData));
-			res.setSuccessId(StringUtils.isBlank(successIds)?emiId:successIds);
+			res.setSuccessId(StringUtils.isBlank(collect) ? "" : collect);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -477,10 +467,10 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 		}
 	}
 
-	public Integer getMasterTableCount(String companyId ) {
-		Integer data = 0;
+	public List<EmiMaster> getEmiMasterList(String companyId) {
+		List<EmiMaster> list = new ArrayList<EmiMaster>();
 		try {
-			List<EmiMaster> list = new ArrayList<EmiMaster>();
+
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<EmiMaster> query = cb.createQuery(EmiMaster.class);
@@ -488,36 +478,35 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			Root<EmiMaster> b = query.from(EmiMaster.class);
 			// Select
 			query.select(b);
-			//Effective Date Max Filter
+			// Effective Date Max Filter
 			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<EmiMaster> ocpm1 = effectiveDate.from(EmiMaster.class);
 			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
 			Predicate a1 = cb.equal(ocpm1.get("emiId"), b.get("emiId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			effectiveDate.where(a1,a2);
-			
+			effectiveDate.where(a1, a2);
+
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.desc(b.get("emiId")));
-			
+
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("companyId"), companyId);
 //			Predicate n3 = cb.equal(b.get("companyId"), "99999");
 //			Predicate n4 = cb.or(n2,n3);
-			query.where(n1,n2).orderBy(orderList);
-			
+			query.where(n1, n2).orderBy(orderList);
+
 			// Get Result
-		TypedQuery<EmiMaster> result = em.createQuery(query);
-		int limit = 0 , offset = 1 ;
-		result.setFirstResult(limit * offset);
-		result.setMaxResults(offset);
-		list = result.getResultList();
-		data = list.size() > 0 ?  list.get(0).getEmiId() : 0 ;
-	} catch (Exception e) {
+			TypedQuery<EmiMaster> result = em.createQuery(query);
+			int limit = 0, offset = 1;
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			list = result.getResultList();
+		} catch (Exception e) {
 			e.printStackTrace();
 			log.info(e.getMessage());
 		}
-		return data;
+		return list;
 	}
 
 	public PolicyTypeMaster getPolicyTypeDesc( String productId, String companyId,String policyTypeId ) {

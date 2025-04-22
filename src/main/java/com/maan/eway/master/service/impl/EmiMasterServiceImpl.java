@@ -1029,6 +1029,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			list = result.getResultList();
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getEmiId()))).collect(Collectors.toList());
 			
+			if(!list.isEmpty()) {
 			res=mapper.map(list.get(0), EmiMasterRes2.class);
 			List<EmiDetailsRes> emiDetails=new ArrayList<EmiDetailsRes>();
 			for (EmiMaster data : list) {
@@ -1044,6 +1045,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			res.setPolicyDesc(list.get(0).getPolicyDesc());
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
 			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());

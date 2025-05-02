@@ -430,7 +430,7 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 			header1.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 			header1.setBearerAuth(response.getBody());
 			Map<String, Object> requestBody = new HashMap<>();
-	        requestBody.put("queryId", 7);
+	        requestBody.put("queryId", 6);
 			HttpEntity<?> requestent1 = new HttpEntity<>(requestBody, header1);
 			System.out.println("calling second Api:  " + requestent1);
 			try {

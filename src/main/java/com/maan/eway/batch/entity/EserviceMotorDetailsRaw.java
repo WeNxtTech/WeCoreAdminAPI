@@ -13,17 +13,25 @@
 package com.maan.eway.batch.entity;
 
 
+import java.io.Serializable;
+import java.util.Date;
+
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
-
-import lombok.*;
-import jakarta.persistence.*;
-import java.io.Serializable;
-import java.util.List;
-
-import java.util.Date;
-import jakarta.persistence.*;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 
 
@@ -43,7 +51,7 @@ import jakarta.persistence.*;
 @DynamicInsert
 @DynamicUpdate
 @Builder
-//@IdClass(EserviceMotorDetailsRawId.class)
+@IdClass(EserviceMotorDetailsRawId.class)
 @Table(name="eservice_motor_details_raw")
 
 public class EserviceMotorDetailsRaw implements Serializable {
@@ -51,7 +59,7 @@ public class EserviceMotorDetailsRaw implements Serializable {
 private static final long serialVersionUID = 1L;
  
     //--- ENTITY PRIMARY KEY 
-    @Id
+   
     @Column(name="ROW_NUM", nullable=false)
     private Integer    rowNum ;
     
@@ -59,26 +67,27 @@ private static final long serialVersionUID = 1L;
     private Integer    sno ;
     
     //------------------------------------
-    
+    @Id
     @Column(name="COMPANY_ID")
     private Integer    companyId ;
 
-    
+    @Id
     @Column(name="PRODUCT_ID")
     private Integer    productId ;
 
-    
+    @Id
     @Column(name="SECTION_ID")
     private Integer    sectionId ;
 
-   
+    @Id
     @Column(name="TYPEID")
     private Integer    typeid ;
 
-   
+    @Id
     @Column(name="REQUEST_REFERENCE_NO", nullable=true, length=200)
     private String     requestReferenceNo ;
 
+    @Id
     @Column(name="VEHICLE_ID", nullable=true)
     private Integer    vehicleId ;
 

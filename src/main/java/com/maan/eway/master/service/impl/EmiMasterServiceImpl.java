@@ -5,7 +5,6 @@
 */
 package com.maan.eway.master.service.impl;
 
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -286,7 +285,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 	public SuccessRes insertEmi(EmiMasterSaveReq req) {
 		SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/YYYY");
 		SuccessRes res = new SuccessRes();
-		EmiMaster saveData = new EmiMaster();
+		
 		List<EmiMaster> list = new ArrayList<EmiMaster>();
 		List<EmiMaster> emiList = new ArrayList<EmiMaster>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
@@ -299,23 +298,24 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			Date entryDate = null;
 			String createdBy = "";
 
-			String emiId = "";
+			Integer emiId = null;
+			Integer count = 1;
 			PolicyTypeMaster policyTypeData = getPolicyTypeDesc(req.getProductId(), req.getCompanyId(),
 					req.getPolicyType());
 			String policyTypeDesc = policyTypeData.getPolicyTypeName();
-			List<EmiMaster> emiMasterList = getEmiMasterList(req.getCompanyId());
+			EmiMaster emi = repo.findTopByOrderByEmiIdDesc();
 			for (EmiDetailsReq r : req.getEmiDetails()) {
+				EmiMaster saveData = new EmiMaster();
 				if (StringUtils.isBlank(r.getEmiId())) {
-
 					findExistingEmiMaster(req);
-					emiId = Integer.valueOf(emiMasterList.size() + 1).toString();
+					emiId = emi.getEmiId() + count;
 					saveData.setEmiId(Integer.valueOf(emiId));
 					entryDate = new Date();
 					createdBy = req.getCreatedBy();
 					res.setResponse("Saved Successfully ");
-					res.setSuccessId(emiId);
+					count++;
 				} else {
-					emiId = r.getEmiId();
+					emiId = Integer.valueOf(r.getEmiId());
 					CriteriaBuilder cb = em.getCriteriaBuilder();
 					CriteriaQuery<EmiMaster> query = cb.createQuery(EmiMaster.class);
 
@@ -365,7 +365,6 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 //					}
 				}
 				res.setResponse("Updated Successfully ");
-				res.setSuccessId(emiId);
 				dozerMapper.map(req, saveData);
 				saveData.setEmiId(Integer.valueOf(emiId));
 				
@@ -392,10 +391,6 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 						saveData.setInstallmentTypeId("0");
 						saveData.setInstallmentTypeDesc(r.getInstallmentPeriod() + " months");
 					}
-					emiList.add(saveData);
-					Integer i = Integer.parseInt(emiId) + 1;
-					emiId = i.toString();
-					saveData.setEmiId(i);
 				} else {
 					saveData.setPremiumStart(r.getPremiumStart());
 					saveData.setPremiumEnd(r.getPremiumEnd());
@@ -412,21 +407,21 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 						saveData.setInstallmentTypeId("0");
 						saveData.setInstallmentTypeDesc(r.getInstallmentPeriod() + " months");
 					}
-					saveData.setEffectiveDateStart(new Date());
-					saveData.setEffectiveDateEnd(endDate);
-					saveData.setCreatedBy(createdBy);
-					saveData.setStatus(req.getStatus());
-					saveData.setEntryDate(new Date());
-					saveData.setUpdatedDate(new Date());
-					saveData.setUpdatedBy(req.getCreatedBy());
-					saveData.setAmendId(list.get(0).getAmendId());
-					emiList.add(saveData);
 				}
+				saveData.setEffectiveDateStart(new Date());
+				saveData.setEffectiveDateEnd(endDate);
+				saveData.setCreatedBy(createdBy);
+				saveData.setStatus(req.getStatus());
+				saveData.setEntryDate(new Date());
+				saveData.setUpdatedDate(new Date());
+				saveData.setUpdatedBy(req.getCreatedBy());
+				saveData.setAmendId(list != null && !list.isEmpty() ? list.get(0).getAmendId() : 0);
+				emiList.add(saveData);
 			}
 			repo.saveAllAndFlush(emiList);
-			String collect = emiList.stream().distinct().map(e -> String.valueOf(e.getEmiId()))
+			String collect = emiList.stream().map(e -> String.valueOf(e.getEmiId()))
 					.collect(Collectors.joining(","));
-			log.info("Saved Details is ---> " + json.toJson(saveData));
+			log.info("Saved Details is ---> " + json.toJson(emiList));
 			res.setSuccessId(StringUtils.isBlank(collect) ? "" : collect);
 
 		} catch (Exception e) {
@@ -435,6 +430,11 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			return null;
 		}
 		return res;
+	}
+
+	private void findTopByOrderByEmiIdDesc() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private void findExistingEmiMaster(EmiMasterSaveReq req) {

@@ -12,13 +12,13 @@
 
 package com.maan.eway.repository;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import com.maan.eway.bean.SmsDataDetails;
+import com.maan.eway.bean.SmsDataDetailsId;
 
 /**
  * <h2>SmsDataDetailsRepository</h2>
@@ -29,7 +29,7 @@ import com.maan.eway.bean.SmsDataDetails;
  */
 
 
-public interface SmsDataDetailsRepository extends JpaRepository<SmsDataDetails, String>, JpaSpecificationExecutor<SmsDataDetails> {
+public interface SmsDataDetailsRepository extends JpaRepository<SmsDataDetails, SmsDataDetailsId>, JpaSpecificationExecutor<SmsDataDetails> {
 
 	List<SmsDataDetails> findByMobileNoOrderByReqTimeDesc(String mobileNo);
 

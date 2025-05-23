@@ -4,6 +4,8 @@
  */
 package com.maan.eway.master.res;
 
+import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -56,5 +58,8 @@ public class ExcessMasterRes {
 	
 	@JsonProperty("Status")
 	private String status;	
+	
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
 	
 }

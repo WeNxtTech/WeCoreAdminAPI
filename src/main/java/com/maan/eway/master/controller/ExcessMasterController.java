@@ -47,11 +47,11 @@ public class ExcessMasterController {
 @PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 public ResponseEntity<CommonRes> insertExcess(@RequestBody 
 			@NotEmpty(message = "Excess master save or update list should not be empty.")
-			List<@Valid ExcessMasterSaveUpReq> req) {
+			@Valid ExcessMasterSaveUpReq req) {
 	
 	CommonRes data = new CommonRes();	
 	reqPrinter.reqPrint(req);
-	List<ExcessMaster> savedOrUpdatedExcessMasters = excessService.saveAndUpdateExcessMaster(req);
+	ExcessMaster savedOrUpdatedExcessMasters = excessService.saveAndUpdateExcessMaster(req);
 	
 	if(savedOrUpdatedExcessMasters!=null)
 	{

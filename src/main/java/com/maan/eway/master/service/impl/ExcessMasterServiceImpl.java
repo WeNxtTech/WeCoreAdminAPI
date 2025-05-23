@@ -18,7 +18,6 @@ import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
 import com.maan.eway.bean.ExcessMaster;
 import com.maan.eway.master.req.ExcessMasterGetAllReq;
 import com.maan.eway.master.req.ExcessMasterGetReq;
@@ -63,7 +62,7 @@ public class ExcessMasterServiceImpl  implements ExcessMasterService{
 	 * @return the list of saved {@code ExcessMaster} entities, or {@code null} if an exception occurs
 	 */
 	@Transactional(rollbackOn = Exception.class)
-	public List<ExcessMaster> saveAndUpdateExcessMaster(List<ExcessMasterSaveUpReq> req) {
+	public List<ExcessMaster> saveAndUpdateExcessMaster2(List<ExcessMasterSaveUpReq> req) {
 		try {
 			List<ExcessMaster> list = new ArrayList<>();			
 			for(ExcessMasterSaveUpReq excess : req) {
@@ -87,6 +86,28 @@ public class ExcessMasterServiceImpl  implements ExcessMasterService{
 	}
 	
 
+	@Transactional(rollbackOn = Exception.class)
+	public ExcessMaster saveAndUpdateExcessMaster(ExcessMasterSaveUpReq req) {
+		try {
+			ExcessMaster excessMaster=new ExcessMaster();
+				if(req.getExcessId() == null) {
+					ExcessMaster saved = excessRepo.saveAndFlush(createNewExcessMaster(req));
+					excessMaster=saved;
+				}
+				
+				else {
+					ExcessMaster deactivated = excessRepo.saveAndFlush(deactivateOldExcessMaster(req));
+					ExcessMaster updated = excessRepo.saveAndFlush(createNewExcessMaster(req));
+					excessMaster=updated;
+				}				
+			
+			return excessMaster;
+		} catch (Exception e) {
+			log.error("Exception occured :{}",e.getMessage(), e);
+			return null;
+		}
+	}
+	
 	/**
 	 * Retrieves all active {@code ExcessMaster} entities and maps them to a list of response objects.
 	 * 

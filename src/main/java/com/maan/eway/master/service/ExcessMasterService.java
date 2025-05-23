@@ -10,7 +10,8 @@ import com.maan.eway.master.res.ExcessMasterRes;
 
 public interface ExcessMasterService {
 	
-	List<ExcessMaster> saveAndUpdateExcessMaster(List<ExcessMasterSaveUpReq> req);
+//	List<ExcessMaster> saveAndUpdateExcessMaster(List<ExcessMasterSaveUpReq> req);
+	ExcessMaster saveAndUpdateExcessMaster(ExcessMasterSaveUpReq req);
 
 	List<ExcessMasterRes> getallExcessMaster(ExcessMasterGetAllReq req);
 	

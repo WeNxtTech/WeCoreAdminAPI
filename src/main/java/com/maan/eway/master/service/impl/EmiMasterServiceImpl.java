@@ -19,6 +19,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -280,9 +281,9 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 		}
 		return res;
 	}
-	@Transactional
-	@Override
-	public SuccessRes insertEmi(EmiMasterSaveReq req) {
+//	@Transactional
+//	@Override
+	public SuccessRes insertEmi2(EmiMasterSaveReq req) {
 		SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/YYYY");
 		SuccessRes res = new SuccessRes();
 		
@@ -430,7 +431,103 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			return null;
 		}
 		return res;
+		}
+	
+	@Transactional
+	@Override
+	public SuccessRes insertEmi(EmiMasterSaveReq req) {
+	    SuccessRes res = new SuccessRes();
+	    List<EmiMaster> emiList = new ArrayList<>();
+	    DozerBeanMapper dozerMapper = new DozerBeanMapper();
+
+	    try {
+	        SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/yyyy");
+	        Date startDate = req.getEffectiveDateStart(); // correctly use input
+	        Date endDate = sdformat.parse("31/12/2050");
+
+	        String createdBy = req.getCreatedBy();
+	        Long count = repo.count(); // for generating new EMI IDs
+	        int trackEmiId = 1;
+
+	        PolicyTypeMaster policyTypeData = getPolicyTypeDesc(req.getProductId(), req.getCompanyId(), req.getPolicyType());
+	        String policyTypeDesc = policyTypeData != null ? policyTypeData.getPolicyTypeName() : "UNKNOWN";
+	        findExistingEmiMaster(req);
+	        for (EmiDetailsReq detail : req.getEmiDetails()) {
+	            EmiMaster saveData = new EmiMaster(); // important: new object per loop
+	            dozerMapper.map(req, saveData);
+
+	            Integer emiId;
+	            if (StringUtils.isBlank(detail.getEmiId())) {
+	                emiId = count.intValue() + trackEmiId++;
+	                saveData.setAmendId(0);
+	            } else {
+	                emiId = Integer.parseInt(detail.getEmiId());
+
+	                CriteriaBuilder cb = em.getCriteriaBuilder();
+	                CriteriaQuery<EmiMaster> query = cb.createQuery(EmiMaster.class);
+	                Root<EmiMaster> root = query.from(EmiMaster.class);
+
+	                Predicate byCompany = cb.equal(root.get("companyId"), req.getCompanyId());
+	                Predicate byEmiId = cb.equal(root.get("emiId"), emiId);
+	                query.select(root).where(cb.and(byCompany, byEmiId)).orderBy(cb.desc(root.get("effectiveDateStart")));
+
+	                List<EmiMaster> existingList = em.createQuery(query)
+	                        .setFirstResult(0)
+	                        .setMaxResults(1)
+	                        .getResultList();
+
+	                int amendId = existingList.isEmpty() ? 0 : existingList.get(0).getAmendId();
+	                saveData.setAmendId(amendId);
+	            }
+
+	            // Common data
+	            saveData.setEmiId(emiId);
+	            saveData.setEffectiveDateStart(startDate);
+	            saveData.setEffectiveDateEnd(endDate);
+	            saveData.setCreatedBy(createdBy);
+	            saveData.setUpdatedBy(createdBy);
+	            saveData.setEntryDate(new Date());
+	            saveData.setUpdatedDate(new Date());
+	            saveData.setPolicyType(req.getPolicyType());
+	            saveData.setPolicyDesc("99999".equals(req.getPolicyType()) ? "ALL" : policyTypeDesc);
+	            saveData.setStatus(req.getStatus());
+
+	            // EMI-specific fields
+	            saveData.setPremiumStart(detail.getPremiumStart());
+	            saveData.setPremiumEnd(detail.getPremiumEnd());
+	            saveData.setInterestPercent(detail.getInterestPercent());
+	            saveData.setAdvancePercent(detail.getAdvancePercent());
+	            saveData.setInstallmentPeriod(detail.getInstallmentPeriod());
+
+	            if (StringUtils.isBlank(detail.getInstallmentPeriod())) {
+	                List<ListItemValue> installmentList = getInstallmentTypeDesc(
+	                        req.getCompanyId(), "99999", "INSTALLMENT_TYPE", detail.getInstallmentTypeId()
+	                );
+	                String installmentDesc = installmentList.isEmpty() ? "" : installmentList.get(0).getItemValue();
+	                saveData.setInstallmentTypeId(detail.getInstallmentTypeId());
+	                saveData.setInstallmentTypeDesc(StringUtils.defaultIfBlank(installmentDesc, ""));
+	            } else {
+	                saveData.setInstallmentTypeId("0");
+	                saveData.setInstallmentTypeDesc(detail.getInstallmentPeriod() + " months");
+	            }
+
+	            emiList.add(saveData);
+	        }
+
+	        repo.saveAllAndFlush(emiList);
+	        String collect = emiList.stream().map(e -> String.valueOf(e.getEmiId()))
+	                .distinct()
+	                .collect(Collectors.joining(","));
+
+	        res.setSuccessId(collect);
+	        return res;
+
+	    } catch (Exception e) {
+	        log.error("Exception in insertEmi: ", e);
+	        return null;
+	    }
 	}
+
 
 	private void findTopByOrderByEmiIdDesc() {
 		// TODO Auto-generated method stub

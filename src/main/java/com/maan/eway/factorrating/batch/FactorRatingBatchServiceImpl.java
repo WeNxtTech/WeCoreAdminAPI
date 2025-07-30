@@ -1207,9 +1207,9 @@ public class FactorRatingBatchServiceImpl implements FactorRatingBatchService,Se
 				}else if(StringUtils.isBlank(discreateColumns)) {
 					String groupbyColumns ="";
 					if("Y".equalsIgnoreCase(minimum_rate_yn))
-						groupbyColumns ="xlAgencyCode~"+rangeColumns+"~rate~minimumRate~calcType~minPremium";
+						groupbyColumns ="xlAgencyCode~"+rangeColumns+"~rate~minimumRate~calType~minPremium";
 					else
-						groupbyColumns ="xlAgencyCode~"+rangeColumns+"~rate~calcType~minPremium";
+						groupbyColumns ="xlAgencyCode~"+rangeColumns+"~rate~calType~minPremium";
 
 					List<String> groupbyColumnsList =Arrays.stream(groupbyColumns.split("~")).collect(Collectors.toList());
 					List<FactorParamsInsert> duplicateRecordsList =new ArrayList<>();

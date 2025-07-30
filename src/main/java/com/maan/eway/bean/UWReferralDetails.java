@@ -44,7 +44,7 @@ import jakarta.persistence.*;
 @DynamicUpdate
 @Builder
 @IdClass(UWReferralDetailsId.class)
-@Table(name="UW_REFFERRAL_DETAILS")
+@Table(name="uw_refferral_details")
 
 
 public class UWReferralDetails implements Serializable {

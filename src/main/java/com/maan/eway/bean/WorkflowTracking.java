@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "WORKFLOW_TRACKING")
+@Table(name = "workflow_tracking") //WORKFLOW_TRACKING
 @IdClass(WorkflowTrackingPK.class)
 @NoArgsConstructor
 @Setter

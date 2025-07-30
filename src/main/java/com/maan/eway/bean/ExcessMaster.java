@@ -9,7 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @IdClass(ExcessMasterId.class)
-@Table(name = "Excess_Master")
+@Table(name = "excess_master")
 @Getter
 @Setter
 public class ExcessMaster {

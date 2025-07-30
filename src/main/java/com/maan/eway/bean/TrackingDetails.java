@@ -45,7 +45,7 @@ import jakarta.persistence.*;
 @DynamicUpdate
 @Builder
 @IdClass(TrackingDetailsId.class)
-@Table(name="EWAY_TRACKING_DETAILS")
+@Table(name="eway_tracking_details") //EWAY_TRACKING_DETAILS
 
 
 public class TrackingDetails implements Serializable {

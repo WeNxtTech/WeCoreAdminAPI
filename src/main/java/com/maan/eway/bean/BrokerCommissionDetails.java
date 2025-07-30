@@ -39,7 +39,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 @IdClass(BrokerCommissionDetailsId.class)
-@Table(name="BROKER_COMMISSION_DETAILS")
+@Table(name="broker_commission_details") //BROKER_COMMISSION_DETAILS
 
 
 public class BrokerCommissionDetails implements Serializable {

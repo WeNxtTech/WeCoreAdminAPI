@@ -19,7 +19,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "CHART_PARENT_MASTER")
+@Table(name = "chart_parent_master") //CHART_PARENT_MASTER
 public class ChartParentMaster {
 
 	@EmbeddedId

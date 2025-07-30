@@ -1174,10 +1174,10 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 		Predicate n1 = cb.equal(c.get("status"),"Y");
 		Predicate n11 = cb.equal(c.get("status"),"R");
 		Predicate n12 = cb.or(n1,n11);
-		jakarta.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
-		jakarta.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
-		jakarta.persistence.criteria.Predicate n4 = cb.equal(c.get("productId"), req.getProductId());
-		jakarta.persistence.criteria.Predicate n5 = cb.equal(c.get("companyId"),req.getCompanyId());
+		Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+		Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+		Predicate n4 = cb.equal(c.get("productId"), req.getProductId());
+		Predicate n5 = cb.equal(c.get("companyId"),req.getCompanyId());
 		
 		query.where(n12, n2, n3, n4,n5).orderBy(orderList);
 

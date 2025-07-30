@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "WORKFLOW_FACTOR_RATE_REQUEST_DETAIL")
+@Table(name = "workflow_factor_rate_request_detail")//WORKFLOW_FACTOR_RATE_REQUEST_DETAIL
 @IdClass(WorkflowFactorRateRequestDetailPK.class)
 @NoArgsConstructor
 @Getter

@@ -73,8 +73,9 @@ private static final long serialVersionUID = 1L;
     private String  sectionId ;
     
     @Id
-   	@Column(name = "COVER_ID", nullable=false )
-   	private Integer coverId;
+    @Column(name = "COVER_ID", nullable = false)
+    @Builder.Default
+    private Integer coverId = 0;
 
     //--- ENTITY DATA FIELDS 
 

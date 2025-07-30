@@ -24,7 +24,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.ctc.wstx.shaded.msv_core.datatype.SerializationContext;
 import com.maan.eway.batch.entity.EserviceMotorDetailsRaw;
 import com.maan.eway.batch.entity.EserviceMotorDetailsRawId;
 
@@ -37,7 +36,7 @@ import jakarta.transaction.Transactional;
  *
  */
 @Repository
-public interface EserviceMotorDetailsRawRepository  extends JpaRepository<EserviceMotorDetailsRaw,EserviceMotorDetailsRawId > , JpaSpecificationExecutor<EserviceMotorDetailsRaw>{
+public interface EserviceMotorDetailsRawRepository  extends JpaRepository<EserviceMotorDetailsRaw,EserviceMotorDetailsRawId> , JpaSpecificationExecutor<EserviceMotorDetailsRaw>{
 
 	List<EserviceMotorDetailsRaw> findByRequestReferenceNo(String requestReferenceNo);
 	

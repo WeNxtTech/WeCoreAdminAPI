@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "WORKFLOW_QUOTE_PROPOSALS")
+@Table(name = "workflow_quote_proposals") //WORKFLOW_QUOTE_PROPOSALS
 @IdClass(QuoteProposalPK.class)
 @NoArgsConstructor
 @Setter

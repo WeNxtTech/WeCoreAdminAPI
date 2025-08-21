@@ -14,7 +14,7 @@
     <groupId>com.maan.eway</groupId>
     <artifactId>EwayAdminApi</artifactId>
     <version>0.0.2-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <name>EwayAdminApi</name>
     <description>Admin for Spring Boot</description>
     <properties>

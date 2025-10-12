@@ -61,23 +61,24 @@ def deployApp(String serverConfig, String profile) {
                             remoteDirectory: "${REMOTE_DIR}",
                             removePrefix: 'target',
                             execCommand: """
-                                bash -c '
-                                    set -x
-                                    echo "Stopping old application if running..."
-                                    PID=\$(pgrep -f "${REMOTE_DIR}/${jarFile}")
-                                    if [ -n "\$PID" ]; then
-                                        kill $PID 2>/dev/null || true
-                                        echo "Stopped old app (PID \$PID)."
-                                    else
-                                        echo "No old app running."
-                                    fi
+                              bash -c '
+                                  set -x
+                                  echo "Stopping old application if running..."
+                                  PID=\$(ps -ef | grep java | grep "${remoteDir}/${jarFile}" | grep -v grep | awk "{print \\\$2}")
+                                  if [ -n "\$PID" ]; then
+                                      kill \$PID
+                                      echo "Old application stopped (PID \$PID)."
+                                  else
+                                      echo "No old application running."
+                                  fi
 
-                                    echo "Starting new application..."
-                                    nohup java -jar ${REMOTE_DIR}/${jarFile} --spring.profiles.active=${profile} > ${REMOTE_DIR}/app.log 2>&1 &
+                                  echo "Starting new application..."
+                                  nohup java -jar ${remoteDir}/${jarFile} --spring.profiles.active=${profile}> ${remoteDir}/app.log 2>&1 &
 
-                                    echo "Application started. Logs: ${REMOTE_DIR}/app.log"
-                                '
-                            """
+                                  echo "Application started. Logs: ${remoteDir}/app.log"
+                                  exit 0
+                              '
+                          """
                         )
                     ],
                     verbose: true

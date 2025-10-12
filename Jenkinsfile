@@ -66,7 +66,7 @@ def deployApp(String serverConfig, String profile) {
                                     echo "Stopping old application if running..."
                                     PID=\$(pgrep -f "${REMOTE_DIR}/${jarFile}")
                                     if [ -n "\$PID" ]; then
-                                        kill \$PID
+                                        kill $PID 2>/dev/null || true
                                         echo "Stopped old app (PID \$PID)."
                                     else
                                         echo "No old app running."

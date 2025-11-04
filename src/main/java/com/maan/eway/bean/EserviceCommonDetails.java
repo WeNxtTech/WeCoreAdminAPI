@@ -527,6 +527,12 @@ private static final long serialVersionUID = 1L;
        
 		@Column(name = "ADDRESS", length = 300)
 		private String address;
+		
+		@Column(name = "REGION_CODE", length = 20)
+		private String regionCode;
+
+		@Column(name = "REGION_DESC", length = 100)
+		private String regionDesc;
 
 }
 

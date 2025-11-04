@@ -172,6 +172,28 @@ public class SectionCoverMasterController {
 				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
 			}
 		}
+		
+		@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
+		@PostMapping("/getallSectionCoverDetailsWithPremium")
+		@ApiOperation("This method is getall Section Cover Details")
+		public ResponseEntity<CommonRes> getallSectionCoverDetailsWithPremium(@RequestBody SectionCoverMasterGetAllReq req)
+		{
+			CommonRes data = new CommonRes();
+			reqPrinter.reqPrint(req);
+			
+			List<SectionCoverMasterGetAllRes> res = sectionCoverService.getallSectionCoverDetailsWithPremium(req);
+			data.setCommonResponse(res);
+			data.setErrorMessage(Collections.emptyList());
+			data.setIsError(false);
+			data.setMessage("Success");
+			
+			if(res!= null) {
+				return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
+			}
+			else {
+				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+			}
+		}
 
 		
 	//  Get Active Cover Master

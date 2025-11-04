@@ -289,6 +289,12 @@ private static final long serialVersionUID = 1L;
 	    
 	    @Column(name = "COVER_ID")
 		private Integer coverId;
+	    
+	    @Column(name = "REGION_CODE", length = 20)
+		private String regionCode;
+
+		@Column(name = "REGION_DESC", length = 100)
+		private String regionDesc;
 }
 
 

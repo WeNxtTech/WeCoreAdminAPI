@@ -969,6 +969,10 @@ private static final long serialVersionUID = 1L;
 
     @Column(name = "ATT_TYPE")
     private String attestationType;
+    
+    @Column(name = "IMPORt_YN")
+    
+    private String importYN;
 }
 
 

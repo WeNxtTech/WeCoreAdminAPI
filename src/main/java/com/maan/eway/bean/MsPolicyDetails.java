@@ -103,6 +103,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="CLAIM_RATIO", nullable=false)
     private BigDecimal       claimRatio ;
+    
+    @Column(name="FACTOR_USE")
+    private String factorUse;
 }
 
 

@@ -51,5 +51,7 @@ public interface SectionCoverMasterService  {
 
 	List<SectionCoverMasterGetAllRes> getallSectionBrokerCoverDetails(SectionCoverMasterGetAllReq req);
 
+	List<SectionCoverMasterGetAllRes> getallSectionCoverDetailsWithPremium(SectionCoverMasterGetAllReq req);
+
 
 }

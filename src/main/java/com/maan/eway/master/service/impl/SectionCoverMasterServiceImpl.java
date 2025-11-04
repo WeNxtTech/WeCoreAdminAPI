@@ -6,12 +6,12 @@
 package com.maan.eway.master.service.impl;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -55,6 +55,7 @@ import com.maan.eway.res.SuccessRes;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -372,6 +373,63 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 		}
 		return resList;
 	}
+	
+	//*******************************************************************DETAILED SECTION DETAILS***********************************
+	@Override
+	public List<SectionCoverMasterGetAllRes> getallSectionCoverDetailsWithPremium(SectionCoverMasterGetAllReq req) {
+	    List<SectionCoverMasterGetAllRes> resList = new ArrayList<>();
+	    DozerBeanMapper mapper = new DozerBeanMapper();
+
+	    try {
+	        String sql = "SELECT scm.* " +
+	                     "FROM section_cover_master scm " +
+	                     "INNER JOIN ( " +
+	                     "   SELECT company_id, product_id, section_id, cover_id, sub_cover_id, MAX(amend_id) AS max_amend_id " +
+	                     "   FROM section_cover_master " +
+	                     "   WHERE company_id = :companyId " +
+	                     "     AND product_id = :productId " +
+	                     
+	                     "     AND effective_date_start <= CURRENT_DATE " +
+	                     "     AND effective_date_end >= CURRENT_DATE " +
+	                     "   GROUP BY company_id, product_id, section_id, cover_id, sub_cover_id " +
+	                     ") latest " +
+	                     "ON scm.company_id   = latest.company_id " +
+	                     "AND scm.product_id  = latest.product_id " +
+	                     "AND scm.section_id  = latest.section_id " +
+	                     "AND scm.cover_id    = latest.cover_id " +
+	                     "AND scm.sub_cover_id= latest.sub_cover_id " +
+	                     "AND scm.amend_id    = latest.max_amend_id " +
+	                     "WHERE (scm.agency_code = :agencyCode OR scm.agency_code = '99999') " +
+	                     "AND (scm.branch_code = :branchCode OR scm.branch_code = '99999') " +
+	                     "AND scm.sub_cover_id = '0' " +
+	                     "ORDER BY scm.cover_name ASC";
+
+	        Query query = em.createNativeQuery(sql, SectionCoverMaster.class);
+	        query.setParameter("companyId", req.getInsuranceId());
+	        query.setParameter("productId", req.getProductId());
+//	        query.setParameter("sectionId", req.getSectionId());
+	        query.setParameter("agencyCode", req.getAgencyCode());
+	        query.setParameter("branchCode", req.getBranchCode());
+
+	        @SuppressWarnings("unchecked")
+	        List<SectionCoverMaster> list = query.getResultList();
+
+	        // Map directly to response, no deduplication / grouping
+	        for (SectionCoverMaster scm : list) {
+	            SectionCoverMasterGetAllRes res = mapper.map(scm, SectionCoverMasterGetAllRes.class);
+	            res.setCodeDescLocal(scm.getCoverNameLocal());
+	            resList.add(res);
+	        }
+
+	    } catch (Exception e) {
+	        log.error("Error fetching Section Cover details", e);
+	        return Collections.emptyList();
+	    }
+
+	    return resList;
+	}
+
+
 
 ///*********************************************************************GET BY ID******************************************************\\
 	@Override

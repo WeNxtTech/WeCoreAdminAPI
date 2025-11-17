@@ -48,824 +48,491 @@ import jakarta.persistence.*;
 
 
 public class EserviceBuildingDetails implements Serializable {
- 
-private static final long serialVersionUID = 1L;
- 
-    //--- ENTITY PRIMARY KEY 
-    @Id
-    @Column(name="REQUEST_REFERENCE_NO", nullable=false, length=20)
-    private String     requestReferenceNo ;
 
-    @Id
-    @Column(name="RISK_ID", nullable=false)
-    private Integer    riskId ;
+	private static final long serialVersionUID = 1L;
 
-    @Id
-    @Column(name="CUSTOMER_REFERENCE_NO", nullable=false, length=20)
-    private String     customerReferenceNo ;
-    
-    @Id
-    @Column(name="SECTION_ID", length=100)
-    private String  sectionId;
-    
-    @Id
-	@Column(name = "COVER_ID", nullable=false )
+	// --- ENTITY PRIMARY KEY
+	@Id
+	@Column(name = "REQUEST_REFERENCE_NO", nullable = false, length = 20)
+	private String requestReferenceNo;
+
+	@Id
+	@Column(name = "RISK_ID", nullable = false)
+	private Integer riskId;
+
+	@Id
+	@Column(name = "CUSTOMER_REFERENCE_NO", nullable = false, length = 20)
+	private String customerReferenceNo;
+
+	@Id
+	@Column(name = "SECTION_ID", length = 100)
+	private String sectionId;
+
+	@Id
+	@Column(name = "COVER_ID", nullable = false)
 	private Integer coverId;
 
+	// --- ENTITY DATA FIELDS
+	@Column(name = "PRODUCT_ID", length = 20)
+	private String productId;
 
-    //--- ENTITY DATA FIELDS 
-    @Column(name="PRODUCT_ID", length=20)
-    private String  productId ;
+	@Column(name = "COMPANY_ID", length = 20)
+	private String companyId;
 
-    @Column(name="COMPANY_ID", length=20)
-    private String     companyId ;
+	@Column(name = "POLICY_NO", length = 100)
+	private String policyNo;
 
+	@Column(name = "BRANCH_CODE", length = 20)
+	private String branchCode;
 
-    @Column(name="POLICY_NO", length=100)
-    private String     policyNo;
+	@Column(name = "INBUILD_CONSTRUCT_TYPE", length = 20)
+	private String inbuildConstructType;
 
-    
-    @Column(name="BRANCH_CODE", length=20)
-    private String     branchCode ;
+	@Column(name = "BUILDING_FLOORS")
+	private Integer buildingFloors;
 
-    @Column(name="INBUILD_CONSTRUCT_TYPE", length=20)
-    private String     inbuildConstructType ;
+	@Column(name = "OUTBUILD_CONSTRUCT_TYPE", length = 20)
+	private String outbuildConstructType;
 
-    @Column(name="BUILDING_FLOORS")
-    private Integer    buildingFloors ;
+	@Column(name = "BUILDING_USAGE_YN", length = 2)
+	private String buildingUsageYn;
 
-    @Column(name="OUTBUILD_CONSTRUCT_TYPE", length=20)
-    private String     outbuildConstructType ;
+	@Column(name = "BUILDING_USAGE_ID", length = 100)
+	private String buildingUsageId;
 
-    @Column(name="BUILDING_USAGE_YN", length=2)
-    private String     buildingUsageYn ;
+	@Column(name = "BUILDING_USAGE_DESC", length = 100)
+	private String buildingUsageDesc;
 
-    @Column(name="BUILDING_USAGE_ID", length=100)
-    private String     buildingUsageId;
-    
-    @Column(name="BUILDING_USAGE_DESC", length=100)
-    private String     buildingUsageDesc;
+	@Column(name = "BUILDING_TYPE", length = 100)
+	private String buildingType;
 
-    @Column(name="BUILDING_TYPE", length=100)
-    private String     buildingType;
-    
-    @Column(name="BUILDING_OWNER_YN", length=20)
-    private String     buildingOwnerYn;
+	@Column(name = "BUILDING_OWNER_YN", length = 20)
+	private String buildingOwnerYn;
 
-    @Column(name="BUILDING_OCCUPATION_TYPE", length=100)
-    private String     buildingOccupationType ;
+	@Column(name = "BUILDING_OCCUPATION_TYPE", length = 100)
+	private String buildingOccupationType;
 
-    @Column(name="APARTMENT_OR_BORDER", length=200)
-    private String     apartmentOrBorder ;
+	@Column(name = "BUILDING_CONDITION", length = 100)
+	private String buildingCondition;
 
-    @Column(name="WITHOUT_INHABITANT_DAYS")
-    private Integer    withoutInhabitantDays ;
+	@Column(name = "BUILDING_AGE")
+	private Integer buildingAge;
 
-    
-    @Column(name="BUILDING_CONDITION", length=100)
-    private String     buildingCondition ;
+	@Column(name = "BUILDING_AREA_SQM")
+	private BigDecimal buildingAreaSqm;
 
-    @Column(name="BUILDING_BUILD_YEAR")
-    private Integer    buildingBuildYear ;
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "ENTRY_DATE")
+	private Date entryDate;
 
-    @Column(name="BUILDING_AGE")
-    private Integer    buildingAge ;
+	@Column(name = "CREATED_BY", length = 100)
+	private String createdBy;
 
-    @Column(name="BUILDING_AREA_SQM")
-    private BigDecimal     buildingAreaSqm ;
+	@Column(name = "STATUS", length = 2)
+	private String status;
 
-//    @Column(name="BUILDING_SUMINSURED")
-//    private BigDecimal     buildingSuminsured ;
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "UPDATED_DATE")
+	private Date updatedDate;
 
-//    @Column(name="ALLRISK_SUMINSURED")
-//    private BigDecimal     allriskSuminsured ;
-    
-//    @Column(name="CONTENT_SUMINSURED")
-//    private BigDecimal     contentSuminsured ;
-    
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="ENTRY_DATE")
-    private Date       entryDate ;
+	@Column(name = "UPDATED_BY", length = 100)
+	private String updatedBy;
 
-    @Column(name="CREATED_BY", length=100)
-    private String     createdBy ;
+	@Column(name = "QUOTE_NO", length = 20)
+	private String quoteNo;
 
-    @Column(name="STATUS", length=2)
-    private String     status ;
+	@Column(name = "CUSTOMER_ID", length = 20)
+	private String customerId;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="UPDATED_DATE")
-    private Date       updatedDate ;
+	@Column(name = "AC_EXECUTIVE_ID")
+	private Integer acExecutiveId;
 
-    @Column(name="UPDATED_BY", length=100)
-    private String     updatedBy ;
+	@Column(name = "APPLICATION_ID", length = 20)
+	private String applicationId;
 
-    @Column(name="QUOTE_NO", length=20)
-    private String     quoteNo ;
+	@Column(name = "BROKER_CODE", length = 20)
+	private String brokerCode;
 
-    @Column(name="CUSTOMER_ID", length=20)
-    private String     customerId ;
+	@Column(name = "SUB_USER_TYPE", length = 20)
+	private String subUserType;
 
-    @Column(name="AC_EXECUTIVE_ID")
-    private Integer    acExecutiveId ;
+	@Column(name = "LOGIN_ID", length = 100)
+	private String loginId;
 
-    @Column(name="APPLICATION_ID", length=20)
-    private String     applicationId ;
+	@Column(name = "AGENCY_CODE", length = 20)
+	private String agencyCode;
 
-    @Column(name="BROKER_CODE", length=20)
-    private String     brokerCode ;
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "POLICY_START_DATE")
+	private Date policyStartDate;
 
-    @Column(name="SUB_USER_TYPE", length=20)
-    private String     subUserType ;
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "POLICY_END_DATE")
+	private Date policyEndDate;
 
-    @Column(name="LOGIN_ID", length=100)
-    private String     loginId ;
+	@Column(name = "POLICY_PERIORD")
+	private Integer policyPeriord;
 
-    @Column(name="AGENCY_CODE", length=20)
-    private String     agencyCode ;
+	@Column(name = "CURRENCY", length = 20)
+	private String currency;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="POLICY_START_DATE")
-    private Date       policyStartDate ;
+	@Column(name = "EXCHANGE_RATE")
+	private BigDecimal exchangeRate;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="POLICY_END_DATE")
-    private Date       policyEndDate ;
+	@Column(name = "ADMIN_LOGIN_ID", length = 100)
+	private String adminLoginId;
 
+	@Column(name = "ADMIN_REMARKS", length = 100)
+	private String adminRemarks;
 
-    @Column(name="POLICY_PERIORD")
-    private Integer policyPeriord;
-    
-    @Column(name="CURRENCY", length=20)
-    private String     currency ;
+	@Column(name = "REJECT_REASON", length = 100)
+	private String rejectReason;
 
-    @Column(name="EXCHANGE_RATE")
-    private BigDecimal     exchangeRate ;
+	@Column(name = "REFERAL_REMARKS", length = 100)
+	private String referalRemarks;
 
-    @Column(name="ADMIN_LOGIN_ID", length=100)
-    private String     adminLoginId ;
+	@Column(name = "PRODUCT_DESC", length = 100)
+	private String productDesc;
 
-    @Column(name="ADMIN_REMARKS", length=100)
-    private String     adminRemarks ;
+	@Column(name = "SECTION_DESC", length = 100)
+	private String sectionDesc;
 
-    @Column(name="REJECT_REASON", length=100)
-    private String     rejectReason ;
+	@Column(name = "BRANCH_NAME", length = 100)
+	private String branchName;
 
-    @Column(name="REFERAL_REMARKS", length=100)
-    private String     referalRemarks ;
+	@Column(name = "COMPANY_NAME", length = 100)
+	private String companyName;
 
-    @Column(name="PRODUCT_DESC", length=100)
-    private String  productDesc;
+	@Column(name = "OLD_REQ_REF_NO", length = 100)
+	private String oldReqRefNo;
 
+	@Column(name = "ACTUAL_PREMIUM_FC")
+	private BigDecimal actualPremiumFc;
 
-    
-    @Column(name="SECTION_DESC", length=100)
-    private String  sectionDesc;
+	@Column(name = "ACTUAL_PREMIUM_LC")
+	private BigDecimal actualPremiumLc;
 
-    @Column(name="BRANCH_NAME", length=100)
-    private String branchName;
+	@Column(name = "OVERALL_PREMIUM_LC")
+	private BigDecimal overallPremiumLc;
 
-    @Column(name="COMPANY_NAME", length=100)
-    private String companyName;
+	@Column(name = "OVERALL_PREMIUM_FC")
+	private BigDecimal overallPremiumFc;
 
-    @Column(name="OLD_REQ_REF_NO", length=100)
-    private String     oldReqRefNo ;
-    
-    
-    @Column(name="ACTUAL_PREMIUM_FC")
-    private BigDecimal     actualPremiumFc ;
-    
-    @Column(name="ACTUAL_PREMIUM_LC")
-    private BigDecimal     actualPremiumLc ;
+	@Column(name = "BROKER_BRANCH_CODE", length = 20)
+	private String brokerBranchCode;
 
-    @Column(name="OVERALL_PREMIUM_LC")
-    private BigDecimal     overallPremiumLc ;
+	@Column(name = "BROKER_BRANCH_NAME", length = 100)
+	private String brokerBranchName;
 
-    @Column(name="OVERALL_PREMIUM_FC")
-    private BigDecimal     overallPremiumFc ;
+	@Column(name = "INSURANCE_TYPE", length = 100)
+	private String insuranceType;
 
-    @Column(name="BROKER_BRANCH_CODE", length=20)
-    private String     brokerBranchCode ;
+	@Column(name = "COMMISSION_TYPE", length = 20)
+	private String commissionType;
 
-    @Column(name="BROKER_BRANCH_NAME", length=100)
-    private String     brokerBranchName ;
+	@Column(name = "COMMISSION_TYPE_DESC", length = 100)
+	private String commissionTypeDesc;
 
-    @Column(name="INSURANCE_TYPE", length=100)
-    private String insuranceType     ;
+	@Column(name = "HAVEPROMOCODE", length = 20)
+	private String havepromocode;
 
-    @Column(name="COMMISSION_TYPE", length=20)
-    private String     commissionType ;
-    
-    @Column(name="COMMISSION_TYPE_DESC", length=100)
-    private String     commissionTypeDesc ;
-
-    @Column(name="HAVEPROMOCODE", length=20)
-    private String     havepromocode;
-
-    @Column(name="PROMOCODE", length=100)
-    private String     promocode;
-
-    @Column(name="OCCUPATION_TYPE", length=20)
-    private String     occupationType;
-
-    @Column(name="OCCUPATION_TYPE_DESC", length=100)
-    private String     occupationTypeDesc;
-
-    @Column(name="DOMESTIC_PACKAGE_YN", length=20)
-    private String     domesticPackageYn;
-
-    @Column(name="CATEGORY_ID", length=20)
-    private String     categoryId;
-
-    @Column(name="CATEGORY_DESC", length=100)
-    private String     categoryDesc;
-
-    @Column(name="BANK_CODE", length=100)
-    private String   bankCode;  
-    
-    @Column(name="SOURCE_TYPE", length=100)
-    private String   sourceType;  
-    
-    @Column(name="CUSTOMER_CODE", length=100)
-    private String   customerCode;  
-    
-    @Column(name="BDM_CODE", length=100)
-    private String  bdmCode;
-    
-    @Column(name="MANUAL_REFERAL_YN", length=100)
-    private String  manualReferalYn;
-    
-//    @Column(name="ELEC_EQUIP_SUMINSURED")
-//    private BigDecimal elecEquipSuminsured;
-
-//    @Column(name="GOODS_SINGLECARRY_SUMINSURED")
-//    private BigDecimal goodsSinglecarrySuminsured;
-
-//    @Column(name="GOODS_TURNOVER_SUMINSURED")
-//    private BigDecimal goodsTurnoverSuminsured;
-
-    @Column(name="INDUSTRY_ID")
-    private Integer  industryId ;
-    
-    @Column(name="INDUSTRY_DESC", length=100)
-    private String  industryDesc ;
-
-  @Column(name="ENDORSEMENT_TYPE")
-  private Integer    endorsementType ;
-
-  @Column(name="ENDORSEMENT_TYPE_DESC", length=100)
-  private String     endorsementTypeDesc ;
-
-  @Temporal(TemporalType.TIMESTAMP)
-  @Column(name="ENDORSEMENT_DATE")
-  private Date       endorsementDate ;
-
-  @Column(name="ENDORSEMENT_REMARKS", length=500)
-  private String     endorsementRemarks ;
-
-  @Temporal(TemporalType.TIMESTAMP)
-  @Column(name="ENDORSEMENT_EFFDATE")
-  private Date       endorsementEffdate ;
-
-  @Column(name="ORIGINAL_POLICY_NO", length=500)
-  private String     originalPolicyNo ;
-
-  @Column(name="ENDT_PREV_POLICY_NO", length=500)
-  private String     endtPrevPolicyNo ;
-
-  @Column(name="ENDT_PREV_QUOTE_NO", length=500)
-  private String     endtPrevQuoteNo ;
-
-  @Column(name="ENDT_COUNT")
-  private BigDecimal endtCount ;
-
-  @Column(name="ENDT_STATUS", length=10)
-  private String     endtStatus ;
-      
-  @Column(name="IS_FINYN", length=10)
-  private String     isFinaceYn ;
-      
-      
-  @Column(name="ENDT_CATEG_DESC", length=10)
-  private String     endtCategDesc ;
-      
-      
-  @Column(name="ENDT_PREMIUM")
-  private Double       endtPremium ;
-      
-  @Column(name="WALL_TYPE", length=10)
-  private String     wallType ;
-      
-  @Column(name="WALL_TYPE_DESC", length=10)
-  private String     wallTypeDesc;
-      
-  @Column(name="ROOF_TYPE", length=10)
-  private String     roofType;
-      
-  @Column(name="ROOF_TYPE_DESC", length=10)
-  private String     roofTypeDesc ;
-    
-  @Column(name="NATURE_OF_TRADE_ID")
-  private Integer natureOfTradeId;
-      
-  @Column(name="NATURE_OF_TRADE_DESC")
-  private String     natureOfTradeDesc ;
-      
-  @Column(name="INSURANCE_FOR_ID")
-  private String insuranceForId ;
-      
-      @Column(name="INSURANCE_FOR_DESC")
-      private String     insuranceForDesc ;
-      
-      @Column(name="INTERNAL_WALL_TYPE")
-      private Integer internalWallType;
-      
-      @Column(name="INTERNAL_WALL_DESC")
-      private String     internalWallDesc ;
-      
-      @Column(name="CEILING_TYPE")
-      private Integer ceilingType;
-      
-      @Column(name="CEILING_TYPE_DESC")
-      private String     ceilingTypeDesc ;
-      
-      @Column(name="STOCK_IN_TRADE_SI")
-      private BigDecimal stockInTradeSi ;
-      
-      @Column(name="GOODS_SI")
-      private BigDecimal goodsSi;
-      
-      @Column(name="FURNITURE_SI")
-      private BigDecimal furnitureSi;
-      
-      @Column(name="APPLIANCE_SI")
-      private BigDecimal applianceSi;
-      
-      @Column(name="CASH_VALUEABLES_SI")
-      private BigDecimal cashValueablesSi;
-      
-      @Column(name="STOCK_LOSS_PERCENT")
-		private Integer stockLossPercent ;
-      
-      @Column(name="GOODS_LOSS_PERCENT")
-      private Integer goodsLossPercent;
-      
-      @Column(name="FURNITURE_LOSS_PERCENT")
-      private Integer furnitureLossPercent;
-      
-      @Column(name="APPLIANCE_LOSS_PERCENT")
-      private Integer applianceLossPercent;
-      
-      @Column(name="CASH_VALUEABLES_LOSS_PERCENT")
-      private Integer cashValueablesLossPercent;
-      
-      @Column(name="ADDRESS")
-      private String address;
-      
-      @Column(name="REGION_CODE")
-      private String regionCode;
-      
-      @Column(name="REGION_DESC")
-      private String     regionDesc ;
-      
-      @Column(name="DISTRICT_CODE")
-      private String districtCode ;
-      
-      @Column(name="DISTRICT_DESC")
-      private String     districtDesc ;
-      
-      @Column(name="OCCUPIED_YEAR")
-      private Integer occupiedYear;
-      
-      @Column(name="SHOW_WINDOWS")
-      private Integer showWindow;
-      
-      @Column(name="FRONT_DOORS")
-      private Integer frontDoors;
-      
-      @Column(name="BACK_DOORS")
-      private Integer backDoors;
-      
-      @Column(name="WINDOWS_MATERIAL_ID")
-      private Integer windowsMaterialId;
-      
-      @Column(name="WINDOWS_MATERIAL_DESC")
-      private String     windowsMaterialDesc;
-      
-      @Column(name="DOORS_MATERIAL_ID")
-      private Integer doorsMaterialId; 
-      
-      @Column(name="DOORS_MATERIAL_DESC")
-      private String     doorsMaterialDesc;
-      
-      @Column(name="NIGHT_LEFT_DOOR")
-      private Integer nightLeftDoor; 
-      
-      @Column(name="NIGHT_LEFT_DOOR_DESC")
-      private String     nightLeftDoorDesc ;
-      
-      @Column(name="BUILDING_OCCUPIED")
-      private Integer buildingOccupied; 
-      
-      @Column(name="BUILDING_OCCUPIED_DESC")
-      private String     buildingOccupiedDesc;
-      
-      @Column(name="WATCHMAN_GUARD_HOURS")
-      private Integer watchmanGuardHours;
-      
-      @Column(name="ACCESSIBLE_WINDOWS")
-      private Integer accessibleWindows;
-   
-      
-      @Column(name="TRAP_DOORS")
-      private Integer trapDoors;
-    
-      
-      @Column(name="REVENUE_FROM_STAMPS")
-      private BigDecimal revenueFromStamps;
-   
-//      @Column(name="MACHINE_EQUIP_SI")
-//      private BigDecimal machineEquipSi ;
-
-//      @Column(name="PLATE_GLASS_SI")
-//      private BigDecimal plateGlassSi ;
-      
-      @Column(name="FIRST_LOSS_PERCENT_ID")
-      private Integer firstLossPercentId;
-
-      @Column(name="FIRST_LOSS_PERCENT")
-      private Integer firstLossPercent;
-  
-//      @Column(name="POWER_PLANT_SI")
-//      private BigDecimal powerPlantSi ;
-      
-//      @Column(name="ELEC_MACHINES_SI")
-//      private BigDecimal elecMachinesSi ;
-      
-//      @Column(name="EQUIPMENT_SI")
-//      private BigDecimal equipmentSi ;
-      
-//      @Column(name="GENERAL_MACHINE_SI")
-//      private BigDecimal generalMachineSi ;
-      
-//      @Column(name="MANU_UNITS_SI")
-//      private BigDecimal manuUnitsSi ;
-      
-//      @Column(name="BOILER_PLANTS_SI")
-//      private BigDecimal boilerPlantsSi ;
-      
-      @Column(name="TIRA_COVER_NOTE_NO")
-      private String tiraCoverNoteNo;
-      
-      @Column(name="INDEMITY_PERIOD")
-      private String indemityPeriod;
-      
-      @Column(name="INDEMITY_PERIOD_DESC")
-      private String indemityPeriodDesc;
-      
-      
-      @Column(name="MAKUTI_YN")
-      private String makutiYn;
-    
-      @Column(name="PLATE_GLASS_TYPE")
-      private String plateGlassType;
-      
-      @Column(name="PLATE_GLASS_DESC")
-      private String plateGlassDesc;
-      
-//      @Column(name="MINING_PLANT_SI")
-//      private BigDecimal miningPlantSi;
-      
-//      @Column(name="NONMINING_PLANT_SI")
-//      private BigDecimal nonminingPlantSi;
-      
-//      @Column(name="GENSETS_SI")
-//      private BigDecimal gensetsSi;
-      
-      @Column(name="COMMISSION_PERCENTAGE")
-      private BigDecimal commissionPercentage;
-      
-      @Column(name="VAT_COMMISSION")
-      private BigDecimal vatCommission;
-      //LC Column
-      
-//      @Column(name="BUILDING_SUMINSURED_LC")
-//      private BigDecimal buildingSumInsuredLC;
-
-//      @Column(name="ALLRISK_SUMINSURED_LC")
-//      private BigDecimal allRiskSumInsuredLC;
-
-//      @Column(name="CONTENT_SUMINSURED_LC")
-//      private BigDecimal contentSumInsuredLC;
-
-//      @Column(name="ELEC_EQUIP_SUMINSURED_LC")
-//      private BigDecimal elecEquipSumInsuredLC;
-
-
-//      @Column(name="GOODS_SILCNGLECARRY_SUMINSURED_LC")
-//      private BigDecimal goodsSilcnglEcarrySumInsuredLC;
-
-//      @Column(name="GOODS_TURNOVER_SUMINSURED_LC")
-//      private BigDecimal goodsTurnoverSumInsuredLC;
-
-//      @Column(name="MACHINE_EQUIP_SI_LC")
-//      private BigDecimal machineEquipSiLC;
-
-//      @Column(name="PLATE_GLASS_SI_LC")
-//      private BigDecimal plateGlassSiLC;
-
-//      @Column(name="POWER_PLANT_SI_LC")
-//      private BigDecimal powerPlantSiLC;
-
-//      @Column(name="ELEC_MACHINES_SI_LC")
-//      private BigDecimal elecMachinesSiLC;
-
-//      @Column(name="EQUIPMENT_SI_LC")
-//      private BigDecimal equipmentSiLC;
-
-//      @Column(name="GENERAL_MACHINE_SI_LC")
-//      private BigDecimal generalMachineSiLC;
-
-//      @Column(name="MANU_UNITS_SI_LC")
-//      private BigDecimal manuUnitsSiLC;
-
-//      @Column(name="BOILER_PLANTS_SI_LC")
-//      private BigDecimal boilerPlantsSiLC;
-
-//      @Column(name="MINING_PLANT_SI_LC")
-//      private BigDecimal miningPlantSiLC;
-
-//      @Column(name="NONMINING_PLANT_SI_LC")
-//      private BigDecimal nonMiningPlantSiLC;
-
-//      @Column(name="GENSETS_SI_LC")
-//      private BigDecimal gensetsSiLC;
-      
-      @Column(name="STOCK_IN_TRADE_SI_LC")
-      private BigDecimal stockInTradeSiLc;
-      
-      
-      @Column(name="GOODS_SI_LC ")
-      private BigDecimal goodsSiLc ;
-
-      @Column(name="FURNITURE_SI_LC ")
-      private BigDecimal furnitureSiLc ;
-
-      @Column(name="APPLIANCE_SI_LC ")
-      private BigDecimal applianceSiLc ;
-      
-      @Column(name="CASH_VALUEABLES_SI_LC")
-      private BigDecimal cashValueablesSiLc;
-      
-     
-      @Column(name="VD_REFNO")
-      private Integer     vdRefNo ;
-      
-      @Column(name="CD_REFNO")
-      private Integer     cdRefno;
-      
-      @Column(name="MS_REFNO")
-      private Integer     msRefno ;
-      
-//      @Column(name="FIRE_BUILDING_SI  ")
-//      private BigDecimal fireBuildingSi  ;
-    
-//      @Column(name="FIRE_EQUIP_SI  ")
-//      private BigDecimal fireEquipSi  ;
-//      @Column(name="FIRE_STOCK_SI  ")
-//      private BigDecimal fireStockSi  ;
-      
-
-//      @Column(name="FIRE_BUILDING_SI_LC  ")
-//      private BigDecimal fireBuildingSiLc  ;
-  
-//      @Column(name="FIRE_EQUIP_SI_LC  ")
-//      private BigDecimal fireEquipSiLc  ;
-//      @Column(name="FIRE_STOCK_SI_LC  ")
-//      private BigDecimal fireStockSiLc  ;
-     
-      @Column(name="MONEY_SAFE_LIMIT")
-      private BigDecimal     moneySafeLimit;
-      
-      @Column(name="MONEY_SAFE_LIMIT_LC")
-      private BigDecimal     moneySafeLimitLc;
-      
-      @Column(name="MONEY_OUTOF_SAFE")
-      private BigDecimal     moneyOutofSafe;
-      
-      @Column(name="MONEY_OUTOF_SAFE_LC")
-      private BigDecimal     moneyOutofSafeLc;
-      
-      @Column(name="MONEY_DIRECTOR_RESIDENCE")
-      private BigDecimal     moneyDirectorResidence;
-      
-      @Column(name="MONEY_DIRECTOR_RESIDENCE_LC")
-      private BigDecimal     moneyDirectorResidenceLc;
-      
-      @Column(name="MONEY_COLLECTOR")
-      private BigDecimal     moneyCollector;
-      
-      @Column(name="MONEY_COLLECTOR_LC")
-      private BigDecimal     moneyCollectorLc;
-      
-      @Column(name="MONEY_ANNUAL_ESTIMATE")
-      private BigDecimal     moneyAnnualEstimate;
-      
-      @Column(name="MONEY_ANNUAL_ESTIMATE_LC")
-      private BigDecimal     moneyAnnualEstimateLc;
-      
-      @Column(name="FIRE_PLANT_SI")
-      private BigDecimal firePlantSi  ;
-      
-//      @Column(name="FIRE_PLANT_SI_LC")
-//      private BigDecimal firePlantSiLc  ;
-      
-      
-      @Column(name="MONEY_MAJOR_LOSS")
-      private BigDecimal     moneyMajorLoss;
-      
-      @Column(name="MONEY_MAJOR_LOSS_LC")
-      private BigDecimal     moneyMajorLossLc;
-      
-      @Column(name="CUSTOMER_NAME")
-      private String     customerName ;
-
-//      @Column(name="WATER_TANK_SI")
-//      private BigDecimal waterTankSi;
-      
-//      @Column(name="WATER_TANK_SI_LC")
-//      private BigDecimal waterTankSiLc;
-      
-//      @Column(name="ARCHITECTS_SI")
-//      private BigDecimal architectsSi  ;
-      
-//      @Column(name="ARCHITECTS_SI_LC")
-//      private BigDecimal architectsSiLc  ;
-      
-//      @Column(name="LOSS_OF_RENT_SI")
-//      private BigDecimal lossOfRentSi  ;
-      
-//      @Column(name="LOSS_OF_RENT_SI_LC")
-//      private BigDecimal lossOfRentSiLc  ;
-      
-//      @Column(name="JEWELLERY_SI")
-//      private BigDecimal jewellerySi  ;
-      
-//      @Column(name="JEWELLERY_SI_LC")
-//      private BigDecimal jewellerySiLc  ;
-      
-//      @Column(name="PAITINGS_SI")
-//      private BigDecimal paitingsSi  ;
-      
-//      @Column(name="PAITINGS_SI_LC")
-//      private BigDecimal paitingsSiLc  ;
-
-//      @Column(name="CARPETS_SI")
-//      private BigDecimal carpetsSi  ;
-      
-//      @Column(name="CARPETS_SI_LC")
-//      private BigDecimal carpetsSiLc  ;
-      
-      @Column(name="TYPE_OF_PROPERTY")
-      private String typeOfProperty  ;
-      
-      @Column(name="TYPE_OF_PROPERTY_DESC")
-      private String typeOfPropertyDesc  ;
-      
-      @Column(name="SALE_POINT_CODE", length=200)
-      private String    salePointCode;
-      
-
-      @Column(name = "GROSS_PROFIT_FC")
-      private BigDecimal grossProfitFc;
-      
-      @Column(name = "GROSS_PROFIT_LC")
-      private BigDecimal grossProfitLc;
-      
-      @Column(name="INDEMNITY_PERIOD_FC")
-      private BigDecimal indemnityPeriodFc;
-      
-      @Column(name="INDEMNITY_PERIOD_LC ")
-      private BigDecimal indemnityPeriodLc;
-
-      
-      @Column(name = "ON_STOCK_SI")
- 	  private BigDecimal onStockSi;
-      
-
-      @Column(name = "ON_STOCK_SI_LC")
- 	  private BigDecimal onStockSiLc;
-      
-
-      @Column(name = "ON_ASSETS_SI")
- 	  private BigDecimal onAssetsSi;
-      
-      @Column(name = "ON_ASSETS_SI_LC")
-	  private BigDecimal onAssetsSiLc;
-      
-//      @Column(name = "BURGLARY_SI")
-//	    private BigDecimal burglarySi;
-      
-//      @Column(name = "BURGLARY_SI_LC")
-//	    private BigDecimal burglarySiLc;
-      
-      @Column(name = "STRONGROOM_SI")
-	  private BigDecimal strongroomSi;
-      
-      @Column(name = "STRONGROOM_SI_LC")
-	  private BigDecimal strongroomSiLc;
-      
-//      @Column(name = "MACHINERY_SI")
-//	    private BigDecimal machinerySi;
-      
-//      @Column(name = "MACHINERY_SI_LC")
-//	    private BigDecimal machinerySiLc;
-      
-      @Column(name="TRANSPORTED_BY") 
-      private String transportedBy;
-     
-     @Column(name="MODE_OF_TRANSPORT")
-     private String modeOfTransport;
-     
-     @Column(name="GEOGRAPHICAL_COVERAGE") 
-     private String geographicalCoverage;
-     
-     @Column(name="SINGLE_ROAD_SI_LC") 
-     private Double singleRoadSiLc;
-     
-     @Column(name="SINGLE_ROAD_SI_FC ") 
-     private Double singleRoadSiFc;
-     
-     @Column(name="EST_ANNUAL_CARRIES_SI_LC ") 
-     private Double estAnnualCarriesSiLc; 
-     
-     @Column(name="EST_ANNUAL_CARRIES_SI_FC ") 
-     private Double estAnnualCarriesSiFc;
-      
-      @Column(name="BROKER_TIRA_CODE")
-      private String brokerTiraCode;      
-
-      @Column(name="SOURCE_TYPE_ID")
-      private String sourceTypeId;
-      
-      @Column(name="EMI_YN", length=20)
-      private String     emiYn;
-
-      @Column(name="INSTALLMENT_PERIOD")
-      private Integer     installmentPeriod ;
-      
-      @Column(name="NO_OF_INSTALLMENT")
-      private Integer     noOfInstallment ;
-
-      @Column(name="EMI_PREMIUM")
-      private BigDecimal     emiPremium ;
-      
-      @Column(name="VAT_PREMIUM")
-      private BigDecimal vatPremium;
-      
-      
-      @Column(name="ENDT_VAT_PREMIUM")
-      private BigDecimal endtVatPremium;
-      
-      @Column(name="OTHER_OCCUPATION")
-      private String otherOccupation;
-      
-
-//      @Column(name="GROUND_UNDERGROUND_SI")
-//      private 	BigDecimal groundUndergroundSi;
-   
-      
-    //Bond
-//      @Column(name="BOND_SUMINSURED")
-//      private BigDecimal bondSuminsured;
-      
-      @Column(name="BOND_TYPE")
-      private String bondType;
-      
-      @Column(name="BOND_YEAR")
-      private String bondYear;
-      
- 	 @Column(name="Business_Interruption")
-  	 private String  businessInterruption;
-  	 
- 	 @Column(name="FIRST_LOSS_PAYEE")
-  	 private String  firstLossPayee;
- 	 
- 	   @Column(name="SUM_INSURED")
- 	   private BigDecimal     sumInsured ;
- 	   
- 	   @Column(name="SUM_INSURED_LC")
- 	   private BigDecimal     sumInsuredLc ;
- 	   
-	
-		
-		@Column(name = "NO_OF_CLAIM")
-	    private Integer noOfClaim;
-		
-		@Column(name = "NO_OF_CLAIM_DESC", length = 20)
-	    private String noOfClaimDesc;
-
-      
+	@Column(name = "PROMOCODE", length = 100)
+	private String promocode;
+
+	@Column(name = "OCCUPATION_TYPE", length = 20)
+	private String occupationType;
+
+	@Column(name = "OCCUPATION_TYPE_DESC", length = 100)
+	private String occupationTypeDesc;
+
+	@Column(name = "DOMESTIC_PACKAGE_YN", length = 20)
+	private String domesticPackageYn;
+
+	@Column(name = "CATEGORY_ID", length = 20)
+	private String categoryId;
+
+	@Column(name = "CATEGORY_DESC", length = 100)
+	private String categoryDesc;
+
+	@Column(name = "BANK_CODE", length = 100)
+	private String bankCode;
+
+	@Column(name = "SOURCE_TYPE", length = 100)
+	private String sourceType;
+
+	@Column(name = "CUSTOMER_CODE", length = 100)
+	private String customerCode;
+
+	@Column(name = "BDM_CODE", length = 100)
+	private String bdmCode;
+
+	@Column(name = "MANUAL_REFERAL_YN", length = 100)
+	private String manualReferalYn;
+
+	@Column(name = "INDUSTRY_ID")
+	private Integer industryId;
+
+	@Column(name = "INDUSTRY_DESC", length = 100)
+	private String industryDesc;
+
+	@Column(name = "ENDORSEMENT_TYPE")
+	private Integer endorsementType;
+
+	@Column(name = "ENDORSEMENT_TYPE_DESC", length = 100)
+	private String endorsementTypeDesc;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "ENDORSEMENT_DATE")
+	private Date endorsementDate;
+
+	@Column(name = "ENDORSEMENT_REMARKS", length = 500)
+	private String endorsementRemarks;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "ENDORSEMENT_EFFDATE")
+	private Date endorsementEffdate;
+
+	@Column(name = "ORIGINAL_POLICY_NO", length = 500)
+	private String originalPolicyNo;
+
+	@Column(name = "ENDT_PREV_POLICY_NO", length = 500)
+	private String endtPrevPolicyNo;
+
+	@Column(name = "ENDT_PREV_QUOTE_NO", length = 500)
+	private String endtPrevQuoteNo;
+
+	@Column(name = "ENDT_COUNT")
+	private BigDecimal endtCount;
+
+	@Column(name = "ENDT_STATUS", length = 10)
+	private String endtStatus;
+
+	@Column(name = "IS_FINYN", length = 10)
+	private String isFinaceYn;
+
+	@Column(name = "ENDT_CATEG_DESC", length = 10)
+	private String endtCategDesc;
+
+	@Column(name = "ENDT_PREMIUM")
+	private Double endtPremium;
+
+	@Column(name = "WALL_TYPE", length = 10)
+	private String wallType;
+
+	@Column(name = "WALL_TYPE_DESC", length = 10)
+	private String wallTypeDesc;
+
+	@Column(name = "ROOF_TYPE", length = 10)
+	private String roofType;
+
+	@Column(name = "ROOF_TYPE_DESC", length = 10)
+	private String roofTypeDesc;
+
+	@Column(name = "NATURE_OF_TRADE_ID")
+	private Integer natureOfTradeId;
+
+	@Column(name = "NATURE_OF_TRADE_DESC")
+	private String natureOfTradeDesc;
+
+	@Column(name = "INSURANCE_FOR_ID")
+	private String insuranceForId;
+
+	@Column(name = "INSURANCE_FOR_DESC")
+	private String insuranceForDesc;
+
+	@Column(name = "INTERNAL_WALL_TYPE")
+	private Integer internalWallType;
+
+	@Column(name = "INTERNAL_WALL_DESC")
+	private String internalWallDesc;
+
+	@Column(name = "CEILING_TYPE")
+	private Integer ceilingType;
+
+	@Column(name = "CEILING_TYPE_DESC")
+	private String ceilingTypeDesc;
+
+	@Column(name = "ADDRESS")
+	private String address;
+
+	@Column(name = "REGION_CODE")
+	private String regionCode;
+
+	@Column(name = "REGION_DESC")
+	private String regionDesc;
+
+	@Column(name = "DISTRICT_CODE")
+	private String districtCode;
+
+	@Column(name = "DISTRICT_DESC")
+	private String districtDesc;
+
+	@Column(name = "OCCUPIED_YEAR")
+	private Integer occupiedYear;
+
+	@Column(name = "FIRST_LOSS_PERCENT_ID")
+	private Integer firstLossPercentId;
+
+	@Column(name = "FIRST_LOSS_PERCENT")
+	private Integer firstLossPercent;
+
+	@Column(name = "TIRA_COVER_NOTE_NO")
+	private String tiraCoverNoteNo;
+
+	@Column(name = "INDEMITY_PERIOD")
+	private String indemityPeriod;
+
+	@Column(name = "INDEMITY_PERIOD_DESC")
+	private String indemityPeriodDesc;
+
+	@Column(name = "MAKUTI_YN")
+	private String makutiYn;
+
+	@Column(name = "PLATE_GLASS_TYPE")
+	private String plateGlassType;
+
+	@Column(name = "PLATE_GLASS_DESC")
+	private String plateGlassDesc;
+
+	@Column(name = "COMMISSION_PERCENTAGE")
+	private BigDecimal commissionPercentage;
+
+	@Column(name = "VAT_COMMISSION")
+	private BigDecimal vatCommission;
+	// LC Column
+
+	@Column(name = "VD_REFNO")
+	private Integer vdRefNo;
+
+	@Column(name = "CD_REFNO")
+	private Integer cdRefno;
+
+	@Column(name = "MS_REFNO")
+	private Integer msRefno;
+
+	@Column(name = "CUSTOMER_NAME")
+	private String customerName;
+
+	@Column(name = "SALE_POINT_CODE", length = 200)
+	private String salePointCode;
+
+	@Column(name = "GROSS_PROFIT_FC")
+	private BigDecimal grossProfitFc;
+
+	@Column(name = "GROSS_PROFIT_LC")
+	private BigDecimal grossProfitLc;
+
+	@Column(name = "INDEMNITY_PERIOD_FC")
+	private BigDecimal indemnityPeriodFc;
+
+	@Column(name = "INDEMNITY_PERIOD_LC ")
+	private BigDecimal indemnityPeriodLc;
+
+	@Column(name = "TRANSPORTED_BY")
+	private String transportedBy;
+
+	@Column(name = "MODE_OF_TRANSPORT")
+	private String modeOfTransport;
+
+	@Column(name = "GEOGRAPHICAL_COVERAGE")
+	private String geographicalCoverage;
+
+	@Column(name = "BROKER_TIRA_CODE")
+	private String brokerTiraCode;
+
+	@Column(name = "SOURCE_TYPE_ID")
+	private String sourceTypeId;
+
+	@Column(name = "EMI_YN", length = 20)
+	private String emiYn;
+
+	@Column(name = "INSTALLMENT_PERIOD")
+	private Integer installmentPeriod;
+
+	@Column(name = "NO_OF_INSTALLMENT")
+	private Integer noOfInstallment;
+
+	@Column(name = "EMI_PREMIUM")
+	private BigDecimal emiPremium;
+
+	@Column(name = "VAT_PREMIUM")
+	private BigDecimal vatPremium;
+
+	@Column(name = "ENDT_VAT_PREMIUM")
+	private BigDecimal endtVatPremium;
+
+	@Column(name = "OTHER_OCCUPATION")
+	private String otherOccupation;
+
+	@Column(name = "BOND_TYPE")
+	private String bondType;
+
+	@Column(name = "BOND_YEAR")
+	private String bondYear;
+
+	@Column(name = "Business_Interruption")
+	private String businessInterruption;
+
+	@Column(name = "FIRST_LOSS_PAYEE")
+	private String firstLossPayee;
+
+	@Column(name = "SUM_INSURED")
+	private BigDecimal sumInsured;
+
+	@Column(name = "SUM_INSURED_LC")
+	private BigDecimal sumInsuredLc;
+
+	@Column(name = "NO_OF_CLAIM")
+	private Integer noOfClaim;
+
+	@Column(name = "NO_OF_CLAIM_DESC", length = 20)
+	private String noOfClaimDesc;
+
+	@Column(name = "PARAM1", length = 100)
+	private String param1;
+
+	@Column(name = "PARAM2", length = 100)
+	private String param2;
+
+	@Column(name = "PARAM3", length = 100)
+	private String param3;
+
+	@Column(name = "PARAM4", length = 100)
+	private String param4;
+
+	@Column(name = "PARAM5", length = 100)
+	private String param5;
+
+	@Column(name = "PARAM6", length = 100)
+	private String param6;
+
+	@Column(name = "PARAM7", length = 100)
+	private String param7;
+
+	@Column(name = "PARAM8", length = 100)
+	private String param8;
+
+	@Column(name = "PARAM9", length = 100)
+	private String param9;
+
+	@Column(name = "PARAM10", length = 100)
+	private String param10;
+
+	@Column(name = "PARAM11", length = 100)
+	private String param11;
+
+	@Column(name = "PARAM12", length = 100)
+	private String param12;
+
+	@Column(name = "PARAM13", length = 100)
+	private String param13;
+
+	@Column(name = "PARAM14", length = 100)
+	private String param14;
+
+	@Column(name = "PARAM15", length = 100)
+	private String param15;
+
 }
 
 

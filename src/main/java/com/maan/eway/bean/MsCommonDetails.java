@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import jakarta.persistence.Table;
 
 import lombok.*;
 import jakarta.persistence.*;
@@ -48,57 +47,88 @@ import jakarta.persistence.*;
 
 
 public class MsCommonDetails implements Serializable {
- 
-private static final long serialVersionUID = 1L;
- 
-    //--- ENTITY PRIMARY KEY 
-    @Id
-    @Column(name="INSURANCE_ID", nullable=false, length=20)
-    private String     insuranceId ;
+	 
+	private static final long serialVersionUID = 1L;
+	 
+	    //--- ENTITY PRIMARY KEY 
+	    @Id
+	    @Column(name="INSURANCE_ID", nullable=false, length=20)
+	    private String     insuranceId ;
 
-    @Id
-    @Column(name="BRANCH_CODE", nullable=false, length=100)
-    private String     branchCode ;
+	    @Id
+	    @Column(name="BRANCH_CODE", nullable=false, length=100)
+	    private String     branchCode ;
 
-    @Id
-    @Column(name="AGENCY_CODE", nullable=false, length=20)
-    private String     agencyCode ;
+	    @Id
+	    @Column(name="AGENCY_CODE", nullable=false, length=20)
+	    private String     agencyCode ;
 
-    @Id
-    @Column(name="SECTION_ID", nullable=false)
-    private Integer    sectionId ;
+	    @Id
+	    @Column(name="SECTION_ID", nullable=false)
+	    private Integer    sectionId ;
 
-    @Id
-    @Column(name="PRODUCT_ID", nullable=false)
-    private Integer    productId ;
+	    @Id
+	    @Column(name="PRODUCT_ID", nullable=false)
+	    private Integer    productId ;
 
-    @Id
-    @Column(name="CD_REFNO", nullable=false)
-    private Long       cdRefno ;
+	    @Id
+	    @Column(name="CD_REFNO", nullable=false)
+	    private Long       cdRefno ;
 
-    @Id
-    @Column(name="MS_REFNO", nullable=false)
-    private Long       msRefno ;
+	    @Id
+	    @Column(name="MS_REFNO", nullable=false)
+	    private Long       msRefno ;
 
-    @Id
-    @Column(name="REQUESTREFERENCENO", nullable=false, length=20)
-    private String     requestreferenceno ;
+	    @Id
+	    @Column(name="REQUESTREFERENCENO", nullable=false, length=20)
+	    private String     requestreferenceno ;
 
-    @Id
-    @Column(name="STATUS", nullable=false, length=2)
-    private String     status ;
+	    @Id
+	    @Column(name="STATUS", nullable=false, length=2)
+	    private String     status ;
 
-    @Id
-    @Column(name="VD_REFNO", nullable=false)
-    private Long       vdRefno ;
+	    @Id
+	    @Column(name="VD_REFNO", nullable=false)
+	    private Long       vdRefno ;
 
-    //--- ENTITY DATA FIELDS 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="ENTRY_DATE")
-    private Date       entryDate ;
+	    //--- ENTITY DATA FIELDS 
+	    @Temporal(TemporalType.TIMESTAMP)
+	    @Column(name="ENTRY_DATE")
+	    private Date       entryDate ;
+	    
+	    @Column(name = "PARAM_1", length = 100)
+	    private String param1;
+
+	    @Column(name = "PARAM_2", length = 100)
+	    private String param2;
+
+	    @Column(name = "PARAM_3", length = 100)
+	    private String param3;
+
+	    @Column(name = "PARAM_4", length = 100)
+	    private String param4;
+
+	    @Column(name = "PARAM_5", length = 100)
+	    private String param5;
+
+	    @Column(name = "PARAM_6", length = 100)
+	    private String param6;
+
+	    @Column(name = "PARAM_7", length = 100)
+	    private String param7;
+
+	    @Column(name = "PARAM_8", length = 100)
+	    private String param8;
+
+	    @Column(name = "PARAM_9", length = 100)
+	    private String param9;
+
+	    @Column(name = "PARAM_10", length = 100)
+	    private String param10;
 
 
-    //--- ENTITY LINKS ( RELATIONSHIP )
+
+	    //--- ENTITY LINKS ( RELATIONSHIP )
 
 
 }

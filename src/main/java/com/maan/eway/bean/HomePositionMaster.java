@@ -17,17 +17,17 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.hibernate.annotations.DynamicInsert;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -51,7 +51,7 @@ import lombok.ToString;
 @ToString
 @Entity
 @DynamicInsert
-@DynamicUpdate
+
 @Builder
 @IdClass(HomePositionMasterId.class)
 @Table(name="home_position_master")
@@ -61,14 +61,19 @@ public class HomePositionMaster implements Serializable {
  
 private static final long serialVersionUID = 1L;
  
+@Id
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+@Column(name = "HOME_SNO")
+private Long homeSno;
 //--- ENTITY PRIMARY KEY 
 @Id
 @Column(name="REQUEST_REFERENCE_NO", nullable=false, length=20)
 private String     requestReferenceNo ;
 
-@Id
-@Column(name="QUOTE_NO", nullable=false)
-private String    quoteNo ;
+
+
+@Column(name = "QUOTE_NO", nullable = false, length = 20)
+private String quoteNo;
 
 @Id
 @Column(name="NO_OF_VEHICLES", nullable=false)

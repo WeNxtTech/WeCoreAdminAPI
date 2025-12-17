@@ -181,7 +181,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="CLAIM_EXPERIENCE_YN", length=100)
     private String    claimExperienceYn;
     
-    
+    @Column(name="COMMISSION", length=1)
+    private BigDecimal    commission ;
 
 }
 

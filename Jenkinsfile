@@ -1,89 +1,77 @@
 pipeline {
-    agent any
+    agent none
 
     environment {
-        REMOTE_DIR = 'jenkins/WeCoreAdminAPI'
-        MVN_CMD    = './mvnw clean package -DskipTests'
+        NEXUS_REGISTRY = '192.168.1.185:9002'
+        IMAGE_NAME = 'wecore-admin-api'
+        REGISTRY_CREDENTIALS = 'nexus-docker-creds'
+        DEPLOY_PATH = 'C:\\Users\\prodadmin\\Desktop\\Devops\\wecore'
+        SERVICE_NAME = 'adminAPI'
     }
 
     stages {
-        stage('Build') {
+
+        stage('Set Environment') {
             steps {
-                echo 'Building application...'
-                sh "${MVN_CMD}"
+                script {
+                    if (env.BRANCH_NAME == 'dev') {
+                        env.ENVIRONMENT = 'dev'
+                    } else if (env.BRANCH_NAME == 'uat') {
+                        env.ENVIRONMENT = 'uat'
+                    } else if (env.BRANCH_NAME == 'prod') {
+                        env.ENVIRONMENT = 'prod'
+                    } else {
+                        error "Unsupported branch: ${env.BRANCH_NAME}"
+                    }
+
+                    echo "Deploying for environment: ${env.ENVIRONMENT}"
+                }
             }
         }
 
-        stage('Deploy') {
-            parallel {
-                stage('Dev') {
-                    when { branch 'dev' }
-                    steps {
-                        deployApp('dev-server', 'dev')
-                    }
-                }
+        stage('Build & Push Image') {
+            agent { label 'built-in' }
 
-                stage('UAT') {
-                    when { branch 'uat' }
-                    steps {
-                        deployApp('uat-server', 'uat')
-                    }
-                }
+            steps {
+                script {
+                    def imagePath = "${NEXUS_REGISTRY}/${ENVIRONMENT}/${IMAGE_NAME}:latest"
 
-                stage('Prod') {
-                    when { branch 'prod' }
-                    steps {
-                        input message: "Deploy to Production?"
-                        deployApp('prod-server', 'prod')
+                    echo "Building image ${imagePath}"
+                    def dockerImage = docker.build(imagePath)
+
+                    docker.withRegistry("http://${NEXUS_REGISTRY}", REGISTRY_CREDENTIALS) {
+                        echo "Pushing image ${imagePath}"
+                        dockerImage.push('latest')
                     }
                 }
+            }
+        }
+
+        stage('Deploy Service') {
+            agent { label "${ENVIRONMENT}-agent-windows" }
+
+            steps {
+                echo "Deploying ${SERVICE_NAME} to ${ENVIRONMENT}"
+
+                bat """
+                cd /d ${DEPLOY_PATH}
+                set REGISTRY=${NEXUS_REGISTRY}
+                set ENVIRONMENT=${ENVIRONMENT}
+                set SERVICE_NAME=${SERVICE_NAME}
+
+                docker-compose pull %SERVICE_NAME%
+                docker-compose up -d --no-deps %SERVICE_NAME%
+                """
             }
         }
     }
-}
 
-def deployApp(String serverConfig, String profile) {
-    script {
-        def jarFile = sh(
-            script: "ls -1 target/*.jar | head -n 1 | xargs -n 1 basename",
-            returnStdout: true
-        ).trim()
-
-        echo "Deploying ${jarFile} to ${serverConfig} with profile=${profile}"
-
-        sshPublisher(
-            publishers: [
-                sshPublisherDesc(
-                    configName: serverConfig,
-                    transfers: [
-                        sshTransfer(
-                            sourceFiles: "target/${jarFile}",
-                            remoteDirectory: "${REMOTE_DIR}",
-                            removePrefix: 'target',
-                            execCommand: """
-                            bash -c '
-                                set -x
-                                echo "Stopping old application if running..."
-                                PID=\$(ps -ef | grep java | grep "${REMOTE_DIR}/${jarFile}" | grep -v grep | awk "{print \\\$2}")
-                                if [ -n "\$PID" ]; then
-                                    kill \$PID
-                                    echo "Old application stopped (PID \$PID)."
-                                else
-                                    echo "No old application running."
-                                fi
-
-                                echo "Starting new application..."
-                                nohup java -jar ${REMOTE_DIR}/${jarFile} > ${REMOTE_DIR}/app.log 2>&1 &
-
-                                echo "Application started. Logs: ${REMOTE_DIR}/app.log"
-                                exit 0
-                            '
-                        """
-                        )
-                    ],
-                    verbose: true
-                )
-            ]
-        )
+    post {
+        success {
+            echo "Successfully deployed ${SERVICE_NAME} to ${ENVIRONMENT}"
+        }
+        failure {
+            echo "Deployment failed for ${ENVIRONMENT}"
+        }
     }
 }

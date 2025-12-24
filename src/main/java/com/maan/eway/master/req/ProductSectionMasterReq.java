@@ -55,4 +55,19 @@ public class ProductSectionMasterReq {
 	
 	@JsonProperty("CodeDescLocal")
 	private String codeDescLocal;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
+	
+	@JsonProperty("FilePathOriginal")
+	private String filePathOriginal;
+	
+	@JsonProperty("FileName")
+	private String fileName;
+	
+	@JsonProperty("FilePathBackup")
+	private String filePathBackup;
+	
+	@JsonProperty("OriginalFileName")
+	private String originalFileName;
 }

@@ -6,28 +6,40 @@
 package com.maan.eway.master.service.impl;
 
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.CompanyProductMaster;
+import com.maan.eway.bean.CoverDocumentMaster;
+import com.maan.eway.bean.EndtTypeMaster;
+import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.master.req.ProductSectionChangeStatusReq;
@@ -42,6 +54,7 @@ import com.maan.eway.notif.service.impl.MailThreadServiceImpl;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.ProductSectionMasterRepository;
+import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 
@@ -75,6 +88,12 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 	
 	@Autowired
 	private MailThreadServiceImpl mailThreadService;
+	
+	@Value("${file.directoryPath}")
+	private String directoryPath;
+
+	@Value("${file.compressedImg}")
+	private String compressedImg;
 	
 	@PersistenceContext
 	private EntityManager em;
@@ -420,6 +439,9 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			res.setMinimumPremium(list.get(0).getMinPremium() ==null ? "0" :list.get(0).getMinPremium().toPlainString() );
 
 			res.setCodeDescLocal(StringUtils.isBlank(list.get(0).getSectionNameLocal()) ? "":list.get(0).getSectionNameLocal());
+			res.setFilePathOriginal(StringUtils.isBlank(list.get(0).getFilePathOrginal()) ? "":list.get(0).getFilePathOrginal());
+			res.setFileName(StringUtils.isBlank(list.get(0).getFileName()) ? "":list.get(0).getFileName());
+			res.setOriginalFileName(StringUtils.isBlank(list.get(0).getOrginalFileName()) ? "":list.get(0).getOrginalFileName());
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -1055,7 +1077,16 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 						entryDate = new Date() ;
 						createdBy = req.getCreatedBy();
 						ProductSectionMaster lastRecord = list.get(0);
+						/*ProductSectionMaster records = list.get(list.size()-1);
+						if(StringUtils.isNotBlank(records.getFileName()) && StringUtils.isNotBlank(records.getOrginalFileName())
+								&& StringUtils.isNotBlank(records.getFilePathOrginal())) {
+							lastRecord.setFileName(records.getFileName());
+							lastRecord.setFilePathBackup(records.getFilePathBackup());
+							lastRecord.setFilePathOrginal(records.getFilePathOrginal());
+							lastRecord.setOrginalFileName(records.getOrginalFileName());
+						}*/
 							lastRecord.setEffectiveDateEnd(oldEndDate);
+							
 							repo.saveAndFlush(lastRecord);
 						
 					} else {
@@ -1068,14 +1099,13 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 							lastRecord.setEffectiveDateEnd(oldEndDate);
 							repo.saveAndFlush(lastRecord);
 						}
-					
+						
 				    }
 				}
 				res.setResponse("Updated Successfully ");
 				res.setSuccessId(sectionId);
-					
 				
-			    dozerMapper.map(req, saveData );
+				dozerMapper.map(req, saveData );
 				saveData.setSectionId(Integer.valueOf(sectionId));
 				saveData.setSectionName(req.getSectionName());
 				saveData.setCompanyId(req.getInsuranceId());
@@ -1091,11 +1121,16 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 				saveData.setMotorYn(req.getMotorYn());
 				saveData.setMinPremium(StringUtils.isBlank(req.getMinimumPremium()) ? BigDecimal.ZERO : new BigDecimal(req.getMinimumPremium()) );
 				saveData.setSectionNameLocal(StringUtils.isBlank(req.getCodeDescLocal()) ? "" : req.getCodeDescLocal());
+				saveData.setFileName(StringUtils.isBlank(req.getFileName()) ? "" : req.getFileName());
+				saveData.setOrginalFileName(StringUtils.isBlank(req.getOriginalFileName()) ? "" : req.getOriginalFileName());
+				saveData.setFilePathOrginal(StringUtils.isBlank(req.getFilePathOriginal()) ? "" : req.getFilePathOriginal());
+				saveData.setFilePathBackup(StringUtils.isBlank(req.getFilePathBackup()) ? "" : req.getFilePathBackup());
+				
+				
 				repo.saveAndFlush(saveData);
-			
+				
 				log.info("Saved Details is ---> " + json.toJson(saveData));
-			
-					
+				
 			} catch (Exception e) {
 				e.printStackTrace();
 				log.info("Exception is --->" + e.getMessage());
@@ -1103,5 +1138,103 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			}
 			return res;
 		}
+	
+	
+	@Override
+	public CommonRes deleteFile(ProductSectionMasterReq req) {
+		CommonRes commonRes = new CommonRes();
+		SuccessRes res = new SuccessRes();
+		
+		ProductSectionMaster section = repo.findTopByCompanyIdAndProductIdAndSectionIdOrderByAmendIdDesc(req.getInsuranceId(), Integer.valueOf(req.getProductId()), Integer.valueOf(req.getSectionId()));
+		
+		if(section != null && req.getFileName().equalsIgnoreCase(section.getOrginalFileName())) {
+			section.setFileName(null);
+			section.setFilePathBackup(null);
+			section.setFilePathOrginal(null);
+			section.setOrginalFileName(null);
+			 
+			repo.saveAndFlush(section);
+			res.setResponse("Document Deleted Sucessfully");
+			res.setSuccessId(null);
+
+			commonRes.setCommonResponse(res);
+			commonRes.setIsError(false);
+			commonRes.setErrorMessage(Collections.emptyList());
+			commonRes.setMessage("File Upload Faild");
+		}else {
+			res.setResponse("Document Deleted Failed");
+			res.setSuccessId(null);
+
+			commonRes.setCommonResponse(res);
+			commonRes.setIsError(false);
+			commonRes.setErrorMessage(Collections.emptyList());
+			commonRes.setMessage("File Upload Faild");
+		}
+		
+		
+		return commonRes;
+	}
+
+
+	@Override
+	public SuccessRes uploadSectionDocument(MultipartFile file, ProductSectionMasterReq req) {
+
+		 //SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/YYYY");
+			SuccessRes res = new SuccessRes();
+			//ProductSectionMaster saveData = new ProductSectionMaster();
+			//List<ProductSectionMaster> list = new ArrayList<ProductSectionMaster>();
+			// DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+			
+			try {
+			
+				ProductSectionMaster section = repo.findTopByCompanyIdAndProductIdAndSectionIdOrderByAmendIdDesc(req.getInsuranceId(), Integer.valueOf(req.getProductId()), Integer.valueOf(req.getSectionId()));
+
+				if(section != null) {
+					// Copy File
+					Random random = new Random();
+					Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+					String newfilename = "";
+					String newfilename1 = "";
+					// OrginalFile
+					Path destination = Paths.get(directoryPath);
+					newfilename = random.nextInt(100)
+							+ timestamp.toString().replace(":", "T").replace(" ", "S").replace("-", "H").replace(".", "D") + "."
+							+ FilenameUtils.getExtension(file.getOriginalFilename());
+					Files.copy(file.getInputStream(), destination.resolve(newfilename));
+
+					Timestamp timestamp1 = new Timestamp(System.currentTimeMillis());
+					// BackupFile
+					Path destination1 = Paths.get(compressedImg);
+					newfilename1 = random.nextInt(100)
+							+ timestamp1.toString().replace(":", "T").replace(" ", "S").replace("-", "H").replace(".", "D")
+							+ "." + FilenameUtils.getExtension(file.getOriginalFilename());
+					Files.copy(file.getInputStream(), destination1.resolve(newfilename1));
+					
+					
+					res.setResponse("Document Upload Successfully ");
+					res.setSuccessId(newfilename);
+						
+					
+				    
+					section.setFileName(newfilename);
+					section.setFilePathOrginal(directoryPath + newfilename);
+					section.setFilePathBackup(compressedImg + newfilename1);
+					section.setOrginalFileName(file.getOriginalFilename());
+					
+					repo.saveAndFlush(section);
+				
+					log.info("Saved Details is ---> " + json.toJson(section));
+				}else {
+					return null;
+				}		
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Exception is --->" + e.getMessage());
+				return null;
+			}
+			return res;
+		
+	}
 	
 }

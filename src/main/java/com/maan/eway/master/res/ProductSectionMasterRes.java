@@ -81,5 +81,17 @@ public class ProductSectionMasterRes implements Serializable {
 	
 	@JsonProperty("CodeDescLocal")
 	private String codeDescLocal;
+	
+	@JsonProperty("FilePathOriginal")
+	private String filePathOriginal;
+	
+	@JsonProperty("FileName")
+	private String fileName;
+
+	@JsonProperty("OriginalFileName")
+	private String originalFileName;
+	
+	@JsonProperty("FilePathBackup")
+	private String filePathBackup;
       
 }

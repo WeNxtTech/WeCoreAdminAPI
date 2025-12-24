@@ -115,6 +115,18 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="SECTION_NAME_LOCAL", length=100)
     private String     sectionNameLocal;
+    
+    @Column(name="FILE_PATH_ORGINAL", length=100)
+    private String     filePathOrginal ;
+
+    @Column(name="FILE_PATH_BACKUP", length=100)
+    private String     filePathBackup ;
+
+    @Column(name="FILE_NAME", length=100)
+    private String     fileName ;
+
+    @Column(name="ORGINAL_FILE_NAME", length=100)
+    private String     orginalFileName ;
 
 }
 

@@ -6,6 +6,8 @@
 package com.maan.eway.master.service;
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.ProductSectionChangeStatusReq;
 import com.maan.eway.master.req.ProductSectionMasterGetAllReq;
@@ -14,6 +16,7 @@ import com.maan.eway.master.req.ProductSectionsGetReq;
 import com.maan.eway.master.req.SectionMultiInsertReq;
 import com.maan.eway.master.res.ProductSectionGetRes;
 import com.maan.eway.master.res.ProductSectionMasterRes;
+import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 /**
@@ -43,6 +46,10 @@ public interface ProductSectionMasterService  {
 	List<String> validateUpdateSectionDetails(ProductSectionMasterReq req);
 
 	SuccessRes updateSection(ProductSectionMasterReq req);
+	
+	CommonRes deleteFile(ProductSectionMasterReq req);
+
+	SuccessRes uploadSectionDocument(MultipartFile file, ProductSectionMasterReq req);
 
 
 }

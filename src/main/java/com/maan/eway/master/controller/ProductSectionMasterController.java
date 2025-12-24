@@ -5,18 +5,31 @@
 */
 package com.maan.eway.master.controller;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.maan.eway.common.service.impl.BASE64DecodedMultipartFile;
 import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.ProductSectionChangeStatusReq;
@@ -297,7 +310,85 @@ public class ProductSectionMasterController {
 
 		}
 
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
+	@PostMapping("/document/download")
+	public ResponseEntity<CommonRes> downloadBase64(@RequestBody ProductSectionMasterReq req) throws Exception {
+		CommonRes data = new CommonRes();
+		Map<String,Object> resMap = new HashMap<>();
+		
+		if (StringUtils.isNotBlank(req.getFilePathOriginal()) && new File(req.getFilePathOriginal()).exists()) {
+			String imagUrl = GetFileFromPath(req.getFilePathOriginal());
+			resMap.put("ImgUrl", imagUrl);
+			resMap.put("FilePathOriginal", req.getFilePathOriginal());
+			resMap.put("FileName", req.getFileName());
+			resMap.put("InsuranceId", req.getInsuranceId());
+			resMap.put("SectionId", req.getSectionId());
+			resMap.put("ProductId", req.getProductId());
+		} else {
+			System.out.println("File is Not found!!" + req.getFileName());
+		}
+			
+		data.setCommonResponse(resMap);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		
+		if (resMap != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	private String GetFileFromPath(String path) throws IOException {
+		File file=new File(path);
+		 if(StringUtils.isNotBlank(path) && new File(path).exists())  {
+			 byte[] array = FileUtils.readFileToByteArray(new File(path));
+			 
+			 
+			 
+			 MultipartFile baseM = new BASE64DecodedMultipartFile(array,file.getName());
+			 String contenttype=baseM.getContentType();
+			 String prefix = "data:"+contenttype+";base64,";
+			 
+			// Document doc= new Document();
+			 String imgurlen=Base64Utils.encodeToString(array);
+			 imgurlen = prefix+imgurlen;
+			 return imgurlen;
+		 }else {
+			 System.out.println("File Is Not Found");
+		 }
+		return null;
+	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
+	@PostMapping("/document/delete")
+	public ResponseEntity<CommonRes> deleteFile(@RequestBody ProductSectionMasterReq req) {
 
+		CommonRes res = sectionService.deleteFile(req);
+		return ResponseEntity.status(HttpStatus.OK).body(res);
+
+	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
+	@PostMapping("/document/upload")
+	public ResponseEntity<CommonRes> uploadSectionDoc(@RequestParam("File") MultipartFile file,@RequestParam("Req") String jsonString) 
+			throws JsonMappingException, JsonProcessingException{
+		reqPrinter.reqPrint(jsonString);
+		CommonRes data = new CommonRes();
+		ProductSectionMasterReq req = new ObjectMapper().readValue(jsonString, ProductSectionMasterReq.class);
+		SuccessRes res = sectionService.uploadSectionDocument(file,req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 		
 
 }

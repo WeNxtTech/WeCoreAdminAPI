@@ -2,66 +2,79 @@ pipeline {
     agent none
 
     environment {
-        NEXUS_REGISTRY = '192.168.1.185:9002'
-        IMAGE_NAME = 'wecore-admin-api'
+        // TO CHANGE
+        REGISTRY             = '192.168.1.185:9002'
         REGISTRY_CREDENTIALS = 'nexus-docker-creds'
-        DEPLOY_PATH = 'C:\\Users\\prodadmin\\Desktop\\Devops\\wecore'
-        SERVICE_NAME = 'adminAPI'
+        IMAGE_NAME           = 'wecore-admin-api'
+        SERVICE_NAME         = 'adminAPI'
     }
 
     stages {
 
-        stage('Set Environment') {
+        stage('Init') {
+            agent any
             steps {
                 script {
-                    if (env.BRANCH_NAME == 'dev') {
-                        env.ENVIRONMENT = 'dev'
-                    } else if (env.BRANCH_NAME == 'uat') {
-                        env.ENVIRONMENT = 'uat'
-                    } else if (env.BRANCH_NAME == 'prod') {
-                        env.ENVIRONMENT = 'prod'
-                    } else {
+
+                    // TO CHANGE
+                    def CONFIG = [
+                        dev : ['dev-docker', 'dev-agent-windows', 'windows', 'C:\\Users\\prodadmin\\Desktop\\Devops\\wecore'],
+                        uat : ['uat',        'uat-agent-linux-62', 'linux',   '/opt/devops/wecore'],
+                        prod: ['prod',       'prod-agent-linux',   'linux',   '/opt/devops/wecore']
+                    ]
+
+                    def entry = CONFIG.find { it.value[0] == env.BRANCH_NAME }?.value
+                    if (!entry) {
                         error "Unsupported branch: ${env.BRANCH_NAME}"
                     }
 
-                    echo "Deploying for environment: ${env.ENVIRONMENT}"
+                    env.ENVIRONMENT  = CONFIG.find { it.value == entry }.key
+                    env.DEPLOY_AGENT = entry[1]
+                    env.OS_TYPE      = entry[2]
+                    env.DEPLOY_PATH  = entry[3]
+
+                    echo "Env=${ENVIRONMENT}, Agent=${DEPLOY_AGENT}, OS=${OS_TYPE}"
                 }
             }
         }
 
         stage('Build & Push Image') {
             agent { label 'built-in' }
-
             steps {
                 script {
-                    def imagePath = "${NEXUS_REGISTRY}/${ENVIRONMENT}/${IMAGE_NAME}:latest"
+                    def image = "${REGISTRY}/${ENVIRONMENT}/${IMAGE_NAME}:latest"
 
-                    echo "Building image ${imagePath}"
-                    def dockerImage = docker.build(imagePath)
-
-                    docker.withRegistry("http://${NEXUS_REGISTRY}", REGISTRY_CREDENTIALS) {
-                        echo "Pushing image ${imagePath}"
-                        dockerImage.push('latest')
+                    docker.withRegistry("http://${REGISTRY}", REGISTRY_CREDENTIALS) {
+                        docker.build(image).push('latest')
                     }
                 }
             }
         }
 
         stage('Deploy Service') {
-            agent { label "${ENVIRONMENT}-agent-windows" }
-
+            agent { label "${DEPLOY_AGENT}" }
             steps {
-                echo "Deploying ${SERVICE_NAME} to ${ENVIRONMENT}"
+                script {
+                    if (OS_TYPE == 'linux') {
+                        sh """
+                        export REGISTRY=${REGISTRY}
+                        export ENVIRONMENT=${ENVIRONMENT}
 
-                bat """
-                cd /d ${DEPLOY_PATH}
-                set REGISTRY=${NEXUS_REGISTRY}
-                set ENVIRONMENT=${ENVIRONMENT}
-                set SERVICE_NAME=${SERVICE_NAME}
+                        cd ${DEPLOY_PATH}
+                        docker-compose pull ${SERVICE_NAME}
+                        docker-compose up -d --no-deps ${SERVICE_NAME}
+                        """
+                    } else {
+                        bat """
+                        set REGISTRY=${REGISTRY}
+                        set ENVIRONMENT=${ENVIRONMENT}
 
-                docker-compose pull %SERVICE_NAME%
-                docker-compose up -d --no-deps %SERVICE_NAME%
-                """
+                        cd /d ${DEPLOY_PATH}
+                        docker-compose pull ${SERVICE_NAME}
+                        docker-compose up -d --no-deps ${SERVICE_NAME}
+                        """
+                    }
+                }
             }
         }
     }
@@ -71,7 +84,7 @@ pipeline {
             echo "Successfully deployed ${SERVICE_NAME} to ${ENVIRONMENT}"
         }
         failure {
-            echo "Deployment failed for ${ENVIRONMENT}"
+            echo "Deployment failed for ${SERVICE_NAME} in ${ENVIRONMENT}"
         }
     }
 }

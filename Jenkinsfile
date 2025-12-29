@@ -2,7 +2,6 @@ pipeline {
     agent none
 
     environment {
-        // TO CHANGE
         REGISTRY             = '192.168.1.185:9002'
         REGISTRY_CREDENTIALS = 'nexus-docker-creds'
         IMAGE_NAME           = 'wecore-admin-api'
@@ -16,11 +15,11 @@ pipeline {
             steps {
                 script {
 
-                    // TO CHANGE
+                    // Environment mapping
                     def CONFIG = [
-                        dev : ['dev-docker', 'dev-agent-windows', 'windows', 'C:\\Users\\prodadmin\\Desktop\\Devops\\wecore'],
-                        uat : ['uat',        'uat-agent-linux-62', 'linux',   '/opt/devops/wecore'],
-                        prod: ['prod',       'prod-agent-linux',   'linux',   '/opt/devops/wecore']
+                        dev : ['dev-docker', 'dev-agent-windows', 'windows', 'C:\\Users\\prodadmin\\Desktop\\Devops\\wecore', 1],
+                        uat : ['uat',        'uat-agent-linux-62', 'linux',   '/opt/devops/wecore',                           2],
+                        prod: ['prod',       'prod-agent-linux',  'linux',   '/opt/devops/wecore',                           3]
                     ]
 
                     def entry = CONFIG.find { it.value[0] == env.BRANCH_NAME }?.value
@@ -28,12 +27,19 @@ pipeline {
                         error "Unsupported branch: ${env.BRANCH_NAME}"
                     }
 
-                    env.ENVIRONMENT  = CONFIG.find { it.value == entry }.key
-                    env.DEPLOY_AGENT = entry[1]
-                    env.OS_TYPE      = entry[2]
-                    env.DEPLOY_PATH  = entry[3]
+                    env.ENVIRONMENT          = CONFIG.find { it.value == entry }.key
+                    env.DEPLOY_AGENT         = entry[1]
+                    env.OS_TYPE              = entry[2]
+                    env.DEPLOY_PATH          = entry[3]
+                    env.COMMON_API_REPLICAS  = entry[4].toString()
 
-                    echo "Env=${ENVIRONMENT}, Agent=${DEPLOY_AGENT}, OS=${OS_TYPE}"
+                    echo """
+                    Environment  : ${ENVIRONMENT}
+                    Agent        : ${DEPLOY_AGENT}
+                    OS           : ${OS_TYPE}
+                    Path         : ${DEPLOY_PATH}
+                    Replicas     : ${COMMON_API_REPLICAS}
+                    """
                 }
             }
         }
@@ -57,12 +63,16 @@ pipeline {
                 script {
                     if (OS_TYPE == 'linux') {
                         sh """
+                        set -e
                         export REGISTRY=${REGISTRY}
                         export ENVIRONMENT=${ENVIRONMENT}
 
                         cd ${DEPLOY_PATH}
+
                         docker-compose pull ${SERVICE_NAME}
-                        docker-compose up -d --no-deps ${SERVICE_NAME}
+                        docker-compose up -d --no-deps \
+                          --scale ${SERVICE_NAME}=${COMMON_API_REPLICAS} \
+                          ${SERVICE_NAME}
                         """
                     } else {
                         bat """
@@ -70,8 +80,11 @@ pipeline {
                         set ENVIRONMENT=${ENVIRONMENT}
 
                         cd /d ${DEPLOY_PATH}
-                        docker-compose pull ${SERVICE_NAME}
-                        docker-compose up -d --no-deps ${SERVICE_NAME}
+
+                        docker-compose pull %SERVICE_NAME%
+                        docker-compose up -d --no-deps ^
+                          --scale %SERVICE_NAME%=%COMMON_API_REPLICAS% ^
+                          %SERVICE_NAME%
                         """
                     }
                 }
@@ -81,7 +94,7 @@ pipeline {
 
     post {
         success {
-            echo "Successfully deployed ${SERVICE_NAME} to ${ENVIRONMENT}"
+            echo "Successfully deployed ${SERVICE_NAME} (${COMMON_API_REPLICAS} replicas) to ${ENVIRONMENT}"
         }
         failure {
             echo "Deployment failed for ${SERVICE_NAME} in ${ENVIRONMENT}"

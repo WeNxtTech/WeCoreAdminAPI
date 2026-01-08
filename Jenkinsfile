@@ -2,7 +2,7 @@ pipeline {
     agent none
 
     environment {
-        REGISTRY             = '192.168.1.185:9002'
+        REGISTRY             = '13.200.69.122:9002'
         REGISTRY_CREDENTIALS = 'nexus-docker-creds'
         IMAGE_NAME           = 'wecore-admin-api'
         SERVICE_NAME         = 'adminAPI'
@@ -18,7 +18,7 @@ pipeline {
                     // Environment mapping
                     def CONFIG = [
                         dev : ['dev-docker', 'dev-agent-windows', 'windows', 'C:\\Users\\prodadmin\\Desktop\\Devops\\wecore', 1],
-                        uat : ['uat',        'uat-agent-linux-62', 'linux',   '/opt/devops/wecore',                           2],
+                        uat : ['dev',        'uat-agent-linux-62', 'linux',   '/opt/devops/wecore',                           1],
                         prod: ['prod',       'prod-agent-linux',  'linux',   '/opt/devops/wecore',                           3]
                     ]
 

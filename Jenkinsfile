@@ -50,7 +50,7 @@ pipeline {
                 script {
                     def image = "${REGISTRY}/${ENVIRONMENT}/${IMAGE_NAME}:latest"
 
-                    docker.withRegistry("http://${REGISTRY}", REGISTRY_CREDENTIALS) {
+                    docker.withRegistry("https://${REGISTRY}", REGISTRY_CREDENTIALS) {
                         docker.build(image).push('latest')
                     }
                 }

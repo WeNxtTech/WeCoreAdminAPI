@@ -62,7 +62,6 @@ public class HomePositionMaster implements Serializable {
 private static final long serialVersionUID = 1L;
  
 @Id
-@GeneratedValue(strategy = GenerationType.IDENTITY)
 @Column(name = "HOME_SNO")
 private Long homeSno;
 //--- ENTITY PRIMARY KEY 
@@ -72,7 +71,7 @@ private String     requestReferenceNo ;
 
 
 
-@Column(name = "QUOTE_NO", nullable = false, length = 20)
+@Column(name = "QUOTE_NO")
 private String quoteNo;
 
 @Id

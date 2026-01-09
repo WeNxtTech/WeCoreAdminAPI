@@ -69,8 +69,8 @@ pipeline {
 
                         cd ${DEPLOY_PATH}
 
-                        docker-compose pull ${SERVICE_NAME}
-                        docker-compose up -d --no-deps \
+                        docker compose pull ${SERVICE_NAME}
+                        docker compose up -d --no-deps \
                           --scale ${SERVICE_NAME}=${COMMON_API_REPLICAS} \
                           ${SERVICE_NAME}
                         """
@@ -81,8 +81,8 @@ pipeline {
 
                         cd /d ${DEPLOY_PATH}
 
-                        docker-compose pull %SERVICE_NAME%
-                        docker-compose up -d --no-deps ^
+                        docker compose pull %SERVICE_NAME%
+                        docker compose up -d --no-deps ^
                           --scale %SERVICE_NAME%=%COMMON_API_REPLICAS% ^
                           %SERVICE_NAME%
                         """

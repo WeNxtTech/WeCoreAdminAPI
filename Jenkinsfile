@@ -1,150 +1,103 @@
-@echo off
-setlocal EnableDelayedExpansion
+pipeline {
+    agent none
 
-REM ==================================================
-REM VALIDATE INPUT
-REM ==================================================
-if "%~1"=="" (
-    echo ERROR: Repository URL not provided.
-    echo Usage: %~nx0 https://github.com/org/repo.git
-    exit /b 1
-)
+    environment {
+        REGISTRY             = 'registry.wenxttech.com'
+        REGISTRY_CREDENTIALS = 'nexus-docker-creds'
+        IMAGE_NAME           = 'wecore-admin-api'
+        SERVICE_NAME         = 'adminAPI'
+    }
 
-set REPO_URL=%~1
+    stages {
 
-REM ==================================================
-REM EXTRACT PROJECT NAME
-REM ==================================================
-for %%A in (%REPO_URL%) do set REPO_NAME=%%~nA
-set REPO_DIR=%REPO_NAME%
+        stage('Init') {
+            agent any
+            steps {
+                script {
 
-REM ==================================================
-REM BRANCH & FILE CONFIG
-REM ==================================================
-set DEV_BASE_BRANCH=dev
-set DEV_DOCKER_BRANCH=dev-docker
-set UAT_BRANCH=uat
+                    // Environment mapping
+                    def CONFIG = [
+                        dev : ['dev-docker', 'dev-agent-windows', 'windows', 'C:\\Users\\prodadmin\\Desktop\\Devops\\wecore', 1],
+                        uat : ['uat',        'uat-agent-linux-143', 'linux',   '/opt/devops/wecore',                           1],
+                        prod: ['prod',       'prod-agent-linux',  'linux',   '/opt/devops/wecore',                           3]
+                    ]
 
-set DEV_FILENAME=application-dev.properties
-set UAT_FILENAME=application-uat.properties
+                    def entry = CONFIG.find { it.value[0] == env.BRANCH_NAME }?.value
+                    if (!entry) {
+                        error "Unsupported branch: ${env.BRANCH_NAME}"
+                    }
 
-set OLD_URL=http://wecore.wenxt:2000
-set NEW_URL=http://wecore-uat.wenxt
+                    env.ENVIRONMENT          = CONFIG.find { it.value == entry }.key
+                    env.DEPLOY_AGENT         = entry[1]
+                    env.OS_TYPE              = entry[2]
+                    env.DEPLOY_PATH          = entry[3]
+                    env.COMMON_API_REPLICAS  = entry[4].toString()
 
-set TEMP_DEV_FILE=.tmp_application_dev.properties
-set TEMP_JENKINS=.tmp_Jenkinsfile
+                    echo """
+                    Environment  : ${ENVIRONMENT}
+                    Agent        : ${DEPLOY_AGENT}
+                    OS           : ${OS_TYPE}
+                    Path         : ${DEPLOY_PATH}
+                    Replicas     : ${COMMON_API_REPLICAS}
+                    """
+                }
+            }
+        }
 
-REM ==================================================
-REM CLEAN & CLONE
-REM ==================================================
-if exist "%REPO_DIR%" rmdir /s /q "%REPO_DIR%"
+        stage('Build & Push Image') {
+            agent { label 'built-in' }
+            steps {
+                script {
+                    def image = "${REGISTRY}/${ENVIRONMENT}/${IMAGE_NAME}:latest"
 
-git clone "%REPO_URL%" "%REPO_DIR%" || exit /b 1
-cd "%REPO_DIR%" || exit /b 1
+                    docker.withRegistry("https://${REGISTRY}", REGISTRY_CREDENTIALS) {
+                        docker.build(image).push('latest')
+                    }
+                }
+            }
+        }
 
-git fetch origin --prune
+        stage('Deploy Service') {
+            agent { label "${DEPLOY_AGENT}" }
+            steps {
+                script {
+                    if (OS_TYPE == 'linux') {
+                        sh """
+                        set -e
+                        export REGISTRY=${REGISTRY}
+                        export ENVIRONMENT=${ENVIRONMENT}
 
-REM ==================================================
-REM ENSURE origin/uat EXISTS
-REM ==================================================
-git ls-remote --exit-code --heads origin %UAT_BRANCH% >nul 2>&1
-if errorlevel 1 (
-    git checkout -B %UAT_BRANCH% origin/%DEV_BASE_BRANCH% || exit /b 1
-    git push origin %UAT_BRANCH%
-)
+                        cd ${DEPLOY_PATH}
 
-REM ==================================================
-REM COPY JENKINSFILE: dev-docker -> uat (WITH REPLACE)
-REM ==================================================
-git checkout -B %DEV_DOCKER_BRANCH% origin/%DEV_DOCKER_BRANCH% || exit /b 1
+                        docker compose pull ${SERVICE_NAME}
+                        docker compose up -d --no-deps \
+                          --scale ${SERVICE_NAME}=${COMMON_API_REPLICAS} \
+                          ${SERVICE_NAME}
+                        """
+                    } else {
+                        bat """
+                        set REGISTRY=${REGISTRY}
+                        set ENVIRONMENT=${ENVIRONMENT}
 
-if exist Jenkinsfile (
-    echo Syncing Jenkinsfile from %DEV_DOCKER_BRANCH% to %UAT_BRANCH%
+                        cd /d ${DEPLOY_PATH}
 
-    copy Jenkinsfile "%TEMP_JENKINS%" >nul
+                        docker compose pull %SERVICE_NAME%
+                        docker compose up -d --no-deps ^
+                          --scale %SERVICE_NAME%=%COMMON_API_REPLICAS% ^
+                          %SERVICE_NAME%
+                        """
+                    }
+                }
+            }
+        }
+    }
 
-    git checkout -B %UAT_BRANCH% origin/%UAT_BRANCH% || exit /b 1
-    copy "%TEMP_JENKINS%" Jenkinsfile >nul
-    del "%TEMP_JENKINS%"
-
-    REM -------- SAFE KEYWORD REPLACEMENT --------
-    powershell -Command ^
-        "$c = Get-Content Jenkinsfile; ^
-         $c = $c -replace '192.168.1.185:9002','registry.wenxttech.com'; ^
-         $c = $c -replace '13.200.69.122:9002','registry.wenxttech.com'; ^
-         $c = $c -replace 'uat-agent-linux-62','uat-agent-linux-143'; ^
-         $c = $c -replace 'http://','https://'; ^
-         Set-Content Jenkinsfile $c"
-
-    git add Jenkinsfile
-    git commit -m "Sync Jenkinsfile from dev-docker and update registry/agent URLs" || echo Jenkinsfile unchanged
-    git push origin %UAT_BRANCH%
-) else (
-    echo No Jenkinsfile found in %DEV_DOCKER_BRANCH%, skipping Jenkinsfile sync
-)
-
-REM ==================================================
-REM FIND application-dev.properties (ANYWHERE)
-REM ==================================================
-git checkout -B %DEV_DOCKER_BRANCH% origin/%DEV_DOCKER_BRANCH% || exit /b 1
-
-set DEV_FILE_PATH=
-
-for /f "delims=" %%F in ('git ls-files ^| findstr /i "%DEV_FILENAME%"') do (
-    if not defined DEV_FILE_PATH set DEV_FILE_PATH=%%F
-)
-
-if not defined DEV_FILE_PATH (
-    echo ERROR: %DEV_FILENAME% not found.
-    exit /b 1
-)
-
-REM Convert Git path to Windows path
-set DEV_FILE_PATH=!DEV_FILE_PATH:/=\!
-echo Found DEV file: %DEV_FILE_PATH%
-
-copy "%DEV_FILE_PATH%" "%TEMP_DEV_FILE%" >nul || exit /b 1
-
-REM ==================================================
-REM APPLY PROPERTIES TO uat
-REM ==================================================
-git checkout -B %UAT_BRANCH% origin/%UAT_BRANCH% || exit /b 1
-
-for %%D in ("%DEV_FILE_PATH%") do set DEV_DIR=%%~dpD
-set UAT_FILE_PATH=%DEV_DIR%%UAT_FILENAME%
-
-copy "%TEMP_DEV_FILE%" "%UAT_FILE_PATH%" >nul || exit /b 1
-del "%TEMP_DEV_FILE%"
-
-REM -------- URL REPLACEMENT --------
-powershell -Command ^
-    "(Get-Content '%UAT_FILE_PATH%') -replace '%OLD_URL%', '%NEW_URL%' | Set-Content '%UAT_FILE_PATH%'"
-
-git add "%UAT_FILE_PATH%"
-git commit -m "Sync application-uat.properties from dev-docker and update UAT URL" || echo No changes
-git push origin %UAT_BRANCH%
-
-REM ==================================================
-REM REMOVE Jenkinsfile FROM ALL NON-UAT BRANCHES
-REM ==================================================
-for /f %%B in ('git branch -r ^| findstr /v "origin/%UAT_BRANCH%"') do (
-    set BR=%%B
-    set BR=!BR:origin/=!
-
-    git checkout -B !BR! origin/!BR! >nul 2>&1
-
-    if exist Jenkinsfile (
-        del Jenkinsfile
-        git add Jenkinsfile
-        git commit -m "Remove Jenkinsfile (allowed only in uat)"
-        git push origin !BR!
-    )
-)
-
-git checkout %UAT_BRANCH%
-
-echo ==================================================
-echo COMPLETED SUCCESSFULLY FOR %REPO_NAME%
-echo ==================================================
-
-endlocal
+    post {
+        success {
+            echo "Successfully deployed ${SERVICE_NAME} (${COMMON_API_REPLICAS} replicas) to ${ENVIRONMENT}"
+        }
+        failure {
+            echo "Deployment failed for ${SERVICE_NAME} in ${ENVIRONMENT}"
+        }
+    }
+}

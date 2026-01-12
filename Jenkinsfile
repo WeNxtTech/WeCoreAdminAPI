@@ -61,6 +61,8 @@ pipeline {
             agent { label "${DEPLOY_AGENT}" }
             steps {
                 script {
+                    def PROJECT_NAME = "wecore-${ENVIRONMENT}"
+
                     if (OS_TYPE == 'linux') {
                         sh """
                         set -e
@@ -69,22 +71,25 @@ pipeline {
 
                         cd ${DEPLOY_PATH}
 
-                        docker compose pull ${SERVICE_NAME}
-                        docker compose up -d --no-deps \
-                          --scale ${SERVICE_NAME}=${COMMON_API_REPLICAS} \
-                          ${SERVICE_NAME}
+                        docker compose -p ${PROJECT_NAME} pull ${SERVICE_NAME}
+
+                        docker compose -p ${PROJECT_NAME} up -d --no-deps \
+                        --scale ${SERVICE_NAME}=${COMMON_API_REPLICAS} \
+                        ${SERVICE_NAME}
                         """
                     } else {
                         bat """
                         set REGISTRY=${REGISTRY}
                         set ENVIRONMENT=${ENVIRONMENT}
+                        set PROJECT_NAME=wecore-${ENVIRONMENT}
 
                         cd /d ${DEPLOY_PATH}
 
-                        docker compose pull %SERVICE_NAME%
-                        docker compose up -d --no-deps ^
-                          --scale %SERVICE_NAME%=%COMMON_API_REPLICAS% ^
-                          %SERVICE_NAME%
+                        docker compose -p %PROJECT_NAME% pull %SERVICE_NAME%
+
+                        docker compose -p %PROJECT_NAME% up -d --no-deps ^
+                        --scale %SERVICE_NAME%=%COMMON_API_REPLICAS% ^
+                        %SERVICE_NAME%
                         """
                     }
                 }

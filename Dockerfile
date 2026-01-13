@@ -14,16 +14,5 @@ COPY --from=build /build/target/*.jar app.jar
 
 EXPOSE 8084 9404
 
-ENTRYPOINT [
-  "java",
-  "-javaagent:/jmx.jar=9404:/jmx-config.yaml",
-  "-XX:+UseContainerSupport",
-  "-XX:MaxRAMPercentage=70",
-  "-XX:MetaspaceSize=128m",
-  "-XX:MaxMetaspaceSize=256m",
-  "-XX:MaxDirectMemorySize=128m",
-  "-XX:+ExitOnOutOfMemoryError",
-  "-Xlog:gc*,metaspace",
-  "-jar",
-  "app.jar"
-]
+ENTRYPOINT ["java","-javaagent:/jmx.jar=9404:/jmx-config.yaml","-XX:+UseContainerSupport","-XX:MaxRAMPercentage=70","-XX:MetaspaceSize=128m","-XX:MaxMetaspaceSize=256m","-XX:MaxDirectMemorySize=128m","-XX:+ExitOnOutOfMemoryError","-Xlog:gc*,metaspace","-jar","app.jar"]
+

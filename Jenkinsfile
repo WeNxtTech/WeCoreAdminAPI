@@ -1,6 +1,12 @@
 pipeline {
     agent none
-
+    parameters {
+        string(
+            name: 'ROLLBACK_VERSION',
+            defaultValue: '',
+            description: 'Rollback image version (e.g. 42-a3f9c2d). Leave empty for normal deployment.'
+        )
+    }
     environment {
         REGISTRY             = 'registry.wenxttech.com'
         REGISTRY_CREDENTIALS = 'nexus-docker-creds'
@@ -9,17 +15,16 @@ pipeline {
     }
 
     stages {
-
         stage('Init') {
             agent any
             steps {
                 script {
 
-                    // Environment mapping
                     def CONFIG = [
                         dev : ['dev-docker', 'dev-agent-windows', 'windows', 'C:\\Users\\prodadmin\\Desktop\\Devops\\wecore', 1],
-                        uat : ['uat',        'uat-agent-linux-143', 'linux',   '/opt/devops/wecore',                           1],
-                        prod: ['prod',       'prod-agent-linux',  'linux',   '/opt/devops/wecore',                           3]
+                        uat : ['uat',        'uat-agent-linux-143', 'linux',   '/opt/devops/wecore', 1],
+                        prod: ['prod',       'prod-agent-linux',  'linux',   '/opt/devops/wecore', 3],
+                        'zambia-live': ['zambia-live', 'uat-agent-linux-143', 'linux', '/opt/devops/wecore-zambia-live', 1]
                     ]
 
                     def entry = CONFIG.find { it.value[0] == env.BRANCH_NAME }?.value
@@ -27,31 +32,53 @@ pipeline {
                         error "Unsupported branch: ${env.BRANCH_NAME}"
                     }
 
-                    env.ENVIRONMENT          = CONFIG.find { it.value == entry }.key
-                    env.DEPLOY_AGENT         = entry[1]
-                    env.OS_TYPE              = entry[2]
-                    env.DEPLOY_PATH          = entry[3]
-                    env.COMMON_API_REPLICAS  = entry[4].toString()
+                    env.ENVIRONMENT         = CONFIG.find { it.value == entry }.key
+                    env.DEPLOY_AGENT        = entry[1]
+                    env.OS_TYPE             = entry[2]
+                    env.DEPLOY_PATH         = entry[3]
+                    env.COMMON_API_REPLICAS = entry[4].toString()
+
+                    if (params.ROLLBACK_VERSION?.trim()) {
+                        env.VERSION = params.ROLLBACK_VERSION
+                        env.IS_ROLLBACK = "true"
+                        echo "ROLLBACK MODE ENABLED"
+                    } else {
+                        env.IS_ROLLBACK = "false"
+
+                        env.GIT_SHORT = sh(
+                            script: "git rev-parse --short HEAD",
+                            returnStdout: true
+                        ).trim()
+
+                        env.VERSION = "${BUILD_NUMBER}-${GIT_SHORT}"
+                    }
 
                     echo """
-                    Environment  : ${ENVIRONMENT}
-                    Agent        : ${DEPLOY_AGENT}
-                    OS           : ${OS_TYPE}
-                    Path         : ${DEPLOY_PATH}
-                    Replicas     : ${COMMON_API_REPLICAS}
+                    Environment : ${ENVIRONMENT}
+                    Agent       : ${DEPLOY_AGENT}
+                    OS          : ${OS_TYPE}
+                    Path        : ${DEPLOY_PATH}
+                    Replicas    : ${COMMON_API_REPLICAS}
+                    Version     : ${VERSION}
+                    Rollback    : ${IS_ROLLBACK}
                     """
                 }
             }
         }
-
         stage('Build & Push Image') {
-            agent { label 'built-in' }
+            when {
+                expression { env.IS_ROLLBACK != "true" }
+            }
+            agent { label 'phoenix-jenkin-server-122' }
             steps {
                 script {
-                    def image = "${REGISTRY}/${ENVIRONMENT}/${IMAGE_NAME}:latest"
+                    def imageVersioned = "${REGISTRY}/${ENVIRONMENT}/${IMAGE_NAME}:${VERSION}"
+                    def imageLatest    = "${REGISTRY}/${ENVIRONMENT}/${IMAGE_NAME}:latest"
 
                     docker.withRegistry("https://${REGISTRY}", REGISTRY_CREDENTIALS) {
-                        docker.build(image).push('latest')
+                        def img = docker.build(imageVersioned)
+                        img.push()
+                        img.push('latest')
                     }
                 }
             }
@@ -66,6 +93,7 @@ pipeline {
                         set -e
                         export REGISTRY=${REGISTRY}
                         export ENVIRONMENT=${ENVIRONMENT}
+                        export VERSION=${VERSION}
 
                         cd ${DEPLOY_PATH}
 
@@ -78,6 +106,7 @@ pipeline {
                         bat """
                         set REGISTRY=${REGISTRY}
                         set ENVIRONMENT=${ENVIRONMENT}
+                        set VERSION=${VERSION}
 
                         cd /d ${DEPLOY_PATH}
 
@@ -94,7 +123,7 @@ pipeline {
 
     post {
         success {
-            echo "Successfully deployed ${SERVICE_NAME} (${COMMON_API_REPLICAS} replicas) to ${ENVIRONMENT}"
+            echo "Successfully deployed ${SERVICE_NAME}:${VERSION} (${COMMON_API_REPLICAS} replicas) to ${ENVIRONMENT}"
         }
         failure {
             echo "Deployment failed for ${SERVICE_NAME} in ${ENVIRONMENT}"

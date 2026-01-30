@@ -438,10 +438,10 @@ public class EmbeddedServiceImpl implements EmbeddedService {
 			String companyId=req.get("CompanyId")==null?"":req.get("CompanyId").toString();
 			String vehicleUsageName=req.get("MotorUsageName")==null?"":req.get("MotorUsageName").toString();
 			String bodyType=req.get("BodyType")==null?"":req.get("BodyType").toString();
-			String bodyId =embeddedRepository.getBodyId(companyId, bodyType);
-			String vehcileUsageId =embeddedRepository.getVehicleUsage(companyId, vehicleUsageName);
-			response.put("BodyId", bodyId);
-			response.put("MotorUsage", vehcileUsageId);
+			List<String> bodyId =embeddedRepository.getBodyId(companyId, bodyType);
+		//	String vehcileUsageId =embeddedRepository.getVehicleUsage(companyId, vehicleUsageName);
+			response.put("BodyId", bodyId.get(0));
+		//	response.put("MotorUsage", vehcileUsageId);
 		}catch (Exception e) {
 			e.printStackTrace();
 			log.error(e);

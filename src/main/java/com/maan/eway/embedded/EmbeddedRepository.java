@@ -71,7 +71,7 @@ public interface EmbeddedRepository extends JpaRepository<GroupMedicalDetails, G
 
 	@Query(value ="SELECT DISTINCT body_id FROM EWAY_MOTOR_BODYTYPE_MASTER  WHERE company_id=?1 AND UPPER(TRIM(regulatory_code))=UPPER(TRIM(?2))"
 			+ " AND STATUS ='Y'",nativeQuery=true)
-	public String getBodyId(String companyId,String bodyName);
+	public List<String> getBodyId(String companyId,String bodyName);
 	
 	@Query(value ="SELECT vehicle_usage_id FROM motor_VEHICLEUSAGE_MASTER mm WHERE mm.company_id=?1 AND UPPER(TRIM(mm.regulatory_code))=UPPER(TRIM(?2))"
 			+ " AND mm.STATUS ='Y' AND mm.amend_id=(SELECT * FROM(SELECT MAX(amend_id) FROM motor_VEHICLEUSAGE_MASTER rr WHERE mm.company_id=rr.company_id AND"

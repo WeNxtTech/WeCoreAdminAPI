@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.ttrncloseing.dto.HomePositionReq;
+import com.maan.eway.ttrncloseing.dto.TtrnGetReq;
 import com.maan.eway.ttrncloseing.dto.TtrnReq;
 import com.maan.eway.ttrncloseing.service.TTrnCloseingService;
 
@@ -32,6 +33,13 @@ public class TTrnCloseingController {
 	public ResponseEntity<CommonRes> updateDate(@RequestBody HomePositionReq req) {
 		CommonRes data = new CommonRes();
 		data=ttrnservice.updateHPM(req);
+		return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+	}
+	
+	@PostMapping("/getTTrn")
+	public ResponseEntity<CommonRes> ttrn(@RequestBody TtrnGetReq req) {
+		CommonRes data = new CommonRes();
+		data=ttrnservice.getTTrnList(req);
 		return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 	}
 	

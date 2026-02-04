@@ -13,9 +13,13 @@ public class TtrnReq {
     private String tranCode;
     
 	@JsonProperty("DateClosed")
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+	
 	 private Date cloDateClosed;
 
+	@JsonProperty("DateClosed")
+	
+	 private Date monthEnddate;
+	
 	@JsonProperty("Remarks")
     private String remarks;
 
@@ -23,14 +27,14 @@ public class TtrnReq {
     private String preparedBy;
 
 	@JsonProperty("PreparedDt")
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+	
     private Date  preparedDt;
 
 	@JsonProperty("ModifiedBy")
     private String modifiedBy;
 
 	@JsonProperty("DateOpened")
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+	
     private Date dateOpened;
 
 	@JsonProperty("CompanyId")
@@ -39,6 +43,6 @@ public class TtrnReq {
 	@JsonProperty("BranchCode")
 	private String branchCode;
 
-	@JsonProperty("ProductCode")
+	@JsonProperty("ProductId")
     private String productCoreCode;
 }

@@ -17,4 +17,7 @@ public class HomePositionReq {
 
 	@JsonProperty("ProductCode")
     private String productCoreCode;
+	
+	@JsonProperty("CompanyId")
+	private String companyId;
 }

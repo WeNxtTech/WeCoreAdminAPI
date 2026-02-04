@@ -19,4 +19,7 @@ public interface TTrnClosingRepo extends JpaRepository<TTrnClosing, Integer>{
 	TTrnClosing findByBranchCodeAndProductIdAndCompanyidAndSetUpMonth(String branchCode, String productId,
 			String companyId, Date setUpMonth);
 
+	TTrnClosing findByBranchCodeAndProductIdAndCompanyidAndTranCode(String branchCode, String productCoreCode,
+			String companyId, Integer tranCode);
+
 }

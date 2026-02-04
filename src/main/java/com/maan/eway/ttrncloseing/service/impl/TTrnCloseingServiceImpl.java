@@ -42,24 +42,27 @@ public class TTrnCloseingServiceImpl implements TTrnCloseingService{
 	public CommonRes insertTTRNDetails(TtrnReq req) {
 		CommonRes res = new CommonRes();
 		try {
+			
 			TTrnClosing ttrn = new TTrnClosing();
-		//	ttrn = ttrnrepo.findByBranchCodeAndProductIdAndCompanyidAndTranCode(req.getBranchCode(), req.getProductCoreCode(),req.getCompanyId(),req.get);
+			if(StringUtils.isNotBlank(req.getTranCode())) {
+				Integer tr = Integer.valueOf(req.getTranCode());
+			ttrn = ttrnrepo.findByBranchCodeAndProductIdAndCompanyidAndTranCode(req.getBranchCode(), req.getProductCoreCode(),req.getCompanyId(),tr);
+		}
 			if (ttrn == null) {
 				ttrn = new TTrnClosing();
 			}
-			LocalDate startDate = req.getDateOpened().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-			LocalDate endDate = req.getCloDateClosed().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 			ttrn.setTranCode(1);
-//			ttrn.setDateClosed(req.getCloDateClosed()); // current date
-//			ttrn.setPreparedDt(req.getPreparedDt()); // current date
-//			ttrn.setDateOpened(req.getDateOpened()); // current date
-//			ttrn.setMonthendDt(calculateMonthEnd(startDate,endDate));
-//			ttrn.setMonthendDt(req.getMonthEnddate());
+			ttrn.setDateClosed(req.getCloDateClosed()); // current date
+			ttrn.setPreparedDt(req.getPreparedDt()); // current date
+			ttrn.setDateOpened(req.getDateOpened()); // current date
+		//	ttrn.setMonthendDt(calculateMonthEnd(startDate,endDate));
+			ttrn.setMonthendDt(req.getMonthEnddate());
 			ttrn.setRemarks(req.getRemarks());
-			ttrn.setPreparedBy(StringUtils.isBlank(req.getPreparedBy()) ? null : Integer.valueOf(req.getPreparedBy()));
+			ttrn.setPreparedBy(StringUtils.isBlank(req.getPreparedBy()) ? null : req.getPreparedBy());
 			ttrn.setModifiedBy(req.getModifiedBy());
 			ttrn.setBranchCode(req.getBranchCode());
 			ttrn.setProductId(req.getProductCoreCode());
+			ttrn.setCompanyid(req.getCompanyId());
 			ttrn.setSetUpMonth(null);
 			ttrnrepo.save(ttrn);
 			res.setCommonResponse(ttrn);
@@ -262,8 +265,8 @@ public class TTrnCloseingServiceImpl implements TTrnCloseingService{
 					if (setUpMonth.isBefore(prev.getDateClosed())) {
 					result.add(prev);
 					}
-					resall.setTtrnlist(result);
 					}
+					resall.setTtrnlist(result);
 					resall.setStatus("Y");
 					return resall;
 				}

@@ -30,7 +30,7 @@ public class TTrnClosing {
     private String remarks;
 
     @Column(name = "CLO_PREPARED_BY")
-    private Integer preparedBy;
+    private String preparedBy;
 
    
     @Column(name = "CLO_PREPARED_DT")

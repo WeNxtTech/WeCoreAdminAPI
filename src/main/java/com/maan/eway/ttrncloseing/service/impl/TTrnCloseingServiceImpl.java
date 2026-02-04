@@ -256,9 +256,13 @@ public class TTrnCloseingServiceImpl implements TTrnCloseingService{
 					prevQry.orderBy(cb.desc(prevRoot.get("setUpMonth")));
 
 					List<TTrnClosing> prevMonthList = em.createQuery(prevQry).setMaxResults(1).getResultList();
+					if (!prevMonthList.isEmpty()) {
 					TTrnClosing prev = prevMonthList.get(0);
+					if (setUpMonth.isBefore(prev.getDateClosed())) {
 					result.add(prev);
+					}
 					resall.setTtrnlist(result);
+					}
 					resall.setStatus("Y");
 					return resall;
 				}

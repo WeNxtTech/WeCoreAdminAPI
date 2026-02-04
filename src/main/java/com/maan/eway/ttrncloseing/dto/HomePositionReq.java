@@ -9,13 +9,13 @@ public class HomePositionReq {
 	@JsonProperty("QuoteNo")
 	private String quoteNo;
 	
-	@JsonProperty("Status")
-	private String status;
+	@JsonProperty("Date")
+	private String date;
 	
 	@JsonProperty("BranchCode")
 	private String branchCode;
 
-	@JsonProperty("ProductCode")
+	@JsonProperty("ProductId")
     private String productCoreCode;
 	
 	@JsonProperty("CompanyId")

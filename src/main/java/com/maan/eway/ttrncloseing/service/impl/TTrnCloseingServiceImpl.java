@@ -2,12 +2,12 @@ package com.maan.eway.ttrncloseing.service.impl;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -100,21 +100,20 @@ public class TTrnCloseingServiceImpl implements TTrnCloseingService{
 			TTrnClosing ttrn = new TTrnClosing();
 			HomePositionMaster home = hemoRepo.findByQuoteNo(req.getQuoteNo());
 		//	ttrn = ttrnrepo.findByBranchCodeAndProductIdAndCompanyid(req.getBranchCode(), req.getProductCoreCode(),req.getCompanyId());
-			if(home!=null && ttrn!=null)
+			if(home!=null)
 			{
-//				LocalDate startDate = ttrn.getDateOpened().toInstant()
-//	                    .atZone(ZoneId.systemDefault()).toLocalDate();
-//
-//	            LocalDate endDate = ttrn.getDateClosed().toInstant()
-//	                    .atZone(ZoneId.systemDefault()).toLocalDate();
-				if("Y".equalsIgnoreCase(req.getStatus()))
-				{
-				//	home.setEffectiveDate(ttrn.getMonthendDt());
+				DateTimeFormatter formatter =
+			            DateTimeFormatter.ofPattern("dd/MM/yyyy");
+				  LocalDate localDate = LocalDate.parse(req.getDate(), formatter);
+				  Date effectiveDate = java.sql.Date.valueOf(localDate);
+				
+					home.setEffectiveDate(effectiveDate);
 					hemoRepo.save(home);
+			
 					
-				}else
-				{
-					LocalDate today = LocalDate.now();
+//					LocalDate startDate = ttrn.getDateOpened();	       
+//					LocalDate endDate = ttrn.getDateClosed();
+//					LocalDate today = LocalDate.now();
 //					if (!today.isBefore(startDate) && !today.isAfter(endDate)) {
 //						home.setEffectiveDate(Date.from(today.atStartOfDay(ZoneId.systemDefault()).toInstant()));
 //						hemoRepo.save(home);
@@ -126,7 +125,7 @@ public class TTrnCloseingServiceImpl implements TTrnCloseingService{
 //					}
 					
 	               
-				}
+				res.setCommonResponse(home);
 				res.setErroCode(0);
 				res.setIsError(false);
 				res.setMessage("Sucess");
@@ -152,7 +151,7 @@ public class TTrnCloseingServiceImpl implements TTrnCloseingService{
 		
 		List<TtrnRes> resList = new ArrayList<>();
 		CommonRes resc= new CommonRes();
-		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+	//	DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try
 		{
 			Date setUpMonth = java.sql.Date.valueOf(req.getSetUpMonth());

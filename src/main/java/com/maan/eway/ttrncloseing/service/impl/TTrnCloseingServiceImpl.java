@@ -231,6 +231,7 @@ public class TTrnCloseingServiceImpl implements TTrnCloseingService{
 			if (!currentMonthList.isEmpty()) {
 
 				TTrnClosing currentMonth = currentMonthList.get(0);
+				currentMonth.setMonthendDt(LocalDate.now());
 				result.add(currentMonth);
 
 				/*

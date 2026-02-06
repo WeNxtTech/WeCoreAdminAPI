@@ -15,4 +15,6 @@ public interface TTrnCloseingService {
 
 	CommonRes getTTrnAllYear(HomePositionReq req);
 
+	CommonRes getTTrnTran(HomePositionReq req);
+
 }

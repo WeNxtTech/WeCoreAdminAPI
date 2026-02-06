@@ -138,7 +138,7 @@ public class TTrnCloseingServiceImpl implements TTrnCloseingService{
 		return rescom;
 	}
 
-	
+	@Override
 	public CommonRes getTTrnTran(HomePositionReq req) {
 		CommonRes rescom = new CommonRes();
 		List<TtrnRes> reslist = new ArrayList<TtrnRes>();

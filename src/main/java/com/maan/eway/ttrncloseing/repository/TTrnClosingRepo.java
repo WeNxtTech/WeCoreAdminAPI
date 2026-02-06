@@ -9,17 +9,16 @@ import com.maan.eway.ttrncloseing.bean.TTrnClosing;
 
 public interface TTrnClosingRepo extends JpaRepository<TTrnClosing, Integer>{
 
-//	TTrnClosing findByBranchCodeAndProductCoreCode(String branchCode, String productCoreCode);
 
-//	TTrnClosing findByBranchCodeAndProductCoreCodeAndCompanyid(String branchCode, String productCoreCode,
-//			String companyId);
-
-	List<TTrnClosing> findByBranchCodeAndProductIdAndCompanyid(String branchCode, String productId, String companyId);
 
 	TTrnClosing findByBranchCodeAndProductIdAndCompanyidAndSetUpMonth(String branchCode, String productId,
 			String companyId, Date setUpMonth);
 
 	TTrnClosing findByBranchCodeAndProductIdAndCompanyidAndTranCode(String branchCode, String productCoreCode,
 			String companyId, Integer tranCode);
+
+	TTrnClosing findByCompanyidAndTranCode(String companyId, Integer tr);
+
+	List<TTrnClosing> findByCompanyidAndYear(String companyId, String year);
 
 }

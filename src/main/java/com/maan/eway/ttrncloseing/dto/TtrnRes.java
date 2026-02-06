@@ -49,5 +49,8 @@ public class TtrnRes {
 
 	@JsonProperty("CompanyId")
 	private String companyid;
+	
+	@JsonProperty("Year")
+	private String year;
 
 }

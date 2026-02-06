@@ -2,6 +2,7 @@ package com.maan.eway.ttrncloseing.dto;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
@@ -13,9 +14,11 @@ public class TtrnReq {
 	private String tranCode;
 
 	@JsonProperty("DateClosed")
+	@JsonFormat(pattern = "dd/MM/yyyy")
 	private LocalDate cloDateClosed;
 
 	@JsonProperty("MonthEnddate")
+	@JsonFormat(pattern = "dd/MM/yyyy")
 	private LocalDate monthEnddate;
 
 	@JsonProperty("Remarks")
@@ -25,12 +28,14 @@ public class TtrnReq {
 	private String preparedBy;
 
 	@JsonProperty("PreparedDt")
+	@JsonFormat(pattern = "dd/MM/yyyy")
 	private LocalDate preparedDt;
 
 	@JsonProperty("ModifiedBy")
 	private String modifiedBy;
 
 	@JsonProperty("DateOpened")
+	@JsonFormat(pattern = "dd/MM/yyyy")
 	private LocalDate dateOpened;
 
 	@JsonProperty("CompanyId")

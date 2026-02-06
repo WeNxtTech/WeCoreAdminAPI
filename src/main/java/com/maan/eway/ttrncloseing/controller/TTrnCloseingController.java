@@ -43,5 +43,12 @@ public class TTrnCloseingController {
 		return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 	}
 	
+	@PostMapping("/getTTrnAllYear")
+	public ResponseEntity<CommonRes> ttrn(@RequestBody HomePositionReq req) {
+		CommonRes data = new CommonRes();
+		data=ttrnservice.getTTrnAllYear(req);
+		return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+	}
+	
 
 }

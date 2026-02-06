@@ -10,6 +10,9 @@ import lombok.Data;
 @Data
 public class TtrnGetReq {
 	
+	@JsonProperty("QuoteNo")
+	private String quoteNo;
+	
 	@JsonProperty("CompanyId")
 	private String companyId;
 	

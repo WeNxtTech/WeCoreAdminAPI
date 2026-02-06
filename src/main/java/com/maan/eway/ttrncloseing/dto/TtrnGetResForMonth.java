@@ -18,4 +18,9 @@ public class TtrnGetResForMonth {
 	
 	@JsonProperty("Status")
 	private String status ;
+	
+	@JsonProperty("EffDate")
+	private String effDate ;
+	
+	
 }

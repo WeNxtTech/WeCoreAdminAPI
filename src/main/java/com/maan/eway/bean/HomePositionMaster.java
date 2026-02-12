@@ -567,11 +567,11 @@ private String     tinyUrl ;
 @Column(name="TARGET_PRICE")
 private BigDecimal     targetPrice ;
 
-@Column(name="VISION_REPLACEMENT")
-private BigDecimal     visionReplacement ;
+@Column(name="ENDT_EARNED_PREMIUM")
+private BigDecimal  endtEarendPre ;
 
-@Column(name="VISION_MAINTENANCE")
-private BigDecimal     visionMaintenance ;
+@Column(name="ENDT_EARNED_TAX")
+private BigDecimal  endtEarendTax ;
 
 @Column(name="AGGR_REFERENCEID", length=80)
 private String     aggrReferenceid ;

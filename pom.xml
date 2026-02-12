@@ -9,7 +9,6 @@
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.2.6</version>
         <relativePath/>
-        <!-- lookup parent from repository -->
     </parent>
     <groupId>com.maan.eway</groupId>
     <artifactId>EwayAdminApi</artifactId>

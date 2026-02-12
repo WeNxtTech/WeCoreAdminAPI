@@ -67,7 +67,7 @@ public class WebSecurityConfig  {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().requestMatchers("/", "/resources/**", "/styles/**", "/static/**", "/jasper/**", "/public/**", "/webui/**", "/h2-console/**"
-        	    , "/configuration/**", "/swagger-ui/**", "/swagger-resources/**", "/api-docs", "/api-docs/**","/fonts/**", "/v3/api-docs/**"
+        	    , "/configuration/**",  "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/swagger-resources/**", "/api-docs", "/api-docs/**","/fonts/**", "/v3/api-docs/**"
                 , "/*.html", "/**/*.html" ,"/*.jpg","/**/*.css","/**/*.js","/**/*.png","/**/*.jpg", "/**/*.gif", "/**/*.svg", "/**/*.ico", "/**/*.ttf","/**/*.woff","/**/*.otf"
                 );
     }
@@ -90,7 +90,14 @@ public class WebSecurityConfig  {
         http.csrf(AbstractHttpConfigurer::disable)
         		.cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
         		.authorizeHttpRequests(auth -> 
-        								auth.requestMatchers(HttpMethod.POST, "/dispatch/api/**")
+        								auth
+                                        .requestMatchers(
+                    "/v3/api-docs/**",
+                    "/swagger-ui/**",
+                    "/swagger-ui.html"
+            ).permitAll()
+
+                                        .requestMatchers(HttpMethod.POST, "/dispatch/api/**")
         								.permitAll()
         								.anyRequest().authenticated()
         				)                

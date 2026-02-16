@@ -10,7 +10,6 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +24,7 @@ import com.maan.eway.ttrncloseing.dto.TtrnReq;
 import com.maan.eway.ttrncloseing.dto.TtrnRes;
 import com.maan.eway.ttrncloseing.repository.TTrnClosingRepo;
 import com.maan.eway.ttrncloseing.service.TTrnCloseingService;
-
+import com.maan.eway.error.Error;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -228,8 +227,18 @@ public class TTrnCloseingServiceImpl implements TTrnCloseingService{
 		CommonRes resc = new CommonRes();
 		try {
 
-			TtrnGetResForMonth getmonth = findRelevantMonth(req.getBranchCode(), req.getProductId(), req.getCompanyId(),
-					req.getSetUpMonth());
+			List<Error> list = new ArrayList<Error>();
+			
+			TtrnGetResForMonth getmonth = findRelevantMonth(req.getBranchCode(), req.getProductId(), req.getCompanyId(),req.getSetUpMonth());
+			if("D".equalsIgnoreCase(getmonth.getStatus()))
+			{
+				list.add(new Error("0","0", "Kindly do SetUp for Policy closing"));
+				resc.setCommonResponse("Kindly do SetUp for Policy closing");
+				resc.setMessage("Success");
+				resc.setIsError(true);
+				resc.setErrorMessage(list);
+				return resc;
+			}
 			if (getmonth != null) {
 				List<TTrnClosing> ttrnlist = getmonth.getTtrnlist();
 				if (ttrnlist != null) {
@@ -379,6 +388,10 @@ public class TTrnCloseingServiceImpl implements TTrnCloseingService{
 						resall.setTtrnlist(result);
 						resall.setStatus("N");
 					}
+				}
+				else
+				{
+					resall.setStatus("D");
 				}
 
 				return resall;

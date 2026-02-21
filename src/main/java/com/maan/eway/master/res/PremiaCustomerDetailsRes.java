@@ -37,6 +37,21 @@ public class PremiaCustomerDetailsRes {
 	@JsonProperty("CustomerName")
 	private String customerName;
 	
+	@JsonProperty("TiraCode")
+	private String tiraCode;
+	
+	@JsonProperty("TiraDesc")
+	private String tiraDesc;
+	
+	@JsonProperty("MappingType")
+	private String mappingType;
+	
+	@JsonProperty("SalePoint")
+	private String SalePoint;
+	
+	@JsonProperty("SalePointDesc")
+	private String salePointDesc;
+	
 //	@JsonProperty("CustomerTypeDesc")
 //	private String customertypedesc;
 //	@JsonProperty("Gender")

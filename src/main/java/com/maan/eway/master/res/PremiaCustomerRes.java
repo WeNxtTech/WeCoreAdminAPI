@@ -18,4 +18,20 @@ public class PremiaCustomerRes {
 	
 	@JsonProperty("DivisionCodeTo")
 	private String divisionCodeTo;
+	
+	@JsonProperty("TiraCode")
+	private String tiraCode;
+	
+	@JsonProperty("TiraDesc")
+	private String tiraDesc;
+	
+	@JsonProperty("MappingType")
+	private String mappingType;
+	
+	@JsonProperty("SalePoint")
+	private String SalePoint;
+	
+	@JsonProperty("SalePointDesc")
+	private String salePointDesc;
 }
+

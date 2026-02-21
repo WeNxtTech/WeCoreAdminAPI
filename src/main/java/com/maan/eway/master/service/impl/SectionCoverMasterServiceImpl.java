@@ -18,6 +18,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -1566,8 +1567,20 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 					saveData.setTaxAmount(req.getTaxAmount()==null ?BigDecimal.ZERO :new BigDecimal(req.getTaxAmount()));
 					saveData.setTaxCode(req.getTaxCode());
 				}
+				
 				saveData.setFreeCoverLimit(StringUtils.isBlank(req.getFreeCoverLimit()) ? BigDecimal.ZERO : new BigDecimal(req.getFreeCoverLimit())) ;
 				saveData.setCoverNameLocal(StringUtils.isBlank(req.getCodeDescLocal()) ? "" : req.getCodeDescLocal());
+				saveData.setEndtProRataYn(StringUtils.isBlank(req.getEndtProRataYn())? "N" :req.getEndtProRataYn());
+				List<ListItemValue> EndtList =  getListItem("99999" , saveData.getEndtProRataYn()   ,"PRO_RATA_TYPE");
+				if(EndtList!=null && !EndtList.isEmpty())
+				{
+					List<ListItemValue> r = EndtList.stream()
+							.filter(e -> saveData.getEndtProRataYn().equalsIgnoreCase(e.getItemCode()))
+							.collect(Collectors.toList());
+					saveData.setEndtProRataDesc(r.get(0).getItemValue())	;
+				}
+				saveData.setDependentCoverSIorPRE(req.getDependentCoverSIorPRE());
+				
 				repo.saveAndFlush(saveData);
 			
 				

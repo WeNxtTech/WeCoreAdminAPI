@@ -149,4 +149,14 @@ public class SectionCoverMasterRes {
 	
 	@JsonProperty("MinimumRateYN")
 	private String minimumRateYN;
+	
+	@JsonProperty("EndtProRataYn")
+    private String endtProRataYn;
+    
+	@JsonProperty("EndtProRataDesc")
+    private String endtProRataDesc;
+    
+	@JsonProperty("DependentCoverBasedOn")
+    private String dependentCoverSIorPRE;
+	
 }

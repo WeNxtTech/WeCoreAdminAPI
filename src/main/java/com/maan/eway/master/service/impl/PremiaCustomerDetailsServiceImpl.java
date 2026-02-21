@@ -378,6 +378,11 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 						res.setName(premia.getCustomerName());
 						res.setCustomerCode(premia.getCustomerCode());
 						res.setCustomerName(premia.getCustomerName());
+						res.setTiraCode(premia.getTiraCode());
+						res.setTiraDesc(premia.getTiraDesc());
+						res.setMappingType(premia.getMappingType());
+						res.setSalePoint(premia.getSalePoint());
+						res.setSalePointDesc(premia.getSalePointDesc());
 						res.setOrderId(orderId);
 						resList.add(res);
 					}

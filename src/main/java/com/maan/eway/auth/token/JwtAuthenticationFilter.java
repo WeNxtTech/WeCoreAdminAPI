@@ -112,7 +112,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			
 			if (validtoken) {
 							
-				if(userType.equalsIgnoreCase("Issuer") && subUserType.equalsIgnoreCase("SuperAdmin") ) {
+				if(userType.equalsIgnoreCase("Issuer") && (subUserType.equalsIgnoreCase("SuperAdmin") 
+						|| subUserType.equalsIgnoreCase("surveyor") || subUserType.equalsIgnoreCase("claimofficer") 
+						|| subUserType.equalsIgnoreCase("garge"))) {
 					UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
 							userDetails, null, Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN")));
 					authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(requestWrapper));

@@ -83,7 +83,7 @@ public class ReferalMasterController {
 				if (res != null) {
 					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 				}
 			}
 
@@ -107,7 +107,7 @@ public class ReferalMasterController {
 				return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
 			}
 			else {
-				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}
 		}
 		
@@ -130,7 +130,7 @@ public class ReferalMasterController {
 					return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
 				}
 				else {
-					return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 				}
 			}
 		
@@ -151,7 +151,7 @@ public class ReferalMasterController {
 			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 
 		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 	}
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
@@ -171,7 +171,7 @@ public class ReferalMasterController {
 			if (res != null) {
 				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}
 
 		}
@@ -195,7 +195,7 @@ public class ReferalMasterController {
 			if (res != null) {
 				return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
 			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}
 
 		}
@@ -214,7 +214,7 @@ public class ReferalMasterController {
 			if (res != null) {
 				return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
 			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}
 
 		}

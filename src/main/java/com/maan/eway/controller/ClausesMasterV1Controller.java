@@ -54,7 +54,7 @@ public class ClausesMasterV1Controller {
 		List<ClausesMasterV1Res> allClauses = clausesService.getAllClausesMaster(req);
 		
 		if(allClauses == null) {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 		
 		CommonRes response = new CommonRes();
@@ -77,7 +77,7 @@ public class ClausesMasterV1Controller {
 		List<ClausesMasterV1Res> allClauses = clausesService.getAllActiveClausesMaster(req);
 		
 		if(allClauses == null) {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 		
 		CommonRes response = new CommonRes();
@@ -100,7 +100,7 @@ public class ClausesMasterV1Controller {
 		ClausesMasterV1Res clausesMaster = clausesService.getSingleClausesMaster(req);
 		
 		if(clausesMaster == null) {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 		
 		CommonRes response = new CommonRes();
@@ -124,7 +124,7 @@ public class ClausesMasterV1Controller {
 		ClausesMasterV1Res clausesMaster = clausesService.getSingleActiveClausesMaster(req);
 		
 		if(clausesMaster == null) {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 		
 		CommonRes response = new CommonRes();
@@ -148,7 +148,7 @@ public class ClausesMasterV1Controller {
 		ClausesMasterV1 clausesMaster = clausesService.saveAndUpdateClausesMasterDetails(req);
 		
 		if(clausesMaster == null) {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 		
 		CommonRes response = new CommonRes();
@@ -177,7 +177,7 @@ public class ClausesMasterV1Controller {
 		Boolean result = clausesService.activateOrInactivateClausesMaster(req);
 		
 		if(result == null) {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 
 		CommonRes response = new CommonRes();

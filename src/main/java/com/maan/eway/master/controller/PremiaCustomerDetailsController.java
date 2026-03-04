@@ -60,7 +60,7 @@ public class PremiaCustomerDetailsController {
 		if (res != null) {
 			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 	}
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
@@ -81,7 +81,7 @@ public class PremiaCustomerDetailsController {
 		if (res != null) {
 			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 	}
 
@@ -103,7 +103,7 @@ public class PremiaCustomerDetailsController {
 		if (res != null) {
 			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 	}
 	
@@ -123,7 +123,7 @@ public class PremiaCustomerDetailsController {
 				data.setMessage("Success");
 				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}
 		} else {
 			List<PremiaCustomerDetailsRes> res = service.searchPremiaBrokerCustomerCode(req);
@@ -134,7 +134,7 @@ public class PremiaCustomerDetailsController {
 				data.setMessage("Success");
 				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}
 		}
 	}
@@ -157,7 +157,7 @@ public class PremiaCustomerDetailsController {
 		if (res != null) {
 			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 	}
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
@@ -178,7 +178,7 @@ public class PremiaCustomerDetailsController {
 		if (res != null) {
 			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 	}
 }

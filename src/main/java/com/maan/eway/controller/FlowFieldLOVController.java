@@ -62,7 +62,7 @@ public class FlowFieldLOVController {
 		List<ListOfValuesRes> parentJsonKeys = flowLOVService.dropdownToChooseParentJsonKey(req);
 		
 		if(parentJsonKeys == null) {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 		
 		response.setMessage("Data retrieved successfully");
@@ -82,7 +82,7 @@ public class FlowFieldLOVController {
 		List<ListOfValuesRes> dataTypes = flowLOVService.dropdownToChooseDatatypes();
 		
 		if(dataTypes == null) {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 		
 		CommonRes response = new CommonRes();

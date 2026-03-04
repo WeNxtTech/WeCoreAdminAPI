@@ -95,7 +95,7 @@ public class EmiMasterController {
 				if (res != null) {
 					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 				}
 			}
 
@@ -120,7 +120,7 @@ public class EmiMasterController {
 				return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
 			}
 			else {
-				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}
 		}
 		
@@ -142,7 +142,7 @@ public class EmiMasterController {
 					return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
 				}
 				else {
-					return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 				}
 			}
 		
@@ -163,7 +163,7 @@ public class EmiMasterController {
 			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 
 		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 	}
 	
@@ -183,7 +183,7 @@ public class EmiMasterController {
 			if (res != null) {
 				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}
 
 		}
@@ -205,7 +205,7 @@ public class EmiMasterController {
 				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 
 			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}
 		}
 		

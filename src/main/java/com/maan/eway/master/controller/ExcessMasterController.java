@@ -87,7 +87,7 @@ public ResponseEntity<CommonRes> getallWarranty(@Valid @RequestBody ExcessMaster
 		return new ResponseEntity<CommonRes> (data, HttpStatus.OK);
 	}
 	else {
-		return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 	}
 }
 
@@ -109,7 +109,7 @@ public ResponseEntity<CommonRes> getAllActiveExcessMaster (@Valid @RequestBody E
 	if (res != null) {
 		return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
 	} else {
-		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 	}
 }
 
@@ -131,7 +131,7 @@ public ResponseEntity<CommonRes> getExcessMaster(@Valid @RequestBody ExcessMaste
 	if (res != null) {
 		return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
 	} else {
-		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 	}
 }
 

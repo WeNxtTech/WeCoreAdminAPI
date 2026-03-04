@@ -42,7 +42,7 @@ public class FieldQueryLOVController {
 		List<ListOfValuesRes> lovList = fieldQueryLOVService.dropdownToChooseQueryId();
 		
 		if(lovList == null) {
-			return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 		
 		CommonRes response = new CommonRes();

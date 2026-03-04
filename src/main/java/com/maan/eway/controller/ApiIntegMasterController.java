@@ -55,7 +55,7 @@ public class ApiIntegMasterController {
 		
 		List<ApiIntegMasterRes> allApiIntegMaster = apiIntegService.getAllApiIntegMasterDetails(req);
 		if(allApiIntegMaster == null) {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 		
 		CommonRes response = new CommonRes();
@@ -83,7 +83,7 @@ public class ApiIntegMasterController {
 		
 		ApiIntegMasterRes apiIntegMaster = apiIntegService.getApiIntegMasterDetails(req);
 		if(apiIntegMaster == null) {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 		
 		CommonRes response = new CommonRes();		
@@ -111,7 +111,7 @@ public class ApiIntegMasterController {
 		
 		ApiIntegMaster apiIntegMaster = apiIntegService.saveUpdateApiIntegMasterDetails(req);
 		if(apiIntegMaster == null) {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 		
 		CommonRes response = new CommonRes();

@@ -62,7 +62,7 @@ public class XLConfigMasterController {
 				return new ResponseEntity<CommonResponse>(res, HttpStatus.CREATED);
 
 			} else
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 	}
 
@@ -82,7 +82,7 @@ public class XLConfigMasterController {
 
 			return new ResponseEntity<CommonResponse>(res, HttpStatus.OK);
 		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 	}
 
@@ -127,7 +127,7 @@ public class XLConfigMasterController {
 		if (dataList.size() != 0) {
 			return new ResponseEntity<CommonResponse>(res, HttpStatus.CREATED);
 		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 	}
 
@@ -147,7 +147,7 @@ public class XLConfigMasterController {
 		if (dropList != null) {
 			return new ResponseEntity<CommonResponse>(res, HttpStatus.CREATED);
 		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 
 	}
@@ -166,7 +166,7 @@ public class XLConfigMasterController {
 
 			return new ResponseEntity<CommonResponse>(res, HttpStatus.OK);
 		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 	}
 

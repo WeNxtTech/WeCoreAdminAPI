@@ -63,7 +63,7 @@ public class FlowFieldDetailsController {
 		
 		List<FlowFieldDetailsRes> allFlowFieldDetails = flowFieldService.getAllFlowFieldDetails(req);
 		if(allFlowFieldDetails == null) {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 		
 		response.setMessage("Data retrieved successfully.");
@@ -99,7 +99,7 @@ public class FlowFieldDetailsController {
 		
 		FlowFieldDetailsRes flowFieldDetails = flowFieldService.getFlowFieldDetails(req);
 		if(flowFieldDetails == null) {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 		
 		response.setMessage("Data retrieved successfully.");
@@ -136,7 +136,7 @@ public class FlowFieldDetailsController {
 		
 		FlowFieldDetails flowFieldDetails = flowFieldService.saveAndUpdateFlowFieldDetails(req);
 		if(flowFieldDetails == null) {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 		
 		response.setMessage("Data saved successfully.");

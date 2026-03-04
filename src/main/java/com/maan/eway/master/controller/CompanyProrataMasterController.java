@@ -92,7 +92,7 @@ public class CompanyProrataMasterController {
 			if (res != null) {
 				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}
 		}
 
@@ -115,7 +115,7 @@ public class CompanyProrataMasterController {
 		if (res != null) {
 			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 	}
 
@@ -136,7 +136,7 @@ public class CompanyProrataMasterController {
 		if (res != null) {
 			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 	}
 
@@ -156,7 +156,7 @@ public class CompanyProrataMasterController {
 			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 
 		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 	}
 
@@ -175,7 +175,7 @@ public class CompanyProrataMasterController {
 		if (res != null) {
 			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 
 	}

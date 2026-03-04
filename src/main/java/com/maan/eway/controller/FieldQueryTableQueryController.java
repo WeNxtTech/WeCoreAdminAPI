@@ -53,7 +53,7 @@ public class FieldQueryTableQueryController {
 		List<FieldQueryTableQueryRes> allFieldQueryTableQueries = fieldQueryService.getAllFieldQueryTablequeryDetails();
 		
 		if(allFieldQueryTableQueries == null) {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 		
 		CommonRes response = new CommonRes();
@@ -81,7 +81,7 @@ public class FieldQueryTableQueryController {
 		FieldQueryTableQueryRes fieldQueryTableQuery = fieldQueryService.getFieldQueryTablequeryDetails(queryId);
 		
 		if(fieldQueryTableQuery == null) {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 		
 		CommonRes response = new CommonRes();
@@ -124,7 +124,7 @@ public class FieldQueryTableQueryController {
 		
 		FieldQueryTablequery fieldQueryTableQuery = fieldQueryService.saveUpdateFieldQueryTablequeryDetails(req);
 		if(fieldQueryTableQuery == null) {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 		
 		response.setMessage("Data retrieved successfully");

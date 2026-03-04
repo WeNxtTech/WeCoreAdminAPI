@@ -98,7 +98,7 @@ public class SectionCoverMasterController {
 				if (res != null) {
 					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 				}
 			}
 
@@ -144,7 +144,7 @@ public class SectionCoverMasterController {
 				if (res != null) {
 					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 				}
 			}
 
@@ -169,7 +169,7 @@ public class SectionCoverMasterController {
 				return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
 			}
 			else {
-				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}
 		}
 		
@@ -191,7 +191,7 @@ public class SectionCoverMasterController {
 				return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
 			}
 			else {
-				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}
 		}
 
@@ -216,7 +216,7 @@ public class SectionCoverMasterController {
 					return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
 				}
 				else {
-					return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 				}
 			}
 		
@@ -237,7 +237,7 @@ public class SectionCoverMasterController {
 			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 
 		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 	}
 
@@ -260,7 +260,7 @@ public class SectionCoverMasterController {
 				return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
 			}
 			else {
-				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}
 		}
 		@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
@@ -281,7 +281,7 @@ public class SectionCoverMasterController {
 			if (res != null) {
 				return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
 			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}
 
 		}
@@ -305,7 +305,7 @@ public class SectionCoverMasterController {
 			if (res != null) {
 				return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
 			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}
 
 		}
@@ -325,7 +325,7 @@ public class SectionCoverMasterController {
 				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 			}
 			else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}
 		}
 
@@ -372,7 +372,7 @@ public class SectionCoverMasterController {
 				if (res != null) {
 					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 				}
 			}
 
@@ -397,7 +397,7 @@ public class SectionCoverMasterController {
 				return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
 			}
 			else {
-				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}
 		}
 		@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
@@ -418,7 +418,7 @@ public class SectionCoverMasterController {
 				return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
 			}
 			else {
-				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}
 		}
 

@@ -66,7 +66,7 @@ public class ExcelConfigMasterController {
 				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 			}
 			else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}
 		}
 	}
@@ -111,7 +111,7 @@ public class ExcelConfigMasterController {
 			return new ResponseEntity<CommonResponse>(comRes, HttpStatus.OK);
 		} else {
 
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 	}
 
@@ -130,7 +130,7 @@ public class ExcelConfigMasterController {
 		if (sRes != null) {
 			return new ResponseEntity<CommonResponse>(comRes, HttpStatus.OK);
 		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 	}
 

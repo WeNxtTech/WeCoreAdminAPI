@@ -101,7 +101,7 @@ public class DocumentMasterController {
 				if (res != null) {
 					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 				}
 			}
 
@@ -125,7 +125,7 @@ public class DocumentMasterController {
 				return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
 			}
 			else {
-				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}
 		}
 		// Get By Document Id
@@ -145,7 +145,7 @@ public class DocumentMasterController {
 			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 
 		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 	}
 
@@ -168,7 +168,7 @@ public class DocumentMasterController {
 				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 
 			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}			
 		}
 		
@@ -188,7 +188,7 @@ public class DocumentMasterController {
 				return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
 
 			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}			
 		}
 		
@@ -208,7 +208,7 @@ public class DocumentMasterController {
 			if (res != null) {
 				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}
 
 		}

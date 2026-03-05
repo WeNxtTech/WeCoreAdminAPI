@@ -204,7 +204,8 @@ private static final long serialVersionUID = 1L;
     @Column(name = "CODE_DESC_LOCAL")
     private String codeDescLocal;
     
-    
+    @Column(name = "ADDITIONAL_INFOYN")
+    private String additionalInfoYN;
     
     
     //--- ENTITY LINKS ( RELATIONSHIP )

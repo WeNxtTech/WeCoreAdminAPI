@@ -261,6 +261,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="DPDT_COVER_SIORPRE")
     private String dependentCoverSIorPRE;
     
+    @Column(name = "ADDITIONAL_INFOYN")
+    private String additionalInfoYN;
+    
 }
 
 

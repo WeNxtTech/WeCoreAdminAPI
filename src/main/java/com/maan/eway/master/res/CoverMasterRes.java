@@ -162,4 +162,7 @@ public class CoverMasterRes implements Serializable {
 	@JsonProperty("CodeDescLocal")
 	private String codeDescLocal;
 	
+	@JsonProperty("AdditionalInfoYN")
+    private String additionalInfoYN;
+	
 }

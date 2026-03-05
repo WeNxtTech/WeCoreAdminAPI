@@ -159,4 +159,7 @@ public class SectionCoverMasterRes {
 	@JsonProperty("DependentCoverBasedOn")
     private String dependentCoverSIorPRE;
 	
+	@JsonProperty("AdditionalInfoYN")
+    private String additionalInfoYN;
+	
 }

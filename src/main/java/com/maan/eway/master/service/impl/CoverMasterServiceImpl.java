@@ -503,6 +503,7 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			saveData.setMultiSelectYn( StringUtils.isNotBlank(req.getMultiSelectYn() ) ? req.getMultiSelectYn()  : "N");
 			saveData.setProRataYn( StringUtils.isNotBlank(req.getProRataYn() ) ? req.getProRataYn()  : "N");
 			saveData.setCodeDescLocal(StringUtils.isNotBlank(req.getCodeDescLocal()) ? req.getCodeDescLocal() : ""  );
+			saveData.setAdditionalInfoYN(StringUtils.isNotBlank(req.getAdditionalInfoYN() ) ? req.getAdditionalInfoYN()  : "N");
 			
 			List<ListItemValue> proRataTypes =  getListItem("99999" , saveData.getProRataYn()   ,"PRO_RATA_TYPE");
 			String proRata = saveData.getProRataYn() ;
@@ -820,7 +821,7 @@ public class CoverMasterServiceImpl implements CoverMasterService {
 			res.setExcessPercent(list.get(0).getExcessPercent() == null ? "" :df.format(list.get(0).getExcessPercent()));
 			res.setExcessAmount(list.get(0).getExcessAmount() == null ? "" :df.format(list.get(0).getExcessAmount()));
 			res.setExcessDesc(list.get(0).getExcessDesc() == null ? "" :list.get(0).getExcessDesc());
-			
+			res.setAdditionalInfoYN(list.get(0).getAdditionalInfoYN() == null ? "" :list.get(0).getAdditionalInfoYN());
 			if (null != list && !list.isEmpty() && StringUtils.isNotBlank(list.get(0).getCodeDescLocal())) {
 				res.setCodeDescLocal(list.get(0).getCodeDescLocal());
 			}

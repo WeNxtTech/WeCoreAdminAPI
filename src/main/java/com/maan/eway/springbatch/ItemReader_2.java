@@ -2,14 +2,13 @@ package com.maan.eway.springbatch;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Date;
 
 import javax.sql.DataSource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.batch.core.configuration.annotation.JobScope;
-import org.springframework.batch.item.ItemReader;
-import org.springframework.batch.item.database.JdbcCursorItemReader;
+import org.springframework.batch.infrastructure.item.ItemReader;
+import org.springframework.batch.infrastructure.item.database.JdbcCursorItemReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.RowMapper;
@@ -21,8 +20,10 @@ public class ItemReader_2 extends JdbcCursorItemReader<FactorBatchRecordRes> imp
 	
 	
 
-	public ItemReader_2(@Autowired DataSource primaryDataSource,@Value("#{jobParameters[MainTable]}") String data)
-	 {
+	public ItemReader_2(
+	        @Autowired DataSource primaryDataSource,
+	        @Value("#{jobParameters['MainTable']}") String data) {	 
+		super(primaryDataSource, data, null); 
 		String[] dataOfArray =data.split("~");
 		setDataSource(primaryDataSource);
 		setSql("SELECT FACTOR_TYPE_ID,SNO,COMPANY_ID,PRODUCT_ID,BRANCH_CODE,AGENCY_CODE,SECTION_ID,COVER_ID,SUB_COVER_ID,"

@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -65,7 +64,7 @@ public class LmProductTypeController {
 			}
 			else
 			{
-				return new ResponseEntity<>(null, HttpStatus.CREATED);
+				return ResponseEntity.status(HttpStatus.CREATED).body(null);
 			}
 		}
 	}
@@ -109,8 +108,7 @@ public class LmProductTypeController {
 		}
 		else
 		{
-			return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
-		}
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);		}
 	}
 	
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
@@ -131,8 +129,7 @@ public class LmProductTypeController {
 		}
 		else
 		{
-			return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
-		}
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);		}
 	}
 	
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
@@ -153,8 +150,7 @@ public class LmProductTypeController {
 		}
 		else
 		{
-			return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
-		}
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);		}
 		
 	}
 	
@@ -177,8 +173,7 @@ public class LmProductTypeController {
 		}
 		else
 		{
-			return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
-		}
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);		}
 		
 	}
 }

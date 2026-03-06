@@ -1,6 +1,6 @@
 package com.maan.eway.thread;
 
-import java.time.Duration;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -9,19 +9,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
-import com.maan.eway.bean.RatingFieldMaster;
 import com.maan.eway.common.res.CommonDropdown;
 import com.maan.eway.master.req.MasterApiCallReq;
 import com.maan.eway.res.DropDownRes;
+
 
 public class ThreadDropDownCall implements Callable<Object> {
 	
@@ -39,8 +39,15 @@ public class ThreadDropDownCall implements Callable<Object> {
 		ResponseEntity<CommonDropdown> postForEntity =null;
 		try {
 			{
-				RestTemplate   temp=new RestTemplateBuilder().setConnectTimeout(Duration.ofSeconds(5)).setReadTimeout(Duration.ofSeconds(5)).build();
+				// RestTemplate   temp=new RestTemplateBuilder().setConnectTimeout(Duration.ofSeconds(5)).setReadTimeout(Duration.ofSeconds(5)).build();
 						
+				RestTemplate temp = new RestTemplate();
+			temp.setRequestFactory(
+			    new SimpleClientHttpRequestFactory() {{
+			        setConnectTimeout(5000);
+			        setReadTimeout(5000);
+			    }}
+			);
 						
 				HttpHeaders header=new HttpHeaders();
 				header.setContentType(MediaType.APPLICATION_JSON);

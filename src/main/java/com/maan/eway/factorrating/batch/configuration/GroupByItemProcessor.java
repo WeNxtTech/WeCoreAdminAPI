@@ -1,31 +1,20 @@
 package com.maan.eway.factorrating.batch.configuration;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
-import org.apache.commons.collections.map.HashedMap;
-import org.apache.commons.lang3.StringUtils;
 import org.dozer.DozerBeanMapper;
-import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.infrastructure.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import com.maan.eway.error.Error;
 import com.maan.eway.factorrating.batch.FactorRatingBatchServiceImpl;
-import com.maan.eway.master.req.FactorParamsInsert;
-import com.maan.eway.master.req.FactorRateSaveReq;
-import com.maan.eway.master.service.impl.FactorRateMasterServiceImpl;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.springbatch.FactorRateRawInsert;
-import com.maan.eway.vehicleupload.CustomStepExecutionListener;
 
 @Component
 public class GroupByItemProcessor implements ItemProcessor<List<FactorRateRawInsert>,List<FactorRateRawInsert>>{

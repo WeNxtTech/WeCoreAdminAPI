@@ -1,11 +1,12 @@
 package com.maan.eway.nonmotor.upload;
 
+import java.util.Optional;
+
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.infrastructure.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.maan.eway.batch.entity.EwayEmplyeeDetailRaw;
-import java.util.Optional;
 public class NonMotorRawDataValProcess implements ItemProcessor<EwayEmplyeeDetailRaw, EwayEmplyeeDetailRaw> {
 	
 	@Autowired

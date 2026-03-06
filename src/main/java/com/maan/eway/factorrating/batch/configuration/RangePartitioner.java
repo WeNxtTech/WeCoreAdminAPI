@@ -3,8 +3,8 @@ package com.maan.eway.factorrating.batch.configuration;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.batch.core.partition.support.Partitioner;
-import org.springframework.batch.item.ExecutionContext;
+import org.springframework.batch.core.partition.Partitioner;
+import org.springframework.batch.infrastructure.item.ExecutionContext;
 
 
 public class RangePartitioner implements Partitioner {

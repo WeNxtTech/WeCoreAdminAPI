@@ -1,7 +1,7 @@
 package com.maan.eway.nonmotor.upload;
 
-import org.springframework.batch.item.Chunk;
-import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.infrastructure.item.Chunk;
+import org.springframework.batch.infrastructure.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.maan.eway.batch.entity.EwayEmplyeeDetailRaw;

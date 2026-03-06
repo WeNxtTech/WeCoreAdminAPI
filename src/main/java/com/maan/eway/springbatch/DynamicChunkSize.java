@@ -1,9 +1,9 @@
 package com.maan.eway.springbatch;
 
 import org.springframework.batch.core.configuration.annotation.JobScope;
-import org.springframework.batch.repeat.CompletionPolicy;
-import org.springframework.batch.repeat.RepeatContext;
-import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.batch.infrastructure.repeat.CompletionPolicy;
+import org.springframework.batch.infrastructure.repeat.RepeatContext;
+import org.springframework.batch.infrastructure.repeat.RepeatStatus;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 

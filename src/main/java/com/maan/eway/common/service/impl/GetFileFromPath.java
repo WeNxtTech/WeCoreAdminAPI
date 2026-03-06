@@ -1,11 +1,11 @@
 package com.maan.eway.common.service.impl;
 
 import java.io.File;
+import java.util.Base64;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.Base64Utils;
 import org.springframework.web.multipart.MultipartFile;
 
 public class GetFileFromPath implements Callable<Object> {
@@ -30,7 +30,8 @@ public class GetFileFromPath implements Callable<Object> {
 			 String prefix = "data:"+contenttype+";base64,";
 			 
 			 Document doc= new Document();
-			 String imgurlen=Base64Utils.encodeToString(array);
+			 String imgurlen=Base64.getEncoder().encodeToString(array);
+
 			 doc.setImgUrl(prefix+imgurlen);
 			 return doc;
 		 }else {

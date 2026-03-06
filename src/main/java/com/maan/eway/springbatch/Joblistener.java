@@ -1,9 +1,10 @@
 package com.maan.eway.springbatch;
 
 import org.springframework.batch.core.BatchStatus;
-import org.springframework.batch.core.ChunkListener;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.listener.JobExecutionListenerSupport;
+import org.springframework.batch.core.configuration.xml.JobExecutionListenerParser;
+import org.springframework.batch.core.job.JobExecution;
+import org.springframework.batch.core.listener.ChunkListener;
+import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -13,12 +14,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 @Qualifier(value="FactorListener")
-public class Joblistener extends JobExecutionListenerSupport implements ChunkListener {
+public class Joblistener extends JobExecutionListenerParser implements ChunkListener {
 
 	@Autowired
 	private UtilityServiceImpl service;
 	
-	@Override
 	public void afterJob(JobExecution jobExecution) {
 		String tranId ="";
 		Boolean status=false;

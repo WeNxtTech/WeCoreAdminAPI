@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Calendar;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -18,16 +17,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Order;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-import jakarta.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -46,22 +35,28 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Base64Utils;
 import org.springframework.util.CollectionUtils;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.FactorTypeDetails;
-import com.maan.eway.bean.PremiaConfigDataMaster;
 import com.maan.eway.bean.PremiaConfigMaster;
 import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.FactorParamsInsert;
 import com.maan.eway.master.req.FactorRateSaveReq;
 import com.maan.eway.master.service.FactorRateMasterService;
-import com.maan.eway.repository.FactorRateMasterRepository;
-import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.SuccessRes;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 @Service
 public class EwayFileUploadServiceImpl implements EwayFileUploadService {
@@ -477,7 +472,7 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 			workbook.close();
 			byteArry = bos.toByteArray();
 			String prefix = "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,";
-			String base64 = Base64Utils.encodeToString(byteArry);
+			String base64 = Base64.getEncoder().encodeToString(byteArry);
 			res.setFile(prefix+base64);
 			response.setCommonResponse(res);
 		}catch (Exception e) {

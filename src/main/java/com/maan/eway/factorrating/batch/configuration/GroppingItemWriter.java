@@ -1,11 +1,9 @@
 package com.maan.eway.factorrating.batch.configuration;
 
 import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
-import org.springframework.batch.item.Chunk;
-import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.infrastructure.item.Chunk;
+import org.springframework.batch.infrastructure.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

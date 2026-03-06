@@ -2,20 +2,20 @@ package com.maan.eway.springbatch;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepScope;
+import org.springframework.batch.core.job.Job;
 import org.springframework.batch.core.job.builder.JobBuilder;
-import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.job.parameters.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.step.Step;
 import org.springframework.batch.core.step.builder.StepBuilder;
-import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.ItemWriter;
-import org.springframework.batch.item.file.FlatFileItemReader;
-import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
-import org.springframework.batch.item.file.mapping.DefaultLineMapper;
-import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
-import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
+import org.springframework.batch.infrastructure.item.ItemProcessor;
+import org.springframework.batch.infrastructure.item.ItemWriter;
+import org.springframework.batch.infrastructure.item.file.FlatFileItemReader;
+import org.springframework.batch.infrastructure.item.file.mapping.BeanWrapperFieldSetMapper;
+import org.springframework.batch.infrastructure.item.file.mapping.DefaultLineMapper;
+import org.springframework.batch.infrastructure.item.file.transform.DelimitedLineTokenizer;
+import org.springframework.batch.infrastructure.support.transaction.ResourcelessTransactionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -43,44 +43,44 @@ public class SpringBatchConfig {
 	 @SuppressWarnings("rawtypes")
 	 @Bean("itemReader")
 	 @StepScope
-	 public FlatFileItemReader<FactorRateRawInsert> reader(@Value("#{jobParameters[ewayBatchData]}") String data)  {
-		log.info("Enter || FlatFileItemReader || " +data);
-		SpringBatchMapperResponse factorData =new SpringBatchMapperResponse();
-	    ObjectMapper mapper = new ObjectMapper();
-	    
-	    try {
-	    	factorData = mapper.readValue(data, SpringBatchMapperResponse.class);
-		} catch (Exception e) {
-			e.printStackTrace();
-		} 
-	    
-	    String columns =factorData.getColumns();
-	    String[] arrayofColumns =columns.split("~");
-	    
-	    FlatFileItemReader<FactorRateRawInsert> reader= new FlatFileItemReader<>();
-	    reader. setResource(new FileSystemResource(factorData.getCsvFilePath()));
-	    reader.setName("CSV_FILE_READER");
-	    reader.setLinesToSkip(1);
-	    
-		@SuppressWarnings("unchecked")
-		DefaultLineMapper<FactorRateRawInsert> lineMapper = new DefaultLineMapper();
-	    DelimitedLineTokenizer tokenizer = new DelimitedLineTokenizer();
-	    tokenizer.setDelimiter(DELIMITER);
-	    tokenizer.setStrict(false);
-	    tokenizer.setNames(arrayofColumns);
-	    
-	    @SuppressWarnings("unchecked")
-		BeanWrapperFieldSetMapper<FactorRateRawInsert> fieldSetMapper = new BeanWrapperFieldSetMapper();
-	    fieldSetMapper.setTargetType(FactorRateRawInsert.class);
-	    
-	    lineMapper.setLineTokenizer(tokenizer);
-	    lineMapper.setFieldSetMapper(fieldSetMapper);
+	 public FlatFileItemReader<FactorRateRawInsert> reader(@Value("#{jobParameters[ewayBatchData]}") String data) {
 
-	    reader.setLineMapper(lineMapper);
-	    reader.setRecordSeparatorPolicy(new BlankLineRecordSeparatorPolicy());
-	    return reader;
-	    
-	    }
+	     log.info("Enter || FlatFileItemReader || " + data);
+
+	     SpringBatchMapperResponse factorData = new SpringBatchMapperResponse();
+	     ObjectMapper mapper = new ObjectMapper();
+
+	     try {
+	         factorData = mapper.readValue(data, SpringBatchMapperResponse.class);
+	     } catch (Exception e) {
+	         e.printStackTrace();
+	     }
+
+	     String columns = factorData.getColumns();
+	     String[] arrayofColumns = columns.split("~");
+
+	     DefaultLineMapper<FactorRateRawInsert> lineMapper = new DefaultLineMapper<>();
+
+	     DelimitedLineTokenizer tokenizer = new DelimitedLineTokenizer();
+	     tokenizer.setDelimiter(DELIMITER);
+	     tokenizer.setStrict(false);
+	     tokenizer.setNames(arrayofColumns);
+
+	     BeanWrapperFieldSetMapper<FactorRateRawInsert> fieldSetMapper = new BeanWrapperFieldSetMapper<>();
+	     fieldSetMapper.setTargetType(FactorRateRawInsert.class);
+
+	     lineMapper.setLineTokenizer(tokenizer);
+	     lineMapper.setFieldSetMapper(fieldSetMapper);
+
+	     FlatFileItemReader<FactorRateRawInsert> reader =
+	             new FlatFileItemReader<>(new FileSystemResource(factorData.getCsvFilePath()), lineMapper);
+
+	     reader.setName("CSV_FILE_READER");
+	     reader.setLinesToSkip(1);
+	     reader.setRecordSeparatorPolicy(new BlankLineRecordSeparatorPolicy());
+
+	     return reader;
+	 }
 	 
 
 		 @Bean

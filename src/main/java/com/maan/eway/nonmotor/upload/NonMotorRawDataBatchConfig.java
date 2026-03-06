@@ -2,20 +2,20 @@ package com.maan.eway.nonmotor.upload;
 
 import java.io.IOException;
 
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobExecutionListener;
-import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepScope;
+import org.springframework.batch.core.job.Job;
 import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.listener.JobExecutionListener;
 import org.springframework.batch.core.partition.PartitionHandler;
-import org.springframework.batch.core.partition.support.Partitioner;
+import org.springframework.batch.core.partition.Partitioner;
 import org.springframework.batch.core.partition.support.TaskExecutorPartitionHandler;
 import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.step.Step;
 import org.springframework.batch.core.step.builder.StepBuilder;
-import org.springframework.batch.item.file.FlatFileItemReader;
-import org.springframework.batch.item.file.mapping.DefaultLineMapper;
-import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
-import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
+import org.springframework.batch.infrastructure.item.file.FlatFileItemReader;
+import org.springframework.batch.infrastructure.item.file.mapping.DefaultLineMapper;
+import org.springframework.batch.infrastructure.item.file.transform.DelimitedLineTokenizer;
+import org.springframework.batch.infrastructure.support.transaction.ResourcelessTransactionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -99,44 +99,60 @@ public class NonMotorRawDataBatchConfig {
 	@SuppressWarnings("unchecked")
 	@StepScope
 	@Bean("nonmot_itemReader")
-	public FlatFileItemReader<Record> reader(@Value("#{jobParameters[EwayBatchReq]}") String fileName,
-			@Value("#{jobParameters[ExcelHeaderNames]}") String ExcelHeaderNames, @Value("#{stepExecutionContext['fromId']}") int fromId,
-            @Value("#{stepExecutionContext['toId']}") int toId ) {
-		 FlatFileItemReader<Record> reader = new FlatFileItemReader();
-		 EwayUploadRes response = new EwayUploadRes();
-		 try {
-			 
-			 String csvFilePath = "";
-			 EwayBatchReq request= new EwayBatchReq();
-		     ObjectMapper mapper = new ObjectMapper();
-		     try {
-		    	 request = mapper.readValue(fileName, EwayBatchReq.class);
-		    	 batchWriter.setEwayRequest(fileName);
-		    	 response=request.getEwayUploadRes();
-		    	 csvFilePath =response.getCsvfilepath();
-			  } catch (JsonParseException e) {e.printStackTrace();}catch (JsonMappingException e) {e.printStackTrace();} 
-		      	 catch (IOException e) {e.printStackTrace();}
-		     
-		     
-		     reader.setResource(new FileSystemResource(csvFilePath));
-		     reader.setName("CSV_FILE_READER");
-		     if(fromId==0)fromId=1;
-			    
-			   reader.setCurrentItemCount(fromId);
-			   reader.setMaxItemCount(toId);
-			    
-		    // reader.setLinesToSkip(1);
-		     reader.setLineMapper(new DefaultLineMapper() {{
-			 setLineTokenizer(new DelimitedLineTokenizer("~") {{
-				 
-			 setNames(ExcelHeaderNames.split(","));
-			    }});
-			 setFieldSetMapper(new VehicleCustomFieldSetMapper());
-			       
-			    }});
-	    }catch(Exception e) {
-	    	e.printStackTrace();
+	public FlatFileItemReader<Record> reader(
+	        @Value("#{jobParameters[EwayBatchReq]}") String fileName,
+	        @Value("#{jobParameters[ExcelHeaderNames]}") String ExcelHeaderNames,
+	        @Value("#{stepExecutionContext['fromId']}") int fromId,
+	        @Value("#{stepExecutionContext['toId']}") int toId) {
+
+	    EwayUploadRes response = new EwayUploadRes();
+	    String csvFilePath = "";
+
+	    try {
+
+	        EwayBatchReq request = new EwayBatchReq();
+	        ObjectMapper mapper = new ObjectMapper();
+
+	        try {
+
+	            request = mapper.readValue(fileName, EwayBatchReq.class);
+	            batchWriter.setEwayRequest(fileName);
+
+	            response = request.getEwayUploadRes();
+	            csvFilePath = response.getCsvfilepath();
+
+	        } catch (JsonParseException e) {
+	            e.printStackTrace();
+	        } catch (JsonMappingException e) {
+	            e.printStackTrace();
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
 	    }
+
+	    DefaultLineMapper<Record> lineMapper = new DefaultLineMapper<>();
+
+	    DelimitedLineTokenizer tokenizer = new DelimitedLineTokenizer("~");
+	    tokenizer.setNames(ExcelHeaderNames.split(","));
+
+	    lineMapper.setLineTokenizer(tokenizer);
+	    lineMapper.setFieldSetMapper(new VehicleCustomFieldSetMapper());
+
+	    FlatFileItemReader<Record> reader =
+	            new FlatFileItemReader<>(new FileSystemResource(csvFilePath), lineMapper);
+
+	    reader.setName("CSV_FILE_READER");
+
+	    if (fromId == 0) {
+	        fromId = 1;
+	    }
+
+	    reader.setCurrentItemCount(fromId);
+	    reader.setMaxItemCount(toId);
+
 	    return reader;
 	}
 

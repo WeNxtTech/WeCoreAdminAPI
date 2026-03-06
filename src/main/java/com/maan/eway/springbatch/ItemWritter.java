@@ -10,10 +10,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
 import org.springframework.batch.core.configuration.annotation.JobScope;
-import org.springframework.batch.item.Chunk;
-import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.infrastructure.item.Chunk;
+import org.springframework.batch.infrastructure.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -21,7 +20,6 @@ import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.master.req.FactorParamsInsert;
 import com.maan.eway.master.req.FactorRateSaveReq;
 import com.maan.eway.master.service.impl.FactorRateMasterServiceImpl;
-import com.maan.eway.res.SuccessRes;
 
 @Component
 @JobScope

@@ -2,7 +2,6 @@ package com.maan.eway.master.service.impl;
 
 import java.net.ConnectException;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -22,12 +21,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -409,9 +408,17 @@ public class PremiaCustomerDetailsServiceImpl implements PremiaCustomerDetailsSe
 			ResponseEntity<String> response = null;
 			ResponseEntity<BrokerDetailsRes> brokerDetailResponse = null;
 
-			RestTemplate temp = new RestTemplateBuilder().setConnectTimeout(Duration.ofSeconds(5))
-					.setReadTimeout(Duration.ofMinutes(2)).build();
+			// RestTemplate temp = new RestTemplateBuilder().setConnectTimeout(Duration.ofSeconds(5))
+			// 		.setReadTimeout(Duration.ofMinutes(2)).build();
 
+			RestTemplate temp = new RestTemplate();
+			temp.setRequestFactory(
+			    new SimpleClientHttpRequestFactory() {{
+			        setConnectTimeout(5000);
+			        setReadTimeout(5000);
+			    }}
+			);
+			
 			HttpHeaders header = new HttpHeaders();
 			header.setContentType(MediaType.APPLICATION_JSON);
 			GenerateAuthToken generateAuthToken = new GenerateAuthToken();

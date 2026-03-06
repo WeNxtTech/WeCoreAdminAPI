@@ -1,18 +1,13 @@
 package com.maan.eway.factorrating.batch.configuration;
 
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.JobParametersBuilder;
+import org.springframework.batch.core.job.Job;
+import org.springframework.batch.core.job.parameters.JobParameters;
+import org.springframework.batch.core.job.parameters.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
-
-import com.google.gson.Gson;
-import com.maan.eway.res.DropDownRes;
 
 public class Grouping_Thread_Job implements Runnable {
 

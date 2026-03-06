@@ -11,8 +11,8 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.springframework.batch.core.partition.support.Partitioner;
-import org.springframework.batch.item.ExecutionContext;
+import org.springframework.batch.core.partition.Partitioner;
+import org.springframework.batch.infrastructure.item.ExecutionContext;
 
 import com.maan.eway.factorrating.batch.FactorRatingBatchServiceImpl;
 import com.maan.eway.springbatch.FactorRateRawInsert;

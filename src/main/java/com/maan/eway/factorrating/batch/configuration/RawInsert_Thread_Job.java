@@ -4,13 +4,12 @@ import java.util.Date;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.JobParametersBuilder;
+import org.springframework.batch.core.job.Job;
+import org.springframework.batch.core.job.parameters.JobParameters;
+import org.springframework.batch.core.job.parameters.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
 
 import com.google.gson.Gson;
-import com.maan.eway.factorrating.batch.FactorRatingBatchServiceImpl;
 import com.maan.eway.fileupload.FileUploadInputRequest;
 
 public class RawInsert_Thread_Job  implements Runnable{

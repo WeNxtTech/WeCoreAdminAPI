@@ -49,8 +49,7 @@ public class NotifTransactionDetailsController {
     		if (data != null) {
     			return new ResponseEntity<>(data,HttpStatus.CREATED);
   			  } else {
-    			return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
-   			 }
+  				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);   			 }
     }
 
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")

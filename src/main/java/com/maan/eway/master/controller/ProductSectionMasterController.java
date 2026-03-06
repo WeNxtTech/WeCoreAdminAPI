@@ -7,6 +7,7 @@ package com.maan.eway.master.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -352,7 +352,7 @@ public class ProductSectionMasterController {
 			 String prefix = "data:"+contenttype+";base64,";
 			 
 			// Document doc= new Document();
-			 String imgurlen=Base64Utils.encodeToString(array);
+			 String imgurlen=Base64.getEncoder().encodeToString(array);
 			 imgurlen = prefix+imgurlen;
 			 return imgurlen;
 		 }else {

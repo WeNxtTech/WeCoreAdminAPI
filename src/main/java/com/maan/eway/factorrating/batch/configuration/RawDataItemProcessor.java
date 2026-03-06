@@ -12,7 +12,7 @@ import java.util.Locale;
 import java.util.StringJoiner;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.infrastructure.item.ItemProcessor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maan.eway.bean.FactorRateMaster;

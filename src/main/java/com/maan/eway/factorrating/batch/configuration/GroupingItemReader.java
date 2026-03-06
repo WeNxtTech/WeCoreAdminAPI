@@ -12,8 +12,7 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.springframework.batch.item.ItemReader;
-import org.springframework.batch.item.support.ListItemReader;
+import org.springframework.batch.infrastructure.item.ItemReader;
 
 import com.maan.eway.springbatch.FactorRateRawInsert;
 import com.maan.eway.springbatch.FactorRateRawMasterRepository;

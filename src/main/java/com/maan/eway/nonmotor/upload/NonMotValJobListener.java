@@ -6,18 +6,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.batch.core.BatchStatus;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.JobExecutionListener;
+import org.springframework.batch.core.job.JobExecution;
+import org.springframework.batch.core.listener.JobExecutionListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.maan.eway.batch.entity.EserviceMotorDetailsRaw;
 import com.maan.eway.batch.entity.EwayEmplyeeDetailRaw;
-import com.maan.eway.batch.repository.EserviceMotorDetailsRawRepository;
 import com.maan.eway.batch.repository.EwayEmplyeeDetailRawRepository;
 import com.maan.eway.batch.repository.TransactionControlDetailsRepository;
 import com.maan.eway.factorrating.batch.FactorRatingBatchServiceImpl;

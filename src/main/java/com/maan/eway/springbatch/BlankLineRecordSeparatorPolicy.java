@@ -1,6 +1,6 @@
 package com.maan.eway.springbatch;
 
-import org.springframework.batch.item.file.separator.SimpleRecordSeparatorPolicy;
+import org.springframework.batch.infrastructure.item.file.separator.SimpleRecordSeparatorPolicy;
 
 public class BlankLineRecordSeparatorPolicy extends SimpleRecordSeparatorPolicy {
 

@@ -1,3 +1,3 @@
 @Library('jenkins-shared-library') _
 
-dockerComposePipeline('adminAPI')
+dockerComposePipeline('wecore-life','adminAPI')

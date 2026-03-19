@@ -12,11 +12,15 @@
 
 package com.maan.eway.repository;
 
-import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
 
-import com.maan.eway.bean.SectionCoverMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.bean.SectionCoverMasterId;
 /**
  * <h2>SectionCoverMasterRepository</h2>
@@ -29,5 +33,28 @@ import com.maan.eway.bean.SectionCoverMasterId;
  
  
 public interface SectionCoverMasterRepository  extends JpaRepository<SectionCoverMaster,SectionCoverMasterId > , JpaSpecificationExecutor<SectionCoverMaster> {
-
-}
+	
+	@Query("SELECT s FROM SectionCoverMaster s " +
+		       "WHERE s.companyId          = :companyId " +
+		       "AND   s.productId          = :productId " +
+		       "AND   s.sectionId          = :sectionId " +
+		       "AND   s.status             = 'Y' " +
+		       "AND   (:additionalInfoYN IS NULL " +
+		       "       OR s.additionalInfoYN = :additionalInfoYN) " +
+		       "AND   s.effectiveDateStart <= :currentDate " +   // start not after today
+		       "AND   s.effectiveDateEnd   >= :currentDate " +   // end not before today
+		       "AND   s.amendId = (" +
+		       "       SELECT MAX(s2.amendId) " +
+		       "       FROM   SectionCoverMaster s2 " +
+		       "       WHERE  s2.companyId  = s.companyId " +
+		       "       AND    s2.productId  = s.productId " +
+		       "       AND    s2.sectionId  = s.sectionId " +
+		       "       AND    s2.coverId    = s.coverId) " +
+		       "ORDER BY s.coverName ASC")
+		List<SectionCoverMaster> findActiveCoversForSection(
+		        @Param("companyId")        String  companyId,
+		        @Param("productId")        Integer productId,
+		        @Param("sectionId")        Integer sectionId,
+		        @Param("additionalInfoYN") String  additionalInfoYN,
+		        @Param("currentDate")      Date    currentDate);
+	}

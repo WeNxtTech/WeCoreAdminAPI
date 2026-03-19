@@ -149,4 +149,9 @@ public class CoverMasterSaveReq implements Serializable {
 	@JsonProperty("CodeDescLocal")
 	private String codeDescLocal;
 	
+	@JsonProperty("AdditionalInfoYN")
+	private String additionalInfoYN;
+	
+	
+	
 }

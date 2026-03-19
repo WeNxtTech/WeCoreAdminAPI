@@ -252,6 +252,18 @@ private static final long serialVersionUID = 1L;
     @Column(name ="MINIMUM_RATEYN")
     private String minimumRateYn;
     
+    @Column(name="Endt_PRO_RATA_YN")
+    private String endtProRataYn;
+    
+    @Column(name="Endt_PRO_RATA_DESC")
+    private String endtProRataDesc;
+    
+    @Column(name="DPDT_COVER_SIORPRE")
+    private String dependentCoverSIorPRE;
+    
+    @Column(name = "ADDITIONAL_INFOYN")
+    private String additionalInfoYN;
+    
 }
 
 

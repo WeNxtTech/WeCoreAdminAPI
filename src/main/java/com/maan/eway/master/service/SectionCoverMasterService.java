@@ -13,6 +13,7 @@ import com.maan.eway.master.req.SectionCoverMasterNonSelectedReq;
 import com.maan.eway.master.req.SectionCoverMasterSaveReq;
 import com.maan.eway.master.req.SectionCoverUpdateReq;
 import com.maan.eway.master.res.CoverMasterGetAllRes;
+import com.maan.eway.master.res.SectionCoverMasterGetAllAddiRes;
 import com.maan.eway.master.res.SectionCoverMasterGetAllRes;
 import com.maan.eway.master.res.SectionCoverMasterRes;
 import com.maan.eway.res.DropDownRes;
@@ -52,6 +53,9 @@ public interface SectionCoverMasterService  {
 	List<SectionCoverMasterGetAllRes> getallSectionBrokerCoverDetails(SectionCoverMasterGetAllReq req);
 
 	List<SectionCoverMasterGetAllRes> getallSectionCoverDetailsWithPremium(SectionCoverMasterGetAllReq req);
+	
+	public List<SectionCoverMasterGetAllAddiRes> getActiveCoversForAdditionalInfo(
+	        SectionCoverMasterGetAllReq req);
 
 
 }

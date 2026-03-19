@@ -42,6 +42,7 @@ import com.maan.eway.master.req.SectionCoverMasterNonSelectedReq;
 import com.maan.eway.master.req.SectionCoverMasterSaveReq;
 import com.maan.eway.master.req.SectionCoverUpdateReq;
 import com.maan.eway.master.res.CoverMasterGetAllRes;
+import com.maan.eway.master.res.SectionCoverMasterGetAllAddiRes;
 import com.maan.eway.master.res.SectionCoverMasterGetAllRes;
 import com.maan.eway.master.res.SectionCoverMasterRes;
 import com.maan.eway.master.service.SectionCoverMasterService;
@@ -1566,8 +1567,20 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 					saveData.setTaxAmount(req.getTaxAmount()==null ?BigDecimal.ZERO :new BigDecimal(req.getTaxAmount()));
 					saveData.setTaxCode(req.getTaxCode());
 				}
+				
 				saveData.setFreeCoverLimit(StringUtils.isBlank(req.getFreeCoverLimit()) ? BigDecimal.ZERO : new BigDecimal(req.getFreeCoverLimit())) ;
 				saveData.setCoverNameLocal(StringUtils.isBlank(req.getCodeDescLocal()) ? "" : req.getCodeDescLocal());
+				saveData.setEndtProRataYn(StringUtils.isBlank(req.getEndtProRataYn())? "N" :req.getEndtProRataYn());
+				List<ListItemValue> EndtList =  getListItem("99999" , saveData.getEndtProRataYn()   ,"PRO_RATA_TYPE");
+				if(EndtList!=null && !EndtList.isEmpty())
+				{
+					List<ListItemValue> r = EndtList.stream()
+							.filter(e -> saveData.getEndtProRataYn().equalsIgnoreCase(e.getItemCode()))
+							.collect(Collectors.toList());
+					saveData.setEndtProRataDesc(r.get(0).getItemValue())	;
+				}
+				saveData.setDependentCoverSIorPRE(req.getDependentCoverSIorPRE());
+				
 				repo.saveAndFlush(saveData);
 			
 				
@@ -2348,7 +2361,62 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 		}
 		return resList;
 	}
+	@Override
+	public List<SectionCoverMasterGetAllAddiRes> getActiveCoversForAdditionalInfo(
+	        SectionCoverMasterGetAllReq req) {
 
+	    try {
+
+	        String additionalInfoYN =
+	                (req.getAdditionalInfoYN() != null
+	                 && !req.getAdditionalInfoYN().isBlank())
+	                 ? req.getAdditionalInfoYN() : null;
+
+	        List<SectionCoverMaster> list = repo
+	                .findActiveCoversForSection(
+	                        req.getInsuranceId(),
+	                        Integer.valueOf(req.getProductId()),
+	                        Integer.valueOf(req.getSectionId()),
+	                        additionalInfoYN,
+	                        new Date());
+
+	        if (list == null || list.isEmpty())
+	            return Collections.emptyList();
+
+	        
+	        list.sort(Comparator
+	                .comparing(SectionCoverMaster::getAgencyCode)
+	                .thenComparing(SectionCoverMaster::getBranchCode));
+
+	        list = list.stream()
+	                   .filter(distinctByKey(s ->
+	                           Arrays.asList(s.getCoverId(), s.getSubCoverId())))
+	                   .collect(Collectors.toList());
+
+	        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
+	        return list.stream().map(s -> {
+	        	SectionCoverMasterGetAllAddiRes res = new SectionCoverMasterGetAllAddiRes();
+	            res.setCoverId(String.valueOf(s.getCoverId()));
+	            res.setProductId(String.valueOf(s.getProductId()));
+	            res.setSectionId(String.valueOf(s.getSectionId()));
+	            res.setCompanyId(s.getCompanyId());
+	            res.setCoverName(s.getCoverName());
+	            res.setCoverDesc(s.getCoverDesc());
+	            res.setStatus(s.getStatus());
+	            res.setAdditionalInfoYN(s.getAdditionalInfoYN());
+	            res.setEffectiveDateStart(
+	                    s.getEffectiveDateStart() != null
+	                    ? sdf.format(s.getEffectiveDateStart()) : null);
+	            return res;
+	        }).collect(Collectors.toList());
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        log.error("getActiveCoversForAdditionalInfo error: {}", e.getMessage());
+	        return null;
+	    }
+	}
 	
 
 }

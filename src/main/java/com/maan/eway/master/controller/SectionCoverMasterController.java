@@ -26,6 +26,7 @@ import com.maan.eway.master.req.SectionCoverMasterNonSelectedReq;
 import com.maan.eway.master.req.SectionCoverMasterSaveReq;
 import com.maan.eway.master.req.SectionCoverUpdateReq;
 import com.maan.eway.master.res.CoverMasterGetAllRes;
+import com.maan.eway.master.res.SectionCoverMasterGetAllAddiRes;
 import com.maan.eway.master.res.SectionCoverMasterGetAllRes;
 import com.maan.eway.master.res.SectionCoverMasterRes;
 import com.maan.eway.master.service.SectionCoverMasterService;
@@ -220,7 +221,6 @@ public class SectionCoverMasterController {
 				}
 			}
 		
-		// Get By Cover Id
 		@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
 		@PostMapping("/getbysectioncoverid")
 		@ApiOperation("This Method is to get by Section Cover id")
@@ -422,5 +422,42 @@ public class SectionCoverMasterController {
 			}
 		}
 
+		@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
+		@PostMapping("/getCoversForAdditionalInfo")
+		@ApiOperation("Get active covers for a section filtered by AdditionalInfoYN")
+		public ResponseEntity<CommonRes> getCoversForAdditionalInfo(
+		        @RequestBody SectionCoverMasterGetAllReq req) {
+
+		    CommonRes data = new CommonRes();
+
+		    if (req.getInsuranceId() == null || req.getInsuranceId().isBlank()) {
+		        data.setIsError(true);
+		        data.setMessage("CompanyId is mandatory");
+		        data.setErrorMessage(Collections.emptyList());
+		        return ResponseEntity.ok(data);
+		    }
+		    if (req.getProductId() == null) {
+		        data.setIsError(true);
+		        data.setMessage("ProductId is mandatory");
+		        data.setErrorMessage(Collections.emptyList());
+		        return ResponseEntity.ok(data);
+		    }
+		    if (req.getSectionId() == null) {
+		        data.setIsError(true);
+		        data.setMessage("SectionId is mandatory");
+		        data.setErrorMessage(Collections.emptyList());
+		        return ResponseEntity.ok(data);
+		    }
+
+		    List<SectionCoverMasterGetAllAddiRes> res =
+		            sectionCoverService.getActiveCoversForAdditionalInfo(req);
+
+		    data.setCommonResponse(res);
+		    data.setIsError(false);
+		    data.setErrorMessage(Collections.emptyList());
+		    data.setMessage("Success");
+
+		    return new ResponseEntity<>(data, HttpStatus.OK);
+		}
 		
 }

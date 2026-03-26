@@ -211,7 +211,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 							if (loginData.getSubUserType().equalsIgnoreCase("both")
 									&& (data.getItemCode().equalsIgnoreCase("low")
 											|| data.getItemCode().equalsIgnoreCase("high")
-											|| loginData.getSubUserType().equalsIgnoreCase("claimofficer"))) {
+											|| data.getItemCode().equalsIgnoreCase("claimofficer"))) {
 								
 								if(! data.getItemCode().equalsIgnoreCase("both") ) {
 									res.setCode(data.getItemCode());

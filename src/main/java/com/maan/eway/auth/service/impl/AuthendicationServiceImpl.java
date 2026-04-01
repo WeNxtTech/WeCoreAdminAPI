@@ -187,7 +187,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 		try {
 			LoginUserInfo userInfo = loginUserRepo.findByLoginId(login.getLoginId());
 			
-			r.setToken(session.getTempTokenid());
+			r.setToken(session.getTokenId());
 			r.setLoginId(login.getLoginId());
 			r.setUserName(userInfo.getUserName());
 			r.setUserMail(StringUtils.isBlank(userInfo.getUserMail())?"":userInfo.getUserMail());

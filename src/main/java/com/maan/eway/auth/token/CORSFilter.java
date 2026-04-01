@@ -31,19 +31,25 @@ public class CORSFilter implements Filter {
 	 */
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
 			throws IOException, ServletException {
+		HttpServletRequest httpRequest = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) res;
-		response.setHeader("Access-Control-Allow-Origin", "*");
-		response.setHeader("Access-Control-Allow-Methods", "*");
+		String origin = httpRequest.getHeader("Origin");
+		// System.out.println("Origin: " + origin);
+		response.setHeader("Access-Control-Allow-Origin", origin);
+		response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+//		response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+//		response.setHeader("Access-Control-Allow-Origin", "*");
+//		response.setHeader("Access-Control-Allow-Methods", "*");
+		response.setHeader("Access-Control-Allow-Headers", "*");
 		response.setHeader("Access-Control-Max-Age", "3600");
 		response.setHeader("X-Requested-With", "XMLHttpRequest");
-		response.setHeader("Access-Control-Allow-Headers","*");
-		HttpServletRequest httpRequest = (HttpServletRequest) req;
 		if ("OPTIONS".equalsIgnoreCase(httpRequest.getMethod())) {
 			response.setStatus(HttpServletResponse.SC_OK);
 		} else {
 			chain.doFilter(req, res);
 		}
 	}
+
 
 	public void init(FilterConfig filterConfig) {
 	}

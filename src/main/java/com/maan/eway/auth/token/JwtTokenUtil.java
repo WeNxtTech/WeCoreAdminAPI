@@ -2,7 +2,6 @@
 package com.maan.eway.auth.token;
 
 
-import static com.maan.eway.auth.token.Constants.ACCESS_TOKEN_VALIDITY_SECONDS;
 import static com.maan.eway.auth.token.Constants.SIGNING_KEY;
 
 import java.io.Serializable;
@@ -10,10 +9,12 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Date;
 import java.util.function.Function;
 
-import jakarta.servlet.http.HttpServletRequest;
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -25,28 +26,35 @@ import com.maan.eway.bean.LoginMaster;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Component
 public class JwtTokenUtil implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	
+	private static final String SECRET = "MaanSavor@123456";
+	
 
-	public String getUsernameFromToken(String token) {
+	public String getUsernameFromToken(String token) throws Exception {
         return getClaimFromToken(token, Claims::getSubject);
     }
 
-    public Date getExpirationDateFromToken(String token) {
+    public Date getExpirationDateFromToken(String token) throws Exception {
         return getClaimFromToken(token, Claims::getExpiration);
     }
 
-    public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
+    public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) throws Exception {
         final Claims claims = getAllClaimsFromToken(token);
         return claimsResolver.apply(claims);
     }
 
-    private Claims getAllClaimsFromToken(String token) {
-        return Jwts.parser().setSigningKey(SIGNING_KEY).parseClaimsJws(token).getBody();
-    }
+    
+	private Claims getAllClaimsFromToken(String token) throws Exception {
+		String username = decrypt(token);
+		String decoded = new String(Base64.getDecoder().decode(username));
+		return Jwts.parser().setSigningKey(SIGNING_KEY).parseClaimsJws(decoded).getBody();
+	}
 
     private Boolean isTokenExpired(String token,HttpServletRequest req) {
     	Date expiration = new Date();
@@ -71,11 +79,11 @@ public class JwtTokenUtil implements Serializable {
         return time;
     }
 
-    public String generateToken(LoginMaster user) {
+    public String generateToken(LoginMaster user) throws Exception {
         return doGenerateToken(user.getLoginId());
     }
       
-   public String doGenerateToken(String loginid) {
+   public String doGenerateToken(String loginid) throws Exception {
         Claims claims = Jwts.claims().setSubject(loginid);
         claims.put("scopes", Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN")));
         claims.put("scopes", Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
@@ -86,11 +94,30 @@ public class JwtTokenUtil implements Serializable {
                 .setExpiration(new Date(System.currentTimeMillis() + 3000000 )) 
                 .signWith(SignatureAlgorithm.HS256, SIGNING_KEY)
                 .compact();
-        return token;
+        String encoded = Base64.getEncoder().encodeToString(token.getBytes());
+        return  encrypt(encoded);
+        //return token;
     }
+   
+   public static String encrypt(String data) throws Exception {
+       SecretKeySpec key = new SecretKeySpec(SECRET.getBytes(), "AES");
+       Cipher cipher = Cipher.getInstance("AES");
+       cipher.init(Cipher.ENCRYPT_MODE, key);
+       byte[] encrypted = cipher.doFinal(data.getBytes());
+       return Base64.getEncoder().encodeToString(encrypted);
+   }
+   
+   public static String decrypt(String encryptedData) throws Exception {
+	    SecretKeySpec key = new SecretKeySpec(SECRET.getBytes(), "AES");
+	    Cipher cipher = Cipher.getInstance("AES");
+	    cipher.init(Cipher.DECRYPT_MODE, key);
+	    byte[] decoded = Base64.getDecoder().decode(encryptedData);
+	    return new String(cipher.doFinal(decoded));
+	}
 
-    public Boolean validateToken(String token, UserDetails userDetails,HttpServletRequest req) {
-        final String username = token;//getUsernameFromToken(token);
-        return (username.equalsIgnoreCase(userDetails.getUsername()) && !isTokenExpired(token,req));
-    }
+   public Boolean validateToken(String token, UserDetails userDetails,HttpServletRequest req) throws Exception {
+//       final String username = decrypt(token);
+//       String decoded = new String(Base64.getDecoder().decode(username));
+       return (token.equalsIgnoreCase(userDetails.getUsername()) && !isTokenExpired(token,req));
+   }
 }

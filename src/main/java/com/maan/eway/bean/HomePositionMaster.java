@@ -701,6 +701,9 @@ private String brokerTiraCode;
 
 @Column(name="SOURCE_TYPE_ID")
 private String sourceTypeId;
+
+@Column(name = "BDM_NAME")
+private String bdmName;
 }
 
 

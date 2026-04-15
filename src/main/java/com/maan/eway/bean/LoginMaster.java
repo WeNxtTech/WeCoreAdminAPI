@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import jakarta.persistence.Table;
 
 import lombok.*;
 import jakarta.persistence.*;
@@ -140,6 +139,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="DML_YN", length=10)
     private String     dmlYN ;
+    
+    @Column(name="CLAIM_TYPE")
+    private String claimType;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 

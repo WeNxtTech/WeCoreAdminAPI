@@ -18,5 +18,12 @@ public class SectionDetailsRes {
 	private String quoteNo;
 	@JsonProperty("ProductId")
 	private String productId;
+	@JsonProperty("ProductName")
+	private String productName;
+	@JsonProperty("SectionId")
+	private String sectionId;
+	@JsonProperty("SectionName")
+	private String sectionName;
+	
 
 }

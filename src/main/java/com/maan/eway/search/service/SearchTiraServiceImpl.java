@@ -244,6 +244,9 @@ public class SearchTiraServiceImpl implements  SearchTiraService{
 				secres.setQuoteNo(sec.getQuoteNo());
 				secres.setTiraResponseId(sec.getTiraResponseId());
 				secres.setProductId(sec.getProductId());
+				secres.setProductName(sec.getProductDesc());
+				secres.setSectionId(sec.getSectionId());
+				secres.setSectionName(sec.getSectionDesc());
 				secresList.add(secres);
 			}
 			dto.setSectionList(secresList);
@@ -262,6 +265,9 @@ public class SearchTiraServiceImpl implements  SearchTiraService{
 						buildRes.setIndustryId(building.getIndustryId());
 						buildRes.setBrokerTiraCode(building.getBrokerTiraCode());
 						buildRes.setSalePointCode(building.getSalePointCode());
+						buildRes.setSectionname(building.getSectionDesc());
+						buildRes.setProductid(building.getProductId());
+						buildRes.setProductName(building.getProductDesc());
 						bulidingList.add(buildRes);
 					}
 					dto.setBuildinglist(bulidingList);
@@ -279,6 +285,8 @@ public class SearchTiraServiceImpl implements  SearchTiraService{
 						motRes.setVehicleId(mot.getVehicleId());
 						motRes.setProductId(mot.getProductId());
 						motRes.setSectionId(mot.getSectionId());
+						motRes.setSectionname(mot.getSectionName());
+						motRes.setProductName(mot.getProductName());
 						motRes.setBrokerTiraCode(mot.getBrokerTiraCode());
 						motRes.setSalePointCode(mot.getSalePointCode());
 						motorResList.add(motRes);
@@ -294,6 +302,7 @@ public class SearchTiraServiceImpl implements  SearchTiraService{
 						hum.setQuoteNo(human.getQuoteNo());
 						hum.setCoverId(human.getCoverId() + "");
 						hum.setSectionId(human.getSectionId());
+						hum.setSectionName(human.getSectionDesc());
 						hum.setLocationId(human.getLocationId() + "");
 						hum.setLocationName(human.getLocationName());
 						hum.setBranchCode(human.getBranchCode());
@@ -332,6 +341,10 @@ public class SearchTiraServiceImpl implements  SearchTiraService{
 				secres.setQuoteNo(sec.getQuoteNo());
 				secres.setTiraResponseId(sec.getTiraResponseId());
 				secres.setProductId(sec.getProductId());
+				secres.setProductName(sec.getProductDesc());
+				secres.setSectionId(sec.getSectionId());
+				secres.setSectionName(sec.getSectionDesc());
+				
 				secresList.add(secres);
 			}
 			dto.setSectionList(secresList);
@@ -348,6 +361,8 @@ public class SearchTiraServiceImpl implements  SearchTiraService{
 				motRes.setSectionId(mot.getSectionId());
 				motRes.setBrokerTiraCode(mot.getBrokerTiraCode());
 				motRes.setSalePointCode(mot.getSalePointCode());
+				motRes.setSectionname(mot.getSectionName());
+				motRes.setProductName(mot.getProductName());
 				motorResList.add(motRes);
 			}
 			dto.setMotorResList(motorResList);
@@ -378,6 +393,9 @@ public class SearchTiraServiceImpl implements  SearchTiraService{
 					secres.setQuoteNo(sec.getQuoteNo());
 					secres.setTiraResponseId(sec.getTiraResponseId());
 					secres.setProductId(sec.getProductId());
+					secres.setProductName(sec.getProductDesc());
+					secres.setSectionId(sec.getSectionId());
+					secres.setSectionName(sec.getSectionDesc());
 					secresList.add(secres);
 				}
 				dto.setSectionList(secresList);
@@ -391,6 +409,9 @@ public class SearchTiraServiceImpl implements  SearchTiraService{
 						buildRes.setCoverId(building.getCoverId() + "");
 						buildRes.setQuoteNo(building.getQuoteNo());
 						buildRes.setSectionId(building.getSectionId());
+						buildRes.setSectionname(building.getSectionDesc());
+						buildRes.setProductid(building.getProductId());
+						buildRes.setProductName(building.getProductDesc());;
 						buildRes.setLocationId(building.getLocationId());
 						buildRes.setLocationName(building.getLocationName());
 						buildRes.setBranchCode(building.getBranchCode());
@@ -416,7 +437,8 @@ public class SearchTiraServiceImpl implements  SearchTiraService{
 						motRes.setSectionId(mot.getSectionId());
 						motRes.setBrokerTiraCode(mot.getBrokerTiraCode());
 						motRes.setSalePointCode(mot.getSalePointCode());
-						;
+						motRes.setSectionname(mot.getSectionName());
+						motRes.setProductName(mot.getProductName());
 						motorResList.add(motRes);
 					}
 					dto.setMotorResList(motorResList);
@@ -430,6 +452,7 @@ public class SearchTiraServiceImpl implements  SearchTiraService{
 						hum.setQuoteNo(human.getQuoteNo());
 						hum.setCoverId(human.getCoverId() + "");
 						hum.setSectionId(human.getSectionId());
+						hum.setSectionName(human.getSectionDesc());
 						hum.setLocationId(human.getLocationId() + "");
 						hum.setLocationName(human.getLocationName());
 						hum.setBranchCode(human.getBranchCode());

@@ -21,6 +21,8 @@ public class BuildingRiskRes {
 	private String coverId;
 	@JsonProperty("SectionId")
 	private String sectionId;
+	@JsonProperty("SectionId")
+	private String sectionname;
 	@JsonProperty("LocationId")
 	private Integer locationId;
 	@JsonProperty("LocationName")
@@ -33,5 +35,10 @@ public class BuildingRiskRes {
 	private String brokerTiraCode;
 	@JsonProperty("SalePointCode")
 	private String salePointCode;
+	@JsonProperty("Productid")
+	private String productid;
+	@JsonProperty("ProductName")
+	private String productName;
+	
 }
 

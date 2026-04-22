@@ -12,6 +12,8 @@ public class HumanDetailsRes {
 	private String quoteNo;
 	@JsonProperty("SectionId")
 	private String sectionId;
+	@JsonProperty("SectionName")
+	private String sectionName;
 	@JsonProperty("CoverId")
 	private String coverId;
 	@JsonProperty("LocationId")

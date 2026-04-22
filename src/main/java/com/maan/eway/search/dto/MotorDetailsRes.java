@@ -21,9 +21,16 @@ public class MotorDetailsRes {
 	private Integer productId;
 	@JsonProperty("SectionId")
 	private Integer sectionId;
+	@JsonProperty("SectionName")
+	private String sectionname;
+	
 	@JsonProperty("SalePointCode")
 	 private String    salePointCode;
 	@JsonProperty("BrokerTiraCode")
 	 private String brokerTiraCode;
+	@JsonProperty("ProductName")
+	 private String productName;
+	
+	
 
 }

@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.google.gson.Gson;
 import com.maan.eway.batch.entity.EserviceMotorDetailsRaw;
 import com.maan.eway.batch.repository.EserviceMotorDetailsRawRepository;
@@ -30,7 +31,6 @@ import com.maan.eway.batch.repository.ProductEmployeesDetailsRepository;
 import com.maan.eway.batch.req.ProductEmployeeSaveReq;
 import com.maan.eway.batch.res.EwayUploadRes;
 import com.maan.eway.bean.ProductEmployeeDetails;
-import com.maan.eway.error.Error;
 import com.maan.eway.res.CommonRes;
 
 import okhttp3.MediaType;
@@ -400,39 +400,58 @@ public class VehicleAsynchronousProcess {
 		return CompletableFuture.completedFuture(errorList);
 	}
 	
-	public Map<String,Object> callApi(String req,String auth,MediaType mediaType,String api) {
-		try {
-			
-			if(mediaType==null)
-				mediaType=this.mediaType;
-	      //  log.info("Api Request ==>" +req);
+	public Map<String, Object> callApi(String req, String auth, MediaType mediaType, String api) {
+	    try {
+	        if (mediaType == null)
+	            mediaType = this.mediaType;
 
-			RequestBody requestBody =RequestBody.create(req,mediaType);
-			
-			Response response =null;
-			
-			Request request =new Request.Builder()
-					.addHeader("Authorization", "Bearer "+auth)
-					.url(api)
-					.post(requestBody)
-					.build();
-			
-			response =httpClient.newCall(request).execute();
-			String responseString =response.body().string();
-	        //log.info("Api Response ==>" +responseString);
+	        RequestBody requestBody = RequestBody.create(req, mediaType);
+	        Request request = new Request.Builder()
+	            .addHeader("Authorization", "Bearer " + auth)
+	            .url(api)
+	            .post(requestBody)
+	            .build();
 
-			Integer statusCode =response.code();
-			@SuppressWarnings("unchecked")
-			
-			Map<String,Object> resMap =mapper.readValue(responseString, Map.class);
-			resMap.put("StatusCode", statusCode);
-			return resMap;
-		}catch (Exception e) {
-			log.error(e);
-			e.printStackTrace();
-		}
-		
-		return null;
+	        Response response = httpClient.newCall(request).execute();
+	        
+	        // ── safe body read ────────────────────────────────────────────
+	        String responseString = "";
+	        if (response.body() != null) {
+	            responseString = response.body().string();
+	        }
+	        Integer statusCode = response.code();
+	        log.info("callApi || url={} | httpStatus={} | bodyLength={}", 
+	            api, statusCode, responseString.length());
+
+	        // ── guard: empty body ─────────────────────────────────────────
+	        if (StringUtils.isBlank(responseString)) {
+	            log.error("callApi || empty response | url={} | httpStatus={}", api, statusCode);
+	            return buildErrorResponse("Empty response from API: " + api + " | HTTP " + statusCode);
+	        }
+
+	        Map<String, Object> resMap = mapper.readValue(responseString, Map.class);
+	        resMap.put("StatusCode", statusCode);
+	        return resMap;
+
+	    } catch (MismatchedInputException e) {
+	        log.error("callApi || JSON parse error | url={} | {}", api, e.getMessage());
+	        return buildErrorResponse("Invalid JSON from API: " + api);
+	    } catch (Exception e) {
+	        log.error("callApi || exception | url={}", api, e);
+	        return buildErrorResponse(e.getMessage());
+	    }
+	}
+
+	private Map<String, Object> buildErrorResponse(String message) {
+	    Map<String, Object> result = new LinkedHashMap<>();
+	    result.put("Message", "Failed");
+	    result.put("IsError", true);
+	    List<Map<String, Object>> errList = new ArrayList<>();
+	    Map<String, Object> err = new LinkedHashMap<>();
+	    err.put("Message", message);
+	    errList.add(err);
+	    result.put("ErrorMessage", errList);
+	    return result;
 	}
 
 	public Map<String,Object> createEmployee(List<Map<String,Object>> employeeList, String auth) {

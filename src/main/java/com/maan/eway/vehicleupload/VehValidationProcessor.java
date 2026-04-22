@@ -323,6 +323,8 @@ public class VehValidationProcessor implements ItemProcessor<EserviceMotorDetail
 				
 				// motorcategory type id update block
 				
+				if(item.getCompanyId().equals("100019")) {
+				
 				List<HashMap<String, Object>> motor_category_list =stepExecutionListener.getMotor_list()
 						.stream().filter( p ->StringUtils.isBlank(item.getMotorCategory().toUpperCase())?
 						 null:item.getMotorCategory().toUpperCase().replace(" ", "")
@@ -333,6 +335,8 @@ public class VehValidationProcessor implements ItemProcessor<EserviceMotorDetail
 					String motor_category_id =motor_category_list.get(0).size()>0?motor_category_list.get(0).get("ITEM_CODE").toString():"";
 					item.setMotorCategoryId(motor_category_id);
 				}
+				}
+				
 				
 			// color type id update block
 				

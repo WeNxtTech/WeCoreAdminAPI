@@ -17,6 +17,12 @@ public class ApiCallJobListener  implements JobExecutionListener{
 	private FactorRatingBatchServiceImpl service;
 	
 	@Override
+    public void beforeJob(JobExecution jobExecution) {
+        
+        APIItemProcessor.clearRrnCache();
+    }
+	
+	@Override
 	public void afterJob(JobExecution jobExecution) {
 		String tranId = jobExecution.getJobParameters().getString("request_ref_no");
 		try {
@@ -28,6 +34,8 @@ public class ApiCallJobListener  implements JobExecutionListener{
 		}catch(Exception e) {
 			service.updateBatchTransaction(tranId, "MainData insert has completed" ,"Error","Error","E");
 			e.printStackTrace();}
+		
+		APIItemProcessor.clearRrnCache();
 	}
 
 

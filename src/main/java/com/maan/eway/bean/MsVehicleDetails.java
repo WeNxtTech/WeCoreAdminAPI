@@ -380,6 +380,12 @@ private static final long serialVersionUID = 1L;
 	@Column(name = "IMPORt_YN")
 	 
     private String importYN;
+	
+    @Column(name="EXCESS_LIMIT")
+    private Double excessLimit;
+    
+    @Column(name="EXCESS_LIMIT_LC")
+    private Double excessLimitLc;
     
 }
 

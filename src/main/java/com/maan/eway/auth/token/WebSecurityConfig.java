@@ -72,23 +72,35 @@ public class WebSecurityConfig  {
                 );
     }
     
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-        //Make the below setting as * to allow connection from any hos
-        corsConfiguration.setAllowedOrigins(List.of("*"));
-        corsConfiguration.setAllowedMethods(List.of("*"));
-       // corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.setAllowedHeaders(List.of("*"));        
-        corsConfiguration.setMaxAge(3600L);
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfiguration);
-        return source;
-    }
+    
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration corsConfiguration = new CorsConfiguration();
+//        Make the below setting as * to allow connection from any hos
+		corsConfiguration.setAllowedOrigins(List.of("*"));
+		corsConfiguration.setAllowedMethods(List.of("*"));
+		corsConfiguration.setAllowedHeaders(List.of("*"));
+//        corsConfiguration.setAllowedOrigins(Arrays.asList("http://localhost:8086","https://wecoreuat.wecorephoenixgroup.com"));
+//        corsConfiguration.setAllowedOriginPatterns(Arrays.asList("http://localhost:8086","https://wecoreuat.wecorephoenixgroup.com"));
+//        corsConfiguration.setAllowedHeaders(List.of("Origin, Authorization, Accept, Content-Type, X-Requested-With, X-CSRF-Token, X-Auth-Token")); 
+//        corsConfiguration.setAllowedMethods(List.of("GET, POST, PUT, DELETE, OPTIONS, PATCH"));
+		corsConfiguration.setAllowCredentials(true);
+		corsConfiguration.setMaxAge(3600L);
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", corsConfiguration);
+		return source;
+	}
+	
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http)throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
         		.cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
+        		.headers(headers -> headers
+        	            .contentSecurityPolicy(csp -> 
+        	                csp.policyDirectives("frame-ancestors 'self'")
+        	            )
+        	            .frameOptions(frame -> frame.sameOrigin())
+        	        )
         		.authorizeHttpRequests(auth -> 
         								auth
                                         .requestMatchers(

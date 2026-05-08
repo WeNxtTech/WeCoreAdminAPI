@@ -1,7 +1,9 @@
 package com.maan.eway.vehicleupload;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecutionListener;
@@ -17,7 +19,7 @@ import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.batch.item.data.builder.RepositoryItemReaderBuilder;
+import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -25,8 +27,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.task.TaskExecutor;
-import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import com.maan.eway.batch.entity.EserviceMotorDetailsRaw;
@@ -45,6 +47,10 @@ public class VehApiCallBatchConfig {
 	private Step veh_apicall_step;
 	
 	@Autowired
+	@Qualifier("veh_apicall_listener")
+	private JobExecutionListener apiCallJobListener;
+	
+	@Autowired
 	private EserviceMotorDetailsRawRepository eserviceMotorRawRepo;;
 
 
@@ -60,12 +66,11 @@ public class VehApiCallBatchConfig {
 		
 	@Bean("veh_apilcall_master_step")
 	public Step veh_apilcall_master_step() {
-		return new StepBuilder("veh_apilcall_master_step",jobRepository)
-				.partitioner(veh_apicall_step)
-				.partitioner(veh_apicall_step.getName(), partitioner(0,0))
-				.partitionHandler(partitionHandler())
-				.build();
-				
+	    return new StepBuilder("veh_apilcall_master_step", jobRepository)
+	            .partitioner("veh_apicall_step", partitioner(null, null))
+	            .step(veh_apicall_step)
+	            .partitionHandler(partitionHandler())
+	            .build();
 	}
 	
 	@Bean("veh_apicall_step")
@@ -83,7 +88,7 @@ public class VehApiCallBatchConfig {
 	
 	@Bean("veh_apicall_partitions")
 	@StepScope
-	public Partitioner partitioner(@Value("#{jobParameters[totalRecords]}") int totalRecords,@Value("#{jobParameters[gridSize]}") int gridSize) {
+	public Partitioner partitioner(@Value("#{jobParameters[totalRecords]}") Integer totalRecords,@Value("#{jobParameters[gridSize]}") Integer gridSize) {
 		MainTablePartitions rangePartitioner = new MainTablePartitions();
 		rangePartitioner.setTotalRecord(totalRecords);
 		rangePartitioner.setGridSize(gridSize);
@@ -99,41 +104,50 @@ public class VehApiCallBatchConfig {
 	}
 	
 	@Bean("veh_api_TaskExecutor")
-	 public TaskExecutor taskExecutor(){
-   	ThreadPoolTaskExecutor  asyncTaskExecutor=new ThreadPoolTaskExecutor();
-		 	asyncTaskExecutor.setCorePoolSize(15);
-		 	asyncTaskExecutor.setMaxPoolSize(20);
-		 	asyncTaskExecutor.setWaitForTasksToCompleteOnShutdown(true);
-		 	asyncTaskExecutor.setAwaitTerminationSeconds(5);	
-		 	asyncTaskExecutor.setQueueCapacity(100);
-		 	asyncTaskExecutor.setThreadNamePrefix("veh_val");
-		 	asyncTaskExecutor.initialize();
-		 	return asyncTaskExecutor;
-	 }
+	public TaskExecutor taskExecutor() {
+	    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+	    executor.setCorePoolSize(10);
+	    executor.setMaxPoolSize(15);
+	    executor.setWaitForTasksToCompleteOnShutdown(true);
+	    executor.setAwaitTerminationSeconds(120); // ← was 5 seconds — way too short for API calls
+	    executor.setQueueCapacity(50);
+	    executor.setThreadNamePrefix("veh_val");
+	    executor.initialize();
+	    return executor;
+	}
 	
-	   @Bean(name="veh_apicall_listener")
-	   public JobExecutionListener listener() {
-	      return new ApiCallJobListener();
-	   }
+	@Bean(name="veh_apicall_job_listener")
+	public JobExecutionListener listener() {
+	    return apiCallJobListener;  
+	}
 	
    
-		@Bean("veh_apicall_reader")
-		@StepScope
-	    public ItemReader<EserviceMotorDetailsRaw> reader(@Value("#{stepExecutionContext['fromId']}") int fromId,@Value("#{stepExecutionContext['toId']}") int toId,
-	    		@Value("#{jobParameters[request_ref_no]}") String request_ref_no) {
-	      
-			Map<String, Sort.Direction> sorts = new HashMap<>();
-		    sorts.put("sno", Sort.Direction.ASC); // Replace "sNo" with the field you want to sort by
-		    
-			return new RepositoryItemReaderBuilder<EserviceMotorDetailsRaw>()
-					.name("veh_apicall_reader")
-					.repository(eserviceMotorRawRepo)
-	                .arguments(request_ref_no,"E",fromId,toId)
-	                .methodName("findByRequestReferenceNoAndStatusNotAndSnoBetween")               
-	                .pageSize(500)
-	                .sorts(sorts)
-	                .build();
-	  }
+	   @Bean("veh_apicall_reader")
+	   @Primary
+	   @StepScope
+	   public ItemReader<EserviceMotorDetailsRaw> reader(
+	           @Value("#{jobParameters['request_ref_no']}") String requestRefNo,
+	           @Value("#{stepExecutionContext['minValue'] ?: stepExecutionContext['fromId'] ?: 1}") Integer minValue,
+	           @Value("#{stepExecutionContext['maxValue'] ?: stepExecutionContext['toId'] ?: 999999}") Integer maxValue) {
+
+	       List<EserviceMotorDetailsRaw> allList =
+	               eserviceMotorRawRepo.findByRequestReferenceNotest(requestRefNo)
+	                   .stream()
+	                   .filter(Objects::nonNull)
+	                   .toList();
+
+	       int fromIndex = Math.max(0, minValue - 1);
+	       int toIndex   = Math.min(allList.size(), maxValue);
+
+	       List<EserviceMotorDetailsRaw> partitionSlice =
+	               (fromIndex >= toIndex || fromIndex >= allList.size())
+	                   ? Collections.emptyList()
+	                   : allList.subList(fromIndex, toIndex);
+
+	       System.out.println("veh_apicall_reader || partition [" + minValue + "-" + maxValue + "] → " + partitionSlice.size() + " records");
+
+	       return new ListItemReader<>(new ArrayList<>(partitionSlice));
+	   }
 
  
    	 @Bean(name="veh_apicall_processor")

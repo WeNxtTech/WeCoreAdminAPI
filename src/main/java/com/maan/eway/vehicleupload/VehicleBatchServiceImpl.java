@@ -7,7 +7,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -35,12 +33,18 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.DataValidation;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellRangeAddressList;
+import org.apache.poi.ss.util.CellReference;
+import org.apache.poi.xssf.usermodel.XSSFDataValidation;
+import org.apache.poi.xssf.usermodel.XSSFDataValidationConstraint;
+import org.apache.poi.xssf.usermodel.XSSFDataValidationHelper;
+import org.apache.poi.xssf.usermodel.XSSFName;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
@@ -98,13 +102,20 @@ import com.maan.eway.batch.res.GetUploadTypeMasterRes;
 import com.maan.eway.batch.res.SaveXlConfigReq;
 import com.maan.eway.batch.res.XlConfigData;
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.MotorBodyTypeMaster;
+import com.maan.eway.bean.MotorVehicleUsageMaster;
+import com.maan.eway.bean.PolicyTypeMaster;
 import com.maan.eway.bean.ProductEmployeeDetails;
+import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.repository.MotorBodyTypeMasterRepository;
+import com.maan.eway.repository.MotorVehicleUsageMasterRepository;
+import com.maan.eway.repository.PolicyTypeMasterRepository;
+import com.maan.eway.repository.ProductSectionMasterRepository;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.springbatch.FactorRateRawMasterRepository;
 import com.maan.eway.springbatch.TransactionControlDetails;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
@@ -171,6 +182,18 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 	
 	@Autowired
 	private CriteriaQueryServiceImpl criteriaQuery;
+	
+	@Autowired
+	private ProductSectionMasterRepository productSectionRepo;
+	
+	@Autowired
+	private PolicyTypeMasterRepository policyTypeRepo;
+	
+	@Autowired
+	private MotorVehicleUsageMasterRepository motorUsageRepo;
+	
+	@Autowired
+	private MotorBodyTypeMasterRepository bodyTypeRepo;
 	
 	@Autowired
 	private FactorRateRawMasterRepository repository;
@@ -407,12 +430,25 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			StringJoiner dataRangeList = new StringJoiner("~");
 			List<String> rawTableCol =xlConfigData.stream().map(p -> p.getFieldNameRaw()).collect(Collectors.toList());
 			rawTableCol.add(0,"SNO");
-			for(int i=0;i<xlConfigData.size();i++) {
-				EwayXlconfigMaster updatedData = xlConfigData.get(i);
-				
-		    	rawtablecolumns = rawTableCol.get(i)==null?"":rawTableCol.get(i);
-		    	String excelHeaderDuplicateColumn=updatedData.getExcelheaderName()==null?"":updatedData.getExcelheaderName();
-		    	if(StringUtils.isNotBlank(excelHeaderName)) {
+			for(int i = 0; i < rawTableCol.size(); i++) {
+			    rawtablecolumns = rawTableCol.get(i)==null?"":rawTableCol.get(i);
+			    
+			    
+			    if(i == 0) {
+			        rawtablecolumnslist = rawtablecolumnslist + "SNO,";
+			        mandatoryDetails += "N~";
+			        dataTypeList += "NUMBER~";
+			        dateFormatList += "~";
+			        dataFieldLength.add("0");
+			        dataRangeList.add("0");
+			        continue; 
+			    }
+			    
+			    EwayXlconfigMaster updatedData = xlConfigData.get(i-1);
+			    String excelHeaderDuplicateColumn = updatedData.getExcelheaderName()==null?"":updatedData.getExcelheaderName();
+			    
+			    if(StringUtils.isNotBlank(excelHeaderDuplicateColumn)) { 
+
 		    		rawtablecolumnslist = rawtablecolumnslist+"\""+rawtablecolumns+ "\""+",";
 		    		String mandatoryYN = updatedData.getMandatoryyn()==null?"N":updatedData.getMandatoryyn();
 		    		//String newVehMandatoryYN = updatedData.getv()==null?"N":updatedData.getNewvehiclemandatoryyn();
@@ -450,7 +486,11 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 			EwayBatchReq request = new EwayBatchReq();
 			uploadResponse.setTypeId(fileUploadTypeId);
 			uploadResponse.setExcelrawtablename(rawTable);
-			uploadResponse.setExcelrawtablefields(StringUtils.chop((rawtablecolumnslist).replace("\"", "")));
+			uploadResponse.setExcelrawtablefields(
+				    rawtablecolumnslist.endsWith(",") ? 
+				    rawtablecolumnslist.substring(0, rawtablecolumnslist.length()-1) : 
+				    rawtablecolumnslist
+				);
 			uploadResponse.setExcelmandatorylist(mandatoryDetails);
 			uploadResponse.setTableColumnsDataType(dataTypeList); 
 			uploadResponse.setExceldateformatlist(dateFormatList); 
@@ -501,7 +541,7 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 				     	.addLong("time", System.currentTimeMillis())
 				     	.addString("EwayBatchReq", ewayBatchReq)
 				     	.addString("RequestReferenceNo", uploadResponse.getRequestReferenceNo())
-				     	.addString("ExcelHeaderNames", StringUtils.chop(headerList))
+				     	.addString("ExcelHeaderNames", "SNO," + StringUtils.chop(headerList))
 				     	.addLong("totalRecords", totalRows)
 						.addLong("gridSize", 10L)
 				        .toJobParameters();
@@ -1280,113 +1320,383 @@ public class VehicleBatchServiceImpl implements VehicleBatchService {
 		return res;
 	}
 
+
+
+	private static final int DROPDOWN_DATA_ROWS = 20;
+
+	// Hidden sheet name for reference data
+	private static final String REF_SHEET = "RefData";
+
 	@Override
 	public CommonRes sampleDownload(SamplFileDownloadReq req) {
-		CommonRes res =new CommonRes();
-		Map<String,Object> map =new HashMap<String,Object>();
-		try {
-			
-			Integer sectionId =StringUtils.isBlank(req.getSectionId())?0:Integer.valueOf(req.getSectionId());
-			EwayUploadTypeMaster typeMaster =uploadTypeRepo.findByCompanyIdAndProductIdAndSectionIdAndStatus(
-					Integer.valueOf(req.getCompanyId()),Integer.valueOf(req.getProductId()),sectionId,"Y");
-			if(typeMaster!=null) {
-			    Integer companyId =typeMaster.getCompanyId();
-			    Integer productId =typeMaster.getProductId();
-			    Integer typeId =typeMaster.getTypeid();
-			    String fileName =typeMaster.getTypename();
-			    
-			    if("N".equals(typeMaster.getFilePathYn())) {
-				    	List<EwayXlconfigMaster> master =xlConfigMaster.findByCompanyIdAndProductIdAndTypeidAndStatusOrderByFieldid(companyId, productId, typeId, "Y");
-				    
-					List<String> excelHeaderColumns =master.stream().map(p ->p.getExcelheaderName())
-							.collect(Collectors.toList());
-					
-					String [] strArray =new String[excelHeaderColumns.size()];
-					excelHeaderColumns.toArray(strArray);
-					
-					// Create a new workbook
-			        Workbook workbook = new XSSFWorkbook();
-			        
-			        Sheet sheet =workbook.createSheet(fileName);
-			        
-			        Font font = workbook.createFont();
-			        font.setFontName("Arial");
-			        font.setFontHeightInPoints((short) 12);
-			        font.setBold(true);
-			        font.setColor(IndexedColors.BLACK.getIndex());
-			        
-			        sheet.autoSizeColumn(0);
-			        
-	
-			        // Create a cell style with the font
-			        CellStyle style = workbook.createCellStyle();
-			        style.setFont(font);
-			        
-			        style.setFillForegroundColor(IndexedColors.GREEN.getIndex()); 
-		            style.setFillPattern(FillPatternType.FINE_DOTS); 
-		            
-		           
-	
-			        Row rowm =sheet.createRow(0);
-			        rowm.setHeightInPoints(20);
-	
-			       // String [] excelColArray =excelHeaderColumns.split("~");
-	
-			        int col =0;
-			        for(String str :strArray) {
-			        	Cell cell =rowm.createCell(col);
-			        	cell.setCellValue(str);
-			        	cell.setCellStyle(style);
-			        	
-			        	col++;
-			        }
-			        
-			     // Auto-size the cells in the first row
-			        for (int i = 0; i <strArray.length; i++) {
-			            sheet.autoSizeColumn(i);
-			            
-			        }
-					
-					ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			        workbook.write(bos);
-			        workbook.close();
-			        byte [] byteArray =bos.toByteArray();
-			        String base64 =Base64.getEncoder().encodeToString(byteArray);
-			        String prefix = "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,";
-	
-			        res.setMessage("SUCCESS");
-					map.put("Base64", prefix+base64);
-					map.put("FileName", typeMaster.getTypename());
-					map.put("Message", "SUCCESS");
-					res.setCommonResponse(map);
-			    }else {
-			    	
-			    	String filePath = typeMaster.getFilePath();
-			    	Path paths = Paths.get(filePath);
-			    	byte [] array =Files.readAllBytes(paths);
-			    	String base64 =Base64.getEncoder().encodeToString(array);
-				    String prefix = "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,";
-		
-				    res.setMessage("SUCCESS");
-				    map.put("Base64", prefix+base64);
-					map.put("FileName", typeMaster.getTypename());
-					map.put("Message", "SUCCESS");
-					res.setCommonResponse(map);
-			    }
-			}else {
-				res.setMessage("FAILED");
-				map.put("Base64", "");
-				map.put("FileName", "");
-				map.put("Message", "FAILED");
-				res.setCommonResponse(map);
-			}
-		}catch (Exception e) {
-			log.error(e);
-			e.printStackTrace();
-			res.setMessage("FAILED");
+	    CommonRes res = new CommonRes();
+	    Map<String, Object> map = new HashMap<>();
+	    try {
+	        Integer sectionId = StringUtils.isBlank(req.getSectionId()) ? 0
+	                : Integer.valueOf(req.getSectionId());
 
-		}
-		return res;
+	        EwayUploadTypeMaster typeMaster = uploadTypeRepo
+	                .findByCompanyIdAndProductIdAndSectionIdAndStatus(
+	                        Integer.valueOf(req.getCompanyId()),
+	                        Integer.valueOf(req.getProductId()),
+	                        sectionId, "Y");
+
+	        if (typeMaster != null) {
+	            Integer companyId = typeMaster.getCompanyId();
+	            Integer productId = typeMaster.getProductId();
+	            Integer typeId    = typeMaster.getTypeid();
+	            String  fileName  = typeMaster.getTypename();
+
+	            if ("N".equals(typeMaster.getFilePathYn())) {
+
+	                
+	                List<EwayXlconfigMaster> master =
+	                        xlConfigMaster.findByCompanyIdAndProductIdAndTypeidAndStatusOrderByFieldid(
+	                                companyId, productId, typeId, "Y");
+
+	                List<String> excelHeaderColumns = master.stream()
+	                        .map(EwayXlconfigMaster::getExcelheaderName)
+	                        .collect(Collectors.toList());
+
+	                String[] strArray = excelHeaderColumns.toArray(new String[0]);
+
+	                
+	                List<ProductSectionMaster> sectionList =
+	                        productSectionRepo.findActiveInsuranceTypes(companyId, productId);
+	                // Map: sectionName → sectionId  (needed to fetch child dropdowns)
+	                Map<String, Integer> sectionNameToId = new LinkedHashMap<>();
+	                for (ProductSectionMaster s : sectionList) {
+	                    sectionNameToId.put(s.getSectionName(), s.getSectionId());
+	                }
+	                List<String> insuranceTypeValues = new ArrayList<>(sectionNameToId.keySet());
+
+	                // Insurance Class — policy type names
+	                List<PolicyTypeMaster> policyList =
+	                        policyTypeRepo.findActiveInsuranceClasses(companyId, productId);
+	                List<String> insuranceClassValues = policyList.stream()
+	                        .map(PolicyTypeMaster::getPolicyTypeName)
+	                        .collect(Collectors.toList());
+
+	                // Body Type & Motor Usage — per sectionId for cascading
+	                // Map: sectionName → list of body type descriptions
+	                Map<String, List<String>> bodyTypeMap  = new LinkedHashMap<>();
+	                // Map: sectionName → list of motor usage descriptions
+	                Map<String, List<String>> motorUsageMap = new LinkedHashMap<>();
+
+	                for (Map.Entry<String, Integer> entry : sectionNameToId.entrySet()) {
+	                    String  secName = entry.getKey();
+	                    Integer secId   = entry.getValue();
+
+	                    List<MotorBodyTypeMaster> bodies =
+	                            bodyTypeRepo.findActiveBodyTypesBySectionId(companyId, secId);
+	                    bodyTypeMap.put(secName, bodies.stream()
+	                            .map(MotorBodyTypeMaster::getBodyNameEn)
+	                            .collect(Collectors.toList()));
+
+	                    List<MotorVehicleUsageMaster> usages =
+	                            motorUsageRepo.findActiveUsagesBySectionId(companyId, secId);
+	                    motorUsageMap.put(secName, usages.stream()
+	                            .map(MotorVehicleUsageMaster::getVehicleUsageDesc)
+	                            .collect(Collectors.toList()));
+	                }
+
+	                // Fixed dropdown values
+	                List<String> ynValues       = Arrays.asList("Y", "N");
+	                List<String> borrowerValues = Arrays.asList("Bank", "Individual");
+
+	                // ── 3. Build workbook ─────────────────────────────────────
+	                XSSFWorkbook workbook = new XSSFWorkbook();
+
+	                // ── 4. Create hidden reference sheet ─────────────────────
+	                XSSFSheet sheet    = workbook.createSheet(fileName);     
+	                XSSFSheet refSheet = workbook.createSheet(REF_SHEET);  
+	                workbook.setSheetHidden(workbook.getSheetIndex(REF_SHEET), true);
+	                workbook.setActiveSheet(workbook.getSheetIndex(fileName));
+
+	                // Helper: write a column of values onto refSheet and return
+	                // the absolute column letter (e.g. "A", "B") for named-range use.
+	                // We'll use a column counter starting at 0.
+	                int refCol = 0; // tracks next free column in refSheet
+
+	                // ── 4a. Write Insurance Type list → refSheet col A ───────
+	                int insuranceTypeRefCol = refCol;
+	                writeRefColumn(refSheet, refCol++, insuranceTypeValues);
+
+	                // ── 4b. Write Insurance Class list → refSheet col B ──────
+	                int insuranceClassRefCol = refCol;
+	                writeRefColumn(refSheet, refCol++, insuranceClassValues);
+
+	                // ── 4c. Write Y/N list → refSheet next col ───────────────
+	                int ynRefCol = refCol;
+	                writeRefColumn(refSheet, refCol++, ynValues);
+
+	                // ── 4d. Write Borrower Type list → refSheet next col ─────
+	                int borrowerRefCol = refCol;
+	                writeRefColumn(refSheet, refCol++, borrowerValues);
+
+	                // ── 4e. Write Body Type lists per Insurance Type ──────────
+	                // Named range name: "BT_" + sanitized(sectionName)
+	                Map<String, String> bodyTypeNamedRangeMap = new LinkedHashMap<>();
+	                for (Map.Entry<String, List<String>> entry : bodyTypeMap.entrySet()) {
+	                    String sanitized = sanitizeName("BT_" + entry.getKey());
+	                    int startRow = 0;
+	                    int endRow   = Math.max(0, entry.getValue().size() - 1);
+	                    writeRefColumn(refSheet, refCol, entry.getValue());
+	                    String colLetter = CellReference.convertNumToColString(refCol);
+	                    // Named range formula: RefData!$X$1:$X$N
+	                    String formula = REF_SHEET + "!$" + colLetter + "$1:$"
+	                            + colLetter + "$" + (endRow + 1);
+	                    createNamedRange(workbook, sanitized, formula);
+	                    bodyTypeNamedRangeMap.put(entry.getKey(), sanitized);
+	                    refCol++;
+	                }
+
+	                // ── 4f. Write Motor Usage lists per Insurance Type ────────
+	                Map<String, String> motorUsageNamedRangeMap = new LinkedHashMap<>();
+	                for (Map.Entry<String, List<String>> entry : motorUsageMap.entrySet()) {
+	                    String sanitized = sanitizeName("MU_" + entry.getKey());
+	                    int endRow = Math.max(0, entry.getValue().size() - 1);
+	                    writeRefColumn(refSheet, refCol, entry.getValue());
+	                    String colLetter = CellReference.convertNumToColString(refCol);
+	                    String formula = REF_SHEET + "!$" + colLetter + "$1:$"
+	                            + colLetter + "$" + (endRow + 1);
+	                    createNamedRange(workbook, sanitized, formula);
+	                    motorUsageNamedRangeMap.put(entry.getKey(), sanitized);
+	                    refCol++;
+	                }
+
+	                // ── 4g. Create simple named ranges for flat lists ─────────
+	                // Insurance Type
+	                {
+	                    String colLetter = CellReference.convertNumToColString(insuranceTypeRefCol);
+	                    createNamedRange(workbook, "InsuranceTypeList",
+	                            REF_SHEET + "!$" + colLetter + "$1:$" + colLetter
+	                                    + "$" + insuranceTypeValues.size());
+	                }
+	                // Insurance Class
+	                {
+	                    String colLetter = CellReference.convertNumToColString(insuranceClassRefCol);
+	                    createNamedRange(workbook, "InsuranceClassList",
+	                            REF_SHEET + "!$" + colLetter + "$1:$" + colLetter
+	                                    + "$" + insuranceClassValues.size());
+	                }
+	                // Y/N
+	                {
+	                    String colLetter = CellReference.convertNumToColString(ynRefCol);
+	                    createNamedRange(workbook, "YNList",
+	                            REF_SHEET + "!$" + colLetter + "$1:$" + colLetter + "$2");
+	                }
+	                // Borrower Type
+	                {
+	                    String colLetter = CellReference.convertNumToColString(borrowerRefCol);
+	                    createNamedRange(workbook, "BorrowerTypeList",
+	                            REF_SHEET + "!$" + colLetter + "$1:$" + colLetter + "$2");
+	                }
+
+//	                // ── 5. Create data sheet ──────────────────────────────────
+//	                XSSFSheet sheet = workbook.createSheet(fileName);
+//	                workbook.setActiveSheet(workbook.getSheetIndex(fileName));
+
+	                // Header style
+	                Font font = workbook.createFont();
+	                font.setFontName("Arial");
+	                font.setFontHeightInPoints((short) 12);
+	                font.setBold(true);
+	                font.setColor(IndexedColors.BLACK.getIndex());
+
+	                CellStyle headerStyle = workbook.createCellStyle();
+	                headerStyle.setFont(font);
+	                headerStyle.setFillForegroundColor(IndexedColors.GREEN.getIndex());
+	                headerStyle.setFillPattern(FillPatternType.FINE_DOTS);
+
+	                // Header row
+	                Row headerRow = sheet.createRow(0);
+	                headerRow.setHeightInPoints(20);
+	                for (int i = 0; i < strArray.length; i++) {
+	                    Cell cell = headerRow.createCell(i);
+	                    cell.setCellValue(strArray[i]);
+	                    cell.setCellStyle(headerStyle);
+	                    sheet.autoSizeColumn(i);
+	                }
+
+	                // ── 6. Apply dropdown validations to data rows 1-20 ──────
+	                XSSFDataValidationHelper dvHelper = new XSSFDataValidationHelper(sheet);
+
+	                // Row range for validation: rows 1 to DROPDOWN_DATA_ROWS (0-based index)
+	                int firstDataRow = 1;
+	                int lastDataRow  = DROPDOWN_DATA_ROWS; // row index 20 = Excel row 21
+
+	                // Helper method reference for applying list validation per column
+	                // Col 0: Tira Search By → Y/N
+	                applyListValidation(dvHelper, sheet, "YNList", 0, firstDataRow, lastDataRow);
+
+	                // Col 2: Insurance Type → InsuranceTypeList
+	                applyListValidation(dvHelper, sheet, "InsuranceTypeList", 2, firstDataRow, lastDataRow);
+
+	                // Col 3: Insurance Class → InsuranceClassList
+	                applyListValidation(dvHelper, sheet, "InsuranceClassList", 3, firstDataRow, lastDataRow);
+
+	                // Col 4: Body Type → cascading via INDIRECT on Insurance Type col (C)
+	                // Formula: INDIRECT("BT_"&SUBSTITUTE(C2," ","_"))
+	                // Applied row by row so each row references its own Insurance Type cell
+	                for (int r = firstDataRow; r <= lastDataRow; r++) {
+	                    String insuranceTypeCell = "C" + (r + 1); // Excel row is 1-based
+	                    String indirectFormula = "INDIRECT(\"BT_\"&SUBSTITUTE("
+	                            + insuranceTypeCell + ",\" \",\"_\"))";
+	                    applyFormulaValidation(dvHelper, sheet, indirectFormula, 4, r, r);
+	                }
+
+	                // Col 5: Motor Usage → cascading via INDIRECT on Insurance Type col (C)
+	                for (int r = firstDataRow; r <= lastDataRow; r++) {
+	                    String insuranceTypeCell = "C" + (r + 1);
+	                    String indirectFormula = "INDIRECT(\"MU_\"&SUBSTITUTE("
+	                            + insuranceTypeCell + ",\" \",\"_\"))";
+	                    applyFormulaValidation(dvHelper, sheet, indirectFormula, 5, r, r);
+	                }
+
+	                // Col 6: Claims Y/N → Y/N
+	                applyListValidation(dvHelper, sheet, "YNList", 6, firstDataRow, lastDataRow);
+
+	                // Col 7: GPS Details → Y/N
+	                applyListValidation(dvHelper, sheet, "YNList", 7, firstDataRow, lastDataRow);
+
+	                // Col 12: Collateral Yn → Y/N
+	                applyListValidation(dvHelper, sheet, "YNList", 12, firstDataRow, lastDataRow);
+
+	                // Col 13: Borrower Type → Bank/Individual
+	                applyListValidation(dvHelper, sheet, "BorrowerTypeList", 13, firstDataRow, lastDataRow);
+
+	                // ── 7. Encode and return ──────────────────────────────────
+	                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+	                workbook.write(bos);
+	                workbook.close();
+
+	                byte[] byteArray = bos.toByteArray();
+	                String base64    = Base64.getEncoder().encodeToString(byteArray);
+	                String prefix    = "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,";
+
+	                res.setMessage("SUCCESS");
+	                map.put("Base64", prefix + base64);
+	                map.put("FileName", typeMaster.getTypename());
+	                map.put("Message", "SUCCESS");
+	                res.setCommonResponse(map);
+
+	            } else {
+	                // File path flow — unchanged
+	                String filePath = typeMaster.getFilePath();
+	                Path paths = Paths.get(filePath);
+	                byte[] array  = Files.readAllBytes(paths);
+	                String base64 = Base64.getEncoder().encodeToString(array);
+	                String prefix = "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,";
+
+	                res.setMessage("SUCCESS");
+	                map.put("Base64", prefix + base64);
+	                map.put("FileName", typeMaster.getTypename());
+	                map.put("Message", "SUCCESS");
+	                res.setCommonResponse(map);
+	            }
+
+	        } else {
+	            res.setMessage("FAILED");
+	            map.put("Base64", "");
+	            map.put("FileName", "");
+	            map.put("Message", "FAILED");
+	            res.setCommonResponse(map);
+	        }
+
+	    } catch (Exception e) {
+	        log.error(e);
+	        e.printStackTrace();
+	        res.setMessage("FAILED");
+	    }
+	    return res;
+	}
+
+	// ─────────────────────────────────────────────────────────────────────────────
+	// PRIVATE HELPER METHODS — add these inside your service class
+	// ─────────────────────────────────────────────────────────────────────────────
+
+	/**
+	 * Writes a list of string values vertically into a column of the reference sheet.
+	 */
+	private void writeRefColumn(XSSFSheet refSheet, int colIndex, List<String> values) {
+	    for (int i = 0; i < values.size(); i++) {
+	        Row row = refSheet.getRow(i);
+	        if (row == null) row = refSheet.createRow(i);
+	        row.createCell(colIndex).setCellValue(values.get(i));
+	    }
+	}
+
+	/**
+	 * Creates a workbook-level named range pointing to an absolute range formula.
+	 * Example formula: "RefData!$A$1:$A$3"
+	 */
+	private void createNamedRange(XSSFWorkbook workbook, String name, String formula) {
+	    XSSFName namedRange = workbook.createName();
+	    namedRange.setNameName(name);
+	    namedRange.setRefersToFormula(formula);
+	}
+
+	/**
+	 * Applies a named-range list dropdown validation to a single column across the given rows.
+	 * The named range is referenced via INDIRECT so Excel resolves it at runtime.
+	 */
+	private void applyListValidation(XSSFDataValidationHelper dvHelper,
+	                                  XSSFSheet sheet,
+	                                  String namedRangeName,
+	                                  int colIndex,
+	                                  int firstRow,
+	                                  int lastRow) {
+	    CellRangeAddressList addressList =
+	            new CellRangeAddressList(firstRow, lastRow, colIndex, colIndex);
+	    XSSFDataValidationConstraint constraint =
+	            (XSSFDataValidationConstraint) dvHelper.createFormulaListConstraint(namedRangeName);
+	    XSSFDataValidation validation =
+	            (XSSFDataValidation) dvHelper.createValidation(constraint, addressList);
+	    validation.setShowErrorBox(true);
+	    validation.setErrorStyle(DataValidation.ErrorStyle.STOP);
+	    validation.createErrorBox("Invalid Value", "Please select a value from the dropdown list.");
+	    validation.setSuppressDropDownArrow(true);
+	    sheet.addValidationData(validation);
+	}
+
+	/**
+	 * Applies an INDIRECT formula-based dropdown validation to a single cell (row range = single row).
+	 * Used for cascading dropdowns where each row references its own parent cell.
+	 */
+	private void applyFormulaValidation(XSSFDataValidationHelper dvHelper,
+	                                     XSSFSheet sheet,
+	                                     String formula,
+	                                     int colIndex,
+	                                     int firstRow,
+	                                     int lastRow) {
+	    CellRangeAddressList addressList =
+	            new CellRangeAddressList(firstRow, lastRow, colIndex, colIndex);
+	    XSSFDataValidationConstraint constraint =
+	            (XSSFDataValidationConstraint) dvHelper.createFormulaListConstraint(formula);
+	    XSSFDataValidation validation =
+	            (XSSFDataValidation) dvHelper.createValidation(constraint, addressList);
+	    validation.setShowErrorBox(false); // soft — INDIRECT may resolve empty if no Insurance Type chosen
+	    validation.setSuppressDropDownArrow(true);
+	    sheet.addValidationData(validation);
+	}
+
+	/**
+	 * Sanitizes a string to be a valid Excel named range name.
+	 * Rules: must start with letter or underscore, only letters/digits/underscores allowed.
+	 * Spaces → underscore, special chars removed.
+	 */
+	private String sanitizeName(String input) {
+	    if (input == null) return "_";
+	    // Replace spaces and hyphens with underscore
+	    String result = input.replaceAll("[ \\-]", "_");
+	    // Remove any character that is not letter, digit, or underscore
+	    result = result.replaceAll("[^A-Za-z0-9_]", "");
+	    // If starts with digit, prefix underscore
+	    if (!result.isEmpty() && Character.isDigit(result.charAt(0))) {
+	        result = "_" + result;
+	    }
+	    return result.isEmpty() ? "_ref" : result;
 	}
 	
 
@@ -2016,23 +2326,25 @@ public CommonRes updateEmployeeRecord(UpdateEmployeeRecordReq req) {
 	@Override
 	public Object batchCreateQuote(String request_ref_no, String authorization) {
 		CommonRes response = new CommonRes();
-		try {
-			Integer total_records =eserviceRepository.countByRequestReferenceNoAndStatusNot(request_ref_no,"E");
-			
-			TransactionControlDetails controlDetails=transRepo.findByRequestReferenceNo(request_ref_no);
-			controlDetails.setProgressDescription("Progressing..");
-			controlDetails.setStatus("P");
+	    try {
+	        Integer total_records = eserviceRepository.countByRequestReferenceNoAndStatusNot(request_ref_no, "E");
+	        
+	        eserviceRepository.updateVehicleIdFromSno(request_ref_no);
 
-			TransactionControlDetails tcd= transRepo.save(controlDetails);
-			
-			JobParameters jobParameters=new JobParametersBuilder()
-					.addString("request_ref_no", request_ref_no)
-					.addString("Authorization", authorization)
-					.addLong("totalRecords", total_records.longValue())
-					.addLong("gridSize", 10L)
-					.addLocalDateTime("time", LocalDateTime.now())
-					.toJobParameters();
-			jobLauncher.run(veh_apicall_job, jobParameters);
+	        TransactionControlDetails controlDetails = transRepo.findByRequestReferenceNo(request_ref_no);
+	        controlDetails.setProgressDescription("Progressing..");
+	        controlDetails.setStatus("P");
+	        TransactionControlDetails tcd = transRepo.save(controlDetails);
+
+	        JobParameters jobParameters = new JobParametersBuilder()
+	        		.addString("request_ref_no", request_ref_no)
+	            .addString("Authorization", authorization)
+	            .addLong("totalRecords", total_records.longValue())
+	            .addLong("gridSize", 1L) 
+	            .addLocalDateTime("time", LocalDateTime.now())
+	            .toJobParameters();
+
+	        jobLauncher.run(veh_apicall_job, jobParameters);
 			
 			
 			 Map<String,String> map = new HashMap<>();

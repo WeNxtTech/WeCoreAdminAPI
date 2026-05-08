@@ -67,7 +67,19 @@ public ItemWriter<Record> itemWriter(TransactionControlDetailsRepository fleetTe
 				String productId =response.getProductId();
 				log.info("Eway batch write start with productId:" +productId);
 				if(("5".equals(productId) || "46".equals(productId))){
-					batchInsert_1(recordsList, jdbcTemplate, response,fleetTempRepo);
+					batchInsert_1(recordsList, jdbcTemplate, response, fleetTempRepo);
+
+//					if (result != null) {
+//					    // Set VEHICLE_ID = SNO for all newly inserted records of this request
+//					    jdbcTemplate.update(
+//					        "UPDATE eservice_motor_details_raw " +
+//					        "SET vehicle_id = sno " +
+//					        "WHERE request_reference_no = ? " +
+//					        "AND (vehicle_id IS NULL OR vehicle_id = 0)",
+//					        response.getRequestReferenceNo()
+//					    );
+//					    log.info("VEHICLE_ID synced to SNO for RRN: " + response.getRequestReferenceNo());
+//					}
 				}//else if ("100019".equalsIgnoreCase(companyId)){
 				//	batchInsert_3(recordsList, jdbcTemplate, response,fleetTempRepo);// for ugandaCompany
 				//}
@@ -97,82 +109,93 @@ protected int[][] batchInsert_1(List<Record> records, JdbcTemplate jdbcTemplate,
 		
 		HashMap<String,String> map =getTableColumns(response.getXlConfigData());
 		String rawTableFields = map.get("RAW_COLUMNS").toString();
+		rawTableFields = rawTableFields.replaceFirst("^SNO,", "").replaceFirst("^\"SNO\",", "");
 		String[] listcol = rawTableFields.split(",");
 		int length = listcol.length;
 		String prepareValues =map.get("PREPARE_VALUES").toString();
 		
 	
 					
-		String finalquery = "INSERT INTO " + excelTableName + "(COMPANY_ID,PRODUCT_ID,SECTION_ID,REQUEST_REFERENCE_NO,TYPEID,ERROR_DESC,STATUS,"
-				+ "BROKER_BRANCHCODE,AC_EXECUTIVEID,BROKER_CODE,LOGIN_ID,SUB_USERTYPE,APPLICATION_ID,CUSTOMER_REFERENCENO,ENDORSEMENT_YN,"
-				+ "ENDORSEMENT_DATE,ENDORSEMENT_EFFECTIVE_DATE,ENDORSEMENT_REMARKS,ENDORSEMENT_TYPE,ENDORSEMENT_TYPE_DESC,ENDT_CATEGORY_DESC,ENDT_COUNT,"
-				+ "ENDT_PREV_POLICYNO,ENDT_STATUS,IS_FINANCE_ENDT,ORGINAL_POLICYNO,EXCHANGE_RATE,HAVE_PROMOCODE,NO_OF_VEHICLES,"
-				+ "POLICY_START_DATE,POLICY_END_DATE,PROMOCODE,CURRENCY,BRANCH_CODE,AGENCY_CODE,ID_NUMBER,USER_TYPE,NCD_YN,SOURCE_TYPE,CUSTOMER_CODE,CUSTOMER_NAME,BDM_CODE,OWNER_CATEGORY,SOURCE_TYPEID,"
-				+ "" + rawTableFields + ") VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,"
-				+ "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,"
-				+prepareValues + ")";
+		String finalquery = "INSERT INTO " + excelTableName + 
+			    "(SNO,COMPANY_ID,PRODUCT_ID,SECTION_ID,REQUEST_REFERENCE_NO,TYPEID,ERROR_DESC,STATUS,"
+			    + "BROKER_BRANCHCODE,AC_EXECUTIVEID,BROKER_CODE,LOGIN_ID,SUB_USERTYPE,APPLICATION_ID,"
+			    + "CUSTOMER_REFERENCENO,ENDORSEMENT_YN,ENDORSEMENT_DATE,ENDORSEMENT_EFFECTIVE_DATE,"
+			    + "ENDORSEMENT_REMARKS,ENDORSEMENT_TYPE,ENDORSEMENT_TYPE_DESC,ENDT_CATEGORY_DESC,ENDT_COUNT,"
+			    + "ENDT_PREV_POLICYNO,ENDT_STATUS,IS_FINANCE_ENDT,ORGINAL_POLICYNO,EXCHANGE_RATE,"
+			    + "HAVE_PROMOCODE,NO_OF_VEHICLES,POLICY_START_DATE,POLICY_END_DATE,PROMOCODE,CURRENCY,"
+			    + "BRANCH_CODE,AGENCY_CODE,ID_NUMBER,USER_TYPE,NCD_YN,SOURCE_TYPE,CUSTOMER_CODE,"
+			    + "CUSTOMER_NAME,BDM_CODE,OWNER_CATEGORY,SOURCE_TYPEID,"
+			    + rawTableFields 
+			    + ") VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,"
+			    + "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,"
+			    + prepareValues + ")";
 		
 			int[][] updateCounts = jdbcTemplate.batchUpdate(finalquery, records, batchSize,
 				new ParameterizedPreparedStatementSetter<Record>() {
-					public void setValues(PreparedStatement ps, Record argument) throws SQLException {
-						//log.info("Eway batch data========>"+argument==null?"":print.toJson(argument));
-						
-						final String error =validateDetails(argument,response);
-						DateFormat dateformat = new SimpleDateFormat("dd/MM/yyyy");
-						ps.setInt(1, Integer.valueOf(response.getCompanyId()));
-						ps.setInt(2, Integer.valueOf(response.getProductId()));
-						ps.setInt(3, StringUtils.isBlank(response.getSectionId())?0:Integer.valueOf(response.getSectionId()));
-						ps.setString(4,  StringUtils.isBlank(response.getRequestReferenceNo())?null:response.getRequestReferenceNo());
-						ps.setInt(5, Integer.valueOf(response.getTypeId()));
-						ps.setString(6,  StringUtils.isBlank(error) ?null:error);
-						ps.setString(7,  StringUtils.isBlank(error) ?"Y":"E");
-						ps.setString(8, StringUtils.isBlank(response.getBrokerBranchCode())?null:response.getBrokerBranchCode());
-						ps.setString(9, StringUtils.isBlank(response.getAcExecutiveId())?null:response.getAcExecutiveId());
-						ps.setString(10, StringUtils.isBlank(response.getBeokerCode())?null:response.getBeokerCode());
-						ps.setString(11, StringUtils.isBlank(response.getLoginId())?null:response.getLoginId());
-						ps.setString(12, StringUtils.isBlank(response.getSubUserType())?null:response.getSubUserType());
-						ps.setString(13, StringUtils.isBlank(response.getApplicationId())?null:response.getApplicationId());
-						ps.setString(14, StringUtils.isBlank(response.getCustomerRefNo())?null:response.getCustomerRefNo());
-						ps.setString(15, StringUtils.isBlank(response.getEndorsementYn())?null:response.getEndorsementYn());
-						ps.setString(16, StringUtils.isBlank(response.getEndorsementDate())?null:response.getEndorsementDate());
-						ps.setString(17, StringUtils.isBlank(response.getEndorsementEffectiveDate())?null:response.getEndorsementEffectiveDate());
-						ps.setString(18, StringUtils.isBlank(response.getEndorsementRemarks())?null:response.getEndorsementRemarks());
-						ps.setString(19, StringUtils.isBlank(response.getEndorsementType())?null:response.getEndorsementType());
-						ps.setString(20, StringUtils.isBlank(response.getEndorsementTypeDesc())?null:response.getEndorsementTypeDesc());
-						ps.setString(21, StringUtils.isBlank(response.getEndtCategoryDesc())?null:response.getEndtCategoryDesc());							
-						ps.setString(22, StringUtils.isBlank(response.getEndtCount())?null:response.getEndtCount());
-						ps.setString(23, StringUtils.isBlank(response.getEndtPrevPolicyNo())?null:response.getEndtPrevPolicyNo());
-						ps.setString(24, StringUtils.isBlank(response.getEndtStatus())?null:response.getEndtStatus());							
-						ps.setString(25, StringUtils.isBlank(response.getIsFinanceEndt())?null:response.getIsFinanceEndt());
-						ps.setString(26, StringUtils.isBlank(response.getOrginalPolicyNo())?null:response.getOrginalPolicyNo());
-						ps.setString(27, StringUtils.isBlank(response.getExchangeRate())?null:response.getExchangeRate());
-						ps.setString(28, StringUtils.isBlank(response.getHavePromoCode())?null:response.getHavePromoCode());						
-						ps.setString(29, StringUtils.isBlank(response.getNoOfVehicles())?null:response.getNoOfVehicles());
-						ps.setString(30, StringUtils.isBlank(response.getPolicyStartDate())?null:response.getPolicyStartDate());
-						ps.setString(31, StringUtils.isBlank(response.getPolicyEndDate())?null:response.getPolicyEndDate());
-						ps.setString(32, StringUtils.isBlank(response.getPromoCode())?null:response.getPromoCode());
-						ps.setString(33, StringUtils.isBlank(response.getCurrency())?null:response.getCurrency());
-						ps.setString(34, StringUtils.isBlank(response.getBranchCode())?null:response.getBranchCode());
-						ps.setString(35, StringUtils.isBlank(response.getAgencyCode())?null:response.getAgencyCode());
-						ps.setString(36, StringUtils.isBlank(response.getIdnumber())?null:response.getIdnumber());
-						ps.setString(37, StringUtils.isBlank(response.getUserType())?null:response.getUserType());
-						ps.setString(38, response.getNcdYn());
-						ps.setString(39, StringUtils.isBlank(response.getSourceType())?null:response.getSourceType());
-						ps.setString(40, StringUtils.isBlank(response.getCustomerCode())?null:response.getCustomerCode());
-						ps.setString(41, StringUtils.isBlank(response.getResOwnerName())?null:response.getResOwnerName());
-						ps.setString(42, StringUtils.isBlank(response.getBdmCode())?null:response.getBdmCode());
-						ps.setString(43, StringUtils.isBlank(response.getOwnerCategory())?"None":response.getOwnerCategory());
-						ps.setString(44, StringUtils.isBlank(response.getSourceTypeId())?"":response.getSourceTypeId());
-						
-						
-						for (int i = 1; i <= length; i++) {
-							ps.setString(i + 44, argument.getColumnByIndex(i - 1) == null ? null
-									: argument.getColumnByIndex(i - 1).toString().trim());
-							log.info("rowid: "+i+", rowvalue : "+argument.getColumnByIndex(i - 1) );
-						}
-						log.info("entryDate:"+dateformat.format(new Date()) );
-						log.info("finalquery:"+finalquery);
-					}
+				public void setValues(PreparedStatement ps, Record argument) throws SQLException {
+				    final String error = validateDetails(argument, response);
+				    DateFormat dateformat = new SimpleDateFormat("dd/MM/yyyy");
+				    
+				    // INDEX 1: SNO (row number from CSV first column)
+				    ps.setString(1, argument.getColumnByIndex(0) == null ? "0" 
+				            : argument.getColumnByIndex(0).toString().trim());
+				    
+				    ps.setInt(2, Integer.valueOf(response.getCompanyId()));
+				    ps.setInt(3, Integer.valueOf(response.getProductId()));
+				    ps.setInt(4, StringUtils.isBlank(response.getSectionId())?0:Integer.valueOf(response.getSectionId()));
+				    ps.setString(5, StringUtils.isBlank(response.getRequestReferenceNo())?null:response.getRequestReferenceNo());
+				    ps.setInt(6, Integer.valueOf(response.getTypeId()));
+				    ps.setString(7, StringUtils.isBlank(error)?null:error);
+				    ps.setString(8, StringUtils.isBlank(error)?"Y":"E");
+				    ps.setString(9, StringUtils.isBlank(response.getBrokerBranchCode())?null:response.getBrokerBranchCode());
+				    ps.setString(10, StringUtils.isBlank(response.getAcExecutiveId())?null:response.getAcExecutiveId());
+				    ps.setString(11, StringUtils.isBlank(response.getBeokerCode())?null:response.getBeokerCode());
+				    ps.setString(12, StringUtils.isBlank(response.getLoginId())?null:response.getLoginId());
+				    ps.setString(13, StringUtils.isBlank(response.getSubUserType())?null:response.getSubUserType());
+				    ps.setString(14, StringUtils.isBlank(response.getApplicationId())?null:response.getApplicationId());
+				    ps.setString(15, StringUtils.isBlank(response.getCustomerRefNo())?null:response.getCustomerRefNo());
+				    ps.setString(16, StringUtils.isBlank(response.getEndorsementYn())?null:response.getEndorsementYn());
+				    ps.setString(17, StringUtils.isBlank(response.getEndorsementDate())?null:response.getEndorsementDate());
+				    ps.setString(18, StringUtils.isBlank(response.getEndorsementEffectiveDate())?null:response.getEndorsementEffectiveDate());
+				    ps.setString(19, StringUtils.isBlank(response.getEndorsementRemarks())?null:response.getEndorsementRemarks());
+				    ps.setString(20, StringUtils.isBlank(response.getEndorsementType())?null:response.getEndorsementType());
+				    ps.setString(21, StringUtils.isBlank(response.getEndorsementTypeDesc())?null:response.getEndorsementTypeDesc());
+				    ps.setString(22, StringUtils.isBlank(response.getEndtCategoryDesc())?null:response.getEndtCategoryDesc());
+				    ps.setString(23, StringUtils.isBlank(response.getEndtCount())?null:response.getEndtCount());
+				    ps.setString(24, StringUtils.isBlank(response.getEndtPrevPolicyNo())?null:response.getEndtPrevPolicyNo());
+				    ps.setString(25, StringUtils.isBlank(response.getEndtStatus())?null:response.getEndtStatus());
+				    ps.setString(26, StringUtils.isBlank(response.getIsFinanceEndt())?null:response.getIsFinanceEndt());
+				    ps.setString(27, StringUtils.isBlank(response.getOrginalPolicyNo())?null:response.getOrginalPolicyNo());
+				    ps.setString(28, StringUtils.isBlank(response.getExchangeRate())?null:response.getExchangeRate());
+				    ps.setString(29, StringUtils.isBlank(response.getHavePromoCode())?null:response.getHavePromoCode());
+				    ps.setString(30, StringUtils.isBlank(response.getNoOfVehicles())?null:response.getNoOfVehicles());
+				    ps.setString(31, StringUtils.isBlank(response.getPolicyStartDate())?null:response.getPolicyStartDate());
+				    ps.setString(32, StringUtils.isBlank(response.getPolicyEndDate())?null:response.getPolicyEndDate());
+				    ps.setString(33, StringUtils.isBlank(response.getPromoCode())?null:response.getPromoCode());
+				    ps.setString(34, StringUtils.isBlank(response.getCurrency())?null:response.getCurrency());
+				    ps.setString(35, StringUtils.isBlank(response.getBranchCode())?null:response.getBranchCode());
+				    ps.setString(36, StringUtils.isBlank(response.getAgencyCode())?null:response.getAgencyCode());
+				    ps.setString(37, StringUtils.isBlank(response.getIdnumber())?null:response.getIdnumber());
+				    ps.setString(38, StringUtils.isBlank(response.getUserType())?null:response.getUserType());
+				    ps.setString(39, response.getNcdYn());
+				    ps.setString(40, StringUtils.isBlank(response.getSourceType())?null:response.getSourceType());
+				    ps.setString(41, StringUtils.isBlank(response.getCustomerCode())?null:response.getCustomerCode());
+				    ps.setString(42, StringUtils.isBlank(response.getResOwnerName())?null:response.getResOwnerName());
+				    ps.setString(43, StringUtils.isBlank(response.getBdmCode())?null:response.getBdmCode());
+				    ps.setString(44, StringUtils.isBlank(response.getOwnerCategory())?"None":response.getOwnerCategory());
+				    ps.setString(45, StringUtils.isBlank(response.getSourceTypeId())?"":response.getSourceTypeId());
+				    
+				    // Dynamic columns: indices 46 through 61
+				    for (int i = 1; i <= length; i++) {
+				        ps.setString(i + 45, argument.getColumnByIndex(i) == null ? null
+				                : argument.getColumnByIndex(i).toString().trim());
+				        log.info("rowid: "+i+", rowvalue : "+argument.getColumnByIndex(i));
+				    }
+				    
+				    
+				    log.info("entryDate:"+dateformat.format(new Date()));
+				    log.info("finalquery:"+finalquery);
+				}
 				});
 		//log.info("batchSize:"+batchSize+", updateCounts : "+updateCounts +finalquery);
 		 
@@ -292,15 +315,16 @@ private String validateDetails(Record items, EwayUploadRes response) {
 		String[] fieldLength = response.getDataFieldLength().split("~");
 		String[] rangeColumn = response.getDataRange().split("~");
 		String errorDesc ="";
-		for(int i=0;i<excelValueList.length;i++) {
+		for(int i = 1; i < excelValueList.length; i++) {
 			
-			String headername = excelHeaderList.length>0?excelHeaderList[i].replace("\"", ""):"";
-			String excelValue = items.getColumnByIndex(i).toString();//.get(0)
-			String mandatoryYn = mandatoryList.length>0?mandatoryList[i]:"";
-			String datatype = datatypeList.length>0?datatypeList[i]:"";
-			String dateFormat = dateformatList.length>0?dateformatList[i]:"";
-			String dataLength =fieldLength.length>0?fieldLength[i]:"";
-			String rangeCondition =rangeColumn.length>0?rangeColumn[i]:"";
+			String headername = excelHeaderList[i-1].replace("\"", ""); 
+		    String excelValue = items.getColumnByIndex(i).toString();   
+		    String mandatoryYn = mandatoryList[i];      
+		    String datatype = datatypeList[i];          
+		    String dateFormat = dateformatList[i];      
+		    String dataLength = fieldLength[i];        
+		    String rangeCondition = rangeColumn[i];   
+		    
 			String errors = "";
 			if(StringUtils.isNotBlank(mandatoryYn)&&mandatoryYn.equalsIgnoreCase("Y")&&StringUtils.isBlank(excelValue)) {
 				errors = headername + " value is Mandatory";

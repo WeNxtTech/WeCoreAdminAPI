@@ -12,12 +12,12 @@
 
 package com.maan.eway.repository;
 
-import java.math.BigDecimal;
 import java.util.List;
 
-import com.maan.eway.bean.SessionMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+
+import com.maan.eway.bean.SessionMaster;
 import com.maan.eway.bean.SessionMasterId;
 /**
  * <h2>SessionMasterRepository</h2>
@@ -27,12 +27,13 @@ import com.maan.eway.bean.SessionMasterId;
  * Description: "SessionMaster" Repository
  */
  
- 
- 
+
 public interface SessionMasterRepository  extends JpaRepository<SessionMaster,SessionMasterId > , JpaSpecificationExecutor<SessionMaster> {
 
 	List<SessionMaster> findByLoginIdOrderByEntryDateDesc(String userId);
 
 	SessionMaster findByTempTokenid(String authToken);
+	
+	SessionMaster findByTempTokenidAndStatusAndLoginIdAndUserType(String tempTokenid, String status, String loginId, String userType);
 
 }

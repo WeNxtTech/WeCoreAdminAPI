@@ -12,25 +12,29 @@
 
 package com.maan.eway.repository;
 
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 
-import com.maan.eway.bean.BankMaster;
-
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import com.maan.eway.bean.BankMasterId;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 import com.maan.eway.bean.MotorVehicleUsageMaster;
 import com.maan.eway.bean.MotorVehicleUsageMasterId;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
  
 public interface MotorVehicleUsageMasterRepository  extends JpaRepository<MotorVehicleUsageMaster,MotorVehicleUsageMasterId > , JpaSpecificationExecutor<MotorVehicleUsageMaster> {
 
-	
+	// Motor Usage dropdown — per section_id for cascading
+	@Query(value = """
+	    SELECT * FROM motor_vehicleusage_master
+	    WHERE company_id = :companyId AND section_id = :sectionId
+	    AND status = 'Y'
+	    AND effective_date_start <= NOW()
+	    AND effective_date_end > NOW()
+	    """, nativeQuery = true)
+	List<MotorVehicleUsageMaster> findActiveUsagesBySectionId(
+	    @Param("companyId") Integer companyId,
+	    @Param("sectionId") Integer sectionId);
 
 }

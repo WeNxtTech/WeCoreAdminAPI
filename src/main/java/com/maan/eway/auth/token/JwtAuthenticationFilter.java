@@ -8,12 +8,8 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,6 +22,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.maan.eway.bean.SessionMaster;
 import com.maan.eway.repository.SessionMasterRepository;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 
 
 
@@ -33,6 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	@Lazy
 	@Autowired
+	@Qualifier(value = "authendicationServiceImpl")
 	UserDetailsService userDetailsService;
 
 	@Autowired
@@ -73,6 +75,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 					table.setEndTime(endTime );
 					String token = jwtTokenUtil.doGenerateToken(table.getLoginId());
 					table.setTokenId(token);
+					table.setIpAddress(req.getLocalAddr() +":" +req.getLocalPort());
 					sessionRep.save(table);
 				}
 			} catch (IllegalArgumentException e) {
@@ -85,10 +88,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 					cal.add(Calendar.MINUTE, 50);
 					Date endTime = cal.getTime();
 					table.setEndTime(endTime );
-					String token = jwtTokenUtil.doGenerateToken(table.getLoginId());
+					String token = null;
+					try {
+						token = jwtTokenUtil.doGenerateToken(table.getLoginId());
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
 					table.setTokenId(token);
+					table.setIpAddress(req.getLocalAddr() +":" +req.getLocalPort());
 					sessionRep.save(table);
-					username = jwtTokenUtil.getUsernameFromToken(authToken);
+					try {
+						username = jwtTokenUtil.getUsernameFromToken(authToken);
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
 				} else {
 					logger.warn("the token is expired and not valid anymore");
 					username = table.getTokenId();
@@ -103,7 +116,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			String combinedUsername = username + ":" + loginId;
 			
 			UserDetails userDetails = userDetailsService.loadUserByUsername(combinedUsername);
-			boolean validtoken = jwtTokenUtil.validateToken(username, userDetails,req);
+			boolean validtoken = false;;
+			try {
+				validtoken = jwtTokenUtil.validateToken(username, table.getTempTokenid(), userDetails,req);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			
 			if(validtoken && table.getStatus().equals("DE-ACTIVE")) {
 				validtoken = false;
@@ -114,7 +132,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 							
 				if(userType.equalsIgnoreCase("Issuer") && (subUserType.equalsIgnoreCase("SuperAdmin") 
 						|| subUserType.equalsIgnoreCase("surveyor") || subUserType.equalsIgnoreCase("claimofficer") 
-						|| subUserType.equalsIgnoreCase("garge"))) {
+						|| subUserType.equalsIgnoreCase("garge")|| subUserType.equalsIgnoreCase("bidder"))) {
 					UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
 							userDetails, null, Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN")));
 					authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(requestWrapper));

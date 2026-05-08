@@ -15,15 +15,18 @@ public class ProductSectionsGetReq {
 //
 //	@JsonProperty("BranchCode")
 //	private String branchCode;
-	
+
 	@JsonProperty("SectionId")
 	private String sectionId;
 
 	@JsonProperty("ProductId")
 	private String productId;
-	
-	  @JsonFormat(pattern ="dd/MM/yyyy")
-	  @JsonProperty("EffectiveDateStart")
-	  private Date effectiveDateStart;
+
+	@JsonProperty("WhatsappYn")
+	private String whatsappYn;
+
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
 
 }

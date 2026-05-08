@@ -13,17 +13,25 @@
 package com.maan.eway.bean;
 
 
+import java.io.Serializable;
+import java.util.Date;
+
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
-
-import lombok.*;
-import jakarta.persistence.*;
-import java.io.Serializable;
-import java.util.List;
-
-import java.util.Date;
-import jakarta.persistence.*;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 
 
@@ -103,6 +111,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="REMARKS", length=100)
     private String     remarks ;
+    
+    @Column(name="IP_ADDRESS", length=100)
+    private String     ipAddress ;
 
 
     //--- ENTITY LINKS ( RELATIONSHIP )

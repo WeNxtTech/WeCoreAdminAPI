@@ -149,6 +149,18 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="MINIMUM_AMOUNT", length=20)
     private BigDecimal   minimumAmount;
+    
+    @Column(name="MAX_AMOUNT")
+    private BigDecimal   maxAmount;
+    
+    @Column(name="START_DAYS")
+    private BigDecimal   startDays;
+    
+    @Column(name="END_DAYS")
+    private BigDecimal   enddays;
+    
+    @Column(name="MAX_AMOUNT_YN")
+    private String   maxAmountyn;
 }
 
 

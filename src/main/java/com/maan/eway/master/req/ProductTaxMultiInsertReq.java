@@ -43,4 +43,17 @@ public class ProductTaxMultiInsertReq {
 	
 	@JsonProperty("DependentYn")
 	private String dependentYn;
+	
+	@JsonProperty("MaxAmountYN")
+	private String maxAmountYN;
+	
+	@JsonProperty("StartDays")
+	private String startDays;
+	
+	@JsonProperty("EndDays")
+	private String endDays;
+	
+	@JsonProperty("MaximumAmount")
+	private String maximumAmount;
+	
 }

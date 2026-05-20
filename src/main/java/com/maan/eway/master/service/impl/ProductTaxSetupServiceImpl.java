@@ -252,6 +252,10 @@ public class ProductTaxSetupServiceImpl implements ProductTaxSetupService {
 				saveData.setDependentYn(StringUtils.isBlank(data.getDependentYn())?"N":data.getDependentYn());
 				saveData.setMinimumAmount(StringUtils.isBlank(data.getMinimumAmount())?BigDecimal.ZERO  :new BigDecimal(data.getMinimumAmount()) );
 				saveData.setProductId(Integer.valueOf(req.getProductId()));
+				saveData.setMaxAmount(StringUtils.isBlank(data.getMaximumAmount()) ? BigDecimal.ZERO : new BigDecimal(data.getMaximumAmount()));
+				saveData.setStartDays(StringUtils.isBlank(data.getStartDays()) ? BigDecimal.ZERO : new BigDecimal(data.getStartDays()));
+				saveData.setEnddays(StringUtils.isBlank(data.getEndDays()) ? BigDecimal.ZERO : new BigDecimal(data.getEndDays()));
+				saveData.setMaxAmountyn(StringUtils.isBlank(data.getMaxAmountYN()) ? "N" : data.getMaxAmountYN());
 				saveList.add(saveData);
 			}
 			repo.saveAllAndFlush(saveList);
@@ -722,7 +726,11 @@ public class ProductTaxSetupServiceImpl implements ProductTaxSetupService {
 //					taxRes.setUpdatedBy(data.getCreatedBy());
 //					taxRes.setUpdatedDate(new Date());
 					taxRes.setValue(data.getValue()== null ? "" : data.getValue().toString() ) ;
+					taxRes.setStartDays(data.getStartDays()== null ? "" : data.getStartDays().toString());
 					taxRes.setDependentYn(data.getDependentYn()==null? "" :data.getDependentYn());
+					taxRes.setMaxAmountYN(data.getMaxAmountyn());
+					taxRes.setEndDays(data.getEnddays()== null ? "" : data.getEnddays().toString());
+					taxRes.setMaximumAmount(data.getMaxAmount()== null ? "" : data.getMaxAmount().toString());
 					taxRes.setMinimumAmount(data.getMinimumAmount()==null?"" :data.getMinimumAmount().toPlainString() );
 					taxList.add(taxRes);
 				}

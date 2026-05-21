@@ -80,6 +80,10 @@ private static final long serialVersionUID = 1L;
     @Column(name="COUNTRY_ID", length=20)
     private String   countryId;
     
+    @Id
+    @Column(name="TAX_ID_FOR")
+    private Integer    taxIdFor;
+    
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="EFFECTIVE_DATE_START", nullable=false)
     private Date       effectiveDateStart ;

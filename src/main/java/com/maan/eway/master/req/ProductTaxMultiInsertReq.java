@@ -56,4 +56,7 @@ public class ProductTaxMultiInsertReq {
 	@JsonProperty("MaximumAmount")
 	private String maximumAmount;
 	
+	@JsonProperty("TaxIdFor")
+	private String taxIdFor;
+	
 }

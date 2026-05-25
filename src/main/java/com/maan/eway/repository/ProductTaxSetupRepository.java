@@ -14,19 +14,13 @@ package com.maan.eway.repository;
 
 
 
-import com.maan.eway.bean.CompaniesTaxSetup;
-import com.maan.eway.bean.CompaniesTaxSetupId;
-import com.maan.eway.bean.CountryMaster;
-import com.maan.eway.bean.CountryMasterId;
-import com.maan.eway.bean.CountryTaxSetup;
-import com.maan.eway.bean.CountryTaxSetupId;
-import com.maan.eway.bean.ProductTaxSetup;
-import com.maan.eway.bean.ProductTaxSetupId;
-
-import java.util.Date;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import com.maan.eway.bean.ProductTaxSetup;
+import com.maan.eway.bean.ProductTaxSetupId;
 
 /**
  * <h2>ReferalMasterRepository</h2>
@@ -40,6 +34,15 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  
 public interface ProductTaxSetupRepository  extends JpaRepository<ProductTaxSetup,ProductTaxSetupId > , JpaSpecificationExecutor<ProductTaxSetup> {
 
-
+	@Query("select max(p.taxIdFor) from ProductTaxSetup p " +
+		       "where p.companyId = :companyId " +
+		       "and p.productId = :productId " +
+		       "and p.amendId = :amendId " +
+		       "and p.taxCode = :taxCode")
+		Integer findMaxTaxIdForByTaxCode(
+		        @Param("companyId") String companyId,
+		        @Param("productId") Integer productId,
+		        @Param("amendId") Integer amendId,
+		        @Param("taxCode") String taxCode);
 
 }

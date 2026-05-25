@@ -387,6 +387,10 @@ private static final long serialVersionUID = 1L;
     @Column(name="EXCESS_LIMIT_LC")
     private Double excessLimitLc;
     
+    @Column(name="NON_ELEC_ACCESSORIES_SI")
+    private Double nonElecAccessoriesSi;
+    
+    
 }
 
 

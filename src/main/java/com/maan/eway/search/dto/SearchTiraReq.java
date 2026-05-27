@@ -9,6 +9,12 @@ public class SearchTiraReq {
 	@JsonProperty("StickeNo")
 	private String stickerno;
 	
+	@JsonProperty("QuoteNo")
+	private String quoteNo;
+	
+	@JsonProperty("RequestRefNo")
+	private String requestRefNo;
+	
 	@JsonProperty("ChassisNo")
 	private String  chassesNo;
 	

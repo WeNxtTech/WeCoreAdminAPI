@@ -12,13 +12,12 @@
 
 package com.maan.eway.repository;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Set;
 
-import com.maan.eway.bean.MotorDataDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+
+import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.MotorDataDetailsId;
 /**
  * <h2>MotorDataDetailsRepository</h2>
@@ -38,8 +37,10 @@ public interface MotorDataDetailsRepository  extends JpaRepository<MotorDataDeta
 
 	List<MotorDataDetails> findByChassisNumberAndCompanyId(String chassesNo, String companyId);
 
-	List<MotorDataDetails> findByQuoteNoInAndCompanyId(Set<String> quoteNo, String companyId);
+	List<MotorDataDetails> findByQuoteNoInAndCompanyId(List<String> string, String companyId);
 
 	List<MotorDataDetails> findByQuoteNo(String quote);
+
+	List<MotorDataDetails> findByQuoteNoAndCompanyId(String quoteNo, String companyId);
 
 }

@@ -9,41 +9,42 @@ import lombok.Data;
 
 @Data
 public class SectionCoverUpdateReq {
-
+	
 	@JsonProperty("CoverId")
 	private String coverId;
-
+	
 	@JsonProperty("ProductId")
 	private String productId;
-
+	
 	@JsonProperty("SectionId")
 	private String sectionId;
 	@JsonProperty("AgencyCode")
 	private String agencyCode;
-
+	
 	@JsonProperty("BranchCode")
 	private String branchCode;
-
+	
 	@JsonProperty("InsuranceId")
 	private String companyId;
-
-	@JsonFormat(pattern = "dd/MM/yyyy")
+	
+	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
-
-	@JsonFormat(pattern = "dd/MM/yyyy")
+	
+	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateEnd")
 	private Date effectiveDateEnd;
 
 	@JsonProperty("CoverName")
 	private String coverName;
-
+	
 	@JsonProperty("CoverBasedOn")
 	private String coverBasedOn;
 
+	
 	@JsonProperty("CoverDesc")
 	private String coverDesc;
-
+	
 	@JsonProperty("Status")
 	private String status;
 
@@ -51,130 +52,119 @@ public class SectionCoverUpdateReq {
 	private String coreAppCode;
 
 	@JsonProperty("Remarks")
-	private String remarks;
-
+	private String remarks; 
+	
 	@JsonProperty("CreatedBy")
-	private String createdBy;
-
+	private String createdBy; 
+	
 	@JsonProperty("ProRataYn")
 	private String proRataYn;
-
+	
 	@JsonProperty("ToolTip")
-	private String toolTip;
+	private String toolTip;  
 
 	@JsonProperty("RegulatoryCode")
 	private String regulatoryCode;
 
 	@JsonProperty("SubCoverYn")
 	private String subCoverYn;
-
+	
 //	@JsonFormat(pattern="dd/MM/yyyy")
 //	@JsonProperty("EffectiveDateEnd")
 //	private Date effectiveDateEnd;
-
-	// Rating Master Insert
+	
+	
+	// Rating Master Insert 
 	@JsonProperty("CoverageType")
 	private String coverageType;
-
+	
 	@JsonProperty("CoverageLimit")
 	private String coverageLimit;
-
+	
 	@JsonProperty("Excess")
 	private String excess;
-
+	
 	@JsonProperty("CalcType")
 	private String calcType;
-
+	
 	@JsonProperty("BaseRate")
 	private String baseRate;
-
+	
 	@JsonProperty("MinimumRate")
 	private String minimumRate;
-
+	
 	@JsonProperty("SumInsuredStart")
 	private String sumInsuredStart;
-
+	
 	@JsonProperty("SumInsuredEnd")
 	private String sumInsuredEnd;
-
+	
 	@JsonProperty("MinimumPremium")
 	private String minimumPremium;
-
+	
 	@JsonProperty("FactorTypeId")
 	private String factorTypeId;
-
+	
 	@JsonProperty("IsTaxExcempted")
 	private String isTaxExcempted;
-
+	
 	@JsonProperty("TaxAmount")
 	private String taxAmount;
-
+	
 	@JsonProperty("TaxCode")
 	private String taxCode;
-
+	
 	@JsonProperty("TaxExcemptionReference")
 	private String taxExcemptionReference;
-
+	
 	@JsonProperty("TaxExcemptionType")
 	private String taxExcemptionType;
+	
 
 	@JsonProperty("DiscountCoverId")
 	private String discountCoverId;
-
+	
 	@JsonProperty("DependentCoverYn")
-	private String dependentCoverYn;
-
+    private String dependentCoverYn;
+    
 	@JsonProperty("DependentCoverId")
-	private String dependentCoverId;
-
+    private String dependentCoverId;
+	
 	@JsonProperty("IsSelectedYn")
-	private String isSelectedYn;
-
+    private String isSelectedYn;
+	
 	@JsonProperty("MultiSelectYn")
-	private String multiSelectYn;
-
+    private String multiSelectYn;
+	
 	@JsonProperty("ExcessPercent")
 	private String excessPercent;
-
+	
 	@JsonProperty("ExcessAmount")
 	private String excessAmount;
-
+	
 	@JsonProperty("ExcessDesc")
 	private String excessDesc;
-
+	
 	@JsonProperty("FreeCoverLimit")
 	private String freeCoverLimit;
-
+	
 	@JsonProperty("CodeDescLocal")
 	private String codeDescLocal;
-
+	
 	@JsonProperty("MinimumRateYN")
 	private String minimumRateYN;
-
+	
 	@JsonProperty("EndtProRataYn")
-	private String endtProRataYn;
-
+    private String endtProRataYn;
+    
 	@JsonProperty("EndtProRataDesc")
-	private String endtProRataDesc;
-
+    private String endtProRataDesc;
+    
 	@JsonProperty("DependentCoverBasedOn")
-	private String dependentCoverSIorPRE;
-
+    private String dependentCoverSIorPRE;
+	
 	@JsonProperty("AdditionalInfoYN")
 	private String additionalInfoYN;
-
-	@JsonProperty("IsRateEditYn")
-	private String isRateEditYn;
-	@JsonProperty("IsPremiumEditYn")
-	private String isPremiumEditYn;
-
-	@JsonProperty("IsDiscountYn")
-	private String isDiscountYn;
-	@JsonProperty("IsLoadingYn")
-	private String isLoadingYn;
-	@JsonProperty("IsEditYn")
-	private String isEditYn;
 	
-	@JsonProperty("DiscApplyCoverId")
-	private String discApplyCoverId;
+	
 }

@@ -3,10 +3,13 @@ package com.maan.eway.master.res;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.annotations.ColumnDefault;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.maan.eway.master.req.OfsGridGetRes;
 
+import jakarta.persistence.Column;
 import lombok.Data;
 
 @Data
@@ -161,5 +164,26 @@ public class SectionCoverMasterRes {
 	
 	@JsonProperty("AdditionalInfoYN")
     private String additionalInfoYN;
+	
+	@JsonProperty("IsEditYn")
+    private String isEditYn;
+	
+	
+	@JsonProperty( "IsRateEditYn")
+	private String isRateEditYn;
+
+	@JsonProperty( "IsPremiumEditYn")
+	private String isPremiumEditYn;
+
+	@JsonProperty("IsDiscountYn")
+	private String isDisCountYn;
+
+	@JsonProperty("IsLoadingYn")
+	private String isLoadingYn;
+	
+
+
+	@JsonProperty("DiscApplyCoverId")
+	private String discApplyCoverId;
 	
 }

@@ -46,7 +46,7 @@ public class FactorRateRequestDetailsId implements Serializable {
     
     private Integer    subCoverId ;
     
-    private Integer    discLoadId ;
+    private String    discLoadId ;
     
     private Integer    taxId ;
     

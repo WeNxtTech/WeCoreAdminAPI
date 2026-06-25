@@ -1615,7 +1615,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				} else if (req.getCalcType().equalsIgnoreCase("D")) {
 
 					saveData.setDiscountCoverId(
-							req.getDiscountCoverId() == null ? null : Integer.valueOf(req.getDiscountCoverId()));
+							req.getDiscountCoverId() == null ? null : req.getDiscountCoverId());
 				} else if (req.getCalcType().equalsIgnoreCase("P")) {
 
 					// Amount

@@ -192,7 +192,7 @@ public class SectionCoverMaster implements Serializable {
 	private String taxExcemptionTypeDesc;
 
 	@Column(name = "DISCOUNT_COVER_ID")
-	private Integer discountCoverId;
+	private String discountCoverId;
 
 	@Column(name = "DEPENDENT_COVER_YN", length = 2)
 	private String dependentCoverYn;

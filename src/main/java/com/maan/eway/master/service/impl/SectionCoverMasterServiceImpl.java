@@ -543,8 +543,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				res.setIsPremiumEditYn(list.get(0).getIsPremiumEditYn() != null ? list.get(0).getIsPremiumEditYn() : "N");
 				res.setIsLoadingYn(list.get(0).getIsLoadingYn() != null ? list.get(0).getIsLoadingYn() : "N");
 				res.setIsDisCountYn(list.get(0).getIsDisCountYn() != null ? list.get(0).getIsDisCountYn() : "N");
-				res.setDiscApplyCoverId(list.get(0).getCoverGroup() != null ? list.get(0).getCoverGroup() : null);
-
+				res.setDiscApplyCoverId(list.get(0).getDiscountCoverId() != null ? list.get(0).getDiscountCoverId() : null);
 			}
 
 		} catch (Exception e) {
@@ -1613,9 +1612,14 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 
 					saveData.setFactorTypeId(Integer.valueOf(req.getFactorTypeId()));
 				} else if (req.getCalcType().equalsIgnoreCase("D")) {
-
-					saveData.setDiscountCoverId(
-							req.getDiscountCoverId() == null ? null : req.getDiscountCoverId());
+					if (req.getCompanyId().equals("100054")) {
+						//String discountCoverIds = String.join(",", req.getDiscApplyCoverId());
+						saveData.setDiscountCoverId(req.getDiscApplyCoverId());
+					} else {
+						saveData.setDiscountCoverId(
+								req.getDiscountCoverId() == null ? null : req.getDiscountCoverId());
+					}
+					
 				} else if (req.getCalcType().equalsIgnoreCase("P")) {
 
 					// Amount
@@ -1687,7 +1691,7 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				saveData.setIsPremiumEditYn(req.getIsPremiumEditYn() != null ? req.getIsPremiumEditYn() : "N");
 				saveData.setIsDisCountYn(req.getIsDiscountYn() != null ? req.getIsDiscountYn() : "N");
 				saveData.setIsLoadingYn(req.getIsLoadingYn() != null ? req.getIsLoadingYn() : "N");
-				saveData.setCoverGroup(req.getDiscApplyCoverId() != null ? req.getDiscApplyCoverId() : "");
+				//saveData.setCoverGroup(req.getDiscApplyCoverId() != null ? req.getDiscApplyCoverId() : "");
 
 				repo.saveAndFlush(saveData);
 

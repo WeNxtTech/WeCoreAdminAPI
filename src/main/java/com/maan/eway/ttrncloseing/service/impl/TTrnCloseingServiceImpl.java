@@ -232,7 +232,7 @@ public class TTrnCloseingServiceImpl implements TTrnCloseingService{
 			TtrnGetResForMonth getmonth = findRelevantMonth(req.getBranchCode(), req.getProductId(), req.getCompanyId(),req.getSetUpMonth());
 			if("D".equalsIgnoreCase(getmonth.getStatus()))
 			{
-				list.add(new Error("0","0", "Kindly do SetUp for Policy closing"));
+			//	list.add(new Error("0","0", "Kindly do SetUp for Policy closing"));
 				resc.setCommonResponse("Kindly do SetUp for Policy closing");
 				resc.setMessage("Success");
 				resc.setIsError(true);

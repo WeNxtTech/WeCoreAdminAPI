@@ -15,4 +15,6 @@ public interface SectionDataDetailsRepo extends JpaRepository<SectionDataDetails
 
 	List<SectionDataDetails> findByQuoteNo(String qu);
 
+	List<SectionDataDetails> findByQuoteNoAndCompanyId(String quoteNo, String companyId);
+
 }

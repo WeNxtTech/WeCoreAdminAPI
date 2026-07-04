@@ -72,8 +72,8 @@ public class SearchTiraServiceImpl implements  SearchTiraService{
 		List<MotorDataDetails> motor = new ArrayList<>();
 		try
 		{
-
-			if (StringUtils.isNotBlank(req.getCoverNoteNo())) {
+			
+			if (StringUtils.isNotBlank(req.getCoverNoteNo()) ) {
 				section = sectionrepo.findByCoverNoteReferenceNoAndCompanyId(req.getCoverNoteNo(), req.getCompanyId());
 				if (section != null && !section.isEmpty()) {
 					quoteNo = section.stream().map(SectionDataDetails::getQuoteNo).filter(Objects::nonNull)
@@ -175,22 +175,19 @@ public class SearchTiraServiceImpl implements  SearchTiraService{
 					return res;
 				}
 
-			} else {
-				errors = setErrorMethod("10005", null, "Please Enter Mobile Number or Stickerno");
-				res.setCommonResponse(null);
-				res.setErroCode(0);
-				res.setIsError(true);
-				res.setMessage("Failed");
-				res.setErrorMessage(errors);
-				return res;
+			} else if (StringUtils.isNotBlank(req.getQuoteNo()))
+			{
+				section = sectionrepo.findByQuoteNoAndCompanyId(req.getQuoteNo(), req.getCompanyId());
+				motor=motorrepo.findByQuoteNoAndCompanyId(req.getQuoteNo(), req.getCompanyId());
+				quoteNo.add(req.getQuoteNo());	
 			}
-
+			
 			for (String qu : quoteNo) {
 				QuoteDetailsDto dto = new QuoteDetailsDto();
-				if (StringUtils.isNotBlank(req.getCoverNoteNo()) || StringUtils.isNotBlank(req.getStickerno())) {
+				if (StringUtils.isNotBlank(req.getCoverNoteNo()) || StringUtils.isNotBlank(req.getStickerno()) || StringUtils.isNotBlank(req.getQuoteNo()) ) {
 					sectionSearch(section, qu, dto);
 
-				} else if (StringUtils.isNotBlank(req.getRegNo()) || StringUtils.isNotBlank(req.getChassesNo())) {
+				} else if (StringUtils.isNotBlank(req.getRegNo()) || StringUtils.isNotBlank(req.getChassesNo()) || StringUtils.isNotBlank(req.getQuoteNo())) {
 					motorSearch(motor, qu, dto);
 				}
 				dtoList.add(dto);

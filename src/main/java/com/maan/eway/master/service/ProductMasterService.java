@@ -8,12 +8,14 @@ package com.maan.eway.master.service;
 
 import java.util.List;
 
+import com.maan.eway.auth.dto.LOBReq;
 import com.maan.eway.master.req.ProductChangeStatusReq;
 import com.maan.eway.master.req.ProductMasterGetAllReq;
 import com.maan.eway.master.req.ProductMasterGetReq;
 import com.maan.eway.master.req.ProductMasterSaveReq;
 import com.maan.eway.master.res.ProductGetAllRes;
 import com.maan.eway.master.res.ProductMasterRes;
+import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 /**
@@ -34,6 +36,15 @@ public interface ProductMasterService  {
 	List<DropDownRes> getProductMasterDropdown();
 
 	SuccessRes changeStatusOfProduct(ProductChangeStatusReq req);
+
+	List<String> validateGlobalLobConfig(LOBReq req);
+
+	CommonRes insertGlobalLobConfig(LOBReq req);
+
+	CommonRes getGlobalLobConfig(Long id);
+
+
+	CommonRes getAllLobConfig();
 
 
 }

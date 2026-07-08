@@ -5,7 +5,6 @@
 */
 package com.maan.eway.master.service.impl;
 
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,9 +15,11 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,8 +29,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.auth.dto.LOBReq;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.ProductMaster;
+import com.maan.eway.bean.WecoreLobMaster;
 import com.maan.eway.master.req.GlobalCommonValidationReq;
 import com.maan.eway.master.req.ProductChangeStatusReq;
 import com.maan.eway.master.req.ProductMasterGetAllReq;
@@ -41,6 +44,8 @@ import com.maan.eway.master.service.MasterCommonValidationService;
 import com.maan.eway.master.service.ProductMasterService;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.ProductMasterRepository;
+import com.maan.eway.repository.WecoreLobMasterRepository;
+import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 
@@ -54,78 +59,83 @@ import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
+
 /**
-* <h2>ProductMasterServiceimpl</h2>
-*/
+ * <h2>ProductMasterServiceimpl</h2>
+ */
 @Service
 @Transactional
 public class ProductMasterServiceImpl implements ProductMasterService {
 
-@PersistenceContext
-private EntityManager em;
+	@PersistenceContext
+	private EntityManager em;
 
-@Autowired
-private ProductMasterRepository repo;
+	@Autowired
+	private ProductMasterRepository repo;
 
-@Autowired
-private MasterCommonValidationService commonValidationService;
+	@Autowired
+	private MasterCommonValidationService commonValidationService;
 
-@Autowired
-private ListItemValueRepository listRepo ;
+	@Autowired
+	private ListItemValueRepository listRepo;
 
-Gson json = new Gson();
+	@Autowired
+	private WecoreLobMasterRepository wecoreLobMasterRepo;
 
-private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
+	Gson json = new Gson();
 
-	//************************************************INSERT/UPDATE PRODUCT DETAILS******************************************************\\
+	private Logger log = LogManager.getLogger(ProductMasterServiceImpl.class);
+
+	// ************************************************INSERT/UPDATE PRODUCT
+	// DETAILS******************************************************\\
 	@Transactional
 	@Override
 	public SuccessRes insertProduct(ProductMasterSaveReq req) {
-	    SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/YYYY");
+		SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/YYYY");
 		SuccessRes res = new SuccessRes();
 		ProductMaster saveData = new ProductMaster();
 		List<ProductMaster> list = new ArrayList<ProductMaster>();
-		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
-		
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+
 		try {
-			Integer amendId=0;
-			Date startDate = req.getEffectiveDateStart() ;
+			Integer amendId = 0;
+			Date startDate = req.getEffectiveDateStart();
 			String end = "31/12/2050";
 			Date endDate = sdformat.parse(end);
 			long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
 			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
-			Date entryDate = null ;
-			String createdBy = "" ;		
-			
-			String productId="";
-			
-			if (req.getProductId() ==null || StringUtils.isBlank(req.getProductId().toString())) {
-					// Save
-				    //Long totalCount = repo.count();
-					Long totalCount =getProductMasterTableCount();
-					productId = Long.valueOf(totalCount + 01).toString();
-					saveData.setProductId(Integer.valueOf(productId));
-					saveData.setProductName(req.getProductName());
-					entryDate = new Date();
-					createdBy = req.getCreatedBy();
-					res.setResponse("Saved Successfully ");
-					res.setSuccessId(productId);
-	
-				} else {
-					// Update
-					// Get Less than Equal Today Record 
-					// Criteria
-					productId=req.getProductId();
-					CriteriaBuilder cb = em.getCriteriaBuilder();
-					CriteriaQuery<ProductMaster> query = cb.createQuery(ProductMaster.class);
-	
-					// Find All
-					Root<ProductMaster> b = query.from(ProductMaster.class);
-	
-					// Select
-					query.select(b);
-	
-					// Effective Date Max Filter
+			Date entryDate = null;
+			String createdBy = "";
+
+			String productId = "";
+
+			if (req.getProductId() == null || StringUtils.isBlank(req.getProductId().toString())) {
+				// Save
+				// Long totalCount = repo.count();
+				Long totalCount = getProductMasterTableCount();
+				productId = Long.valueOf(totalCount + 01).toString();
+				saveData.setProductId(Integer.valueOf(productId));
+				saveData.setProductName(req.getProductName());
+				entryDate = new Date();
+				createdBy = req.getCreatedBy();
+				res.setResponse("Saved Successfully ");
+				res.setSuccessId(productId);
+
+			} else {
+				// Update
+				// Get Less than Equal Today Record
+				// Criteria
+				productId = req.getProductId();
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<ProductMaster> query = cb.createQuery(ProductMaster.class);
+
+				// Find All
+				Root<ProductMaster> b = query.from(ProductMaster.class);
+
+				// Select
+				query.select(b);
+
+				// Effective Date Max Filter
 //					Subquery<Long> effectiveDate = query.subquery(Long.class);
 //					Root<ProductMaster> ocpm1 = effectiveDate.from(ProductMaster.class);
 //					effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
@@ -133,158 +143,158 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 //					Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , startDate);
 //					effectiveDate.where(a1,a2);
 //	
-					// Order By
-				//	List<Order> orderList = new ArrayList<Order>();
-				//	orderList.add(cb.asc(b.get("branchName")));
-					
-					// Where
-					Predicate n1 = cb.equal(b.get("status"), "Y");
-	//				Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-					Predicate n3 =  cb.equal(b.get("productId"), req.getProductId() );
-	
-					query.where(n1, n3);//.orderBy(orderList);
-	
-					// Get Result
-					TypedQuery<ProductMaster> result = em.createQuery(query);
-					int limit = 0 , offset = 2 ;
-					result.setFirstResult(limit * offset);
-					result.setMaxResults(offset);
-					list = result.getResultList();
-					
-					if(list.size()>0) {
-						Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
-					
-						if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
-							amendId = list.get(0).getAmendId() + 1 ;
-							entryDate = new Date() ;
-							createdBy = req.getCreatedBy();
-								ProductMaster lastRecord = list.get(0);
-								lastRecord.setEffectiveDateEnd(oldEndDate);
-								repo.saveAndFlush(lastRecord);
-							
-						} else {
-							amendId = list.get(0).getAmendId() ;
-							entryDate = list.get(0).getEntryDate() ;
-							createdBy = list.get(0).getCreatedBy();
-							saveData = list.get(0) ;
-							if (list.size()>1 ) {
-								ProductMaster lastRecord = list.get(1);
-								lastRecord.setEffectiveDateEnd(oldEndDate);
-								repo.saveAndFlush(lastRecord);
-							}
-						
-					    }
+				// Order By
+				// List<Order> orderList = new ArrayList<Order>();
+				// orderList.add(cb.asc(b.get("branchName")));
+
+				// Where
+				Predicate n1 = cb.equal(b.get("status"), "Y");
+				// Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+				Predicate n3 = cb.equal(b.get("productId"), req.getProductId());
+
+				query.where(n1, n3);// .orderBy(orderList);
+
+				// Get Result
+				TypedQuery<ProductMaster> result = em.createQuery(query);
+				int limit = 0, offset = 2;
+				result.setFirstResult(limit * offset);
+				result.setMaxResults(offset);
+				list = result.getResultList();
+
+				if (list.size() > 0) {
+					Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+
+					if (list.get(0).getEffectiveDateStart().before(beforeOneDay)) {
+						amendId = list.get(0).getAmendId() + 1;
+						entryDate = new Date();
+						createdBy = req.getCreatedBy();
+						ProductMaster lastRecord = list.get(0);
+						lastRecord.setEffectiveDateEnd(oldEndDate);
+						repo.saveAndFlush(lastRecord);
+
+					} else {
+						amendId = list.get(0).getAmendId();
+						entryDate = list.get(0).getEntryDate();
+						createdBy = list.get(0).getCreatedBy();
+						saveData = list.get(0);
+						if (list.size() > 1) {
+							ProductMaster lastRecord = list.get(1);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							repo.saveAndFlush(lastRecord);
+						}
+
 					}
-				
-					res.setResponse("Updated Successfully ");
-					res.setSuccessId(productId);
 				}
-			
-			    dozerMapper.map(req, saveData );
-				saveData.setProductId(Integer.valueOf(productId));
-				saveData.setProductName(req.getProductName());
-				saveData.setEffectiveDateStart(startDate);
-				saveData.setEffectiveDateEnd(endDate);
-				saveData.setCreatedBy(createdBy);
-				saveData.setStatus(req.getStatus());
-				saveData.setEntryDate(entryDate);
-				saveData.setUpdatedDate(new Date());
-				saveData.setUpdatedBy(req.getCreatedBy());
-				saveData.setAmendId(amendId);
-				String currencyIds =  String.join(",", req.getCurrencyIds()); ;
-				currencyIds = currencyIds.replace("[", "").replace("]", "");
-				saveData.setCurrencyIds(currencyIds);
-				saveData.setSectionEndtYn(StringUtils.isNotBlank(req.getSectionEndtYn()) ? req.getSectionEndtYn() :"N" );
-				ListItemValue icon = listRepo.findByItemTypeAndItemCodeAndStatus("PRODUCT_ICONS" , req.getProductIconId() ,"Y");
-				saveData.setProductIconId(Integer.valueOf(icon.getItemCode()));
-				saveData.setProductIconName(icon.getItemValue());
-				repo.saveAndFlush(saveData);
-				
-				
-				
-				log.info("Saved Details is ---> " + json.toJson(saveData));
-				
-	} catch (Exception e) {
+
+				res.setResponse("Updated Successfully ");
+				res.setSuccessId(productId);
+			}
+
+			dozerMapper.map(req, saveData);
+			saveData.setProductId(Integer.valueOf(productId));
+			saveData.setProductName(req.getProductName());
+			saveData.setEffectiveDateStart(startDate);
+			saveData.setEffectiveDateEnd(endDate);
+			saveData.setCreatedBy(createdBy);
+			saveData.setStatus(req.getStatus());
+			saveData.setEntryDate(entryDate);
+			saveData.setUpdatedDate(new Date());
+			saveData.setUpdatedBy(req.getCreatedBy());
+			saveData.setAmendId(amendId);
+			String currencyIds = String.join(",", req.getCurrencyIds());
+			;
+			currencyIds = currencyIds.replace("[", "").replace("]", "");
+			saveData.setCurrencyIds(currencyIds);
+			saveData.setSectionEndtYn(StringUtils.isNotBlank(req.getSectionEndtYn()) ? req.getSectionEndtYn() : "N");
+			ListItemValue icon = listRepo.findByItemTypeAndItemCodeAndStatus("PRODUCT_ICONS", req.getProductIconId(),
+					"Y");
+			saveData.setProductIconId(Integer.valueOf(icon.getItemCode()));
+			saveData.setProductIconName(icon.getItemValue());
+			repo.saveAndFlush(saveData);
+
+			log.info("Saved Details is ---> " + json.toJson(saveData));
+
+		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
 			return null;
 		}
 		return res;
 	}
-	
-	
+
 	@Override
 	public List<String> validateProductDetails(ProductMasterSaveReq req) {
 		List<String> errorList = new ArrayList<String>();
-		DozerBeanMapper dozerMapper = new DozerBeanMapper(); 
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-		
+
 			// Common Errors
 			GlobalCommonValidationReq commonReq = new GlobalCommonValidationReq();
 			dozerMapper.map(req, commonReq);
-			List<String>  commonErrors = commonValidationService.validateGlobalMaster(commonReq) ;
-			if(commonErrors.size()>0  ) {
+			List<String> commonErrors = commonValidationService.validateGlobalMaster(commonReq);
+			if (commonErrors.size() > 0) {
 				errorList.addAll(commonErrors);
 			}
-						
-						
-			// Other Errors		
+
+			// Other Errors
 			if (StringUtils.isBlank(req.getProductName())) {
 //				errorList.add(new Error("01", "ProductName", "Please Select Product  Name "));
 				errorList.add("2043");
-			}else if (req.getProductName().length() > 100){
+			} else if (req.getProductName().length() > 100) {
 //				errorList.add(new Error("01","ProductName", "Please Enter Product  Name within 100 Characters")); 
 				errorList.add("2044");
-			}else if (StringUtils.isBlank(req.getProductId())) {
+			} else if (StringUtils.isBlank(req.getProductId())) {
 				List<ProductMaster> ProductList = getProductNameExistDetails(req.getProductName());
-				if (ProductList.size()>0 ) {
+				if (ProductList.size() > 0) {
 //					errorList.add(new Error("01", "ProductName", "This Product Name Already Exist "));
 					errorList.add("2045");
 				}
-			}else  {
-				List<ProductMaster> ProductList =  getProductNameExistDetails(req.getProductName() );
-				if (ProductList.size()>0 &&  (! req.getProductId().equalsIgnoreCase(ProductList.get(0).getProductId().toString())) ) {
+			} else {
+				List<ProductMaster> ProductList = getProductNameExistDetails(req.getProductName());
+				if (ProductList.size() > 0
+						&& (!req.getProductId().equalsIgnoreCase(ProductList.get(0).getProductId().toString()))) {
 //					errorList.add(new Error("01", "ProductName", "This Product Name Already Exist "));
 					errorList.add("2045");
 				}
-				
+
 			}
-	
-			if (StringUtils.isBlank(req.getProductIconId()) ) {
+
+			if (StringUtils.isBlank(req.getProductIconId())) {
 //				errorList.add(new Error("02", "ProductIconId", "Please Select Product Icon"));
 				errorList.add("2046");
-			} else if (! req.getProductIconId().matches("[0-9]+")  ) {
+			} else if (!req.getProductIconId().matches("[0-9]+")) {
 //				errorList.add(new Error("02", "ProductIconId", "Please Select  Valid Product Icon"));
 				errorList.add("2047");
-			}else {
-				ListItemValue icon = listRepo.findByItemTypeAndItemCodeAndStatus("PRODUCT_ICONS" , req.getProductIconId() ,"Y");
-				if( icon ==null ) {
+			} else {
+				ListItemValue icon = listRepo.findByItemTypeAndItemCodeAndStatus("PRODUCT_ICONS",
+						req.getProductIconId(), "Y");
+				if (icon == null) {
 //					errorList.add(new Error("02", "ProductIconId", "Please Select  Valid Product Icon"));
 					errorList.add("2047");
 				}
 			}
-			
-			if (req.getCurrencyIds()==null && req.getCurrencyIds().size()<=0 ) {
+
+			if (req.getCurrencyIds() == null && req.getCurrencyIds().size() <= 0) {
 //				errorList.add(new Error("02", "CurrencyIds", "Please Select Currency Ids"));
 				errorList.add("2048");
 			}
-			
+
 			if (StringUtils.isBlank(req.getProductDesc())) {
 //				errorList.add(new Error("08", "ProductDesc", "Please Select Product  Desc "));
 				errorList.add("2049");
-			}else if (req.getProductDesc().length() > 500) {
+			} else if (req.getProductDesc().length() > 500) {
 //				errorList.add(new Error("08", "ProductDesc", "Please Enter Product Desc within 500 Characters"));
 				errorList.add("2050");
 			}
-			
+
 			if (StringUtils.isBlank(req.getMotorYn())) {
 //				errorList.add(new Error("12", "Product Type", "Please Select Product Type "));
 				errorList.add("2051");
-			}else if (req.getMotorYn().length() >1) {
+			} else if (req.getMotorYn().length() > 1) {
 //				errorList.add(new Error("12", "Product Type", "Please Enter Product Type within 1 Character"));
 				errorList.add("2052");
 			}
-			
+
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
@@ -292,67 +302,65 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 		}
 		return errorList;
 	}
-	
+
 	public Long getProductMasterTableCount() {
-	
+
 		Long data = 0L;
 		try {
-	
+
 			List<Tuple> list = new ArrayList<Tuple>();
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
-	
+
 			// Find All
 			Root<ProductMaster> b = query.from(ProductMaster.class);
-	
+
 			// Select
-			query.multiselect(b.get("productId").alias("productId") );
-			
+			query.multiselect(b.get("productId").alias("productId"));
+
 			Subquery<Long> product = query.subquery(Long.class);
 			Root<ProductMaster> ocpm2 = product.from(ProductMaster.class);
-		
+
 			// Effective Date Max Filter
 			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<ProductMaster> ocpm1 = effectiveDate.from(ProductMaster.class);
 			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class))).distinct(true);
 			Predicate a1 = cb.equal(ocpm1.get("productId"), ocpm2.get("productId"));
 			effectiveDate.where(a1);
-									
-			
+
 			// Cover ID Date Max Filter
 			product.select(ocpm2.get("productId")).distinct(true);
 			Predicate a2 = cb.equal(ocpm2.get("productId"), b.get("productId"));
-			Predicate a3 = cb.equal(ocpm2.get("effectiveDateStart"), effectiveDate );
+			Predicate a3 = cb.equal(ocpm2.get("effectiveDateStart"), effectiveDate);
 			product.where(a2, a3);
-			
+
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.desc(b.get("productId")));
-			
+
 			Predicate n1 = cb.equal(b.get("productId"), product);
 			query.where(n1).orderBy(orderList);
-			
+
 			// Get Result
 			TypedQuery<Tuple> result = em.createQuery(query);
 			list = result.getResultList();
-	
-			if( list.size() > 0 ) {
-				data = list.get(0).get("productId") == null ? 0L  : Long.valueOf(list.get(0).get("productId").toString() ) ;
+
+			if (list.size() > 0) {
+				data = list.get(0).get("productId") == null ? 0L
+						: Long.valueOf(list.get(0).get("productId").toString());
 			} else {
-				 data = 0L ;
+				data = 0L;
 			}
-			
-	
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info(e.getMessage());
-	
+
 		}
 		return data;
 	}
-	
-	
+
 	public List<ProductMaster> getProductNameExistDetails(String productName) {
 		List<ProductMaster> list = new ArrayList<ProductMaster>();
 		try {
@@ -360,13 +368,13 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<ProductMaster> query = cb.createQuery(ProductMaster.class);
-	
+
 			// Find All
 			Root<ProductMaster> b = query.from(ProductMaster.class);
-	
+
 			// Select
 			query.select(b);
-	
+
 			// Amend Id Max Filter
 			Subquery<Long> amendId = query.subquery(Long.class);
 			Root<ProductMaster> ocpm1 = amendId.from(ProductMaster.class);
@@ -374,38 +382,38 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a3 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateEnd"), today);
-			amendId.where(a1,a2,a3);
+			amendId.where(a1, a2, a3);
 
-	
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
-			Predicate n2 = cb.equal(b.get("productName"), productName );	
-			query.where(n1,n2);
+			Predicate n2 = cb.equal(b.get("productName"), productName);
+			query.where(n1, n2);
 			// Get Result
 			TypedQuery<ProductMaster> result = em.createQuery(query);
-			list = result.getResultList();		
-		
+			list = result.getResultList();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info(e.getMessage());
-	
+
 		}
 		return list;
 	}
-	
-	///*********************************************************************GET ALL******************************************************\\
+
+	/// *********************************************************************GET
+	/// ALL******************************************************\\
 	@Override
 	public List<ProductGetAllRes> getallProductDetails(ProductMasterGetAllReq req) {
 		List<ProductGetAllRes> resList = new ArrayList<ProductGetAllRes>();
-		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 
 		try {
-			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
-			Calendar cal = new GregorianCalendar(); 
-			cal.setTime(today );
+			Date today = req.getEffectiveDateStart() != null ? req.getEffectiveDateStart() : new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
 			cal.set(Calendar.MINUTE, 1);
-			today   = cal.getTime();
-			
+			today = cal.getTime();
+
 			List<ProductMaster> list = new ArrayList<ProductMaster>();
 //			//Pagination
 //			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
@@ -414,114 +422,120 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<ProductMaster> query = cb.createQuery(ProductMaster.class);
-	
+
 			// Find All
 			Root<ProductMaster> b = query.from(ProductMaster.class);
-	
+
 			// Select
 			query.select(b);
-	
+
 			// Amend ID Max Filter
 			Subquery<Long> amendId = query.subquery(Long.class);
 			Root<ProductMaster> ocpm1 = amendId.from(ProductMaster.class);
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			amendId.where(a1);
-	
+
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.desc(b.get("amendId")));
-			
+
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			query.where(n1).orderBy(orderList);
-	
+
 			// Get Result
 			TypedQuery<ProductMaster> result = em.createQuery(query);
-	
+
 			list = result.getResultList();
-			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getProductId()))).collect(Collectors.toList());
-			list.sort(Comparator.comparing(ProductMaster :: getProductName ));
-			
-			
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getProductId())))
+					.collect(Collectors.toList());
+			list.sort(Comparator.comparing(ProductMaster::getProductName));
+
 			// Map
 			for (ProductMaster data : list) {
 				ProductGetAllRes res = new ProductGetAllRes();
-	
+
 				res = dozerMapper.map(data, ProductGetAllRes.class);
 				res.setProductId(data.getProductId().toString());
-				
+
 				resList.add(res);
 			}
-	
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info(e.getMessage());
 			return null;
-	
+
 		}
 		return resList;
 	}
-	private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
-	    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
-	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+
+	private static <T> java.util.function.Predicate<T> distinctByKey(
+			java.util.function.Function<? super T, ?> keyExtractor) {
+		Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+		return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
 	}
 
-	///*********************************************************************GET BY ID******************************************************\\
+	/// *********************************************************************GET BY
+	/// ID******************************************************\\
 	@Override
 	public ProductMasterRes getByProductCode(ProductMasterGetReq req) {
 		ProductMasterRes res = new ProductMasterRes();
-		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
-			Calendar cal = new GregorianCalendar(); 
+			Date today = req.getEffectiveDateStart() != null ? req.getEffectiveDateStart() : new Date();
+			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
 			cal.set(Calendar.MINUTE, 1);
-			today   = cal.getTime();
-			
+			today = cal.getTime();
+
 			List<ProductMaster> list = new ArrayList<ProductMaster>();
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<ProductMaster> query = cb.createQuery(ProductMaster.class);
-	
+
 			// Find All
 			Root<ProductMaster> b = query.from(ProductMaster.class);
-	
+
 			// Select
 			query.select(b);
-	
+
 			// Amend ID Max Filter
 			Subquery<Long> amendId = query.subquery(Long.class);
 			Root<ProductMaster> ocpm1 = amendId.from(ProductMaster.class);
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-		//	Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			// Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			amendId.where(a1);
-	
+
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.desc(b.get("amendId")));
-	
+
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
-			Predicate n2 = cb.equal(b.get("productId"), req.getProductId() );
-	
-			query.where(n1,n2).orderBy(orderList);
-	
+			Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
+
+			query.where(n1, n2).orderBy(orderList);
+
 			// Get Result
 			TypedQuery<ProductMaster> result = em.createQuery(query);
 			list = result.getResultList();
-			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getProductId()))).collect(Collectors.toList());
-			list.sort(Comparator.comparing(ProductMaster :: getProductName ));
-			
-		//	res = dozerMapper.map(list.get(0) , ProductMasterRes.class);
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getProductId())))
+					.collect(Collectors.toList());
+			list.sort(Comparator.comparing(ProductMaster::getProductName));
+
+			// res = dozerMapper.map(list.get(0) , ProductMasterRes.class);
 			res.setProductId(list.get(0).getProductId().toString());
 			res.setEntryDate(list.get(0).getEntryDate());
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
-			List<String> currencyIds = new ArrayList<String>(list.get(0).getCurrencyIds()==null?Collections.emptyList() : Arrays.asList(list.get(0).getCurrencyIds().split(",")));
-			res.setCurrencyIds(  currencyIds   );
-			res.setAmendId(list.get(0).getAmendId()==null?"":list.get(0).getAmendId().toString());
+			List<String> currencyIds = new ArrayList<String>(
+					list.get(0).getCurrencyIds() == null ? Collections.emptyList()
+							: Arrays.asList(list.get(0).getCurrencyIds().split(",")));
+			res.setCurrencyIds(currencyIds);
+			res.setAmendId(list.get(0).getAmendId() == null ? "" : list.get(0).getAmendId().toString());
 			res.setAppLoginUrl(list.get(0).getAppLoginUrl());
 			res.setCreatedBy(list.get(0).getCreatedBy());
 			res.setEntryDate(list.get(0).getEntryDate());
@@ -530,17 +544,18 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 			res.setPaymentRedirUrl(list.get(0).getPaymentRedirUrl());
 			res.setPaymentYn(list.get(0).getPaymentYn());
 			res.setProductDesc(list.get(0).getProductDesc());
-			res.setProductIconId(list.get(0).getProductIconId()==null?"":list.get(0).getProductIconId().toString());
+			res.setProductIconId(
+					list.get(0).getProductIconId() == null ? "" : list.get(0).getProductIconId().toString());
 			res.setProductIconName(list.get(0).getProductIconName());
-			res.setProductId(list.get(0).getProductId()==null?"":list.get(0).getProductId().toString());
+			res.setProductId(list.get(0).getProductId() == null ? "" : list.get(0).getProductId().toString());
 			res.setProductName(list.get(0).getProductName());
 			res.setProductDesc(list.get(0).getProductDesc());
 			res.setRegulatoryCode(list.get(0).getRegulatoryCode());
 			res.setRemarks(list.get(0).getRemarks());
 			res.setStatus(list.get(0).getStatus());
-			res.setPackageYn(list.get(0).getPackageYn() );
+			res.setPackageYn(list.get(0).getPackageYn());
 			res.setSectionEndtYn(list.get(0).getSectionEndtYn());
-		
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -548,74 +563,74 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 		}
 		return res;
 	}
-	
-	//**********************************************************DROPDOWN********************************************************************\\
+
+	// **********************************************************DROPDOWN********************************************************************\\
 	@Override
 	public List<DropDownRes> getProductMasterDropdown() {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			Date today  = new Date();
-			Calendar cal = new GregorianCalendar(); 
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
 			cal.set(Calendar.MINUTE, 1);
-			today   = cal.getTime();
+			today = cal.getTime();
 			cal.set(Calendar.HOUR_OF_DAY, 1);
 			cal.set(Calendar.MINUTE, 1);
-			Date todayEnd   = cal.getTime();
-			
+			Date todayEnd = cal.getTime();
+
 			// Criteria
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<ProductMaster> query = cb.createQuery(ProductMaster.class);
 			List<ProductMaster> list = new ArrayList<ProductMaster>();
-			
+
 			// Find All
-			Root<ProductMaster>    c = query.from(ProductMaster.class);		
-			
+			Root<ProductMaster> c = query.from(ProductMaster.class);
+
 			// Select
-			query.select(c );
-			
-		
+			query.select(c);
+
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(c.get("productName")));
-			
+
 			// Effective Date Max Filter
 			Subquery<Date> effectiveDate = query.subquery(Date.class);
 			Root<ProductMaster> ocpm1 = effectiveDate.from(ProductMaster.class);
 			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
-			jakarta.persistence.criteria.Predicate a1 = cb.equal(c.get("productId"),ocpm1.get("productId") );
+			jakarta.persistence.criteria.Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
 			jakarta.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			effectiveDate.where(a1,a2);
-			
+			effectiveDate.where(a1, a2);
+
 			// Effective Date Max Filter
 			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
 			Root<ProductMaster> ocpm2 = effectiveDate2.from(ProductMaster.class);
 			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
-			jakarta.persistence.criteria.Predicate a3 = cb.equal(c.get("productId"),ocpm2.get("productId") );
-			jakarta.persistence.criteria.Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-			effectiveDate2.where(a3,a4);
-			
-		    // Where	
+			jakarta.persistence.criteria.Predicate a3 = cb.equal(c.get("productId"), ocpm2.get("productId"));
+			jakarta.persistence.criteria.Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"),
+					todayEnd);
+			effectiveDate2.where(a3, a4);
+
+			// Where
 			jakarta.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
 			jakarta.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			jakarta.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
-			Predicate n4 = cb.equal(c.get("status"),"R");
-			Predicate n5 = cb.or(n1,n4);
-			query.where(n5,n2,n3).orderBy(orderList);
-			
+			Predicate n4 = cb.equal(c.get("status"), "R");
+			Predicate n5 = cb.or(n1, n4);
+			query.where(n5, n2, n3).orderBy(orderList);
+
 			// Get Result
-			TypedQuery<ProductMaster> result = em.createQuery(query);			
-			list =  result.getResultList();  
-			
-			for(ProductMaster data : list ) {
+			TypedQuery<ProductMaster> result = em.createQuery(query);
+			list = result.getResultList();
+
+			for (ProductMaster data : list) {
 				// Response
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getProductId().toString());
 				res.setCodeDesc(data.getProductName());
 				res.setCodeDescLocal(data.getProductNameLocal());
 				resList.add(res);
-			}		
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -623,190 +638,454 @@ private Logger log=LogManager.getLogger(ProductMasterServiceImpl.class);
 		}
 		return resList;
 	}
-	
-	//************************************************GET ACTIVE PRODUCT******************************************\\
+
+	// ************************************************GET ACTIVE
+	// PRODUCT******************************************\\
 	@Override
 	public List<ProductGetAllRes> getActiveProductDetails(ProductMasterGetAllReq req) {
 		List<ProductGetAllRes> resList = new ArrayList<ProductGetAllRes>();
-		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 
 		try {
-			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
-			Calendar cal = new GregorianCalendar(); 
+			Date today = req.getEffectiveDateStart() != null ? req.getEffectiveDateStart() : new Date();
+			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
 			cal.set(Calendar.MINUTE, 1);
-			today   = cal.getTime();
-			
+			today = cal.getTime();
+
 			List<ProductMaster> list = new ArrayList<ProductMaster>();
-	
-			
+
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<ProductMaster> query = cb.createQuery(ProductMaster.class);
-	
+
 			// Find All
 			Root<ProductMaster> b = query.from(ProductMaster.class);
-	
+
 			// Select
 			query.select(b);
-	
+
 			// Amend ID Max Filter
 			Subquery<Long> amendId = query.subquery(Long.class);
 			Root<ProductMaster> ocpm1 = amendId.from(ProductMaster.class);
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			amendId.where(a1,a2);
-	
+			amendId.where(a1, a2);
+
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.desc(b.get("effectiveDateStart")));
-	
+
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n3 = cb.equal(b.get("status"), "Y");
-	
-			query.where(n1,n3).orderBy(orderList);
-	
+
+			query.where(n1, n3).orderBy(orderList);
+
 			// Get Result
 			TypedQuery<ProductMaster> result = em.createQuery(query);
 			list = result.getResultList();
-			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getProductId()))).collect(Collectors.toList());
-			list.sort(Comparator.comparing(ProductMaster :: getProductName ));
-			
-	
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getProductId())))
+					.collect(Collectors.toList());
+			list.sort(Comparator.comparing(ProductMaster::getProductName));
+
 			// Map
 			for (ProductMaster data : list) {
 				ProductGetAllRes res = new ProductGetAllRes();
-	
+
 				res = dozerMapper.map(data, ProductGetAllRes.class);
 				res.setProductId(data.getProductId().toString());
 				resList.add(res);
 			}
-	
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info(e.getMessage());
 			return null;
-	
+
 		}
 		return resList;
 	}
-	
-	
-		
 
-		@Override
-		public SuccessRes changeStatusOfProduct(ProductChangeStatusReq req) {
-			  SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/YYYY");
-				SuccessRes res = new SuccessRes();
-				ProductMaster saveData = new ProductMaster();
-				List<ProductMaster> list = new ArrayList<ProductMaster>();
-				DozerBeanMapper dozerMapper = new  DozerBeanMapper();
-				
-				try {
-					Integer amendId = 0;
-					Date startDate = req.getEffectiveDateStart();
-					String end = "31/12/2050";
-					Date endDate = sdformat.parse(end);
-					long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
-					Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
-					Date entryDate = null;
-					String createdBy = req.getCreatedBy();
+	@Override
+	public SuccessRes changeStatusOfProduct(ProductChangeStatusReq req) {
+		SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/YYYY");
+		SuccessRes res = new SuccessRes();
+		ProductMaster saveData = new ProductMaster();
+		List<ProductMaster> list = new ArrayList<ProductMaster>();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 
-					String productId = "";
+		try {
+			Integer amendId = 0;
+			Date startDate = req.getEffectiveDateStart();
+			String end = "31/12/2050";
+			Date endDate = sdformat.parse(end);
+			long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
+			Date entryDate = null;
+			String createdBy = req.getCreatedBy();
 
-					// Update
-					// Get Less than Equal Today Record
-					// Criteria
-					productId = req.getProductId();
-					CriteriaBuilder cb = em.getCriteriaBuilder();
-					CriteriaQuery<ProductMaster> query = cb.createQuery(ProductMaster.class);
+			String productId = "";
 
-					// Find All
-					Root<ProductMaster> b = query.from(ProductMaster.class);
+			// Update
+			// Get Less than Equal Today Record
+			// Criteria
+			productId = req.getProductId();
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ProductMaster> query = cb.createQuery(ProductMaster.class);
 
-					// Select
-					query.select(b);
-					Subquery<Long> amendId2 = query.subquery(Long.class);
-					Root<ProductMaster> ocpm1 = amendId2.from(ProductMaster.class);
-					amendId2.select(cb.max(ocpm1.get("amendId")));
-					Predicate a1 =  cb.equal(b.get("productId"), ocpm1.get("productId") );
-					amendId2.where(a1);
-					//Orderby
-					List<Order> orderList = new ArrayList<Order>();
-					orderList.add(cb.asc(b.get("effectiveDateStart")));
-					//Where
-					Predicate n1 = cb.equal(b.get("productId"), req.getProductId() );
-					Predicate n2 = cb.equal(b.get("amendId"),amendId2);
-					
-					query.where(n1,n2).orderBy(orderList);
+			// Find All
+			Root<ProductMaster> b = query.from(ProductMaster.class);
 
-					// Get Result
-					TypedQuery<ProductMaster> result = em.createQuery(query);
-					int limit = 0, offset = 2;
-					result.setFirstResult(limit * offset);
-					result.setMaxResults(offset);
-					list = result.getResultList();
+			// Select
+			query.select(b);
+			Subquery<Long> amendId2 = query.subquery(Long.class);
+			Root<ProductMaster> ocpm1 = amendId2.from(ProductMaster.class);
+			amendId2.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(b.get("productId"), ocpm1.get("productId"));
+			amendId2.where(a1);
+			// Orderby
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("effectiveDateStart")));
+			// Where
+			Predicate n1 = cb.equal(b.get("productId"), req.getProductId());
+			Predicate n2 = cb.equal(b.get("amendId"), amendId2);
 
-					if (list.size() > 0) {
-						Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+			query.where(n1, n2).orderBy(orderList);
 
-						if (list.get(0).getEffectiveDateStart().before(beforeOneDay)) {
-							amendId = list.get(0).getAmendId() + 1;
-							entryDate = new Date();
-							createdBy = req.getCreatedBy();
-							ProductMaster lastRecord = list.get(0);
-							lastRecord.setEffectiveDateEnd(oldEndDate);
-							repo.saveAndFlush(lastRecord);
+			// Get Result
+			TypedQuery<ProductMaster> result = em.createQuery(query);
+			int limit = 0, offset = 2;
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			list = result.getResultList();
 
-						} else {
-							amendId = list.get(0).getAmendId();
-							entryDate = list.get(0).getEntryDate();
-							createdBy = list.get(0).getCreatedBy();
-							saveData = list.get(0);
-							if (list.size() > 1) {
-								ProductMaster lastRecord = list.get(1);
-								lastRecord.setEffectiveDateEnd(oldEndDate);
-								repo.saveAndFlush(lastRecord);
-							}
+			if (list.size() > 0) {
+				Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
 
-						}
+				if (list.get(0).getEffectiveDateStart().before(beforeOneDay)) {
+					amendId = list.get(0).getAmendId() + 1;
+					entryDate = new Date();
+					createdBy = req.getCreatedBy();
+					ProductMaster lastRecord = list.get(0);
+					lastRecord.setEffectiveDateEnd(oldEndDate);
+					repo.saveAndFlush(lastRecord);
+
+				} else {
+					amendId = list.get(0).getAmendId();
+					entryDate = list.get(0).getEntryDate();
+					createdBy = list.get(0).getCreatedBy();
+					saveData = list.get(0);
+					if (list.size() > 1) {
+						ProductMaster lastRecord = list.get(1);
+						lastRecord.setEffectiveDateEnd(oldEndDate);
+						repo.saveAndFlush(lastRecord);
 					}
 
-					res.setResponse("Updated Successfully ");
-					res.setSuccessId(productId);
-
-					dozerMapper.map(list.get(0), saveData);
-					saveData.setAmendId(amendId);
-					saveData.setProductId(Integer.valueOf(productId));
-					saveData.setProductName(list.get(0).getProductName());
-					saveData.setEffectiveDateStart(startDate);
-					saveData.setEffectiveDateEnd(endDate);
-					saveData.setCreatedBy(createdBy);
-					saveData.setStatus(req.getStatus());
-					saveData.setEntryDate(entryDate);
-					saveData.setUpdatedDate(new Date());
-					saveData.setMakerYn(list.get(0).getMakerYn());
-					saveData.setMotorYn(list.get(0).getMotorYn());
-					saveData.setUpdatedBy(req.getCreatedBy());
-					saveData.setRegulatoryCode(list.get(0).getRegulatoryCode());
-					saveData.setCurrencyIds(list.get(0).getCurrencyIds());
-					saveData.setProductIconId(list.get(0).getProductIconId());
-					saveData.setProductIconName(list.get(0).getProductIconName());
-					repo.saveAndFlush(saveData);
-						
-				res.setResponse("Status Changed");
-				res.setSuccessId(req.getProductId());
-			} catch(Exception e ) {
-				e.printStackTrace();
-				log.info("Exception is ---> " + e.getMessage());
-				return null;
+				}
 			}
-			return res;
+
+			res.setResponse("Updated Successfully ");
+			res.setSuccessId(productId);
+
+			dozerMapper.map(list.get(0), saveData);
+			saveData.setAmendId(amendId);
+			saveData.setProductId(Integer.valueOf(productId));
+			saveData.setProductName(list.get(0).getProductName());
+			saveData.setEffectiveDateStart(startDate);
+			saveData.setEffectiveDateEnd(endDate);
+			saveData.setCreatedBy(createdBy);
+			saveData.setStatus(req.getStatus());
+			saveData.setEntryDate(entryDate);
+			saveData.setUpdatedDate(new Date());
+			saveData.setMakerYn(list.get(0).getMakerYn());
+			saveData.setMotorYn(list.get(0).getMotorYn());
+			saveData.setUpdatedBy(req.getCreatedBy());
+			saveData.setRegulatoryCode(list.get(0).getRegulatoryCode());
+			saveData.setCurrencyIds(list.get(0).getCurrencyIds());
+			saveData.setProductIconId(list.get(0).getProductIconId());
+			saveData.setProductIconName(list.get(0).getProductIconName());
+			repo.saveAndFlush(saveData);
+
+			res.setResponse("Status Changed");
+			res.setSuccessId(req.getProductId());
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+
+	@Override
+	public List<String> validateGlobalLobConfig(LOBReq req) {
+
+		List<String> errorList = new ArrayList<String>();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+
+			// Common Errors
+			List<String> commonErrors = validateLOBGlobalMaster(req);
+			if (commonErrors.size() > 0) {
+				errorList.addAll(commonErrors);
+			}
+
+		} catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+//				errorList.add(new Error("12", "Common Error", e.getMessage()));
+		}
+		return errorList;
+
+	}
+
+	@Override
+	@Transactional
+	public CommonRes insertGlobalLobConfig(LOBReq req) {
+
+		CommonRes res = new CommonRes();
+
+		try {
+
+			// ================= INSERT ===================
+			if (req.getId() == null) {
+
+				Optional<WecoreLobMaster> nameExist = wecoreLobMasterRepo
+						.findTopByClassNameOrderByAmendIdDesc(req.getClassName());
+
+				if (nameExist.isPresent()) {
+					res.setIsError(true);
+					res.setMessage("Class Name Already Exists");
+					return res;
+				}
+
+				Optional<WecoreLobMaster> codeExist = wecoreLobMasterRepo
+						.findTopByClassCodeOrderByAmendIdDesc(req.getClassCode());
+
+				if (codeExist.isPresent()) {
+					res.setIsError(true);
+					res.setMessage("Class Code Already Exists");
+					return res;
+				}
+
+				WecoreLobMaster entity = new WecoreLobMaster();
+
+				System.out.println(req);
+				System.out.println(entity);
+
+				BeanUtils.copyProperties(req, entity);
+
+				System.out.println(entity);
+
+				entity.setCompanyId("99999");
+				entity.setBranchCode("99999");
+				entity.setAmendId(0);
+
+				entity.setEffectiveDateStart(req.getEffectiveDateStart());
+
+				Calendar cal = Calendar.getInstance();
+				cal.set(2050, Calendar.DECEMBER, 31, 23, 59, 59);
+
+				entity.setEffectiveDateEnd(cal.getTime());
+
+				entity.setCreatedBy(req.getCreatedBy());
+				entity.setCreatedDate(new Date());
+
+				wecoreLobMasterRepo.save(entity);
+
+				res.setIsError(false);
+				res.setMessage("Saved Successfully");
+				res.setCommonResponse(entity);
+
+				return res;
+			}
+
+			// ================= UPDATE ===================
+
+			Optional<WecoreLobMaster> oldOpt = wecoreLobMasterRepo.findById(req.getId());
+
+			if (!oldOpt.isPresent()) {
+
+				res.setIsError(true);
+				res.setMessage("Record Not Found");
+				return res;
+			}
+
+			WecoreLobMaster old = oldOpt.get();
+
+			// Close previous version
+			Calendar oldEnd = Calendar.getInstance();
+			oldEnd.setTime(req.getEffectiveDateStart());
+			oldEnd.add(Calendar.DATE, -1);
+
+			old.setEffectiveDateEnd(oldEnd.getTime());
+			old.setUpdatedBy(req.getCreatedBy());
+			old.setUpdatedDate(new Date());
+
+			wecoreLobMasterRepo.save(old);
+
+			Integer amend = wecoreLobMasterRepo.getMaxAmendId(old.getClassCode());
+
+			WecoreLobMaster entity = new WecoreLobMaster();
+
+			BeanUtils.copyProperties(req, entity);
+
+			entity.setId(null);
+
+			entity.setCompanyId(old.getCompanyId());
+			entity.setBranchCode(old.getBranchCode());
+
+			entity.setAmendId(amend + 1);
+
+			entity.setEffectiveDateStart(req.getEffectiveDateStart());
+
+			Calendar newEnd = Calendar.getInstance();
+			newEnd.set(2050, Calendar.DECEMBER, 31, 23, 59, 59);
+
+			entity.setEffectiveDateEnd(newEnd.getTime());
+
+			entity.setCreatedBy(req.getCreatedBy());
+			entity.setCreatedDate(new Date());
+
+			wecoreLobMasterRepo.save(entity);
+
+			res.setIsError(false);
+			res.setMessage("Updated Successfully");
+			res.setCommonResponse(entity);
+
+		} catch (Exception e) {
+
+			log.error("Exception", e);
+
+			res.setIsError(true);
+			res.setMessage("Failed : " + e.getMessage());
 		}
 
-	
-		
+		return res;
 	}
+
+	public List<String> validateLOBGlobalMaster(LOBReq req) {
+		List<String> errorList = new ArrayList<String>();
+		try {
+
+			if (StringUtils.isBlank(req.getRemarks())) {
+				errorList.add("2032");
+			} else if (req.getRemarks().length() > 100) {
+				errorList.add("2033");
+			}
+			Calendar cal = new GregorianCalendar();
+			Date today = new Date();
+			cal.setTime(today);
+			cal.add(Calendar.DAY_OF_MONTH, -1);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 50);
+			today = cal.getTime();
+			if (req.getEffectiveDateStart() == null) {
+				errorList.add("2034");
+			} else if (req.getEffectiveDateStart().before(today)) {
+				errorList.add("2035");
+			}
+			if (StringUtils.isBlank(req.getStatus())) {
+				errorList.add("2036");
+			} else if (req.getStatus().length() > 1) {
+				errorList.add("2037");
+			} else if (!("Y".equalsIgnoreCase(req.getStatus()) || "N".equalsIgnoreCase(req.getStatus())
+					|| "R".equalsIgnoreCase(req.getStatus()) || "P".equalsIgnoreCase(req.getStatus()))) {
+				errorList.add("2038");
+			}
+
+			if (StringUtils.isBlank(req.getCreatedBy())) {
+				errorList.add("2039");
+			} else if (req.getCreatedBy().length() > 50) {
+				errorList.add("2040");
+			}
+
+			if (StringUtils.isBlank(req.getRegulatoryCode())) {
+				errorList.add("2041");
+			} else if (req.getRegulatoryCode().length() > 20) {
+				errorList.add("2042");
+			}
+			if (StringUtils.isBlank(req.getClassCode())) {
+				errorList.add("5029");
+			}
+
+			if (StringUtils.isBlank(req.getClassName())) {
+				errorList.add("5027");
+			}
+			if (StringUtils.isBlank(req.getClassDescription())) {
+				errorList.add("5028");
+			}
+
+		} catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+		}
+		return errorList;
+	}
+
+	@Override
+	public CommonRes getGlobalLobConfig(Long id) {
+
+		CommonRes res = new CommonRes();
+
+		try {
+
+			Optional<WecoreLobMaster> opt = wecoreLobMasterRepo.findById(id);
+
+			if (!opt.isPresent()) {
+
+				res.setIsError(true);
+				res.setMessage("Record Not Found");
+				res.setCommonResponse(null);
+
+				return res;
+			}
+
+			WecoreLobMaster entity = opt.get();
+
+			LOBReq response = new LOBReq();
+
+			BeanUtils.copyProperties(entity, response);
+
+			res.setIsError(false);
+			res.setMessage("Success");
+			res.setCommonResponse(response);
+
+		} catch (Exception e) {
+
+			log.error("Exception : ", e);
+
+			res.setIsError(true);
+			res.setMessage("Failed");
+			res.setCommonResponse(null);
+		}
+
+		return res;
+	}
+
+	@Override
+	public CommonRes getAllLobConfig() {
+		CommonRes res = new CommonRes();
+
+		try {
+
+			List<WecoreLobMaster> list = wecoreLobMasterRepo.findLatestLobConfigs();
+
+			res.setIsError(false);
+			res.setMessage("Success");
+			res.setCommonResponse(list);
+
+		} catch (Exception e) {
+
+			log.error("Exception :", e);
+
+			res.setIsError(true);
+			res.setMessage("Failed");
+			res.setCommonResponse(Collections.emptyList());
+		}
+
+		return res;
+	}
+}

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.auth.dto.LOBReq;
 import com.maan.eway.common.service.impl.FetchErrorDescServiceImpl;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.ProductChangeStatusReq;
@@ -237,7 +238,76 @@ public class ProductMasterController {
 		 */
 		
 
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
+	@PostMapping("/globalLobConfig")
+	@ApiOperation(value = "Insert / Update Global LOB Config")
+	public ResponseEntity<CommonRes> globalLobConfig(@RequestBody LOBReq req) {
+
+	    reqPrinter.reqPrint(req);
+
+	    // Validation
+	    List<String> validationCodes = productService.validateGlobalLobConfig(req);
+
+	    List<Error> validation = null;
+
+	    if (validationCodes != null && !validationCodes.isEmpty()) {
+
+	        CommonErrorModuleReq errorReq = new CommonErrorModuleReq();
+	        errorReq.setBranchCode("99999");
+	        errorReq.setInsuranceId("99999");
+	        errorReq.setProductId("99999");
+	        errorReq.setModuleId("31");
+	        errorReq.setModuleName("MASTERS");
+
+	        validation = errorDescService.getErrorDesc(validationCodes, errorReq);
+	    }
+
+	    if (validation != null && !validation.isEmpty()) {
+
+	        CommonRes response = new CommonRes();
+	        response.setIsError(true);
+	        response.setMessage("Failed");
+	        response.setErrorMessage(validation);
+	        response.setCommonResponse(null);
+
+	        return ResponseEntity.ok(response);
+	    }
+
+	    // Save / Update
+	    CommonRes response = productService.insertGlobalLobConfig(req);
+
+	    if (Boolean.TRUE.equals(response.getIsError())) {
+	        return ResponseEntity.badRequest().body(response);
+	    }
+
+	    return new ResponseEntity<>(response, HttpStatus.CREATED);
+	}
 	
-		
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
+	@PostMapping("/getGlobalLobConfig")
+	@ApiOperation(value = "Get Global LOB Config By Id")
+	public ResponseEntity<CommonRes> getGlobalLobConfig(@RequestBody LOBReq req) {
+
+		CommonRes response = productService.getGlobalLobConfig(req.getId());
+
+		if (Boolean.TRUE.equals(response.getIsError())) {
+			return ResponseEntity.badRequest().body(response);
+		}
+
+		return ResponseEntity.ok(response);
+	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
+	@PostMapping("/getAllLobConfig")
+	@ApiOperation(value = "Get Global LOB Config By Id")
+	public ResponseEntity<CommonRes> getAllLobConfig() {
+
+		CommonRes response = productService.getAllLobConfig();
+
+		if (Boolean.TRUE.equals(response.getIsError())) {
+			return ResponseEntity.badRequest().body(response);
+		}
+
+		return ResponseEntity.ok(response);
+	}
 }

@@ -1207,6 +1207,10 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 		//	saveData.setProductIconName(filterList.size()> 0 ? filterList.get(0).getItemValue() : "");
 			saveData.setClaimExperienceYn(StringUtils.isNoneBlank(req.getClaimExperienceYn())? req.getClaimExperienceYn() :"N");
 			saveData.setCoInsuranceYn(StringUtils.isNotBlank(req.getCoInsuranceYn())? req.getCoInsuranceYn():"N");
+			saveData.setLobCoreAppCode(req.getLobCoreAppCode() != null ? req.getLobCoreAppCode() : "");
+
+			saveData.setLobClassName(req.getLobClassName() != null ? req.getLobClassName() : "");		
+
 			repo.saveAndFlush(saveData);
 			log.info("Saved Details is --> " + json.toJson(saveData));
 			

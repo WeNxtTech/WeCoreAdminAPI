@@ -130,4 +130,14 @@ public class CompanyProductMasterRes implements Serializable {
 
 	@JsonProperty("ClaimExperience_YN")
 	private String claimExperienceYn;
+	
+	@JsonProperty("LobClassName")
+	private String lobClassName;
+	
+	@JsonProperty("LobClassId")
+	private String lobClassId;
+	
+	@JsonProperty("LobCoreAppCode")
+	private String lobCoreAppCode;
+	
 }

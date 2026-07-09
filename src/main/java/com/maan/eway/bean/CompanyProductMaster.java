@@ -179,6 +179,9 @@ public class CompanyProductMaster implements Serializable {
 
 	@Column(name = "Lob_Class_Name")
 	private String lobClassName;
+	
+	@Column(name = "Lob_Class_Id")
+	private Long lobClassId;
 
 	@Column(name = "Lob_CORE_APP_CODE")
 	private String LobCoreAppCode;

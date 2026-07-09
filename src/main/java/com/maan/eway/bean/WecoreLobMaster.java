@@ -32,6 +32,7 @@ public class WecoreLobMaster {
 	private String productIconId;
 	private String status;
 	private String remarks;
+	private String productIconName;
 
 	private Integer amendId;
 

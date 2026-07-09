@@ -652,6 +652,12 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 		    res.setPackageYn(list.get(0).getPackageYn());
 		    res.setClaimExperienceYn(list.get(0).getClaimExperienceYn());
 		    res.setCoInsuranceYn(list.get(0).getCoInsuranceYn());
+		    res.setLobCoreAppCode(list.get(0).getLobCoreAppCode());
+		    res.setLobClassId(list.get(0).getLobClassId()==null?"":list.get(0).getLobClassId().toString());
+		    res.setLobClassName(list.get(0).getLobClassName()==null?"":list.get(0).getLobClassName().toString());
+
+		
+		
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -1208,9 +1214,12 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 			saveData.setClaimExperienceYn(StringUtils.isNoneBlank(req.getClaimExperienceYn())? req.getClaimExperienceYn() :"N");
 			saveData.setCoInsuranceYn(StringUtils.isNotBlank(req.getCoInsuranceYn())? req.getCoInsuranceYn():"N");
 			saveData.setLobCoreAppCode(req.getLobCoreAppCode() != null ? req.getLobCoreAppCode() : "");
-
+			saveData.setLobClassId(req.getLobClassId() != null ? req.getLobClassId() : null);		
 			saveData.setLobClassName(req.getLobClassName() != null ? req.getLobClassName() : "");		
-
+			ListItemValue icon = listRepo.findByItemTypeAndItemCodeAndStatus("PRODUCT_ICONS", req.getProductIconId(),
+					"Y");
+			saveData.setProductIconId(Integer.valueOf(icon.getItemCode()));
+			saveData.setProductIconName(icon.getItemValue());
 			repo.saveAndFlush(saveData);
 			log.info("Saved Details is --> " + json.toJson(saveData));
 			

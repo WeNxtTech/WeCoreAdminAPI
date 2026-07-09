@@ -105,7 +105,8 @@ public class CompanyProductMasterSaveReq implements Serializable {
 	
 	@JsonProperty("LobClassName")
 	private String lobClassName;
-	
+	@JsonProperty("LobClassId")
+	private Long lobClassId;
 	@JsonProperty("LobCoreAppCode")
 	private String LobCoreAppCode;
 

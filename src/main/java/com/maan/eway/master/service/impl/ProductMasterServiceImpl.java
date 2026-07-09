@@ -892,7 +892,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 				entity.setCreatedBy(req.getCreatedBy());
 				entity.setCreatedDate(new Date());
-
+				ListItemValue icon = listRepo.findByItemTypeAndItemCodeAndStatus("PRODUCT_ICONS", req.getProductIconId(),
+						"Y");
+				entity.setProductIconName(icon.getItemValue());
 				wecoreLobMasterRepo.save(entity);
 
 				res.setIsError(false);

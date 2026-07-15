@@ -444,6 +444,15 @@ private static final long serialVersionUID = 1L;
     
     @Column(name = "NO_OF_INSTALLMENT", length = 10)
     private String noOfInstallment;
+    
+    @Column(name = "hypo_cust_code")
+    private String hypoCustCode;
+
+    @Column(name = "hypo_bank_name")
+    private String hypoBankName;
+
+    @Column(name =  "CREATED_UID")
+    private String createdUID;
 
 
 }

@@ -110,4 +110,7 @@ public class CompanyProductMasterSaveReq implements Serializable {
 	@JsonProperty("LobCoreAppCode")
 	private String LobCoreAppCode;
 
+	@JsonProperty("RiReviewYn")
+	private String riReviewYn;
 }
+

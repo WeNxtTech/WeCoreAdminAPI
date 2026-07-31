@@ -1220,6 +1220,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 					"Y");
 			saveData.setProductIconId(Integer.valueOf(icon.getItemCode()));
 			saveData.setProductIconName(icon.getItemValue());
+			saveData.setRipolicyReview(req.getRiReviewYn());
 			repo.saveAndFlush(saveData);
 			log.info("Saved Details is --> " + json.toJson(saveData));
 			

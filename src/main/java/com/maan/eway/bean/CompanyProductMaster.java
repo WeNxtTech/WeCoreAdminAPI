@@ -185,5 +185,9 @@ public class CompanyProductMaster implements Serializable {
 
 	@Column(name = "Lob_CORE_APP_CODE")
 	private String LobCoreAppCode;
+	
+	@Column(name = "RI_POLICY_REVIEW")
+	private String ripolicyReview;
+   
 
 }

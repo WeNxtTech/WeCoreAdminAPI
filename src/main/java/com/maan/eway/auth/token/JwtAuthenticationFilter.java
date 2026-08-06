@@ -139,14 +139,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 					logger.info("authenticated user " + username + ", setting security context");
 					SecurityContextHolder.getContext().setAuthentication(authentication);
 					
-				} else if(userType.equalsIgnoreCase("Issuer") && ( subUserType.equalsIgnoreCase("high") ||subUserType.equalsIgnoreCase("both") ) ) {
+				} else if(userType.equalsIgnoreCase("Issuer") && ( subUserType.equalsIgnoreCase("high") ||subUserType.equalsIgnoreCase("both")  || subUserType.equalsIgnoreCase("Aimlhigh") || subUserType.equalsIgnoreCase("Aimlboth")) ) {
 					UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
 							userDetails, null, Arrays.asList(new SimpleGrantedAuthority("ROLE_APPROVER")));
 					authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(requestWrapper));
 					logger.info("authenticated user " + username + ", setting security context");
 					SecurityContextHolder.getContext().setAuthentication(authentication);
-					
-				} else if (userType.equalsIgnoreCase("Broker") || userType.equalsIgnoreCase("User") || (userType.equalsIgnoreCase("Issuer") &&  subUserType.equalsIgnoreCase("low"))   ) {
+
+				} else if (userType.equalsIgnoreCase("Broker") || userType.equalsIgnoreCase("User") || (userType.equalsIgnoreCase("Issuer") && (subUserType.equalsIgnoreCase("low") || subUserType.equalsIgnoreCase("Aimllow")))) {
 					UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
 							userDetails, null, Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
 					authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(requestWrapper));

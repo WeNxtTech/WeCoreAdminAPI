@@ -511,6 +511,12 @@ public class CommonDataDetails implements Serializable {
 
 	@Column(name = "BDM_NAME")
 	private String bdmName;
+	
+	@Column(name="PROFESSIONAL_TYPE", length=10)
+    private String     professionalType ;
+
+    @Column(name="PROFESSIONAL_TYPE_DESC", length=100)
+    private String     professionalTypeDesc ;
 
 }
 

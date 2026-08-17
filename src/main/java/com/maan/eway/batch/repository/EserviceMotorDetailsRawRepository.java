@@ -44,6 +44,8 @@ public interface EserviceMotorDetailsRawRepository  extends JpaRepository<Eservi
 
 	Page<EserviceMotorDetailsRaw> findByRequestReferenceNoAndStatusNotAndSnoBetween(String tranId ,String error_status,Integer start, Integer end,PageRequest page);
 
+	Page<EserviceMotorDetailsRaw> findByRequestReferenceNoAndStatusNot(String tranId ,String error_status,PageRequest page);
+
 	
 	@Modifying
 	@Transactional
@@ -190,7 +192,7 @@ public interface EserviceMotorDetailsRawRepository  extends JpaRepository<Eservi
 
 	@Modifying
 	@Transactional
-	@Query(value="DELETE FROM Travel_Passenger_Details WHERE REQUEST_REFERENCE_NO=:refNo and SECTION_ID=:sectionId",nativeQuery=true)
+	@Query(value="DELETE FROM travel_passenger_details WHERE REQUEST_REFERENCE_NO=:refNo and SECTION_ID=:sectionId",nativeQuery=true)
 	Integer deletePassengerDetails(@Param("refNo")String requestReferenceNo,@Param("sectionId")String sectionId);
 
 
@@ -225,11 +227,11 @@ public interface EserviceMotorDetailsRawRepository  extends JpaRepository<Eservi
 	
 	Integer countByRequestReferenceNoAndStatusNot(String request_ref_no,String status);
 
-	@Query(nativeQuery=true,value="SELECT ITEM_CODE,ITEM_VALUE FROM EWAY_LIST_ITEM_VALUE WHERE COMPANY_ID=?1 AND STATUS='Y' AND "
+	@Query(nativeQuery=true,value="SELECT ITEM_CODE,ITEM_VALUE FROM eway_list_item_value WHERE COMPANY_ID=?1 AND STATUS='Y' AND "
 			+ "SYSDATE() BETWEEN EFFECTIVE_DATE_START AND EFFECTIVE_DATE_END AND ITEM_TYPE='MOTOR_CATEGORY'")
 	List<Map<String, String>> getMotorCategory(String companyId);
 
-	@Query(nativeQuery=true,value="SELECT SECTION_ID,SECTION_NAME FROM Product_Section_Master WHERE company_id=?1 AND product_id=?2 "
+	@Query(nativeQuery=true,value="SELECT SECTION_ID,SECTION_NAME FROM product_section_master WHERE company_id=?1 AND product_id=?2 "
 			+ "AND CURRENT_DATE BETWEEN effective_date_start AND effective_date_end AND STATUS='Y'")
 	List<Map<String, String>> getSections(String companyId,String productId);
 
@@ -245,7 +247,7 @@ public interface EserviceMotorDetailsRawRepository  extends JpaRepository<Eservi
 			+ "AND CURRENT_DATE BETWEEN effective_date_start AND effective_date_end AND STATUS='Y'")
 	List<Map<String, String>> getVehicleUsage(String companyId);
 
-	@Query(nativeQuery=true,value="SELECT POLICY_TYPE_ID,POLICY_TYPE_NAME FROM Policy_Type_Master WHERE company_id=?1 AND product_id=?2 "
+	@Query(nativeQuery=true,value="SELECT POLICY_TYPE_ID,POLICY_TYPE_NAME FROM policy_type_master WHERE company_id=?1 AND product_id=?2 "
 			+ "AND CURRENT_DATE BETWEEN effective_date_start AND effective_date_end AND STATUS='Y'")
 	List<Map<String, String>> getPolicyTypes(String companyId,String productId);
 	
@@ -272,6 +274,24 @@ public interface EserviceMotorDetailsRawRepository  extends JpaRepository<Eservi
 	
 	@Query(nativeQuery=true,value="SELECT MAKE_ID,MAKE_NAME_EN FROM eway_motor_make_master WHERE company_id=?1 AND CURRENT_DATE BETWEEN effective_date_start AND effective_date_end AND STATUS='Y' ")
 	List<Map<String,String>> getMakeList(String companyId);
+
+	@Query(value = "SELECT * FROM eservice_motor_details_raw " +
+            "WHERE request_reference_no = :refNo " +
+            "ORDER BY vehicle_id ASC",
+    nativeQuery = true)
+List<EserviceMotorDetailsRaw> findByRequestReferenceNotest(@Param("refNo") String refNo);
+	
+	
+	@Modifying
+	@Transactional
+	@Query(value = """
+	    UPDATE eservice_motor_details_raw
+	    SET vehicle_id = sno
+	    WHERE request_reference_no = :rrn
+	      AND section_id = 0
+	      AND (vehicle_id IS NULL OR vehicle_id = 0)
+	    """, nativeQuery = true)
+	void updateVehicleIdFromSno(@Param("rrn") String requestReferenceNo);
 	
 }
 

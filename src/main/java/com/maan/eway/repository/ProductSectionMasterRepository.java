@@ -12,15 +12,15 @@
 
 package com.maan.eway.repository;
 
-import java.math.BigDecimal;
 import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.ProductSectionMasterId;
-import com.maan.eway.bean.SectionMaster;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import com.maan.eway.bean.SectionMasterId;
 /**
  * <h2>SectionMasterRepository</h2>
  *
@@ -45,4 +45,21 @@ public interface ProductSectionMasterRepository  extends JpaRepository<ProductSe
 
 	ProductSectionMaster findTopByCompanyIdAndProductIdAndSectionIdOrderByAmendIdDesc(String insuranceId,
 			Integer valueOf, Integer valueOf2);
+	
+	// Insurance Type dropdown — max amend_id per section, effective_start <= today, effective_end > today
+	@Query(value = """
+	    SELECT s1.* FROM product_section_master s1
+	    INNER JOIN (
+	        SELECT section_id, MAX(amend_id) as max_amend
+	        FROM product_section_master
+	        WHERE company_id = :companyId AND product_id = :productId AND status = 'Y'
+	        GROUP BY section_id
+	    ) s2 ON s1.section_id = s2.section_id AND s1.amend_id = s2.max_amend
+	    WHERE s1.company_id = :companyId AND s1.product_id = :productId AND s1.status = 'Y'
+	    AND s1.effective_date_start <= NOW()
+	    AND s1.effective_date_end > NOW()
+	    """, nativeQuery = true)
+	List<ProductSectionMaster> findActiveInsuranceTypes(
+	    @Param("companyId") Integer companyId,
+	    @Param("productId") Integer productId);
 }

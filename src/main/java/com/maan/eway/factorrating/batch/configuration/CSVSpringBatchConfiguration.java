@@ -97,75 +97,125 @@ public class CSVSpringBatchConfiguration {
 	        return new CSVBatchWriter(outputFilePath);
 	    }
 
-	    private List<String> readExcel(String inputFilePath,String file_extension) {
+//	    private List<String> readExcel(String inputFilePath,String file_extension) {
+//	        List<String> rows = new ArrayList<>();
+//	       
+//	        if("xlsx".equals(file_extension)) {
+//		        
+//	        	try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(new File(inputFilePath)));
+//		             Workbook workbook = new XSSFWorkbook(bis)) {
+//			            DataFormatter dataFormatter = new DataFormatter();
+//			            Sheet sheet = workbook.getSheetAt(0);
+//			            
+//		            	int cell_count =sheet.getRow(0).getLastCellNum();
+//
+//			            int rowindex =0;
+//			            for (Row row : sheet) {
+//			            	
+//
+//			            	String data ="";
+//			            	for (int i =0 ;i<cell_count ;i++) {
+//			            		Cell cell =row.getCell(i);
+//			            		data+=cell==null || cell.getCellType()==CellType.BLANK?""+"~":
+//			            			dataFormatter.formatCellValue(cell).
+//		                    		replace("\t", "").replace("\n", "").replace("\r", "").replace("'", "").replaceAll("^\"|\"$", "").replace(",", "")+"~";;
+//			            		
+//			            	}
+//			            	data =rowindex==0?"sNo~"+data:String.valueOf(rowindex)+"~"+data;
+//				            rows.add(data.substring(0,data.length()-1)+"\r\n");
+//				            rowindex++;
+//			            }
+//			            
+//		        } catch (IOException e) {
+//		            e.printStackTrace();
+//		        }
+//	        	
+//	        }else if ("xls".equals(file_extension)) {
+//	        	
+//	        	try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(new File(inputFilePath)));
+//			             Workbook workbook = new HSSFWorkbook(bis)) {
+//				           
+//	        				DataFormatter dataFormatter = new DataFormatter();
+//				            Sheet sheet = workbook.getSheetAt(0);
+//			            
+//				            
+//			            	int cell_count =sheet.getRow(0).getLastCellNum();
+//
+//				            int rowindex =0;
+//				            for (Row row : sheet) {
+//
+//
+//				            	String data ="";
+//				            	for (int i =0 ;i<cell_count ;i++) {
+//				            		Cell cell =row.getCell(i);
+//				            		data+=cell==null || cell.getCellType()==CellType.BLANK?""+"~":
+//				            			dataFormatter.formatCellValue(cell).
+//			                    		replace("\t", "").replace("\n", "").replace("\r", "").replace("'", "").replaceAll("^\"|\"$", "").replace(",", "")+"~";;
+//				            		
+//				            	}
+//				            	data =rowindex==0?"sNo~"+data:String.valueOf(rowindex)+"~"+data;
+//					            rows.add(data.substring(0,data.length()-1)+"\r\n");
+//					            rowindex++;
+//				            }
+//				            
+//			        } catch (IOException e) {
+//			            e.printStackTrace();
+//			        }
+//	        }
+//	        return rows;
+//	    }
+	    
+	    private List<String> readExcel(String inputFilePath, String file_extension) {
 	        List<String> rows = new ArrayList<>();
-	       
-	        if("xlsx".equals(file_extension)) {
-		        
-	        	try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(new File(inputFilePath)));
-		             Workbook workbook = new XSSFWorkbook(bis)) {
-			            DataFormatter dataFormatter = new DataFormatter();
-			            Sheet sheet = workbook.getSheetAt(0);
-			            
-		            	int cell_count =sheet.getRow(0).getLastCellNum();
 
-			            int rowindex =0;
-			            for (Row row : sheet) {
-			            	
+	        try (BufferedInputStream bis = new BufferedInputStream(
+	                    new FileInputStream(new File(inputFilePath)));
+	             Workbook workbook = "xlsx".equals(file_extension)
+	                     ? new XSSFWorkbook(bis)
+	                     : new HSSFWorkbook(bis)) {
 
-			            	String data ="";
-			            	for (int i =0 ;i<cell_count ;i++) {
-			            		Cell cell =row.getCell(i);
-			            		data+=cell==null || cell.getCellType()==CellType.BLANK?""+"~":
-			            			dataFormatter.formatCellValue(cell).
-		                    		replace("\t", "").replace("\n", "").replace("\r", "").replace("'", "").replaceAll("^\"|\"$", "").replace(",", "")+"~";;
-			            		
-			            	}
-			            	data =rowindex==0?"sNo~"+data:String.valueOf(rowindex)+"~"+data;
-				            rows.add(data.substring(0,data.length()-1)+"\r\n");
-				            rowindex++;
-			            }
-			            
-		        } catch (IOException e) {
-		            e.printStackTrace();
-		        }
-	        	
-	        }else if ("xls".equals(file_extension)) {
-	        	
-	        	try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(new File(inputFilePath)));
-			             Workbook workbook = new HSSFWorkbook(bis)) {
-				           
-	        				DataFormatter dataFormatter = new DataFormatter();
-				            Sheet sheet = workbook.getSheetAt(0);
-			            
-				            
-			            	int cell_count =sheet.getRow(0).getLastCellNum();
+	            DataFormatter dataFormatter = new DataFormatter();
 
-				            int rowindex =0;
-				            for (Row row : sheet) {
+	            // Skip hidden sheets (RefData) — find first visible sheet
+	            Sheet sheet = null;
+	            for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+	                if (!workbook.isSheetHidden(i) && !workbook.isSheetVeryHidden(i)) {
+	                    sheet = workbook.getSheetAt(i);
+	                    break;
+	                }
+	            }
 
+	            if (sheet == null) {
+	                System.out.println("readExcel || No visible sheet found in: " + inputFilePath);
+	                return rows;
+	            }
 
-				            	String data ="";
-				            	for (int i =0 ;i<cell_count ;i++) {
-				            		Cell cell =row.getCell(i);
-				            		data+=cell==null || cell.getCellType()==CellType.BLANK?""+"~":
-				            			dataFormatter.formatCellValue(cell).
-			                    		replace("\t", "").replace("\n", "").replace("\r", "").replace("'", "").replaceAll("^\"|\"$", "").replace(",", "")+"~";;
-				            		
-				            	}
-				            	data =rowindex==0?"sNo~"+data:String.valueOf(rowindex)+"~"+data;
-					            rows.add(data.substring(0,data.length()-1)+"\r\n");
-					            rowindex++;
-				            }
-				            
-			        } catch (IOException e) {
-			            e.printStackTrace();
-			        }
+	            int cell_count = sheet.getRow(0).getLastCellNum();
+	            int rowindex = 0;
+
+	            for (Row row : sheet) {
+	                String data = "";
+	                for (int i = 0; i < cell_count; i++) {
+	                    Cell cell = row.getCell(i);
+	                    data += (cell == null || cell.getCellType() == CellType.BLANK)
+	                            ? "~"
+	                            : dataFormatter.formatCellValue(cell)
+	                                    .replace("\t", "").replace("\n", "")
+	                                    .replace("\r", "").replace("'", "")
+	                                    .replaceAll("^\"|\"$", "").replace(",", "") + "~";
+	                }
+	                data = rowindex == 0 ? "sNo~" + data : rowindex + "~" + data;
+	                rows.add(data.substring(0, data.length() - 1) + "\r\n");
+	                rowindex++;
+	            }
+
+	        } catch (IOException e) {
+	            System.out.println("readExcel || IOException: " + e.getMessage());
+	            e.printStackTrace();
 	        }
+
 	        return rows;
 	    }
-	    
-	    
 	    
 	    @Bean(name="CsvBatchListener")
 	    public JobExecutionListener listener() {

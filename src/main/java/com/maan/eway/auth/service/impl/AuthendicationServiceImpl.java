@@ -138,8 +138,9 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 				session.setLoginId(mslogin.getLoginId());
 				session.setTokenId(token);
 				session.setStatus("ACTIVE");
-				String temptoken = bCryptPasswordEncoder.encode("CommercialClaim");
-				session.setTempTokenid(temptoken);
+//				String temptoken = bCryptPasswordEncoder.encode("CommercialClaim");
+//				session.setTempTokenid(temptoken);
+				session.setTempTokenid(token);
 				session.setUserType(login.getUserType());
 				session.setSubUserType(login.getSubUserType());
 				Date today = new Date(); 
@@ -149,6 +150,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 				cal.add(Calendar.MINUTE, 50);
 				Date endTime = cal.getTime();
 				session.setEndTime(endTime );
+				session.setIpAddress(http.getLocalAddr() +":" +http.getLocalPort());
 				session =sessionRep.save(session);
 				ClaimLoginResponse loginRes = new ClaimLoginResponse(); 
 				
@@ -187,7 +189,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 		try {
 			LoginUserInfo userInfo = loginUserRepo.findByLoginId(login.getLoginId());
 			
-			r.setToken(session.getTempTokenid());
+			r.setToken(session.getTokenId());
 			r.setLoginId(login.getLoginId());
 			r.setUserName(userInfo.getUserName());
 			r.setUserMail(StringUtils.isBlank(userInfo.getUserMail())?"":userInfo.getUserMail());
@@ -295,9 +297,12 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 				
 				
 				// Effective Date Max Filter
-				Subquery<Date> effectiveDate = query.subquery(Date.class);
+				Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 				Root<LoginProductMaster> ocpm1 = effectiveDate.from(LoginProductMaster.class);
-				effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
+				//effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+				effectiveDate.select(
+					    cb.greatest(ocpm1.<Timestamp>get("effectiveDateStart"))
+					);
 				Predicate a1 = cb.equal(c.get("productId"),ocpm1.get("productId") );
 				Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
 				Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
@@ -305,9 +310,12 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 				effectiveDate.where(a1,a2,a3,a4);
 				
 				// Effective Date Max Filter
-				Subquery<Date> effectiveDate2 = query.subquery(Date.class);
+				Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 				Root<LoginProductMaster> ocpm2 = effectiveDate2.from(LoginProductMaster.class);
-				effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
+				//effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+				effectiveDate2.select(
+					    cb.greatest(ocpm2.<Timestamp>get("effectiveDateEnd"))
+					);
 				Predicate a5 = cb.equal(c.get("productId"),ocpm2.get("productId") );
 				Predicate a6 = cb.equal(c.get("companyId"),ocpm2.get("companyId") );
 				Predicate a7 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
@@ -319,17 +327,23 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 				Root<CompanyProductMaster> cm = productIds.from(CompanyProductMaster.class);
 				
 				
-				Subquery<Date> effectiveDate3 = query.subquery(Date.class);
+				Subquery<Timestamp> effectiveDate3 = query.subquery(Timestamp.class);
 				Root<CompanyProductMaster> ocpm4 = effectiveDate3.from(CompanyProductMaster.class);
-				effectiveDate3.select(cb.greatest(ocpm4.get("effectiveDateStart").as(Date.class)));
+				//effectiveDate3.select(cb.greatest(ocpm4.get("effectiveDateStart")));
+				effectiveDate3.select(
+					    cb.greatest(ocpm4.<Timestamp>get("effectiveDateStart"))
+					);
 				Predicate a9 = cb.equal(cm.get("productId"),ocpm4.get("productId") );
 				Predicate a10 = cb.equal(cm.get("companyId"),ocpm4.get("companyId") );
 				Predicate a11 = cb.lessThanOrEqualTo(ocpm4.get("effectiveDateStart"), today);
 				effectiveDate3.where(a9,a10,a11);
 				
-				Subquery<Date> effectiveDate4 = query.subquery(Date.class);
+				Subquery<Timestamp> effectiveDate4 = query.subquery(Timestamp.class);
 				Root<CompanyProductMaster> ocpm5 = effectiveDate4.from(CompanyProductMaster.class);
-				effectiveDate4.select(cb.greatest(ocpm5.get("effectiveDateEnd").as(Date.class)));
+				//effectiveDate4.select(cb.greatest(ocpm5.get("effectiveDateEnd")));
+				effectiveDate4.select(
+					    cb.greatest(ocpm5.<Timestamp>get("effectiveDateEnd"))
+					);
 				Predicate a12 = cb.equal(cm.get("productId"),ocpm5.get("productId") );
 				Predicate a13 = cb.equal(cm.get("companyId"),ocpm5.get("companyId") );
 				Predicate a14 = cb.greaterThanOrEqualTo(ocpm5.get("effectiveDateEnd"), todayEnd);
@@ -423,17 +437,24 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			orderList.add(cb.asc(c.get("productName")));
 			
 			// Effective Date Start Max Filter
-			Subquery<Date> effectiveDate = query.subquery(Date.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
+			//effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(
+				    cb.greatest(ocpm1.<Timestamp>get("effectiveDateStart"))
+				);
 			Predicate a1 = cb.equal(c.get("productId"),ocpm1.get("productId"));
 			Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
 			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			effectiveDate.where(a1,a2,a3);
 			// Effective Date End Max Filter
-			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd").as(Date.class)));
+			//effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateEnd")));
+			
+			effectiveDate2.select(
+				    cb.greatest(ocpm2.<Timestamp>get("effectiveDateEnd"))
+				);
 			Predicate a4 = cb.equal(c.get("productId"),ocpm2.get("productId"));
 			Predicate a5 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
 			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
@@ -535,9 +556,12 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			// Company Effective Date Max Filter
 			Subquery<Long> company = query.subquery(Long.class);
 			Root<InsuranceCompanyMaster> ins = company.from(InsuranceCompanyMaster.class);
-			Subquery<Date> effectiveDate2 = query.subquery(Date.class);
+			Subquery<Timestamp> effectiveDate2 = query.subquery(Timestamp.class);
 			Root<InsuranceCompanyMaster> ocpm2 = effectiveDate2.from(InsuranceCompanyMaster.class);
-			effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateStart").as(Date.class)));
+			//effectiveDate2.select(cb.greatest(ocpm2.get("effectiveDateStart")));
+			effectiveDate2.select(
+				    cb.greatest(ocpm2.<Timestamp>get("effectiveDateStart"))
+				);
 			Predicate ceff1 = cb.equal(ocpm2.get("companyId"), ins.get("companyId"));
 			Predicate ceff2 = cb.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"), today);
 			effectiveDate2.where(ceff1,ceff2);
@@ -567,9 +591,13 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			// Company Currency Effective Date Max Filter
 			Subquery<Long> currency = query.subquery(Long.class);
 			Root<InsuranceCompanyMaster> currencyId = currency.from(InsuranceCompanyMaster.class);
-			Subquery<Date> effectiveDate6 = query.subquery(Date.class);
+			Subquery<Timestamp> effectiveDate6 = query.subquery(Timestamp.class);
 			Root<InsuranceCompanyMaster> ocpm6 = effectiveDate6.from(InsuranceCompanyMaster.class);
-			effectiveDate6.select(cb.greatest(ocpm6.get("effectiveDateStart").as(Date.class)));
+			//effectiveDate6.select(cb.greatest(ocpm6.get("effectiveDateStart")));
+			
+			effectiveDate6.select(
+				    cb.greatest(ocpm6.<Timestamp>get("effectiveDateStart"))
+				);
 			Predicate iceff3 = cb.equal(ocpm6.get("companyId"), currencyId.get("companyId"));
 			Predicate iceff4 = cb.lessThanOrEqualTo(ocpm6.get("effectiveDateStart"), today);
 			effectiveDate6.where(iceff3,iceff4);
@@ -587,7 +615,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 //			Root<RegionMaster> rm = region.from(RegionMaster.class);
 //			Subquery<Long> effectiveDate3 = query.subquery(Long.class);
 //			Root<RegionMaster> ocpm3 = effectiveDate3.from(RegionMaster.class);
-//			effectiveDate3.select(cb.greatest(ocpm3.get("effectiveDateStart").as(Date.class)));
+//			effectiveDate3.select(cb.greatest(ocpm3.get("effectiveDateStart")));
 //			Predicate reff2 = cb.equal(ocpm3.get("regionCode"), rm.get("regionCode"));
 //			Predicate reff3 = cb.lessThanOrEqualTo(ocpm3.get("effectiveDateStart"), today);
 //			effectiveDate3.where(reff2,reff3);
@@ -607,9 +635,12 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 					currency.alias("currencyId") );
 
 			// Effective Date Max Filter
-			Subquery<Date> effectiveDate = query.subquery(Date.class);
+			Subquery<Timestamp> effectiveDate = query.subquery(Timestamp.class);
 			Root<BranchMaster> ocpm1 = effectiveDate.from(BranchMaster.class);
-			effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart").as(Date.class)));
+			//effectiveDate.select(cb.greatest(ocpm1.get("effectiveDateStart")));
+			effectiveDate.select(
+				    cb.greatest(ocpm1.<Timestamp>get("effectiveDateStart"))
+				);
 			Predicate eff1 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
 		//	Predicate eff2 = cb.equal(ocpm1.get("regionCode"), b.get("regionCode"));
 			Predicate eff3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));

@@ -12,13 +12,15 @@
 
 package com.maan.eway.repository;
 
-import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
-import com.maan.eway.bean.HomePositionMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+
+import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.HomePositionMasterId;
+import com.maan.eway.bean.MotorDataDetails;
 /**
  * <h2>HomePositionMasterRepository</h2>
  *
@@ -29,7 +31,8 @@ import com.maan.eway.bean.HomePositionMasterId;
  
  
  
-public interface HomePositionMasterRepository  extends JpaRepository<HomePositionMaster,HomePositionMasterId > , JpaSpecificationExecutor<HomePositionMaster> {
+public interface HomePositionMasterRepository
+		extends JpaRepository<HomePositionMaster, HomePositionMasterId>, JpaSpecificationExecutor<HomePositionMaster> {
 
 	HomePositionMaster findByQuoteNo(String quoteNo);
 
@@ -42,5 +45,8 @@ public interface HomePositionMasterRepository  extends JpaRepository<HomePositio
 			String insuranceId, String string, String string2);
 
 	List<HomePositionMaster> findByQuoteNoIn(List<String> quoteNos);
+
+	List<HomePositionMaster> findByCustomerIdInAndCompanyIdAndStatus(Set<String> collect, String companyId,
+			String policyOrQuote);
 
 }

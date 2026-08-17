@@ -8,15 +8,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -47,6 +45,9 @@ import com.maan.eway.batch.repository.TransactionControlDetailsRepository;
 import com.maan.eway.batch.res.EwayUploadRes;
 import com.maan.eway.springbatch.TransactionControlDetails;
 import com.maan.eway.springbatch.TransactionControlDetailsId;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 @Component
 @Transactional
@@ -482,7 +483,11 @@ public class VehicleCSVFileConvertion {
 					
 					if (totalLinesProcessed == 1) {
 						//record=record.replaceAll("~Sno~VehicleNo", "");
-						excelHeaders = record.split("~");
+						excelHeaders = record.replaceAll("~+$", "").split("~");
+						if(excelHeaders[0].trim().equalsIgnoreCase("sno") || 
+								   excelHeaders[0].trim().equalsIgnoreCase("sNo")) {
+								    excelHeaders = Arrays.copyOfRange(excelHeaders, 1, excelHeaders.length);
+								}
 						//System.out.println(excelHeaders.length);
 						resultMap = matchColumns(excelHeaders, dbColumns);
 						if (!resultMap.isEmpty()) {

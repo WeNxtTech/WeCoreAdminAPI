@@ -31,13 +31,17 @@ public class CORSFilter implements Filter {
 	 */
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
 			throws IOException, ServletException {
+		HttpServletRequest httpRequest = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) res;
+		String origin = httpRequest.getHeader("Origin");
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		response.setHeader("Access-Control-Allow-Methods", "*");
+		response.setHeader("Access-Control-Allow-Headers","*");
 		response.setHeader("Access-Control-Max-Age", "3600");
 		response.setHeader("X-Requested-With", "XMLHttpRequest");
-		response.setHeader("Access-Control-Allow-Headers","*");
-		HttpServletRequest httpRequest = (HttpServletRequest) req;
+//		response.setHeader("Access-Control-Allow-Origin", origin);
+//		response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH");
+//		response.setHeader("Access-Control-Allow-Headers","Origin, Authorization, Accept, Content-Type, X-Requested-With, X-CSRF-Token, X-Auth-Token");
 		if ("OPTIONS".equalsIgnoreCase(httpRequest.getMethod())) {
 			response.setStatus(HttpServletResponse.SC_OK);
 		} else {

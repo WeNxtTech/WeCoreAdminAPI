@@ -35,5 +35,6 @@ public class ProductTaxSetupId implements Serializable {
     private String branchCode ;
     private String   countryId;
     private String   taxFor;
+    private Integer taxIdFor;
          
 }

@@ -243,7 +243,7 @@ public class CompanyProductMasterController {
 			}
 		}
 
-	  @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER')")
+	  @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 		@PostMapping(value="/dropdown/companyproducts",produces = "application/json")
 		@ApiOperation(value = "This method is get Company Product Master Drop Down")
 

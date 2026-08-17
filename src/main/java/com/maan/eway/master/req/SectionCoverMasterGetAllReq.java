@@ -26,6 +26,9 @@ public class SectionCoverMasterGetAllReq implements Serializable {
 	
 	@JsonProperty("BranchCode")
 	private String branchCode;
+	
+	@JsonProperty("AdditionalInfoYN")
+    private String additionalInfoYN;
 //
 //    @JsonProperty("Limit")
 //    private String limit;

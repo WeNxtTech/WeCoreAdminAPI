@@ -1,13 +1,14 @@
 package com.maan.eway.master.service.impl;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -52,6 +53,8 @@ public class ProductTaxSetupServiceImpl implements ProductTaxSetupService {
 
 	@Autowired
 	private ProductTaxSetupRepository repo;
+	
+	
 
 	Gson json = new Gson();
 
@@ -219,10 +222,28 @@ public class ProductTaxSetupServiceImpl implements ProductTaxSetupService {
 			// Decimal Digit
 			
 			List<ProductTaxSetup> saveList = new ArrayList<ProductTaxSetup>();
+			Map<String, Integer> taxCodeMap = new HashMap<>();
 			for ( ProductTaxMultiInsertReq data :  req.getTaxList() ) {
+				String taxCode = data.getTaxCode();
+				 Integer nextTaxIdFor = taxCodeMap.get(taxCode);
+
+		            if (nextTaxIdFor == null) {
+
+		                Integer dbMax = repo.findMaxTaxIdForByTaxCode(
+		                        req.getCompanyId(),
+		                        Integer.valueOf(req.getProductId()),
+		                        amendId,
+		                        taxCode);
+
+		                nextTaxIdFor = (dbMax == null ? 1 : dbMax + 1);
+		            }
+
+				
 				ProductTaxSetup saveData = new ProductTaxSetup();
 				// Save New Records
 			//	saveData = dozerMapper.map(req, CompaniesTaxSetup.class );
+				
+				saveData.setTaxIdFor(StringUtils.isBlank(data.getTaxIdFor())?nextTaxIdFor:Integer.valueOf(data.getTaxIdFor()));
 				saveData.setAmendId(amendId);
 				saveData.setBranchCode(req.getBranchCode());
 				saveData.setCompanyId(req.getCompanyId());
@@ -252,9 +273,14 @@ public class ProductTaxSetupServiceImpl implements ProductTaxSetupService {
 				saveData.setDependentYn(StringUtils.isBlank(data.getDependentYn())?"N":data.getDependentYn());
 				saveData.setMinimumAmount(StringUtils.isBlank(data.getMinimumAmount())?BigDecimal.ZERO  :new BigDecimal(data.getMinimumAmount()) );
 				saveData.setProductId(Integer.valueOf(req.getProductId()));
-				saveList.add(saveData);
+				saveData.setMaxAmount(StringUtils.isBlank(data.getMaximumAmount()) ? BigDecimal.ZERO : new BigDecimal(data.getMaximumAmount()));
+				saveData.setStartDays(StringUtils.isBlank(data.getStartDays()) ? BigDecimal.ZERO : new BigDecimal(data.getStartDays()));
+				saveData.setEnddays(StringUtils.isBlank(data.getEndDays()) ? BigDecimal.ZERO : new BigDecimal(data.getEndDays()));
+				saveData.setMaxAmountyn(StringUtils.isBlank(data.getMaxAmountYN()) ? "N" : data.getMaxAmountYN());
+		//		saveList.add(saveData);
+				repo.saveAndFlush(saveData);
 			}
-			repo.saveAllAndFlush(saveList);
+			//repo.saveAllAndFlush(saveList);
 			
 		} catch (Exception e) {
 		e.printStackTrace();
@@ -480,16 +506,17 @@ public class ProductTaxSetupServiceImpl implements ProductTaxSetupService {
 				//		errorList.add(new Error("01", "Tax", "Please Select Tax Name In Row No : " + row ));
 						errorList.add("1617" + "," + row);
 						
-					}else {
-						List<String> filterTaxIds = taxIds.stream().filter( o -> o.equalsIgnoreCase(data.getTaxId())).collect(Collectors.toList());
-						if(filterTaxIds.size() > 0 ) {
-				//			errorList.add(new Error("01", "Tax", "Duplicate Tax Name Available In Row No : " + row ));
-							errorList.add("1618" + "," + row);
-						} else {
-							taxIds.add(data.getTaxId());
-						}
-						
-					} 
+					}
+//					else {
+//						List<String> filterTaxIds = taxIds.stream().filter( o -> o.equalsIgnoreCase(data.getTaxId())).collect(Collectors.toList());
+//						if(filterTaxIds.size() > 0 ) {
+//				//			errorList.add(new Error("01", "Tax", "Duplicate Tax Name Available In Row No : " + row ));
+//							errorList.add("1618" + "," + row);
+//						} else {
+//							taxIds.add(data.getTaxId());
+//						}
+//						
+//					} 
 					
 					
 					if (StringUtils.isBlank(data.getValue())) {
@@ -576,17 +603,18 @@ public class ProductTaxSetupServiceImpl implements ProductTaxSetupService {
 					//	errorList.add(new Error("06", "CoreAppCode", "Please Enter CoreAppCode within 20 Characters In Row No : " + row ));
 						errorList.add("1490" + "," + row);
 						
-					} else if(! ( "N/A".equalsIgnoreCase(data.getCoreAppCode()) || "99999".equalsIgnoreCase(data.getCoreAppCode()) 
-							|| "NA".equalsIgnoreCase(data.getCoreAppCode())) ) {
-						List<String> filterCoreAppCodes = coreAppCodes.stream().filter( o -> o.equalsIgnoreCase(data.getCoreAppCode())).collect(Collectors.toList());
-						if(filterCoreAppCodes.size() > 0 ) {
-					//		errorList.add(new Error("01", "Core App Code", "Duplicate Core App Code Available In Row No : " + row ));
-							errorList.add("1491" + "," + row);
-						} else {
-							coreAppCodes.add(data.getCoreAppCode());
-						}
-						
-					}
+					} 
+//					else if(! ( "N/A".equalsIgnoreCase(data.getCoreAppCode()) || "99999".equalsIgnoreCase(data.getCoreAppCode()) 
+//							|| "NA".equalsIgnoreCase(data.getCoreAppCode())) ) {
+//						List<String> filterCoreAppCodes = coreAppCodes.stream().filter( o -> o.equalsIgnoreCase(data.getCoreAppCode())).collect(Collectors.toList());
+//						if(filterCoreAppCodes.size() > 0 ) {
+//					//		errorList.add(new Error("01", "Core App Code", "Duplicate Core App Code Available In Row No : " + row ));
+//							errorList.add("1491" + "," + row);
+//						} else {
+//							coreAppCodes.add(data.getCoreAppCode());
+//						}
+//						
+//					}
 					
 					if (StringUtils.isBlank(data.getTaxCode())) {
 				//		errorList.add(new Error("06", "TaxCode", "Please Enter Tax Code In Row No : " + row ));
@@ -595,17 +623,18 @@ public class ProductTaxSetupServiceImpl implements ProductTaxSetupService {
 					//	errorList.add(new Error("06", "TaxCode", "Please Enter Tax Code within 100 Characters In Row No : " + row ));
 						errorList.add("1627" + "," + row);
 						
-					} else if(! ( "N/A".equalsIgnoreCase(data.getTaxCode()) || "99999".equalsIgnoreCase(data.getTaxCode()) 
-							|| "NA".equalsIgnoreCase(data.getTaxCode())) ) {
-						List<String> filterTaxCodes = taxCodes.stream().filter( o -> o.equalsIgnoreCase(data.getTaxCode())).collect(Collectors.toList());
-						if(filterTaxCodes.size() > 0 ) {
-					//		errorList.add(new Error("01", "TaxCode", "Duplicate Tax Code Available In Row No : " + row ));
-							errorList.add("1628" + "," + row);
-						} else {
-							taxCodes.add(data.getTaxCode());
-						}
-						
-					}
+					} 
+//					else if(! ( "N/A".equalsIgnoreCase(data.getTaxCode()) || "99999".equalsIgnoreCase(data.getTaxCode()) 
+//							|| "NA".equalsIgnoreCase(data.getTaxCode())) ) {
+//						List<String> filterTaxCodes = taxCodes.stream().filter( o -> o.equalsIgnoreCase(data.getTaxCode())).collect(Collectors.toList());
+//						if(filterTaxCodes.size() > 0 ) {
+//					//		errorList.add(new Error("01", "TaxCode", "Duplicate Tax Code Available In Row No : " + row ));
+//							errorList.add("1628" + "," + row);
+//						} else {
+//							taxCodes.add(data.getTaxCode());
+//						}
+//						
+//					}
 					
 				} 
 				
@@ -722,7 +751,12 @@ public class ProductTaxSetupServiceImpl implements ProductTaxSetupService {
 //					taxRes.setUpdatedBy(data.getCreatedBy());
 //					taxRes.setUpdatedDate(new Date());
 					taxRes.setValue(data.getValue()== null ? "" : data.getValue().toString() ) ;
+					taxRes.setStartDays(data.getStartDays()== null ? "" : data.getStartDays().toString());
 					taxRes.setDependentYn(data.getDependentYn()==null? "" :data.getDependentYn());
+					taxRes.setMaxAmountYN(data.getMaxAmountyn());
+					taxRes.setTaxIdFor(data.getTaxIdFor()==null ? null : data.getTaxIdFor().toString());
+					taxRes.setEndDays(data.getEnddays()== null ? "" : data.getEnddays().toString());
+					taxRes.setMaximumAmount(data.getMaxAmount()== null ? "" : data.getMaxAmount().toString());
 					taxRes.setMinimumAmount(data.getMinimumAmount()==null?"" :data.getMinimumAmount().toPlainString() );
 					taxList.add(taxRes);
 				}

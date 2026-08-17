@@ -396,19 +396,33 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 			System.out.println("Premia Config Master  : "+premia);
 			int count=0;
 			String[] tableList=null;
+			
+			String[] premiaIds = null;
+			String[] tableNames = null;
+			
 			if(premia!=null) {
 				String premiaId =premia.get("PREMIA_ID").toString();
 				String tableName =premia.get("TABLE_NAME").toString();
 				count= countPremiaId(premiaId); 
 				tableList=tableList( tableName);
+				
+				premiaId = premiaId.substring(1, premiaId.length() - 1);   // Remove [ ]
+				tableName = tableName.substring(1, tableName.length() - 1);
+				
+				 premiaIds = premiaId.split(",");
+				 tableNames = tableName.split(",");
+				 
 			}
 			Integer premiaId=0;
 			String tableString=null;
 			String table1=null;
 			XSSFWorkbook workbook = new XSSFWorkbook();
-			for(String data: tableList ) {
-			table1=data;
-			premiaId=premiaId+1;
+			//for(String data: tableList ) {
+			for (int j = 0; j < tableNames.length; j++) {
+			//table1=data;
+			//premiaId=premiaId+1;
+				table1 = tableNames[j].trim();
+			    premiaId = Integer.parseInt(premiaIds[j].trim());
 			
 			tableString=capitalizeWordsWithoutUnderscore(table1.replaceAll("\\s", ""));
 			System.out.println("Premia Id  : "+premiaId);
@@ -589,11 +603,11 @@ public class EwayFileUploadServiceImpl implements EwayFileUploadService {
 			Predicate n7 = cb.equal(b.get("productId"), "99999");
 			Predicate n8 = cb.or(n6,n7);
 			if((StringUtils.isNotBlank(req.getProductId()))) {
-			query.where(n1,n2,n8).orderBy(orderList);
+			query.where(n1,n2,n6).orderBy(orderList);
 			}
 			
 			else {
-				query.where(n1,n2).orderBy(orderList);
+				query.where(n1,n2,n7).orderBy(orderList);
 				
 			}
 			

@@ -12,11 +12,13 @@
 
 package com.maan.eway.repository;
 
-import java.math.BigDecimal;
+import java.util.List;
 
-import com.maan.eway.bean.PersonalInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.stereotype.Repository;
+
+import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PersonalInfoId;
 /**
  * <h2>PersonalInfoRepository</h2>
@@ -27,9 +29,13 @@ import com.maan.eway.bean.PersonalInfoId;
  */
  
  
- 
-public interface PersonalInfoRepository  extends JpaRepository<PersonalInfo,PersonalInfoId > , JpaSpecificationExecutor<PersonalInfo> {
+ @Repository
+	public interface PersonalInfoRepository
+			extends JpaRepository<PersonalInfo, PersonalInfoId>, JpaSpecificationExecutor<PersonalInfo> {
 
-	PersonalInfo findByCustomerId(String customerId);
+		PersonalInfo findByCustomerId(String customerId);
 
-}
+		List<PersonalInfo> findByMobileNo1OrMobileNo2OrMobileNo3AndMobileCode1(String mobileNo, String mobileNo2,
+				String mobileNo3, String mobileCode);
+
+	}

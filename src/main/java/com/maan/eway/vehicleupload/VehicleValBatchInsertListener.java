@@ -58,7 +58,9 @@ public class VehicleValBatchInsertListener implements JobExecutionListener {
 	private void findDuplicateValues(String tranId) {
 		try {
 			List<EserviceMotorDetailsRaw> motor_list = eserviceMotorDetailsRaw.findByRequestReferenceNo(tranId);
-			Map<String,List<EserviceMotorDetailsRaw>> group_list =motor_list.stream().collect(Collectors.groupingBy(p -> p.getSearchByData().toUpperCase()));
+			Map<String,List<EserviceMotorDetailsRaw>> group_list =motor_list.stream().filter(p -> p != null)
+					.filter(p -> p.getSearchByData() != null)
+					.collect(Collectors.groupingBy(p -> p.getSearchByData()));			
 			List<EserviceMotorDetailsRaw> duplicate_data = group_list.entrySet().stream()
 					.filter(p -> p.getValue().size()>1).map(p -> p.getValue())
 					.flatMap( f -> f.stream())

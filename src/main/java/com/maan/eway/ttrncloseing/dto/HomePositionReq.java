@@ -9,12 +9,16 @@ public class HomePositionReq {
 	@JsonProperty("QuoteNo")
 	private String quoteNo;
 	
-	@JsonProperty("Status")
-	private String status;
+	@JsonProperty("TranId")
+	private Integer tranId;
 	
-	@JsonProperty("BranchCode")
-	private String branchCode;
-
-	@JsonProperty("ProductCode")
-    private String productCoreCode;
+	@JsonProperty("Year")
+	private String year;
+	
+	@JsonProperty("CompanyId")
+	private String companyId;
+	
+	@JsonProperty("Date")
+	private String date;
+	
 }

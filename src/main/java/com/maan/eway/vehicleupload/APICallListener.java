@@ -16,7 +16,7 @@ public class APICallListener implements JobExecutionListener {
 	
 	@Override
 	public void afterJob(JobExecution jobExecution) {
-		String tranId = jobExecution.getJobParameters().getString("factor_id");
+		String tranId = jobExecution.getJobParameters().getString("request_ref_no");
 		try {
 			if (jobExecution.getStatus() == BatchStatus.COMPLETED) {	
 				

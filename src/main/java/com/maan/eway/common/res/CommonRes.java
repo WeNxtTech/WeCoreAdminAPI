@@ -17,7 +17,7 @@ public class CommonRes {
 	
 	@JsonProperty("ErrorMessage")
 	private List<Error> errorMessage;
-
+	
 	//Dynamic
 	@JsonProperty("Result")
 	private Object commonResponse;

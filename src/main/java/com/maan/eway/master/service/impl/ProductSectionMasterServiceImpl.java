@@ -763,7 +763,13 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			jakarta.persistence.criteria.Predicate n5 = cb.equal(c.get("productId"), req.getProductId());
 			Predicate n6 = cb.equal(c.get("status"),"R");
 			Predicate n7 = cb.or(n1,n6);
-			query.where(n7,n2,n3,n4,n5).orderBy(orderList);
+			
+			if(StringUtils.isNotBlank(req.getWhatsappYn()) && req.getWhatsappYn().equalsIgnoreCase("Y")) {
+			    Predicate n8 = cb.notEqual(c.get("sectionId"), 1);
+			    query.where(n7,n2,n3,n4,n5,n8).orderBy(orderList);
+			} else {
+			    query.where(n7,n2,n3,n4,n5).orderBy(orderList);
+			}
 			
 			// Get Result
 			TypedQuery<ProductSectionMaster> result = em.createQuery(query);			

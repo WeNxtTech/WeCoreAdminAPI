@@ -1,7 +1,6 @@
 package com.maan.eway.master.req;
 
 import java.util.Date;
-import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -155,6 +154,17 @@ public class SectionCoverUpdateReq {
 	@JsonProperty("MinimumRateYN")
 	private String minimumRateYN;
 	
+	@JsonProperty("EndtProRataYn")
+    private String endtProRataYn;
+    
+	@JsonProperty("EndtProRataDesc")
+    private String endtProRataDesc;
+    
+	@JsonProperty("DependentCoverBasedOn")
+    private String dependentCoverSIorPRE;
+	
+	@JsonProperty("AdditionalInfoYN")
+	private String additionalInfoYN;
 	
 	
 }

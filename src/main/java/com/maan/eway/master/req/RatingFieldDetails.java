@@ -36,4 +36,10 @@ public class RatingFieldDetails {
 	@JsonProperty("ApiUrl")
 	private String apiUrl;
 	
+	@JsonProperty("JsonKey")
+	private String jsonKey;
+	
+	@JsonProperty("JsonKeyDesc")
+	private String jsonKeyDD;
+	
 }

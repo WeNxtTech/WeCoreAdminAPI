@@ -478,6 +478,8 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 				saveData.setColumnsId(Integer.valueOf(data.getColumnsId()));
 				saveData.setStatus(StringUtils.isBlank(data.getStatus()) ? req.getStatus()  : data.getStatus());
 				saveData.setAmendId(amendId);
+				saveData.setJsonKey(data.getJsonKey());
+				saveData.setJsonKey(data.getJsonKeyDD());
 				//saveData.setStatus(req.getStatus().equalsIgnoreCase("P")?"P" : data.getStatus());		
 		//		saveData.setStatus(req.getStatus());
 				saveData.setApiUrl(data.getApiUrl());
@@ -895,9 +897,10 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 			for (FactorTypeDetails  data : list ) {
 				RatingFieldDetailsRes rating = new RatingFieldDetailsRes();
 				rating = dozerMapper.map(data , RatingFieldDetailsRes.class );
+				rating.setJsonKey(data.getJsonKey());
+				rating.setJsonKeyDD(data.getJsonKeyDropDown());
 				ratingFieldList.add(rating);
 			}
-			
 			res.setRatingFieldDetails(ratingFieldList);
 			}
 			

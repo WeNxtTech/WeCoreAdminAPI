@@ -42,4 +42,11 @@ public class RatingFieldDetailsRes {
 	
 	@JsonProperty("ApiUrl")
 	private String apiUrl;
+	
+
+	@JsonProperty("JsonKey")
+	private String jsonKey;
+	
+	@JsonProperty("JsonKeyDesc")
+	private String jsonKeyDD;
 }

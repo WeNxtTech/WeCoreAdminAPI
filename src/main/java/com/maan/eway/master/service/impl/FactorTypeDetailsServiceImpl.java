@@ -479,7 +479,7 @@ private Logger log=LogManager.getLogger(FactorTypeDetailsServiceImpl.class);
 				saveData.setStatus(StringUtils.isBlank(data.getStatus()) ? req.getStatus()  : data.getStatus());
 				saveData.setAmendId(amendId);
 				saveData.setJsonKey(data.getJsonKey());
-				saveData.setJsonKey(data.getJsonKeyDD());
+				saveData.setJsonKeyDropDown(data.getJsonKeyDD());
 				//saveData.setStatus(req.getStatus().equalsIgnoreCase("P")?"P" : data.getStatus());		
 		//		saveData.setStatus(req.getStatus());
 				saveData.setApiUrl(data.getApiUrl());

@@ -264,6 +264,12 @@ private static final long serialVersionUID = 1L;
     @Column(name = "ADDITIONAL_INFOYN")
     private String additionalInfoYN;
     
+    @Column(name ="MAXIMUM_RATE")
+    private BigDecimal maximumRate;
+    
+    @Column(name ="MAXIMUM_RATEYN")
+    private String maximumRateYn;
+    
 }
 
 

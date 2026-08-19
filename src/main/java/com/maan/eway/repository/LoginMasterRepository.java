@@ -13,9 +13,12 @@
 package com.maan.eway.repository;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginMasterId;
@@ -38,6 +41,13 @@ public interface LoginMasterRepository  extends JpaRepository<LoginMaster,LoginM
 	LoginMaster findByAgencyCodeAndOaCode(String oaCode, Integer oaCode2);
 
 	LoginMaster findByLoginIdAndEffectiveDateStartLessThanEqual(String loginId, Date date);
+	
+	@Query(
+		    value = "SELECT * FROM eway_login_master WHERE login_id = :loginId",
+		    nativeQuery = true
+		)
+		List<LoginMaster> findLogin(@Param("loginId") String loginId);
+	
 
 
 }

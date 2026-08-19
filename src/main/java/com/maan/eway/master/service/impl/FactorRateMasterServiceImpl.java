@@ -2158,7 +2158,11 @@ private Logger log=LogManager.getLogger(FactorRateMasterServiceImpl.class);
 				saveData.setMinimumRate(StringUtils.isBlank(data.getMinimumRate()) ? null :new BigDecimal(data.getMinimumRate()) );
 
 				saveData.setMinPremium(StringUtils.isBlank(data.getMinimumPremium()) ? null :new BigDecimal(data.getMinimumPremium()) );
+				
+				saveData.setMaximumRate(StringUtils.isBlank(data.getMaximumRate()) ? null :new BigDecimal(data.getMaximumRate()) );
+
 				saveData.setCalcType(data.getCalType() );
+				
 				saveData.setCalcTypeDesc(calcTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(data.getCalType()) ).collect(Collectors.toList()).get(0).getItemValue());
 				saveData.setStatus(StringUtils.isBlank(data.getStatus()) ? req.getStatus()  : data.getStatus());
 				//saveData.setAgencyCode(StringUtils.isBlank(req.getAgencyCode()) ? "99999" : req.getAgencyCode());

@@ -22,28 +22,41 @@ public class LocationMasterService {
 	@Transactional
 	public LocationMasterRes saveOrUpdateLocation(LocationMasterReq req) {
 
-		// 1. Check if an active record already exists for Company & CoreAppCode
-		List<LocationMaster> existList = repository.findByCompanyIdAndStatus(req.getCompanyId(), "Y");
+		String branchId = req.getBranchId() != null ? req.getBranchId() : "99999";
+		String address = req.getAddress() != null ? req.getAddress() : "";
+
+		if (address.length() > 100) {
+			address = address.substring(0, 100);
+		}
+
+		List<LocationMaster> existingList = repository.findActiveLocation(req.getCompanyId(), branchId,
+				req.getCountry(), req.getRegionState(), req.getCityLocationName(), address);
 
 		LocationMaster newRecord = new LocationMaster();
 
-		if (!existList.isEmpty()) {
-			LocationMaster activeRecord = existList.get(0);
+		if (!existingList.isEmpty()) {
 
+			// Same location already exists
+			LocationMaster activeRecord = existingList.get(0);
+
+			// Deactivate current active amendment
 			activeRecord.setStatus("N");
 			repository.save(activeRecord);
 
-			Integer maxAmendId = repository.findMaxAmendId(req.getCompanyId(), req.getCoreAppCode()).orElse(0);
+			// Create next amendment
+			Integer maxAmendId = repository.findMaxAmendIdEdit(req.getCompanyId(), branchId, req.getCountry(),
+					req.getRegionState(), req.getCityLocationName(), address).orElse(0);
+
 			newRecord.setAmendId(maxAmendId + 1);
 
 		} else {
-			// --- INSERT LOGIC ---
+
+			// Completely new location
 			newRecord.setAmendId(0);
 		}
 
-		// Map request fields to new entity instance
 		newRecord.setCompanyId(req.getCompanyId());
-		newRecord.setBranchId(req.getBranchId() != null ? req.getBranchId() : "99999");
+		newRecord.setBranchId(branchId);
 		newRecord.setCountry(req.getCountry());
 		newRecord.setRegionState(req.getRegionState());
 		newRecord.setCityLocationName(req.getCityLocationName());
@@ -56,7 +69,6 @@ public class LocationMasterService {
 
 		LocationMaster saved = repository.save(newRecord);
 
-		// Convert and return response
 		return mapToResponse(saved);
 	}
 

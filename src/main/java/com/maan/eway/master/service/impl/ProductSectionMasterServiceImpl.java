@@ -765,7 +765,7 @@ public class ProductSectionMasterServiceImpl implements ProductSectionMasterServ
 			Predicate n7 = cb.or(n1,n6);
 			
 			if(StringUtils.isNotBlank(req.getWhatsappYn()) && req.getWhatsappYn().equalsIgnoreCase("Y")) {
-			    Predicate n8 = cb.notEqual(c.get("sectionId"), 1);
+			    Predicate n8 = cb.notEqual(cb.lower(c.get("sectionName")), "comprehensive");
 			    query.where(n7,n2,n3,n4,n5,n8).orderBy(orderList);
 			} else {
 			    query.where(n7,n2,n3,n4,n5).orderBy(orderList);

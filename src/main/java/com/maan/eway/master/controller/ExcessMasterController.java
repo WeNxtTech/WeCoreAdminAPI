@@ -45,9 +45,7 @@ public class ExcessMasterController {
 	
 @PostMapping("/insertExcessMaster")
 @PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
-public ResponseEntity<CommonRes> insertExcess(@RequestBody 
-			@NotEmpty(message = "Excess master save or update list should not be empty.")
-			@Valid ExcessMasterSaveUpReq req) {
+public ResponseEntity<CommonRes> insertExcess(@RequestBody @Valid ExcessMasterSaveUpReq req) {
 	
 	CommonRes data = new CommonRes();	
 	reqPrinter.reqPrint(req);

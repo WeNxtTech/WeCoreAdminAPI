@@ -38,7 +38,7 @@ public class ExcessMaster {
 	private Integer amendId;
 
 	@Column(name = "EXCESS_PERCENTAGE")
-	private Integer excessPercentage;
+	private Double excessPercentage;
 
 	@Column(name = "EXCESS_AMOUNT")
 	private Double excessAmount;

@@ -114,6 +114,12 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="INSTALLMENT_TYPE_DESC", length=100)
     private String installmentTypeDesc;
+    
+    @Column(name="INTEREST_OR_PROPOSAL")
+    private String intresetOrProposal;
+    
+    @Column(name="TAX_IDS")
+    private String taxIds;
 
 }
 

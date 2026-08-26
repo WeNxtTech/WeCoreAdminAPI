@@ -491,7 +491,13 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 	            saveData.setPolicyType(req.getPolicyType());
 	            saveData.setPolicyDesc("99999".equals(req.getPolicyType()) ? "ALL" : policyTypeDesc);
 	            saveData.setStatus(req.getStatus());
-
+	            saveData.setIntresetOrProposal(detail.getAdvanceYn());
+	           
+	            List<String> taxIds = detail.getTaxIds();
+	            String taxIdsString = taxIds == null || taxIds.isEmpty()
+	                    ? ""
+	                    : String.join(",", taxIds) + ",";
+	            saveData.setTaxIds(taxIdsString);
 	            // EMI-specific fields
 	            saveData.setPremiumStart(detail.getPremiumStart());
 	            saveData.setPremiumEnd(detail.getPremiumEnd());
@@ -508,7 +514,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 	                saveData.setInstallmentTypeDesc(StringUtils.defaultIfBlank(installmentDesc, ""));
 	            } else {
 	                saveData.setInstallmentTypeId("0");
-	                saveData.setInstallmentTypeDesc(detail.getInstallmentPeriod() + " months");
+	                saveData.setInstallmentTypeDesc(detail.getInstallmentPeriod() + "months");
 	            }
 
 	            emiList.add(saveData);
@@ -859,6 +865,18 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 					DozerBeanMapper mapper2 = new DozerBeanMapper();
 					EmiDetailsRes e=new EmiDetailsRes();
 					e=mapper2.map(data, EmiDetailsRes.class);
+					e.setAdvanceYn(data.getIntresetOrProposal());
+					String taxIds = data.getTaxIds();
+					if (taxIds != null && !taxIds.trim().isEmpty()) {
+				        List<String> taxIdList = Arrays.stream(taxIds.split(","))
+				                .map(String::trim)
+				                .filter(s -> !s.isEmpty())
+				                .collect(Collectors.toList());
+
+				        e.setTaxIds(taxIdList);
+				    } else {
+				        e.setTaxIds(new ArrayList<>());
+				    }
 					emiDetails.add(e);
 				}
 				res.setEmiDetails(emiDetails);

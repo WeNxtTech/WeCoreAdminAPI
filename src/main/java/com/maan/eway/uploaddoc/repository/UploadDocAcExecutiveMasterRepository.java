@@ -28,4 +28,24 @@ public interface UploadDocAcExecutiveMasterRepository extends JpaRepository<Uplo
 			+ "where a2.acExecutiveId = a.acExecutiveId and a2.branchCode = a.branchCode and a2.companyId = a.companyId "
 			+ "and a2.bankCode = a.bankCode)")
 	List<UploadDocAcExecutiveMaster> findAllLatest();
+	
+	@Query("""
+		    select c from UploadDocAcExecutiveMaster c
+		    where c.branchCode = :branchCode
+		    and c.companyId = :companyId
+		    and c.bankCode = :bankCode
+		    and coalesce(c.amendId, 0) = (
+		        select max(coalesce(c2.amendId, 0))
+		        from UploadDocAcExecutiveMaster c2
+		        where c2.acExecutiveId = c.acExecutiveId
+		        and c2.branchCode = c.branchCode
+		        and c2.companyId = c.companyId
+		        and c2.bankCode = c.bankCode
+		    )
+		""")
+		List<UploadDocAcExecutiveMaster> findAllLatest(
+		        @Param("branchCode") String branchCode,
+		        @Param("companyId") String companyId,
+		        @Param("bankCode") String bankCode
+		);
 }

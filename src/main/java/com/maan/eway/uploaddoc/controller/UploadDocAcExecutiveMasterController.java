@@ -89,11 +89,11 @@ public class UploadDocAcExecutiveMasterController {
 		return new ResponseEntity<>(data, HttpStatus.OK);
 	}
 
-	@GetMapping
+	@PostMapping("/list")
 	@Operation(summary = "List the latest amendment of every Ac Executive Master record")
-	public ResponseEntity<CommonRes> getAll() {
+	public ResponseEntity<CommonRes> getAll(@RequestBody UploadDocAcExecutiveMasterGetReq req) {
 		CommonRes data = new CommonRes();
-		List<UploadDocAcExecutiveMasterRes> res = service.getAll();
+		List<UploadDocAcExecutiveMasterRes> res = service.getAll(req);
 		data.setIsError(false);
 		data.setMessage("Success");
 		data.setErrorMessage(Collections.emptyList());

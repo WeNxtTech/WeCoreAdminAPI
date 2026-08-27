@@ -168,8 +168,16 @@ public class UploadDocAcExecutiveMasterServiceImpl implements UploadDocAcExecuti
 	}
 
 	@Override
-	public List<UploadDocAcExecutiveMasterRes> getAll() {
-		return repo.findAllLatest().stream().map(mapper::toRes).collect(Collectors.toList());
+	public List<UploadDocAcExecutiveMasterRes> getAll(UploadDocAcExecutiveMasterGetReq req) {
+	    List<UploadDocAcExecutiveMaster> list = repo.findAllLatest(
+	             req.getBranchCode(),
+	            req.getCompanyId(), req.getBankCode());
+	    if (list == null || list.isEmpty()) {
+	        return null;
+	    }
+	    return list.stream()
+	               .map(mapper::toRes)
+	               .collect(Collectors.toList());
 	}
 
 	@Override

@@ -20,7 +20,7 @@ public interface UploadDocAcExecutiveMasterService {
 
 	UploadDocAcExecutiveMasterRes getLatest(UploadDocAcExecutiveMasterGetReq req);
 
-	List<UploadDocAcExecutiveMasterRes> getAll();
+	List<UploadDocAcExecutiveMasterRes> getAll(UploadDocAcExecutiveMasterGetReq req);
 
 	boolean delete(UploadDocAcExecutiveMasterGetReq req);
 }

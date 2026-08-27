@@ -183,4 +183,96 @@ public class UploadDocAgricultureMasterServiceImpl implements UploadDocAgricultu
 		latest.ifPresent(repo::delete);
 		return latest.isPresent();
 	}
+	
+	@Override
+	public UploadDocAgricultureMasterRes saveOrUpdate(
+			UploadDocAgricultureMasterSaveReq req) {
+
+		Date now = new Date();
+
+		// Get latest AMEND_ID
+		int newAmendId = repo.findMaxAmendId(req.getSno(), req.getCompanyId(), req.getProductId()).orElse(-1) + 1;
+
+		// Get previous/latest record
+		UploadDocAgricultureMaster previous = null;
+
+		if (newAmendId > 0) {
+			previous = repo.findBySnoAndCompanyIdAndProductIdAndAmendId(req.getSno(), req.getCompanyId(),
+					req.getProductId(), newAmendId - 1).orElse(null);
+		}
+
+		UploadDocAgricultureMaster entity;
+
+		if (previous == null) {
+
+			// =========================
+			// NEW RECORD
+			// =========================
+			entity = UploadDocAgricultureMaster.builder().sno(req.getSno()).companyId(req.getCompanyId())
+					.productId(req.getProductId()).amendId(0)
+
+					.provinceId(req.getProvinceId()).provinceDesc(req.getProvinceDesc()).districtId(req.getDistrictId())
+					.districtDesc(req.getDistrictDesc()).aez(req.getAez()).cropId(req.getCropId())
+					.cropDesc(req.getCropDesc()).yieldPercentage(req.getYieldPercentage()).perHaCost(req.getPerHaCost())
+					.sectionId(req.getSectionId()).coreAppCode(req.getCoreAppCode())
+
+					.status(StringUtils.isBlank(req.getStatus()) ? "Y" : req.getStatus())
+
+					.entryDate(now).effectiveDateStart(req.getEffectiveDateStart())
+					.effectiveDateEnd(req.getEffectiveDateEnd()).remarks(req.getRemarks())
+
+					.build();
+
+		} else {
+
+			// =========================
+			// UPDATE / AMENDMENT
+			// =========================
+			entity = UploadDocAgricultureMaster.builder().sno(req.getSno()).companyId(req.getCompanyId())
+					.productId(req.getProductId()).amendId(newAmendId)
+
+					.provinceId(req.getProvinceId() != null ? req.getProvinceId() : previous.getProvinceId())
+
+					.provinceDesc(req.getProvinceDesc() != null ? req.getProvinceDesc() : previous.getProvinceDesc())
+
+					.districtId(req.getDistrictId() != null ? req.getDistrictId() : previous.getDistrictId())
+
+					.districtDesc(req.getDistrictDesc() != null ? req.getDistrictDesc() : previous.getDistrictDesc())
+
+					.aez(req.getAez() != null ? req.getAez() : previous.getAez())
+
+					.cropId(req.getCropId() != null ? req.getCropId() : previous.getCropId())
+
+					.cropDesc(req.getCropDesc() != null ? req.getCropDesc() : previous.getCropDesc())
+
+					.yieldPercentage(
+							req.getYieldPercentage() != null ? req.getYieldPercentage() : previous.getYieldPercentage())
+
+					.perHaCost(req.getPerHaCost() != null ? req.getPerHaCost() : previous.getPerHaCost())
+
+					.sectionId(req.getSectionId() != null ? req.getSectionId() : previous.getSectionId())
+
+					.coreAppCode(req.getCoreAppCode() != null ? req.getCoreAppCode() : previous.getCoreAppCode())
+
+					.status(req.getStatus() != null ? req.getStatus() : previous.getStatus())
+
+					.entryDate(previous.getEntryDate())
+
+					.effectiveDateStart(req.getEffectiveDateStart() != null ? req.getEffectiveDateStart()
+							: previous.getEffectiveDateStart())
+
+					.effectiveDateEnd(req.getEffectiveDateEnd() != null ? req.getEffectiveDateEnd()
+							: previous.getEffectiveDateEnd())
+
+					.remarks(req.getRemarks() != null ? req.getRemarks() : previous.getRemarks())
+
+					.build();
+		}
+
+		entity = repo.saveAndFlush(entity);
+
+		log.info("UploadDocAgricultureMaster saved/amended with AMEND_ID={}: {}", entity.getAmendId(), entity);
+
+		return mapper.toRes(entity);
+	}
 }

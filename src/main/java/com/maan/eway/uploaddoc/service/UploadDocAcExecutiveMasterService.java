@@ -23,4 +23,6 @@ public interface UploadDocAcExecutiveMasterService {
 	List<UploadDocAcExecutiveMasterRes> getAll(UploadDocAcExecutiveMasterGetReq req);
 
 	boolean delete(UploadDocAcExecutiveMasterGetReq req);
+
+	UploadDocAcExecutiveMasterRes saveOrUpdate(UploadDocAcExecutiveMasterSaveReq req);
 }

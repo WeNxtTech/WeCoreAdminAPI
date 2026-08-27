@@ -23,4 +23,6 @@ public interface UploadDocAgricultureMasterService {
 	List<UploadDocAgricultureMasterRes> getAll(UploadDocAgricultureMasterGetReq req);
 
 	boolean delete(UploadDocAgricultureMasterGetReq req);
+
+	UploadDocAgricultureMasterRes saveOrUpdate(UploadDocAgricultureMasterSaveReq req);
 }

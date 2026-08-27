@@ -236,4 +236,133 @@ public class UploadDocNotifTemplateMasterServiceImpl implements UploadDocNotifTe
 		latest.ifPresent(repo::delete);
 		return latest.isPresent();
 	}
+	
+	@Override
+	public UploadDocNotifTemplateMasterRes saveOrUpdate(
+			UploadDocNotifTemplateMasterSaveReq req) {
+
+		Date now = new Date();
+
+		// Get latest AMEND_ID
+		int newAmendId = repo.findMaxAmendId(req.getNotifTemplateCode(), req.getCompanyId(), req.getProductId())
+				.orElse(-1) + 1;
+
+		// Get previous/latest record
+		UploadDocNotifTemplateMaster previous = null;
+
+		if (newAmendId > 0) {
+			previous = repo.findByNotifTemplateCodeAndCompanyIdAndProductIdAndAmendId(req.getNotifTemplateCode(),
+					req.getCompanyId(), req.getProductId(), newAmendId - 1).orElse(null);
+		}
+
+		UploadDocNotifTemplateMaster entity;
+
+		if (previous == null) {
+
+			// =========================
+			// NEW RECORD
+			// =========================
+			entity = UploadDocNotifTemplateMaster.builder().notifTemplateCode(req.getNotifTemplateCode())
+					.companyId(req.getCompanyId()).productId(req.getProductId()).amendId(0)
+
+					.notifTemplateName(req.getNotifTemplateName()).toMessengerNo(req.getToMessengerNo())
+					.toSmsNo(req.getToSmsNo()).toEmail(req.getToEmail())
+
+					.effectiveDateStart(req.getEffectiveDateStart()).effectiveDateEnd(req.getEffectiveDateEnd())
+
+					.mailRequired(req.getMailRequired()).mailSubject(req.getMailSubject()).mailBody(req.getMailBody())
+					.mailRegards(req.getMailRegards())
+
+					.smsRequired(req.getSmsRequired()).smsSubject(req.getSmsSubject()).smsBodyEn(req.getSmsBodyEn())
+					.smsRegards(req.getSmsRegards())
+
+					.whatsappRequired(req.getWhatsappRequired()).whatsappSubject(req.getWhatsappSubject())
+					.whatsappBodyEn(req.getWhatsappBodyEn()).whatsappRegards(req.getWhatsappRegards())
+
+					.entryDate(now).remarks(req.getRemarks())
+
+					.status(StringUtils.isBlank(req.getStatus()) ? "Y" : req.getStatus())
+
+					.coreAppCode(req.getCoreAppCode()).regulatoryCode(req.getRegulatoryCode())
+
+					.createdBy(req.getCreatedBy()).updatedBy(req.getCreatedBy()).updatedDate(now)
+
+					.build();
+
+		} else {
+
+			// =========================
+			// UPDATE / AMENDMENT
+			// =========================
+			entity = UploadDocNotifTemplateMaster.builder().notifTemplateCode(req.getNotifTemplateCode())
+					.companyId(req.getCompanyId()).productId(req.getProductId()).amendId(newAmendId)
+
+					.notifTemplateName(req.getNotifTemplateName() != null ? req.getNotifTemplateName()
+							: previous.getNotifTemplateName())
+
+					.toMessengerNo(
+							req.getToMessengerNo() != null ? req.getToMessengerNo() : previous.getToMessengerNo())
+
+					.toSmsNo(req.getToSmsNo() != null ? req.getToSmsNo() : previous.getToSmsNo())
+
+					.toEmail(req.getToEmail() != null ? req.getToEmail() : previous.getToEmail())
+
+					.effectiveDateStart(req.getEffectiveDateStart() != null ? req.getEffectiveDateStart()
+							: previous.getEffectiveDateStart())
+
+					.effectiveDateEnd(req.getEffectiveDateEnd() != null ? req.getEffectiveDateEnd()
+							: previous.getEffectiveDateEnd())
+
+					.mailRequired(req.getMailRequired() != null ? req.getMailRequired() : previous.getMailRequired())
+
+					.mailSubject(req.getMailSubject() != null ? req.getMailSubject() : previous.getMailSubject())
+
+					.mailBody(req.getMailBody() != null ? req.getMailBody() : previous.getMailBody())
+
+					.mailRegards(req.getMailRegards() != null ? req.getMailRegards() : previous.getMailRegards())
+
+					.smsRequired(req.getSmsRequired() != null ? req.getSmsRequired() : previous.getSmsRequired())
+
+					.smsSubject(req.getSmsSubject() != null ? req.getSmsSubject() : previous.getSmsSubject())
+
+					.smsBodyEn(req.getSmsBodyEn() != null ? req.getSmsBodyEn() : previous.getSmsBodyEn())
+
+					.smsRegards(req.getSmsRegards() != null ? req.getSmsRegards() : previous.getSmsRegards())
+
+					.whatsappRequired(req.getWhatsappRequired() != null ? req.getWhatsappRequired()
+							: previous.getWhatsappRequired())
+
+					.whatsappSubject(
+							req.getWhatsappSubject() != null ? req.getWhatsappSubject() : previous.getWhatsappSubject())
+
+					.whatsappBodyEn(
+							req.getWhatsappBodyEn() != null ? req.getWhatsappBodyEn() : previous.getWhatsappBodyEn())
+
+					.whatsappRegards(
+							req.getWhatsappRegards() != null ? req.getWhatsappRegards() : previous.getWhatsappRegards())
+
+					.entryDate(previous.getEntryDate())
+
+					.remarks(req.getRemarks() != null ? req.getRemarks() : previous.getRemarks())
+
+					.status(req.getStatus() != null ? req.getStatus() : previous.getStatus())
+
+					.coreAppCode(req.getCoreAppCode() != null ? req.getCoreAppCode() : previous.getCoreAppCode())
+
+					.regulatoryCode(
+							req.getRegulatoryCode() != null ? req.getRegulatoryCode() : previous.getRegulatoryCode())
+
+					.createdBy(previous.getCreatedBy())
+
+					.updatedDate(now)
+
+					.build();
+		}
+
+		entity = repo.saveAndFlush(entity);
+
+		log.info("UploadDocNotifTemplateMaster saved/amended with AMEND_ID={}: {}", entity.getAmendId(), entity);
+
+		return mapper.toRes(entity);
+	}
 }

@@ -23,4 +23,6 @@ public interface UploadDocDeductibleMasterService {
 	List<UploadDocDeductibleMasterRes> getAll(UploadDocDeductibleMasterGetReq req);
 
 	boolean delete(UploadDocDeductibleMasterGetReq req);
+
+	UploadDocDeductibleMasterRes saveOrUpdate(UploadDocDeductibleMasterSaveReq req);
 }

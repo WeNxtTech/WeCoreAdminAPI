@@ -44,7 +44,7 @@ public class UploadDocAcExecutiveMasterController {
 			data.setErrorMessage(errors);
 			return new ResponseEntity<>(data, HttpStatus.UNPROCESSABLE_ENTITY);
 		}
-		UploadDocAcExecutiveMasterRes res = service.save(req);
+		UploadDocAcExecutiveMasterRes res = service.saveOrUpdate(req);
 		data.setIsError(false);
 		data.setMessage("Ac Executive Master Created Successfully");
 		data.setErrorMessage(Collections.emptyList());

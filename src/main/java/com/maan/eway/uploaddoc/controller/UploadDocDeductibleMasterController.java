@@ -44,7 +44,7 @@ public class UploadDocDeductibleMasterController {
 			data.setErrorMessage(errors);
 			return new ResponseEntity<>(data, HttpStatus.UNPROCESSABLE_ENTITY);
 		}
-		UploadDocDeductibleMasterRes res = service.save(req);
+		UploadDocDeductibleMasterRes res = service.saveOrUpdate(req);
 		data.setIsError(false);
 		data.setMessage("Deductible Master Created Successfully");
 		data.setErrorMessage(Collections.emptyList());

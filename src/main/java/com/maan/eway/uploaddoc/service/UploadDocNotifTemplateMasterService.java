@@ -27,4 +27,6 @@ public interface UploadDocNotifTemplateMasterService {
 	List<UploadDocNotifTemplateMasterRes> getAll(UploadDocNotifTemplateMasterGetReq req);
 
 	boolean delete(UploadDocNotifTemplateMasterGetReq req);
+
+	UploadDocNotifTemplateMasterRes saveOrUpdate(UploadDocNotifTemplateMasterSaveReq req);
 }

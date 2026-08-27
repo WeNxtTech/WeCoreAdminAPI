@@ -3,6 +3,7 @@ package com.maan.eway.uploaddoc.service;
 import java.util.List;
 
 import com.maan.eway.error.Error;
+import com.maan.eway.req.RegionMasterRequest;
 import com.maan.eway.uploaddoc.dto.request.UploadDocRegionMasterGetReq;
 import com.maan.eway.uploaddoc.dto.request.UploadDocRegionMasterSaveReq;
 import com.maan.eway.uploaddoc.dto.request.UploadDocRegionMasterUpdateReq;
@@ -20,7 +21,7 @@ public interface UploadDocRegionMasterService {
 
 	UploadDocRegionMasterRes getLatest(UploadDocRegionMasterGetReq req);
 
-	List<UploadDocRegionMasterRes> getAll();
+	List<UploadDocRegionMasterRes> getAll(RegionMasterRequest request);
 
 	boolean delete(UploadDocRegionMasterGetReq req);
 }

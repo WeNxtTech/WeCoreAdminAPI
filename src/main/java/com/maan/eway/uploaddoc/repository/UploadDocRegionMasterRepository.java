@@ -18,7 +18,16 @@ public interface UploadDocRegionMasterRepository extends JpaRepository<UploadDoc
 	Optional<UploadDocRegionMaster> findByRegionCodeAndCountryIdAndAmendId(String regionCode, String countryId,
 			Integer amendId);
 
-	@Query("select r from UploadDocRegionMaster r where r.amendId = (select max(r2.amendId) from UploadDocRegionMaster r2 "
-			+ "where r2.regionCode = r.regionCode and r2.countryId = r.countryId)")
-	List<UploadDocRegionMaster> findAllLatest();
+	@Query("""
+			    SELECT r
+			    FROM UploadDocRegionMaster r
+			    WHERE r.countryId = :countryId
+			      AND r.amendId = (
+			          SELECT MAX(r2.amendId)
+			          FROM UploadDocRegionMaster r2
+			          WHERE r2.regionCode = r.regionCode
+			            AND r2.countryId = r.countryId
+			      )
+			""")
+	List<UploadDocRegionMaster> findAllLatest(@Param("countryId") String countryId);
 }

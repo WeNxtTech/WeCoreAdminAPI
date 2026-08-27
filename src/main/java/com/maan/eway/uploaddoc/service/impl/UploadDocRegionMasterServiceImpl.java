@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.error.Error;
+import com.maan.eway.req.RegionMasterRequest;
 import com.maan.eway.uploaddoc.dto.request.UploadDocRegionMasterGetReq;
 import com.maan.eway.uploaddoc.dto.request.UploadDocRegionMasterSaveReq;
 import com.maan.eway.uploaddoc.dto.request.UploadDocRegionMasterUpdateReq;
@@ -170,8 +171,11 @@ public class UploadDocRegionMasterServiceImpl implements UploadDocRegionMasterSe
 	}
 
 	@Override
-	public List<UploadDocRegionMasterRes> getAll() {
-		return repo.findAllLatest().stream().map(mapper::toRes).collect(Collectors.toList());
+	public List<UploadDocRegionMasterRes> getAll(RegionMasterRequest request) {
+	    return repo.findAllLatest(request.getCountryId())
+	               .stream()
+	               .map(mapper::toRes)
+	               .collect(Collectors.toList());
 	}
 
 	@Override

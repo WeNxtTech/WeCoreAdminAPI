@@ -22,4 +22,22 @@ public interface UploadDocAgricultureMasterRepository extends JpaRepository<Uplo
 	@Query("select a from UploadDocAgricultureMaster a where a.amendId = (select max(a2.amendId) from UploadDocAgricultureMaster a2 "
 			+ "where a2.sno = a.sno and a2.companyId = a.companyId and a2.productId = a.productId)")
 	List<UploadDocAgricultureMaster> findAllLatest();
+	
+	@Query("""
+		    select c
+		    from UploadDocAgricultureMaster c
+		    where c.companyId = :companyId
+		    and c.productId = :productId
+		    and c.amendId = (
+		        select max(c2.amendId)
+		        from UploadDocAgricultureMaster c2
+		        where c2.sno = c.sno
+		        and c2.companyId = c.companyId
+		        and c2.productId = c.productId
+		    )
+		""")
+		List<UploadDocAgricultureMaster> findAllLatest(
+		        @Param("companyId") Integer companyId,
+		        @Param("productId") Integer productId
+		);
 }

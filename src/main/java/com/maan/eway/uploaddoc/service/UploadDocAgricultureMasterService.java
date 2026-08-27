@@ -20,7 +20,7 @@ public interface UploadDocAgricultureMasterService {
 
 	UploadDocAgricultureMasterRes getLatest(UploadDocAgricultureMasterGetReq req);
 
-	List<UploadDocAgricultureMasterRes> getAll();
+	List<UploadDocAgricultureMasterRes> getAll(UploadDocAgricultureMasterGetReq req);
 
 	boolean delete(UploadDocAgricultureMasterGetReq req);
 }

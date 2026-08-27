@@ -163,8 +163,13 @@ public class UploadDocAgricultureMasterServiceImpl implements UploadDocAgricultu
 	}
 
 	@Override
-	public List<UploadDocAgricultureMasterRes> getAll() {
-		return repo.findAllLatest().stream().map(mapper::toRes).collect(Collectors.toList());
+	public List<UploadDocAgricultureMasterRes> getAll(
+	        UploadDocAgricultureMasterGetReq req) {
+
+	    return repo.findAllLatest()
+	            .stream()
+	            .map(mapper::toRes)
+	            .collect(Collectors.toList());
 	}
 
 	@Override

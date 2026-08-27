@@ -89,11 +89,11 @@ public class UploadDocAgricultureMasterController {
 		return new ResponseEntity<>(data, HttpStatus.OK);
 	}
 
-	@GetMapping
+	@PostMapping("/list")
 	@Operation(summary = "List the latest amendment of every Agriculture Master record")
-	public ResponseEntity<CommonRes> getAll() {
+	public ResponseEntity<CommonRes> getAll(@RequestBody UploadDocAgricultureMasterGetReq req) {
 		CommonRes data = new CommonRes();
-		List<UploadDocAgricultureMasterRes> res = service.getAll();
+		List<UploadDocAgricultureMasterRes> res = service.getAll(req);
 		data.setIsError(false);
 		data.setMessage("Success");
 		data.setErrorMessage(Collections.emptyList());

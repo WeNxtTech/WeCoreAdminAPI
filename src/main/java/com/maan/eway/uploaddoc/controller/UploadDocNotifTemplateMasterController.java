@@ -47,7 +47,7 @@ public class UploadDocNotifTemplateMasterController {
 			data.setErrorMessage(errors);
 			return new ResponseEntity<>(data, HttpStatus.UNPROCESSABLE_ENTITY);
 		}
-		UploadDocNotifTemplateMasterRes res = service.save(req);
+		UploadDocNotifTemplateMasterRes res = service.saveOrUpdate(req);
 		data.setIsError(false);
 		data.setMessage("Notif Template Master Created Successfully");
 		data.setErrorMessage(Collections.emptyList());

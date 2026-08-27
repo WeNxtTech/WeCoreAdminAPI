@@ -32,7 +32,7 @@ public class UploadDocCityMasterController {
 	@Autowired
 	private UploadDocCityMasterService service;
 
-	@PostMapping("/save")
+	@PostMapping
 	@Operation(summary = "Create a new City Master record")
 	public ResponseEntity<CommonRes> save(@RequestBody UploadDocCityMasterSaveReq req) {
 		CommonRes data = new CommonRes();

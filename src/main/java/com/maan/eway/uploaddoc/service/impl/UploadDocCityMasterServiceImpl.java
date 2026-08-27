@@ -66,12 +66,12 @@ public class UploadDocCityMasterServiceImpl implements UploadDocCityMasterServic
 		if (StringUtils.isBlank(req.getRegulatoryCode())) {
 			errors.add(new Error("07", "regulatoryCode", "Please provide RegulatoryCode"));
 		}
-		if (req.getCityId() != null && StringUtils.isNotBlank(req.getCountryId())
-				&& StringUtils.isNotBlank(req.getStateId())
-				&& repo.findMaxAmendId(req.getCityId(), req.getCountryId(), req.getStateId()).isPresent()) {
-			errors.add(new Error("08", "cityId",
-					"A City Master record already exists for this business key. Use the update API to amend it."));
-		}
+//		if (req.getCityId() != null && StringUtils.isNotBlank(req.getCountryId())
+//				&& StringUtils.isNotBlank(req.getStateId())
+//				&& repo.findMaxAmendId(req.getCityId(), req.getCountryId(), req.getStateId()).isPresent()) {
+//			errors.add(new Error("08", "cityId",
+//					"A City Master record already exists for this business key. Use the update API to amend it."));
+//		}
 		return errors;
 	}
 

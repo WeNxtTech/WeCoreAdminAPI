@@ -13,7 +13,7 @@ public class UploadDocDeductibleMasterMapper {
 			return null;
 		}
 		UploadDocDeductibleMasterRes res = new UploadDocDeductibleMasterRes();
-		res.setDeductMasterId(entity.getDeductMasterId());
+		
 		res.setDeductId(entity.getDeductId());
 		res.setDeductStart(entity.getDeductStart());
 		res.setDeductEnd(entity.getDeductEnd());

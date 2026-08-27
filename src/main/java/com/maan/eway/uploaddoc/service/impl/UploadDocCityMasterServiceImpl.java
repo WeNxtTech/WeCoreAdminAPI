@@ -131,9 +131,10 @@ public class UploadDocCityMasterServiceImpl implements UploadDocCityMasterServic
 	public UploadDocCityMasterRes update(UploadDocCityMasterUpdateReq req) {
 		int newAmendId = repo.findMaxAmendId(req.getCityId(), req.getCountryId(), req.getStateId()).orElse(-1) + 1;
 		UploadDocCityMaster previous = repo
-				.findByCityIdAndCountryIdAndStateIdAndAmendId(req.getCityId(), req.getCountryId(), req.getStateId(),
-						newAmendId - 1)
-				.orElse(null);
+		        .findByCityIdAndCountryIdAndStateIdAndAmendId(
+		                req.getCityId(), req.getCountryId(), req.getStateId(), newAmendId - 1)
+		        .flatMap(list -> list.stream().findFirst())
+		        .orElse(null);
 
 		Date now = new Date();
 		UploadDocCityMaster entity = UploadDocCityMaster.builder()
@@ -162,29 +163,43 @@ public class UploadDocCityMasterServiceImpl implements UploadDocCityMasterServic
 	}
 
 	@Override
-	public UploadDocCityMasterRes getLatest(UploadDocCityMasterGetReq req) {
+	public List<UploadDocCityMasterRes> getLatest(UploadDocCityMasterGetReq req) {
 		Optional<Integer> maxAmendId = repo.findMaxAmendId(req.getCityId(), req.getCountryId(), req.getStateId());
 		if (maxAmendId.isEmpty()) {
 			return null;
 		}
-		return repo.findByCityIdAndCountryIdAndStateIdAndAmendId(req.getCityId(), req.getCountryId(),
-				req.getStateId(), maxAmendId.get()).map(mapper::toRes).orElse(null);
+		
+		return repo.findByCityIdAndCountryIdAndStateIdAndAmendId(
+	               req.getCityId(), req.getCountryId(), req.getStateId(), maxAmendId.get())
+	           .map(list -> list.stream().map(mapper::toRes).collect(Collectors.toList()))
+	           .orElse(null);
 	}
 
 	@Override
-	public List<UploadDocCityMasterRes> getAll() {
-		return repo.findAllLatest().stream().map(mapper::toRes).collect(Collectors.toList());
-	}
+	public List<UploadDocCityMasterRes> getAll(UploadDocCityMasterGetReq req) {
+	    List<UploadDocCityMaster> list = repo.findLatestAmendmentPerCity(
+	            req.getCountryId(), req.getStateId());
 
+	    if (list == null || list.isEmpty()) {
+	        return null;
+	    }
+	    return list.stream()
+	               .map(mapper::toRes)
+	               .collect(Collectors.toList());
+	}
 	@Override
 	public boolean delete(UploadDocCityMasterGetReq req) {
-		Optional<Integer> maxAmendId = repo.findMaxAmendId(req.getCityId(), req.getCountryId(), req.getStateId());
-		if (maxAmendId.isEmpty()) {
-			return false;
-		}
-		Optional<UploadDocCityMaster> latest = repo.findByCityIdAndCountryIdAndStateIdAndAmendId(req.getCityId(),
-				req.getCountryId(), req.getStateId(), maxAmendId.get());
-		latest.ifPresent(repo::delete);
-		return latest.isPresent();
+	    Optional<Integer> maxAmendId = repo.findMaxAmendId(req.getCityId(), req.getCountryId(), req.getStateId());
+	    if (maxAmendId.isEmpty()) {
+	        return false;
+	    }
+	    Optional<List<UploadDocCityMaster>> latest = repo.findByCityIdAndCountryIdAndStateIdAndAmendId(
+	            req.getCityId(), req.getCountryId(), req.getStateId(), maxAmendId.get());
+
+	    if (latest.isEmpty() || latest.get().isEmpty()) {
+	        return false;
+	    }
+	    repo.deleteAll(latest.get());
+	    return true;
 	}
 }

@@ -18,9 +18,11 @@ public interface UploadDocCityMasterService {
 
 	UploadDocCityMasterRes update(UploadDocCityMasterUpdateReq req);
 
-	UploadDocCityMasterRes getLatest(UploadDocCityMasterGetReq req);
+	List<UploadDocCityMasterRes> getLatest(UploadDocCityMasterGetReq req);
 
-	List<UploadDocCityMasterRes> getAll();
+	
 
 	boolean delete(UploadDocCityMasterGetReq req);
+
+	List<UploadDocCityMasterRes> getAll(UploadDocCityMasterGetReq req);
 }

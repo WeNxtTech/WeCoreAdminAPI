@@ -16,10 +16,28 @@ public interface UploadDocCityMasterRepository extends JpaRepository<UploadDocCi
 	Optional<Integer> findMaxAmendId(@Param("cityId") Integer cityId, @Param("countryId") String countryId,
 			@Param("stateId") String stateId);
 
-	Optional<UploadDocCityMaster> findByCityIdAndCountryIdAndStateIdAndAmendId(Integer cityId, String countryId,
-			String stateId, Integer amendId);
+	Optional<List<UploadDocCityMaster>> findByCityIdAndCountryIdAndStateIdAndAmendId(
+	        Integer cityId, String countryId, String stateId, Integer amendId);
 
 	@Query("select c from UploadDocCityMaster c where c.amendId = (select max(c2.amendId) from UploadDocCityMaster c2 "
 			+ "where c2.cityId = c.cityId and c2.countryId = c.countryId and c2.stateId = c.stateId)")
 	List<UploadDocCityMaster> findAllLatest();
+
+	Optional<List<UploadDocCityMaster>>  findByCountryIdAndStateIdAndAmendId(String countryId, String stateId, Integer integer);
+	
+	@Query("""
+		    select c from UploadDocCityMaster c
+		    where c.countryId = :countryId
+		    and c.stateId = :stateId
+		    and c.amendId = (
+		        select max(c2.amendId) from UploadDocCityMaster c2
+		        where c2.cityId = c.cityId
+		        and c2.countryId = c.countryId
+		        and c2.stateId = c.stateId
+		    )
+		""")
+		List<UploadDocCityMaster> findLatestAmendmentPerCity(
+		    @Param("countryId") String countryId,
+		    @Param("stateId") String stateId
+		);
 }

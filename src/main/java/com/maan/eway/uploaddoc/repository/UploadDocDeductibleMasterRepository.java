@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.maan.eway.uploaddoc.entity.UploadDocDeductibleMaster;
 
-public interface UploadDocDeductibleMasterRepository extends JpaRepository<UploadDocDeductibleMaster, Long> {
+public interface UploadDocDeductibleMasterRepository extends JpaRepository<UploadDocDeductibleMaster, Integer> {
 
 	@Query("select max(d.amendId) from UploadDocDeductibleMaster d where d.deductId = :deductId and d.companyId = :companyId "
 			+ "and d.productId = :productId and d.sectionId = :sectionId and d.branchCode = :branchCode")
@@ -25,4 +25,27 @@ public interface UploadDocDeductibleMasterRepository extends JpaRepository<Uploa
 			+ "where d2.deductId = d.deductId and d2.companyId = d.companyId and d2.productId = d.productId "
 			+ "and d2.sectionId = d.sectionId and d2.branchCode = d.branchCode)")
 	List<UploadDocDeductibleMaster> findAllLatest();
+	
+	@Query("""
+		    select c from UploadDocDeductibleMaster c
+		    where c.companyId = :companyId
+		    and c.productId = :productId
+		    and c.sectionId = :sectionId
+		    and c.branchCode = :branchCode
+		    and c.amendId = (
+		        select max(c2.amendId) from UploadDocDeductibleMaster c2
+		        where c2.deductId = c.deductId
+		        and c2.companyId = c.companyId
+		        and c2.productId = c.productId
+		        and c2.sectionId = c.sectionId
+		        and c2.branchCode = c.branchCode
+		    )
+		""")
+		List<UploadDocDeductibleMaster> findLatestAmendmentPerDeduct(
+		    @Param("companyId") String companyId,
+		    @Param("productId") Integer productId,
+		    @Param("sectionId") Integer sectionId,
+		    @Param("branchCode") String branchCode
+		);
+	
 }

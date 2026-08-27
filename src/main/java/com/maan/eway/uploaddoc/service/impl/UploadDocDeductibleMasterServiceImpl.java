@@ -161,21 +161,31 @@ public class UploadDocDeductibleMasterServiceImpl implements UploadDocDeductible
 
 	@Override
 	public UploadDocDeductibleMasterRes getLatest(UploadDocDeductibleMasterGetReq req) {
-		Optional<Integer> maxAmendId = repo.findMaxAmendId(req.getDeductId(), req.getCompanyId(), req.getProductId(),
-				req.getSectionId(), req.getBranchCode());
-		if (maxAmendId.isEmpty()) {
-			return null;
-		}
-		return repo.findByDeductIdAndCompanyIdAndProductIdAndSectionIdAndBranchCodeAndAmendId(req.getDeductId(),
-				req.getCompanyId(), req.getProductId(), req.getSectionId(), req.getBranchCode(), maxAmendId.get())
-				.map(mapper::toRes).orElse(null);
+	    Optional<Integer> maxAmendId = repo.findMaxAmendId(req.getDeductId(), req.getCompanyId(),
+	            req.getProductId(), req.getSectionId(), req.getBranchCode());
+	    if (maxAmendId.isEmpty()) {
+	        return null;
+	    }
+	    Optional<UploadDocDeductibleMaster> result = repo
+	            .findByDeductIdAndCompanyIdAndProductIdAndSectionIdAndBranchCodeAndAmendId(
+	                    req.getDeductId(), req.getCompanyId(), req.getProductId(),
+	                    req.getSectionId(), req.getBranchCode(), maxAmendId.get());
+
+	    return result.map(mapper::toRes).orElse(null);
 	}
 
 	@Override
-	public List<UploadDocDeductibleMasterRes> getAll() {
-		return repo.findAllLatest().stream().map(mapper::toRes).collect(Collectors.toList());
-	}
+	public List<UploadDocDeductibleMasterRes> getAll(UploadDocDeductibleMasterGetReq req) {
+	    List<UploadDocDeductibleMaster> list = repo.findLatestAmendmentPerDeduct(
+	            req.getCompanyId(), req.getProductId(), req.getSectionId(), req.getBranchCode());
 
+	    if (list == null || list.isEmpty()) {
+	        return null;
+	    }
+	    return list.stream()
+	               .map(mapper::toRes)
+	               .collect(Collectors.toList());
+	}
 	@Override
 	public boolean delete(UploadDocDeductibleMasterGetReq req) {
 		Optional<Integer> maxAmendId = repo.findMaxAmendId(req.getDeductId(), req.getCompanyId(), req.getProductId(),

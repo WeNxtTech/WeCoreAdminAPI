@@ -33,7 +33,7 @@ public class UploadDocCityMasterController {
 	@Autowired
 	private UploadDocCityMasterService service;
 
-	@PostMapping
+	@PostMapping("/save")
 	@Operation(summary = "Create a new City Master record")
 	public ResponseEntity<CommonRes> save(@RequestBody UploadDocCityMasterSaveReq req) {
 		CommonRes data = new CommonRes();
@@ -52,7 +52,7 @@ public class UploadDocCityMasterController {
 		return new ResponseEntity<>(data, HttpStatus.CREATED);
 	}
 
-	@PutMapping
+	@PutMapping("/update")
 	@Operation(summary = "Amend an existing City Master record (creates the next AMEND_ID)")
 	public ResponseEntity<CommonRes> update(@RequestBody UploadDocCityMasterUpdateReq req) {
 		CommonRes data = new CommonRes();
@@ -75,7 +75,7 @@ public class UploadDocCityMasterController {
 	@Operation(summary = "Get the latest amendment of a City Master record by its business key")
 	public ResponseEntity<CommonRes> getById(@RequestBody UploadDocCityMasterGetReq req) {
 		CommonRes data = new CommonRes();
-		UploadDocCityMasterRes res = service.getLatest(req);
+		 List<UploadDocCityMasterRes> res = service.getLatest(req);
 		if (res == null) {
 			data.setIsError(true);
 			data.setMessage("City Master Record Not Found");
@@ -89,11 +89,11 @@ public class UploadDocCityMasterController {
 		return new ResponseEntity<>(data, HttpStatus.OK);
 	}
 
-	@GetMapping
+	@PostMapping("/list")
 	@Operation(summary = "List the latest amendment of every City Master record")
-	public ResponseEntity<CommonRes> getAll() {
+	public ResponseEntity<CommonRes> getAll(@RequestBody UploadDocCityMasterGetReq req) {
 		CommonRes data = new CommonRes();
-		List<UploadDocCityMasterRes> res = service.getAll();
+		List<UploadDocCityMasterRes> res = service.getAll(req);
 		data.setIsError(false);
 		data.setMessage("Success");
 		data.setErrorMessage(Collections.emptyList());

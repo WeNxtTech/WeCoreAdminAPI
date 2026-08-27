@@ -20,7 +20,7 @@ public interface UploadDocDeductibleMasterService {
 
 	UploadDocDeductibleMasterRes getLatest(UploadDocDeductibleMasterGetReq req);
 
-	List<UploadDocDeductibleMasterRes> getAll();
+	List<UploadDocDeductibleMasterRes> getAll(UploadDocDeductibleMasterGetReq req);
 
 	boolean delete(UploadDocDeductibleMasterGetReq req);
 }

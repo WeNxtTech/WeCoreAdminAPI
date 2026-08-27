@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.error.Error;
+import com.maan.eway.req.StateMasterRequest;
 import com.maan.eway.uploaddoc.dto.request.UploadDocStateMasterGetReq;
 import com.maan.eway.uploaddoc.dto.request.UploadDocStateMasterSaveReq;
 import com.maan.eway.uploaddoc.dto.request.UploadDocStateMasterUpdateReq;
@@ -252,8 +253,12 @@ public class UploadDocStateMasterServiceImpl implements UploadDocStateMasterServ
 	}
 
 	@Override
-	public List<UploadDocStateMasterRes> getAll() {
-		return repo.findAllLatest().stream().map(mapper::toRes).collect(Collectors.toList());
+	public List<UploadDocStateMasterRes> getAll(StateMasterRequest req) {
+
+	    return repo.findAllLatest(req.getCountryId(), req.getRegionCode())
+	            .stream()
+	            .map(mapper::toRes)
+	            .collect(Collectors.toList());
 	}
 
 	@Override

@@ -22,8 +22,22 @@ public interface UploadDocStateMasterRepository extends JpaRepository<UploadDocS
 			Integer stateId, String stateShortCode, String countryId, String regionCode, Integer cityId,
 			Integer suburbId, Integer amendId);
 
-	@Query("select s from UploadDocStateMaster s where s.amendId = (select max(s2.amendId) from UploadDocStateMaster s2 "
-			+ "where s2.stateId = s.stateId and s2.stateShortCode = s.stateShortCode and s2.countryId = s.countryId "
-			+ "and s2.regionCode = s.regionCode and s2.cityId = s.cityId and s2.suburbId = s.suburbId)")
-	List<UploadDocStateMaster> findAllLatest();
+	@Query("""
+			    SELECT s
+			    FROM UploadDocStateMaster s
+			    WHERE s.countryId = :countryId
+			      AND s.regionCode = :regionCode
+			      AND s.amendId = (
+			          SELECT MAX(s2.amendId)
+			          FROM UploadDocStateMaster s2
+			          WHERE s2.stateId = s.stateId
+			            AND s2.stateShortCode = s.stateShortCode
+			            AND s2.countryId = s.countryId
+			            AND s2.regionCode = s.regionCode
+			            AND s2.cityId = s.cityId
+			            AND s2.suburbId = s.suburbId
+			      )
+			""")
+	List<UploadDocStateMaster> findAllLatest(@Param("countryId") String countryId,
+			@Param("regionCode") String regionCode);
 }

@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.error.Error;
+import com.maan.eway.req.StateMasterRequest;
 import com.maan.eway.uploaddoc.dto.request.UploadDocStateMasterGetReq;
 import com.maan.eway.uploaddoc.dto.request.UploadDocStateMasterSaveReq;
 import com.maan.eway.uploaddoc.dto.request.UploadDocStateMasterUpdateReq;
@@ -93,11 +93,11 @@ public class UploadDocStateMasterController {
 		return new ResponseEntity<>(data, HttpStatus.OK);
 	}
 
-	@GetMapping
+	@PostMapping("/list")
 	@Operation(summary = "List the latest amendment of every State Master record")
-	public ResponseEntity<CommonRes> getAll() {
+	public ResponseEntity<CommonRes> getAll(@RequestBody StateMasterRequest request) {
 		CommonRes data = new CommonRes();
-		List<UploadDocStateMasterRes> res = service.getAll();
+		List<UploadDocStateMasterRes> res = service.getAll(request);
 		data.setIsError(false);
 		data.setMessage("Success");
 		data.setErrorMessage(Collections.emptyList());

@@ -1,5 +1,6 @@
 package com.maan.eway.uploaddoc.repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,8 +27,7 @@ public interface UploadDocStateMasterRepository extends JpaRepository<UploadDocS
 			    SELECT s
 			    FROM UploadDocStateMaster s
 			    WHERE s.countryId = :countryId
-			      AND s.regionCode = :regionCode
-			      AND s.amendId = (
+			     AND s.amendId = (
 			          SELECT MAX(s2.amendId)
 			          FROM UploadDocStateMaster s2
 			          WHERE s2.stateId = s.stateId
@@ -38,6 +38,24 @@ public interface UploadDocStateMasterRepository extends JpaRepository<UploadDocS
 			            AND s2.suburbId = s.suburbId
 			      )
 			""")
-	List<UploadDocStateMaster> findAllLatest(@Param("countryId") String countryId,
-			@Param("regionCode") String regionCode);
+	List<UploadDocStateMaster> findAllLatest(@Param("countryId") String countryId);
+	
+	@Query("""
+		    SELECT s
+		    FROM UploadDocStateMaster s
+		    WHERE s.countryId = :countryId
+		     AND  s.regionCode = :regionCode
+		     AND s.amendId = (
+		          SELECT MAX(s2.amendId)
+		          FROM UploadDocStateMaster s2
+		          WHERE s2.stateId = s.stateId
+		            AND s2.stateShortCode = s.stateShortCode
+		            AND s2.countryId = s.countryId
+		            AND s2.regionCode = s.regionCode
+		            AND s2.cityId = s.cityId
+		            AND s2.suburbId = s.suburbId
+		      )
+		""")
+
+	Collection<UploadDocStateMaster> findAllLatest(String countryId, String regionCode);
 }

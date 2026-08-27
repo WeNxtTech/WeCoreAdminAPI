@@ -254,11 +254,19 @@ public class UploadDocStateMasterServiceImpl implements UploadDocStateMasterServ
 
 	@Override
 	public List<UploadDocStateMasterRes> getAll(StateMasterRequest req) {
-
-	    return repo.findAllLatest(req.getCountryId(), req.getRegionCode())
+		if(req.getRegionCode()==null)
+		{
+	    return repo.findAllLatest(req.getCountryId())
 	            .stream()
 	            .map(mapper::toRes)
 	            .collect(Collectors.toList());
+		}
+		else{
+			 return repo.findAllLatest(req.getCountryId(),req.getRegionCode())
+			            .stream()
+			            .map(mapper::toRes)
+			            .collect(Collectors.toList());
+		}
 	}
 
 	@Override

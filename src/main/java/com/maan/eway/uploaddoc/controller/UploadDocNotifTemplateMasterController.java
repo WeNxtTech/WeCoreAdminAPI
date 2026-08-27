@@ -93,11 +93,11 @@ public class UploadDocNotifTemplateMasterController {
 		return new ResponseEntity<>(data, HttpStatus.OK);
 	}
 
-	@GetMapping
+	@PostMapping("/list")
 	@Operation(summary = "List the latest amendment of every Notif Template Master record")
-	public ResponseEntity<CommonRes> getAll() {
+	public ResponseEntity<CommonRes> getAll(@RequestBody UploadDocNotifTemplateMasterGetReq req) {
 		CommonRes data = new CommonRes();
-		List<UploadDocNotifTemplateMasterRes> res = service.getAll();
+		List<UploadDocNotifTemplateMasterRes> res = service.getAll(req);
 		data.setIsError(false);
 		data.setMessage("Success");
 		data.setErrorMessage(Collections.emptyList());

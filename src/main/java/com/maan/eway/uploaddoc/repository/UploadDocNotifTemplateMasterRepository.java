@@ -30,4 +30,22 @@ public interface UploadDocNotifTemplateMasterRepository
 	@Query("select n from UploadDocNotifTemplateMaster n where n.amendId = (select max(n2.amendId) from UploadDocNotifTemplateMaster n2 "
 			+ "where n2.notifTemplateCode = n.notifTemplateCode and n2.companyId = n.companyId and n2.productId = n.productId)")
 	List<UploadDocNotifTemplateMaster> findAllLatest();
+	
+	@Query("""
+		    select c
+		    from UploadDocNotifTemplateMaster c
+		    where c.companyId = :companyId
+		    and c.productId = :productId
+		    and c.amendId = (
+		        select max(c2.amendId)
+		        from UploadDocNotifTemplateMaster c2
+		        where c2.notifTemplateCode = c.notifTemplateCode
+		        and c2.companyId = c.companyId
+		        and c2.productId = c.productId
+		    )
+		""")
+		List<UploadDocNotifTemplateMaster> findAllLatest(
+		        @Param("companyId") String companyId,
+		        @Param("productId") Long productId
+		);
 }

@@ -212,8 +212,16 @@ public class UploadDocNotifTemplateMasterServiceImpl implements UploadDocNotifTe
 	}
 
 	@Override
-	public List<UploadDocNotifTemplateMasterRes> getAll() {
-		return repo.findAllLatest().stream().map(mapper::toRes).collect(Collectors.toList());
+	public List<UploadDocNotifTemplateMasterRes> getAll(
+	        UploadDocNotifTemplateMasterGetReq req) {
+
+	    return repo.findAllLatest(
+	            req.getCompanyId(),
+	            req.getProductId()
+	        )
+	        .stream()
+	        .map(mapper::toRes)
+	        .collect(Collectors.toList());
 	}
 
 	@Override

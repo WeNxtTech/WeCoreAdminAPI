@@ -24,4 +24,6 @@ public interface UploadDocRegionMasterService {
 	List<UploadDocRegionMasterRes> getAll(RegionMasterRequest request);
 
 	boolean delete(UploadDocRegionMasterGetReq req);
+
+	UploadDocRegionMasterRes saveOrUpdate(UploadDocRegionMasterSaveReq req);
 }

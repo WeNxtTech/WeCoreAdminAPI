@@ -189,4 +189,84 @@ public class UploadDocRegionMasterServiceImpl implements UploadDocRegionMasterSe
 		latest.ifPresent(repo::delete);
 		return latest.isPresent();
 	}
+	
+	@Override
+	public UploadDocRegionMasterRes saveOrUpdate(UploadDocRegionMasterSaveReq req) {
+
+		Date now = new Date();
+
+		// Get latest amend ID
+		int newAmendId = repo.findMaxAmendId(req.getRegionCode(), req.getCountryId()).orElse(-1) + 1;
+
+		// Fetch previous/latest record
+		UploadDocRegionMaster previous = null;
+
+		if (newAmendId > 0) {
+			previous = repo
+					.findByRegionCodeAndCountryIdAndAmendId(req.getRegionCode(), req.getCountryId(), newAmendId - 1)
+					.orElse(null);
+		}
+
+		UploadDocRegionMaster entity;
+
+		if (previous == null) {
+			// =========================
+			// NEW RECORD
+			// =========================
+			entity = UploadDocRegionMaster.builder().regionCode(req.getRegionCode()).countryId(req.getCountryId())
+					.amendId(0).regionShortCode(req.getRegionShortCode()).regionName(req.getRegionName()).entryDate(now)
+					.status(StringUtils.isBlank(req.getStatus()) ? "Y" : req.getStatus())
+					.effectiveDateStart(req.getEffectiveDateStart()).effectiveDateEnd(req.getEffectiveDateEnd())
+					.coreAppCode(req.getCoreAppCode()).remarks(req.getRemarks()).createdBy(req.getCreatedBy())
+					.tiraCode(req.getTiraCode()).regulatoryCode(req.getRegulatoryCode()).updatedBy(req.getCreatedBy())
+					.updatedDate(now).regionNameLocal(req.getRegionNameLocal()).build();
+
+		} else {
+			// =========================
+			// AMEND / UPDATE
+			// =========================
+			entity = UploadDocRegionMaster.builder().regionCode(req.getRegionCode()).countryId(req.getCountryId())
+					.amendId(newAmendId)
+
+					.regionShortCode(
+							req.getRegionShortCode() != null ? req.getRegionShortCode() : previous.getRegionShortCode())
+
+					.regionName(req.getRegionName() != null ? req.getRegionName() : previous.getRegionName())
+
+					.entryDate(previous.getEntryDate())
+
+					.status(req.getStatus() != null ? req.getStatus() : previous.getStatus())
+
+					.effectiveDateStart(req.getEffectiveDateStart() != null ? req.getEffectiveDateStart()
+							: previous.getEffectiveDateStart())
+
+					.effectiveDateEnd(req.getEffectiveDateEnd() != null ? req.getEffectiveDateEnd()
+							: previous.getEffectiveDateEnd())
+
+					.coreAppCode(req.getCoreAppCode() != null ? req.getCoreAppCode() : previous.getCoreAppCode())
+
+					.remarks(req.getRemarks() != null ? req.getRemarks() : previous.getRemarks())
+
+					.createdBy(previous.getCreatedBy())
+
+					.tiraCode(req.getTiraCode() != null ? req.getTiraCode() : previous.getTiraCode())
+
+					.regulatoryCode(
+							req.getRegulatoryCode() != null ? req.getRegulatoryCode() : previous.getRegulatoryCode())
+
+					
+					.updatedDate(now)
+
+					.regionNameLocal(
+							req.getRegionNameLocal() != null ? req.getRegionNameLocal() : previous.getRegionNameLocal())
+
+					.build();
+		}
+
+		entity = repo.saveAndFlush(entity);
+
+		log.info("UploadDocRegionMaster saved/amended with AMEND_ID={}: {}", entity.getAmendId(), entity);
+
+		return mapper.toRes(entity);
+	}
 }

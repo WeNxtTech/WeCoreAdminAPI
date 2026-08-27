@@ -192,4 +192,117 @@ public class UploadDocAcExecutiveMasterServiceImpl implements UploadDocAcExecuti
 		latest.ifPresent(repo::delete);
 		return latest.isPresent();
 	}
+	
+	
+	public UploadDocAcExecutiveMasterRes saveOrUpdate(
+	        UploadDocAcExecutiveMasterSaveReq req) {
+
+	    Date now = new Date();
+
+	    // Get latest amend ID
+	    int newAmendId = repo.findMaxAmendId(
+	            req.getAcExecutiveId(),
+	            req.getBranchCode(),
+	            req.getCompanyId(),
+	            req.getBankCode()
+	    ).orElse(-1) + 1;
+
+	    // Fetch previous/latest record
+	    UploadDocAcExecutiveMaster previous = null;
+
+	    if (newAmendId > 0) {
+	        previous = repo.findByBusinessKeyAndAmendId(
+	                req.getAcExecutiveId(),
+	                req.getBranchCode(),
+	                req.getCompanyId(),
+	                req.getBankCode(),
+	                newAmendId - 1
+	        ).orElse(null);
+	    }
+
+	    UploadDocAcExecutiveMaster entity;
+
+	    if (previous == null) {
+
+	        // =========================
+	        // NEW RECORD
+	        // =========================
+	        entity = UploadDocAcExecutiveMaster.builder()
+	                .acExecutiveId(req.getAcExecutiveId())
+	                .acExecutiveName(req.getAcExecutiveName())
+	                .oaCode(req.getOaCode())
+	                .branchCode(req.getBranchCode())
+	                .companyId(req.getCompanyId())
+	                .commissionPercent(req.getCommissionPercent())
+	                .status(req.getStatus())
+	                .effectiveDateStart(req.getEffectiveDateStart())
+	                .effectiveDateEnd(req.getEffectiveDateEnd())
+	                .amendId(0)
+	                .entryDate(now)
+	                .bankCode(req.getBankCode())
+	                .build();
+
+	    } else {
+
+	        // =========================
+	        // AMEND / UPDATE
+	        // =========================
+	        entity = UploadDocAcExecutiveMaster.builder()
+	                .acExecutiveId(req.getAcExecutiveId())
+	                .branchCode(req.getBranchCode())
+	                .companyId(req.getCompanyId())
+	                .bankCode(req.getBankCode())
+	                .amendId(newAmendId)
+
+	                .acExecutiveName(
+	                        req.getAcExecutiveName() != null
+	                                ? req.getAcExecutiveName()
+	                                : previous.getAcExecutiveName()
+	                )
+
+	                .oaCode(
+	                        req.getOaCode() != null
+	                                ? req.getOaCode()
+	                                : previous.getOaCode()
+	                )
+
+	                .commissionPercent(
+	                        req.getCommissionPercent() != null
+	                                ? req.getCommissionPercent()
+	                                : previous.getCommissionPercent()
+	                )
+
+	                .status(
+	                        req.getStatus() != null
+	                                ? req.getStatus()
+	                                : previous.getStatus()
+	                )
+
+	                .effectiveDateStart(
+	                        req.getEffectiveDateStart() != null
+	                                ? req.getEffectiveDateStart()
+	                                : previous.getEffectiveDateStart()
+	                )
+
+	                .effectiveDateEnd(
+	                        req.getEffectiveDateEnd() != null
+	                                ? req.getEffectiveDateEnd()
+	                                : previous.getEffectiveDateEnd()
+	                )
+
+	                .entryDate(previous.getEntryDate())
+
+	                .build();
+	    }
+
+	    entity = repo.saveAndFlush(entity);
+
+	    log.info(
+	            "UploadDocAcExecutiveMaster saved/amended with AMEND_ID={}: {}",
+	            entity.getAmendId(),
+	            entity
+	    );
+
+	    return mapper.toRes(entity);
+	}
 }

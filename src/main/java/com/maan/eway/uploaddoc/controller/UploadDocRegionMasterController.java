@@ -48,7 +48,7 @@ public class UploadDocRegionMasterController {
 			data.setErrorMessage(errors);
 			return new ResponseEntity<>(data, HttpStatus.UNPROCESSABLE_ENTITY);
 		}
-		UploadDocRegionMasterRes res = service.save(req);
+		UploadDocRegionMasterRes res = service.saveOrUpdate(req);
 		data.setIsError(false);
 		data.setMessage("Region Master Created Successfully");
 		data.setErrorMessage(Collections.emptyList());

@@ -25,4 +25,6 @@ public interface UploadDocCityMasterService {
 	boolean delete(UploadDocCityMasterGetReq req);
 
 	List<UploadDocCityMasterRes> getAll(UploadDocCityMasterGetReq req);
+
+	UploadDocCityMasterRes saveOrUpdate(UploadDocCityMasterSaveReq req);
 }

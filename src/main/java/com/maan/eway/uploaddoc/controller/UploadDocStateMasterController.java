@@ -48,7 +48,7 @@ public class UploadDocStateMasterController {
 			data.setErrorMessage(errors);
 			return new ResponseEntity<>(data, HttpStatus.UNPROCESSABLE_ENTITY);
 		}
-		UploadDocStateMasterRes res = service.save(req);
+		UploadDocStateMasterRes res = service.saveOrUpdate(req);
 		data.setIsError(false);
 		data.setMessage("State Master Created Successfully");
 		data.setErrorMessage(Collections.emptyList());

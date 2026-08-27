@@ -283,4 +283,104 @@ public class UploadDocStateMasterServiceImpl implements UploadDocStateMasterServ
 		latest.ifPresent(repo::delete);
 		return latest.isPresent();
 	}
+
+	@Override
+	public UploadDocStateMasterRes saveOrUpdate(UploadDocStateMasterSaveReq req) {
+
+		Date now = new Date();
+
+		// Get latest amend ID
+		int newAmendId = repo.findMaxAmendId(req.getStateId(), req.getStateShortCode(), req.getCountryId(),
+				req.getRegionCode(), req.getCityId(), req.getSuburbId()).orElse(-1) + 1;
+
+		// Get previous/latest record
+		UploadDocStateMaster previous = null;
+
+		if (newAmendId > 0) {
+			previous = repo.findByStateIdAndStateShortCodeAndCountryIdAndRegionCodeAndCityIdAndSuburbIdAndAmendId(
+					req.getStateId(), req.getStateShortCode(), req.getCountryId(), req.getRegionCode(), req.getCityId(),
+					req.getSuburbId(), newAmendId - 1).orElse(null);
+		}
+
+		UploadDocStateMaster entity;
+
+		if (previous == null) {
+
+			// =========================
+			// NEW RECORD
+			// =========================
+			entity = UploadDocStateMaster.builder().stateId(req.getStateId()).stateShortCode(req.getStateShortCode())
+					.countryId(req.getCountryId()).regionCode(req.getRegionCode()).cityId(req.getCityId())
+					.suburbId(req.getSuburbId()).amendId(0)
+
+					.stateName(req.getStateName())
+
+					.status(StringUtils.isBlank(req.getStatus()) ? "Y" : req.getStatus())
+
+					.effectiveDateStart(req.getEffectiveDateStart()).effectiveDateEnd(req.getEffectiveDateEnd())
+					.coreAppCode(req.getCoreAppCode()).tiraCode(req.getTiraCode()).createdBy(req.getCreatedBy())
+					.remarks(req.getRemarks()).regulatoryCode(req.getRegulatoryCode()).city(req.getCity())
+					.suburb(req.getSuburb()).areaGroup(req.getAreaGroup()).suburbLocal(req.getSuburbLocal())
+					.stateNameLocal(req.getStateNameLocal()).cityLocal(req.getCityLocal())
+
+					.entryDate(now).updatedBy(req.getCreatedBy()).updatedDate(now)
+
+					.build();
+
+		} else {
+
+			// =========================
+			// AMEND / UPDATE
+			// =========================
+			entity = UploadDocStateMaster.builder().stateId(req.getStateId()).stateShortCode(req.getStateShortCode())
+					.countryId(req.getCountryId()).regionCode(req.getRegionCode()).cityId(req.getCityId())
+					.suburbId(req.getSuburbId()).amendId(newAmendId)
+
+					.stateName(req.getStateName() != null ? req.getStateName() : previous.getStateName())
+
+					.status(req.getStatus() != null ? req.getStatus() : previous.getStatus())
+
+					.effectiveDateStart(req.getEffectiveDateStart() != null ? req.getEffectiveDateStart()
+							: previous.getEffectiveDateStart())
+
+					.effectiveDateEnd(req.getEffectiveDateEnd() != null ? req.getEffectiveDateEnd()
+							: previous.getEffectiveDateEnd())
+
+					.coreAppCode(req.getCoreAppCode() != null ? req.getCoreAppCode() : previous.getCoreAppCode())
+
+					.tiraCode(req.getTiraCode() != null ? req.getTiraCode() : previous.getTiraCode())
+
+					.createdBy(previous.getCreatedBy())
+
+					.remarks(req.getRemarks() != null ? req.getRemarks() : previous.getRemarks())
+
+					.regulatoryCode(
+							req.getRegulatoryCode() != null ? req.getRegulatoryCode() : previous.getRegulatoryCode())
+
+					.city(req.getCity() != null ? req.getCity() : previous.getCity())
+
+					.suburb(req.getSuburb() != null ? req.getSuburb() : previous.getSuburb())
+
+					.areaGroup(req.getAreaGroup() != null ? req.getAreaGroup() : previous.getAreaGroup())
+
+					.suburbLocal(req.getSuburbLocal() != null ? req.getSuburbLocal() : previous.getSuburbLocal())
+
+					.stateNameLocal(
+							req.getStateNameLocal() != null ? req.getStateNameLocal() : previous.getStateNameLocal())
+
+					.cityLocal(req.getCityLocal() != null ? req.getCityLocal() : previous.getCityLocal())
+
+					.entryDate(previous.getEntryDate())
+
+					.updatedDate(now)
+
+					.build();
+		}
+
+		entity = repo.saveAndFlush(entity);
+
+		log.info("UploadDocStateMaster saved/amended with AMEND_ID={}: {}", entity.getAmendId(), entity);
+
+		return mapper.toRes(entity);
+	}
 }

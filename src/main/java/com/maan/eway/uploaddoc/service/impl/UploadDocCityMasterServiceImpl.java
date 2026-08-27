@@ -127,40 +127,40 @@ public class UploadDocCityMasterServiceImpl implements UploadDocCityMasterServic
 		return errors;
 	}
 
-	@Override
-	public UploadDocCityMasterRes update(UploadDocCityMasterUpdateReq req) {
-		int newAmendId = repo.findMaxAmendId(req.getCityId(), req.getCountryId(), req.getStateId()).orElse(-1) + 1;
-		UploadDocCityMaster previous = repo
-		        .findByCityIdAndCountryIdAndStateIdAndAmendId(
-		                req.getCityId(), req.getCountryId(), req.getStateId(), newAmendId - 1)
-		        .flatMap(list -> list.stream().findFirst())
-		        .orElse(null);
-
-		Date now = new Date();
-		UploadDocCityMaster entity = UploadDocCityMaster.builder()
-				.cityId(req.getCityId())
-				.countryId(req.getCountryId())
-				.stateId(req.getStateId())
-				.amendId(newAmendId)
-				.effectiveDateEnd(req.getEffectiveDateEnd() != null ? req.getEffectiveDateEnd() : previous.getEffectiveDateEnd())
-				.effectiveDateStart(req.getEffectiveDateStart() != null ? req.getEffectiveDateStart() : previous.getEffectiveDateStart())
-				.cityName(req.getCityName() != null ? req.getCityName() : previous.getCityName())
-				.status(req.getStatus() != null ? req.getStatus() : previous.getStatus())
-				.remarks(req.getRemarks() != null ? req.getRemarks() : previous.getRemarks())
-				.coreAppCode(req.getCoreAppCode() != null ? req.getCoreAppCode() : previous.getCoreAppCode())
-				.tiraCode(req.getTiraCode() != null ? req.getTiraCode() : previous.getTiraCode())
-				.createdBy(previous.getCreatedBy())
-				.regulatoryCode(req.getRegulatoryCode() != null ? req.getRegulatoryCode() : previous.getRegulatoryCode())
-				.cityNameLocal(req.getCityNameLocal() != null ? req.getCityNameLocal() : previous.getCityNameLocal())
-				.entryDate(previous.getEntryDate())
-				.updatedBy(req.getUpdatedBy())
-				.updatedDate(now)
-				.build();
-
-		entity = repo.saveAndFlush(entity);
-		log.info("UploadDocCityMaster amended to AMEND_ID={}: {}", newAmendId, entity);
-		return mapper.toRes(entity);
-	}
+		@Override
+		public UploadDocCityMasterRes update(UploadDocCityMasterUpdateReq req) {
+			int newAmendId = repo.findMaxAmendId(req.getCityId(), req.getCountryId(), req.getStateId()).orElse(-1) + 1;
+			UploadDocCityMaster previous = repo
+			        .findByCityIdAndCountryIdAndStateIdAndAmendId(
+			                req.getCityId(), req.getCountryId(), req.getStateId(), newAmendId - 1)
+			        .flatMap(list -> list.stream().findFirst())
+			        .orElse(null);
+	
+			Date now = new Date();
+			UploadDocCityMaster entity = UploadDocCityMaster.builder()
+					.cityId(req.getCityId())
+					.countryId(req.getCountryId())
+					.stateId(req.getStateId())
+					.amendId(newAmendId)
+					.effectiveDateEnd(req.getEffectiveDateEnd() != null ? req.getEffectiveDateEnd() : previous.getEffectiveDateEnd())
+					.effectiveDateStart(req.getEffectiveDateStart() != null ? req.getEffectiveDateStart() : previous.getEffectiveDateStart())
+					.cityName(req.getCityName() != null ? req.getCityName() : previous.getCityName())
+					.status(req.getStatus() != null ? req.getStatus() : previous.getStatus())
+					.remarks(req.getRemarks() != null ? req.getRemarks() : previous.getRemarks())
+					.coreAppCode(req.getCoreAppCode() != null ? req.getCoreAppCode() : previous.getCoreAppCode())
+					.tiraCode(req.getTiraCode() != null ? req.getTiraCode() : previous.getTiraCode())
+					.createdBy(previous.getCreatedBy())
+					.regulatoryCode(req.getRegulatoryCode() != null ? req.getRegulatoryCode() : previous.getRegulatoryCode())
+					.cityNameLocal(req.getCityNameLocal() != null ? req.getCityNameLocal() : previous.getCityNameLocal())
+					.entryDate(previous.getEntryDate())
+					.updatedBy(req.getUpdatedBy())
+					.updatedDate(now)
+					.build();
+	
+			entity = repo.saveAndFlush(entity);
+			log.info("UploadDocCityMaster amended to AMEND_ID={}: {}", newAmendId, entity);
+			return mapper.toRes(entity);
+		}
 
 	@Override
 	public List<UploadDocCityMasterRes> getLatest(UploadDocCityMasterGetReq req) {
@@ -201,5 +201,90 @@ public class UploadDocCityMasterServiceImpl implements UploadDocCityMasterServic
 	    }
 	    repo.deleteAll(latest.get());
 	    return true;
+	}
+
+	@Override
+	public UploadDocCityMasterRes saveOrUpdate(UploadDocCityMasterSaveReq req) {
+
+		Date now = new Date();
+
+		// Get latest amend ID
+		int newAmendId = repo.findMaxAmendId(req.getCityId(), req.getCountryId(), req.getStateId()).orElse(-1) + 1;
+
+		// Get previous/latest record
+		UploadDocCityMaster previous = null;
+
+		if (newAmendId > 0) {
+			previous = repo.findByCityIdAndCountryIdAndStateIdAndAmendId(req.getCityId(), req.getCountryId(),
+					req.getStateId(), newAmendId - 1).flatMap(list -> list.stream().findFirst()).orElse(null);
+		}
+
+		UploadDocCityMaster entity;
+
+		if (previous == null) {
+
+			// =========================
+			// NEW RECORD
+			// =========================
+			entity = UploadDocCityMaster.builder().cityId(req.getCityId()).countryId(req.getCountryId())
+					.stateId(req.getStateId()).amendId(0)
+
+					.effectiveDateEnd(req.getEffectiveDateEnd()).effectiveDateStart(req.getEffectiveDateStart())
+					.cityName(req.getCityName())
+
+					.status(StringUtils.isBlank(req.getStatus()) ? "Y" : req.getStatus())
+
+					.remarks(req.getRemarks()).coreAppCode(req.getCoreAppCode()).tiraCode(req.getTiraCode())
+					.createdBy(req.getCreatedBy()).regulatoryCode(req.getRegulatoryCode())
+					.cityNameLocal(req.getCityNameLocal())
+
+					.entryDate(now).updatedBy(req.getCreatedBy()).updatedDate(now)
+
+					.build();
+
+		} else {
+
+			// =========================
+			// AMEND / UPDATE
+			// =========================
+			entity = UploadDocCityMaster.builder().cityId(req.getCityId()).countryId(req.getCountryId())
+					.stateId(req.getStateId()).amendId(newAmendId)
+
+					.effectiveDateEnd(req.getEffectiveDateEnd() != null ? req.getEffectiveDateEnd()
+							: previous.getEffectiveDateEnd())
+
+					.effectiveDateStart(req.getEffectiveDateStart() != null ? req.getEffectiveDateStart()
+							: previous.getEffectiveDateStart())
+
+					.cityName(req.getCityName() != null ? req.getCityName() : previous.getCityName())
+
+					.status(req.getStatus() != null ? req.getStatus() : previous.getStatus())
+
+					.remarks(req.getRemarks() != null ? req.getRemarks() : previous.getRemarks())
+
+					.coreAppCode(req.getCoreAppCode() != null ? req.getCoreAppCode() : previous.getCoreAppCode())
+
+					.tiraCode(req.getTiraCode() != null ? req.getTiraCode() : previous.getTiraCode())
+
+					.createdBy(previous.getCreatedBy())
+
+					.regulatoryCode(
+							req.getRegulatoryCode() != null ? req.getRegulatoryCode() : previous.getRegulatoryCode())
+
+					.cityNameLocal(
+							req.getCityNameLocal() != null ? req.getCityNameLocal() : previous.getCityNameLocal())
+
+					.entryDate(previous.getEntryDate())
+
+					.updatedDate(now)
+
+					.build();
+		}
+
+		entity = repo.saveAndFlush(entity);
+
+		log.info("UploadDocCityMaster saved/amended with AMEND_ID={}: {}", entity.getAmendId(), entity);
+
+		return mapper.toRes(entity);
 	}
 }

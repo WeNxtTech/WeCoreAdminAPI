@@ -24,4 +24,6 @@ public interface UploadDocStateMasterService {
 	List<UploadDocStateMasterRes> getAll(StateMasterRequest req);
 
 	boolean delete(UploadDocStateMasterGetReq req);
+
+	UploadDocStateMasterRes saveOrUpdate(UploadDocStateMasterSaveReq req);
 }

@@ -58,11 +58,11 @@ public class UploadDocCityMasterServiceImpl implements UploadDocCityMasterServic
 		if (req.getEffectiveDateEnd() == null) {
 			errors.add(new Error("05", "effectiveDateEnd", "Please provide EffectiveDateEnd"));
 		}
-		if (StringUtils.isBlank(req.getCreatedBy())) {
-			errors.add(new Error("06", "createdBy", "Please provide CreatedBy"));
-		} else if (req.getCreatedBy().length() > 100) {
-			errors.add(new Error("06", "createdBy", "CreatedBy must not exceed 100 characters"));
-		}
+//		if (StringUtils.isBlank(req.getCreatedBy())) {
+//			errors.add(new Error("06", "createdBy", "Please provide CreatedBy"));
+//		} else if (req.getCreatedBy().length() > 100) {
+//			errors.add(new Error("06", "createdBy", "CreatedBy must not exceed 100 characters"));
+//		}
 		if (StringUtils.isBlank(req.getRegulatoryCode())) {
 			errors.add(new Error("07", "regulatoryCode", "Please provide RegulatoryCode"));
 		}

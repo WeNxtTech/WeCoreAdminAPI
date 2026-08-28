@@ -6,6 +6,7 @@ import com.maan.eway.error.Error;
 import com.maan.eway.uploaddoc.dto.request.UploadDocAcExecutiveMasterGetReq;
 import com.maan.eway.uploaddoc.dto.request.UploadDocAcExecutiveMasterSaveReq;
 import com.maan.eway.uploaddoc.dto.request.UploadDocAcExecutiveMasterUpdateReq;
+import com.maan.eway.uploaddoc.dto.response.AcExtDropDownRes;
 import com.maan.eway.uploaddoc.dto.response.UploadDocAcExecutiveMasterRes;
 
 public interface UploadDocAcExecutiveMasterService {
@@ -25,4 +26,6 @@ public interface UploadDocAcExecutiveMasterService {
 	boolean delete(UploadDocAcExecutiveMasterGetReq req);
 
 	UploadDocAcExecutiveMasterRes saveOrUpdate(UploadDocAcExecutiveMasterSaveReq req);
+
+	List<AcExtDropDownRes> dropDownList(UploadDocAcExecutiveMasterGetReq req);
 }

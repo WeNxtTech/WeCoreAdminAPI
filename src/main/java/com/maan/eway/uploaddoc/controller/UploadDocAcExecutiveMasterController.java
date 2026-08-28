@@ -18,6 +18,7 @@ import com.maan.eway.error.Error;
 import com.maan.eway.uploaddoc.dto.request.UploadDocAcExecutiveMasterGetReq;
 import com.maan.eway.uploaddoc.dto.request.UploadDocAcExecutiveMasterSaveReq;
 import com.maan.eway.uploaddoc.dto.request.UploadDocAcExecutiveMasterUpdateReq;
+import com.maan.eway.uploaddoc.dto.response.AcExtDropDownRes;
 import com.maan.eway.uploaddoc.dto.response.UploadDocAcExecutiveMasterRes;
 import com.maan.eway.uploaddoc.service.UploadDocAcExecutiveMasterService;
 
@@ -116,4 +117,23 @@ public class UploadDocAcExecutiveMasterController {
 		data.setErrorMessage(Collections.emptyList());
 		return new ResponseEntity<>(data, HttpStatus.OK);
 	}
+	
+	@PostMapping("/dropDown")
+	@Operation(summary = "Get the latest amendment of an Ac Executive Master record by its business key")
+	public ResponseEntity<CommonRes> dropDown(@RequestBody UploadDocAcExecutiveMasterGetReq req) {
+		CommonRes data = new CommonRes();
+		List<AcExtDropDownRes> res = service.dropDownList(req);
+		if (res == null) {
+			data.setIsError(true);
+			data.setMessage("Ac Executive Master Record Not Found");
+			data.setErrorMessage(Collections.emptyList());
+			return new ResponseEntity<>(data, HttpStatus.NOT_FOUND);
+		}
+		data.setIsError(false);
+		data.setMessage("Success");
+		data.setErrorMessage(Collections.emptyList());
+		data.setCommonResponse(res);
+		return new ResponseEntity<>(data, HttpStatus.OK);
+	}
+	
 }

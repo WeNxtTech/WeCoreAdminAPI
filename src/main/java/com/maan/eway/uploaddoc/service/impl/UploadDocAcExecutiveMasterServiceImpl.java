@@ -1,6 +1,7 @@
 package com.maan.eway.uploaddoc.service.impl;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +18,7 @@ import com.maan.eway.error.Error;
 import com.maan.eway.uploaddoc.dto.request.UploadDocAcExecutiveMasterGetReq;
 import com.maan.eway.uploaddoc.dto.request.UploadDocAcExecutiveMasterSaveReq;
 import com.maan.eway.uploaddoc.dto.request.UploadDocAcExecutiveMasterUpdateReq;
+import com.maan.eway.uploaddoc.dto.response.AcExtDropDownRes;
 import com.maan.eway.uploaddoc.dto.response.UploadDocAcExecutiveMasterRes;
 import com.maan.eway.uploaddoc.entity.UploadDocAcExecutiveMaster;
 import com.maan.eway.uploaddoc.mapper.UploadDocAcExecutiveMasterMapper;
@@ -44,9 +46,9 @@ public class UploadDocAcExecutiveMasterServiceImpl implements UploadDocAcExecuti
 	@Override
 	public List<Error> validateSave(UploadDocAcExecutiveMasterSaveReq req) {
 		List<Error> errors = new ArrayList<>();
-		if (req.getAcExecutiveId() == null) {
-			errors.add(new Error("01", "acExecutiveId", "Please provide AcExecutiveId"));
-		}
+//		if (req.getAcExecutiveId() == null) {
+//			errors.add(new Error("01", "acExecutiveId", "Please provide AcExecutiveId"));
+//		}
 		if (StringUtils.isBlank(req.getBranchCode())) {
 			errors.add(new Error("02", "branchCode", "Please provide BranchCode"));
 		}
@@ -64,9 +66,9 @@ public class UploadDocAcExecutiveMasterServiceImpl implements UploadDocAcExecuti
 		if (req.getEffectiveDateStart() == null) {
 			errors.add(new Error("06", "effectiveDateStart", "Please provide EffectiveDateStart"));
 		}
-		if (req.getEffectiveDateEnd() == null) {
-			errors.add(new Error("07", "effectiveDateEnd", "Please provide EffectiveDateEnd"));
-		}
+//		if (req.getEffectiveDateEnd() == null) {
+//			errors.add(new Error("07", "effectiveDateEnd", "Please provide EffectiveDateEnd"));
+//		}
 //		if (req.getAcExecutiveId() != null && StringUtils.isNotBlank(req.getBranchCode())
 //				&& StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBankCode())
 //				&& repo.findMaxAmendId(req.getAcExecutiveId(), req.getBranchCode(), req.getCompanyId(),
@@ -193,72 +195,240 @@ public class UploadDocAcExecutiveMasterServiceImpl implements UploadDocAcExecuti
 		return latest.isPresent();
 	}
 	
+//	@Override
+//	public UploadDocAcExecutiveMasterRes saveOrUpdate(UploadDocAcExecutiveMasterSaveReq req) {
+//
+//		Date now = new Date();
+//
+//		// Get latest amend ID
+//		int newAmendId = repo
+//				.findMaxAmendId(req.getAcExecutiveId(), req.getBranchCode(), req.getCompanyId(), req.getBankCode())
+//				.orElse(-1) + 1;
+//
+//		// Fetch previous/latest record
+//		UploadDocAcExecutiveMaster previous = null;
+//
+//		if (newAmendId > 0) {
+//			previous = repo.findByBusinessKeyAndAmendId(req.getAcExecutiveId(), req.getBranchCode(), req.getCompanyId(),
+//					req.getBankCode(), newAmendId - 1).orElse(null);
+//		}
+//
+//		UploadDocAcExecutiveMaster entity;
+//
+//		if (previous == null) {
+//
+//			// =========================
+//			// NEW RECORD
+//			// =========================
+//			entity = UploadDocAcExecutiveMaster.builder().acExecutiveId(req.getAcExecutiveId())
+//					.acExecutiveName(req.getAcExecutiveName()).oaCode(req.getOaCode()).branchCode(req.getBranchCode())
+//					.companyId(req.getCompanyId()).commissionPercent(req.getCommissionPercent()).status(req.getStatus())
+//					.effectiveDateStart(req.getEffectiveDateStart()).effectiveDateEnd(req.getEffectiveDateEnd())
+//					.coreAppCode(req.getCoreAppCode())
+//					.amendId(0).entryDate(now).bankCode(req.getBankCode()).build();
+//
+//		} else {
+//
+//			// =========================
+//			// AMEND / UPDATE
+//			// =========================
+//			entity = UploadDocAcExecutiveMaster.builder().acExecutiveId(req.getAcExecutiveId())
+//					.branchCode(req.getBranchCode()).companyId(req.getCompanyId()).bankCode(req.getBankCode())
+//					.amendId(newAmendId)
+//
+//					.acExecutiveName(
+//							req.getAcExecutiveName() != null ? req.getAcExecutiveName() : previous.getAcExecutiveName())
+//
+//					.oaCode(req.getOaCode() != null ? req.getOaCode() : previous.getOaCode())
+//
+//					.commissionPercent(req.getCommissionPercent() != null ? req.getCommissionPercent()
+//							: previous.getCommissionPercent())
+//
+//					.status(req.getStatus() != null ? req.getStatus() : previous.getStatus())
+//
+//					.effectiveDateStart(req.getEffectiveDateStart() != null ? req.getEffectiveDateStart()
+//							: previous.getEffectiveDateStart())
+//
+//					.effectiveDateEnd(req.getEffectiveDateEnd() != null ? req.getEffectiveDateEnd()
+//							: previous.getEffectiveDateEnd())
+//
+//					.entryDate(previous.getEntryDate())
+//					.coreAppCode(previous.getCoreAppCode())
+//					.build();
+//		}
+//
+//		entity = repo.saveAndFlush(entity);
+//
+//		log.info("UploadDocAcExecutiveMaster saved/amended with AMEND_ID={}: {}", entity.getAmendId(), entity);
+//
+//		return mapper.toRes(entity);
+//	}
 	@Override
-	public UploadDocAcExecutiveMasterRes saveOrUpdate(UploadDocAcExecutiveMasterSaveReq req) {
+	public UploadDocAcExecutiveMasterRes saveOrUpdate(
+			UploadDocAcExecutiveMasterSaveReq req) {
 
 		Date now = new Date();
 
-		// Get latest amend ID
-		int newAmendId = repo
-				.findMaxAmendId(req.getAcExecutiveId(), req.getBranchCode(), req.getCompanyId(), req.getBankCode())
-				.orElse(-1) + 1;
-
-		// Fetch previous/latest record
-		UploadDocAcExecutiveMaster previous = null;
-
-		if (newAmendId > 0) {
-			previous = repo.findByBusinessKeyAndAmendId(req.getAcExecutiveId(), req.getBranchCode(), req.getCompanyId(),
-					req.getBankCode(), newAmendId - 1).orElse(null);
-		}
-
 		UploadDocAcExecutiveMaster entity;
 
-		if (previous == null) {
+		// =====================================================
+		// INSERT
+		// AcExecutiveId is NULL -> MAX ID + 1
+		// EffectiveDateEnd -> EffectiveDateStart + 25 YEARS
+		// =====================================================
 
-			// =========================
-			// NEW RECORD
-			// =========================
-			entity = UploadDocAcExecutiveMaster.builder().acExecutiveId(req.getAcExecutiveId())
-					.acExecutiveName(req.getAcExecutiveName()).oaCode(req.getOaCode()).branchCode(req.getBranchCode())
-					.companyId(req.getCompanyId()).commissionPercent(req.getCommissionPercent()).status(req.getStatus())
-					.effectiveDateStart(req.getEffectiveDateStart()).effectiveDateEnd(req.getEffectiveDateEnd())
+		if (req.getAcExecutiveId() == null) {
+
+			// Get MAX AcExecutiveId
+			Integer maxAcExecutiveId = repo.findMaxAcExecutiveId();
+
+			// MAX ID + 1
+			Integer newAcExecutiveId = (maxAcExecutiveId == null) ? 1 : maxAcExecutiveId + 1;
+
+			// ---------------------------------------------
+			// Calculate Effective Date End = Start Date + 25 Years
+			// ---------------------------------------------
+
+			Date effectiveDateEnd = null;
+
+			if (req.getEffectiveDateStart() != null) {
+
+				Calendar calendar = Calendar.getInstance();
+
+				calendar.setTime(req.getEffectiveDateStart());
+
+				calendar.add(Calendar.YEAR, 25);
+
+				effectiveDateEnd = calendar.getTime();
+			}
+
+			// ---------------------------------------------
+			// Create New Entity
+			// ---------------------------------------------
+
+			entity = UploadDocAcExecutiveMaster.builder()
+
+					.acExecutiveId(newAcExecutiveId)
+
+					.acExecutiveName(req.getAcExecutiveName())
+
+					.oaCode(req.getOaCode())
+
+					.branchCode(req.getBranchCode())
+
+					.companyId(req.getCompanyId())
+
+					.commissionPercent(req.getCommissionPercent())
+
+					.status(req.getStatus())
+
+					.effectiveDateStart(req.getEffectiveDateStart())
+
+					.effectiveDateEnd(effectiveDateEnd)
+
+					.bankCode(req.getBankCode())
+
 					.coreAppCode(req.getCoreAppCode())
-					.amendId(0).entryDate(now).bankCode(req.getBankCode()).build();
 
-		} else {
+					.amendId(0)
 
-			// =========================
-			// AMEND / UPDATE
-			// =========================
-			entity = UploadDocAcExecutiveMaster.builder().acExecutiveId(req.getAcExecutiveId())
-					.branchCode(req.getBranchCode()).companyId(req.getCompanyId()).bankCode(req.getBankCode())
-					.amendId(newAmendId)
+					.entryDate(now)
 
-					.acExecutiveName(
-							req.getAcExecutiveName() != null ? req.getAcExecutiveName() : previous.getAcExecutiveName())
-
-					.oaCode(req.getOaCode() != null ? req.getOaCode() : previous.getOaCode())
-
-					.commissionPercent(req.getCommissionPercent() != null ? req.getCommissionPercent()
-							: previous.getCommissionPercent())
-
-					.status(req.getStatus() != null ? req.getStatus() : previous.getStatus())
-
-					.effectiveDateStart(req.getEffectiveDateStart() != null ? req.getEffectiveDateStart()
-							: previous.getEffectiveDateStart())
-
-					.effectiveDateEnd(req.getEffectiveDateEnd() != null ? req.getEffectiveDateEnd()
-							: previous.getEffectiveDateEnd())
-
-					.entryDate(previous.getEntryDate())
-					.coreAppCode(previous.getCoreAppCode())
 					.build();
+
+			log.info(
+					"Creating new AC Executive Master. AC_EXECUTIVE_ID={}, "
+							+ "EffectiveDateStart={}, EffectiveDateEnd={}",
+					newAcExecutiveId, req.getEffectiveDateStart(), effectiveDateEnd);
 		}
+
+		// =====================================================
+		// UPDATE
+		// AcExecutiveId is provided -> Existing record update
+		// =====================================================
+
+		else {
+
+			entity = repo.findByAcExecutiveId(req.getAcExecutiveId())
+					.orElseThrow(() -> new RuntimeException("AC Executive ID not found: " + req.getAcExecutiveId()));
+
+			if (req.getAcExecutiveName() != null) {
+				entity.setAcExecutiveName(req.getAcExecutiveName());
+			}
+
+			if (req.getOaCode() != null) {
+				entity.setOaCode(req.getOaCode());
+			}
+
+			if (req.getBranchCode() != null) {
+				entity.setBranchCode(req.getBranchCode());
+			}
+
+			if (req.getCompanyId() != null) {
+				entity.setCompanyId(req.getCompanyId());
+			}
+
+			if (req.getCommissionPercent() != null) {
+				entity.setCommissionPercent(req.getCommissionPercent());
+			}
+
+			if (req.getStatus() != null) {
+				entity.setStatus(req.getStatus());
+			}
+
+			if (req.getEffectiveDateStart() != null) {
+				entity.setEffectiveDateStart(req.getEffectiveDateStart());
+			}
+
+			if (req.getEffectiveDateEnd() != null) {
+				entity.setEffectiveDateEnd(req.getEffectiveDateEnd());
+			}
+
+			if (req.getBankCode() != null) {
+				entity.setBankCode(req.getBankCode());
+			}
+
+			if (req.getCoreAppCode() != null) {
+				entity.setCoreAppCode(req.getCoreAppCode());
+			}
+
+			log.info("Updating AC Executive Master. AC_EXECUTIVE_ID={}", req.getAcExecutiveId());
+		}
+
+		// =====================================================
+		// SAVE
+		// =====================================================
 
 		entity = repo.saveAndFlush(entity);
 
-		log.info("UploadDocAcExecutiveMaster saved/amended with AMEND_ID={}: {}", entity.getAmendId(), entity);
+		log.info("AC Executive Master saved successfully. " + "AC_EXECUTIVE_ID={}, AMEND_ID={}",
+				entity.getAcExecutiveId(), entity.getAmendId());
 
 		return mapper.toRes(entity);
+	}
+
+	@Override
+	public List<AcExtDropDownRes> dropDownList(UploadDocAcExecutiveMasterGetReq req) {
+
+	    List<UploadDocAcExecutiveMaster> entities =
+	            repo.findLatestByCompanyIdAndBranchCode(
+	                    req.getCompanyId(),
+	                    req.getBranchCode());
+
+	    return entities.stream()
+	            .map(entity -> {
+
+	                AcExtDropDownRes res = new AcExtDropDownRes();
+
+	                res.setAcExecutiveId(entity.getAcExecutiveId());
+	                res.setAcExecutiveName(entity.getAcExecutiveName());
+	                res.setCoreAppCode(entity.getCoreAppCode());
+	                res.setCompanyId(entity.getCompanyId());
+	                res.setBranchCode(entity.getBranchCode());
+	                res.setCommissionPercent(entity.getCommissionPercent());
+
+	                return res;
+	            })
+	            .toList();
 	}
 }

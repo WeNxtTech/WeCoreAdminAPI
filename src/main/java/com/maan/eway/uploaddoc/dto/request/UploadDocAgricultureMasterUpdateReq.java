@@ -2,30 +2,69 @@ package com.maan.eway.uploaddoc.dto.request;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Data;
 
 @Data
 public class UploadDocAgricultureMasterUpdateReq {
 
-	// business key
-	private Integer sno;
-	private Integer companyId;
-	private Integer productId;
+    // business key
+    @JsonProperty("Sno")
+    private Integer sno;
 
-	// amendable fields
-	private Integer provinceId;
-	private String provinceDesc;
-	private Integer districtId;
-	private String districtDesc;
-	private Integer aez;
-	private Integer cropId;
-	private String cropDesc;
-	private Integer yieldPercentage;
-	private Double perHaCost;
-	private Integer sectionId;
-	private String coreAppCode;
-	private String status;
-	private Date effectiveDateStart;
-	private Date effectiveDateEnd;
-	private String remarks;
+    @JsonProperty("CompanyId")
+    private Integer companyId;
+
+    @JsonProperty("ProductId")
+    private Integer productId;
+
+    // amendable fields
+    @JsonProperty("ProvinceId")
+    private Integer provinceId;
+
+    @JsonProperty("ProvinceDesc")
+    private String provinceDesc;
+
+    @JsonProperty("DistrictId")
+    private Integer districtId;
+
+    @JsonProperty("DistrictDesc")
+    private String districtDesc;
+
+    @JsonProperty("Aez")
+    private Integer aez;
+
+    @JsonProperty("CropId")
+    private Integer cropId;
+
+    @JsonProperty("CropDesc")
+    private String cropDesc;
+
+    @JsonProperty("YieldPercentage")
+    private Integer yieldPercentage;
+
+    @JsonProperty("PerHaCost")
+    private Double perHaCost;
+
+    @JsonProperty("SectionId")
+    private Integer sectionId;
+
+    @JsonProperty("CoreAppCode")
+    private String coreAppCode;
+
+    @JsonProperty("Status")
+    private String status;
+
+    @JsonProperty("EffectiveDateStart")
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    private Date effectiveDateStart;
+
+    @JsonProperty("EffectiveDateEnd")
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    private Date effectiveDateEnd;
+
+    @JsonProperty("Remarks")
+    private String remarks;
 }

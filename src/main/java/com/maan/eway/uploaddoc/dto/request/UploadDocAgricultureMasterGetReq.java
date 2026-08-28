@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class UploadDocAgricultureMasterGetReq {
 
-	private Integer sno;
-	private Integer companyId;
-	private Integer productId;
+	private Integer Sno;
+	private Integer CompanyId;
+	private Integer ProductId;
 }

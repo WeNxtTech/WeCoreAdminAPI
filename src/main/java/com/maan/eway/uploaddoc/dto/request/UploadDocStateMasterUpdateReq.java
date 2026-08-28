@@ -2,6 +2,9 @@ package com.maan.eway.uploaddoc.dto.request;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Data;
 
 /**
@@ -11,28 +14,70 @@ import lombok.Data;
 @Data
 public class UploadDocStateMasterUpdateReq {
 
-	// business key (identifies the record family being amended)
-	private Integer stateId;
-	private String stateShortCode;
-	private String countryId;
-	private String regionCode;
-	private Integer cityId;
-	private Integer suburbId;
+    // business key (identifies the record family being amended)
+    @JsonProperty("StateId")
+    private Integer stateId;
 
-	// amendable fields
-	private String stateName;
-	private String status;
-	private Date effectiveDateStart;
-	private Date effectiveDateEnd;
-	private String coreAppCode;
-	private String tiraCode;
-	private String updatedBy;
-	private String remarks;
-	private String regulatoryCode;
-	private String city;
-	private String suburb;
-	private Integer areaGroup;
-	private String suburbLocal;
-	private String stateNameLocal;
-	private String cityLocal;
+    @JsonProperty("StateShortCode")
+    private String stateShortCode;
+
+    @JsonProperty("CountryId")
+    private String countryId;
+
+    @JsonProperty("RegionCode")
+    private String regionCode;
+
+    @JsonProperty("CityId")
+    private Integer cityId;
+
+    @JsonProperty("SuburbId")
+    private Integer suburbId;
+
+    // amendable fields
+    @JsonProperty("StateName")
+    private String stateName;
+
+    @JsonProperty("Status")
+    private String status;
+
+    @JsonProperty("EffectiveDateStart")
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    private Date effectiveDateStart;
+
+    @JsonProperty("EffectiveDateEnd")
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    private Date effectiveDateEnd;
+
+    @JsonProperty("CoreAppCode")
+    private String coreAppCode;
+
+    @JsonProperty("TiraCode")
+    private String tiraCode;
+
+    @JsonProperty("UpdatedBy")
+    private String updatedBy;
+
+    @JsonProperty("Remarks")
+    private String remarks;
+
+    @JsonProperty("RegulatoryCode")
+    private String regulatoryCode;
+
+    @JsonProperty("City")
+    private String city;
+
+    @JsonProperty("Suburb")
+    private String suburb;
+
+    @JsonProperty("AreaGroup")
+    private Integer areaGroup;
+
+    @JsonProperty("SuburbLocal")
+    private String suburbLocal;
+
+    @JsonProperty("StateNameLocal")
+    private String stateNameLocal;
+
+    @JsonProperty("CityLocal")
+    private String cityLocal;
 }

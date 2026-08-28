@@ -8,16 +8,16 @@ import lombok.Data;
 public class UploadDocAcExecutiveMasterUpdateReq {
 
 	// business key
-	private Integer acExecutiveId;
-	private String branchCode;
-	private String companyId;
-	private String bankCode;
+	private Integer AcExecutiveId;
+	private String BranchCode;
+	private String CompanyId;
+	private String BankCode;
 
 	// amendable fields
-	private String acExecutiveName;
-	private String oaCode;
-	private Double commissionPercent;
-	private String status;
-	private Date effectiveDateStart;
-	private Date effectiveDateEnd;
+	private String AcExecutiveName;
+	private String OaCode;
+	private Double CommissionPercent;
+	private String Status;
+	private Date EffectiveDateStart;
+	private Date EffectiveDateEnd;
 }

@@ -177,12 +177,12 @@ public class UploadDocStateMasterServiceImpl implements UploadDocStateMasterServ
 		if (!errors.isEmpty()) {
 			return errors;
 		}
-		Optional<Integer> maxAmendId = repo.findMaxAmendId(req.getStateId(), req.getStateShortCode(),
-				req.getCountryId(), req.getRegionCode(), req.getCityId(), req.getSuburbId());
-		if (maxAmendId.isEmpty()) {
-			errors.add(new Error("08", "stateId",
-					"No existing State Master record found for this business key. Use the save API to create it."));
-		}
+//		Optional<Integer> maxAmendId = repo.findMaxAmendId(req.getStateId(), req.getStateShortCode(),
+//				req.getCountryId(), req.getRegionCode(), req.getCityId(), req.getSuburbId());
+//		if (maxAmendId.isEmpty()) {
+//			errors.add(new Error("08", "stateId",
+//					"No existing State Master record found for this business key. Use the save API to create it."));
+//		}
 		return errors;
 	}
 
@@ -239,17 +239,26 @@ public class UploadDocStateMasterServiceImpl implements UploadDocStateMasterServ
 
 	@Override
 	public UploadDocStateMasterRes getLatest(UploadDocStateMasterGetReq req) {
-		Optional<Integer> maxAmendId = repo.findMaxAmendId(req.getStateId(), req.getStateShortCode(),
-				req.getCountryId(), req.getRegionCode(), req.getCityId(), req.getSuburbId());
-		if (maxAmendId.isEmpty()) {
-			return null;
-		}
-		return repo
-				.findByStateIdAndStateShortCodeAndCountryIdAndRegionCodeAndCityIdAndSuburbIdAndAmendId(
-						req.getStateId(), req.getStateShortCode(), req.getCountryId(), req.getRegionCode(),
-						req.getCityId(), req.getSuburbId(), maxAmendId.get())
-				.map(mapper::toRes)
-				.orElse(null);
+		 Integer maxAmendId = repo.findMaxAmendIdMax(
+		            req.getStateId(),
+		            req.getStateShortCode(),
+		            req.getCountryId(),
+		            req.getRegionCode(),
+		            req.getCityId(),
+		            req.getSuburbId()
+		    );
+		 return repo
+		            .findByStateIdAndStateShortCodeAndCountryIdAndRegionCodeAndCityIdAndSuburbIdAndAmendId(
+		                    req.getStateId(),
+		                    req.getStateShortCode(),
+		                    req.getCountryId(),
+		                    req.getRegionCode(),
+		                    req.getCityId(),
+		                    req.getSuburbId(),
+		                    maxAmendId
+		            )
+		            .map(mapper::toRes)
+		            .orElse(null);
 	}
 
 	@Override

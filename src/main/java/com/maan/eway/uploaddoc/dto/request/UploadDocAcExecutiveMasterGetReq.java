@@ -5,8 +5,8 @@ import lombok.Data;
 @Data
 public class UploadDocAcExecutiveMasterGetReq {
 
-	private Integer acExecutiveId;
+	private Integer AcExecutiveId;
 	private String branchCode;
-	private String companyId;
-	private String bankCode;
+	private String CompanyId;
+	private String BankCode;
 }

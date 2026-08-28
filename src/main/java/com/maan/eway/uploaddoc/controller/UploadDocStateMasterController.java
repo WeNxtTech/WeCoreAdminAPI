@@ -84,7 +84,7 @@ public class UploadDocStateMasterController {
 			data.setIsError(true);
 			data.setMessage("State Master Record Not Found");
 			data.setErrorMessage(Collections.emptyList());
-			return new ResponseEntity<>(data, HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(data, HttpStatus.ACCEPTED);
 		}
 		data.setIsError(false);
 		data.setMessage("Success");

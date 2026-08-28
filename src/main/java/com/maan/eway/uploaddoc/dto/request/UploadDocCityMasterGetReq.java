@@ -1,11 +1,18 @@
 package com.maan.eway.uploaddoc.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Data;
 
 @Data
 public class UploadDocCityMasterGetReq {
 
-	private Integer cityId;
-	private String countryId;
-	private String stateId;
+    @JsonProperty("CityId")
+    private Integer cityId;
+
+    @JsonProperty("CountryId")
+    private String countryId;
+
+    @JsonProperty("StateId")
+    private String stateId;
 }

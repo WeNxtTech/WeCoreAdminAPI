@@ -18,6 +18,9 @@ public interface UploadDocStateMasterRepository extends JpaRepository<UploadDocS
 	Optional<Integer> findMaxAmendId(@Param("stateId") Integer stateId, @Param("stateShortCode") String stateShortCode,
 			@Param("countryId") String countryId, @Param("regionCode") String regionCode,
 			@Param("cityId") Integer cityId, @Param("suburbId") Integer suburbId);
+	
+	
+	
 
 	Optional<UploadDocStateMaster> findByStateIdAndStateShortCodeAndCountryIdAndRegionCodeAndCityIdAndSuburbIdAndAmendId(
 			Integer stateId, String stateShortCode, String countryId, String regionCode, Integer cityId,
@@ -58,4 +61,23 @@ public interface UploadDocStateMasterRepository extends JpaRepository<UploadDocS
 		""")
 
 	Collection<UploadDocStateMaster> findAllLatest(String countryId, String regionCode);
+	
+	@Query("""
+		    SELECT COALESCE(MAX(s.amendId), 0)
+		    FROM UploadDocStateMaster s
+		    WHERE s.stateId = :stateId
+		      AND s.stateShortCode = :stateShortCode
+		      AND s.countryId = :countryId
+		      AND s.regionCode = :regionCode
+		      AND s.cityId = :cityId
+		      AND s.suburbId = :suburbId
+		""")
+		Integer findMaxAmendIdMax(
+		        @Param("stateId") Integer stateId,
+		        @Param("stateShortCode") String stateShortCode,
+		        @Param("countryId") String countryId,
+		        @Param("regionCode") String regionCode,
+		        @Param("cityId") Integer cityId,
+		        @Param("suburbId") Integer suburbId
+		);
 }

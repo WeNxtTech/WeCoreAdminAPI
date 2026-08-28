@@ -200,88 +200,170 @@ public class UploadDocDeductibleMasterServiceImpl implements UploadDocDeductible
 		return latest.isPresent();
 	}
 	
-	
 	@Override
 	public UploadDocDeductibleMasterRes saveOrUpdate(
-			UploadDocDeductibleMasterSaveReq req) {
+	        UploadDocDeductibleMasterSaveReq req) {
 
-		Date now = new Date();
+	    Date now = new Date();
 
-		// Get latest AMEND_ID
-		int newAmendId = repo.findMaxAmendId(req.getDeductId(), req.getCompanyId(), req.getProductId(),
-				req.getSectionId(), req.getBranchCode()).orElse(-1) + 1;
+	    // =========================================================
+	    // Get latest AMEND_ID for the given business key
+	    // =========================================================
+	    int newAmendId = repo.findMaxAmendId(
+	            req.getDeductId(),
+	            req.getCompanyId(),
+	            req.getProductId(),
+	            req.getSectionId(),
+	            req.getBranchCode()
+	    ).orElse(-1) + 1;
 
-		// Get previous/latest record
-		UploadDocDeductibleMaster previous = null;
+	    // =========================================================
+	    // Get previous/latest record
+	    // =========================================================
+	    UploadDocDeductibleMaster previous = null;
 
-		if (newAmendId > 0) {
-			previous = repo.findByDeductIdAndCompanyIdAndProductIdAndSectionIdAndBranchCodeAndAmendId(req.getDeductId(),
-					req.getCompanyId(), req.getProductId(), req.getSectionId(), req.getBranchCode(), newAmendId - 1)
-					.orElse(null);
-		}
+	    if (newAmendId > 0) {
 
-		UploadDocDeductibleMaster entity;
+	        previous = repo
+	                .findByDeductIdAndCompanyIdAndProductIdAndSectionIdAndBranchCodeAndAmendId(
+	                        req.getDeductId(),
+	                        req.getCompanyId(),
+	                        req.getProductId(),
+	                        req.getSectionId(),
+	                        req.getBranchCode(),
+	                        newAmendId - 1
+	                )
+	                .orElse(null);
+	    }
 
-		if (previous == null) {
+	    UploadDocDeductibleMaster entity;
 
-			// =========================
-			// NEW RECORD
-			// =========================
-			entity = UploadDocDeductibleMaster.builder().deductId(req.getDeductId()).companyId(req.getCompanyId())
-					.productId(req.getProductId()).sectionId(req.getSectionId()).branchCode(req.getBranchCode())
+	    // =========================================================
+	    // NEW RECORD
+	    // =========================================================
+	    if (previous == null) {
 
-					.amendId(0)
+	        entity = UploadDocDeductibleMaster.builder()
 
-					.deductStart(req.getDeductStart()).deductEnd(req.getDeductEnd()).rate(req.getRate())
-					.calcType(req.getCalcType())
+	                // Business ID - manually supplied
+	                .deductId(req.getDeductId())
 
-					.status(StringUtils.isBlank(req.getStatus()) ? "Y" : req.getStatus())
+	                .companyId(req.getCompanyId())
+	                .productId(req.getProductId())
+	                .sectionId(req.getSectionId())
+	                .branchCode(req.getBranchCode())
 
-					.entryDate(now)
+	                // First amendment
+	                .amendId(0)
 
-					.effectiveDateStart(req.getEffectiveDateStart()).effectiveDateEnd(req.getEffectiveDateEnd())
+	                .deductStart(req.getDeductStart())
+	                .deductEnd(req.getDeductEnd())
+	                .rate(req.getRate())
+	                .calcType(req.getCalcType())
 
-					.remarks(req.getRemarks())
+	                .status(
+	                        StringUtils.isBlank(req.getStatus())
+	                                ? "Y"
+	                                : req.getStatus()
+	                )
 
-					.build();
+	                .entryDate(now)
 
-		} else {
+	                .effectiveDateStart(req.getEffectiveDateStart())
+	                .effectiveDateEnd(req.getEffectiveDateEnd())
 
-			// =========================
-			// UPDATE / AMENDMENT
-			// =========================
-			entity = UploadDocDeductibleMaster.builder().deductId(req.getDeductId()).companyId(req.getCompanyId())
-					.productId(req.getProductId()).sectionId(req.getSectionId()).branchCode(req.getBranchCode())
+	                .remarks(req.getRemarks())
 
-					.amendId(newAmendId)
+	                .build();
 
-					.deductStart(req.getDeductStart() != null ? req.getDeductStart() : previous.getDeductStart())
+	    }
 
-					.deductEnd(req.getDeductEnd() != null ? req.getDeductEnd() : previous.getDeductEnd())
+	    // =========================================================
+	    // UPDATE / AMENDMENT
+	    // =========================================================
+	    else {
 
-					.rate(req.getRate() != null ? req.getRate() : previous.getRate())
+	        entity = UploadDocDeductibleMaster.builder()
 
-					.calcType(req.getCalcType() != null ? req.getCalcType() : previous.getCalcType())
+	                // Same business ID
+	                .deductId(req.getDeductId())
 
-					.status(req.getStatus() != null ? req.getStatus() : previous.getStatus())
+	                .companyId(req.getCompanyId())
+	                .productId(req.getProductId())
+	                .sectionId(req.getSectionId())
+	                .branchCode(req.getBranchCode())
 
-					.entryDate(previous.getEntryDate())
+	                // Increment amendment ID
+	                .amendId(newAmendId)
 
-					.effectiveDateStart(req.getEffectiveDateStart() != null ? req.getEffectiveDateStart()
-							: previous.getEffectiveDateStart())
+	                // Use request value if provided,
+	                // otherwise retain previous value
+	                .deductStart(
+	                        req.getDeductStart() != null
+	                                ? req.getDeductStart()
+	                                : previous.getDeductStart()
+	                )
 
-					.effectiveDateEnd(req.getEffectiveDateEnd() != null ? req.getEffectiveDateEnd()
-							: previous.getEffectiveDateEnd())
+	                .deductEnd(
+	                        req.getDeductEnd() != null
+	                                ? req.getDeductEnd()
+	                                : previous.getDeductEnd()
+	                )
 
-					.remarks(req.getRemarks() != null ? req.getRemarks() : previous.getRemarks())
+	                .rate(
+	                        req.getRate() != null
+	                                ? req.getRate()
+	                                : previous.getRate()
+	                )
 
-					.build();
-		}
+	                .calcType(
+	                        req.getCalcType() != null
+	                                ? req.getCalcType()
+	                                : previous.getCalcType()
+	                )
 
-		entity = repo.saveAndFlush(entity);
+	                .status(
+	                        req.getStatus() != null
+	                                ? req.getStatus()
+	                                : previous.getStatus()
+	                )
 
-		log.info("UploadDocDeductibleMaster saved/amended with AMEND_ID={}: {}", entity.getAmendId(), entity);
+	                // Keep original entry date
+	                .entryDate(previous.getEntryDate())
 
-		return mapper.toRes(entity);
+	                .effectiveDateStart(
+	                        req.getEffectiveDateStart() != null
+	                                ? req.getEffectiveDateStart()
+	                                : previous.getEffectiveDateStart()
+	                )
+
+	                .effectiveDateEnd(
+	                        req.getEffectiveDateEnd() != null
+	                                ? req.getEffectiveDateEnd()
+	                                : previous.getEffectiveDateEnd()
+	                )
+
+	                .remarks(
+	                        req.getRemarks() != null
+	                                ? req.getRemarks()
+	                                : previous.getRemarks()
+	                )
+
+	                .build();
+	    }
+
+	    // =========================================================
+	    // SAVE
+	    // =========================================================
+	    entity = repo.saveAndFlush(entity);
+
+	    log.info(
+	            "UploadDocDeductibleMaster saved/amended with DEDUCT_ID={}, AMEND_ID={}: {}",
+	            entity.getDeductId(),
+	            entity.getAmendId(),
+	            entity
+	    );
+
+	    return mapper.toRes(entity);
 	}
 }

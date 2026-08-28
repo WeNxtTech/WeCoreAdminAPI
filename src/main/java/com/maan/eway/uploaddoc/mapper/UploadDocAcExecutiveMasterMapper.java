@@ -25,6 +25,7 @@ public class UploadDocAcExecutiveMasterMapper {
 		res.setAmendId(entity.getAmendId());
 		res.setEntryDate(entity.getEntryDate());
 		res.setBankCode(entity.getBankCode());
+		res.setCoreAppCode(entity.getCoreAppCode());
 		return res;
 	}
 }

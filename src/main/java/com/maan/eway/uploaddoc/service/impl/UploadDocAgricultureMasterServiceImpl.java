@@ -55,11 +55,11 @@ public class UploadDocAgricultureMasterServiceImpl implements UploadDocAgricultu
 		if (StringUtils.isBlank(req.getCropDesc())) {
 			errors.add(new Error("04", "cropDesc", "Please provide CropDesc"));
 		}
-		if (req.getSno() != null && req.getCompanyId() != null && req.getProductId() != null
-				&& repo.findMaxAmendId(req.getSno(), req.getCompanyId(), req.getProductId()).isPresent()) {
-			errors.add(new Error("05", "sno",
-					"An Agriculture Master record already exists for this business key. Use the update API to amend it."));
-		}
+//		if (req.getSno() != null && req.getCompanyId() != null && req.getProductId() != null
+//				&& repo.findMaxAmendId(req.getSno(), req.getCompanyId(), req.getProductId()).isPresent()) {
+//			errors.add(new Error("05", "sno",
+//					"An Agriculture Master record already exists for this business key. Use the update API to amend it."));
+//		}
 		return errors;
 	}
 
@@ -185,8 +185,7 @@ public class UploadDocAgricultureMasterServiceImpl implements UploadDocAgricultu
 	}
 	
 	@Override
-	public UploadDocAgricultureMasterRes saveOrUpdate(
-			UploadDocAgricultureMasterSaveReq req) {
+	public UploadDocAgricultureMasterRes saveOrUpdate(UploadDocAgricultureMasterSaveReq req) {
 
 		Date now = new Date();
 

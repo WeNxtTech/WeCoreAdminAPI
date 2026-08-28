@@ -61,13 +61,13 @@ public class UploadDocDeductibleMasterServiceImpl implements UploadDocDeductible
 		if (req.getRate() == null) {
 			errors.add(new Error("06", "rate", "Please provide Rate"));
 		}
-		if (req.getDeductId() != null && StringUtils.isNotBlank(req.getCompanyId()) && req.getProductId() != null
-				&& req.getSectionId() != null && StringUtils.isNotBlank(req.getBranchCode())
-				&& repo.findMaxAmendId(req.getDeductId(), req.getCompanyId(), req.getProductId(), req.getSectionId(),
-						req.getBranchCode()).isPresent()) {
-			errors.add(new Error("07", "deductId",
-					"A Deductible Master record already exists for this business key. Use the update API to amend it."));
-		}
+//		if (req.getDeductId() != null && StringUtils.isNotBlank(req.getCompanyId()) && req.getProductId() != null
+//				&& req.getSectionId() != null && StringUtils.isNotBlank(req.getBranchCode())
+//				&& repo.findMaxAmendId(req.getDeductId(), req.getCompanyId(), req.getProductId(), req.getSectionId(),
+//						req.getBranchCode()).isPresent()) {
+//			errors.add(new Error("07", "deductId",
+//					"A Deductible Master record already exists for this business key. Use the update API to amend it."));
+//		}
 		return errors;
 	}
 

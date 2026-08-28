@@ -19,4 +19,5 @@ public class UploadDocAcExecutiveMasterRes {
 	private Integer amendId;
 	private Date entryDate;
 	private String bankCode;
+	private String coreAppCode;
 }

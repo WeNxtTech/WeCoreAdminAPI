@@ -77,13 +77,13 @@ public class UploadDocNotifTemplateMasterServiceImpl implements UploadDocNotifTe
 		if (StringUtils.isBlank(req.getCreatedBy())) {
 			errors.add(new Error("09", "createdBy", "Please provide CreatedBy"));
 		}
-		if (StringUtils.isNotBlank(req.getNotifTemplateCode()) && StringUtils.isNotBlank(req.getCompanyId())
-				&& req.getProductId() != null
-				&& repo.findMaxAmendId(req.getNotifTemplateCode(), req.getCompanyId(), req.getProductId())
-						.isPresent()) {
-			errors.add(new Error("10", "notifTemplateCode",
-					"A Notif Template Master record already exists for this business key. Use the update API to amend it."));
-		}
+//		if (StringUtils.isNotBlank(req.getNotifTemplateCode()) && StringUtils.isNotBlank(req.getCompanyId())
+//				&& req.getProductId() != null
+//				&& repo.findMaxAmendId(req.getNotifTemplateCode(), req.getCompanyId(), req.getProductId())
+//						.isPresent()) {
+//			errors.add(new Error("10", "notifTemplateCode",
+//					"A Notif Template Master record already exists for this business key. Use the update API to amend it."));
+//		}
 		return errors;
 	}
 
@@ -238,8 +238,7 @@ public class UploadDocNotifTemplateMasterServiceImpl implements UploadDocNotifTe
 	}
 	
 	@Override
-	public UploadDocNotifTemplateMasterRes saveOrUpdate(
-			UploadDocNotifTemplateMasterSaveReq req) {
+	public UploadDocNotifTemplateMasterRes saveOrUpdate(UploadDocNotifTemplateMasterSaveReq req) {
 
 		Date now = new Date();
 

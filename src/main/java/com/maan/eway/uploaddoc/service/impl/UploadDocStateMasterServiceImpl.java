@@ -99,18 +99,18 @@ public class UploadDocStateMasterServiceImpl implements UploadDocStateMasterServ
 		} else if (req.getRegulatoryCode().length() > 20) {
 			errors.add(new Error("08", "regulatoryCode", "RegulatoryCode must not exceed 20 characters"));
 		}
-		if (req.getStateId() != null && req.getCityId() != null && req.getSuburbId() != null
-				&& StringUtils.isNotBlank(req.getStateShortCode()) && StringUtils.isNotBlank(req.getCountryId())
-				&& StringUtils.isNotBlank(req.getRegionCode())) {
-			boolean exists = repo
-					.findMaxAmendId(req.getStateId(), req.getStateShortCode(), req.getCountryId(), req.getRegionCode(),
-							req.getCityId(), req.getSuburbId())
-					.isPresent();
-			if (exists) {
-				errors.add(new Error("09", "stateId",
-						"A State Master record already exists for this business key. Use the update API to amend it."));
-			}
-		}
+//		if (req.getStateId() != null && req.getCityId() != null && req.getSuburbId() != null
+//				&& StringUtils.isNotBlank(req.getStateShortCode()) && StringUtils.isNotBlank(req.getCountryId())
+//				&& StringUtils.isNotBlank(req.getRegionCode())) {
+//			boolean exists = repo
+//					.findMaxAmendId(req.getStateId(), req.getStateShortCode(), req.getCountryId(), req.getRegionCode(),
+//							req.getCityId(), req.getSuburbId())
+//					.isPresent();
+//			if (exists) {
+//				errors.add(new Error("09", "stateId",
+//						"A State Master record already exists for this business key. Use the update API to amend it."));
+//			}
+//		}
 		return errors;
 	}
 
@@ -289,7 +289,7 @@ public class UploadDocStateMasterServiceImpl implements UploadDocStateMasterServ
 
 		Date now = new Date();
 
-		// Get latest amend ID
+		// Get latest amendment ID
 		int newAmendId = repo.findMaxAmendId(req.getStateId(), req.getStateShortCode(), req.getCountryId(),
 				req.getRegionCode(), req.getCityId(), req.getSuburbId()).orElse(-1) + 1;
 
@@ -297,6 +297,7 @@ public class UploadDocStateMasterServiceImpl implements UploadDocStateMasterServ
 		UploadDocStateMaster previous = null;
 
 		if (newAmendId > 0) {
+
 			previous = repo.findByStateIdAndStateShortCodeAndCountryIdAndRegionCodeAndCityIdAndSuburbIdAndAmendId(
 					req.getStateId(), req.getStateShortCode(), req.getCountryId(), req.getRegionCode(), req.getCityId(),
 					req.getSuburbId(), newAmendId - 1).orElse(null);
@@ -307,15 +308,14 @@ public class UploadDocStateMasterServiceImpl implements UploadDocStateMasterServ
 		if (previous == null) {
 
 			// =========================
-			// NEW RECORD
+			// FIRST RECORD
 			// =========================
+
 			entity = UploadDocStateMaster.builder().stateId(req.getStateId()).stateShortCode(req.getStateShortCode())
 					.countryId(req.getCountryId()).regionCode(req.getRegionCode()).cityId(req.getCityId())
 					.suburbId(req.getSuburbId()).amendId(0)
 
-					.stateName(req.getStateName())
-
-					.status(StringUtils.isBlank(req.getStatus()) ? "Y" : req.getStatus())
+					.stateName(req.getStateName()).status(StringUtils.isBlank(req.getStatus()) ? "Y" : req.getStatus())
 
 					.effectiveDateStart(req.getEffectiveDateStart()).effectiveDateEnd(req.getEffectiveDateEnd())
 					.coreAppCode(req.getCoreAppCode()).tiraCode(req.getTiraCode()).createdBy(req.getCreatedBy())
@@ -330,11 +330,15 @@ public class UploadDocStateMasterServiceImpl implements UploadDocStateMasterServ
 		} else {
 
 			// =========================
-			// AMEND / UPDATE
+			// NEW AMENDMENT RECORD
 			// =========================
+
 			entity = UploadDocStateMaster.builder().stateId(req.getStateId()).stateShortCode(req.getStateShortCode())
 					.countryId(req.getCountryId()).regionCode(req.getRegionCode()).cityId(req.getCityId())
-					.suburbId(req.getSuburbId()).amendId(newAmendId)
+					.suburbId(req.getSuburbId())
+
+					// IMPORTANT
+					.amendId(newAmendId)
 
 					.stateName(req.getStateName() != null ? req.getStateName() : previous.getStateName())
 
@@ -370,16 +374,15 @@ public class UploadDocStateMasterServiceImpl implements UploadDocStateMasterServ
 
 					.cityLocal(req.getCityLocal() != null ? req.getCityLocal() : previous.getCityLocal())
 
-					.entryDate(previous.getEntryDate())
-
-					.updatedDate(now)
+					.entryDate(previous.getEntryDate()).updatedBy(req.getCreatedBy()).updatedDate(now)
 
 					.build();
 		}
 
+		// INSERT new amendment row
 		entity = repo.saveAndFlush(entity);
 
-		log.info("UploadDocStateMaster saved/amended with AMEND_ID={}: {}", entity.getAmendId(), entity);
+		log.info("UploadDocStateMaster saved with AMEND_ID={}", entity.getAmendId());
 
 		return mapper.toRes(entity);
 	}

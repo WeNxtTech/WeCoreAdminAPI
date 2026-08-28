@@ -51,6 +51,8 @@ public class UploadDocDeductibleMaster implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "DEDUCT_ID")
 	private Integer deductId;
+	
+	
 
 	@Column(name = "DEDUCT_START")
 	private Integer deductStart;

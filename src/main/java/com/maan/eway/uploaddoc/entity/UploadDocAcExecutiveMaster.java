@@ -82,4 +82,8 @@ public class UploadDocAcExecutiveMaster implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "ENTRY_DATE")
 	private Date entryDate;
+	
+	@Column(name = "CORE_APP_CODE")
+	private String coreAppCode;
+
 }

@@ -180,7 +180,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			}
 			if (StringUtils.isBlank(e.getInterestPercent())) {
 			//	errorList.add(new Error("09", "InterestPercent", "Please Enter InterestPercent"));
-				errorList.add("1605");
+				e.setInterestPercent("0.0");
 			}else if (Double.valueOf(e.getInterestPercent())>100.0 || Double.valueOf(e.getInterestPercent())<0.0 ) {
 			//	errorList.add(new Error("09", "InterestPercent", "Please Enter InterestPercent Less that or equal to 100"));
 				errorList.add("1606");
@@ -204,7 +204,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			}
 			if (StringUtils.isBlank(e.getAdvancePercent())) {
 			//	errorList.add(new Error("10", "AdvancePercent", "Please Enter AdvancePercent"));
-				errorList.add("1609");
+				e.setAdvancePercent("0.0");
 			}else if (Double.valueOf(e.getAdvancePercent())>100.0) {
 			//	errorList.add(new Error("10", "AdvancePercent", "Please Enter AdvancePercent Less that or equal to 100"));
 				errorList.add("1610");

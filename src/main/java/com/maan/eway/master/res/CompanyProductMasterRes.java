@@ -130,4 +130,7 @@ public class CompanyProductMasterRes implements Serializable {
 
 	@JsonProperty("ClaimExperience_YN")
 	private String claimExperienceYn;
+	
+	@JsonProperty("DynamicYN")
+	private String dynamicYN;
 }

@@ -652,6 +652,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 		    res.setPackageYn(list.get(0).getPackageYn());
 		    res.setClaimExperienceYn(list.get(0).getClaimExperienceYn());
 		    res.setCoInsuranceYn(list.get(0).getCoInsuranceYn());
+		    res.setDynamicYN(list.get(0).getDynamicYN());
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -1207,6 +1208,7 @@ public class CompanyProductMasterServiceImpl implements CompanyProductMasterServ
 		//	saveData.setProductIconName(filterList.size()> 0 ? filterList.get(0).getItemValue() : "");
 			saveData.setClaimExperienceYn(StringUtils.isNoneBlank(req.getClaimExperienceYn())? req.getClaimExperienceYn() :"N");
 			saveData.setCoInsuranceYn(StringUtils.isNotBlank(req.getCoInsuranceYn())? req.getCoInsuranceYn():"N");
+			saveData.setDynamicYN(StringUtils.isNotBlank(req.getDynamicYN())? req.getDynamicYN():"N");
 			repo.saveAndFlush(saveData);
 			log.info("Saved Details is --> " + json.toJson(saveData));
 			

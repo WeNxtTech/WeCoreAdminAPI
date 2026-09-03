@@ -183,6 +183,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="COMMISSION", length=1)
     private BigDecimal    commission ;
+    
+    @Column(name="DYNAMIC_YN")
+    private String    dynamicYN ;
 
 }
 

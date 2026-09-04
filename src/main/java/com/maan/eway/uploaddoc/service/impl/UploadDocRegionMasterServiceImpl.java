@@ -57,9 +57,9 @@ public class UploadDocRegionMasterServiceImpl implements UploadDocRegionMasterSe
 		if (req.getEffectiveDateStart() == null) {
 			errors.add(new Error("03", "effectiveDateStart", "Please provide EffectiveDateStart"));
 		}
-		if (req.getEffectiveDateEnd() == null) {
-			errors.add(new Error("04", "effectiveDateEnd", "Please provide EffectiveDateEnd"));
-		}
+//		if (req.getEffectiveDateEnd() == null) {
+//			errors.add(new Error("04", "effectiveDateEnd", "Please provide EffectiveDateEnd"));
+//		}
 		if (StringUtils.isBlank(req.getCreatedBy())) {
 			errors.add(new Error("05", "createdBy", "Please provide CreatedBy"));
 		} else if (req.getCreatedBy().length() > 50) {

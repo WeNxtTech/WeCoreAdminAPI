@@ -1,6 +1,7 @@
 package com.maan.eway.uploaddoc.service.impl;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -208,7 +209,28 @@ public class UploadDocRegionMasterServiceImpl implements UploadDocRegionMasterSe
 					.orElse(null);
 		}
 
-		UploadDocRegionMaster entity;
+		Date effectiveDateStart;
+	    Date effectiveDateEnd;
+
+	    if (req.getEffectiveDateStart() != null) {
+	        effectiveDateStart = req.getEffectiveDateStart();
+	    } else if (previous != null) {
+	        effectiveDateStart = previous.getEffectiveDateStart();
+	    } else {
+	        effectiveDateStart = null;
+	    }
+
+	    if (effectiveDateStart != null) {
+	        Calendar calendar = Calendar.getInstance();
+	        calendar.setTime(effectiveDateStart);
+	        calendar.add(Calendar.YEAR, 25);
+
+	        effectiveDateEnd = calendar.getTime();
+	    } else {
+	        effectiveDateEnd = null;
+	    }
+
+	    UploadDocRegionMaster entity;
 
 		if (previous == null) {
 			// =========================
@@ -217,7 +239,7 @@ public class UploadDocRegionMasterServiceImpl implements UploadDocRegionMasterSe
 			entity = UploadDocRegionMaster.builder().regionCode(req.getRegionCode()).countryId(req.getCountryId())
 					.amendId(0).regionShortCode(req.getRegionShortCode()).regionName(req.getRegionName()).entryDate(now)
 					.status(StringUtils.isBlank(req.getStatus()) ? "Y" : req.getStatus())
-					.effectiveDateStart(req.getEffectiveDateStart()).effectiveDateEnd(req.getEffectiveDateEnd())
+					.effectiveDateStart(req.getEffectiveDateStart()).effectiveDateEnd(effectiveDateEnd)
 					.coreAppCode(req.getCoreAppCode()).remarks(req.getRemarks()).createdBy(req.getCreatedBy())
 					.tiraCode(req.getTiraCode()).regulatoryCode(req.getRegulatoryCode()).updatedBy(req.getCreatedBy())
 					.updatedDate(now).regionNameLocal(req.getRegionNameLocal()).build();
@@ -241,8 +263,7 @@ public class UploadDocRegionMasterServiceImpl implements UploadDocRegionMasterSe
 					.effectiveDateStart(req.getEffectiveDateStart() != null ? req.getEffectiveDateStart()
 							: previous.getEffectiveDateStart())
 
-					.effectiveDateEnd(req.getEffectiveDateEnd() != null ? req.getEffectiveDateEnd()
-							: previous.getEffectiveDateEnd())
+					.effectiveDateEnd(effectiveDateEnd)
 
 					.coreAppCode(req.getCoreAppCode() != null ? req.getCoreAppCode() : previous.getCoreAppCode())
 

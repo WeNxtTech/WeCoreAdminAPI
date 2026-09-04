@@ -173,7 +173,7 @@ public class UploadDocRegionMasterServiceImpl implements UploadDocRegionMasterSe
 
 	@Override
 	public List<UploadDocRegionMasterRes> getAll(RegionMasterRequest request) {
-	    return repo.findAllLatest(request.getCountryId(),"Y")
+	    return repo.findAllLatest(request.getCountryId())
 	               .stream()
 	               .map(mapper::toRes)
 	               .collect(Collectors.toList());

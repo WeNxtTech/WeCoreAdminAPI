@@ -29,7 +29,6 @@ public interface UploadDocCityMasterRepository extends JpaRepository<UploadDocCi
 		    select c from UploadDocCityMaster c
 		    where c.countryId = :countryId
 		    and c.stateId = :stateId
-		    AND s.status = :status
 		    and c.amendId = (
 		        select max(c2.amendId) from UploadDocCityMaster c2
 		        where c2.cityId = c.cityId
@@ -39,6 +38,6 @@ public interface UploadDocCityMasterRepository extends JpaRepository<UploadDocCi
 		""")
 		List<UploadDocCityMaster> findLatestAmendmentPerCity(
 		    @Param("countryId") String countryId,
-		    @Param("stateId") String stateId, String status
+		    @Param("stateId") String stateId
 		);
 }

@@ -179,7 +179,7 @@ public class UploadDocCityMasterServiceImpl implements UploadDocCityMasterServic
 	@Override
 	public List<UploadDocCityMasterRes> getAll(UploadDocCityMasterGetReq req) {
 	    List<UploadDocCityMaster> list = repo.findLatestAmendmentPerCity(
-	            req.getCountryId(), req.getStateId(), "Y");
+	            req.getCountryId(), req.getStateId());
 
 	    if (list == null || list.isEmpty()) {
 	        return null;

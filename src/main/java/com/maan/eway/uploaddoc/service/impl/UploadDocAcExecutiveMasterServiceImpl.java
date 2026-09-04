@@ -173,7 +173,7 @@ public class UploadDocAcExecutiveMasterServiceImpl implements UploadDocAcExecuti
 	public List<UploadDocAcExecutiveMasterRes> getAll(UploadDocAcExecutiveMasterGetReq req) {
 	    List<UploadDocAcExecutiveMaster> list = repo.findAllLatest(
 	             req.getBranchCode(),
-	            req.getCompanyId(), req.getBankCode());
+	            req.getCompanyId(), req.getBankCode(), "Y");
 	    if (list == null || list.isEmpty()) {
 	        return null;
 	    }

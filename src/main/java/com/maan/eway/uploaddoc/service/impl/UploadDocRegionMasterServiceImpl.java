@@ -70,11 +70,12 @@ public class UploadDocRegionMasterServiceImpl implements UploadDocRegionMasterSe
 		} else if (req.getRegulatoryCode().length() > 20) {
 			errors.add(new Error("06", "regulatoryCode", "RegulatoryCode must not exceed 20 characters"));
 		}
-//		if (StringUtils.isNotBlank(req.getRegionCode()) && StringUtils.isNotBlank(req.getCountryId())
-//				&& repo.findMaxAmendId(req.getRegionCode(), req.getCountryId()).isPresent()) {
-//			errors.add(new Error("07", "regionCode",
-//					"A Region Master record already exists for this business key. Use the update API to amend it."));
-//		}
+		if (StringUtils.isNotBlank(req.getRegionCode()) && StringUtils.isNotBlank(req.getCountryId())
+				&& repo.findMaxAmendId(req.getRegionCode(), req.getCountryId()).isPresent()) {
+			errors.add(new Error("07", "regionCode",
+					"A Region Master record already exists for this business key. Use the update API to amend it."));
+		}
+
 		return errors;
 	}
 
@@ -172,7 +173,7 @@ public class UploadDocRegionMasterServiceImpl implements UploadDocRegionMasterSe
 
 	@Override
 	public List<UploadDocRegionMasterRes> getAll(RegionMasterRequest request) {
-	    return repo.findAllLatest(request.getCountryId())
+	    return repo.findAllLatest(request.getCountryId(),"Y")
 	               .stream()
 	               .map(mapper::toRes)
 	               .collect(Collectors.toList());

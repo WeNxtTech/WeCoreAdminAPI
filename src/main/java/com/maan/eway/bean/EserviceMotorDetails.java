@@ -916,8 +916,8 @@ private static final long serialVersionUID = 1L;
 	@Column(name = "AGGREGATED_VALUE")
 	private Integer aggregatedValue;
 	
-	@Column(name = "MUNICIPALITY_TRAFFIC")
-	private String municipalityTraffic;
+//	@Column(name = "MUNICIPALITY_TRAFFIC")
+//	private String municipalityTraffic;
 	
 	@Column(name = "TRANSPORT_HYDRO")
 	private String transportHydro;

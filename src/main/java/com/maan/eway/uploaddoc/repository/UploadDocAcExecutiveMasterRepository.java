@@ -35,6 +35,7 @@ public interface UploadDocAcExecutiveMasterRepository
 			    where c.branchCode = :branchCode
 			    and c.companyId = :companyId
 			    and c.bankCode = :bankCode
+			    AND s.status = :status
 			    and coalesce(c.amendId, 0) = (
 			        select max(coalesce(c2.amendId, 0))
 			        from UploadDocAcExecutiveMaster c2

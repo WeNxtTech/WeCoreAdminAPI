@@ -22,6 +22,7 @@ public interface UploadDocRegionMasterRepository extends JpaRepository<UploadDoc
 			    SELECT r
 			    FROM UploadDocRegionMaster r
 			    WHERE r.countryId = :countryId
+			    AND s.status = :status
 			      AND r.amendId = (
 			          SELECT MAX(r2.amendId)
 			          FROM UploadDocRegionMaster r2
@@ -29,5 +30,5 @@ public interface UploadDocRegionMasterRepository extends JpaRepository<UploadDoc
 			            AND r2.countryId = r.countryId
 			      )
 			""")
-	List<UploadDocRegionMaster> findAllLatest(@Param("countryId") String countryId);
+	List<UploadDocRegionMaster> findAllLatest(@Param("countryId") String countryId, String status);
 }

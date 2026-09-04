@@ -111,6 +111,15 @@ public class UploadDocStateMasterServiceImpl implements UploadDocStateMasterServ
 //						"A State Master record already exists for this business key. Use the update API to amend it."));
 //			}
 //		}
+		if (req.getStateId() != null
+		        && StringUtils.isNotBlank(req.getCountryId())) {
+		    boolean exists = repo.existsByStateIdAndCountryIdAndStatus(
+		            req.getStateId(), req.getCountryId(), "Y");
+		    if (exists) {
+		        errors.add(new Error("09", "stateId",
+		                "A State Master record already exists for this State, City and Suburb combination."));
+		    }
+		}
 		return errors;
 	}
 
@@ -263,19 +272,18 @@ public class UploadDocStateMasterServiceImpl implements UploadDocStateMasterServ
 
 	@Override
 	public List<UploadDocStateMasterRes> getAll(StateMasterRequest req) {
-		if(req.getRegionCode()==null)
-		{
-	    return repo.findAllLatest(req.getCountryId())
-	            .stream()
-	            .map(mapper::toRes)
-	            .collect(Collectors.toList());
-		}
-		else{
-			 return repo.findAllLatest(req.getCountryId(),req.getRegionCode())
-			            .stream()
-			            .map(mapper::toRes)
-			            .collect(Collectors.toList());
-		}
+
+	    if (req.getRegionCode() == null) {
+	        return repo.findAllLatest(req.getCountryId(), "Y")
+	                .stream()
+	                .map(mapper::toRes)
+	                .collect(Collectors.toList());
+	    } else {
+	        return repo.findAllLatest(req.getCountryId(), req.getRegionCode(), "Y")
+	                .stream()
+	                .map(mapper::toRes)
+	                .collect(Collectors.toList());
+	    }
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package com.maan.eway.uploaddoc.service.impl;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -55,9 +56,9 @@ public class UploadDocCityMasterServiceImpl implements UploadDocCityMasterServic
 		if (req.getEffectiveDateStart() == null) {
 			errors.add(new Error("04", "effectiveDateStart", "Please provide EffectiveDateStart"));
 		}
-		if (req.getEffectiveDateEnd() == null) {
-			errors.add(new Error("05", "effectiveDateEnd", "Please provide EffectiveDateEnd"));
-		}
+//		if (req.getEffectiveDateEnd() == null) {
+//			errors.add(new Error("05", "effectiveDateEnd", "Please provide EffectiveDateEnd"));
+//		}
 //		if (StringUtils.isBlank(req.getCreatedBy())) {
 //			errors.add(new Error("06", "createdBy", "Please provide CreatedBy"));
 //		} else if (req.getCreatedBy().length() > 100) {
@@ -66,12 +67,12 @@ public class UploadDocCityMasterServiceImpl implements UploadDocCityMasterServic
 		if (StringUtils.isBlank(req.getRegulatoryCode())) {
 			errors.add(new Error("07", "regulatoryCode", "Please provide RegulatoryCode"));
 		}
-//		if (req.getCityId() != null && StringUtils.isNotBlank(req.getCountryId())
-//				&& StringUtils.isNotBlank(req.getStateId())
-//				&& repo.findMaxAmendId(req.getCityId(), req.getCountryId(), req.getStateId()).isPresent()) {
-//			errors.add(new Error("08", "cityId",
-//					"A City Master record already exists for this business key. Use the update API to amend it."));
-//		}
+		if (req.getCityId() != null && StringUtils.isNotBlank(req.getCountryId())
+				&& StringUtils.isNotBlank(req.getStateId() ) && StringUtils.isNotBlank(req.getCityName() )
+				&& repo.findMaxAmendId(req.getCityId(), req.getCountryId(), req.getStateId()).isPresent()) {
+			errors.add(new Error("08", "cityId",
+					"A City Master record already exists for this business key. Use the update API to amend it."));
+		}
 		return errors;
 	}
 
@@ -178,7 +179,7 @@ public class UploadDocCityMasterServiceImpl implements UploadDocCityMasterServic
 	@Override
 	public List<UploadDocCityMasterRes> getAll(UploadDocCityMasterGetReq req) {
 	    List<UploadDocCityMaster> list = repo.findLatestAmendmentPerCity(
-	            req.getCountryId(), req.getStateId());
+	            req.getCountryId(), req.getStateId(), "Y");
 
 	    if (list == null || list.isEmpty()) {
 	        return null;
@@ -201,6 +202,16 @@ public class UploadDocCityMasterServiceImpl implements UploadDocCityMasterServic
 	    }
 	    repo.deleteAll(latest.get());
 	    return true;
+	}
+	private Date calculateEffectiveDateEnd(Date effectiveDateStart) {
+	    if (effectiveDateStart == null) {
+	        return null;
+	    }
+	    Calendar cal = Calendar.getInstance();
+	    cal.setTime(effectiveDateStart);
+	    cal.add(Calendar.YEAR, 25);
+	    cal.add(Calendar.DATE, -1); // so the 25-year window ends the day before the next cycle starts
+	    return cal.getTime();
 	}
 
 	@Override
@@ -226,20 +237,19 @@ public class UploadDocCityMasterServiceImpl implements UploadDocCityMasterServic
 			// =========================
 			// NEW RECORD
 			// =========================
+			Date resolvedEffectiveDateEnd = req.getEffectiveDateEnd() != null
+		            ? req.getEffectiveDateEnd()
+		            : calculateEffectiveDateEnd(req.getEffectiveDateStart());
 			entity = UploadDocCityMaster.builder().cityId(req.getCityId()).countryId(req.getCountryId())
 					.stateId(req.getStateId()).amendId(0)
-
-					.effectiveDateEnd(req.getEffectiveDateEnd()).effectiveDateStart(req.getEffectiveDateStart())
+					.effectiveDateEnd(resolvedEffectiveDateEnd)
+		            .effectiveDateStart(req.getEffectiveDateStart())
 					.cityName(req.getCityName())
-
 					.status(StringUtils.isBlank(req.getStatus()) ? "Y" : req.getStatus())
-
 					.remarks(req.getRemarks()).coreAppCode(req.getCoreAppCode()).tiraCode(req.getTiraCode())
 					.createdBy(req.getCreatedBy()).regulatoryCode(req.getRegulatoryCode())
 					.cityNameLocal(req.getCityNameLocal())
-
 					.entryDate(now).updatedBy(req.getCreatedBy()).updatedDate(now)
-
 					.build();
 
 		} else {

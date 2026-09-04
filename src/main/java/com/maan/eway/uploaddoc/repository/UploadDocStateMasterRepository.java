@@ -30,6 +30,7 @@ public interface UploadDocStateMasterRepository extends JpaRepository<UploadDocS
 			    SELECT s
 			    FROM UploadDocStateMaster s
 			    WHERE s.countryId = :countryId
+			    AND s.status = :status
 			     AND s.amendId = (
 			          SELECT MAX(s2.amendId)
 			          FROM UploadDocStateMaster s2
@@ -41,13 +42,14 @@ public interface UploadDocStateMasterRepository extends JpaRepository<UploadDocS
 			            AND s2.suburbId = s.suburbId
 			      )
 			""")
-	List<UploadDocStateMaster> findAllLatest(@Param("countryId") String countryId);
+	List<UploadDocStateMaster> findAllLatest(@Param("countryId") String countryId, String status);
 	
 	@Query("""
 		    SELECT s
 		    FROM UploadDocStateMaster s
 		    WHERE s.countryId = :countryId
 		     AND  s.regionCode = :regionCode
+		     AND s.status = :status
 		     AND s.amendId = (
 		          SELECT MAX(s2.amendId)
 		          FROM UploadDocStateMaster s2
@@ -60,7 +62,7 @@ public interface UploadDocStateMasterRepository extends JpaRepository<UploadDocS
 		      )
 		""")
 
-	Collection<UploadDocStateMaster> findAllLatest(String countryId, String regionCode);
+	Collection<UploadDocStateMaster> findAllLatest(String countryId, String regionCode, String status);
 	
 	@Query("""
 		    SELECT COALESCE(MAX(s.amendId), 0)
@@ -80,4 +82,7 @@ public interface UploadDocStateMasterRepository extends JpaRepository<UploadDocS
 		        @Param("cityId") Integer cityId,
 		        @Param("suburbId") Integer suburbId
 		);
+
+	boolean existsByStateIdAndCountryIdAndStatus(Integer stateId, String countryId,
+			String string);
 }

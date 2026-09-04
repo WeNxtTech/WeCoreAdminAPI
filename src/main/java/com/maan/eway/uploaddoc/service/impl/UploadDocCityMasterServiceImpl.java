@@ -69,7 +69,7 @@ public class UploadDocCityMasterServiceImpl implements UploadDocCityMasterServic
 		}
 		if (req.getCityId() != null && StringUtils.isNotBlank(req.getCountryId())
 				&& StringUtils.isNotBlank(req.getStateId() ) && StringUtils.isNotBlank(req.getCityName() )
-				&& repo.findMaxAmendId(req.getCityId(), req.getCountryId(), req.getStateId()).isPresent()) {
+				&& repo.findMaxAmendId(req.getCityId(), req.getCountryId(), req.getCityName()).isPresent()) {
 			errors.add(new Error("08", "cityId",
 					"A City Master record already exists for this business key. Use the update API to amend it."));
 		}

@@ -163,7 +163,6 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 					}			
 				}
 			}*/
-		
 			for(EmiDetailsReq e:req.getEmiDetails()) {
 				
 			
@@ -176,11 +175,11 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 				cal.set(Calendar.MINUTE, 50);
 				today = cal.getTime();
 				
-				if (e.getEffectiveDateStart() == null) {
+				if (req.getEffectiveDateStart() == null) {
 				//	errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start "));
 					errorList.add("1261");
 
-				} else if (e.getEffectiveDateStart().before(today)) {
+				} else if (req.getEffectiveDateStart().before(today)) {
 				//	errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
 					errorList.add("1262");
 				}
@@ -193,29 +192,28 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 					errorList.add("1271");
 				}
 				//Status Validation
-				if (StringUtils.isBlank(e.getStatus())) {
+				if (StringUtils.isBlank(req.getStatus())) {
 				//	errorList.add(new Error("05", "Status", "Please Select Status  "));
 					errorList.add("1263");
 				} 
 				else
-					if (e.getStatus().length() > 1) {
+					if (req.getStatus().length() > 1) {
 				//	errorList.add(new Error("05", "Status", "Please Select Valid Status - 1 Character Only Allwed"));
 					errorList.add("1264");
 				}else 
 					
-					if(!("Y".equalsIgnoreCase(e.getStatus())||"N".equalsIgnoreCase(e.getStatus())||"R".equalsIgnoreCase(e.getStatus())|| "P".equalsIgnoreCase(e.getStatus()))) {
+					if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
 			//		errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
 					errorList.add("1265");
 				}
 
-				if (StringUtils.isBlank(e.getRemarks())) {
+				if (StringUtils.isBlank(req.getRemarks())) {
 				//	errorList.add(new Error("05", "Remarks", "Please Enter Remarks"));
 					errorList.add("1259");
-				} else if (e.getRemarks().length() > 100) {
+				} else if (req.getRemarks().length() > 100) {
 				//	errorList.add(new Error("05", "Remarks", "Enter Remarks  within 100 Characters Only"));
 					errorList.add("1260");
 				}
-
 				} else if (req.getEffectiveDateStart().before(today)) {
 				//	errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
 					errorList.add("1262");
@@ -578,10 +576,10 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 
 	        PolicyTypeMaster policyTypeData = getPolicyTypeDesc(req.getProductId(), req.getCompanyId(), req.getPolicyType());
 	        String policyTypeDesc = policyTypeData != null ? policyTypeData.getPolicyTypeName() : "UNKNOWN";
-	        findExistingEmiMaster(req);
-	        for (EmiDetailsReq detail : req.getEmiDetails()) {
+	    //    findExistingEmiMaster(req);
+	   //     for (EmiDetailsReq detail : req.getEmiDetails()) {
 	        	SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/yyyy");
-	 	        Date startDate = detail.getEffectiveDateStart(); // correctly use input
+	 	        Date startDate = req.getEffectiveDateStart(); // correctly use input
 	 	        Date endDate = sdformat.parse("31/12/2050");
 	            EmiMaster saveData = new EmiMaster(); // important: new object per loop
 	            dozerMapper.map(req, saveData);
@@ -622,7 +620,6 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 	            saveData.setPolicyDesc("99999".equals(req.getPolicyType()) ? "ALL" : policyTypeDesc);
 	            saveData.setStatus(req.getStatus());
 	            saveData.setIntresetOrProposal(req.getAdvanceYn());
-
 	           
 	            List<String> taxIds = req.getTaxIds();
 	            String taxIdsString = taxIds == null || taxIds.isEmpty()

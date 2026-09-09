@@ -27,6 +27,11 @@ public class EmiMasterSaveReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
+    
+    
 	@JsonProperty("ProductId")
 	private String productId;
 
@@ -36,16 +41,6 @@ public class EmiMasterSaveReq implements Serializable {
 	@JsonProperty("PolicyType")
 	private String policyType;
 	
-	@JsonFormat(pattern="dd/MM/yyyy")
-	@JsonProperty("EffectiveDateStart")
-	private Date effectiveDateStart;
-	
-	@JsonProperty("Status")
-	private String status;
-
-	@JsonProperty("Remarks")
-	private String remarks;
-
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 	

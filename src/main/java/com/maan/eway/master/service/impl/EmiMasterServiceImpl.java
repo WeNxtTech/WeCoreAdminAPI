@@ -81,7 +81,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 	public List<String> validateEmiDetails(EmiMasterSaveReq req) {
 		List<String> errorList = new ArrayList<String>();
 		try {
-			List<EmiDetailsReq> emiDetails = req.getEmiDetails();
+			
 			// Emi Master Validation
 			if (StringUtils.isBlank(req.getPolicyType())) {
 		//		errorList.add(new Error("01", "PolicyType", "Please Enter PolicyType "));
@@ -165,9 +165,6 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 				}
 			}*/
 			
-			for(EmiDetailsReq e:req.getEmiDetails()) {
-				
-				
 				// Date Validation
 				Calendar cal = new GregorianCalendar();
 				Date today = new Date();
@@ -177,11 +174,11 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 				cal.set(Calendar.MINUTE, 50);
 				today = cal.getTime();
 				
-				if (e.getEffectiveDateStart() == null) {
+				if (req.getEffectiveDateStart() == null) {
 				//	errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start "));
 					errorList.add("1261");
 
-				} else if (e.getEffectiveDateStart().before(today)) {
+				} else if (req.getEffectiveDateStart().before(today)) {
 				//	errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
 					errorList.add("1262");
 				}
@@ -194,62 +191,62 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 					errorList.add("1271");
 				}
 				//Status Validation
-				if (StringUtils.isBlank(e.getStatus())) {
+				if (StringUtils.isBlank(req.getStatus())) {
 				//	errorList.add(new Error("05", "Status", "Please Select Status  "));
 					errorList.add("1263");
 				} 
 				else
-					if (e.getStatus().length() > 1) {
+					if (req.getStatus().length() > 1) {
 				//	errorList.add(new Error("05", "Status", "Please Select Valid Status - 1 Character Only Allwed"));
 					errorList.add("1264");
 				}else 
 					
-					if(!("Y".equalsIgnoreCase(e.getStatus())||"N".equalsIgnoreCase(e.getStatus())||"R".equalsIgnoreCase(e.getStatus())|| "P".equalsIgnoreCase(e.getStatus()))) {
+					if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
 			//		errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
 					errorList.add("1265");
 				}
 
-				if (StringUtils.isBlank(e.getRemarks())) {
+				if (StringUtils.isBlank(req.getRemarks())) {
 				//	errorList.add(new Error("05", "Remarks", "Please Enter Remarks"));
 					errorList.add("1259");
-				} else if (e.getRemarks().length() > 100) {
+				} else if (req.getRemarks().length() > 100) {
 				//	errorList.add(new Error("05", "Remarks", "Enter Remarks  within 100 Characters Only"));
 					errorList.add("1260");
 				}
 
-			if (StringUtils.isBlank(e.getPremiumEnd())) {
+			if (StringUtils.isBlank(req.getPremiumEnd())) {
 			//	errorList.add(new Error("07", "PremiumEnd", "Please Enter PremiumEnd"));
 				errorList.add("1600");
-			} else if (!e.getPremiumEnd().matches("[0-9.]+")) {
+			} else if (!req.getPremiumEnd().matches("[0-9.]+")) {
 			//	errorList.add(new Error("07", "PremiumEnd", "Please Enter Valid Number In PremiumEnd"));
 				errorList.add("1601");
 			}
-			if (StringUtils.isBlank(e.getPremiumStart())) {
+			if (StringUtils.isBlank(req.getPremiumStart())) {
 			//	errorList.add(new Error("08", "PremiumStart", "Please Enter PremiumStart"));
 				errorList.add("1602");
-			} else if (!e.getPremiumStart().matches("[0-9.]+")) {
+			} else if (!req.getPremiumStart().matches("[0-9.]+")) {
 			//	errorList.add(new Error("08", "PremiumStart", "Please Enter Valid Number In PremiumStart"));
 				errorList.add("1603");
-			} else if (Double.valueOf(e.getPremiumStart()) > Double.valueOf(e.getPremiumEnd())) {
+			} else if (Double.valueOf(req.getPremiumStart()) > Double.valueOf(req.getPremiumEnd())) {
 			//	errorList.add(new Error("08", "PremiumStart", "PremiumStart must be greater than PremiumEnd "));
 				errorList.add("1604");
 			}
-			if (StringUtils.isBlank(e.getInterestPercent())) {
+			if (StringUtils.isBlank(req.getInterestPercent())) {
 			//	errorList.add(new Error("09", "InterestPercent", "Please Enter InterestPercent"));
-				e.setInterestPercent("0.0");
-			}else if (Double.valueOf(e.getInterestPercent())>100.0 || Double.valueOf(e.getInterestPercent())<0.0 ) {
+				req.setInterestPercent("0.0");
+			}else if (Double.valueOf(req.getInterestPercent())>100.0 || Double.valueOf(req.getInterestPercent())<0.0 ) {
 			//	errorList.add(new Error("09", "InterestPercent", "Please Enter InterestPercent Less that or equal to 100"));
 				errorList.add("1606");
-			}else if (Double.valueOf(e.getInterestPercent())<0.0 ) {
+			}else if (Double.valueOf(req.getInterestPercent())<0.0 ) {
 			//	errorList.add(new Error("09", "InterestPercent", "Please Enter InterestPercent Should Be Greater than 0"));
 				errorList.add("1607");
 			}
-			else if (!e.getInterestPercent().matches("[0-9.]+")) {
+			else if (!req.getInterestPercent().matches("[0-9.]+")) {
 			//	errorList.add(new Error("09", "InterestPercent", "Please Enter Valid Number In InterestPercent"));
 				errorList.add("1608");
 			}
-			else if (StringUtils.isNotBlank(e.getInterestPercent())) {
-				String input = e.getInterestPercent();
+			else if (StringUtils.isNotBlank(req.getInterestPercent())) {
+				String input = req.getInterestPercent();
 
 				Pattern pat = Pattern.compile("^[0-9]*\\.?[0-9]+$");
 				Matcher mat = pat.matcher(input);
@@ -258,17 +255,17 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 					errorList.add("1608");
 				}
 			}
-			if (StringUtils.isBlank(e.getAdvancePercent())) {
+			if (StringUtils.isBlank(req.getAdvancePercent())) {
 			//	errorList.add(new Error("10", "AdvancePercent", "Please Enter AdvancePercent"));
-				e.setAdvancePercent("0.0");
-			}else if (Double.valueOf(e.getAdvancePercent())>100.0) {
+				req.setAdvancePercent("0.0");
+			}else if (Double.valueOf(req.getAdvancePercent())>100.0) {
 			//	errorList.add(new Error("10", "AdvancePercent", "Please Enter AdvancePercent Less that or equal to 100"));
 				errorList.add("1610");
-			}else if (Double.valueOf(e.getAdvancePercent())<0.0 ) {
+			}else if (Double.valueOf(req.getAdvancePercent())<0.0 ) {
 				//errorList.add(new Error("10", "AdvancePercent", "Please Enter AdvancePercent Should Be Greater than 0"));
 				errorList.add("1611");
-			}else if (StringUtils.isNotBlank(e.getAdvancePercent())) {
-				String input = e.getAdvancePercent();
+			}else if (StringUtils.isNotBlank(req.getAdvancePercent())) {
+				String input =req.getAdvancePercent();
 
 				Pattern pat = Pattern.compile("^[0-9]*\\.?[0-9]+$");
 				Matcher mat = pat.matcher(input);
@@ -280,7 +277,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 //			}else if (!req.getAdvancePercent().matches("[0-9.]+")) {
 //				errorList.add(new Error("10", "AdvancePercent", "Please Enter Valid Number In AdvancePercent"));
 //			}
-			}
+			
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
@@ -361,9 +358,9 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 					req.getPolicyType());
 			String policyTypeDesc = policyTypeData.getPolicyTypeName();
 			EmiMaster emi = repo.findTopByOrderByEmiIdDesc();
-			for (EmiDetailsReq r : req.getEmiDetails()) {
+		//	for (EmiDetailsReq r : req.getEmiDetails()) {
 				EmiMaster saveData = new EmiMaster();
-				if (StringUtils.isBlank(r.getEmiId())) {
+				if (StringUtils.isBlank(req.getEmiId())) {
 					findExistingEmiMaster(req);
 					emiId = emi.getEmiId() + count;
 					saveData.setEmiId(Integer.valueOf(emiId));
@@ -372,7 +369,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 					res.setResponse("Saved Successfully ");
 					count++;
 				} else {
-					emiId = Integer.valueOf(r.getEmiId());
+					emiId = Integer.valueOf(req.getEmiId());
 					CriteriaBuilder cb = em.getCriteriaBuilder();
 					CriteriaQuery<EmiMaster> query = cb.createQuery(EmiMaster.class);
 
@@ -384,7 +381,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 					orderList.add(cb.desc(b.get("effectiveDateStart")));
 
 					Predicate n1 = cb.equal(b.get("companyId"), req.getCompanyId());
-					Predicate n3 = cb.equal(b.get("emiId"), r.getEmiId());
+					Predicate n3 = cb.equal(b.get("emiId"), req.getEmiId());
 
 					query.where(n1, n3).orderBy(orderList);
 
@@ -432,37 +429,37 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 					saveData.setPolicyDesc(policyTypeDesc);
 				}
 
-				if (StringUtils.isBlank(r.getEmiId())) {
-					saveData.setPremiumStart(r.getPremiumStart());
-					saveData.setPremiumEnd(r.getPremiumEnd());
-					saveData.setInterestPercent(r.getInterestPercent());
-					saveData.setAdvancePercent(r.getAdvancePercent());
-					saveData.setInstallmentPeriod(r.getInstallmentPeriod());
-					if (StringUtils.isBlank(r.getInstallmentPeriod())) {
+				if (StringUtils.isBlank(req.getEmiId())) {
+					saveData.setPremiumStart(req.getPremiumStart());
+					saveData.setPremiumEnd(req.getPremiumEnd());
+					saveData.setInterestPercent(req.getInterestPercent());
+					saveData.setAdvancePercent(req.getAdvancePercent());
+					saveData.setInstallmentPeriod(req.getInstallmentPeriod());
+					if (StringUtils.isBlank(req.getInstallmentPeriod())) {
 						List<ListItemValue> installmentList = getInstallmentTypeDesc(req.getCompanyId(), "99999",
-								"INSTALLMENT_TYPE", r.getInstallmentTypeId());
+								"INSTALLMENT_TYPE", req.getInstallmentTypeId());
 						String installmentDesc = installmentList.get(0).getItemValue();
-						saveData.setInstallmentTypeId(r.getInstallmentTypeId());
+						saveData.setInstallmentTypeId(req.getInstallmentTypeId());
 						saveData.setInstallmentTypeDesc(StringUtils.isBlank(installmentDesc) ? "" : installmentDesc);
 					} else {
 						saveData.setInstallmentTypeId("0");
-						saveData.setInstallmentTypeDesc(r.getInstallmentPeriod() + " months");
+						saveData.setInstallmentTypeDesc(req.getInstallmentPeriod() + " months");
 					}
 				} else {
-					saveData.setPremiumStart(r.getPremiumStart());
-					saveData.setPremiumEnd(r.getPremiumEnd());
-					saveData.setInterestPercent(r.getInterestPercent());
-					saveData.setAdvancePercent(r.getAdvancePercent());
-					saveData.setInstallmentPeriod(r.getInstallmentPeriod());
-					if (StringUtils.isBlank(r.getInstallmentPeriod())) {
+					saveData.setPremiumStart(req.getPremiumStart());
+					saveData.setPremiumEnd(req.getPremiumEnd());
+					saveData.setInterestPercent(req.getInterestPercent());
+					saveData.setAdvancePercent(req.getAdvancePercent());
+					saveData.setInstallmentPeriod(req.getInstallmentPeriod());
+					if (StringUtils.isBlank(req.getInstallmentPeriod())) {
 						List<ListItemValue> installmentList = getInstallmentTypeDesc(req.getCompanyId(), "99999",
-								"INSTALLMENT_TYPE", r.getInstallmentTypeId());
+								"INSTALLMENT_TYPE", req.getInstallmentTypeId());
 						String installmentDesc = installmentList.get(0).getItemValue();
-						saveData.setInstallmentTypeId(r.getInstallmentTypeId());
+						saveData.setInstallmentTypeId(req.getInstallmentTypeId());
 						saveData.setInstallmentTypeDesc(StringUtils.isBlank(installmentDesc) ? "" : installmentDesc);
 					} else {
 						saveData.setInstallmentTypeId("0");
-						saveData.setInstallmentTypeDesc(r.getInstallmentPeriod() + " months");
+						saveData.setInstallmentTypeDesc(req.getInstallmentPeriod() + " months");
 					}
 				}
 				saveData.setEffectiveDateStart(new Date());
@@ -474,7 +471,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 				saveData.setUpdatedBy(req.getCreatedBy());
 				saveData.setAmendId(list != null && !list.isEmpty() ? list.get(0).getAmendId() : 0);
 				emiList.add(saveData);
-			}
+		//	}
 			repo.saveAllAndFlush(emiList);
 			String collect = emiList.stream().map(e -> String.valueOf(e.getEmiId()))
 					.collect(Collectors.joining(","));
@@ -505,20 +502,20 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 
 	        PolicyTypeMaster policyTypeData = getPolicyTypeDesc(req.getProductId(), req.getCompanyId(), req.getPolicyType());
 	        String policyTypeDesc = policyTypeData != null ? policyTypeData.getPolicyTypeName() : "UNKNOWN";
-	        findExistingEmiMaster(req);
-	        for (EmiDetailsReq detail : req.getEmiDetails()) {
+	    //    findExistingEmiMaster(req);
+	   //     for (EmiDetailsReq detail : req.getEmiDetails()) {
 	        	SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/yyyy");
-	 	        Date startDate = detail.getEffectiveDateStart(); // correctly use input
+	 	        Date startDate = req.getEffectiveDateStart(); // correctly use input
 	 	        Date endDate = sdformat.parse("31/12/2050");
 	            EmiMaster saveData = new EmiMaster(); // important: new object per loop
 	            dozerMapper.map(req, saveData);
 
 	            Integer emiId;
-	            if (StringUtils.isBlank(detail.getEmiId())) {
+	            if (StringUtils.isBlank(req.getEmiId())) {
 	                emiId = count.intValue() + trackEmiId++;
 	                saveData.setAmendId(0);
 	            } else {
-	                emiId = Integer.parseInt(detail.getEmiId());
+	                emiId = Integer.parseInt(req.getEmiId());
 
 	                CriteriaBuilder cb = em.getCriteriaBuilder();
 	                CriteriaQuery<EmiMaster> query = cb.createQuery(EmiMaster.class);
@@ -547,35 +544,35 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 	            saveData.setUpdatedDate(new Date());
 	            saveData.setPolicyType(req.getPolicyType());
 	            saveData.setPolicyDesc("99999".equals(req.getPolicyType()) ? "ALL" : policyTypeDesc);
-	            saveData.setStatus(detail.getStatus());
-	            saveData.setIntresetOrProposal(detail.getAdvanceYn());
+	            saveData.setStatus(req.getStatus());
+	            saveData.setIntresetOrProposal(req.getAdvanceYn());
 	           
-	            List<String> taxIds = detail.getTaxIds();
+	            List<String> taxIds = req.getTaxIds();
 	            String taxIdsString = taxIds == null || taxIds.isEmpty()
 	                    ? ""
 	                    : String.join(",", taxIds) + ",";
 	            saveData.setTaxIds(taxIdsString);
 	            // EMI-specific fields
-	            saveData.setPremiumStart(detail.getPremiumStart());
-	            saveData.setPremiumEnd(detail.getPremiumEnd());
-	            saveData.setInterestPercent(detail.getInterestPercent());
-	            saveData.setAdvancePercent(detail.getAdvancePercent());
-	            saveData.setInstallmentPeriod(detail.getInstallmentPeriod());
+	            saveData.setPremiumStart(req.getPremiumStart());
+	            saveData.setPremiumEnd(req.getPremiumEnd());
+	            saveData.setInterestPercent(req.getInterestPercent());
+	            saveData.setAdvancePercent(req.getAdvancePercent());
+	            saveData.setInstallmentPeriod(req.getInstallmentPeriod());
 
-	            if (StringUtils.isBlank(detail.getInstallmentPeriod())) {
+	            if (StringUtils.isBlank(req.getInstallmentPeriod())) {
 	                List<ListItemValue> installmentList = getInstallmentTypeDesc(
-	                        req.getCompanyId(), "99999", "INSTALLMENT_TYPE", detail.getInstallmentTypeId()
+	                        req.getCompanyId(), "99999", "INSTALLMENT_TYPE", req.getInstallmentTypeId()
 	                );
 	                String installmentDesc = installmentList.isEmpty() ? "" : installmentList.get(0).getItemValue();
-	                saveData.setInstallmentTypeId(detail.getInstallmentTypeId());
+	                saveData.setInstallmentTypeId(req.getInstallmentTypeId());
 	                saveData.setInstallmentTypeDesc(StringUtils.defaultIfBlank(installmentDesc, ""));
 	            } else {
 	                saveData.setInstallmentTypeId("0");
-	                saveData.setInstallmentTypeDesc(detail.getInstallmentPeriod() + "months");
+	                saveData.setInstallmentTypeDesc(req.getInstallmentPeriod() + "months");
 	            }
 
 	            emiList.add(saveData);
-	        }
+	    //    }
 
 	        repo.saveAllAndFlush(emiList);
 	        String collect = emiList.stream().map(e -> String.valueOf(e.getEmiId()))
@@ -612,11 +609,11 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 		n2=cb.equal(r.get("productId"), req.getProductId());
 		n3=cb.equal(r.get("policyType"), req.getPolicyType());
 	
-		for(EmiDetailsReq emiDetails:req.getEmiDetails()){
-			if(StringUtils.isBlank(emiDetails.getInstallmentPeriod())) {
-			n4=cb.equal(r.get("installmentTypeId"),emiDetails.getInstallmentTypeId());
+	//	for(EmiDetailsReq emiDetails:req.getEmiDetails()){
+			if(StringUtils.isBlank(req.getInstallmentPeriod())) {
+			n4=cb.equal(r.get("installmentTypeId"),req.getInstallmentTypeId());
 			}else {
-			n4=cb.equal(r.get("installmentPeriod"),emiDetails.getInstallmentPeriod());
+			n4=cb.equal(r.get("installmentPeriod"),req.getInstallmentPeriod());
 			}
 			q.select(r.get("emiId"));
 			q.where(n1,n2,n3,n4);
@@ -626,7 +623,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 				repo.deleteByEmiId(id);
 			}
 		}
-	}
+	
 
 	public List<EmiMaster> getEmiMasterList(String companyId) {
 		List<EmiMaster> list = new ArrayList<EmiMaster>();

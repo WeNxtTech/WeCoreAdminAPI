@@ -81,7 +81,6 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 	public List<String> validateEmiDetails(EmiMasterSaveReq req) {
 		List<String> errorList = new ArrayList<String>();
 		try {
-			
 			// Emi Master Validation
 			if (StringUtils.isBlank(req.getPolicyType())) {
 		//		errorList.add(new Error("01", "PolicyType", "Please Enter PolicyType "));
@@ -164,6 +163,9 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 					}			
 				}
 			}*/
+		
+			for(EmiDetailsReq e:req.getEmiDetails()) {
+				
 			
 				// Date Validation
 				Calendar cal = new GregorianCalendar();
@@ -174,9 +176,45 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 				cal.set(Calendar.MINUTE, 50);
 				today = cal.getTime();
 				
-				if (req.getEffectiveDateStart() == null) {
+				if (e.getEffectiveDateStart() == null) {
 				//	errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start "));
 					errorList.add("1261");
+
+				} else if (e.getEffectiveDateStart().before(today)) {
+				//	errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+					errorList.add("1262");
+				}
+
+				if (StringUtils.isBlank(req.getCreatedBy())) {
+				//	errorList.add(new Error("03", "CreatedBy", "Please Enter CreatedBy "));
+					errorList.add("1270");
+				} else if (req.getCreatedBy().length() > 100) {
+				//	errorList.add(new Error("03", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+					errorList.add("1271");
+				}
+				//Status Validation
+				if (StringUtils.isBlank(e.getStatus())) {
+				//	errorList.add(new Error("05", "Status", "Please Select Status  "));
+					errorList.add("1263");
+				} 
+				else
+					if (e.getStatus().length() > 1) {
+				//	errorList.add(new Error("05", "Status", "Please Select Valid Status - 1 Character Only Allwed"));
+					errorList.add("1264");
+				}else 
+					
+					if(!("Y".equalsIgnoreCase(e.getStatus())||"N".equalsIgnoreCase(e.getStatus())||"R".equalsIgnoreCase(e.getStatus())|| "P".equalsIgnoreCase(e.getStatus()))) {
+			//		errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+					errorList.add("1265");
+				}
+
+				if (StringUtils.isBlank(e.getRemarks())) {
+				//	errorList.add(new Error("05", "Remarks", "Please Enter Remarks"));
+					errorList.add("1259");
+				} else if (e.getRemarks().length() > 100) {
+				//	errorList.add(new Error("05", "Remarks", "Enter Remarks  within 100 Characters Only"));
+					errorList.add("1260");
+				}
 
 				} else if (req.getEffectiveDateStart().before(today)) {
 				//	errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
@@ -540,10 +578,10 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 
 	        PolicyTypeMaster policyTypeData = getPolicyTypeDesc(req.getProductId(), req.getCompanyId(), req.getPolicyType());
 	        String policyTypeDesc = policyTypeData != null ? policyTypeData.getPolicyTypeName() : "UNKNOWN";
-	    //    findExistingEmiMaster(req);
-	   //     for (EmiDetailsReq detail : req.getEmiDetails()) {
+	        findExistingEmiMaster(req);
+	        for (EmiDetailsReq detail : req.getEmiDetails()) {
 	        	SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/yyyy");
-	 	        Date startDate = req.getEffectiveDateStart(); // correctly use input
+	 	        Date startDate = detail.getEffectiveDateStart(); // correctly use input
 	 	        Date endDate = sdformat.parse("31/12/2050");
 	            EmiMaster saveData = new EmiMaster(); // important: new object per loop
 	            dozerMapper.map(req, saveData);
@@ -584,6 +622,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 	            saveData.setPolicyDesc("99999".equals(req.getPolicyType()) ? "ALL" : policyTypeDesc);
 	            saveData.setStatus(req.getStatus());
 	            saveData.setIntresetOrProposal(req.getAdvanceYn());
+
 	           
 	            List<String> taxIds = req.getTaxIds();
 	            String taxIdsString = taxIds == null || taxIds.isEmpty()

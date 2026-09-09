@@ -27,10 +27,7 @@ import lombok.ToString;
 @ToString
 public class EmiMasterSaveReq implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
-	
-    
+    private static final long serialVersionUID = 1L;   
     
 	@JsonProperty("ProductId")
 	private String productId;

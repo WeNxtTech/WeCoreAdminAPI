@@ -102,5 +102,8 @@ public class CompanyProductMasterSaveReq implements Serializable {
 
 	@JsonProperty("ClaimExperience_YN")
 	private String claimExperienceYn;
+	
+	@JsonProperty("DynamicYN")
+	private String dynamicYN;
 
 }

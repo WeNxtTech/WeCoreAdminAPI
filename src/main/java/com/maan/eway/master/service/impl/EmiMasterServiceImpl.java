@@ -180,7 +180,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			}
 			if (StringUtils.isBlank(e.getInterestPercent())) {
 			//	errorList.add(new Error("09", "InterestPercent", "Please Enter InterestPercent"));
-				errorList.add("1605");
+				e.setInterestPercent("0.0");
 			}else if (Double.valueOf(e.getInterestPercent())>100.0 || Double.valueOf(e.getInterestPercent())<0.0 ) {
 			//	errorList.add(new Error("09", "InterestPercent", "Please Enter InterestPercent Less that or equal to 100"));
 				errorList.add("1606");
@@ -204,7 +204,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			}
 			if (StringUtils.isBlank(e.getAdvancePercent())) {
 			//	errorList.add(new Error("10", "AdvancePercent", "Please Enter AdvancePercent"));
-				errorList.add("1609");
+				e.setAdvancePercent("0.0");
 			}else if (Double.valueOf(e.getAdvancePercent())>100.0) {
 			//	errorList.add(new Error("10", "AdvancePercent", "Please Enter AdvancePercent Less that or equal to 100"));
 				errorList.add("1610");
@@ -491,7 +491,13 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 	            saveData.setPolicyType(req.getPolicyType());
 	            saveData.setPolicyDesc("99999".equals(req.getPolicyType()) ? "ALL" : policyTypeDesc);
 	            saveData.setStatus(req.getStatus());
-
+	            saveData.setIntresetOrProposal(detail.getAdvanceYn());
+	           
+	            List<String> taxIds = detail.getTaxIds();
+	            String taxIdsString = taxIds == null || taxIds.isEmpty()
+	                    ? ""
+	                    : String.join(",", taxIds) + ",";
+	            saveData.setTaxIds(taxIdsString);
 	            // EMI-specific fields
 	            saveData.setPremiumStart(detail.getPremiumStart());
 	            saveData.setPremiumEnd(detail.getPremiumEnd());
@@ -508,7 +514,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 	                saveData.setInstallmentTypeDesc(StringUtils.defaultIfBlank(installmentDesc, ""));
 	            } else {
 	                saveData.setInstallmentTypeId("0");
-	                saveData.setInstallmentTypeDesc(detail.getInstallmentPeriod() + " months");
+	                saveData.setInstallmentTypeDesc(detail.getInstallmentPeriod() + "months");
 	            }
 
 	            emiList.add(saveData);
@@ -856,10 +862,35 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 				res=map.map(emiMaster.get(0), EmiMasterRes2.class);
 				List<EmiDetailsRes> emiDetails=new ArrayList<EmiDetailsRes>();
 				for (EmiMaster data : emiMaster) {
-					DozerBeanMapper mapper2 = new DozerBeanMapper();
-					EmiDetailsRes e=new EmiDetailsRes();
-					e=mapper2.map(data, EmiDetailsRes.class);
-					emiDetails.add(e);
+
+				    EmiDetailsRes e = new EmiDetailsRes();
+
+				    e.setEmiId(data.getEmiId() != null ? String.valueOf(data.getEmiId()) : "");
+				    e.setPremiumStart(data.getPremiumStart() != null ? data.getPremiumStart() : "");
+				    e.setPremiumEnd(data.getPremiumEnd() != null ? data.getPremiumEnd() : "");
+				    e.setInterestPercent(data.getInterestPercent() != null ? data.getInterestPercent() : "");
+				    e.setAdvancePercent(data.getAdvancePercent() != null ? data.getAdvancePercent() : "");
+				    e.setInstallmentTypeId(data.getInstallmentTypeId() != null ? data.getInstallmentTypeId() : "");
+				    e.setInstallmentPeriod(data.getInstallmentPeriod() != null ? data.getInstallmentPeriod() : "");
+				    e.setInstallmentTypeDesc(data.getInstallmentTypeDesc() != null ? data.getInstallmentTypeDesc() : "");
+				    e.setAdvanceYn(data.getIntresetOrProposal() != null ? data.getIntresetOrProposal() : "");
+
+				    String taxIds = data.getTaxIds();
+
+				    if (taxIds != null && !taxIds.trim().isEmpty()) {
+
+				        List<String> taxIdList = Arrays.stream(taxIds.split(","))
+				                .map(String::trim)
+				                .filter(s -> !s.isEmpty())
+				                .collect(Collectors.toList());
+
+				        e.setTaxIds(taxIdList);
+
+				    } else {
+				        e.setTaxIds(new ArrayList<>());
+				    }
+
+				    emiDetails.add(e);
 				}
 				res.setEmiDetails(emiDetails);
 				resList.add(res);
@@ -1130,10 +1161,35 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			res=mapper.map(list.get(0), EmiMasterRes2.class);
 			List<EmiDetailsRes> emiDetails=new ArrayList<EmiDetailsRes>();
 			for (EmiMaster data : list) {
-				DozerBeanMapper mapper2 = new DozerBeanMapper();
-				EmiDetailsRes e=new EmiDetailsRes();
-				e=mapper2.map(data, EmiDetailsRes.class);
-				emiDetails.add(e);
+
+			    EmiDetailsRes e = new EmiDetailsRes();
+
+			    e.setEmiId(data.getEmiId() != null ? String.valueOf(data.getEmiId()) : "");
+			    e.setPremiumStart(data.getPremiumStart() != null ? data.getPremiumStart() : "");
+			    e.setPremiumEnd(data.getPremiumEnd() != null ? data.getPremiumEnd() : "");
+			    e.setInterestPercent(data.getInterestPercent() != null ? data.getInterestPercent() : "");
+			    e.setAdvancePercent(data.getAdvancePercent() != null ? data.getAdvancePercent() : "");
+			    e.setInstallmentTypeId(data.getInstallmentTypeId() != null ? data.getInstallmentTypeId() : "");
+			    e.setInstallmentPeriod(data.getInstallmentPeriod() != null ? data.getInstallmentPeriod() : "");
+			    e.setInstallmentTypeDesc(data.getInstallmentTypeDesc() != null ? data.getInstallmentTypeDesc() : "");
+			    e.setAdvanceYn(data.getIntresetOrProposal() != null ? data.getIntresetOrProposal() : "");
+
+			    String taxIds = data.getTaxIds();
+
+			    if (taxIds != null && !taxIds.trim().isEmpty()) {
+
+			        List<String> taxIdList = Arrays.stream(taxIds.split(","))
+			                .map(String::trim)
+			                .filter(s -> !s.isEmpty())
+			                .collect(Collectors.toList());
+
+			        e.setTaxIds(taxIdList);
+
+			    } else {
+			        e.setTaxIds(new ArrayList<>());
+			    }
+
+			    emiDetails.add(e);
 			}
 			res.setEmiDetails(emiDetails);
 	

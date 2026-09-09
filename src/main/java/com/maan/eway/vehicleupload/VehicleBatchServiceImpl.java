@@ -2335,12 +2335,16 @@ public CommonRes updateEmployeeRecord(UpdateEmployeeRecordReq req) {
 	        controlDetails.setProgressDescription("Progressing..");
 	        controlDetails.setStatus("P");
 	        TransactionControlDetails tcd = transRepo.save(controlDetails);
+	     // ── CHANGED: dynamic gridSize based on record count ──────────────────
+	        int batchSize = determineBatchSize(total_records);   // records per partition
+	        int gridSize  = (int) Math.ceil((double) total_records / batchSize);
+	        log.info("batchCreateQuote || total={} batchSize={} gridSize={}", total_records, batchSize, gridSize);
 
 	        JobParameters jobParameters = new JobParametersBuilder()
 	        		.addString("request_ref_no", request_ref_no)
 	            .addString("Authorization", authorization)
 	            .addLong("totalRecords", total_records.longValue())
-	            .addLong("gridSize", 1L) 
+	            .addLong("gridSize",(long) gridSize) 
 	            .addLocalDateTime("time", LocalDateTime.now())
 	            .toJobParameters();
 
@@ -2351,6 +2355,8 @@ public CommonRes updateEmployeeRecord(UpdateEmployeeRecordReq req) {
 		     map.put("progress_description", tcd.getProgressDescription());
 		     map.put("status", tcd.getStatus());
 		     map.put("request_reference_no",request_ref_no);
+		     map.put("total_records", String.valueOf(total_records));   
+		     map.put("grid_size", String.valueOf(gridSize));   
 		        			
 		     response.setMessage("Success");
 		     response.setErrorMessage(Collections.EMPTY_LIST);
@@ -2367,6 +2373,13 @@ public CommonRes updateEmployeeRecord(UpdateEmployeeRecordReq req) {
 		    return response;
 		}
 		return response;
+	}
+	
+	private int determineBatchSize(int totalRecords) {
+	    if (totalRecords <= 100)  return 10;
+	    if (totalRecords <= 300)  return 20;
+	    if (totalRecords <= 600)  return 30;
+	    return 40;
 	}
 	
 	@Override

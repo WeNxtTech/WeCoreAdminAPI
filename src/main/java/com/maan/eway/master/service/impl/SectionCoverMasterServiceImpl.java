@@ -1465,7 +1465,10 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				saveCover.setIsSelectedYn(req.getIsSelectedYn());
 				saveData.setMinimumRate(new BigDecimal(req.getMinimumRate()));
 				saveData.setMinimumRateYn(StringUtils.isBlank(req.getMinimumRateYN()) ? "N" : req.getMinimumRateYN());
-
+				
+				saveData.setMaximumRateYn(StringUtils.isBlank(req.getMaximumRateYN()) ? "N" : req.getMaximumRateYN());
+				saveData.setMaximumRate(new BigDecimal(req.getMaximumRate()));
+				
 				saveCover.setRemarks(req.getRemarks());
 				saveCover.setDependentCoverYn(StringUtils.isNotBlank(req.getDependentCoverYn()) ? req.getDependentCoverYn() : "N");
 				saveCover.setMultiSelectYn( StringUtils.isNotBlank(req.getMultiSelectYn() ) ? req.getMultiSelectYn()  : "N");
@@ -1513,6 +1516,8 @@ public class SectionCoverMasterServiceImpl implements SectionCoverMasterService 
 				
 				saveData.setMinimumRateYn(StringUtils.isBlank(req.getMinimumRateYN()) ? "N" : req.getMinimumRateYN());
 
+				saveData.setMaximumRateYn(StringUtils.isBlank(req.getMaximumRateYN()) ? "N" : req.getMaximumRateYN());
+				saveData.setMaximumRate(req.getMaximumRate()!=null ?new BigDecimal(req.getMaximumRate()):BigDecimal.ZERO);
 				
 				saveData.setMultiSelectYn( StringUtils.isNotBlank(req.getMultiSelectYn() ) ? req.getMultiSelectYn()  : "N");
 				saveData.setAgencyCode(StringUtils.isNotBlank(req.getAgencyCode()) ? req.getAgencyCode() : "99999") ;

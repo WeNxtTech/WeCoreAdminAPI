@@ -210,7 +210,11 @@ public class ExcessMasterServiceImpl  implements ExcessMasterService{
 		}
 		
 		ExcessMaster oldExcessMaster = excessMaster.get(0);		
-		oldExcessMaster.setEffectiveDateEnd(req.getEffectiveDateStart());
+		oldExcessMaster.setEffectiveDateEnd( Date.from(
+		        req.getEffectiveDateStart()
+		           .atStartOfDay(ZoneId.systemDefault())
+		           .toInstant()
+		    ));
 		oldExcessMaster.setStatus("N");
 		return oldExcessMaster;		
 	}
@@ -239,7 +243,7 @@ public class ExcessMasterServiceImpl  implements ExcessMasterService{
 		
 		excessMaster.setExcessAmount(req.getExcessAmount());
 		excessMaster.setExcessDescription(req.getExcessDescription());
-		excessMaster.setExcessPercentage(req.getExcessPercentage());
+		excessMaster.setExcessPercentage(req.getExcessPercentage() != null  ? (req.getExcessPercentage()) :null );
 		excessMaster.setCurrency(req.getCurrency());
 		excessMaster.setCoverName(req.getCoverId());
 		excessMaster.setStatus(req.getStatus());
@@ -255,7 +259,11 @@ public class ExcessMasterServiceImpl  implements ExcessMasterService{
 		excessMaster.setCoreAppCode(coreAppCode);
 				
 		excessMaster.setCreatedBy(req.getCreatedBy());
-		excessMaster.setEffectiveDateStart(req.getEffectiveDateStart());
+		excessMaster.setEffectiveDateStart( Date.from(
+		        req.getEffectiveDateStart()
+		           .atStartOfDay(ZoneId.systemDefault())
+		           .toInstant()
+		    ));
 		excessMaster.setEffectiveDateEnd(DEFAULT_END_DATE);		
 		excessMaster.setEntryDate(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
 				

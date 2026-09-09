@@ -1,5 +1,7 @@
 package com.maan.eway.master.req;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -35,4 +37,10 @@ public class EmiDetailsReq {
 	
 	@JsonProperty("EmiId")
 	private String emiId;
+	
+	@JsonProperty("AdvanceYn")
+	private String advanceYn;
+	
+	@JsonProperty("TaxIds")
+	private List<String> taxIds;
 }

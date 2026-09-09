@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -16,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -78,6 +80,10 @@ public class VehicleAsynchronousProcess {
 	
 	@Autowired
 	private ProductEmployeesDetailsRepository productRepo;
+	
+	@Autowired
+	@Qualifier("apiCallExecutor")
+	private Executor apiCallExecutor;
 	
     private static ObjectMapper mapper =new ObjectMapper();
     
@@ -596,6 +602,15 @@ public class VehicleAsynchronousProcess {
 		}
 		return apiResponse ;
 		
+	}
+	
+	public CompletableFuture<Map<String, Object>> callApiAsync(
+	        String req, String auth, MediaType mediaType, String api) {
+
+	    return CompletableFuture.supplyAsync(
+	            () -> callApi(req, auth, mediaType, api), 
+	            apiCallExecutor
+	    );
 	}
 	
 }

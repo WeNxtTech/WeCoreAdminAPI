@@ -166,5 +166,10 @@ public class SectionCoverUpdateReq {
 	@JsonProperty("AdditionalInfoYN")
 	private String additionalInfoYN;
 	
+	@JsonProperty("MaximumRate")
+	private String maximumRate;
+	
+	@JsonProperty("MaximumRateYN")
+	private String maximumRateYN;
 	
 }

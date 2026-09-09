@@ -142,6 +142,11 @@ private static final long serialVersionUID = 1L;
     @Column(name="UPDATED_BY", length=20)
     private String   updatedBy ;
 
+    @Column(name="JSON_KEY", length=20)
+    private String   jsonKey ;
+    
+    @Column(name="JSON_KEY_DROPDOWN", length=20)
+    private String   jsonKeyDropDown ;
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

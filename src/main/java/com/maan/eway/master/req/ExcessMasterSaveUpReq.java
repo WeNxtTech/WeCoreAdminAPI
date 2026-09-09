@@ -4,7 +4,7 @@
  */
 package com.maan.eway.master.req;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
@@ -46,7 +46,7 @@ public class ExcessMasterSaveUpReq {
 	
 	@JsonProperty("ExcessPercentage")
 	@NotNull(message = "Section Id is required.")
-	private Integer excessPercentage;
+	private Double  excessPercentage;
 	
 	@JsonProperty("ExcessAmount")
 	@NotNull(message = "Excess Amount is required.")
@@ -82,6 +82,6 @@ public class ExcessMasterSaveUpReq {
 	@NotNull(message = "Effective Date Start is required.")
 	@FutureOrPresent(message = "Effective Date Start accepts present or future date.")
 	@JsonFormat(pattern = "dd/MM/yyyy", shape = Shape.STRING)
-	private Date effectiveDateStart;
+	private LocalDate  effectiveDateStart;
 	
 }

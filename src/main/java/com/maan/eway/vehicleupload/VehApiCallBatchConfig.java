@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Executor;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecutionListener;
@@ -88,30 +89,34 @@ public class VehApiCallBatchConfig {
 	
 	@Bean("veh_apicall_partitions")
 	@StepScope
-	public Partitioner partitioner(@Value("#{jobParameters[totalRecords]}") Integer totalRecords,@Value("#{jobParameters[gridSize]}") Integer gridSize) {
-		MainTablePartitions rangePartitioner = new MainTablePartitions();
-		rangePartitioner.setTotalRecord(totalRecords);
-		rangePartitioner.setGridSize(gridSize);
-		return rangePartitioner;
+	public Partitioner partitioner(
+	        @Value("#{jobParameters[totalRecords]}") Long totalRecords,  
+	        @Value("#{jobParameters[gridSize]}")     Long gridSize) {
+
+	    MainTablePartitions rangePartitioner = new MainTablePartitions();
+	    rangePartitioner.setTotalRecord(totalRecords.intValue());
+	    rangePartitioner.setGridSize(gridSize.intValue());
+	    return rangePartitioner;
 	}
 	
 	@Bean("veh_apicall_partitionsHandler")
 	public PartitionHandler partitionHandler() {
-		TaskExecutorPartitionHandler teph = new TaskExecutorPartitionHandler();
-		teph.setStep(veh_apicall_step);
-		teph.setTaskExecutor(taskExecutor());
-		return teph;
+	    TaskExecutorPartitionHandler teph = new TaskExecutorPartitionHandler();
+	    teph.setStep(veh_apicall_step);
+	    teph.setTaskExecutor(taskExecutor());
+	    teph.setGridSize(50);   
+	    return teph;
 	}
 	
 	@Bean("veh_api_TaskExecutor")
 	public TaskExecutor taskExecutor() {
 	    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-	    executor.setCorePoolSize(10);
-	    executor.setMaxPoolSize(15);
+	    executor.setCorePoolSize(15);    // was 10
+	    executor.setMaxPoolSize(25);     // was 15; each thread runs 3 API calls sequentially
+	    executor.setQueueCapacity(100);  // was 50
 	    executor.setWaitForTasksToCompleteOnShutdown(true);
-	    executor.setAwaitTerminationSeconds(120); // ← was 5 seconds — way too short for API calls
-	    executor.setQueueCapacity(50);
-	    executor.setThreadNamePrefix("veh_val");
+	    executor.setAwaitTerminationSeconds(300);  
+	    executor.setThreadNamePrefix("veh_api_");
 	    executor.initialize();
 	    return executor;
 	}
@@ -150,17 +155,36 @@ public class VehApiCallBatchConfig {
 	   }
 
  
-   	 @Bean(name="veh_apicall_processor")
-	 @StepScope
-	 public ItemProcessor<EserviceMotorDetailsRaw, EserviceMotorDetailsRaw> processor(@Value("#{jobParameters[Authorization]}") String Authorization){
-		 return new APIItemProcessor(Authorization);
-	 }
+	// In VehApiCallBatchConfig.java — processor bean becomes a passthrough
+	   @Bean(name = "veh_apicall_processor")
+	   @StepScope
+	   public ItemProcessor<EserviceMotorDetailsRaw, EserviceMotorDetailsRaw> processor(
+	           @Value("#{jobParameters[Authorization]}") String authorization) {
+	       APIItemProcessor proc = new APIItemProcessor(authorization);
+	       return item -> item;  //
+	   }
 	 
 	 
-	@Bean(name="veh_apicall_itemWriter")
-	@StepScope
-	public ItemWriter<EserviceMotorDetailsRaw> writer() {
-		return new APIItemWriter();
+	   @Bean(name = "veh_apicall_itemWriter")
+	   @StepScope
+	   public ItemWriter<EserviceMotorDetailsRaw> writer(
+	           @Value("#{jobParameters[Authorization]}") String authorization) {
+	       return new APIItemWriter(authorization);  // ← auth passed in, no @Autowired needed
+	   }
+	
+	// In VehApiCallBatchConfig.java — add this bean
+
+	@Bean("apiCallExecutor")
+	public Executor apiCallExecutor() {
+	    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+	    executor.setCorePoolSize(20);    // 20 vehicles' HTTP calls in flight simultaneously
+	    executor.setMaxPoolSize(40);
+	    executor.setQueueCapacity(200);
+	    executor.setThreadNamePrefix("api-call-");
+	    executor.setWaitForTasksToCompleteOnShutdown(true);
+	    executor.setAwaitTerminationSeconds(300);
+	    executor.initialize();
+	    return executor;
 	}
 
 

@@ -192,6 +192,7 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="MINIMUM_RATE")
     private BigDecimal     minimumRate ;
+    
 
     @Column(name="CALC_TYPE", length=1)
     private String     calcType ;
@@ -270,6 +271,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="EXCESS_DESC")
     private String     excessDesc ;
+    
+    @Column(name="MAXIMUM_RATE")
+    private BigDecimal    maximumRate ;
  
 }
 

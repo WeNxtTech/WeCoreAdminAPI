@@ -27,9 +27,7 @@ public class EmiMasterSaveReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-	@JsonFormat(pattern="dd/MM/yyyy")
-	@JsonProperty("EffectiveDateStart")
-	private Date effectiveDateStart;
+	
     
     
 	@JsonProperty("ProductId")
@@ -44,6 +42,44 @@ public class EmiMasterSaveReq implements Serializable {
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 	
-	@JsonProperty("EmiDetails")
-	private List<EmiDetailsReq> emiDetails;
+//	@JsonProperty("EmiDetails")
+//	private List<EmiDetailsReq> emiDetails;
+	
+	@JsonProperty("PremiumStart")
+	private String premiumStart;
+
+	@JsonProperty("PremiumEnd")
+	private String premiumEnd;
+
+	@JsonProperty("InterestPercent")
+    private String  interestPercent ;
+    
+    @JsonProperty("AdvancePercent")
+    private String     advancePercent ;
+    
+	@JsonProperty("InstallmentTypeId")
+    private String installmentTypeId;
+	
+	@JsonProperty("InstallmentPeriod")
+	private String installmentPeriod;
+	
+	@JsonProperty("EmiId")
+	private String emiId;
+	
+	@JsonProperty("AdvanceYn")
+	private String advanceYn;
+	
+	@JsonProperty("Status")
+	private String status;
+	
+
+	@JsonProperty("Remarks")
+	private String remarks;
+	
+	@JsonProperty("TaxIds")
+	private List<String> taxIds;
+	
+	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
 }

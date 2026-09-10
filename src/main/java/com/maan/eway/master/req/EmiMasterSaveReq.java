@@ -7,16 +7,18 @@ package com.maan.eway.master.req;
 
 
 
-import lombok.*;
-
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-import java.util.Date;
-import jakarta.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter

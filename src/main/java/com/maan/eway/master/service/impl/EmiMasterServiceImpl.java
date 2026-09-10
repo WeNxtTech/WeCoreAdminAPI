@@ -278,6 +278,44 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 //				errorList.add(new Error("10", "AdvancePercent", "Please Enter Valid Number In AdvancePercent"));
 //			}
 			
+			if (StringUtils.isBlank(req.getInstallmentTypeId())) {
+
+			    errorList.add("1613");
+
+			} else {
+
+			    List<EmiMaster> existingEmi = repo
+			            .findByCompanyIdAndProductIdAndPolicyTypeAndInstallmentTypeIdAndStatus(
+			                    req.getCompanyId(),
+			                    Integer.valueOf(req.getProductId()),
+			                    req.getPolicyType(),
+			                    req.getInstallmentTypeId(),
+			                    "Y"
+			            );
+
+			    if (existingEmi != null && !existingEmi.isEmpty()) {
+
+			        // INSERT
+			        if (StringUtils.isBlank(req.getEmiId())) {
+
+			            errorList.add("5021");
+
+			        } 
+			        // UPDATE
+			        else {
+
+			            Integer requestEmiId = Integer.valueOf(req.getEmiId());
+
+			            boolean duplicate = existingEmi.stream()
+			                    .anyMatch(emi -> !emi.getEmiId().equals(requestEmiId));
+
+			            if (duplicate) {
+			                errorList.add("5021");
+			            }
+			        }
+			    }
+			}
+			
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();

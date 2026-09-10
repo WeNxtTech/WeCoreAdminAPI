@@ -12,6 +12,8 @@
 
 package com.maan.eway.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import com.maan.eway.bean.EmiMaster;
@@ -22,6 +24,9 @@ public interface EmiMasterRepository  extends JpaRepository<EmiMaster,EmiMasterI
 	void deleteByEmiId(Integer id);
 	
 	EmiMaster findTopByOrderByEmiIdDesc();
+
+	List<EmiMaster> findByCompanyIdAndProductIdAndPolicyTypeAndInstallmentTypeIdAndStatus(String companyId, Integer valueOf,
+			String policyType, String installmentTypeId, String string);
 
 	
 }

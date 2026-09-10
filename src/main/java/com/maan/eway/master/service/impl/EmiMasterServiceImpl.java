@@ -899,7 +899,17 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 //			Predicate n3 = cb.equal(b.get("companyId"), "99999");
 //			Predicate n5 = cb.or(n3,n2);
 			Predicate n6 = cb.equal(b.get("productId"), req.getProductId());
-			query.where(n1,n2,n6).orderBy(orderList);
+			if(StringUtils.isNotBlank(req.getPolicyType()))
+			{
+				Predicate n7 = cb.equal(b.get("policyType"), req.getPolicyType());
+				query.where(n1,n2,n6,n7).orderBy(orderList);
+			}
+			else
+			{
+				
+				query.where(n1,n2,n6).orderBy(orderList);
+			}
+			
 			
 			// Get Result
 			TypedQuery<EmiMaster> result = em.createQuery(query);

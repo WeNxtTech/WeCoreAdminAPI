@@ -19,4 +19,7 @@ public class EmiMasterGetAllReq implements Serializable {
     @JsonProperty("InsuranceId")
     private String companyId;
     
+    @JsonProperty("PolicyType")
+    private String policyType;
+    
 }

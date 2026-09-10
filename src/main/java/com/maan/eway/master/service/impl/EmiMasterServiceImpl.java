@@ -278,6 +278,44 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 //				errorList.add(new Error("10", "AdvancePercent", "Please Enter Valid Number In AdvancePercent"));
 //			}
 			
+			if (StringUtils.isBlank(req.getInstallmentTypeId())) {
+
+			    errorList.add("1613");
+
+			} else {
+
+			    List<EmiMaster> existingEmi = repo
+			            .findByCompanyIdAndProductIdAndPolicyTypeAndInstallmentTypeIdAndStatus(
+			                    req.getCompanyId(),
+			                    Integer.valueOf(req.getProductId()),
+			                    req.getPolicyType(),
+			                    req.getInstallmentTypeId(),
+			                    "Y"
+			            );
+
+			    if (existingEmi != null && !existingEmi.isEmpty()) {
+
+			        // INSERT
+			        if (StringUtils.isBlank(req.getEmiId())) {
+
+			            errorList.add("5021");
+
+			        } 
+			        // UPDATE
+			        else {
+
+			            Integer requestEmiId = Integer.valueOf(req.getEmiId());
+
+			            boolean duplicate = existingEmi.stream()
+			                    .anyMatch(emi -> !emi.getEmiId().equals(requestEmiId));
+
+			            if (duplicate) {
+			                errorList.add("5021");
+			            }
+			        }
+			    }
+			}
+			
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
@@ -899,7 +937,17 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 //			Predicate n3 = cb.equal(b.get("companyId"), "99999");
 //			Predicate n5 = cb.or(n3,n2);
 			Predicate n6 = cb.equal(b.get("productId"), req.getProductId());
-			query.where(n1,n2,n6).orderBy(orderList);
+			if(StringUtils.isNotBlank(req.getPolicyType()))
+			{
+				Predicate n7 = cb.equal(b.get("policyType"), req.getPolicyType());
+				query.where(n1,n2,n6,n7).orderBy(orderList);
+			}
+			else
+			{
+				
+				query.where(n1,n2,n6).orderBy(orderList);
+			}
+			
 			
 			// Get Result
 			TypedQuery<EmiMaster> result = em.createQuery(query);

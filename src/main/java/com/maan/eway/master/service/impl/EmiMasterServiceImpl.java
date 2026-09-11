@@ -976,6 +976,13 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 				    e.setInstallmentPeriod(data.getInstallmentPeriod() != null ? data.getInstallmentPeriod() : "");
 				    e.setInstallmentTypeDesc(data.getInstallmentTypeDesc() != null ? data.getInstallmentTypeDesc() : "");
 				    e.setAdvanceYn(data.getIntresetOrProposal() != null ? data.getIntresetOrProposal() : "");
+				    e.setEntryDate(data.getEntryDate() !=  null ? data.getEntryDate() : null);
+				    e.setRemarks(data.getRemarks() != null ? data.getRemarks() : "");
+				    e.setCompanyId(data.getCompanyId() != null ?  data.getCompanyId() : null);
+				    e.setProductId(data.getProductId() != null ? data.getProductId().toString() : null);
+				    e.setPolicyType(data.getPolicyType() != null ? data.getPolicyType() : null);
+				    e.setPolicyDesc(data.getPolicyDesc() != null ? data.getPolicyDesc() : null );
+				    e.setEffectiveDateStart(data.getEffectiveDateStart() != null ? data.getEffectiveDateStart() : null);
 
 				    String taxIds = data.getTaxIds();
 
@@ -1275,6 +1282,13 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 			    e.setInstallmentPeriod(data.getInstallmentPeriod() != null ? data.getInstallmentPeriod() : "");
 			    e.setInstallmentTypeDesc(data.getInstallmentTypeDesc() != null ? data.getInstallmentTypeDesc() : "");
 			    e.setAdvanceYn(data.getIntresetOrProposal() != null ? data.getIntresetOrProposal() : "");
+			    e.setEntryDate(data.getEntryDate() !=  null ? data.getEntryDate() : null);
+			    e.setRemarks(data.getRemarks() != null ? data.getRemarks() : "");
+			    e.setCompanyId(data.getCompanyId() != null ?  data.getCompanyId() : null);
+			    e.setProductId(data.getProductId() != null ? data.getProductId().toString() : null);
+			    e.setPolicyType(data.getPolicyType() != null ? data.getPolicyType() : null);
+			    e.setPolicyDesc(data.getPolicyDesc() != null ? data.getPolicyDesc() : null );
+			    e.setEffectiveDateStart(data.getEffectiveDateStart() != null ? data.getEffectiveDateStart() : null);
 
 			    String taxIds = data.getTaxIds();
 

@@ -1,7 +1,9 @@
 package com.maan.eway.master.res;
 
+import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -42,6 +44,35 @@ public class EmiDetailsRes {
 	
 	@JsonProperty("AdvanceYn")
 	private String advanceYn;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EntryDate")
+	private Date entryDate;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
+	
+	@JsonProperty("Remarks")
+	private String remarks;
+	
+	@JsonProperty("Status")
+	private String status;
+	
+	@JsonProperty("ProductId")
+	private String productId;
+
+	@JsonProperty("InsuranceId")
+	private String companyId;
+	
+	@JsonProperty("AmendId")
+	private String amendId;
+
+	@JsonProperty("PolicyType")
+	private String policyType;
+
+	@JsonProperty("PolicyTypeDesc")
+	private String policyDesc;
 	
 	@JsonProperty("TaxIds")
 	private List<String> taxIds;

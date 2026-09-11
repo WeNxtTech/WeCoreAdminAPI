@@ -81,6 +81,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 	public List<String> validateEmiDetails(EmiMasterSaveReq req) {
 		List<String> errorList = new ArrayList<String>();
 		try {
+			
 			// Emi Master Validation
 			if (StringUtils.isBlank(req.getPolicyType())) {
 		//		errorList.add(new Error("01", "PolicyType", "Please Enter PolicyType "));
@@ -163,8 +164,6 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 					}			
 				}
 			}*/
-			for(EmiDetailsReq e:req.getEmiDetails()) {
-				
 			
 				// Date Validation
 				Calendar cal = new GregorianCalendar();
@@ -179,41 +178,6 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 				//	errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start "));
 					errorList.add("1261");
 
-				} else if (req.getEffectiveDateStart().before(today)) {
-				//	errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
-					errorList.add("1262");
-				}
-
-				if (StringUtils.isBlank(req.getCreatedBy())) {
-				//	errorList.add(new Error("03", "CreatedBy", "Please Enter CreatedBy "));
-					errorList.add("1270");
-				} else if (req.getCreatedBy().length() > 100) {
-				//	errorList.add(new Error("03", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
-					errorList.add("1271");
-				}
-				//Status Validation
-				if (StringUtils.isBlank(req.getStatus())) {
-				//	errorList.add(new Error("05", "Status", "Please Select Status  "));
-					errorList.add("1263");
-				} 
-				else
-					if (req.getStatus().length() > 1) {
-				//	errorList.add(new Error("05", "Status", "Please Select Valid Status - 1 Character Only Allwed"));
-					errorList.add("1264");
-				}else 
-					
-					if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-			//		errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
-					errorList.add("1265");
-				}
-
-				if (StringUtils.isBlank(req.getRemarks())) {
-				//	errorList.add(new Error("05", "Remarks", "Please Enter Remarks"));
-					errorList.add("1259");
-				} else if (req.getRemarks().length() > 100) {
-				//	errorList.add(new Error("05", "Remarks", "Enter Remarks  within 100 Characters Only"));
-					errorList.add("1260");
-				}
 				} else if (req.getEffectiveDateStart().before(today)) {
 				//	errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
 					errorList.add("1262");

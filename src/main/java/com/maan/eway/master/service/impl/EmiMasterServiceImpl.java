@@ -595,12 +595,11 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 	            saveData.setPremiumEnd(req.getPremiumEnd());
 	            saveData.setInterestPercent(req.getInterestPercent());
 	            saveData.setAdvancePercent(req.getAdvancePercent());
-	            saveData.setInstallmentPeriod(req.getInstallmentPeriod());
+                List<ListItemValue> installmentList = getInstallmentTypeDesc(
+                        req.getCompanyId(), "99999", "INSTALLMENT_TYPE", req.getInstallmentTypeId()
+                );
+	            if (!StringUtils.isBlank(req.getInstallmentTypeId())) {
 
-	            if (StringUtils.isBlank(req.getInstallmentPeriod())) {
-	                List<ListItemValue> installmentList = getInstallmentTypeDesc(
-	                        req.getCompanyId(), "99999", "INSTALLMENT_TYPE", req.getInstallmentTypeId()
-	                );
 	                String installmentDesc = installmentList.isEmpty() ? "" : installmentList.get(0).getItemValue();
 	                saveData.setInstallmentTypeId(req.getInstallmentTypeId());
 	                saveData.setInstallmentTypeDesc(StringUtils.defaultIfBlank(installmentDesc, ""));
@@ -608,6 +607,15 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 	                saveData.setInstallmentTypeId("0");
 	                saveData.setInstallmentTypeDesc(req.getInstallmentPeriod() + "months");
 	            }
+	            
+	            if (!StringUtils.isBlank(req.getInstallmentPeriod())) {
+	                saveData.setInstallmentPeriod(req.getInstallmentPeriod());
+	            } else {
+	            	String intallPeriod = installmentList.isEmpty() ? req.getInstallmentTypeId() : installmentList.get(0).getParam1();
+	            	saveData.setInstallmentPeriod(intallPeriod);
+	            }
+	            
+	            
 
 	            emiList.add(saveData);
 	    //    }

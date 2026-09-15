@@ -597,7 +597,7 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 	            saveData.setAdvancePercent(req.getAdvancePercent());
 	            saveData.setInstallmentPeriod(req.getInstallmentPeriod());
 
-	            if (StringUtils.isBlank(req.getInstallmentTypeId())) {
+	            if (!StringUtils.isBlank(req.getInstallmentTypeId())) {
 	                List<ListItemValue> installmentList = getInstallmentTypeDesc(
 	                        req.getCompanyId(), "99999", "INSTALLMENT_TYPE", req.getInstallmentTypeId()
 	                );

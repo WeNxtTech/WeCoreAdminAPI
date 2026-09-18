@@ -595,11 +595,11 @@ public class EmiMasterServiceImpl implements EmiMasterService {
 	            saveData.setPremiumEnd(req.getPremiumEnd());
 	            saveData.setInterestPercent(req.getInterestPercent());
 	            saveData.setAdvancePercent(req.getAdvancePercent());
-
                 List<ListItemValue> installmentList = getInstallmentTypeDesc(
                         req.getCompanyId(), "99999", "INSTALLMENT_TYPE", req.getInstallmentTypeId()
                 );
 	            if (!StringUtils.isBlank(req.getInstallmentTypeId())) {
+
 	                String installmentDesc = installmentList.isEmpty() ? "" : installmentList.get(0).getItemValue();
 	                saveData.setInstallmentTypeId(req.getInstallmentTypeId());
 	                saveData.setInstallmentTypeDesc(StringUtils.defaultIfBlank(installmentDesc, ""));
